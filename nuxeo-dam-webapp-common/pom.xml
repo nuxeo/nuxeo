@@ -10,7 +10,7 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-dam-webapp-contrib</artifactId>
+  <artifactId>nuxeo-dam-webapp-common</artifactId>
   <name>Nuxeo DAM WebApp Contributions</name>
   <description>Contributions shared by Nuxeo DAM and Nuxeo DM</description>
 

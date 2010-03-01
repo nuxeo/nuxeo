@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo DAM WebApp Contrib
-Bundle-SymbolicName: org.nuxeo.ecm.webapp.contrib;singleton=true
+Bundle-SymbolicName: org.nuxeo.ecm.webapp.common;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/dam-layouts-contrib.xml,
- OSGI-INF/dam-ecm-types-contrib.xml
+Nuxeo-Component: OSGI-INF/dam-common-layouts-contrib.xml,
+ OSGI-INF/dam-common-ecm-types-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.types.api

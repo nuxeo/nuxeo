@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.imaging">
 
-  <require>org.nuxeo.ecm.platform.url.service.DocumentViewCodecService</require>
-  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
   <require>org.nuxeo.ecm.platform.ui.web.rest.URLService</require>
-
-  <extension
-      target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
-      point="codecs">
-    <documentViewCodec name="downloadPicture" enabled="true"
-                       prefix="nxpicsfile"
-                       class="org.nuxeo.ecm.platform.url.codec.DocumentFileCodec"/>
-  </extension>
-
-  <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="startURL">
-    <startURLPattern>
-      <patterns>
-        <pattern>nxpicsfile/</pattern>
-      </patterns>
-    </startURLPattern>
-  </extension>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
              point="urlpatterns">

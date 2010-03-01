@@ -47,7 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-webapp-contrib</artifactId>
+      <artifactId>nuxeo-dam-webapp-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
@@ -79,7 +79,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-web</artifactId>
+      <artifactId>nuxeo-platform-imaging-jsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-dm</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

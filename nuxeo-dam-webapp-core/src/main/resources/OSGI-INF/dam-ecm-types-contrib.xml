@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.ecm.platform.types</require>
+  <require>org.nuxeo.dam.common.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <!-- override the ImportSet type to add our DAM specific layouts-->
+    <type id="ImportSet">
+      <label>ImportSet</label>
+      <icon>/icons/import_set.png</icon>
+      <bigIcon>/icons/import_set_100.png</bigIcon>
+      <description>ImportSet.description</description>
+      <category>DAM</category>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Picture</type>
+        <type>Video</type>
+        <type>Audio</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>importset_heading</layout>
+        <layout>dam_common</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+  </extension>
+
+</component>

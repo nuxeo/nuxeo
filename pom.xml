@@ -21,7 +21,7 @@
   <modules>
     <module>nuxeo-dam-core</module>
     <module>nuxeo-dam-webapp-core</module>
-    <module>nuxeo-dam-webapp-contrib</module>
+    <module>nuxeo-dam-webapp-common</module>
     <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-webapp-override</module>
     <module>nuxeo-dam-lang</module>
@@ -47,7 +47,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp-contrib</artifactId>
+        <artifactId>nuxeo-dam-webapp-common</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>

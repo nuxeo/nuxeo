@@ -48,7 +48,7 @@
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
-      <artifact name="nuxeo-platform-imaging-web" />
+      <artifact name="nuxeo-platform-imaging-dm" />
       <artifact name="nuxeo-platform-virtualnavigation-web" />
       <artifact name="nuxeo-platform-forum*" />
       <artifact name="nuxeo-platform-syndication" />

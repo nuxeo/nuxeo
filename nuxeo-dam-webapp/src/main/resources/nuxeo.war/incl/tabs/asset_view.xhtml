@@ -158,7 +158,7 @@
           <f:subview id="viewSubView" rendered="#{documentActions.displayMode == 'view'}">
           <nxl:layout name="heading" mode="view"
                       value="#{documentActions.currentSelection}"/>
-          <nxl:layout name="damc" mode="view"
+          <nxl:layout name="dam_common" mode="view"
                       value="#{documentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="view"
                       value="#{documentActions.currentSelection}"/>
@@ -166,7 +166,7 @@
           <f:subview id="editSubView" rendered="#{documentActions.displayMode == 'edit'}">
           <nxl:layout name="heading" mode="edit"
                       value="#{documentActions.currentSelection}"/>
-          <nxl:layout name="damc" mode="edit"
+          <nxl:layout name="dam_common" mode="edit"
                       value="#{documentActions.currentSelection}"/>
           <nxl:layout name="dublincore" mode="edit"
                       value="#{documentActions.currentSelection}"/>

@@ -24,7 +24,7 @@
 
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
         <!-- Property name mentioned in SQLBackendHelper -->
-        <property name="URL">jdbc:h2:vcsh2repo</property>
+        <property name="URL">jdbc:h2:vcsh2repo;MVCC=TRUE</property>
         <property name="User">sa</property>
         <property name="Password"></property>
       </repository>

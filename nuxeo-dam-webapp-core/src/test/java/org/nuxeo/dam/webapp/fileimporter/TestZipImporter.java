@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -61,7 +60,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.filemanager.core:OSGI-INF/nxfilemanager-service.xml",
         "org.nuxeo.ecm.platform.filemanager.core:OSGI-INF/nxfilemanager-plugins-contrib.xml",
         "org.nuxeo.ecm.platform.picture.web:OSGI-INF/picturebook-types-contrib.xml",
-        "org.nuxeo.ecm.platform.picture.web:OSGI-INF/imaging-various-contrib.xml",
+        "org.nuxeo.ecm.platform.picture.web:OSGI-INF/imaging-urlservice-contrib.xml",
         "org.nuxeo.ecm.platform.content.template",
         "org.nuxeo.dam.core:OSGI-INF/dam-schemas-contrib.xml",
         "org.nuxeo.ecm.webapp.core:OSGI-INF/dam-filemanager-plugins-contrib.xml"

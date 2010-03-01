@@ -73,9 +73,6 @@ public class InitPropertiesListener implements EventListener {
     }
 
     protected static final List<String> DUBLINCORE_PROPERTIES = Arrays.asList(
-
-
-
             "dc:description", "dc:coverage", "dc:subjects", "dc:expired");
 
     public void handleEvent(Event event) throws ClientException {

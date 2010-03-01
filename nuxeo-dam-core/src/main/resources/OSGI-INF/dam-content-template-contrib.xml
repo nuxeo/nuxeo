@@ -45,8 +45,8 @@
         <templateItem typeName="SectionRoot" id="sections" title="Sections" description="Sections"/>
         <templateItem typeName="TemplateRoot" id="templates" title="Templates"
             description="Root of workspaces templates"/>
-        <templateItem typeName="ImportRoot" id="import-root" title="Import Root"
-            description="Import Root"/>
+        <templateItem typeName="ImportRoot" id="import-root" title="Assets Library"
+            description="Assets Library"/>
       </template>
     </factoryBinding>
 

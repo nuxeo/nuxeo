@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.common.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layout.WebLayoutManager</require>
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="dam_common">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>author</widget>
+        </row>
+        <row>
+          <widget>authoringDate</widget>
+        </row>
+      </rows>
+      <widget name="author" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>damc:author</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="authoringDate" type="datetime">
+        <translated>true</translated>
+        <fields>
+          <field>damc:authoringDate</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
+        </properties>
+      </widget>
+
+    </layout>
+
+  </extension>
+
+</component>

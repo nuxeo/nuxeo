@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.dam.types">
+<component name="org.nuxeo.dam.common.types">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.ecm.platform.types</require>
+  <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <type id="ImportRoot">
       <label>ImportRoot</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>Collaborative</category>
+      <icon>/icons/assets_library.png</icon>
+      <bigIcon>/icons/assets_library_100.png</bigIcon>
+      <category>DAM</category>
       <description>ImportRoot.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -27,10 +28,10 @@
 
     <type id="ImportFolder">
       <label>ImportFolder</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>Collaborative</category>
+      <icon>/icons/import_folder_closed.png</icon>
+      <bigIcon>/icons/import_folder_closed_100.png</bigIcon>
+      <icon-expanded>/icons/import_folder_open.png</icon-expanded>
+      <category>DAM</category>
       <description>ImportFolder.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -47,11 +48,11 @@
     </type>
 
     <type id="ImportSet">
-      <label>Import Set</label>
-      <icon>/icons/import_set.gif</icon>
+      <label>ImportSet</label>
+      <icon>/icons/import_set.png</icon>
       <bigIcon>/icons/import_set_100.png</bigIcon>
-      <description>importSet.description</description>
-      <category>SuperDocument</category>
+      <description>ImportSet.description</description>
+      <category>DAM</category>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Folder</type>
@@ -61,8 +62,12 @@
         <type>Audio</type>
       </subtypes>
       <layouts mode="any">
-        <layout>importset_heading</layout>
-        <layout>damc</layout>
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
     </type>
@@ -91,7 +96,28 @@
       </layouts>
     </type>
 
-    <!-- At the moment we're only using this for the icons -->
+    <type id="File">
+      <label>File</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+        <layout>file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <!-- all content already on summary page -->
+      <layouts mode="view" />
+    </type>
+
     <type id="Picture">
       <label>Picture</label>
       <default-view>view_documents</default-view>
@@ -100,28 +126,51 @@
       <bigIcon>/icons/image_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Picture.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
-    <!-- At the moment we're only using this for the icons -->
     <type id="Video">
       <label>Video</label>
       <default-view>view_documents</default-view>
-      <create-view>create_video</create-view>
       <icon>/icons/video.png</icon>
       <bigIcon>/icons/video_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Video.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
-    <!-- At the moment we're only using this for the icons -->
     <type id="Audio">
       <label>Audio</label>
       <default-view>view_documents</default-view>
-      <create-view>create_audio</create-view>
       <icon>/icons/audio.png</icon>
       <bigIcon>/icons/audio_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Audio.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
   </extension>
