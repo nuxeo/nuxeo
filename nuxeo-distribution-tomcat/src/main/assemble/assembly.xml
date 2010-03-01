@@ -57,10 +57,10 @@
     
     <echo>Preparing Nuxeo Chemistry...</echo>
     <antcall target="set-cmis" />
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}-cmis.zip"
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-cmis.zip"
          basedir="${stagedir}" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}-cmis.zip"
-                     classifier="${distribution}-cmis"
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-cmis.zip"
+                     classifier="cmis"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
