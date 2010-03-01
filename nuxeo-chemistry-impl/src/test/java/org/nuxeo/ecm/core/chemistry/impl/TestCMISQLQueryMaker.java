@@ -128,9 +128,10 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
         // join query
 
+        // join on non-hierarchy table to test query generation and types
         query = "SELECT A.cmis:ObjectId, B.dc:title" //
                 + " FROM cmis:Document A" //
-                + " JOIN cmis:Document B ON A.cmis:ObjectId = B.cmis:ParentId" //
+                + " JOIN cmis:Document B ON A.cmis:ObjectId = B.dc:title" //
                 + " WHERE A.dc:title = '123' OR B.dc:title = 'xyz'";
         q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
                 captured.session, query, null, new Object[] { null });
@@ -140,8 +141,8 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID, _B_HIERARCHY.PRIMARYTYPE"
                 + " FROM HIERARCHY _A_HIERARCHY"
                 + " LEFT JOIN DUBLINCORE _A_DUBLINCORE ON _A_DUBLINCORE.ID = _A_HIERARCHY.ID"
-                + " JOIN HIERARCHY _B_HIERARCHY ON _A_HIERARCHY.ID = _B_HIERARCHY.PARENTID"
-                + " LEFT JOIN DUBLINCORE _B_DUBLINCORE ON _B_DUBLINCORE.ID = _B_HIERARCHY.ID"
+                + " JOIN DUBLINCORE _B_DUBLINCORE ON _A_HIERARCHY.ID = _B_DUBLINCORE.TITLE"
+                + " LEFT JOIN HIERARCHY _B_HIERARCHY ON _B_HIERARCHY.ID = _B_DUBLINCORE.ID"
                 + " WHERE _A_HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
                 + "   AND _B_HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
                 + "   AND ((_A_DUBLINCORE.TITLE = ?) OR (_B_DUBLINCORE.TITLE = ?))";
