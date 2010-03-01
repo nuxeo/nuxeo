@@ -142,9 +142,9 @@
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-placeful*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-preview*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-syndication*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-ui-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-ui-*" excludes="nuxeo-platform-ui-api*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-uidgen*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-url*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-url*" excludes="nuxeo-platform-url-api*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-webapp*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-webengine-*" excludes="nuxeo-webengine-core*,nuxeo-webengine-base*,nuxeo-webengine-admin*" />
       <fileset dir="${nxserver}/config" includes="commentService-config-bundle.xml" />
