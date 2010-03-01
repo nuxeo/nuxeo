@@ -64,6 +64,7 @@ import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,7 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("pictureManager")
 @Scope(CONVERSATION)
-public class PictureManagerBean extends InputController implements
+public class PictureManagerBean implements
         PictureManager, Serializable {
 
     private static final long serialVersionUID = -7323791279190937921L;
@@ -88,6 +89,9 @@ public class PictureManagerBean extends InputController implements
 
     @In(required = true, create = true)
     private transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected ResourcesAccessor resourcesAccessor;
 
     String fileurlPicture;
 

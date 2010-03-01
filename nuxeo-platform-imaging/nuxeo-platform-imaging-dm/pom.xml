@@ -14,8 +14,8 @@
     drop plugin, slideshows or thumbnails.
   </description>
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-imaging-web</artifactId>
-  <name>Nuxeo Platform Imaging Web</name>
+  <artifactId>nuxeo-platform-imaging-dm</artifactId>
+  <name>Nuxeo Platform Imaging DM</name>
 
   <dependencies>
     <dependency>
