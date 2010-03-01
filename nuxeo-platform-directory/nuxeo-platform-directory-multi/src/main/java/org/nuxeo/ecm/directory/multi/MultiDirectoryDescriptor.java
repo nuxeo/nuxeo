@@ -78,7 +78,7 @@ public class MultiDirectoryDescriptor implements Cloneable {
                 SourceDescriptor[] s = new SourceDescriptor[sources.length
                         + other.sources.length];
                 System.arraycopy(sources, 0, s, 0, sources.length);
-                System.arraycopy(other.sources, 0, s, s.length,
+                System.arraycopy(other.sources, 0, s, sources.length,
                         other.sources.length);
                 sources = s;
             }
