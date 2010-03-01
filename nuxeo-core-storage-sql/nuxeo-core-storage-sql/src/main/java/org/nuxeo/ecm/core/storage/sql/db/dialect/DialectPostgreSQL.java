@@ -593,27 +593,6 @@ public class DialectPostgreSQL extends Dialect {
                                 + "LANGUAGE plpgsql" //
                         , idType)));
 
-        statements.add(new ConditionalStatement(
-                true, // early
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                "CREATE OR REPLACE FUNCTION NX_CLUSTER_GET_INVALS() " //
-                        + "RETURNS SETOF RECORD " //
-                        + "AS $$ " //
-                        + "DECLARE" //
-                        + "  r RECORD; " //
-                        + "BEGIN" //
-                        + "  FOR r IN SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = pg_backend_pid() LOOP" //
-                        + "    RETURN NEXT r;" //
-                        + "  END LOOP;" //
-                        + "  DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid();" //
-                        + "  RETURN; " //
-                        + "END " //
-                        + "$$ " //
-                        + "LANGUAGE plpgsql" //
-        ));
-
         if (!fulltextDisabled) {
             statements.add(new ConditionalStatement(
                     true, // early
@@ -1363,9 +1342,8 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        // TODO id type
-        return "SELECT * FROM NX_CLUSTER_GET_INVALS() "
-                + "AS invals(id varchar(36), fragments varchar[], kind int2)";
+        return "DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid()"
+                + " RETURNING id, fragments, kind";
     }
 
     @Override
