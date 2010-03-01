@@ -49,47 +49,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-api</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-commons</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-atompub</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-atompub-server</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-atompub-client</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-ws</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-soap-server</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry</groupId>
-        <artifactId>chemistry-tests</artifactId>
-        <version>${chemistry.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>metro.webservices</groupId>
         <artifactId>webservices-api</artifactId>
         <version>${metro.version}</version>
