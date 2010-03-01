@@ -9,6 +9,8 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 
 abstract public class AbstractSpaceProvider implements SpaceProvider {
 
+    private static final String COLUMN_ID_PREFIX = "column-";
+
     public void add(Space o, CoreSession session) throws SpaceException {
         if(isReadOnly(session)) throw new SpaceException("This SpaceProvider is read only");
     }
@@ -57,6 +59,8 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
         return false;
     }
 
-
+    public static String getColumnId(int n) {
+        return COLUMN_ID_PREFIX + (n + 1);
+    }
 
 }

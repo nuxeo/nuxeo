@@ -29,15 +29,6 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
 
   private static final Log log = LogFactory.getLog(DashboardSpaceProvider.class);
 
-  // we really would like to use COLS[0] from ContainerPortal here.
-  // however, we can't because that would cause linkage with the
-  // client
-  // side code, which would imply that we can run in the browser,
-  // and we can't... so we have to duplicate the constants here
-
-  private static final String[] COLS = new String[] { "firstCol", "secondCol",
-      "thirdCol", "fourCol" };
-
   @Override
   public Space doGetSpace(String name, CoreSession session)
       throws SpaceException {
@@ -78,7 +69,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
   /**
    * For compat purpose, we put the space in a univers. But it is not really
    * needed
-   * 
+   *
    * @param session
    * @return
    */
@@ -151,7 +142,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
     log.debug("creating UserTasks ");
     labelKey = "title.dashboard.userTasks";
     title = TranslationHelper.getLabel(labelKey, language);
-    createGadgetForInitialDashboard(session, space, "tasks", title, COLS[0],
+    createGadgetForInitialDashboard(session, space, "tasks", title, getColumnId(0),
         new Integer(0));
 
     // waiting on others
@@ -159,28 +150,28 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
     labelKey = "title.dashboard.waitingfor";
     title = TranslationHelper.getLabel(labelKey, language);
     createGadgetForInitialDashboard(session, space, "waitingfor", title,
-        COLS[0], new Integer(1));
+            getColumnId(0), new Integer(1));
 
     // User Sites
     log.debug("creating UserSites ");
     labelKey = "title.dashboard.userSites";
     title = TranslationHelper.getLabel(labelKey, language);
     createGadgetForInitialDashboard(session, space, "usersites", title,
-        COLS[0], new Integer(2));
+            getColumnId(0), new Integer(2));
 
     // UserDocuments
     log.debug("creating UserDocuments ");
     labelKey = "title.dashboard.userDocuments";
     title = TranslationHelper.getLabel(labelKey, language);
     createGadgetForInitialDashboard(session, space, "userdocuments", title,
-        COLS[1], new Integer(0));
+            getColumnId(1), new Integer(0));
 
     // User Workspaces
     log.debug("creating UserWorkspaces ");
     labelKey = "title.dashboard.userWorkspaces";
     title = TranslationHelper.getLabel(labelKey, language);
     createGadgetForInitialDashboard(session, space, "userworkspaces", title,
-        COLS[1], new Integer(0));
+            getColumnId(1), new Integer(0));
 
     session.save();
 
