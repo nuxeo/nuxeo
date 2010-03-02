@@ -87,7 +87,7 @@ public class InitPropertiesListener implements EventListener {
                     && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
                 DocumentModel importSet = getImportSet(coreSession, doc);
-                if (importSet == null) {
+                if (importSet == null || "/".equals(importSet.getPath())) {
                     // there is no or no accessible importset parent, don't update
                     // the document.
                     return;
