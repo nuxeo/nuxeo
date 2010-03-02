@@ -42,7 +42,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
-        String name = computeDocumentName(bundleGroup.getName());
+        String name = computeDocumentName("bg-" + bundleGroup.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {

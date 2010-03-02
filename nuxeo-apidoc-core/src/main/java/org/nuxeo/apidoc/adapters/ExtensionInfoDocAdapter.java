@@ -45,7 +45,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName(xi.getId());
+        String name = computeDocumentName("contrib-" + xi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {

@@ -46,7 +46,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
-        String name = computeDocumentName(bundleInfo.getId());
+        String name = computeDocumentName("bundle-" + bundleInfo.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {

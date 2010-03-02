@@ -17,8 +17,6 @@ ${contribution.xml?html}
 
 <h2> target ExtensionPoint </h2>
 <A href="${Root.path}/${distId}/viewExtensionPoint/${contribution.extensionPoint}">
-${contribution.targetComponentName.name}
- --
 ${contribution.extensionPoint}
 </A>
 

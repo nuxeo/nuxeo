@@ -21,7 +21,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName(si.getId());
+        String name = computeDocumentName("service-"+si.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {

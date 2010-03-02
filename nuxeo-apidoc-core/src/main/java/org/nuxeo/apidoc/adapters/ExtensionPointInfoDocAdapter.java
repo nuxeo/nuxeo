@@ -46,7 +46,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName(xpi.getId());
+        String name = computeDocumentName("xp-" + xpi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
@@ -121,7 +121,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getId() {
-        return getComponent().getId() + "--" +  getName();
+        return safeGet("nxextensionpoint:epId");
     }
 
     public String getVersion() {

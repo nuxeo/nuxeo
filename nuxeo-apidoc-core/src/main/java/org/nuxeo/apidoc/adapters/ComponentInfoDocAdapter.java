@@ -51,7 +51,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName(componentInfo.getName());
+        String name = computeDocumentName("component-" + componentInfo.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
