@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
- * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node} .
- * This is used for documents and for complex properties.
+ * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node}
+ * . This is used for documents and for complex properties.
  *
  * @author Florent Guillaume
  */
@@ -62,24 +62,9 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         this.session = session;
     }
 
-    /**
-     * Returns the node with info about the object's data.
-     */
-    protected Node getDataNode() {
+    // for SQLDocument
+    public Node getNode() {
         return node;
-    }
-
-    /**
-     * Returns the node with info about the hierarchy location.
-     * <p>
-     * It's only different from the {@link #getDataNode} for proxies.
-     */
-    protected Node getHierarchyNode() {
-        return node;
-    }
-
-    protected void setHierarchyNode(Node node) {
-        this.node = node;
     }
 
     /*

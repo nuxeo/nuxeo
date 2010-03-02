@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -71,7 +71,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
-import org.nuxeo.ecm.core.model.DocumentVersionProxy;
+import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
@@ -240,8 +240,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -2162,6 +2162,39 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    /**
+     * Creates a generic proxy to a document.
+     * <p>
+     * The document may be a version, or a working copy (live document) in which
+     * case the proxy will be a "shortcut".
+     */
+    public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
+            throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            Document folder = resolveReference(folderRef);
+            checkPermission(doc, READ);
+            checkPermission(folder, ADD_CHILDREN);
+
+            // create the new proxy
+            Document proxy = getSession().createProxy(doc, folder);
+            DocumentModel proxyModel = readModel(proxy, null);
+
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
+                    options, null, null, true, false);
+            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+                    proxyModel, options, null, null, true, false);
+            DocumentModel folderModel = readModel(folder, null);
+            notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
+                    folderModel, options, null, null, true, false);
+            return proxyModel;
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to create proxy for doc: "
+                    + docRef, e);
+        }
+    }
+
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy)
             throws ClientException {
@@ -2177,9 +2210,15 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel proxyModel = null;
             Map<String, Serializable> options = new HashMap<String, Serializable>();
+            String vlabel = version.getLabel();
 
             if (overwriteExistingProxy) {
-                proxyModel = updateExistingProxies(doc, section, version);
+                Document target = getSession().getVersion(doc.getUUID(), version);
+                if (target == null) {
+                    throw new ClientException("Document " + docRef
+                            + " has no version " + vlabel);
+                }
+                proxyModel = updateExistingProxies(doc, section, target);
                 // proxyModel is null is update fails
                 if (proxyModel != null) {
                     // notify for proxy updates
@@ -2195,7 +2234,6 @@ public abstract class AbstractSession implements CoreSession,
 
             if (proxyModel == null) {
                 // create the new proxy
-                String vlabel = version.getLabel();
                 Document proxy = getSession().createProxyForVersion(section,
                         doc, vlabel);
                 log.debug("Created proxy for version " + vlabel
@@ -2243,15 +2281,14 @@ public abstract class AbstractSession implements CoreSession,
      * Update the proxy while republishing.
      */
     protected DocumentModel updateExistingProxies(Document doc,
-            Document folder, VersionModel version) throws DocumentException,
+            Document folder, Document target) throws DocumentException,
             ClientException {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
                 for (Document proxy : proxies) {
-                    if (proxy instanceof DocumentVersionProxy) {
-                        ((DocumentVersionProxy) proxy).setTargetDocument(doc,
-                                version.getLabel());
+                    if (proxy instanceof DocumentProxy) {
+                        ((DocumentProxy) proxy).setTargetDocument(target);
                         return readModel(proxy, null);
                     }
                 }
@@ -2298,7 +2335,13 @@ public abstract class AbstractSession implements CoreSession,
             List<String> versions = new ArrayList<String>();
             for (Document child : children) {
                 if (hasPermission(child, READ)) {
-                    versions.add(((DocumentVersionProxy) child).getTargetVersion().getLabel());
+                    Document target = ((DocumentProxy) child).getTargetDocument();
+                    if (target instanceof DocumentVersion) {
+                        versions.add(((DocumentVersion) target).getLabel());
+                    } else {
+                        // live proxy
+                        versions.add("");
+                    }
                 }
             }
             return versions.toArray(new String[versions.size()]);

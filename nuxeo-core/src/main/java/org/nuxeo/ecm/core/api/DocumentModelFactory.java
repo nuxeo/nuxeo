@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -147,22 +148,22 @@ public class DocumentModelFactory {
             parentRef = new IdRef(parent.getUUID());
         }
 
-        Set<String> typeFacets = type.getFacets();
-        if (doc.isProxy() || doc.isVersion()) {
-            if (typeFacets != null) {
-                // clone facets to avoid modifying doc type facets
-                typeFacets = new HashSet<String>(typeFacets);
-            } else {
-                typeFacets = new HashSet<String>();
-            }
-            typeFacets.add("Immutable");
-        }
-
-        // Compute document source id if exists.
-        String sourceId = null;
+        // Compute document source id if exists
         Document sourceDoc = doc.getSourceDocument();
-        if (sourceDoc != null) {
-            sourceId = sourceDoc.getUUID();
+        String sourceId = sourceDoc == null ? null : sourceDoc.getUUID();
+
+        // Immutable flag
+        boolean immutable = doc.isVersion()
+                || (doc.isProxy() && sourceDoc.isVersion());
+
+        Set<String> typeFacets = type.getFacets();
+        if (immutable) {
+            // clone facets to avoid modifying doc type facets
+            typeFacets = new HashSet<String>();
+            if (typeFacets != null) {
+                typeFacets.addAll(typeFacets);
+            }
+            typeFacets.add(FacetNames.IMMUTABLE);
         }
 
         // Compute repository name.
@@ -185,6 +186,9 @@ public class DocumentModelFactory {
         }
         if (doc.isProxy()) {
             docModel.setIsProxy(true);
+        }
+        if (immutable) {
+            docModel.setIsImmutable(true);
         }
 
         // populate models

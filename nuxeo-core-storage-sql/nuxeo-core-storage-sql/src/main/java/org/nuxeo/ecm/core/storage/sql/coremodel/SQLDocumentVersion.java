@@ -39,7 +39,8 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 /**
  * @author Florent Guillaume
  */
-public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
+public class SQLDocumentVersion extends SQLDocumentLive implements
+        DocumentVersion {
 
     private final Node versionableNode;
 
@@ -314,12 +315,12 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     private boolean equals(SQLDocumentVersion other) {
-        return getHierarchyNode().getId() == other.getHierarchyNode().getId();
+        return getNode().equals(other.getNode());
     }
 
     @Override
     public int hashCode() {
-        return getHierarchyNode().getId().hashCode();
+        return getNode().hashCode();
     }
 
 }

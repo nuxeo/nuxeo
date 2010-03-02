@@ -38,7 +38,8 @@ public abstract class SQLBaseProperty implements Property {
         this.readonly = readonly;
     }
 
-    protected void checkWritable() throws DocumentException {
+    // for SQLDocument
+    public void checkWritable() throws DocumentException {
         if (readonly) {
             throw new DocumentException("Cannot write property: " + getName());
         }

@@ -52,18 +52,29 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 /**
  * @author Florent Guillaume
  */
-public class SQLDocument extends SQLComplexProperty implements Document {
+public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
-    protected static final String BINARY_TEXT_SYS_PROP = "binaryText";
-
-    private static final Log log = LogFactory.getLog(SQLDocument.class);
+    private static final Log log = LogFactory.getLog(SQLDocumentLive.class);
 
     // cache of the lock state, for efficiency
     protected String lock;
 
-    protected SQLDocument(Node node, ComplexType type, SQLSession session,
+    protected SQLDocumentLive(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
         super(node, type, session, readonly);
+    }
+
+    /*
+     * ----- SQLDocument -----
+     */
+
+    // getNode in SQLComplexProperty
+
+    // checkWritable in SQLBaseProperty
+
+    public org.nuxeo.ecm.core.model.Property getACLProperty()
+            throws DocumentException {
+        return session.makeACLProperty(getNode());
     }
 
     /*
@@ -82,23 +93,19 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean isFolder() {
-        return _isFolder();
-    }
-
-    protected boolean _isFolder() {
         return ((DocumentType) type).isFolder();
     }
 
     public String getUUID() {
-        return getHierarchyNode().getId().toString();
+        return getNode().getId().toString();
     }
 
     public Document getParent() throws DocumentException {
-        return session.getParent(getHierarchyNode());
+        return session.getParent(getNode());
     }
 
     public String getPath() throws DocumentException {
-        return session.getPath(getHierarchyNode());
+        return session.getPath(getNode());
     }
 
     public Calendar getLastModified() {
@@ -114,7 +121,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void remove() throws DocumentException {
-        session.remove(getHierarchyNode());
+        session.remove(getNode());
     }
 
     public void save() throws DocumentException {
@@ -319,11 +326,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
     public void checkIn(String label, String description)
             throws DocumentException {
-        session.checkIn(getHierarchyNode(), label, description);
+        session.checkIn(getNode(), label, description);
     }
 
     public void checkOut() throws DocumentException {
-        session.checkOut(getHierarchyNode());
+        session.checkOut(getNode());
     }
 
     public boolean isCheckedOut() throws DocumentException {
@@ -331,11 +338,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void restore(String label) throws DocumentException {
-        session.restoreByLabel(getHierarchyNode(), label);
+        session.restoreByLabel(getNode(), label);
     }
 
     public List<String> getVersionsIds() throws DocumentException {
-        Collection<DocumentVersion> versions = session.getVersions(getHierarchyNode());
+        Collection<DocumentVersion> versions = session.getVersions(getNode());
         List<String> ids = new ArrayList<String>(versions.size());
         for (DocumentVersion version : versions) {
             ids.add(version.getUUID());
@@ -344,16 +351,16 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public Document getVersion(String label) throws DocumentException {
-        return session.getVersionByLabel(getHierarchyNode(), label);
+        return session.getVersionByLabel(getNode(), label);
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
         return new SQLDocumentVersionIterator(
-                session.getVersions(getHierarchyNode()));
+                session.getVersions(getNode()));
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
-        return session.getLastVersion(getHierarchyNode());
+        return session.getLastVersion(getNode());
     }
 
     public boolean hasVersions() throws DocumentException {
@@ -379,34 +386,22 @@ public class SQLDocument extends SQLComplexProperty implements Document {
             // TODO log warning
             path = path.substring(1);
         }
-        return session.resolvePath(getHierarchyNode(), path);
+        return session.resolvePath(getNode(), path);
     }
 
     public Document getChild(String name) throws DocumentException {
-        return _getChild(name);
-    }
-
-    protected Document _getChild(String name) throws DocumentException {
-        return session.getChild(getHierarchyNode(), name);
+        return session.getChild(getNode(), name);
     }
 
     public Iterator<Document> getChildren() throws DocumentException {
-        return _getChildren();
-    }
-
-    protected Iterator<Document> _getChildren() throws DocumentException {
         return getChildren(0);
     }
 
     public DocumentIterator getChildren(int start) throws DocumentException {
-        return _getChildren(start);
-    }
-
-    protected DocumentIterator _getChildren(int start) throws DocumentException {
         if (!isFolder()) {
             return EmptyDocumentIterator.INSTANCE;
         }
-        List<Document> children = session.getChildren(getHierarchyNode());
+        List<Document> children = session.getChildren(getNode());
         if (start < 0) {
             throw new IllegalArgumentException(String.valueOf(start));
         }
@@ -418,15 +413,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public List<String> getChildrenIds() throws DocumentException {
-        return _getChildrenIds();
-    }
-
-    protected List<String> _getChildrenIds() throws DocumentException {
         if (!isFolder()) {
             return Collections.emptyList();
         }
         // not optimized as this method doesn't seem to be used
-        List<Document> children = session.getChildren(getHierarchyNode());
+        List<Document> children = session.getChildren(getNode());
         List<String> ids = new ArrayList<String>(children.size());
         for (Document child : children) {
             ids.add(child.getUUID());
@@ -435,46 +426,28 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean hasChild(String name) throws DocumentException {
-        return _hasChild(name);
-    }
-
-    protected boolean _hasChild(String name) throws DocumentException {
         if (!isFolder()) {
             return false;
         }
-        return session.hasChild(getHierarchyNode(), name);
+        return session.hasChild(getNode(), name);
     }
 
     public boolean hasChildren() throws DocumentException {
-        return _hasChildren();
-    }
-
-    protected boolean _hasChildren() throws DocumentException {
         if (!isFolder()) {
             return false;
         }
-        return session.hasChildren(getHierarchyNode());
+        return session.hasChildren(getNode());
     }
 
     public Document addChild(String name, String typeName)
             throws DocumentException {
-        return _addChild(name, typeName);
-    }
-
-    protected Document _addChild(String name, String typeName)
-            throws DocumentException {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
-        return session.addChild(getHierarchyNode(), name, null, typeName);
+        return session.addChild(getNode(), name, null, typeName);
     }
 
     public void orderBefore(String src, String dest) throws DocumentException {
-        _orderBefore(src, dest);
-    }
-
-    protected void _orderBefore(String src, String dest)
-            throws DocumentException {
         SQLDocument srcDoc = (SQLDocument) getChild(src);
         if (srcDoc == null) {
             throw new DocumentException("Document " + this + " has no child: "
@@ -490,15 +463,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
                         + " has no child: " + dest);
             }
         }
-        session.orderBefore(getHierarchyNode(), srcDoc.getHierarchyNode(),
-                destDoc == null ? null : destDoc.getHierarchyNode());
+        session.orderBefore(getNode(), srcDoc.getNode(),
+                destDoc == null ? null : destDoc.getNode());
     }
 
     public void removeChild(String name) throws DocumentException {
-        _removeChild(name);
-    }
-
-    protected void _removeChild(String name) throws DocumentException {
         if (!isFolder()) {
             return; // ignore non folder documents XXX urgh
         }
@@ -509,15 +478,6 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     /*
      * ----- PropertyContainer inherited from SQLComplexProperty -----
      */
-
-    /*
-     * ----- internal for SQLSecurityManager -----
-     */
-
-    protected org.nuxeo.ecm.core.model.Property getACLProperty()
-            throws DocumentException {
-        return session.makeACLProperty(getHierarchyNode());
-    }
 
     /*
      * ----- toString/equals/hashcode -----
@@ -534,19 +494,19 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (other == this) {
             return true;
         }
-        if (other instanceof SQLDocument) {
-            return equals((SQLDocument) other);
+        if (other instanceof SQLDocumentLive) {
+            return equals((SQLDocumentLive) other);
         }
         return false;
     }
 
-    private boolean equals(SQLDocument other) {
-        return getHierarchyNode().getId() == other.getHierarchyNode().getId();
+    private boolean equals(SQLDocumentLive other) {
+        return getNode().equals(other.getNode());
     }
 
     @Override
     public int hashCode() {
-        return getHierarchyNode().getId().hashCode();
+        return getNode().hashCode();
     }
 
 }

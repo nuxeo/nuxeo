@@ -431,6 +431,16 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
+    public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
+            throws ClientException {
+        try {
+            return super.createProxy(docRef, folderRef);
+        } catch (Throwable e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy)
             throws ClientException {

@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
@@ -127,12 +128,6 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  * @author Florent Guillaume
  */
 public class NXQLQueryMaker implements QueryMaker {
-
-    /**
-     * Name of the Immutable facet, added by {@code DocumentModelFactory} when
-     * instantiating a proxy or a version.
-     */
-    public static final String FACET_IMMUTABLE = "Immutable";
 
     protected static final String TABLE_HIER_ALIAS = "_H";
 
@@ -255,7 +250,7 @@ public class NXQLQueryMaker implements QueryMaker {
             facetFilter = FacetFilter.ALLOW;
         }
         info.mixinsExcluded.addAll(facetFilter.excluded);
-        if (info.mixinsExcluded.remove(FACET_IMMUTABLE)) {
+        if (info.mixinsExcluded.remove(FacetNames.IMMUTABLE)) {
             if (info.immutableClause == Boolean.TRUE) {
                 // conflict on immutable condition, query cannot match
                 return null;
@@ -263,7 +258,7 @@ public class NXQLQueryMaker implements QueryMaker {
             info.immutableClause = Boolean.FALSE;
         }
         info.mixinsAllRequired.addAll(facetFilter.required);
-        if (info.mixinsAllRequired.remove(FACET_IMMUTABLE)) {
+        if (info.mixinsAllRequired.remove(FacetNames.IMMUTABLE)) {
             if (info.immutableClause == Boolean.FALSE) {
                 // conflict on immutable condition, query cannot match
                 return null;
@@ -642,7 +637,7 @@ public class NXQLQueryMaker implements QueryMaker {
                             return;
                         }
                         if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                            if (FACET_IMMUTABLE.equals(value)) {
+                            if (FacetNames.IMMUTABLE.equals(value)) {
                                 Boolean im = Boolean.valueOf(isEq);
                                 if (immutableClause != null
                                         && immutableClause != im) {
@@ -719,7 +714,7 @@ public class NXQLQueryMaker implements QueryMaker {
                                                     + " IN requires string literals");
                                 }
                                 String value = ((StringLiteral) literal).value;
-                                if (FACET_IMMUTABLE.equals(value)) {
+                                if (FacetNames.IMMUTABLE.equals(value)) {
                                     Boolean im = Boolean.valueOf(isIn);
                                     if (immutableClause != null
                                             && immutableClause != im) {

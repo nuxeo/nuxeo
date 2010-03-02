@@ -25,6 +25,8 @@ package org.nuxeo.ecm.core.schema;
  */
 public final class FacetNames {
 
+    public static final String IMMUTABLE = "Immutable";
+
     public static final String FOLDERISH = "Folderish";
 
     public static final String VERSIONABLE = "Versionable";

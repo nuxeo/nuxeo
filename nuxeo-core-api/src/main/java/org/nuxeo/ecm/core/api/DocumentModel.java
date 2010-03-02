@@ -404,6 +404,14 @@ public interface DocumentModel extends Serializable {
     boolean isProxy();
 
     /**
+     * Checks if this document is immutable.
+     *
+     * @return {@code true} if the document is a version or a proxy to a
+     *         version, {@code false} otherwise
+     */
+    boolean isImmutable();
+
+    /**
      * Adapts the document to the given interface.
      *
      * <p>
