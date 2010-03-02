@@ -638,6 +638,7 @@
       </rule>
     </filter>
 
+    <!-- deprecated, use mutable_document instead -->
     <filter id="cannotEdit">
       <rule grant="false">
         <type>Root</type>
@@ -801,7 +802,7 @@
         <type>Section</type>
       </rule>
     </filter>
-    
+
     <filter id="denyFilesTab">
       <rule grant="false">
         <type>WebSite</type>

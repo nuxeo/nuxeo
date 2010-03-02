@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -97,7 +98,6 @@ import org.nuxeo.runtime.api.Framework;
 @Name("liveEditHelper")
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
-    protected static final String IMMUTABLE_FACET = "Immutable";
     protected static final String MODIFIED_FIELD = "modified";
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
@@ -630,7 +630,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
         if (cachedEditableBlob == null) {
 
-            if (documentModel.hasFacet(IMMUTABLE_FACET)) {
+            if (documentModel.hasFacet(FacetNames.IMMUTABLE)) {
                 return cacheBlobToFalse(cacheKey);
             }
 

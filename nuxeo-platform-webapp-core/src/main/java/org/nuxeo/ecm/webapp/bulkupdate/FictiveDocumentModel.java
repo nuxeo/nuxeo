@@ -297,6 +297,10 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
         return false;
     }
 
+    public boolean isImmutable() {
+        return false;
+    }
+
     public DocumentType getDocumentType() {
         return null;
     }

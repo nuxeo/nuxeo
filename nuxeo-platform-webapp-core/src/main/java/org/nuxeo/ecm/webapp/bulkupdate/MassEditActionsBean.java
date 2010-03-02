@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
@@ -515,7 +516,7 @@ public class MassEditActionsBean extends InputController implements
 
             boolean canWrite = documentManager.hasPermission(docModel.getRef(),
                     SecurityConstants.WRITE_PROPERTIES)
-                    && !docModel.hasFacet("Immutable");
+                    && !docModel.hasFacet(FacetNames.IMMUTABLE);
             if (!canWrite) {
                 String titleOrId = docModel.getTitle();
                 if (titleOrId == null) {
