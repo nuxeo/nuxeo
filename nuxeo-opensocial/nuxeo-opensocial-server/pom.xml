@@ -75,127 +75,70 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.google.code.guice</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.google.code.guice</groupId>
       <artifactId>guice-jmx</artifactId>
     </dependency>
+    <dependency>
+      <groupId>caja</groupId>
+      <artifactId>caja</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.oauth.core</groupId>
+      <artifactId>oauth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-impl</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>aopalliance</groupId>
+      <artifactId>aopalliance</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sanselan</groupId>
+      <artifactId>sanselan</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
-    <plugins>
-      <!-- TODO This is bad and need cleanup: no embedded libraries. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin
-        </artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <excludeTransistive>true</excludeTransistive>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.shindig</groupId>
-                  <artifactId>shindig-common</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.shindig</groupId>
-                  <artifactId>shindig-features</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.shindig</groupId>
-                  <artifactId>shindig-social-api</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.shindig</groupId>
-                  <artifactId>shindig-gadgets</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>caja</groupId>
-                  <artifactId>caja</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>com.googlecode.json-simple</groupId>
-                  <artifactId>json-simple</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>net.oauth.core</groupId>
-                  <artifactId>oauth</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>com.google.collections</groupId>
-                  <artifactId>google-collections</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>com.google.code.guice</groupId>
-                  <artifactId>guice</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.google.code.guice</groupId>
-                  <artifactId>guice-jmx</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>rome</groupId>
-                  <artifactId>rome</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.ibm.icu</groupId>
-                  <artifactId>icu4j</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>net.sourceforge.nekohtml</groupId>
-                  <artifactId>nekohtml</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>joda-time</groupId>
-                  <artifactId>joda-time</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.json</groupId>
-                  <artifactId>json</artifactId>
-                </artifactItem>
-
-                <!--  New libs for Shindig-1.1 -->
-
-                <artifactItem>
-                  <groupId>de.odysseus.juel</groupId>
-                  <artifactId>juel-impl</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>aopalliance</groupId>
-                  <artifactId>aopalliance</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>org.apache.sanselan</groupId>
-                  <artifactId>sanselan</artifactId>
-                </artifactItem>
-
-
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/classes/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

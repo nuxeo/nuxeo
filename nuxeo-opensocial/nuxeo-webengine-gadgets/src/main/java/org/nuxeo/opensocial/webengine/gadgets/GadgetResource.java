@@ -29,18 +29,18 @@ import org.nuxeo.runtime.api.Framework;
 
 public class GadgetResource extends InputStreamResource {
 
-  GadgetDeclaration gadget;
+    GadgetDeclaration gadget;
 
-  public GadgetResource(GadgetDeclaration gadget) {
-    this.gadget = gadget;
-  }
+    public GadgetResource(GadgetDeclaration gadget) {
+        this.gadget = gadget;
+    }
 
-  @GET
-  @Path("{filename:.*}")
-  public Object getGadgetFile(@PathParam("filename") String fileName)
-      throws Exception {
-    InputStream in = Framework.getService(GadgetService.class)
-        .getGadgetResource(gadget.getName(), fileName);
-    return getObject(in, fileName);
-  }
+    @GET
+    @Path("{filename:.*}")
+    public Object getGadgetFile(@PathParam("filename") String fileName)
+            throws Exception {
+        InputStream in = Framework.getService(GadgetService.class).getGadgetResource(
+                gadget.getName(), fileName);
+        return getObject(in, fileName);
+    }
 }

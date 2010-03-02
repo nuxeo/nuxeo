@@ -21,41 +21,43 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetPosition
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class GadgetPosition implements IsSerializable {
 
-  private static final long serialVersionUID = 1L;
-  private String placeID;
-  private int position;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Default construcor (Specification of Gwt)
-   */
-  public GadgetPosition() {
+    private String placeID;
 
-  }
+    private int position;
 
-  public GadgetPosition(String placeID, int position) {
-    this.placeID = placeID;
-    this.position = position;
-  }
+    /**
+     * Default construcor (Specification of Gwt)
+     */
+    public GadgetPosition() {
 
-  public String getPlaceID() {
-    return placeID;
-  }
+    }
 
-  public Integer getPosition() {
-    return position;
-  }
+    public GadgetPosition(String placeID, int position) {
+        this.placeID = placeID;
+        this.position = position;
+    }
 
-  public void setPlaceId(String id) {
-    placeID = id;
-  }
+    public String getPlaceID() {
+        return placeID;
+    }
 
-  public void setPosition(int pos) {
-    this.position = pos;
-  }
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPlaceId(String id) {
+        placeID = id;
+    }
+
+    public void setPosition(int pos) {
+        this.position = pos;
+    }
 
 }

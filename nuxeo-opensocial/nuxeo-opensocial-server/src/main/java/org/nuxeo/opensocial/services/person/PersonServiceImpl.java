@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-
 public class PersonServiceImpl extends DefaultComponent implements
         PersonService {
 
@@ -53,15 +52,17 @@ public class PersonServiceImpl extends DefaultComponent implements
         if ("principalConverter".equals(extensionPoint)) {
             PrincipalConverterDescriptor converterDescriptor = (PrincipalConverterDescriptor) contribution;
 
-                PrincipalConverter conv;
-                try {
-                    conv = converterDescriptor.getPrincipalConverterClass().newInstance();
-                    converter = conv;
-                } catch (InstantiationException e) {
-                    LOG.error("Unable to get converter " + converterDescriptor.getPrincipalConverterClass().getCanonicalName());
-                } catch (IllegalAccessException e) {
-                    LOG.error("Unable to get converter " + converterDescriptor.getPrincipalConverterClass().getCanonicalName());
-                }
+            PrincipalConverter conv;
+            try {
+                conv = converterDescriptor.getPrincipalConverterClass().newInstance();
+                converter = conv;
+            } catch (InstantiationException e) {
+                LOG.error("Unable to get converter "
+                        + converterDescriptor.getPrincipalConverterClass().getCanonicalName());
+            } catch (IllegalAccessException e) {
+                LOG.error("Unable to get converter "
+                        + converterDescriptor.getPrincipalConverterClass().getCanonicalName());
+            }
 
         }
     }
@@ -73,13 +74,12 @@ public class PersonServiceImpl extends DefaultComponent implements
 
     }
 
-
     private String realUid(UserId id, SecurityToken token) {
         return id.getUserId() == null ? id.getUserId(token) : id.getUserId();
     }
 
     public Future<Person> getPerson(UserId id, Set<String> fields,
-            SecurityToken token)  {
+            SecurityToken token) {
         String userId = realUid(id, token);
 
         try {
@@ -87,14 +87,14 @@ public class PersonServiceImpl extends DefaultComponent implements
             NuxeoPrincipal principal = um.getPrincipal(userId);
             return ImmediateFuture.newInstance(converter.convert(principal));
         } catch (Exception e) {
-            throw new ProtocolException(500,
-                    "Unable to get user : " + e.getMessage(),e);
+            throw new ProtocolException(500, "Unable to get user : "
+                    + e.getMessage(), e);
         }
     }
 
     public Future<RestfulCollection<Person>> getPeople(Set<UserId> userIds,
-        GroupId groupId, CollectionOptions collectionOptions,
-        Set<String> fields, SecurityToken token) throws ProtocolException {
-      throw new ProtocolException(500, NOT_IMPLEMENTED);
+            GroupId groupId, CollectionOptions collectionOptions,
+            Set<String> fields, SecurityToken token) throws ProtocolException {
+        throw new ProtocolException(500, NOT_IMPLEMENTED);
     }
 }

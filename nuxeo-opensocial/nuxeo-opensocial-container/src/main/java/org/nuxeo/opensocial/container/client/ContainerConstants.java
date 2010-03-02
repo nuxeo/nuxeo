@@ -25,49 +25,49 @@ import com.google.gwt.i18n.client.Constants;
  * @author Guillaume Cusnieux
  */
 public interface ContainerConstants extends Constants {
-  String error();
+    String error();
 
-  String loadingError();
+    String loadingError();
 
-  String savePreferencesError();
+    String savePreferencesError();
 
-  String deleteConfirm();
+    String deleteConfirm();
 
-  String colorChoice();
+    String colorChoice();
 
-  String save();
+    String save();
 
-  String cancel();
+    String cancel();
 
-  String search();
+    String search();
 
-  String addGadget();
+    String addGadget();
 
-  String add();
+    String add();
 
-  String addGadgetError();
+    String addGadgetError();
 
-  String loadGadgetError();
+    String loadGadgetError();
 
-  String modifyLayout();
+    String modifyLayout();
 
-  String appearance();
+    String appearance();
 
-  String close();
+    String close();
 
-  String deleteGadget();
+    String deleteGadget();
 
-  String deleteError();
+    String deleteError();
 
-  String noImageDisplay();
+    String noImageDisplay();
 
-  String createdBy();
+    String createdBy();
 
-  String select();
+    String select();
 
-  String previous();
+    String previous();
 
-  String next();
+    String next();
 
-  String on();
+    String on();
 }

@@ -76,11 +76,10 @@
       <artifactId>nuxeo-webengine-base</artifactId>
     </dependency>
 
- <dependency>
+    <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
-
+    </dependency>
 
     <dependency>
       <groupId>net.sf.json-lib</groupId>

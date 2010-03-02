@@ -13,46 +13,41 @@ import com.gwtext.client.widgets.form.TextArea;
 
 public class NXRequestCallback implements RequestCallback {
 
-  private Field field;
-  private NXDataWindow nxDataWindow;
-  private TextArea fieldHidden;
-  private String type;
+    private Field field;
 
-  public NXRequestCallback(Field field, TextArea fieldHidden, String type) {
-    this.field = field;
-    this.fieldHidden = fieldHidden;
-    this.type = type;
-  }
+    private NXDataWindow nxDataWindow;
 
-  public NXRequestCallback(NXDataWindow nxDataWindow) {
-    this.nxDataWindow = nxDataWindow;
-  }
+    private TextArea fieldHidden;
 
-  public void onError(Request arg0, Throwable arg1) {
-    JsLibrary.log("error");
-  }
+    private String type;
 
-  public void onResponseReceived(Request arg0, Response rep) {
-    JSONObject o = JSONParser.parse(rep.getText())
-        .isObject();
-    JSONObject summary = o.get("summary")
-        .isObject();
-
-    if (nxDataWindow != null) {
-      nxDataWindow.setDataView(o.get("data")
-          .isArray(), summary.get("pageNumber")
-          .isNumber()
-          .doubleValue(), summary.get("pages")
-          .isNumber()
-          .doubleValue());
-    } else {
-      new NXDataWindow(o.get("data")
-          .isArray(), GadgetForm.window, this.field, this.fieldHidden,
-          summary.get("pageNumber")
-              .isNumber()
-              .doubleValue(), summary.get("pages")
-              .isNumber()
-              .doubleValue(), this.type);
+    public NXRequestCallback(Field field, TextArea fieldHidden, String type) {
+        this.field = field;
+        this.fieldHidden = fieldHidden;
+        this.type = type;
     }
-  }
+
+    public NXRequestCallback(NXDataWindow nxDataWindow) {
+        this.nxDataWindow = nxDataWindow;
+    }
+
+    public void onError(Request arg0, Throwable arg1) {
+        JsLibrary.log("error");
+    }
+
+    public void onResponseReceived(Request arg0, Response rep) {
+        JSONObject o = JSONParser.parse(rep.getText()).isObject();
+        JSONObject summary = o.get("summary").isObject();
+
+        if (nxDataWindow != null) {
+            nxDataWindow.setDataView(o.get("data").isArray(), summary.get(
+                    "pageNumber").isNumber().doubleValue(),
+                    summary.get("pages").isNumber().doubleValue());
+        } else {
+            new NXDataWindow(o.get("data").isArray(), GadgetForm.window,
+                    this.field, this.fieldHidden,
+                    summary.get("pageNumber").isNumber().doubleValue(),
+                    summary.get("pages").isNumber().doubleValue(), this.type);
+        }
+    }
 }

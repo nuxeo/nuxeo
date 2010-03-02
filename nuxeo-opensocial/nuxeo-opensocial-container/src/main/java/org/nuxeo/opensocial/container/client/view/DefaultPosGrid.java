@@ -18,21 +18,22 @@
 package org.nuxeo.opensocial.container.client.view;
 
 /**
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class DefaultPosGrid implements PosGrid {
 
-  protected int xPos;
-  protected int width;
+    protected int xPos;
 
-  public DefaultPosGrid(int xPos, int width) {
-    this.xPos = xPos;
-    this.width = width;
-  }
+    protected int width;
 
-  public boolean isCol(int[] coordinates) {
-    return coordinates[0] < (xPos + width);
-  }
+    public DefaultPosGrid(int xPos, int width) {
+        this.xPos = xPos;
+        this.width = width;
+    }
+
+    public boolean isCol(int[] coordinates) {
+        return coordinates[0] < (xPos + width);
+    }
 
 }

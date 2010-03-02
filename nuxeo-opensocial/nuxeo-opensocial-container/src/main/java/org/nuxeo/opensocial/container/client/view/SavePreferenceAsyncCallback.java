@@ -29,30 +29,31 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author Guillaume Cusnieux
  */
 public class SavePreferenceAsyncCallback<T> implements
-    AsyncCallback<GadgetBean> {
+        AsyncCallback<GadgetBean> {
 
-  private GadgetBean gadget;
-  private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
+    private GadgetBean gadget;
 
-  public SavePreferenceAsyncCallback(GadgetBean gadget) {
-    super();
-    this.gadget = gadget;
-  }
+    private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
 
-  public void onFailure(Throwable tr) {
-    JsLibrary.loadingHide();
-    ContainerPortal.showErrorMessage(CONSTANTS.error(),
-        CONSTANTS.savePreferencesError());
-  }
+    public SavePreferenceAsyncCallback(GadgetBean gadget) {
+        super();
+        this.gadget = gadget;
+    }
 
-  public void onSuccess(GadgetBean bean) {
-    JsLibrary.loadingHide();
-    ContainerPortal c = ContainerEntryPoint.getContainerPortal();
-    GadgetPortlet gp = c.getGadgetPortletByRef(gadget.getRef());
-    gp.setTitle(bean.getTitle());
-    gp.setGadgetBean(bean);
-    gp.updateGadgetPortlet();
-    gp.doLayoutFrame();
-  }
+    public void onFailure(Throwable tr) {
+        JsLibrary.loadingHide();
+        ContainerPortal.showErrorMessage(CONSTANTS.error(),
+                CONSTANTS.savePreferencesError());
+    }
+
+    public void onSuccess(GadgetBean bean) {
+        JsLibrary.loadingHide();
+        ContainerPortal c = ContainerEntryPoint.getContainerPortal();
+        GadgetPortlet gp = c.getGadgetPortletByRef(gadget.getRef());
+        gp.setTitle(bean.getTitle());
+        gp.setGadgetBean(bean);
+        gp.updateGadgetPortlet();
+        gp.doLayoutFrame();
+    }
 
 }

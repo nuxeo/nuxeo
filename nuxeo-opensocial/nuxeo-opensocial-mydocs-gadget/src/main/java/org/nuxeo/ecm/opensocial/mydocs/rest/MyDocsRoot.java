@@ -21,40 +21,39 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 @Produces( { "text/html; charset=UTF-8" })
 public class MyDocsRoot extends ModuleRoot {
 
-  @GET
-  public Object noRootRessource() {
-    return Response.serverError();
-  }
-
-  @Path("{gadgetid}")
-  public Object getParentWorkspace(@PathParam("gadgetid") String gadgetId) {
-    CoreSession session = ctx.getCoreSession();
-    try {
-      IdRef spaceRef = new IdRef(gadgetId);
-      if (!session.exists(spaceRef)) {
-        return Response.status(404);
-      }
-
-      List<DocumentModel> parents = session.getParentDocuments(spaceRef);
-      Collections.reverse(parents);
-      for (DocumentModel parent : parents) {
-        if (parent.getType()
-            .equals("Workspace")) {
-          return newObject("JSONDocument", parent);
-        }
-      }
-      return Response.serverError();
-
-    } catch (ClientException e) {
-      return Response.serverError();
+    @GET
+    public Object noRootRessource() {
+        return Response.serverError();
     }
 
-  }
+    @Path("{gadgetid}")
+    public Object getParentWorkspace(@PathParam("gadgetid") String gadgetId) {
+        CoreSession session = ctx.getCoreSession();
+        try {
+            IdRef spaceRef = new IdRef(gadgetId);
+            if (!session.exists(spaceRef)) {
+                return Response.status(404);
+            }
 
-  @POST
-  @Path("{gadgetid}")
-  public Object doPost(@PathParam("gadgetid") String gadgetId) {
-    return ((JSONDocument) getParentWorkspace(gadgetId)).addDocument();
-  }
+            List<DocumentModel> parents = session.getParentDocuments(spaceRef);
+            Collections.reverse(parents);
+            for (DocumentModel parent : parents) {
+                if (parent.getType().equals("Workspace")) {
+                    return newObject("JSONDocument", parent);
+                }
+            }
+            return Response.serverError();
+
+        } catch (ClientException e) {
+            return Response.serverError();
+        }
+
+    }
+
+    @POST
+    @Path("{gadgetid}")
+    public Object doPost(@PathParam("gadgetid") String gadgetId) {
+        return ((JSONDocument) getParentWorkspace(gadgetId)).addDocument();
+    }
 
 }

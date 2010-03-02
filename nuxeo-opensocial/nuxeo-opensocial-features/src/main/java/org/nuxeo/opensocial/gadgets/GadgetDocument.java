@@ -41,223 +41,220 @@ import org.nuxeo.runtime.api.Framework;
 @Produces( { "application/octet-stream" })
 public class GadgetDocument extends DocumentObject {
 
-  private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
-  private ConversionService conversionService = null;
-  private ImagingService imagingService;
+    private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
 
-  @GET
-  @Override
-  public Object doGet() {
-    return Response.serverError();
-  }
+    private ConversionService conversionService = null;
 
-  @POST
-  @Path("deletePicture")
-  public Response doDelete(){
-    try {
-      doc.setPropertyValue("file:content",null);
+    private ImagingService imagingService;
 
-
-      CoreSession session = getContext().getCoreSession();
-      session.saveDocument(doc);
-      session.save();
-    } catch (ClientException e) {
-      throw WebException.wrap(e);
+    @GET
+    @Override
+    public Object doGet() {
+        return Response.serverError();
     }
 
-    return Response.ok()
-    .build();
-  }
+    @POST
+    @Path("deletePicture")
+    public Response doDelete() {
+        try {
+            doc.setPropertyValue("file:content", null);
 
-  @POST
-  @Override
-  public Response doPost() {
-    FormData form = ctx.getForm();
+            CoreSession session = getContext().getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
 
-    form.fillDocument(doc);
+        return Response.ok().build();
+    }
 
-    if (form.isMultipartContent()) {
-      String xpath = "file:content";
-      Blob blob = form.getFirstBlob();
-      if (blob == null) {
-        throw new IllegalArgumentException("Could not find any uploaded file");
-      } else {
-        if (!"".equals(blob.getFilename())) {
-          try {
-            String resizeWidth = form.getString("resize_width");
-            if (resizeWidth != null && !"".equals(resizeWidth)) {
-              blob = getResizedBlobl(blob, Integer.valueOf(resizeWidth));
+    @POST
+    @Override
+    public Response doPost() {
+        FormData form = ctx.getForm();
+
+        form.fillDocument(doc);
+
+        if (form.isMultipartContent()) {
+            String xpath = "file:content";
+            Blob blob = form.getFirstBlob();
+            if (blob == null) {
+                throw new IllegalArgumentException(
+                        "Could not find any uploaded file");
+            } else {
+                if (!"".equals(blob.getFilename())) {
+                    try {
+                        String resizeWidth = form.getString("resize_width");
+                        if (resizeWidth != null && !"".equals(resizeWidth)) {
+                            blob = getResizedBlobl(blob,
+                                    Integer.valueOf(resizeWidth));
+                        }
+
+                        Property p = doc.getProperty(xpath);
+                        p.getParent().get("filename").setValue(
+                                blob.getFilename());
+
+                        p.setValue(blob);
+                    } catch (Exception e) {
+                        throw WebException.wrap("Failed to attach file", e);
+                    }
+                }
+            }
+        }
+
+        try {
+            CoreSession session = getContext().getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+
+        return Response.ok().build();
+
+    }
+
+    protected Blob getResizedBlobl(Blob blob, int newWidth)
+            throws ClientException, IOException {
+        String fileName = blob.getFilename();
+        blob.persist();
+        BlobHolder bh = new SimpleBlobHolder(blob);
+
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        try {
+            ImageInfo imageInfo = getImagingService().getImageInfo(bh.getBlob());
+
+            int width, height, depth;
+            width = imageInfo.getWidth();
+            height = imageInfo.getHeight();
+            depth = imageInfo.getDepth();
+
+            double ratio = 1.0 * newWidth / width;
+
+            int newHeight = (int) Math.round(height * ratio);
+
+            options.put(OPTION_RESIZE_HEIGHT, newHeight);
+            options.put(OPTION_RESIZE_DEPTH, depth);
+        } catch (Exception e) {
+
+        }
+
+        options.put(OPTION_RESIZE_WIDTH, newWidth);
+        // always convert to jpeg
+        options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
+
+        bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
+
+        blob = bh.getBlob() != null ? bh.getBlob() : blob;
+        String viewFilename = computeViewFilename(fileName,
+                JPEG_CONVERSATION_FORMAT);
+        blob.setFilename(viewFilename);
+        return blob;
+    }
+
+    protected ConversionService getConversionService() throws ClientException {
+        if (conversionService == null) {
+            try {
+                conversionService = Framework.getService(ConversionService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return conversionService;
+    }
+
+    protected ImagingService getImagingService() {
+        if (imagingService == null) {
+            try {
+                imagingService = Framework.getService(ImagingService.class);
+            } catch (Exception e) {
+
             }
 
-            Property p = doc.getProperty(xpath);
-            p.getParent()
-                .get("filename")
-                .setValue(blob.getFilename());
-
-            p.setValue(blob);
-          } catch (Exception e) {
-            throw WebException.wrap("Failed to attach file", e);
-          }
         }
-      }
+        return imagingService;
     }
 
-    try {
-      CoreSession session = getContext().getCoreSession();
-      session.saveDocument(doc);
-      session.save();
-    } catch (ClientException e) {
-      throw WebException.wrap(e);
-    }
+    @GET
+    @Path("hasFile")
+    public Response hasFile() {
 
-    return Response.ok()
-        .build();
-
-  }
-
-  protected Blob getResizedBlobl(Blob blob, int newWidth)
-      throws ClientException, IOException {
-    String fileName = blob.getFilename();
-    blob.persist();
-    BlobHolder bh = new SimpleBlobHolder(blob);
-
-
-    Map<String, Serializable> options = new HashMap<String, Serializable>();
-    try {
-      ImageInfo imageInfo = getImagingService().getImageInfo(bh.getBlob());
-
-      int width, height, depth;
-      width = imageInfo.getWidth();
-      height = imageInfo.getHeight();
-      depth = imageInfo.getDepth();
-
-      double ratio = 1.0 * newWidth / width;
-
-      int newHeight = (int) Math.round(height * ratio);
-
-      options.put(OPTION_RESIZE_HEIGHT, newHeight);
-      options.put(OPTION_RESIZE_DEPTH, depth);
-    } catch (Exception e) {
-
-    }
-
-    options.put(OPTION_RESIZE_WIDTH, newWidth);
-    // always convert to jpeg
-    options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
-
-    bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
-
-    blob = bh.getBlob() != null ? bh.getBlob() : blob;
-    String viewFilename = computeViewFilename(fileName,
-        JPEG_CONVERSATION_FORMAT);
-    blob.setFilename(viewFilename);
-    return blob;
-  }
-
-  protected ConversionService getConversionService() throws ClientException {
-    if (conversionService == null) {
-      try {
-        conversionService = Framework.getService(ConversionService.class);
-      } catch (Exception e) {
-        throw new ClientException(e);
-      }
-    }
-    return conversionService;
-  }
-
-  protected ImagingService getImagingService() {
-    if (imagingService == null) {
-      try {
-        imagingService = Framework.getService(ImagingService.class);
-      } catch (Exception e) {
-
-      }
-
-    }
-    return imagingService;
-  }
-
-  @GET
-  @Path("hasFile")
-  public Response hasFile(){
-
-    try {
-      getBlobFromDoc(doc);
-    } catch (Exception e) {
-      return Response.ok("false").build();
-    }
-
-    return Response.ok("true").build();
-
-
-  }
-
-  @GET
-  @Path("file")
-  public Object getFile() {
-    try {
-      Blob blob = getBlobFromDoc(doc);
-      String filename = blob.getFilename();
-
-      String contentDisposition = "attachment;filename=" + filename;
-
-      // Special handling for SWF file. Since Flash Player 10, Flash player
-      // ignores reading if it sees Content-Disposition: attachment
-      // http://forum.dokuwiki.org/thread/2894
-      if (filename.endsWith(".swf")) {
-        contentDisposition = "inline;";
-      }
-
-      return Response.ok(blob)
-          .header("Content-Disposition", contentDisposition)
-          .type(blob.getMimeType())
-          .build();
-    } catch (Exception e) {
-      throw WebException.wrap("Failed to get the attached file", e);
-    }
-  }
-
-  private Blob getBlobFromDoc(DocumentModel doc) throws ClientException {
-    String xpath = "file:content";
-
-    Property p = doc.getProperty(xpath);
-    Blob blob = (Blob) p.getValue();
-
-    if (blob == null) {
-      throw new WebResourceNotFoundException("No attached file at " + xpath);
-    }
-    String fileName = blob.getFilename();
-    if (fileName == null) {
-      p = p.getParent();
-      if (p.isComplex()) { // special handling for file and files
-        // schema
         try {
-          fileName = (String) p.getValue("filename");
-        } catch (PropertyException e) {
-          fileName = "Unknown";
+            getBlobFromDoc(doc);
+        } catch (Exception e) {
+            return Response.ok("false").build();
         }
-      }
-      blob.setFilename(fileName);
+
+        return Response.ok("true").build();
+
     }
 
-    return blob;
-  }
+    @GET
+    @Path("file")
+    public Object getFile() {
+        try {
+            Blob blob = getBlobFromDoc(doc);
+            String filename = blob.getFilename();
 
-  @GET
-  @Path("html")
-  public Object doGetHtml() throws PropertyException, ClientException {
-    String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
-    return Response.ok(htmlContent, MediaType.TEXT_HTML)
-        .build();
-  }
+            String contentDisposition = "attachment;filename=" + filename;
 
-  protected String computeViewFilename(String filename, String format) {
-    int index = filename.lastIndexOf(".");
-    if (index == -1) {
-      return filename + "." + format;
-    } else {
-      return filename.substring(0, index + 1) + format;
+            // Special handling for SWF file. Since Flash Player 10, Flash
+            // player
+            // ignores reading if it sees Content-Disposition: attachment
+            // http://forum.dokuwiki.org/thread/2894
+            if (filename.endsWith(".swf")) {
+                contentDisposition = "inline;";
+            }
+
+            return Response.ok(blob).header("Content-Disposition",
+                    contentDisposition).type(blob.getMimeType()).build();
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get the attached file", e);
+        }
     }
-  }
+
+    private Blob getBlobFromDoc(DocumentModel doc) throws ClientException {
+        String xpath = "file:content";
+
+        Property p = doc.getProperty(xpath);
+        Blob blob = (Blob) p.getValue();
+
+        if (blob == null) {
+            throw new WebResourceNotFoundException("No attached file at "
+                    + xpath);
+        }
+        String fileName = blob.getFilename();
+        if (fileName == null) {
+            p = p.getParent();
+            if (p.isComplex()) { // special handling for file and files
+                // schema
+                try {
+                    fileName = (String) p.getValue("filename");
+                } catch (PropertyException e) {
+                    fileName = "Unknown";
+                }
+            }
+            blob.setFilename(fileName);
+        }
+
+        return blob;
+    }
+
+    @GET
+    @Path("html")
+    public Object doGetHtml() throws PropertyException, ClientException {
+        String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
+        return Response.ok(htmlContent, MediaType.TEXT_HTML).build();
+    }
+
+    protected String computeViewFilename(String filename, String format) {
+        int index = filename.lastIndexOf(".");
+        if (index == -1) {
+            return filename + "." + format;
+        } else {
+            return filename.substring(0, index + 1) + format;
+        }
+    }
 
 }

@@ -92,8 +92,6 @@ public class UrlBuilder {
         // mid=123456&
         sb.append(GADGET_ID_KEY + "=" + containerId++ + "&");
 
-        sb.append("debug=1" + "&");
-
         // parent=http://localhost:8080/...
         // TODO: Verify it works... should not.
         sb.append(PARENT_KEY + "=" + serverBase + "&");

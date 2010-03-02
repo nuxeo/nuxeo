@@ -23,26 +23,28 @@ import com.gwtext.client.widgets.form.Field;
 
 /**
  * ColorListener
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class ColorListener extends ColorPaletteListenerAdapter {
 
-  private Field input;
-  private GadgetPortlet portlet;
-  private String name;
+    private Field input;
 
-  public ColorListener(GadgetPortlet gp, String name, Field input) {
-    this.portlet = gp;
-    this.name = name;
-    this.input = input;
-  }
+    private GadgetPortlet portlet;
 
-  @Override
-  public void onSelect(ColorPalette colorPalette, String color) {
-    super.onSelect(colorPalette, color);
-    this.input.setValue(color);
-    portlet.renderPreference(this.name, color);
-  }
+    private String name;
+
+    public ColorListener(GadgetPortlet gp, String name, Field input) {
+        this.portlet = gp;
+        this.name = name;
+        this.input = input;
+    }
+
+    @Override
+    public void onSelect(ColorPalette colorPalette, String color) {
+        super.onSelect(colorPalette, color);
+        this.input.setValue(color);
+        portlet.renderPreference(this.name, color);
+    }
 
 }

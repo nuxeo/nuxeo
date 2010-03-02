@@ -19,7 +19,7 @@ package org.nuxeo.ecm.spaces.api.exceptions;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
-public class SpaceException extends ClientException{
+public class SpaceException extends ClientException {
 
     /**
      *
@@ -41,6 +41,5 @@ public class SpaceException extends ClientException{
     public SpaceException(Throwable cause) {
         super(cause);
     }
-
 
 }

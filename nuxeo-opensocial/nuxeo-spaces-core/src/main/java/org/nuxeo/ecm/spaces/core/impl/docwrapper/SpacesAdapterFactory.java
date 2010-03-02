@@ -8,8 +8,8 @@ public class SpacesAdapterFactory implements DocumentAdapterFactory {
 
     @SuppressWarnings("unchecked")
     public Object getAdapter(DocumentModel doc, Class itf) {
-        SpacesAdapterComponent comp = (SpacesAdapterComponent) Framework
-                .getRuntime().getComponent(SpacesAdapterComponent.NAME);
+        SpacesAdapterComponent comp = (SpacesAdapterComponent) Framework.getRuntime().getComponent(
+                SpacesAdapterComponent.NAME);
         return comp.getAdapter(doc, itf);
     }
 

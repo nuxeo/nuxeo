@@ -36,8 +36,8 @@ public class SpacesAdapterComponent extends DefaultComponent implements
         DocumentAdapterFactory {
 
     public static final String NAME = SpacesAdapterComponent.class.getName();
-    private static final Log log = LogFactory
-            .getLog(SpacesAdapterComponent.class);
+
+    private static final Log log = LogFactory.getLog(SpacesAdapterComponent.class);
 
     Map<String, Class<? extends DocumentAdapterFactory>> factories = new HashMap<String, Class<? extends DocumentAdapterFactory>>();
 
@@ -77,34 +77,31 @@ public class SpacesAdapterComponent extends DefaultComponent implements
     @SuppressWarnings("unchecked")
     private Object getSpaceFactory(DocumentModel doc, Class itf) {
         if (factories.containsKey(doc.getType())) {
-            Class<? extends DocumentAdapterFactory> factoryKlass = factories
-                    .get(doc.getType());
+            Class<? extends DocumentAdapterFactory> factoryKlass = factories.get(doc.getType());
 
             DocumentAdapterFactory factory;
             try {
                 factory = factoryKlass.newInstance();
             } catch (Exception e) {
                 log.error("Unable to instanciate factory : "
-                        + factoryKlass.getCanonicalName(),e);
+                        + factoryKlass.getCanonicalName(), e);
                 return null;
             }
             return factory.getAdapter(doc, itf);
 
         } else {
 
-
             try {
                 SchemaManager sm = Framework.getService(SchemaManager.class);
 
-                Set<String> types = sm
-                        .getDocumentTypeNamesExtending(DocSpaceImpl.TYPE);
+                Set<String> types = sm.getDocumentTypeNamesExtending(DocSpaceImpl.TYPE);
 
                 if (types.contains(doc.getType())) {
                     return new DocSpaceImpl(doc);
                 }
                 return null;
             } catch (Exception e) {
-                log.error("Unable to get SchemaManager",e);
+                log.error("Unable to get SchemaManager", e);
                 return null;
             }
 

@@ -40,35 +40,28 @@ public class NXFeedProcessor extends FeedProcessor {
 
     /**
      * Converts feed XML to JSON.
-     *
-     * @param feedUrl
-     *            The url that the feed was retrieved from.
-     * @param feedXml
-     *            The raw XML of the feed to be converted.
-     * @param getSummaries
-     *            True if summaries should be returned.
-     * @param numEntries
-     *            Number of entries to return.
+     * 
+     * @param feedUrl The url that the feed was retrieved from.
+     * @param feedXml The raw XML of the feed to be converted.
+     * @param getSummaries True if summaries should be returned.
+     * @param numEntries Number of entries to return.
      * @return The JSON representation of the feed.
      */
     @SuppressWarnings("unchecked")
     public JSONObject process(String feedUrl, String feedXml,
             boolean getSummaries, int numEntries) throws GadgetException {
         try {
-            SyndFeed feed = new SyndFeedInput()
-                    .build(new StringReader(feedXml));
+            SyndFeed feed = new SyndFeedInput().build(new StringReader(feedXml));
             JSONObject json = new JSONObject();
             json.put("Title", feed.getTitle());
             json.put("URL", feedUrl);
             json.put("Description", feed.getDescription());
             json.put("Link", feed.getLink());
 
-
-            if(feed.getCategories().size() >0 ) {
-                json.put("Categories", getCategoriesStringList(feed.getCategories()));
+            if (feed.getCategories().size() > 0) {
+                json.put("Categories",
+                        getCategoriesStringList(feed.getCategories()));
             }
-
-
 
             List<SyndPerson> authors = feed.getAuthors();
             String jsonAuthor = null;
@@ -105,12 +98,12 @@ public class NXFeedProcessor extends FeedProcessor {
     }
 
     private List<String> getCategoriesStringList(List categories) {
-      List<String> result = new ArrayList<String>();
-      for(Object cat : categories) {
-        SyndCategory syndCat = (SyndCategory) cat;
-        result.add(syndCat.getName());
-      }
-      return result;
+        List<String> result = new ArrayList<String>();
+        for (Object cat : categories) {
+            SyndCategory syndCat = (SyndCategory) cat;
+            result.add(syndCat.getName());
+        }
+        return result;
     }
 
     private JSONObject getJSONEntryFromSyndEntry(SyndEntry e,
@@ -119,9 +112,7 @@ public class NXFeedProcessor extends FeedProcessor {
         entry.put("Title", e.getTitle());
         entry.put("Link", e.getLink());
 
-
-
-        if(e.getCategories().size() >0 ) {
+        if (e.getCategories().size() > 0) {
             entry.put("Categories", getCategoriesStringList(e.getCategories()));
         }
 
@@ -135,8 +126,6 @@ public class NXFeedProcessor extends FeedProcessor {
 
         return entry;
     }
-
-
 
     private void addDateFromEntry(JSONObject entry, SyndEntry e)
             throws JSONException {
@@ -154,11 +143,12 @@ public class NXFeedProcessor extends FeedProcessor {
             throws JSONException {
 
         if (e.getContents() != null && e.getContents().size() > 0) {
-            entry.put("Summary", ((SyndContent) e.getContents().get(0))
-                    .getValue());
+            entry.put("Summary",
+                    ((SyndContent) e.getContents().get(0)).getValue());
         } else {
-            entry.put("Summary", e.getDescription() != null ? e
-                    .getDescription().getValue() : "");
+            entry.put("Summary",
+                    e.getDescription() != null ? e.getDescription().getValue()
+                            : "");
         }
 
     }

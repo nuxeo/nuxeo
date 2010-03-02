@@ -4,8 +4,6 @@ import org.apache.shindig.auth.BlobCrypterSecurityTokenDecoder;
 import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.config.ContainerConfig;
-import org.apache.shindig.gadgets.oauth.BasicOAuthStore;
-import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -15,8 +13,7 @@ public class NXBlobCrypterSecurityTokenDecoder extends
         BlobCrypterSecurityTokenDecoder {
 
     @Inject
-    public NXBlobCrypterSecurityTokenDecoder(ContainerConfig config,
-            OAuthStore store) {
+    public NXBlobCrypterSecurityTokenDecoder(ContainerConfig config) {
         super(config);
         try {
             for (String container : config.getContainers()) {
@@ -27,12 +24,8 @@ public class NXBlobCrypterSecurityTokenDecoder extends
                     BlobCrypter crypter = new BasicBlobCrypter(key.getBytes());
                     crypters.put(container, crypter);
                 }
-            }
-            OpenSocialService os = Framework.getService(OpenSocialService.class);
 
-            // this is mildly horrbile
-            BasicOAuthStore basic = (BasicOAuthStore) store;
-            basic.initFromConfigString(os.getOAuthServiceConfig());
+            }
         } catch (Exception e) {
             // Someone specified securityTokenKeyFile, but we couldn't load the
             // key. That merits killing
@@ -40,4 +33,5 @@ public class NXBlobCrypterSecurityTokenDecoder extends
             throw new RuntimeException(e);
         }
     }
+
 }

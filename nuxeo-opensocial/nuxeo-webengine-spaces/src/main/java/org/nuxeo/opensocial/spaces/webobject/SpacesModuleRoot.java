@@ -43,85 +43,79 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS Root Resource class specialized for WebEngine
- *
+ * 
  * @author 10044893.
- *
+ * 
  */
 @WebObject(type = "spaces", facets = "Folderish")
 @Produces("text/html; charset=UTF-8")
 public class SpacesModuleRoot extends ModuleRoot {
 
-  /**
-   * Log4j logger
-   */
-  private static final Log log = LogFactory.getLog(SpacesModuleRoot.class);
+    /**
+     * Log4j logger
+     */
+    private static final Log log = LogFactory.getLog(SpacesModuleRoot.class);
 
+    public List<Univers> getUniversList() throws SpaceException, Exception {
+        CoreSession session = getSession();
+        List<Univers> universList = Framework.getService(SpaceManager.class).getUniversList(
+                session);
 
-  public List<Univers> getUniversList() throws SpaceException, Exception {
-      CoreSession session = getSession();
-      List<Univers>  universList = Framework.getService(SpaceManager.class)
-      .getUniversList(session);
-
-    return universList;
-  }
-
-  /**
-   * Default view ( index.ftl ) - Lists all available universes
-   *
-   * @return
-   */
-  @GET
-  public Object doGet() {
-    return getView("index");
-  }
-
-  /**
-   * Load a particuliar universe from its name with spaces API. Redirect to
-   * sub-ressources UniversDocumentObject indirectly
-   */
-  @Path("{universeName}")
-  public Object doGetUnivers(@PathParam("universeName") String universeName) {
-    try {
-      CoreSession session = getSession();
-      SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-      Univers universe = spaceManager.getUnivers(universeName, session);
-
-      return newObject("Univers", universe);
-
-    } catch (UniversNotFoundException e) {
-        throw new WebResourceNotFoundException("No univers " + universeName + "found", e);
-    } catch (Exception e) {
-      throw WebException.wrap(e);
+        return universList;
     }
-  }
 
-  private CoreSession getSession() {
-    return WebEngine.getActiveContext()
-        .getCoreSession();
-  }
-
-
-  /**
-   * Exception handler
-   */
-  public Response handleError(WebApplicationException e) {
-    if (e instanceof WebSecurityException) {
-      String fileName = "error/error_401.ftl";
-      log.info(fileName);
-      return Response.status(401)
-          .entity(getTemplate(fileName))
-          .build();
-    } else if (e instanceof WebResourceNotFoundException) {
-      String fileName = "error/error_404.ftl";
-      log.info(fileName);
-      return Response.status(404)
-          .entity(getTemplate(fileName))
-          .build();
-    } else {
-      log.info("No error handling for class "+e.getClass().getName());
-      log.error(e.getMessage(), e);
-      return (Response) super.handleError(e);
+    /**
+     * Default view ( index.ftl ) - Lists all available universes
+     * 
+     * @return
+     */
+    @GET
+    public Object doGet() {
+        return getView("index");
     }
-  }
+
+    /**
+     * Load a particuliar universe from its name with spaces API. Redirect to
+     * sub-ressources UniversDocumentObject indirectly
+     */
+    @Path("{universeName}")
+    public Object doGetUnivers(@PathParam("universeName") String universeName) {
+        try {
+            CoreSession session = getSession();
+            SpaceManager spaceManager = Framework.getService(SpaceManager.class);
+            Univers universe = spaceManager.getUnivers(universeName, session);
+
+            return newObject("Univers", universe);
+
+        } catch (UniversNotFoundException e) {
+            throw new WebResourceNotFoundException("No univers " + universeName
+                    + "found", e);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    private CoreSession getSession() {
+        return WebEngine.getActiveContext().getCoreSession();
+    }
+
+    /**
+     * Exception handler
+     */
+    public Response handleError(WebApplicationException e) {
+        if (e instanceof WebSecurityException) {
+            String fileName = "error/error_401.ftl";
+            log.info(fileName);
+            return Response.status(401).entity(getTemplate(fileName)).build();
+        } else if (e instanceof WebResourceNotFoundException) {
+            String fileName = "error/error_404.ftl";
+            log.info(fileName);
+            return Response.status(404).entity(getTemplate(fileName)).build();
+        } else {
+            log.info("No error handling for class " + e.getClass().getName());
+            log.error(e.getMessage(), e);
+            return (Response) super.handleError(e);
+        }
+    }
 
 }

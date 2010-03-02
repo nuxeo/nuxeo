@@ -20,6 +20,7 @@
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
+        org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
       </param-value>
     </context-param>

@@ -9,19 +9,19 @@ import org.apache.shindig.gadgets.rewrite.ProxyingLinkRewriterFactory;
 import com.google.inject.Inject;
 
 public class NXProxyingLinkRewriterFactory implements
-    ProxyingLinkRewriterFactory {
+        ProxyingLinkRewriterFactory {
 
-  private final ContentRewriterUris rewriterUris;
+    private final ContentRewriterUris rewriterUris;
 
-  @Inject
-  public NXProxyingLinkRewriterFactory(ContentRewriterUris rewriterUris) {
-    this.rewriterUris = rewriterUris;
-  }
+    @Inject
+    public NXProxyingLinkRewriterFactory(ContentRewriterUris rewriterUris) {
+        this.rewriterUris = rewriterUris;
+    }
 
-  public ProxyingLinkRewriter create(Uri gadgetUri,
-      ContentRewriterFeature rewriterFeature, String container, boolean debug,
-      boolean ignoreCache) {
-    return new NXLinkRewriter(rewriterUris, gadgetUri, rewriterFeature,
-        container, debug, ignoreCache);
-  }
+    public ProxyingLinkRewriter create(Uri gadgetUri,
+            ContentRewriterFeature rewriterFeature, String container,
+            boolean debug, boolean ignoreCache) {
+        return new NXLinkRewriter(rewriterUris, gadgetUri, rewriterFeature,
+                container, debug, ignoreCache);
+    }
 }

@@ -16,24 +16,27 @@ import org.nuxeo.runtime.api.Framework;
 public class SimpleProxySelector extends ProxySelector {
 
     private static final String SHINDIG_PROXY_PROXY_PORT = "shindig.proxy.proxyPort";
+
     private static final String SHINDIG_PROXY_PROXY_HOST = "shindig.proxy.proxyHost";
+
     private static final String SHINDIG_PROXY_PROXY_SET = "shindig.proxy.proxySet";
+
     private static final String SHINDIG_PROXY_PASSWORD = "shindig.proxy.password";
+
     private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
 
     private Proxy proxySettings = null;
 
-
     @Override
     public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-        //Do nothing
+        // Do nothing
 
     }
 
     @Override
     public List<Proxy> select(URI uri) {
         List<Proxy> proxies = new ArrayList<Proxy>();
-        if("localhost".equals(uri.getHost())) {
+        if ("localhost".equals(uri.getHost())) {
             proxies.add(Proxy.NO_PROXY);
         } else {
             proxies.add(getProxySettings());
@@ -48,10 +51,9 @@ public class SimpleProxySelector extends ProxySelector {
                 setAuthenticator();
                 proxySettings = new Proxy(
                         Proxy.Type.HTTP,
-                        new InetSocketAddress(Framework
-                                .getProperty(SHINDIG_PROXY_PROXY_HOST), Integer
-                                .parseInt(Framework
-                                        .getProperty(SHINDIG_PROXY_PROXY_PORT))));
+                        new InetSocketAddress(
+                                Framework.getProperty(SHINDIG_PROXY_PROXY_HOST),
+                                Integer.parseInt(Framework.getProperty(SHINDIG_PROXY_PROXY_PORT))));
             }
 
             return proxySettings;
@@ -67,9 +69,9 @@ public class SimpleProxySelector extends ProxySelector {
 
                 String password = Framework.getProperty(SHINDIG_PROXY_PASSWORD);
                 if (password != null) {
-                    return new PasswordAuthentication(Framework
-                            .getProperty(SHINDIG_PROXY_USER), password
-                            .toCharArray());
+                    return new PasswordAuthentication(
+                            Framework.getProperty(SHINDIG_PROXY_USER),
+                            password.toCharArray());
                 }
                 return null;
 
@@ -79,8 +81,7 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static boolean isProxySet() {
         return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
-                        .equals("true");
+                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET).equals("true");
     }
 
 }

@@ -54,6 +54,7 @@ public class GuiceContextListener implements ServletContextListener {
         log.info("GuiceContextListener getModuleList");
         Injector injector = null;
         try {
+
             log.info("GuiceContextListener createInjector");
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
             OpenSocialService service = Framework.getService(OpenSocialService.class);

@@ -54,8 +54,4 @@ public interface OpenSocialService {
      */
     ProxySelector getProxySelector();
 
-    /**
-     * Temporary: Allow Service to get the config as JSon
-     */
-    String getOAuthServiceConfig();
 }

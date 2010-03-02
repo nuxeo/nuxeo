@@ -11,12 +11,12 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  */
 public class NXLinkRewriter extends ProxyingLinkRewriter {
 
-
     public NXLinkRewriter(ContentRewriterUris rewriterUris, Uri gadgetUri,
-      ContentRewriterFeature rewriterFeature, String container, boolean debug,
-      boolean ignoreCache) {
-    super(rewriterUris, gadgetUri, rewriterFeature, container, debug, ignoreCache);
-  }
+            ContentRewriterFeature rewriterFeature, String container,
+            boolean debug, boolean ignoreCache) {
+        super(rewriterUris, gadgetUri, rewriterFeature, container, debug,
+                ignoreCache);
+    }
 
     @Override
     public String rewrite(String link, Uri context) {

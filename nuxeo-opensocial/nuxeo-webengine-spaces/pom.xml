@@ -76,5 +76,4 @@
       <artifactId>jsr311-api</artifactId>
     </dependency>    
   </dependencies>
-
 </project>

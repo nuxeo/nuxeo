@@ -23,23 +23,20 @@ import javax.ws.rs.GET;
 
 import org.nuxeo.opensocial.container.service.ContainerServiceImpl;
 
-public class UrlResource extends InputStreamResource{
+public class UrlResource extends InputStreamResource {
 
+    private String path;
 
-  private String path;
+    public UrlResource(String path) {
+        this.path = path;
+    }
 
-  public UrlResource(String path){
-    this.path=path;
-  }
+    @GET
+    public Object getGadgetFile() throws Exception {
 
-  @GET
-  public Object getGadgetFile() throws Exception {
+        URL url = ContainerServiceImpl.class.getResource(path);
 
+        return url == null ? null : getObject(url.openStream(), path);
 
-    URL url = ContainerServiceImpl.class.getResource(path);
-
-    return url == null ? null : getObject(url.openStream(),path);
-
-
-  }
+    }
 }

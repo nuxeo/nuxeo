@@ -12,13 +12,11 @@ public abstract class AbstractUnivers implements Univers {
         SpaceManager sm;
         try {
             sm = Framework.getService(SpaceManager.class);
-        return sm.getSpacesForUnivers(this, session);
+            return sm.getSpacesForUnivers(this, session);
         } catch (Exception e) {
-            throw new SpaceException("Unable to get spaces",e);
+            throw new SpaceException("Unable to get spaces", e);
         }
 
     }
-
-
 
 }

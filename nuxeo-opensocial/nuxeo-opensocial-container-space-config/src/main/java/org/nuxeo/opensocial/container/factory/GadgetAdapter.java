@@ -16,186 +16,194 @@ import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
  */
 class GadgetAdapter implements Gadget {
 
-  private int heigth;
-  private String htmlContent;
-  private String viewer;
-  private String title;
-  private Map<String, String> preferences;
-  private String placeId;
-  private int position;
-  private String name;
-  private String id;
-  private boolean collapsed;
+    private int heigth;
 
-  public GadgetAdapter(GadgetBean bean) throws ClientException {
-    this.setHeight(bean.getHeight());
-    this.setHtmlContent(bean.getHtmlContent());
-    this.setViewer(bean.getViewer());
-    this.setTitle(bean.getTitle());
-    this.setPreferences(createPreferences(bean));
-    this.setPlaceId(bean.getPosition()
-        .getPlaceID());
-    this.setPosition(bean.getPosition()
-        .getPosition());
-    this.setName(bean.getName());
-    this.setId(bean.getRef());
-    this.setCollapsed(bean.isCollapsed());
-  }
+    private String htmlContent;
 
-  private Map<String, String> createPreferences(GadgetBean bean) {
-    Map<String, String> prefs = new HashMap<String, String>();
-    return buildPreferences(buildPreferences(prefs, bean.getUserPrefs()),
-        bean.getDefaultPrefs());
+    private String viewer;
 
-  }
+    private String title;
 
-  private Map<String, String> buildPreferences(Map<String, String> prefs,
-      List<PreferencesBean> uPrefs) {
-    if (uPrefs != null) {
-      for (PreferencesBean p : uPrefs) {
-        prefs.put(p.getName(), p.getValue());
-      }
+    private Map<String, String> preferences;
+
+    private String placeId;
+
+    private int position;
+
+    private String name;
+
+    private String id;
+
+    private boolean collapsed;
+
+    public GadgetAdapter(GadgetBean bean) throws ClientException {
+        this.setHeight(bean.getHeight());
+        this.setHtmlContent(bean.getHtmlContent());
+        this.setViewer(bean.getViewer());
+        this.setTitle(bean.getTitle());
+        this.setPreferences(createPreferences(bean));
+        this.setPlaceId(bean.getPosition().getPlaceID());
+        this.setPosition(bean.getPosition().getPosition());
+        this.setName(bean.getName());
+        this.setId(bean.getRef());
+        this.setCollapsed(bean.isCollapsed());
     }
-    return prefs;
-  }
 
-  public int getHeigth() {
-    return heigth;
-  }
+    private Map<String, String> createPreferences(GadgetBean bean) {
+        Map<String, String> prefs = new HashMap<String, String>();
+        return buildPreferences(buildPreferences(prefs, bean.getUserPrefs()),
+                bean.getDefaultPrefs());
 
-  public void setHeigth(int heigth) {
-    this.heigth = heigth;
-  }
+    }
 
-  public void setViewer(String viewer) {
-    this.viewer = viewer;
-  }
+    private Map<String, String> buildPreferences(Map<String, String> prefs,
+            List<PreferencesBean> uPrefs) {
+        if (uPrefs != null) {
+            for (PreferencesBean p : uPrefs) {
+                prefs.put(p.getName(), p.getValue());
+            }
+        }
+        return prefs;
+    }
 
-  public void setOwner(String owner) {
-  }
+    public int getHeigth() {
+        return heigth;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public void setHeigth(int heigth) {
+        this.heigth = heigth;
+    }
 
-  public void copyFrom(Gadget gadget) throws ClientException {
-  }
+    public void setViewer(String viewer) {
+        this.viewer = viewer;
+    }
 
-  public String getCategory() throws ClientException {
-    return null;
-  }
+    public void setOwner(String owner) {
+    }
 
-  public URL getDefinitionUrl() throws ClientException {
-    return null;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getDescription() throws ClientException {
-    return null;
-  }
+    public void copyFrom(Gadget gadget) throws ClientException {
+    }
 
-  public int getHeight() throws ClientException {
-    return heigth;
-  }
+    public String getCategory() throws ClientException {
+        return null;
+    }
 
-  public String getHtmlContent() throws ClientException {
-    return htmlContent;
-  }
+    public URL getDefinitionUrl() throws ClientException {
+        return null;
+    }
 
-  public String getId() {
-    return id;
-  }
+    public String getDescription() throws ClientException {
+        return null;
+    }
 
-  public String getName() throws ClientException {
-    return name;
-  }
+    public int getHeight() throws ClientException {
+        return heigth;
+    }
 
-  public String getOwner() throws ClientException {
-    return null;
-  }
+    public String getHtmlContent() throws ClientException {
+        return htmlContent;
+    }
 
-  public Space getParent() throws ClientException {
-    return null;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public int getPosition() throws ClientException {
-    return position;
-  }
+    public String getName() throws ClientException {
+        return name;
+    }
 
-  public String getPref(String prefKey) throws ClientException {
-    return preferences.get(prefKey);
-  }
+    public String getOwner() throws ClientException {
+        return null;
+    }
 
-  public Map<String, String> getPreferences() throws ClientException {
-    return preferences;
-  }
+    public Space getParent() throws ClientException {
+        return null;
+    }
 
-  public String getTitle() throws ClientException {
-    return title;
-  }
+    public int getPosition() throws ClientException {
+        return position;
+    }
 
-  public String getViewer() throws ClientException {
-    return viewer;
-  }
+    public String getPref(String prefKey) throws ClientException {
+        return preferences.get(prefKey);
+    }
 
-  public boolean hasPermission(String permissioName) {
-    return false;
-  }
+    public Map<String, String> getPreferences() throws ClientException {
+        return preferences;
+    }
 
-  public boolean isCollapsed() throws ClientException {
-    return collapsed;
-  }
+    public String getTitle() throws ClientException {
+        return title;
+    }
 
-  public boolean isEqualTo(Gadget gadget) throws ClientException {
-    return false;
-  }
+    public String getViewer() throws ClientException {
+        return viewer;
+    }
 
-  public void setCategory(String category) throws ClientException {
-  }
+    public boolean hasPermission(String permissioName) {
+        return false;
+    }
 
-  public void setCollapsed(boolean collapsed) throws ClientException {
-    this.collapsed = collapsed;
-  }
+    public boolean isCollapsed() throws ClientException {
+        return collapsed;
+    }
 
-  public void setDefinitionUrl(URL url) throws ClientException {
-  }
+    public boolean isEqualTo(Gadget gadget) throws ClientException {
+        return false;
+    }
 
-  public void setDescription(String description) throws ClientException {
-  }
+    public void setCategory(String category) throws ClientException {
+    }
 
-  public void setHeight(int height) throws ClientException {
-    this.heigth = height;
-  }
+    public void setCollapsed(boolean collapsed) throws ClientException {
+        this.collapsed = collapsed;
+    }
 
-  public void setHtmlContent(String htmlContent) throws ClientException {
-    this.htmlContent = htmlContent;
-  }
+    public void setDefinitionUrl(URL url) throws ClientException {
+    }
 
-  public void setName(String name) throws ClientException {
-    this.name = name;
-  }
+    public void setDescription(String description) throws ClientException {
+    }
 
-  public void setPosition(int position) throws ClientException {
-    this.position = position;
-  }
+    public void setHeight(int height) throws ClientException {
+        this.heigth = height;
+    }
 
-  public void setPreferences(Map<String, String> prefs) throws ClientException {
-    this.preferences = prefs;
-  }
+    public void setHtmlContent(String htmlContent) throws ClientException {
+        this.htmlContent = htmlContent;
+    }
 
-  public void setTitle(String title) throws ClientException {
-    this.title = title;
-  }
+    public void setName(String name) throws ClientException {
+        this.name = name;
+    }
 
-  public String getPlaceId() throws ClientException {
-    return placeId;
-  }
+    public void setPosition(int position) throws ClientException {
+        this.position = position;
+    }
 
-  public void setPlaceId(String placeId) throws ClientException {
-    this.placeId = placeId;
-  }
+    public void setPreferences(Map<String, String> prefs)
+            throws ClientException {
+        this.preferences = prefs;
+    }
 
-  public void save() throws ClientException {
+    public void setTitle(String title) throws ClientException {
+        this.title = title;
+    }
 
-  }
+    public String getPlaceId() throws ClientException {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) throws ClientException {
+        this.placeId = placeId;
+    }
+
+    public void save() throws ClientException {
+
+    }
 
 }

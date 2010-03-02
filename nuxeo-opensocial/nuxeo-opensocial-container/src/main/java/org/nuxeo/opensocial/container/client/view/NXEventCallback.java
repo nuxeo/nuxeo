@@ -6,16 +6,17 @@ import com.gwtext.client.widgets.form.Field;
 
 public class NXEventCallback implements EventCallback {
 
-  private GadgetPortlet gp;
-  private Field field;
+    private GadgetPortlet gp;
 
-  public NXEventCallback(GadgetPortlet gp, Field nxField) {
-    this.gp = gp;
-    this.field = nxField;
-  }
+    private Field field;
 
-  public void execute(EventObject e) {
-    gp.setPortletTitle(field.getValueAsString());
-  }
+    public NXEventCallback(GadgetPortlet gp, Field nxField) {
+        this.gp = gp;
+        this.field = nxField;
+    }
+
+    public void execute(EventObject e) {
+        gp.setPortletTitle(field.getValueAsString());
+    }
 
 }
