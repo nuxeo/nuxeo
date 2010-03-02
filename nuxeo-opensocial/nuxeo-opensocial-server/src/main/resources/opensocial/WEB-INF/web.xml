@@ -15,10 +15,19 @@
     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
+<!-- 
+
+******* THIS APPEARS TO BE DEAD CODE!  THE CORRECT CODE IS IN THE FILE
+******* deployment-fragment.xml
+ -->
+
+
 <web-app>
 
   <context-param>
     <param-name>guice-modules</param-name>
+
+<!--       org.apache.shindig.gadgets.oauth.OAuthModule:  -->
     <param-value>
       org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
       org.nuxeo.opensocial.shindig.ProxyModule:
@@ -28,7 +37,6 @@
       org.nuxeo.opensocial.shindig.gadgets.NXMakeRequestModule:
       org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule:
       org.apache.shindig.gadgets.DefaultGuiceModule:
-      org.apache.shindig.gadgets.oauth.OAuthModule:
       org.apache.shindig.common.cache.ehcache.EhCacheModule
     </param-value>
   </context-param>

@@ -66,10 +66,11 @@
       </exclusions>
     </dependency>
 
-    <dependency>
+ <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
     </dependency>    
+
 
   </dependencies>
 </project>

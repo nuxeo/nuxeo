@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Confluence Personalized Stream" height="200" scrolling="true">
+    <Require feature="oauthpopup" />
+    <Require feature="dynamic-height" />
+    <OAuth>
+      <Service>
+        <Access url="http://marge:7070/plugins/servlet/oauth/access-token"
+          method="POST" />
+        <Request url="http://marge:7070/plugins/servlet/oauth/request-token"
+          method="POST" />
+        <!--
+          url="http://marge:7070/plugins/servlet/oauth/authorize?oauth_callback=http%3A%2F%2Foauth.gmodules.com%2Fgadgets%2Foauthcallback"
+        -->
+        <Authorization
+          url="http://marge:7070/plugins/servlet/oauth/authorize?oauth_callback=http://192.168.2.203:8080/nuxeo/opensocial/gadgets/oauthcallback" />
+      </Service>
+    </OAuth>
+  </ModulePrefs>
+  <Content type="html">
+     <![CDATA[
+    <style>
+    #main {
+        margin: 0px;
+        padding: 0px;
+        font-size: small;
+    }
+    </style>
+
+    <div id="main" style="display: none">
+    </div>
+
+    <div id="approval" style="display: none">
+      <a href="#" id="personalize">Personalize this gadget</a>
+    </div>
+
+    <div id="waiting" style="display: none">
+      Please click
+      <a href="#" id="approvaldone">I've approved access</a>
+      once you've approved access to your data.
+    </div>
+   
+    <script type="text/javascript" language="javascript" src="nuxeoauth.js">
+    </script>
+ 
+     ]]>
+
+  </Content>
+</Module>
