@@ -280,6 +280,10 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
+    public boolean isImmutable() {
+        throw new UnsupportedOperationException();
+    }
+
     public boolean isVersion() {
         throw new UnsupportedOperationException();
     }

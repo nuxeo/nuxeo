@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -830,14 +831,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, docId, proxyId, versionId);
 
         // facet filter: immutable
-        filter = new FacetFilter("Immutable", true);
+        filter = new FacetFilter(FacetNames.IMMUTABLE, true);
         dml = session.query(
                 "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
                 filter, 99);
         assertIdSet(dml, proxyId, versionId);
 
         // facet filter: not immutable
-        filter = new FacetFilter("Immutable", false);
+        filter = new FacetFilter(FacetNames.IMMUTABLE, false);
         dml = session.query(
                 "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
                 filter, 99);
@@ -887,7 +888,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, versionId);
 
         // conflict between where and filter
-        filter = new FacetFilter("Immutable", false);
+        filter = new FacetFilter(FacetNames.IMMUTABLE, false);
         dml = session.query(
                 "SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'",
                 filter, 99);
@@ -926,7 +927,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(0, dml.size()); // contradictory clauses
 
         // conflict between where and filter
-        filter = new FacetFilter("Immutable", true);
+        filter = new FacetFilter(FacetNames.IMMUTABLE, true);
         dml = session.query(
                 "SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable'",
                 filter, 99);

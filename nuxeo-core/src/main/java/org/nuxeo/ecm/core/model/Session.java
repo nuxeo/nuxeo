@@ -219,6 +219,17 @@ public interface Session {
     InputStream getDataStream(String key) throws DocumentException;
 
     /**
+     * Creates a generic proxy to the given document inside the given folder.
+     *
+     * @param doc the document
+     * @param folder the folder
+     * @return the proxy
+     * @throws DocumentException if any error occurs
+     */
+    Document createProxy(Document doc, Document folder)
+            throws DocumentException;
+
+    /**
      * Creates a proxy to the given version of the given document inside the
      * given parent.
      *

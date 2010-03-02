@@ -167,6 +167,10 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return src.canReopen();
     }
 
+    public StreamSource getStreamSource() {
+        return src;
+    }
+
     /**
      * If the source is cannot be reopen, copy the binary content of the
      * original source to a temporary file and replace the source inplace by a

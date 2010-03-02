@@ -132,7 +132,7 @@ public class DialectSQLServer extends Dialect {
         case FTSTORED:
             return jdbcInfo("NVARCHAR(MAX)", Types.CLOB);
         case CLUSTERNODE:
-            return jdbcInfo("INT", Types.INTEGER);
+            return jdbcInfo("SMALLINT", Types.SMALLINT);
         case CLUSTERFRAGS:
             return jdbcInfo("VARCHAR(8000)", Types.VARCHAR);
         }
@@ -376,6 +376,29 @@ public class DialectSQLServer extends Dialect {
                 false, // late
                 Boolean.TRUE, // always drop
                 null, //
+                "IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL DROP PROCEDURE dbo.NX_CLUSTER_INVAL", //
+                String.format(
+                        "CREATE PROCEDURE NX_CLUSTER_INVAL(@i %s, @f VARCHAR(8000), @k TINYINT) " //
+                                + "AS " //
+                                + "BEGIN" //
+                                + "  DECLARE @nid SMALLINT;" //
+                                + "  DECLARE @cur CURSOR;" //
+                                + "  SET @cur = CURSOR FAST_FORWARD FOR" //
+                                + "    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @@SPID;" //
+                                + "  OPEN @cur;" //
+                                + "  FETCH FROM @cur INTO @nid;" //
+                                + "  WHILE @@FETCH_STATUS = 0 BEGIN" //
+                                + "    INSERT INTO [cluster_invals] ([nodeid], [id], [fragments], [kind]) VALUES (@nid, @i, @f, @k) "
+                                + "    FETCH FROM @cur INTO @nid;" //
+                                + "  END;" //
+                                + "  CLOSE @cur; " //
+                                + "END" //
+                        , idType)));
+
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.TRUE, // always drop
+                null, //
                 "IF OBJECT_ID('dbo.NX_ACCESS_ALLOWED', 'FN') IS NOT NULL DROP FUNCTION dbo.NX_ACCESS_ALLOWED", //
                 String.format(
                         "CREATE FUNCTION NX_ACCESS_ALLOWED" //
@@ -474,6 +497,53 @@ public class DialectSQLServer extends Dialect {
                 null,
                 "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
+    }
+
+    @Override
+    public boolean isClusteringSupported() {
+        return true;
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM N FROM %s N WHERE"
+                + "  HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1"
+                + "  AND NOT EXISTS(" //
+                + "    SELECT 1 FROM sys.dm_exec_sessions S WHERE" //
+                + "      S.is_user_process = 1 AND N.%s = S.session_id)", //
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (@@SPID, CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM %s WHERE %s = @@SPID",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "EXEC dbo.NX_CLUSTER_INVAL ?, ?, ?";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        return "DELETE I OUTPUT DELETED.[id], DELETED.[fragments], DELETED.[kind] "
+                + "FROM [cluster_invals] AS I WHERE I.[nodeid] = @@SPID";
     }
 
 }

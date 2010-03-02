@@ -125,7 +125,7 @@ public class DialectMySQL extends Dialect {
         case FTSTORED:
             return jdbcInfo("LONGTEXT", Types.LONGVARCHAR);
         case CLUSTERNODE:
-            return jdbcInfo("INTEGER", Types.INTEGER);
+            return jdbcInfo("BIGINT", Types.BIGINT);
         case CLUSTERFRAGS:
             return jdbcInfo("TEXT", Types.VARCHAR);
         }
@@ -340,6 +340,32 @@ public class DialectMySQL extends Dialect {
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
         statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.TRUE, // always drop
+                null, //
+                "DROP PROCEDURE IF EXISTS NX_CLUSTER_INVAL", //
+                String.format(
+                        "CREATE PROCEDURE NX_CLUSTER_INVAL(i %s, f TEXT, k TINYINT) " //
+                                + "LANGUAGE SQL " //
+                                + "MODIFIES SQL DATA " //
+                                + "BEGIN" //
+                                + "  DECLARE n BIGINT;" //
+                                + "  DECLARE done BOOLEAN DEFAULT FALSE;" //
+                                + "  DECLARE cur CURSOR FOR " //
+                                + "    SELECT nodeid FROM cluster_nodes WHERE nodeid <> @@PSEUDO_THREAD_ID;" //
+                                + "  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;" //
+                                + "  OPEN cur;" //
+                                + "  REPEAT " //
+                                + "    FETCH cur INTO n;" //
+                                + "    IF NOT done THEN" //
+                                + "      INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (n, i, f, k);" //
+                                + "    END IF;" //
+                                + "  UNTIL done END REPEAT;" //
+                                + "  CLOSE cur; " //
+                                + "END" //
+                        , idType)));
+
+        statements.add(new ConditionalStatement(
                 true, // early
                 Boolean.TRUE, // always drop
                 null, //
@@ -479,6 +505,61 @@ public class DialectMySQL extends Dialect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isClusteringSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isClusteringDeleteNeeded() {
+        return true;
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions that don't exist anymore
+        return String.format(
+                "DELETE N FROM %s N WHERE NOT EXISTS("
+                        + "SELECT 1 FROM INFORMATION_SCHEMA.PROCESSLIST P WHERE N.%s = P.id)",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (@@PSEUDO_THREAD_ID, CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM %s WHERE %s = @@PSEUDO_THREAD_ID",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "CALL NX_CLUSTER_INVAL(?, ?, ?)";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        return "SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
+    }
+
+    @Override
+    public String getClusterDeleteInvalidations() {
+        return "DELETE FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
     }
 
 }

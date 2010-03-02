@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -1045,6 +1045,15 @@ public interface CoreSession {
     boolean isCheckedOut(DocumentRef docRef) throws ClientException;
 
     /**
+     * Creates a generic proxy to the given document inside the given folder.
+     * <p>
+     * The document may be a version, or a working copy (live document) in which
+     * case the proxy will be a "shortcut".
+     */
+    DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
+            throws ClientException;
+
+    /**
      * Creates a proxy for the given version of the given document.
      *
      * @param docRef the reference to the document
@@ -1392,8 +1401,9 @@ public interface CoreSession {
      *
      * @param docRef the target document for the proxies
      * @param folderRef the folder where proxies are located
-     * @return an array of the proxy versions. Null is returned if no proxies
-     *         are found the specified folder
+     * @return an array of the proxy versions, with an empty string being used
+     *         for a live proxy. {@code null} is returned if no proxies are
+     *         found the specified folder
      * @throws ClientException if any error occurs
      */
     String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef)

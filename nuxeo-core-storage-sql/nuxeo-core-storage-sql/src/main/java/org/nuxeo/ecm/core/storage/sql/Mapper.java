@@ -537,8 +537,8 @@ public class Mapper {
      */
     public void insertClusterInvalidations(Invalidations invalidations)
             throws StorageException {
-        String sql = sqlInfo.getClusterInsertInvalidationsSql();
-        List<Column> columns = sqlInfo.getClusterInsertInvalidationsColumns();
+        String sql = sqlInfo.dialect.getClusterInsertInvalidations();
+        List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql);
@@ -554,7 +554,8 @@ public class Mapper {
                                 Integer.valueOf(kind)));
                     }
                     Serializable frags;
-                    if (sqlInfo.dialect.supportsArrays()) {
+                    if (sqlInfo.dialect.supportsArrays()
+                            && columns.get(1).getJdbcType() == Types.ARRAY) {
                         frags = fragments.split(" ");
                     } else {
                         frags = fragments;
@@ -627,8 +628,9 @@ public class Mapper {
      */
     public Invalidations getClusterInvalidations() throws StorageException {
         Invalidations invalidations = new Invalidations();
-        String sql = sqlInfo.getClusterGetInvalidationsSql();
-        List<Column> columns = sqlInfo.getClusterGetInvalidtionsColumns();
+        String sql = sqlInfo.dialect.getClusterGetInvalidations();
+        String sqldel = sqlInfo.dialect.getClusterDeleteInvalidations();
+        List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         Statement st = null;
         try {
             st = connection.createStatement();
@@ -643,7 +645,8 @@ public class Mapper {
                 Serializable frags = columns.get(1).getFromResultSet(rs, 2);
                 int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
                 String[] fragments;
-                if (sqlInfo.dialect.supportsArrays()) {
+                if (sqlInfo.dialect.supportsArrays()
+                        && frags instanceof String[]) {
                     fragments = (String[]) frags;
                 } else {
                     fragments = ((String) frags).split(" ");
@@ -651,7 +654,17 @@ public class Mapper {
                 invalidations.add(id, fragments, kind);
             }
             if (isLogEnabled()) {
-                logCount(n);
+                // logCount(n);
+                log("  -> " + invalidations);
+            }
+            if (sqlInfo.dialect.isClusteringDeleteNeeded()) {
+                if (isLogEnabled()) {
+                    log(sqldel);
+                }
+                n = st.executeUpdate(sqldel);
+                if (isLogEnabled()) {
+                    logCount(n);
+                }
             }
             return invalidations;
         } catch (SQLException e) {
@@ -2117,13 +2130,10 @@ public class Mapper {
         }
 
         // for debug
-        private void logResultSet(ResultSet rs, List<Column> columns)
-                throws SQLException {
+        private void logMap(Map<String, Serializable> map) throws SQLException {
             List<String> res = new LinkedList<String>();
-            int i = 1;
-            for (Column column : columns) {
-                Serializable v = column.getFromResultSet(rs, i++);
-                res.add(column.getKey() + "=" + loggedValue(v));
+            for (Entry<String, Serializable> en : map.entrySet()) {
+                res.add(en.getKey() + "=" + loggedValue(en.getValue()));
             }
             log("  -> " + StringUtils.join(res, ", "));
         }
@@ -2185,7 +2195,7 @@ public class Mapper {
         protected Map<String, Serializable> fetchCurrent() throws SQLException {
             Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
             if (isLogEnabled()) {
-                logResultSet(rs, q.selectInfo.whatColumns);
+                logMap(map);
             }
             return map;
         }

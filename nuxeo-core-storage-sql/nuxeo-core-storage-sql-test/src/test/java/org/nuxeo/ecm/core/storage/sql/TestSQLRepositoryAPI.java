@@ -791,9 +791,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2); // get folder children List<DocumentModel>
-         * retrievedChilds = session.getChildren(root.getRef(), null, null,
-         * filter, null);
+         * Filter filter = new NameFilter(name2); // get folder children
+         * List<DocumentModel> retrievedChilds =
+         * session.getChildren(root.getRef(), null, null, filter, null);
          *
          * assertNotNull(retrievedChilds); assertEquals(1,
          * retrievedChilds.size());
@@ -2844,11 +2844,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save(); // needed for publish-by-copy to work
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
         assertTrue(proxy.isProxy());
+        assertFalse(proxy.isVersion());
+        assertTrue(proxy.isImmutable());
 
         // republish a proxy
         DocumentModel proxy2 = session.publishDocument(proxy, folder);
         session.save();
         assertTrue(proxy2.isProxy());
+        assertFalse(proxy2.isVersion());
+        assertTrue(proxy2.isImmutable());
         assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
 
@@ -2863,6 +2867,48 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         assertEquals(2, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+    }
+
+    public void testProxyLive() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "proxy_test", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "the title");
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // create live proxy
+        DocumentModel proxy = session.createProxy(doc.getRef(), root.getRef());
+        assertTrue(proxy.isProxy());
+        assertFalse(proxy.isVersion());
+        assertFalse(proxy.isImmutable());
+        session.save();
+        assertEquals("the title", proxy.getProperty("dublincore", "title"));
+        assertEquals("the title", doc.getProperty("dublincore", "title"));
+
+        // modify live doc
+        doc.setProperty("dublincore", "title", "the title modified");
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check visible from proxy
+        proxy = session.getDocument(proxy.getRef());
+        assertTrue(proxy.isProxy());
+        assertFalse(proxy.isVersion());
+        assertFalse(proxy.isImmutable());
+        assertEquals("the title modified", proxy.getProperty("dublincore",
+                "title"));
+
+        // modify proxy
+        proxy.setProperty("dublincore", "title", "the title again");
+        doc = session.saveDocument(proxy);
+        session.save();
+
+        // check visible from live doc
+        doc = session.getDocument(doc.getRef());
+        assertEquals("the title again", doc.getProperty("dublincore", "title"));
     }
 
     public void testUpdatePublishedDocument() throws Exception {
@@ -2888,11 +2934,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("the title", proxy.getProperty("dublincore", "title"));
         assertEquals("the title", doc.getProperty("dublincore", "title"));
         assertTrue(proxy.isProxy());
+        assertFalse(proxy.isVersion());
 
         // republish a proxy
         DocumentModel proxy2 = session.publishDocument(doc, folder);
         session.save();
         assertTrue(proxy2.isProxy());
+        assertFalse(proxy2.isVersion());
         assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(proxy.getId(), proxy2.getId());
     }

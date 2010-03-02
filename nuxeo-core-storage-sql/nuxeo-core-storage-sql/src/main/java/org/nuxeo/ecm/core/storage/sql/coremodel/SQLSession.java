@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -82,7 +82,7 @@ public class SQLSession implements Session {
 
     private final org.nuxeo.ecm.core.storage.sql.Session session;
 
-    private SQLDocument root;
+    private Document root;
 
     private final String userSessionId;
 
@@ -237,8 +237,8 @@ public class SQLSession implements Session {
                 name = source.getName();
             }
             Node result = session.move(
-                    ((SQLDocument) source).getHierarchyNode(),
-                    ((SQLDocument) parent).getHierarchyNode(), name);
+                    ((SQLDocument) source).getNode(),
+                    ((SQLDocument) parent).getNode(), name);
             return newDocument(result);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -269,9 +269,9 @@ public class SQLSession implements Session {
             if (name == null) {
                 name = source.getName();
             }
-            Node parentNode = ((SQLDocument) parent).getHierarchyNode();
+            Node parentNode = ((SQLDocument) parent).getNode();
             name = findFreeName(parentNode, name);
-            Node copy = session.copy(((SQLDocument) source).getHierarchyNode(),
+            Node copy = session.copy(((SQLDocument) source).getNode(),
                     parentNode, name);
             return newDocument(copy);
         } catch (StorageException e) {
@@ -298,15 +298,44 @@ public class SQLSession implements Session {
         }
     }
 
+    public Document createProxy(Document doc, Document folder)
+            throws DocumentException {
+        try {
+            Node folderNode = ((SQLDocument) folder).getNode();
+            Node targetNode = ((SQLDocument) doc).getNode();
+            Serializable targetId = targetNode.getId();
+            Serializable versionableId;
+            if (doc.isVersion()) {
+                versionableId = (Serializable) doc.getProperty(
+                        Model.VERSION_VERSIONABLE_PROP).getValue();
+            } else if (doc.isProxy()) {
+                // not supported, but don't crash... copy the proxy
+                targetId = (Serializable) doc.getProperty(
+                        Model.PROXY_TARGET_PROP).getValue();
+                versionableId = (Serializable) doc.getProperty(
+                        Model.PROXY_VERSIONABLE_PROP).getValue();
+            } else {
+                // working copy (live document)
+                versionableId = targetId;
+            }
+            String name = findFreeName(folderNode, doc.getName());
+            Node proxy = session.addProxy(targetId, versionableId, folderNode,
+                    name, null);
+            return newDocument(proxy);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     public Document createProxyForVersion(Document parent, Document document,
             String label) throws DocumentException {
         try {
-            Serializable versionableId = ((SQLDocument) document).getHierarchyNode().getId();
+            Serializable versionableId = ((SQLDocument) document).getNode().getId();
             Node versionNode = session.getVersionByLabel(versionableId, label);
             if (versionNode == null) {
                 throw new DocumentException("Unknown version: " + label);
             }
-            Node parentNode = ((SQLDocument) parent).getHierarchyNode();
+            Node parentNode = ((SQLDocument) parent).getNode();
             String name = findFreeName(parentNode, document.getName());
             Node proxy = session.addProxy(versionNode.getId(), versionableId,
                     parentNode, name, null);
@@ -322,9 +351,9 @@ public class SQLSession implements Session {
         try {
 
             proxyNodes = session.getProxies(
-                    ((SQLDocument) document).getHierarchyNode(),
+                    ((SQLDocument) document).getNode(),
                     parent == null ? null
-                            : ((SQLDocument) parent).getHierarchyNode());
+                            : ((SQLDocument) parent).getNode());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -376,7 +405,7 @@ public class SQLSession implements Session {
             props.put(Model.VERSION_DESCRIPTION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
         } else {
-            parentNode = ((SQLDocument) parent).getHierarchyNode();
+            parentNode = ((SQLDocument) parent).getNode();
             if (isProxy) {
                 // proxy
                 props.put(Model.PROXY_TARGET_PROP,
@@ -498,19 +527,19 @@ public class SQLSession implements Session {
      * ----- called by SQLDocument -----
      */
 
-    private SQLDocument newDocument(Node node) throws DocumentException {
+    private Document newDocument(Node node) throws DocumentException {
         return newDocument(node, true);
     }
 
     // "readonly" meaningful for proxies and versions, used for import
-    private SQLDocument newDocument(Node node, boolean readonly)
+    private Document newDocument(Node node, boolean readonly)
             throws DocumentException {
         if (node == null) {
             // root's parent
             return null;
         }
 
-        Node versionNode = null;
+        Node targetNode = null;
         String typeName = node.getPrimaryType();
         if (node.isProxy()) {
             try {
@@ -519,8 +548,8 @@ public class SQLSession implements Session {
                 if (targetId == null) {
                     throw new DocumentException("Proxy has null target");
                 }
-                versionNode = session.getNodeById(targetId);
-                typeName = versionNode.getPrimaryType();
+                targetNode = session.getNodeById(targetId);
+                typeName = targetNode.getPrimaryType();
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
@@ -532,11 +561,14 @@ public class SQLSession implements Session {
         }
 
         if (node.isProxy()) {
-            return new SQLDocumentProxy(node, versionNode, type, this, readonly);
+            // proxy seen as a normal document
+            Document proxy = new SQLDocumentLive(node, type, this, false);
+            Document target = newDocument(targetNode, readonly);
+            return new SQLDocumentProxy(proxy, target);
         } else if (node.isVersion()) {
             return new SQLDocumentVersion(node, type, this, readonly);
         } else {
-            return new SQLDocument(node, type, this, false);
+            return new SQLDocumentLive(node, type, this, false);
         }
     }
 

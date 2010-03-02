@@ -180,6 +180,11 @@ public final class JCAConnection implements Session {
         return session.getDataStream(key);
     }
 
+    public Document createProxy(Document doc, Document folder)
+            throws DocumentException {
+        return session.createProxy(doc, folder);
+    }
+
     public Document createProxyForVersion(Document parent, Document doc,
             String versionLabel) throws DocumentException {
         return session.createProxyForVersion(parent, doc, versionLabel);

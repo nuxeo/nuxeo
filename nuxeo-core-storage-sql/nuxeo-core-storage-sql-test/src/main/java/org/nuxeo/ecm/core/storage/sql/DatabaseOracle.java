@@ -74,4 +74,9 @@ public class DatabaseOracle extends DatabaseHelper {
         return descriptor;
     }
 
+    @Override
+    public boolean supportsClustering() {
+        return true;
+    }
+
 }

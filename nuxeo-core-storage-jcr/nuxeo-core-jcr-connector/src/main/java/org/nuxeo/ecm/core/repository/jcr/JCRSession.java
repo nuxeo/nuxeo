@@ -365,6 +365,15 @@ public class JCRSession implements Session {
 
     public Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException {
+        Document doc = getDocumentByUUID(versionableId);
+        if (doc == null) {
+            return null;
+        }
+        return doc.getVersion(versionModel.getLabel());
+    }
+
+    public Document createProxy(Document doc, Document folder)
+            throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

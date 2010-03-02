@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr;
@@ -33,7 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentVersionProxy;
+import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.repository.jcr.versioning.Versioning;
@@ -44,20 +43,9 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
- * An implementation of the IDocument over a JackRabbit node.
- * <p>
- * Please note that this is not a JCR implementation of the IDocument, but
- * rather a JackRabbit one - this way we can benefit from JackRabbit internal
- * API to optimize some operations.
- * <p>
- * Thus, the underlying node of the IDocument is of type {@link Node} and not
- * {@link Node}.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * An implementation of the DocumentProxy over a Jackrabbit node.
  */
-public class JCRDocumentProxy extends JCRDocument implements
-        DocumentVersionProxy {
+public class JCRDocumentProxy extends JCRDocument implements DocumentProxy {
     // private static Log log = LogFactory.getLog(JCRDocument.class);
 
     // referred doc
@@ -95,30 +83,8 @@ public class JCRDocumentProxy extends JCRDocument implements
     // this.type = type;
     // }
 
-    public DocumentVersion getTargetVersion() {
-        return (DocumentVersion) doc;
-    }
-
-    public void updateToBaseVersion() throws DocumentException {
-        try {
-            JCRDocument doc = (JCRDocument) getTargetDocument();
-            Node baseVersion = doc.getNode().getProperty("jcr:baseVersion").getNode();
-            if (!baseVersion.getUUID().equals(node.getParent().getUUID())) {
-                // not the same version update to base version
-                Node frozenNode = baseVersion.getNode("jcr:frozenNode");
-                node.setProperty(NodeConstants.ECM_REF_FROZEN_NODE.rawname,
-                        frozenNode);
-                // FIXME: review this line below.
-                doc = new JCRDocument(session, frozenNode);
-            }
-        } catch (RepositoryException e) {
-            throw new DocumentException(
-                    "Failed to update proxy to base version", e);
-        }
-    }
-
-    public Document getTargetDocument() throws DocumentException {
-        return session.getDocumentByUUID(getTargetDocumentUUID());
+    public Document getTargetDocument() {
+        return doc;
     }
 
     @Override
@@ -409,7 +375,7 @@ public class JCRDocumentProxy extends JCRDocument implements
 
     @Override
     public Document getSourceDocument() throws DocumentException {
-        return getTargetVersion();
+        return doc;
     }
 
     @Override
@@ -455,7 +421,7 @@ public class JCRDocumentProxy extends JCRDocument implements
         return new ArrayList<String>();
     }
 
-    public void setTargetDocument(Document document, String label) {
+    public void setTargetDocument(Document target) {
         throw new UnsupportedOperationException();
     }
 

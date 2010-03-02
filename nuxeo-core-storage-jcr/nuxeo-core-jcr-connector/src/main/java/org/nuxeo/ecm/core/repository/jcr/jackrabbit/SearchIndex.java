@@ -54,6 +54,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -64,12 +65,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SearchIndex extends
         org.apache.jackrabbit.core.query.lucene.SearchIndex {
-
-    /**
-     * Name of the Immutable facet, added by {@code DocumentModelFactory} when
-     * instantiating a proxy or a version.
-     */
-    public static final String FACET_IMMUTABLE = "Immutable";
 
     private static SchemaManager schemaManager;
 
@@ -174,7 +169,7 @@ public class SearchIndex extends
                 Set<String> facets = getFacets(dataNode);
                 if (isProxy || isVersion) {
                     facets = new HashSet<String>(facets);
-                    facets.add(FACET_IMMUTABLE);
+                    facets.add(FacetNames.IMMUTABLE);
                 }
                 addFacets(doc, facets);
 

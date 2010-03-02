@@ -156,6 +156,10 @@ public class DialectOracle extends Dialect {
                 && actualName.equals("NUMBER") && actualSize == 1) {
             return true;
         }
+        if (expected == Types.TINYINT && actual == Types.DECIMAL
+                && actualName.equals("NUMBER") && actualSize == 3) {
+            return true;
+        }
         if (expected == Types.INTEGER && actual == Types.DECIMAL
                 && actualName.equals("NUMBER") && actualSize == 10) {
             return true;
@@ -193,6 +197,7 @@ public class DialectOracle extends Dialect {
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
+        case Types.TINYINT:
         case Types.SMALLINT:
             ps.setInt(index, ((Long) value).intValue());
             return;
@@ -253,6 +258,7 @@ public class DialectOracle extends Dialect {
             return sb.toString();
         case Types.BIT:
             return rs.getBoolean(index);
+        case Types.TINYINT:
         case Types.SMALLINT:
         case Types.INTEGER:
         case Types.BIGINT:
@@ -365,6 +371,71 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean isClusteringSupported() {
+        return true;
+    }
+
+    /*
+     * For Oracle we don't use a function to return values and delete them at
+     * the same time, because pipelined functions that need to do DML have to do
+     * it in an autonomous transaction which could cause consistency issues.
+     */
+    @Override
+    public boolean isClusteringDeleteNeeded() {
+        return true;
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions that don't exist anymore
+        // NOTE this needs permissions on SYS.V_$SESSION
+        // i.e. GRANT SELECT ON SYS.V_$SESSION TO someuser
+        // SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'V_$SESSION';
+        return String.format(
+                "DELETE FROM %s N WHERE "
+                        + "NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.%s = S.SID) ",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (SYS_CONTEXT('USERENV','SID'), CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format(
+                "DELETE FROM %s WHERE %s = SYS_CONTEXT('USERENV','SID')",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "{CALL NX_CLUSTER_INVAL(?, ?, ?)}";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        return "SELECT id, fragments, kind FROM cluster_invals "
+                + "WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+    }
+
+    @Override
+    public String getClusterDeleteInvalidations() {
+        return "DELETE FROM cluster_invals WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+    }
+
+    @Override
     public boolean supportsArrays() {
         return true;
     }
@@ -435,6 +506,22 @@ public class DialectOracle extends Dialect {
                 null, //
                 null, //
                 "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
+
+        statements.add(new ConditionalStatement(
+                false, // late
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i %s, f VARCHAR2, k INTEGER) " //
+                                + "IS" //
+                                + "  sid INTEGER := SYS_CONTEXT('USERENV','SID'); " //
+                                + "BEGIN" //
+                                + "  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> sid) LOOP" //
+                                + "    INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);" //
+                                + "  END LOOP; " //
+                                + "END;" //
+                        , idType)));
 
         statements.add(new ConditionalStatement(
                 false, // late

@@ -97,6 +97,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public static final long F_DIRTY = 128L;
 
+    public static final long F_IMMUTABLE = 256L;
+
     private static final long serialVersionUID = 4473357367146978325L;
 
     private static final Log log = LogFactory.getLog(DocumentModelImpl.class);
@@ -911,6 +913,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return (flags & F_PROXY) != 0;
     }
 
+    public boolean isImmutable() {
+        return (flags & F_IMMUTABLE) != 0;
+    }
+
     public void setIsVersion(boolean isVersion) {
         if (isVersion) {
             flags |= F_VERSION;
@@ -924,6 +930,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             flags |= F_PROXY;
         } else {
             flags &= ~F_PROXY;
+        }
+    }
+
+    public void setIsImmutable(boolean isImmutable) {
+        if (isImmutable) {
+            flags |= F_IMMUTABLE;
+        } else {
+            flags &= ~F_IMMUTABLE;
         }
     }
 

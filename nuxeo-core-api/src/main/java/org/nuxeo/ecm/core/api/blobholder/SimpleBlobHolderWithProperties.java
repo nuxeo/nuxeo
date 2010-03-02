@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -32,6 +33,12 @@ public class SimpleBlobHolderWithProperties extends SimpleBlobHolder {
     public SimpleBlobHolderWithProperties(Blob blob,
             Map<String, Serializable> properties) {
         super(blob);
+        this.properties = properties;
+    }
+
+    public SimpleBlobHolderWithProperties(List<Blob> blobs,
+            Map<String, Serializable> properties) {
+        super(blobs);
         this.properties = properties;
     }
 
