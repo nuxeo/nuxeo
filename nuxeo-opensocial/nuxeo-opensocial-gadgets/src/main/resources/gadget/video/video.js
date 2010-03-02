@@ -62,13 +62,20 @@ function setVideo(balise){
     jQuery("#video").html(balise);
     jQuery("#baliseVideo").text(balise);
     var dim = gadgets.window.getViewportDimensions();
-    var h = (dim.width * jQuery("embed").height())/jQuery("object").width();
-    jQuery("embed").width(dim.width);
-    jQuery("embed").height(h);
-    jQuery("embed").attr("wmode","transparent");
+    var embed = jQuery("embed");
+    if(embed.length == 0){
+    	embed = jQuery("object");	
+    }
+    var h = (dim.width * jQuery("object").height())/jQuery("object").width();
+    embed.width(dim.width);
+    embed.height(h);
+    embed.attr("wmode","transparent");
+    embed.attr("type","application/x-shockwave-flash");
   } else {
     jQuery("#video").html("");
     jQuery("#baliseVideo").text("");
   }
-  gadgets.window.adjustHeight();
+  setTimeout(function(){
+  	gadgets.window.adjustHeight();
+  }, 150);
 };

@@ -37,8 +37,11 @@
         font-size:11px;
     }
 
+    img{
+      border:0;
+    }
+
     #hide img, #refresh img{
-     border:0;
      padding:5px 5px 0 0;
     }
 
@@ -97,6 +100,7 @@
     #upload:hover,#fileuploadBtn:hover{
         text-decoration:underline;
     }
+
     </style>
     <script type="text/javascript" language="javascript" src="richtext.js"></script>
     <script type="text/javascript">
@@ -158,7 +162,9 @@
          <table style="width:100%" class="form">
             <tr>
               <td>
-                <label>Photo</label><br/>
+                <div>
+                  <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="/nuxeo/img/x.png" style="vertical-align:middle;"></a>
+                </div>
                 <img id="imgPreview" width="60" />
               </td>
               <td>

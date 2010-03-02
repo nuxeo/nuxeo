@@ -5,7 +5,6 @@ var maxPage = 0;
 var errors = 0;
 var prefs;
 
-
 function getNuxeoClientSideUrl() {
   return top.nxBaseUrl;
 }
@@ -15,33 +14,17 @@ function getUserLang() {
 }
 
 function getResourceUrl() {
-  var url = "";
-  url = getNuxeoClientSideUrl() +"site/myDocsRestAPI/";
-  url += gadgetId + "/";
-
-  strPath = path.join();
-  regEx = new RegExp(",", "g");
-  strPath = strPath.replace(regEx, "/");
-  url += strPath;
-  return url;
+  var regEx = new RegExp(",", "g");
+  return [getNuxeoClientSideUrl(),"site/myDocsRestAPI/",gadgetId,"/",path.join().replace(regEx, "/")].join("");
 }
 
 function getRestletUrl() {
-  var ts = new Date().getTime() + "" + Math.random() * 11
-  var url = getResourceUrl();
-  url += "?page=" + currentPage;
-  url += "&ts=" + ts;
-  return url;
+  return [getResourceUrl(),"?page=",currentPage,"&ts=",new Date().getTime(),Math.random() * 11].join("");
 }
 
 function getDLUrl(name) {
-  var ts = new Date().getTime() + "" + Math.random() * 11
-  var url = getResourceUrl();
-  url += name +"/@file";
-  url += "?ts=" + ts;
-  return url;
+  return [getResourceUrl(), name, "/@file", "?ts=", new Date().getTime(), Math.random() * 11].join("");
 }
-
 
 function getImageBaseUrl() {
   return "/nuxeo";
@@ -54,48 +37,42 @@ function getBaseUrl() {
 function nextPage() {
   if (currentPage < maxPage - 1) {
     currentPage += 1;
+  	refresh();
   }
-  refresh();
 }
 
 function prevPage() {
   if (currentPage > 0) {
     currentPage = currentPage - 1;
+    refresh();
   }
-  refresh();
 }
 
 function firstPage() {
-  currentPage = 0;
-  refresh();
+  if(currentPage != 0) {
+    currentPage = 0;
+    refresh();
+  }
 }
 
 function lastPage() {
-  currentPage = maxPage - 1;
-  if (currentPage < 0) {
-    currentPage = 0;
+  if (maxPage > 1) {
+    currentPage = maxPage - 1;
+    refresh();
   }
-  refresh();
 }
 
 function makeRequest(url, callback, method) {
     var params = {};
-    var headers = {};
-
     params[gadgets.io.RequestParameters.METHOD] = method || gadgets.io.MethodType.GET;
-
     params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
-
     params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
-
-    var now = new Date().toUTCString();
-    headers["Date", now];
-
+    var headers = {};
+    headers["Date", new Date().toUTCString()];
     headers["Expires", "Fri, 01 Jan 1990 00:00:00 GMT"];
     headers["Pragma", "no-cache"];
     headers["Cache-control"] = "no-cache, must-revalidate";
     headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
-
     params[gadgets.io.RequestParameters.HEADERS] = headers;
     gadgets.io.makeRequest(url, callback, params);
 
@@ -108,15 +85,15 @@ function getDocumentLists() {
 function handleJSONResponse(obj) {
   var jsonObject = obj.data;
   if (jsonObject == null) {
-    if (errors == 0) {
-      errors = 1;
-      getDocumentLists();
-    } else {
+    if (errors > 0) {
       displayNoWorkspaceFound();
+    } else { 
+      errors++;
+      getDocumentLists();
     }
     return;
-  } else {
-    errors = 0;
+  } else { 
+  	errors = 0;
   }
   displayDocumentList(jsonObject);
 }
@@ -138,8 +115,7 @@ function tableStart(jsonObject) {
     modified = labelInfo['label.dublincore.modified'];
     creator = labelInfo['label.dublincore.creator'];
   }
-  var html = "";
-  html += "<table class='dataList'>";
+  var html = "<table class='dataList'>";
   html += "  <thead>";
   html += "    <tr>";
   html += "      <th>";
@@ -157,34 +133,31 @@ function tableStart(jsonObject) {
 }
 
 function tableEnd() {
-  var html = "";
-  html += "  </tbody>";
-  html += "</table>";
-  return html
+  return "</tbody></table>";
 }
 
 function displayDocumentList(jsonObject) {
+  var pageInfo = jsonObject.summary;
+  maxPage = pageInfo.pages;
+  if(maxPage < currentPage+1){
+  	currentPage--;
+  	refresh();
+  	return;
+  }
   var htmlContent = tableStart(jsonObject);
   var document = jsonObject.document;
   for ( var i = 0; i < document.length; i++) {
     htmlContent += mkRow(document[i], i);
   }
   htmlContent += tableEnd();
-  _gel("nxDocumentListData").innerHTML = htmlContent;
+  jQuery("#nxDocumentListData").html(htmlContent);
   jQuery(".deleteaction").click(function() {
     deleteDoc(jQuery(this));
     return false;
-    });
-
-
-
-  // page info
-  var pageInfo = jsonObject.summary;
-  var pageInfoLabel = pageInfo.pageNumber + 1;
-  pageInfoLabel += "/";
-  pageInfoLabel += pageInfo.pages;
-  maxPage = pageInfo.pages;
-  _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
+  });
+  
+  currentPage = pageInfo.pageNumber;
+  jQuery("#nxDocumentListPage").text([pageInfo.pageNumber + 1,"/",pageInfo.pages].join(""));
   gadgets.window.adjustHeight();
 }
 
@@ -212,11 +185,10 @@ function followPath(pathToFollow) {
 
 function mkRow(document, i) {
   var htmlRow = "<tr class=\"";
-  if (i % 2 == 0) {
+  if (i % 2 == 0)
     htmlRow += "dataRowEven";
-  } else {
+  else
     htmlRow += "dataRowOdd";
-  }
   htmlRow += "\">";
   htmlRow += "<td class=\"iconColumn\">"
   htmlRow += "<img alt=\"File\" src=\""
@@ -232,7 +204,7 @@ function mkRow(document, i) {
   } else if (document.type == "File"){
     var DLUrl = getDLUrl(document.name);
     htmlRow += "<td><a title=\"" + document.title
-        + "\" href=\"" + DLUrl + "\" />";
+        + "\" href=\"" + DLUrl + "\">";
     htmlRow += document.title + "</a></td>";
   } else {
     htmlRow +="<td>" + document.title + "</td>";
@@ -247,12 +219,9 @@ function mkRow(document, i) {
   htmlRow += "<td>";
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
-
   htmlRow += "<td class=\"iconColumn\">";
-  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\"><img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
-  htmlRow += "<a target=\"_tab\" href=\"/nuxeo/"
-      + document.url
-      + "\"><img src=\"/nuxeo/icons/external.gif\" alt=\"Download\"></a>";
+  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\">";
+  htmlRow += "<img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   htmlRow +="</td>";
   htmlRow += "</tr>";
   return htmlRow;
@@ -277,37 +246,30 @@ function readCookie(name) {
 }
 
 function deleteDoc(obj) {
-  if(confirm("Voulez vous réellement supprimer le document ?")) {
-    url = obj.attr('href');
-    makeRequest(url, function() { refresh();}, gadgets.io.MethodType.DELETE);
-  }
+  if(confirm(prefs.getMsg("confirmDelete")))
+    makeRequest(obj.attr('href'), function() { refresh();}, gadgets.io.MethodType.DELETE);
   return false;
-
 }
 
-
-
 jQuery(document).ready(function(){
-
-
   jQuery('#formUpload').submit(function(){
-      jQuery(this).ajaxSubmit({ beforeSubmit: control,
-                                success:function(){
-                                  refresh();
-                                   },
-                                error: function(xhr,rs) {
-                                    alert(xhr.responseText);
-                                },
-                                url: getResourceUrl(),
-                                method: 'put'
-                              });
-      return false;
+    jQuery(this).ajaxSubmit({ 
+        beforeSubmit: control,
+        success:function(){
+          refresh();
+        },
+        error: function(xhr,rs) {
+          alert(xhr.responseText);
+        },
+        url: getResourceUrl(),
+        resetForm: true,
+        clearForm: true,
+        type: 'POST'
     });
-
-  });
-
-  function control(){
-    if(jQuery.trim(jQuery("#uploadFile").val()) != "")
-      return true;
     return false;
-  };
+  });
+});
+
+function control(){
+  return (jQuery.trim(jQuery("#uploadFile").val()) != "");
+}

@@ -4,9 +4,11 @@
   used when calling the ifr servlet.  -->
   <extension target="org.nuxeo.opensocial.service" point="cryptoConfig">
     <key container="default">
-      <value>
-what is this used for?
-      </value>
+    <!--created with this command line on unix 
+    dd if=/dev/random bs=32 count=1  | openssl base64 > /tmp/key.txt
+    this must MATCH EXACTLY the configuration in opensocial-config-default-contrib.xml
+    -->
+      <value>Wggivegg863gcsf6QHiPEIz4VjZZOwY6g5+kg/ktqTE=</value>
     </key>
   </extension>
 

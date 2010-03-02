@@ -274,8 +274,6 @@ public class GadgetPortlet extends Portlet {
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-webkit-gradient(linear,center top , #"+color+", #FFFFFF)");
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-moz-linear-gradient(center top , #"+color+", #FFFFFF)");
     $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
-
-
   }-*/;
 
   static native void changeBorderColor(String id, String color)
@@ -308,5 +306,14 @@ public class GadgetPortlet extends Portlet {
   public void renderTitle() {
     this.setTitle(this.gadget.getTitle());
   }
+
+  public void removeStyle() {
+    _removeStyle(this.id);
+  };
+
+  private native static void _removeStyle(String id)
+  /*-{
+      $wnd.jQuery("#"+id).attr("style","");
+  }-*/;
 
 }

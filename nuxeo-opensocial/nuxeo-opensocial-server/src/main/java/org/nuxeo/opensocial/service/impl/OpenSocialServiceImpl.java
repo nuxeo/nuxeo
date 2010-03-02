@@ -48,6 +48,15 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private final Map<String, String> keys = new HashMap<String, String>();
 
+    private static final String configStr =
+
+    "{"
+            + "\"http://localhost:8080/nuxeo/site/gadgets/confluencefeed/confluencefeed.xml\" : {"
+            + "\"\" : {"
+            + "\"consumer_key\" : \"nuxeo-opensocial\","
+            + "\"consumer_secret\" : \"-----BEGIN PRIVATE KEY----- MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAM7wu+HCQuBfVyPM TgA9SZh8jcqY5ZF51N2GuwWcLLfhB7/wdj3iE8d564raH52FU2onnoOqry6u/A1t DzKy1riK7g6p3pubP0x9oAaPnkDCVUAPimAvGuZSWBSr3ryDP5GHgI/VYAOiXASM TISq5qxpmat54trYQJFN3iSh0spZAgMBAAECgYBzg8/s8opwQugalIYJ/iwh0Y04 xWaIcVCQpA+rzwTrU9MGoozueE+ALx97b8zsGit4+0qxxsppLcaHHBS6wTe35ML8 OggORPf0xEQAZpYRZeMX91sDNNVVooGTAOh5htH5E9eRqbvlsALO8/Ket8+virvk o6wcGo05Z9yjyT8ssQJBAO3izTwkXC+raqgV4TP7jchesgKTDvScBiZEtVqFston 9U5A5M3eEbHOBgMVKji3BPyGCTFftC2LZl7VfzQWqi0CQQDesrLc1FONfMNpyEgX QcQSg9Au/xhLq+AKUupozRCin25VXH0Jqn6KMdANKZdLt2wuDTUUL0Nd+06Le6Lj pdhdAkEAx5ADwpdyKp9wG1A3m8dFWzlttlEuM7CMTCBJz4Xn07G/zYUNLVNFntcK Hh3sTKXk7f93yM7TtX2DRL1wN/9nhQJBAMnOjDF7o7+aqQbqPRH+Qe05T+XWuzCP r3YLj2qrMgD8kyJ9rr2cqBEZdN0IrJcrv7e3tjr1XYoEGzhhMMo01u0CQQC7Kky2 +IQgLJ2EwBNzqAgH9UglOwwPKp4sYGnr63Po660N8BvJKBPErFx8fHE6isxyrAAp CtChzksnyjXXLZUO -----END PRIVATE KEY-----\","
+            + "\"key_type\" : \"RSA_PRIVATE\"" + "}" + "}" + "}";
+
     public Injector getInjector() {
         return injector;
     }
@@ -115,6 +124,10 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     public ProxySelector getProxySelector() {
         return new SimpleProxySelector();
+    }
+
+    public String getOAuthServiceConfig() {
+        return (configStr);
     }
 
 }

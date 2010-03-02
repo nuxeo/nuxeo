@@ -132,9 +132,10 @@ public class SiteUtils {
      */
     public static StringBuilder getWebContainersPath() {
         WebContext context = WebEngine.getActiveContext();
-        StringBuilder initialPath = new StringBuilder(context.getBasePath()).append(context.getUriInfo().getMatchedURIs().get(
-                context.getUriInfo().getMatchedURIs().size() - 1));
-        return initialPath;
+//        StringBuilder initialPath = new StringBuilder(context.getBasePath()).append(context.getUriInfo().getMatchedURIs().get(
+//                context.getUriInfo().getMatchedURIs().size() - 1));
+//        return initialPath;
+        return new StringBuilder(context.getRoot().getPath());
     }
 
     /**

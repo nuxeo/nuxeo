@@ -6,7 +6,12 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:s="http://jboss.com/products/seam/taglib">
+
+<c:if test="false">
+unused template, here for compat
+</c:if>
 
 <a4j:region rendered="#{documents != null}">
 
@@ -85,7 +90,7 @@
           </nxd:restDocumentLink>
           <!-- Open in a new window -->
           <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
-            <img src="img/external.gif" style="vertical-align:middle"
+            <img src="icons/external.gif" style="vertical-align:middle"
               alt="#{messages['permalink.newTab']}"
               title="#{messages['permalink.newTab']}"/>
           </nxd:restDocumentLink>
