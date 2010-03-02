@@ -144,7 +144,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
     }
 
     @SuppressWarnings({"ObjectEquality"})
-    public Object invoke(Object proxy, Method method, Object[] args)
+    public synchronized Object invoke(Object proxy, Method method, Object[] args)
     throws Throwable {
         try {
 //            MethodInvoker invoker = invokers.get(method);
