@@ -582,13 +582,9 @@
       <rule grant="true">
         <permission>AddChildren</permission>
         <facet>Folderish</facet>
-      </rule>
-      <!-- sub content creation is handled differently from these docs -->
-      <rule grant="false">
-        <type>Root</type>
-        <type>Domain</type>
-        <type>WorkspaceRoot</type>
-        <type>SectionRoot</type>
+        <type>Workspace</type>
+        <type>Template</type>
+        <type>Folder</type>
       </rule>
     </filter>
 
@@ -596,15 +592,9 @@
       <rule grant="true">
         <permission>AddChildren</permission>
         <facet>Folderish</facet>
-      </rule>
-      <!-- sub content creation is handled differently from these docs -->
-      <rule grant="false">
-        <type>Root</type>
-        <type>Domain</type>
-        <type>WorkspaceRoot</type>
-        <type>SectionRoot</type>
-        <type>TemplateRoot</type>
-        <type>Section</type>
+        <type>Workspace</type>
+        <type>Template</type>
+        <type>Folder</type>
       </rule>
     </filter>
 
