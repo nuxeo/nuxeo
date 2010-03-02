@@ -19,7 +19,6 @@
 
 package org.nuxeo.apidoc.browse;
 
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
@@ -30,7 +29,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
@@ -39,7 +37,6 @@ import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -94,11 +91,27 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
         ds.updateDocumentationItem(ctx.getCoreSession(), docItem);
-
-        String targetUrl = computeUrl("/updateDocumentation");
-        return Response.seeOther(new URI(targetUrl)).build();
+        return redirect(getDocUrl());
+        //return Response.seeOther(new URI(targetUrl)).build();
     }
 
+    protected String getDocUrl() {
+        String path = getPath()+"/doc";
+//        //TODO encode path segments if needed
+//        try {
+//            StringBuilder buf = new StringBuilder(); 
+//            org.nuxeo.common.utils.Path p = new org.nuxeo.common.utils.Path(path);
+//            for (int i=0,len=p.segmentCount(); i<len; i++) {
+//                buf.append("/").append(URLEncoder.encode(p.segment(i), "ISO-8859-1"));
+//            }
+//            path = buf.toString();
+//        } catch (Exception e) {
+//            throw WebException.wrap(e);
+//        }
+        return path;
+    }
+    
+    @Deprecated 
     protected String computeUrl(String suffix) throws Exception {
         String targetUrl = ctx.getUrlPath();
         targetUrl = URLDecoder.decode(targetUrl, "ISO-8859-1");
@@ -118,8 +131,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
         ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(), docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
 
-        String targetUrl = computeUrl("/createDocumentation");
-        return Response.seeOther(new URI(targetUrl)).build();
+        return redirect(getDocUrl());
     }
 
     @GET

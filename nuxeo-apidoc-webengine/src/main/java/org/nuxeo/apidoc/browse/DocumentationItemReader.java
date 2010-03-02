@@ -1,14 +1,13 @@
 package org.nuxeo.apidoc.browse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URLDecoder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -25,6 +24,8 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
 
     protected static final Log log = LogFactory.getLog(DocumentationItemReader.class);
 
+    protected @Context HttpServletRequest request;
+    
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return DocumentationItemMediaType.equals(mediaType);
@@ -35,65 +36,25 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
-        InputStreamReader isr = new InputStreamReader(entityStream, "UTF-8");
-        BufferedReader br = new BufferedReader(isr);
-        StringBuffer sb = new StringBuffer();
-        int ch;
-        while ((ch = br.read()) > -1) {
-            sb.append((char) ch);
-        }
-        br.close();
-
-        String data = sb.toString();
-
-        String parts[] = data.split("&");
-
-
         SimpleDocumentationItem item = new SimpleDocumentationItem();
-        for (String part : parts) {
-
-            String[] subParts=part.split("=");
-
-            if (subParts.length==2) {
-
-                String dataStr = URLDecoder.decode(subParts[1], "utf-8");
-
-                if ("content".equals(subParts[0])) {
-                    item.content = dataStr;
-                }
-                else if ("id".equals(subParts[0])) {
-                    item.id = dataStr;
-                }
-                else if ("renderingType".equals(subParts[0])) {
-                    item.renderingType = dataStr;
-                }
-                else if ("target".equals(subParts[0])) {
-                    item.target = dataStr;
-                }
-                else if ("targetType".equals(subParts[0])) {
-                    item.targetType = dataStr;
-                }
-                else if ("title".equals(subParts[0])) {
-                    item.title = dataStr;
-                }
-                else if ("type".equals(subParts[0])) {
-                    item.type = dataStr;
-                }
-                else if ("uuid".equals(subParts[0])) {
-                    item.uuid = dataStr;
-                }
-                else if ("approved".equals(subParts[0])) {
-                    if ("on".equals(dataStr)) {
-                        item.approved = true;
-                    }
-                }
-                else if ("versions".equals(subParts[0])) {
-                    item.applicableVersion.add(dataStr);
-                }
-            }
+        item.content = request.getParameter("content");
+        item.id = request.getParameter("id");
+        item.renderingType = request.getParameter("renderingType");
+        item.target = request.getParameter("target");
+        item.targetType = request.getParameter("targetType");
+        item.title = request.getParameter("title");
+        item.type = request.getParameter("type");
+        item.uuid = request.getParameter("uuid");
+        String v = request.getParameter("approved");
+        if ("on".equals(v)) { //TODO better to use "true" or "false" and use Boolean.parseBoolean(v) to decode it
+            item.approved = true;
         }
-
-        log.debug("POST data = " + data);
+        String[] ar = request.getParameterValues("versions");
+        if (ar != null) {
+            for (int i=0; i<ar.length; i++) {
+                item.applicableVersion.add(ar[i]);
+            }
+        }        
 
         return item;
     }
