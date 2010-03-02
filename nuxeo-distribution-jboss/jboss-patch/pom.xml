@@ -215,14 +215,14 @@
                   <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
                 <!-- warning : this requires web access to validate DTD ... -->
-                <transformationSet>
+                <!-- transformationSet>
                    <validating>false</validating>
                    <dir>${jboss.server}</dir>
                    <includes>
                       <include>deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml</include>
                    </includes>
                    <stylesheet>src/main/xsl/root-web.xsl</stylesheet>
-                 </transformationSet>               
+                 </transformationSet -->               
               </transformationSets>
             </configuration>
           </execution>
