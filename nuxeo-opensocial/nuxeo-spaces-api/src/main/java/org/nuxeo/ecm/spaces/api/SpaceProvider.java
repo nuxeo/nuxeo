@@ -9,7 +9,7 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 
 public interface SpaceProvider {
 
-    public void initialize(Map<String,String> params) throws Exception;
+    public void initialize(Map<String, String> params) throws Exception;
 
     Space getSpace(String spaceName, CoreSession session) throws SpaceException;
 
@@ -17,9 +17,10 @@ public interface SpaceProvider {
 
     void add(Space o, CoreSession session) throws SpaceException;
 
-    void addAll(Collection<? extends Space> c, CoreSession session) throws SpaceException;
+    void addAll(Collection<? extends Space> c, CoreSession session)
+            throws SpaceException;
 
-    void clear( CoreSession session) throws SpaceException;
+    void clear(CoreSession session) throws SpaceException;
 
     boolean isEmpty(CoreSession session) throws SpaceException;
 

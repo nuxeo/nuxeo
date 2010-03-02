@@ -4,17 +4,14 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
-
 @XObject("factory")
 public class SpaceFactoryDescriptor {
 
     @XNode("@type")
-    private
-    String type;
+    private String type;
 
     @XNode("@class")
-    private
-    Class<? extends DocumentAdapterFactory> klass;
+    private Class<? extends DocumentAdapterFactory> klass;
 
     public String getType() {
         return type;
@@ -23,6 +20,5 @@ public class SpaceFactoryDescriptor {
     public Class<? extends DocumentAdapterFactory> getKlass() {
         return klass;
     }
-
 
 }

@@ -29,69 +29,74 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class Container implements IsSerializable {
 
-  private static final long serialVersionUID = 1L;
-  private List<GadgetBean> gadgets;
-  private List<String> permissions;
-  private String layout;
-  private String spaceId;
-  private int structure;
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Default construcor (Specification of Gwt)
-   */
-  public Container() {
+    private List<GadgetBean> gadgets;
 
-  }
+    private List<String> permissions;
 
-  /**
-   * Constructor for create Container instance with all important parameter
-   * 
-   * @param gadgets
-   * @param structure
-   * @param permissions
-   */
-  public Container(List<GadgetBean> gadgets, int structure, String layout,
-      List<String> permissions, String spaceId) {
-    this.gadgets = gadgets;
-    this.layout = layout;
-    this.structure = structure;
-    this.permissions = permissions;
-    this.spaceId = spaceId;
-  }
+    private String layout;
 
-  public List<GadgetBean> getGadgets() {
-    return this.gadgets;
-  }
+    private String spaceId;
 
-  public String getSpaceId() {
-    return spaceId;
-  }
+    private int structure;
 
-  public String getLayout() {
-    return layout;
-  }
+    /**
+     * Default construcor (Specification of Gwt)
+     */
+    public Container() {
 
-  public int getStructure() {
-    return structure;
-  }
-
-  public void setLayout(String layout) {
-    this.layout = layout;
-  }
-
-  public void setStructure(int structure) {
-    this.structure = structure;
-  }
-
-  public List<String> getPermission() {
-    return permissions;
-  }
-
-  public GadgetBean getGadgetBean(String ref) {
-    for (GadgetBean bean : gadgets) {
-      if (ref.equals(bean.getRef()))
-        return bean;
     }
-    return null;
-  }
+
+    /**
+     * Constructor for create Container instance with all important parameter
+     * 
+     * @param gadgets
+     * @param structure
+     * @param permissions
+     */
+    public Container(List<GadgetBean> gadgets, int structure, String layout,
+            List<String> permissions, String spaceId) {
+        this.gadgets = gadgets;
+        this.layout = layout;
+        this.structure = structure;
+        this.permissions = permissions;
+        this.spaceId = spaceId;
+    }
+
+    public List<GadgetBean> getGadgets() {
+        return this.gadgets;
+    }
+
+    public String getSpaceId() {
+        return spaceId;
+    }
+
+    public String getLayout() {
+        return layout;
+    }
+
+    public int getStructure() {
+        return structure;
+    }
+
+    public void setLayout(String layout) {
+        this.layout = layout;
+    }
+
+    public void setStructure(int structure) {
+        this.structure = structure;
+    }
+
+    public List<String> getPermission() {
+        return permissions;
+    }
+
+    public GadgetBean getGadgetBean(String ref) {
+        for (GadgetBean bean : gadgets) {
+            if (ref.equals(bean.getRef()))
+                return bean;
+        }
+        return null;
+    }
 }

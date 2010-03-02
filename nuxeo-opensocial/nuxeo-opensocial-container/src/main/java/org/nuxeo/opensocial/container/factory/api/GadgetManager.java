@@ -27,14 +27,14 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
  */
 public interface GadgetManager {
 
-  void removeGadget(GadgetBean gadget, Map<String, String> gwtParams)
-      throws ClientException;
+    void removeGadget(GadgetBean gadget, Map<String, String> gwtParams)
+            throws ClientException;
 
-  GadgetBean savePreferences(GadgetBean gadget,
-      Map<String, String> updatePrefs, Map<String, String> gwtParams)
-      throws Exception;
+    GadgetBean savePreferences(GadgetBean gadget,
+            Map<String, String> updatePrefs, Map<String, String> gwtParams)
+            throws Exception;
 
-  GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
-      throws ClientException;
+    GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
+            throws ClientException;
 
 }

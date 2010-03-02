@@ -28,54 +28,60 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class PreferencesBean implements IsSerializable {
 
-  private String dataType;
-  private String defaultValue;
-  private String displayName;
-  private List<ValuePair> enumValues;
-  private String name;
-  private String value;
+    private String dataType;
 
-  /**
-   * Default construcor (Specification of Gwt)
-   */
-  public PreferencesBean() {
-  }
+    private String defaultValue;
 
-  public PreferencesBean(String dataType, String defaultValue,
-      String displayName, List<ValuePair> enumValues, String name, String value) {
-    this.dataType = dataType;
-    this.defaultValue = defaultValue;
-    this.displayName = displayName;
-    this.enumValues = enumValues;
-    this.name = name;
-    this.value = value;
-  }
+    private String displayName;
 
-  public String getDataType() {
-    return this.dataType;
-  }
+    private List<ValuePair> enumValues;
 
-  public String getDefaultValue() {
-    return this.defaultValue;
-  }
+    private String name;
 
-  public String getDisplayName() {
-    return this.displayName;
-  }
+    private String value;
 
-  public List<ValuePair> getEnumValues() {
-    return this.enumValues;
-  }
+    /**
+     * Default construcor (Specification of Gwt)
+     */
+    public PreferencesBean() {
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public PreferencesBean(String dataType, String defaultValue,
+            String displayName, List<ValuePair> enumValues, String name,
+            String value) {
+        this.dataType = dataType;
+        this.defaultValue = defaultValue;
+        this.displayName = displayName;
+        this.enumValues = enumValues;
+        this.name = name;
+        this.value = value;
+    }
 
-  public String getValue() {
-    return this.value;
-  }
+    public String getDataType() {
+        return this.dataType;
+    }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public List<ValuePair> getEnumValues() {
+        return this.enumValues;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

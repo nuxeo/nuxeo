@@ -23,18 +23,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("factoryConfig")
 public class FactoryConfig {
 
-  @XNode("gadget")
-  private String gadgetFactory;
+    @XNode("gadget")
+    private String gadgetFactory;
 
-  @XNode("container")
-  private String containerFactory;
+    @XNode("container")
+    private String containerFactory;
 
-  public String getContainerFactory() {
-    return containerFactory;
-  }
+    public String getContainerFactory() {
+        return containerFactory;
+    }
 
-  public String getGadgetFactory() {
-    return gadgetFactory;
-  }
+    public String getGadgetFactory() {
+        return gadgetFactory;
+    }
 
 }

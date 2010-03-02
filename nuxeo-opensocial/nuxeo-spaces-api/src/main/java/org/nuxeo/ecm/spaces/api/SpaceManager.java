@@ -25,72 +25,79 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 
 /**
- * Framework service for CRUD operations concerning Univers, Space in a
- * specific univers, and Gadget in a specific space
- *
+ * Framework service for CRUD operations concerning Univers, Space in a specific
+ * univers, and Gadget in a specific space
+ * 
  * @author 10044893
- *
+ * 
  */
 public interface SpaceManager {
 
-  /**
-   * List of all accesible universes
-   * @param sessionId  sesssion id
-   * @return the list of all accessible universes
-   * @throws SpaceException a bug has happened
-   */
-   List<Univers> getUniversList(CoreSession session) throws SpaceException;
+    /**
+     * List of all accesible universes
+     * 
+     * @param sessionId sesssion id
+     * @return the list of all accessible universes
+     * @throws SpaceException a bug has happened
+     */
+    List<Univers> getUniversList(CoreSession session) throws SpaceException;
 
-  /**
-   * Retrieve a specific universe  from its name
-   * @param name identifier of a univers
-   * @param sessionId sesssion id
-   * @return a specific universe
-   * @throws UniversNotFoundException when no universe with such a name can be found
-   * @throws SpaceException when a bug has happened
-   */
-   Univers getUnivers(String name, CoreSession session)
-    throws UniversNotFoundException,SpaceException;
+    /**
+     * Retrieve a specific universe from its name
+     * 
+     * @param name identifier of a univers
+     * @param sessionId sesssion id
+     * @return a specific universe
+     * @throws UniversNotFoundException when no universe with such a name can be
+     *             found
+     * @throws SpaceException when a bug has happened
+     */
+    Univers getUnivers(String name, CoreSession session)
+            throws UniversNotFoundException, SpaceException;
 
-  /**
-   *
-   * @param universId
-   * @return
-   * @throws UniversNotFoundException
-   * @throws SpaceException
-   */
-   Univers getUniversFromId(String universId, CoreSession session)
-    throws SpaceException;
+    /**
+     * 
+     * @param universId
+     * @return
+     * @throws UniversNotFoundException
+     * @throws SpaceException
+     */
+    Univers getUniversFromId(String universId, CoreSession session)
+            throws SpaceException;
 
-   List<SpaceProvider> getSpacesProvider(Univers univers);
+    List<SpaceProvider> getSpacesProvider(Univers univers);
 
-  /**
-   * List of all accesible spaces for a given univers
-   * @param univers the univers in which you are looking for spaces
-   * @return all accessible univers
-   * @throws UniversNotFoundException when no univers was found with the given universe id
-   * @throws SpaceException when a bug has happened
-   */
-   List<Space> getSpacesForUnivers(Univers universe, CoreSession session)
-      throws UniversNotFoundException,SpaceException;
+    /**
+     * List of all accesible spaces for a given univers
+     * 
+     * @param univers the univers in which you are looking for spaces
+     * @return all accessible univers
+     * @throws UniversNotFoundException when no univers was found with the given
+     *             universe id
+     * @throws SpaceException when a bug has happened
+     */
+    List<Space> getSpacesForUnivers(Univers universe, CoreSession session)
+            throws UniversNotFoundException, SpaceException;
 
-  /**
-   * Retrieve a specific space  from its name and its parent universe
-   * @param name name of the searched space
-   * @param univers parent container
-   * @return the space if found , else a spaceexception is thrown
-   * @throws SpaceNotFoundException when the space was not found
-   */
-   Space getSpace(String name, SpaceProvider provider, CoreSession session)
-      throws SpaceException;
+    /**
+     * Retrieve a specific space from its name and its parent universe
+     * 
+     * @param name name of the searched space
+     * @param univers parent container
+     * @return the space if found , else a spaceexception is thrown
+     * @throws SpaceNotFoundException when the space was not found
+     */
+    Space getSpace(String name, SpaceProvider provider, CoreSession session)
+            throws SpaceException;
 
-   Space getSpace(String name, Univers univers, CoreSession session) throws SpaceException;
+    Space getSpace(String name, Univers univers, CoreSession session)
+            throws SpaceException;
 
-   Space getSpaceFromId(String spaceId, CoreSession session) throws SpaceException;
+    Space getSpaceFromId(String spaceId, CoreSession session)
+            throws SpaceException;
 
-   List<SpaceProvider> getSpacesProviders();
+    List<SpaceProvider> getSpacesProviders();
 
-   String getProviderName(SpaceProvider provider);
-
+    String getProviderName(SpaceProvider provider);
 
 }

@@ -31,36 +31,36 @@ import com.gwtext.client.widgets.event.PanelListenerAdapter;
  */
 public class PortletListener extends PanelListenerAdapter {
 
-  private GadgetPortlet portlet;
+    private GadgetPortlet portlet;
 
-  public PortletListener(GadgetPortlet portlet) {
-    this.portlet = portlet;
-  }
-
-  @Override
-  public boolean doBeforeCollapse(Panel panel, boolean animate) {
-    GadgetBean gadget = portlet.getGadgetBean();
-    if (gadget.isCollapsed()) {
-      portlet.unCollapseGadget();
-    } else {
-      portlet.collapseGadget();
+    public PortletListener(GadgetPortlet portlet) {
+        this.portlet = portlet;
     }
-    saveCollapsed(gadget.isCollapsed());
-    return false;
-  }
 
-  private void saveCollapsed(boolean collapsed) {
-    GadgetBean gadget = portlet.getGadgetBean();
-    gadget.setCollapsed(collapsed);
-    ContainerEntryPoint.getService()
-        .saveGadget(gadget, ContainerEntryPoint.getGwtParams(),
-            new AsyncCallback<GadgetBean>() {
+    @Override
+    public boolean doBeforeCollapse(Panel panel, boolean animate) {
+        GadgetBean gadget = portlet.getGadgetBean();
+        if (gadget.isCollapsed()) {
+            portlet.unCollapseGadget();
+        } else {
+            portlet.collapseGadget();
+        }
+        saveCollapsed(gadget.isCollapsed());
+        return false;
+    }
 
-              public void onFailure(Throwable arg0) {
-              }
+    private void saveCollapsed(boolean collapsed) {
+        GadgetBean gadget = portlet.getGadgetBean();
+        gadget.setCollapsed(collapsed);
+        ContainerEntryPoint.getService().saveGadget(gadget,
+                ContainerEntryPoint.getGwtParams(),
+                new AsyncCallback<GadgetBean>() {
 
-              public void onSuccess(GadgetBean arg0) {
-              }
-            });
-  }
+                    public void onFailure(Throwable arg0) {
+                    }
+
+                    public void onSuccess(GadgetBean arg0) {
+                    }
+                });
+    }
 }

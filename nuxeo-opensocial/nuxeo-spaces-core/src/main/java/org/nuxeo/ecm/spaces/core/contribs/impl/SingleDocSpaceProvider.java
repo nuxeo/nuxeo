@@ -17,7 +17,9 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 public class SingleDocSpaceProvider extends AbstractSpaceProvider {
 
     private static final String PARAM_PATH = "path";
+
     private String path;
+
     private String title;
 
     @Override

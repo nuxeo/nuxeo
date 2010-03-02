@@ -22,8 +22,8 @@ import org.nuxeo.runtime.api.Framework;
 @RunWith(JUnit4.class)
 public class DocSpaceTest extends SQLRepositoryTestCase {
 
-
     private SpaceManager service;
+
     private VirtualUnivers univers;
 
     @Before
@@ -34,9 +34,9 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
         service = Framework.getService(SpaceManager.class);
         session = openSessionAs("Administrator");
         univers = new VirtualUnivers("main");
-        deployContrib("org.nuxeo.ecm.spaces.core.test", "OSGI-INF/test1-spaces-contrib.xml");
+        deployContrib("org.nuxeo.ecm.spaces.core.test",
+                "OSGI-INF/test1-spaces-contrib.xml");
     }
-
 
     @Test
     public void iCanGetSpaceManager() throws Exception {
@@ -65,24 +65,27 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
         Space space = spaces.get(0);
         assertEquals(0, space.getGadgets().size());
-        Gadget gadget = space.createGadget(new URL("http://localhost:8080/gadgetDef.xml"));
+        Gadget gadget = space.createGadget(new URL(
+                "http://localhost:8080/gadgetDef.xml"));
         assertNotNull("gadget");
 
         List<Gadget> gadgets = space.getGadgets();
         assertEquals(1, gadgets.size());
         gadget = gadgets.get(0);
         assertEquals(null, gadget.getName());
-        assertEquals("http://localhost:8080/gadgetDef.xml", gadget.getDefinitionUrl().toString());
+        assertEquals("http://localhost:8080/gadgetDef.xml",
+                gadget.getDefinitionUrl().toString());
     }
 
     @Test
     public void iCanChangePrefs() throws Exception {
 
         Space space = service.getSpacesForUnivers(univers, session).get(0);
-        Gadget gadget = space.createGadget(new URL("http://localhost:8080/gadgetDef.xml"));
+        Gadget gadget = space.createGadget(new URL(
+                "http://localhost:8080/gadgetDef.xml"));
         assertNotNull("gadget");
 
-        Map<String,String> prefs = new HashMap<String,String>();
+        Map<String, String> prefs = new HashMap<String, String>();
         prefs.put("pref", "test");
         gadget.setPreferences(prefs);
         space.save(gadget);
@@ -94,9 +97,6 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
         assertEquals("test", gadget.getPref("pref"));
 
-
-
     }
-
 
 }

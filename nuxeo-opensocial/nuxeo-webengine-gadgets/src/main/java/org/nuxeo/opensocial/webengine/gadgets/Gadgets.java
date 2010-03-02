@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 @Path("/gadgets")
 public class Gadgets extends ModuleRoot {
 
-
     private final GadgetService gm;
 
     public Gadgets() throws Exception {
@@ -65,6 +64,5 @@ public class Gadgets extends ModuleRoot {
             return Response.ok(404).build();
         }
     }
-
 
 }
