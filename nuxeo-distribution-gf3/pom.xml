@@ -36,7 +36,7 @@
   </profiles>
   
   <properties>
-    <core.version>1.6.1-SNAPSHOT</core.version>
+    <nuxeo.core.version>1.6.1-SNAPSHOT</nuxeo.core.version>
     <gf3.version>3.0-b38</gf3.version>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
@@ -67,28 +67,28 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jca</artifactId>
-      <version>${core.version}</version>
+      <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector</artifactId>
-      <version>${core.version}</version>
+      <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
-      <version>${core.version}</version>
+      <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-ra</artifactId>
       <type>rar</type>
-      <version>${core.version}</version>
+      <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
-      <version>${core.version}</version>
+      <version>${nuxeo.core.version}</version>
     </dependency>
 
     <!-- stax needed by gf3 but only on java5 ... -->
