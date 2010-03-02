@@ -92,7 +92,7 @@
     <jackrabbit.jcr-commons.version>1.5.3</jackrabbit.jcr-commons.version>
     <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
     <jetty.mortbay.version>6.1H.7</jetty.mortbay.version>
-    <shindig.version>1.0-incubating</shindig.version>
+    <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.chemistry.version>0.5-SNAPSHOT</apache.chemistry.version>
     <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
@@ -1096,7 +1096,7 @@
       <dependency>
         <groupId>com.google.collections</groupId>
         <artifactId>google-collections</artifactId>
-        <version>0.8</version>
+        <version>1.0-rc2</version>
       </dependency>
 
       <dependency>
@@ -1191,7 +1191,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>1.4</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>com.hp.hpl.jena</groupId>
@@ -1211,12 +1211,12 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>3.4.4</version>
+        <version>3.8</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
-        <version>0.8</version>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>jdom</groupId>
@@ -1318,7 +1318,47 @@
       <dependency>
         <groupId>com.google.code.guice</groupId>
         <artifactId>guice</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.guice</groupId>
+        <artifactId>guice-jmx</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>caja</groupId>
+        <artifactId>caja</artifactId>
+        <version>RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20070829</version>
+      </dependency>
+      <dependency>
+        <groupId>de.odysseus.juel</groupId>
+        <artifactId>juel-api</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>de.odysseus.juel</groupId>
+        <artifactId>juel-impl</artifactId>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>aopalliance</groupId>
+        <artifactId>aopalliance</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sanselan</groupId>
+        <artifactId>sanselan</artifactId>
+        <version>0.97-incubator</version>
       </dependency>
       <dependency>
         <groupId>com.gwtext</groupId>
@@ -1341,9 +1381,9 @@
         <version>0.5.609</version>
       </dependency>
       <dependency>
-        <groupId>net.oauth</groupId>
-        <artifactId>oauth-core</artifactId>
-        <version>20090121</version>
+        <groupId>net.oauth.core</groupId>
+        <artifactId>oauth</artifactId>
+        <version>20090531</version>
       </dependency>
 
       <!--  Test Scope -->
