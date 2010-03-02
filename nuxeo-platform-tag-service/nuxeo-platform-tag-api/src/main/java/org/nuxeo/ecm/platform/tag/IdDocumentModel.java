@@ -283,6 +283,11 @@ public class IdDocumentModel implements DocumentModel {
         return false;
     }
 
+    public boolean isImmutable() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
     public boolean isVersion() {
         // TODO Auto-generated method stub
         return false;
