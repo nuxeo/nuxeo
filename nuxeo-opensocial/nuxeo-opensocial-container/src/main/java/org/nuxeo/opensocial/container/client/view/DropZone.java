@@ -163,9 +163,28 @@ public class DropZone extends PortalDropZone {
       });
     }-*/;
 
+    Timer t;
+
     @Override
     public String notifyOver(final DragSource source, final EventObject e,
             DragData data) {
+
+        if (t != null)
+            t.cancel();
+
+        t = new Timer() {
+            @Override
+            public void run() {
+                _notifyEnter(source, e);
+            }
+        };
+
+        t.schedule(60);
+
+        return "x-dd-drop-ok";
+    }
+
+    private void _notifyEnter(final DragSource source, final EventObject e) {
         int[] xy = e.getXY();
         PanelProxy proxy = new PanelProxy(source.getProxy()
                 .getJsObj());
@@ -226,7 +245,6 @@ public class DropZone extends PortalDropZone {
             proxy.moveProxy(lastPosC.getEl()
                     .getDOM(), null);
         }
-        return "x-dd-drop-ok";
     }
 
     @Override
