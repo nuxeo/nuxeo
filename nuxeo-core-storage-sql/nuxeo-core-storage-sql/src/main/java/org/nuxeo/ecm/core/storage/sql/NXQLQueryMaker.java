@@ -771,6 +771,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_MIXINTYPE.equals(name) || //
                     NXQL.ECM_UUID.equals(name) || //
                     NXQL.ECM_NAME.equals(name) || //
+                    NXQL.ECM_POS.equals(name) || //
                     NXQL.ECM_PARENTID.equals(name)) {
                 if (inOrderBy) {
                     orderKeys.add(name);
@@ -985,6 +986,9 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             if (NXQL.ECM_NAME.equals(name)) {
                 return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
+            }
+            if (NXQL.ECM_POS.equals(name)) {
+                return hierTable.getColumn(model.HIER_CHILD_POS_KEY);
             }
             if (NXQL.ECM_PARENTID.equals(name)) {
                 return hierTable.getColumn(model.HIER_PARENT_KEY);

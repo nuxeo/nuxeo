@@ -36,6 +36,8 @@ public class NXQL {
 
     public static final String ECM_NAME = "ecm:name";
 
+    public static final String ECM_POS = "ecm:pos";
+
     public static final String ECM_PARENTID = "ecm:parentId";
 
     public static final String ECM_MIXINTYPE = "ecm:mixinType";

@@ -463,6 +463,60 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals("/testfolder2", dml.get(1).getPathAsString());
     }
 
+    // this is disabled for JCR
+    public void testOrderByPos() throws Exception {
+        DocumentModelList dml;
+
+        DocumentModel ofolder = new DocumentModelImpl("/", "ofolder",
+                "OrderedFolder");
+        ofolder = session.createDocument(ofolder);
+        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1",
+                "File");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2",
+                "File");
+        file2 = session.createDocument(file2);
+        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3",
+                "File");
+        file3 = session.createDocument(file3);
+        session.save();
+
+        String sql = String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY ecm:pos",
+                ofolder.getId());
+        String sqldesc = sql + " DESC";
+
+        dml = session.query(sql);
+        assertEquals(3, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+        assertEquals(file2.getId(), dml.get(1).getId());
+        assertEquals(file3.getId(), dml.get(2).getId());
+
+        dml = session.query(sqldesc);
+        assertEquals(file3.getId(), dml.get(0).getId());
+        assertEquals(file2.getId(), dml.get(1).getId());
+        assertEquals(file1.getId(), dml.get(2).getId());
+
+        session.orderBefore(ofolder.getRef(), "testfile3", "testfile2");
+        session.save();
+
+        dml = session.query(sql);
+        assertEquals(file1.getId(), dml.get(0).getId());
+        assertEquals(file3.getId(), dml.get(1).getId());
+        assertEquals(file2.getId(), dml.get(2).getId());
+
+        dml = session.query(sqldesc);
+        assertEquals(file2.getId(), dml.get(0).getId());
+        assertEquals(file3.getId(), dml.get(1).getId());
+        assertEquals(file1.getId(), dml.get(2).getId());
+
+        // test ecm:pos as a field
+        sql = "SELECT * FROM Document WHERE ecm:pos = 1";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+        assertEquals(file3.getId(), dml.iterator().next().getId());
+    }
+
     public void testBatching() throws Exception {
         doBatching(true);
     }
