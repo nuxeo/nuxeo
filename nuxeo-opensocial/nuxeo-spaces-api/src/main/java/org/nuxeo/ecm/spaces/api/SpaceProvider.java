@@ -28,4 +28,12 @@ public interface SpaceProvider {
     long size(CoreSession session) throws SpaceException;
 
     boolean isReadOnly(CoreSession session);
+    
+    /**
+     * Gets {@link SpaceProvider}'s name.
+     * 
+     * @return provider name
+     * @throws SpaceException if space manager is not reachable
+     */
+    String getName() throws SpaceException;
 }
