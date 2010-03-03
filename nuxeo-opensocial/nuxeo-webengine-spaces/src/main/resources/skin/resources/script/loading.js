@@ -45,6 +45,14 @@ function loading_show() {//function called when the user clicks on a thickbox li
 
       imgPreloader.src = loading_pathToImage;
   }
+  
+  if($("#contentContainer").length>0){
+  	var pos = $("#contentContainer").position();
+  	var w = $("#contentContainer").width();
+  	$("#LOADING_overlay").css({"left":pos.left,"top":pos.top});
+  	$("#LOADING_overlay").width(w);
+  }
+  
 }
 
 function loading_remove() {

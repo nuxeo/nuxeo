@@ -70,7 +70,8 @@ public class DropZone extends PortalDropZone {
 
     public DropZone(ContainerPortal portal, DropTargetConfig config) {
         super(portal, config);
-        ScrollManager.register(portal.getBody().getDOM());
+        ScrollManager.register(portal.getBody()
+                .getDOM());
         DropZone.portal = portal;
         overrideDragDrop(GHOST_WIDTH, GHOST_HEIGHT, ZONE_CLASS);
     }
@@ -162,37 +163,18 @@ public class DropZone extends PortalDropZone {
       });
     }-*/;
 
-    Timer t = null;
-
     @Override
     public String notifyOver(final DragSource source, final EventObject e,
             DragData data) {
-        if (t != null) {
-            t.cancel();
-        }
-
-        t = new Timer() {
-
-            @Override
-            public void run() {
-                _notifyOver(source, e);
-                t = null;
-            }
-        };
-
-        t.schedule(60);
-
-        return "x-dd-drop-ok";
-    }
-
-    private void _notifyOver(DragSource source, EventObject e) {
         int[] xy = e.getXY();
-        PanelProxy proxy = new PanelProxy(source.getProxy().getJsObj());
+        PanelProxy proxy = new PanelProxy(source.getProxy()
+                .getJsObj());
 
         if (grid == null) {
             grid = getGrid();
         }
-        int cw = portal.getBody().getClientWidth();
+        int cw = portal.getBody()
+                .getClientWidth();
         if (lastCW == -1) {
             lastCW = cw;
         } else if (lastCW != cw) {
@@ -224,21 +206,27 @@ public class DropZone extends PortalDropZone {
 
         for (pos = 0; pos < items.length; pos++) {
             p = items[pos];
-            int height = p.getEl().getHeight();
-            if (height != 0 && (p.getEl().getY() + (height / 2)) > xy[1]) {
+            int height = p.getEl()
+                    .getHeight();
+            if (height != 0 && (p.getEl()
+                    .getY() + (height / 2)) > xy[1]) {
                 match = true;
                 break;
             }
         }
 
-        proxy.getProxy().setWidth("auto", false);
+        proxy.getProxy()
+                .setWidth("auto", false);
 
         if (p != null) {
-            proxy.moveProxy(p.getEl().getParentNode(),
-                    (match ? p.getEl().getDOM() : null));
+            proxy.moveProxy(p.getEl()
+                    .getParentNode(), (match ? p.getEl()
+                    .getDOM() : null));
         } else {
-            proxy.moveProxy(lastPosC.getEl().getDOM(), null);
+            proxy.moveProxy(lastPosC.getEl()
+                    .getDOM(), null);
         }
+        return "x-dd-drop-ok";
     }
 
     @Override
@@ -262,21 +250,25 @@ public class DropZone extends PortalDropZone {
         final GadgetPosition dropPosition = portal.getDropPosition();
         final GadgetBean bean = gp.getGadgetBean();
         if (dropPosition != null) {
-            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition().getPlaceID());
+            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
+                    .getPlaceID());
             PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
             saveDropZone(bean, dropPosition, dragCol, dropCol);
         }
 
         grid = null;
 
-        PanelProxy proxy = new PanelProxy(source.getProxy().getJsObj());
+        PanelProxy proxy = new PanelProxy(source.getProxy()
+                .getJsObj());
 
-        proxy.getProxy().remove();
+        proxy.getProxy()
+                .remove();
 
         if (lastPosC != null) {
             if (dropPosition != null) {
                 lastPosC.remove(gp.getId());
-                lastPosC.insert(bean.getGadgetPosition().getPosition(), gp);
+                lastPosC.insert(bean.getGadgetPosition()
+                        .getPosition(), gp);
             }
             lastPosC.doLayout();
             lastPosC = null;
@@ -299,7 +291,9 @@ public class DropZone extends PortalDropZone {
 
     private PosGrid[] getGrid() {
         Component[] items = portal.getItems();
-        if (portal.getContainer().getLayout().contains(DEFAULT))
+        if (portal.getContainer()
+                .getLayout()
+                .contains(DEFAULT))
             return getDefaultGrid(items);
         else
             return getComplexGrid(items);
@@ -330,29 +324,34 @@ public class DropZone extends PortalDropZone {
         bean.setPosition(dropPosition);
         ArrayList<GadgetBean> beans = getOrderingAndUpdatingBeans(dragCol, bean);
         beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
-        ContainerEntryPoint.getService().saveGadgetsCollection(beans,
-                ContainerEntryPoint.getGwtParams(),
-                new AsyncCallback<Boolean>() {
+        ContainerEntryPoint.getService()
+                .saveGadgetsCollection(beans,
+                        ContainerEntryPoint.getGwtParams(),
+                        new AsyncCallback<Boolean>() {
 
-                    public void onFailure(Throwable arg0) {
-                    }
+                            public void onFailure(Throwable arg0) {
+                            }
 
-                    public void onSuccess(Boolean arg0) {
-                    }
-                });
+                            public void onSuccess(Boolean arg0) {
+                            }
+                        });
     }
 
     private static ArrayList<GadgetBean> getOrderingAndUpdatingBeans(
             PortalColumn col, GadgetBean bean) {
         ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
-        NodeList<Node> childs = col.getElement().getChildNodes();
+        NodeList<Node> childs = col.getElement()
+                .getChildNodes();
         for (int i = 0; i < childs.getLength(); i++) {
             GadgetPortlet p = portal.getGadgetPortlet(Element.as(
-                    childs.getItem(i)).getId());
+                    childs.getItem(i))
+                    .getId());
             if (p != null) {
                 GadgetBean b = p.getGadgetBean();
-                if (!bean.getRef().equals(b.getRef())) {
-                    b.getGadgetPosition().setPosition(i);
+                if (!bean.getRef()
+                        .equals(b.getRef())) {
+                    b.getGadgetPosition()
+                            .setPosition(i);
                 }
                 gadgets.add(b);
             }
