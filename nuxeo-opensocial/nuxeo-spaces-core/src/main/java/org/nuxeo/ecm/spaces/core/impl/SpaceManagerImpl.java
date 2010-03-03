@@ -198,8 +198,9 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         List<SpaceProvider> result = new ArrayList<SpaceProvider>();
         for (SpaceContribDescriptor desc : spaceProvider) {
             try {
-                if(desc.matches(univers.getName()))
-                result.add(desc.getProvider());
+                if(desc.matches(univers.getName())) {
+                    result.add(desc.getProvider());
+                }
             } catch (Exception e) {
                 LOGGER.warn("Unable to instanciate " + desc.getName(), e);
             }
