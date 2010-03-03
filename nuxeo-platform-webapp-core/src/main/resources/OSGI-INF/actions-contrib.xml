@@ -583,7 +583,8 @@
         <permission>AddChildren</permission>
         <facet>Folderish</facet>
         <type>Workspace</type>
-        <type>Template</type>
+        <type>TemplateRoot</type>
+        <type>Section</type>
         <type>Folder</type>
       </rule>
     </filter>
@@ -593,7 +594,6 @@
         <permission>AddChildren</permission>
         <facet>Folderish</facet>
         <type>Workspace</type>
-        <type>Template</type>
         <type>Folder</type>
       </rule>
     </filter>
