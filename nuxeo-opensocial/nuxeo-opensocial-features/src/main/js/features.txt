@@ -32,8 +32,8 @@ nxfeatures/caja/feature.xml
 features/content-rewrite/feature.xml
 features/core.auth/feature.xml
 features/core.config/feature.xml
-features/core.io/feature.xml
-#nxfeatures/core.io/feature.xml
+#features/core.io/feature.xml
+nxfeatures/core.io/feature.xml
 features/core.json/feature.xml
 features/core.legacy/feature.xml
 features/core.log/feature.xml
