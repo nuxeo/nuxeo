@@ -69,5 +69,11 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
   boolean isEqualTo(Univers univers);
 
   List<Space> getSpaces(CoreSession session) throws SpaceException;
+  
+  /**
+   * @param session 
+   * @return list of {@link SpaceProvider}
+   */
+  List<SpaceProvider> getSpaceProviders(CoreSession session) throws SpaceException;
 
 }

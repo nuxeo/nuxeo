@@ -19,6 +19,15 @@ public abstract class AbstractUnivers implements Univers {
 
     }
 
+    public List<SpaceProvider> getSpaceProviders(CoreSession session) throws SpaceException {
+      SpaceManager sm;
+      try {
+          sm = Framework.getService(SpaceManager.class);
+      return sm.getSpacesProvider(this);
+      } catch (Exception e) {
+          throw new SpaceException("Unable to get space providers",e);
+      }
+    }
 
 
 }
