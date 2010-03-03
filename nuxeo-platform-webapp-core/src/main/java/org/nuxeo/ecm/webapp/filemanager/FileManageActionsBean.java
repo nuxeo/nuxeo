@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -81,6 +82,8 @@ public class FileManageActionsBean extends InputController implements
             .getLog(FileManageActionsBean.class);
 
     public static final String TRANSF_ERROR = "TRANSF_ERROR";
+
+    public static final String SECURITY_ERROR = "SECURITY_ERROR";
 
     public static final String MOVE_ERROR = "MOVE_ERROR";
 
@@ -180,11 +183,14 @@ public class FileManageActionsBean extends InputController implements
     }
 
     protected String getErrorMessage(String errorType, String errorInfo) {
-        // Rux INA-224 simple patch for the moment, until full i18n into
-        // Exceptions
+        return getErrorMessage(errorType, errorInfo,
+            "message.operation.fails.generic");
+    }
+
+    protected String getErrorMessage(String errorType, String errorInfo,
+            String errorLabel) {
         return String.format("%s |(%s)| %s", errorType, errorInfo,
-                resourcesAccessor.getMessages().get(
-                        "message.operation.fails.generic"));
+                resourcesAccessor.getMessages().get(errorLabel));
     }
 
     /**
@@ -234,15 +240,21 @@ public class FileManageActionsBean extends InputController implements
         try {
             createdDoc = getFileManagerService().createDocumentFromBlob(
                     documentManager, blob, path, true, fullName);
-        } catch (FileManagerPermissionException e) {
-            // security check failed
-            log.debug("No permissions creating " + fullName);
-            return getErrorMessage(TRANSF_ERROR, fullName);
-        } catch (Exception e) {
-            // log error stack trace for server side debugging while giving a
-            // generic and localized error message to the client
-            log.error("Error importing " + fullName, e);
-            return getErrorMessage(TRANSF_ERROR, fullName);
+        } catch (Throwable t) {
+            // Unwrap the Exception to get pertinent error message.
+            Throwable unwrappedException = DefaultNuxeoExceptionHandler.unwrapException(t);
+            if (unwrappedException.getMessage().contains(
+                    FileManagerPermissionException.class.getName())) {
+                // security check failed
+                log.debug("No permissions creating " + fullName);
+                return getErrorMessage(SECURITY_ERROR, fullName,
+                        "Error.Insuffisant.Rights");
+            } else {
+                // log error stack trace for server side debugging while giving
+                // a generic and localized error message to the client
+                log.error("Error importing " + fullName, t);
+                return getErrorMessage(TRANSF_ERROR, fullName);
+            }
         }
         if (createdDoc == null) {
             log.error("could not create the document " + fullName);
