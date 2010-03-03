@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -498,9 +499,9 @@ public class NuxeoConnection implements Connection, SPI {
         return NuxeoObject.construct(doc, this);
     }
 
-    public Collection<QName> getAllowableActions(ObjectId object) {
+    public Set<QName> getAllowableActions(ObjectId object) {
         // TODO
-        return Collections.emptyList();
+        return null;
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {

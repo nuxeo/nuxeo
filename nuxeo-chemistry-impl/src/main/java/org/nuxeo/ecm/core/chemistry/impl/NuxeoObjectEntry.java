@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -99,9 +100,8 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
         }
     }
 
-    public Map<QName, Boolean> getAllowableActions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public Set<QName> getAllowableActions() {
+        return null;
     }
 
     public Collection<ObjectEntry> getRelationships() {
