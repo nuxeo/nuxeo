@@ -6,6 +6,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
+import org.nuxeo.runtime.api.Framework;
 
 abstract public class AbstractSpaceProvider implements SpaceProvider {
 
@@ -16,8 +17,7 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
             throw new SpaceException("This SpaceProvider is read only");
     }
 
-    public void addAll(Collection<? extends Space> c, CoreSession session)
-            throws SpaceException {
+    public void addAll(Collection<? extends Space> c, CoreSession session) throws SpaceException {
         if (isReadOnly(session))
             throw new SpaceException("This SpaceProvider is read only");
 
@@ -55,11 +55,22 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
 
     }
 
-    public boolean remove(Space space, CoreSession session)
-            throws SpaceException {
-        if (isReadOnly(session))
-            throw new SpaceException("This SpaceProvider is read only");
+    public boolean remove(Space space, CoreSession session) throws SpaceException {
+        if(isReadOnly(session)) throw new SpaceException("This SpaceProvider is read only");
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.spaces.api.SpaceProvider#getName()
+     */
+    final public String getName() throws SpaceException {
+        SpaceManager sm;
+        try {
+            sm = Framework.getService(SpaceManager.class);
+        } catch (Exception e) {
+            throw new SpaceException("Unable to get Space Manager", e);
+        }
+        return sm.getProviderName(this);
     }
 
     public static String getColumnId(int n) {
