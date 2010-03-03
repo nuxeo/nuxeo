@@ -303,6 +303,7 @@ public class DialectOracle extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replaceAll(" +", " ");
+        query = query.replace("*", "%");
         List<String> pos = new LinkedList<String>();
         List<String> neg = new LinkedList<String>();
         for (String word : StringUtils.split(query, ' ', false)) {

@@ -78,6 +78,7 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectOracle(getDatabaseMetaData(),
                 new RepositoryDescriptor());
         check("foo", "foo");
+        check("foo%", "foo*");
         check("foo & bar", "foo    bar");
         check("foo ~ bar", "foo -bar");
         check("bar ~ foo", "-foo bar");
