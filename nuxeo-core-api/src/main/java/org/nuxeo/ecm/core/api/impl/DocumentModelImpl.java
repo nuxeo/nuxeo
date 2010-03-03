@@ -1278,17 +1278,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                         "Could not find registered schema with prefix: "
                                 + prefix);
             }
-            // workaround for a schema prefix bug -> XPATH lookups in
-            // DocumentPart must use prefixed
-            // names for schema with prefixes and non prefixed names for the
-            // rest o schemas.
-            // Until then we used the name as the prefix but we must remove it
-            // since it is not a valid prefix:
-            // NXP-1913
-            String[] segments = path.segments();
-            segments[0] = segments[0].substring(p + 1);
-            path = Path.createFromSegments(segments);
         }
+        // workaround for a schema prefix bug -> XPATH lookups in
+        // DocumentPart must use prefixed
+        // names for schema with prefixes and non prefixed names for the
+        // rest o schemas.
+        // Until then we used the name as the prefix but we must remove it
+        // since it is not a valid prefix:
+        // NXP-1913
+        String[] segments = path.segments();
+        segments[0] = segments[0].substring(p + 1);
+        path = Path.createFromSegments(segments);
 
         DocumentPart part = getPart(schema.getName());
         if (part == null) {

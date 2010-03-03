@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.test.propmodel.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="media" prefix="m" src="schemas/media.xsd" />
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="sameMedia" prefix="sameMedia" src="schemas/media.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Media" extends="Document">
+      <schema name="media" />
+    </doctype>
+    <doctype name="SameMedia" extends="Document">
+      <schema name="sameMedia" />
+    </doctype>
+  </extension>
+
+</component>
