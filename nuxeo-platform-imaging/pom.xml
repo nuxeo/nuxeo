@@ -19,7 +19,8 @@
     <module>nuxeo-platform-imaging-core</module>
     <module>nuxeo-platform-imaging-convert</module>
     <module>nuxeo-platform-imaging-facade</module>
-    <module>nuxeo-platform-imaging-web</module>
+    <module>nuxeo-platform-imaging-jsf</module>
+    <module>nuxeo-platform-imaging-dm</module>
     <module>nuxeo-platform-imaging-preview</module>
   </modules>
 
@@ -53,10 +54,15 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-imaging-web</artifactId>
+        <artifactId>nuxeo-platform-imaging-jsf</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      <!-- ImageJ --> 
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-dm</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <!-- ImageJ -->
       <dependency>
         <groupId>imagej</groupId>
         <artifactId>imagej</artifactId>

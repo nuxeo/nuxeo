@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
     "org.nuxeo.ecm.webengine.admin",
     "org.nuxeo.ecm.webengine.base",
     "org.nuxeo.ecm.webengine.core",
-    "org.nuxeo.ecm.webengine.resteasy.adapter",
     "org.nuxeo.ecm.webengine.ui",
     "org.nuxeo.ecm.webengine.gwt",
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",

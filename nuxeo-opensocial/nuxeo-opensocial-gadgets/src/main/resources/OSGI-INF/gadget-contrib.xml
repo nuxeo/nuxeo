@@ -64,5 +64,12 @@
       <icon>richtext_icon.png</icon>
     </internalGadget>
 
+    <internalGadget name="confluencefeed">
+      <mountPoint>/confluencefeed</mountPoint>
+      <entryPoint>confluencefeed.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>confluencefeed_icon.png</icon>
+    </internalGadget>
+
   </extension>
 </component>

@@ -13,12 +13,11 @@ import org.nuxeo.ecm.spaces.core.impl.docwrapper.VirtualUnivers;
 
 public class VirtualUniversProvider implements UniversProvider {
 
-
-    Map<String, Univers> universes = new HashMap<String,Univers>();
+    Map<String, Univers> universes = new HashMap<String, Univers>();
 
     public Univers getUnivers(String name, CoreSession session)
             throws ClientException {
-        if(universes.containsKey(name)) {
+        if (universes.containsKey(name)) {
             return universes.get(name);
         } else {
             throw new UniversNotFoundException();
@@ -26,18 +25,18 @@ public class VirtualUniversProvider implements UniversProvider {
     }
 
     public void initialize(Map<String, String> params) throws Exception {
-        if(!params.containsKey("names")) {
+        if (!params.containsKey("names")) {
             throw new Exception("Unable to initialize virtual universe");
         }
 
         String names = params.get("names");
-        if(names.indexOf("|") != -1){
-            for(String name : names.split("|")) {
+        if (names.indexOf("|") != -1) {
+            for (String name : names.split("|")) {
                 universes.put(name, new VirtualUnivers(name));
             }
-    } else {
-        universes.put(names, new VirtualUnivers(names));
-    }
+        } else {
+            universes.put(names, new VirtualUnivers(names));
+        }
     }
 
     public List<Univers> getAll(CoreSession session) throws ClientException {
@@ -45,6 +44,5 @@ public class VirtualUniversProvider implements UniversProvider {
         result.addAll(universes.values());
         return result;
     }
-
 
 }

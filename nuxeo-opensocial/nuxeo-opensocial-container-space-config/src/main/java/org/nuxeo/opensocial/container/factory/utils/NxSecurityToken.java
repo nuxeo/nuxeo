@@ -21,60 +21,76 @@ import org.apache.shindig.auth.SecurityToken;
 
 /**
  * Create Security Token
+ * 
  * @author 10044826
- *
+ * 
  */
 public class NxSecurityToken implements SecurityToken {
 
-  private String viewer;
-  private String owner;
+    private final String viewer;
 
-  public NxSecurityToken(String viewer, String owner) {
-    this.viewer = viewer;
-    this.owner = owner;
-  }
+    private final String owner;
 
-  public String getAppId() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    public NxSecurityToken(String viewer, String owner) {
+        this.viewer = viewer;
+        this.owner = owner;
+    }
 
-  public String getAppUrl() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    public String getAppId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  public String getDomain() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    public String getAppUrl() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  public long getModuleId() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+    public String getDomain() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  public String getOwnerId() {
-    return owner;
-  }
+    public long getModuleId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-  public String getTrustedJson() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    public String getOwnerId() {
+        return owner;
+    }
 
-  public String getUpdatedToken() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    public String getTrustedJson() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  public String getViewerId() {
-    return viewer;
-  }
+    public String getUpdatedToken() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-  public boolean isAnonymous() {
-    // TODO Auto-generated method stub
-    return false;
-  }
+    public String getViewerId() {
+        return viewer;
+    }
+
+    public boolean isAnonymous() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public String getActiveUrl() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getAuthenticationMode() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getContainer() {
+        return "default";
+    }
 
 }

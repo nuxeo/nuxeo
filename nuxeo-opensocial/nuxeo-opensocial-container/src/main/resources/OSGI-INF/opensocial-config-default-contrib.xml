@@ -2,13 +2,19 @@
 <component
   name="org.nuxeo.opensocial.container.config.defaultcontrib">
 
+  <require>
+  org.nuxeo.opensocial.container.config
+  </require>
 
   <extension target="org.nuxeo.opensocial.container.config"
     point="portalConfig">
     <portalConfig>
       <domain>localhost</domain>
       <containerName>default</containerName>
-      <key>fnQdpl5HYOFQsGNsSjPEDhQLAlZiZCu91RGLN93w7LU=</key>
+    <!--created with this command line on unix 
+    dd if=/dev/random bs=32 count=1  | openssl base64 > /tmp/key.txt
+    -->
+      <key>Wggivegg863gcsf6QHiPEIz4VjZZOwY6g5+kg/ktqTE=</key>
     </portalConfig>
   </extension>
 </component>

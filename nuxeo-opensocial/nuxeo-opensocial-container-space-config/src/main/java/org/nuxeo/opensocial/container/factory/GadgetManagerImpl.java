@@ -33,107 +33,109 @@ import org.nuxeo.runtime.api.Framework;
 
 public class GadgetManagerImpl implements GadgetManager {
 
-  private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
-  private static final Object NX_BASE_URL = "nxBaseUrl";
+    private static final Log log = LogFactory.getLog(GadgetManagerImpl.class);
 
-  protected SpaceManager spaceManager() throws Exception {
-    return Framework.getService(SpaceManager.class);
-  }
+    private static final Object NX_BASE_URL = "nxBaseUrl";
 
-  /**
-   * Remove gadget to container
-   *
-   * @param bean
-   *          : Gadget to delete
-   * @param gwtParams
-   *          : container paramters
-   */
-  public void removeGadget(GadgetBean bean, Map<String, String> gwtParams)
-      throws ClientException {
-    try {
-      String spaceId = getParamValue(ContainerManagerImpl.DOC_REF, gwtParams,
-          true, null);
-      Space space = spaceManager().getSpaceFromId(spaceId,
-          getCoreSession(gwtParams));
-      space.remove(GadgetFactory.getGadget(bean));
-      space.save();
-    } catch (Exception e) {
-      log.error(e);
-      throw new ClientException(e);
+    protected SpaceManager spaceManager() throws Exception {
+        return Framework.getService(SpaceManager.class);
     }
 
-  }
+    /**
+     * Remove gadget to container
+     * 
+     * @param bean : Gadget to delete
+     * @param gwtParams : container paramters
+     */
+    public void removeGadget(GadgetBean bean, Map<String, String> gwtParams)
+            throws ClientException {
+        try {
+            String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
+                    gwtParams, true, null);
+            Space space = spaceManager().getSpaceFromId(spaceId,
+                    getCoreSession(gwtParams));
+            space.remove(GadgetFactory.getGadget(bean));
+            space.save();
+        } catch (Exception e) {
+            log.error(e);
+            throw new ClientException(e);
+        }
 
-  protected CoreSession getCoreSession(Map<String, String> gwtParams)
-      throws Exception {
-    return CoreSessionHelper.getCoreSession(gwtParams.get(ContainerManagerImpl.REPO_NAME));
-  }
-
-  public GadgetBean saveGadget(GadgetBean bean, Map<String, String> gwtParams) {
-    try {
-      String spaceId = getParamValue(ContainerManagerImpl.DOC_REF, gwtParams,
-          true, null);
-      Space space = spaceManager().getSpaceFromId(spaceId,
-          getCoreSession(gwtParams));
-
-      space.save(GadgetFactory.getGadget(bean));
-
-    } catch (Exception e) {
-      log.error(e);
     }
-    return bean;
-  }
 
-  /**
-   * Save gadget preferences and update render url of gadget
-   *
-   */
-  public GadgetBean savePreferences(GadgetBean bean,
-      Map<String, String> updatePrefs, Map<String, String> gwtParams)
-      throws Exception {
-    try {
-      Space space = getCurrentSpace(gwtParams);
-      String serverBase = getServerBase(gwtParams);
-      Gadget gadget = GadgetFactory.getGadget(bean);
-      if (updatePrefs != null)
-        gadget.setPreferences(updatePrefs);
-      space.save(gadget);
-      return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
-          ContainerManagerImpl.getPermissions(space),
-          ContainerManagerImpl.getLocale(gwtParams), serverBase);
-    } catch (Exception e) {
-      log.error("GadgetManagerImpl - savePreferences : " + e.fillInStackTrace());
+    protected CoreSession getCoreSession(Map<String, String> gwtParams)
+            throws Exception {
+        return CoreSessionHelper.getCoreSession(gwtParams.get(ContainerManagerImpl.REPO_NAME));
     }
-    return bean;
 
-  }
+    public GadgetBean saveGadget(GadgetBean bean, Map<String, String> gwtParams) {
+        try {
+            String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
+                    gwtParams, true, null);
+            Space space = spaceManager().getSpaceFromId(spaceId,
+                    getCoreSession(gwtParams));
 
-  private String getServerBase(Map<String, String> gwtParams) {
-    return gwtParams.get(NX_BASE_URL);
-  }
+            space.save(GadgetFactory.getGadget(bean));
 
-  private Space getCurrentSpace(Map<String, String> gwtParams) throws Exception {
-    CoreSession session = getCoreSession(gwtParams);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return bean;
+    }
 
-    String spaceId = getParamValue(ContainerManagerImpl.DOC_REF, gwtParams,
-        true, null);
-    return spaceManager().getSpaceFromId(spaceId, session);
+    /**
+     * Save gadget preferences and update render url of gadget
+     * 
+     */
+    public GadgetBean savePreferences(GadgetBean bean,
+            Map<String, String> updatePrefs, Map<String, String> gwtParams)
+            throws Exception {
+        try {
+            Space space = getCurrentSpace(gwtParams);
+            String serverBase = getServerBase(gwtParams);
+            Gadget gadget = GadgetFactory.getGadget(bean);
+            if (updatePrefs != null)
+                gadget.setPreferences(updatePrefs);
+            space.save(gadget);
+            return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
+                    ContainerManagerImpl.getPermissions(space),
+                    ContainerManagerImpl.getLocale(gwtParams), serverBase);
+        } catch (Exception e) {
+            log.error("GadgetManagerImpl - savePreferences : "
+                    + e.fillInStackTrace());
+        }
+        return bean;
 
-  }
+    }
 
-  private String getParamValue(String key, Map<String, String> containerParams,
-      boolean required, String defaultValue) {
-    String value = containerParams.get(key);
-    String retour = null;
-    if (value == null) {
-      if (required)
-        throw new RuntimeException("Container param for key '" + key
-            + "' is required");
-      else
-        retour = defaultValue;
-    } else
-      retour = value;
-    return retour;
-  }
+    private String getServerBase(Map<String, String> gwtParams) {
+        return gwtParams.get(NX_BASE_URL);
+    }
+
+    private Space getCurrentSpace(Map<String, String> gwtParams)
+            throws Exception {
+        CoreSession session = getCoreSession(gwtParams);
+
+        String spaceId = getParamValue(ContainerManagerImpl.DOC_REF, gwtParams,
+                true, null);
+        return spaceManager().getSpaceFromId(spaceId, session);
+
+    }
+
+    private String getParamValue(String key,
+            Map<String, String> containerParams, boolean required,
+            String defaultValue) {
+        String value = containerParams.get(key);
+        String retour = null;
+        if (value == null) {
+            if (required)
+                throw new RuntimeException("Container param for key '" + key
+                        + "' is required");
+            else
+                retour = defaultValue;
+        } else
+            retour = value;
+        return retour;
+    }
 
 }

@@ -29,9 +29,8 @@ public class VirtualUnivers extends AbstractUnivers {
     }
 
     public boolean isEqualTo(Univers univers) {
-        return univers.getClass() == this.getClass() && univers.getName() == getName();
+        return univers.getClass() == this.getClass()
+                && univers.getName() == getName();
     }
-
-
 
 }

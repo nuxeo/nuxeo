@@ -28,11 +28,16 @@
       encoded inside of the POST body.
 -->
   <name>core.io</name>
-	<!-- core.io needs an explicit core dependency to ensure that the graph
-	    is resolved in the correct order.
-	-->
-  <dependency>core</dependency>
+  <dependency>core.auth</dependency>
+  <dependency>core.config</dependency>
+  <dependency>core.json</dependency>
+  <dependency>core.util</dependency>
   <gadget>
     <script src="io.js"/>
+    <script src="taming.js"/>
   </gadget>
+  <container>
+    <script src="io.js"/>
+    <script src="taming.js"/>
+  </container>
 </feature>

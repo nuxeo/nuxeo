@@ -24,37 +24,40 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class FactoryManagerImpl extends DefaultComponent implements
-    FactoryManager {
+        FactoryManager {
 
-  private static final String XP_CONFIG = "factoryConfig";
-  private GadgetManager gadgetManager;
-  private ContainerManager containerManager;
+    private static final String XP_CONFIG = "factoryConfig";
 
-  @Override
-  public void registerContribution(Object contribution, String extensionPoint,
-      ComponentInstance contributor) throws Exception {
-    if (XP_CONFIG.equals(extensionPoint)) {
-      FactoryConfig contrib = (FactoryConfig) contribution;
-      gadgetManager = (GadgetManager) Class.forName(contrib.getGadgetFactory())
-          .newInstance();
-      containerManager = (ContainerManager) Class.forName(
-          contrib.getContainerFactory())
-          .newInstance();
+    private GadgetManager gadgetManager;
+
+    private ContainerManager containerManager;
+
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (XP_CONFIG.equals(extensionPoint)) {
+            FactoryConfig contrib = (FactoryConfig) contribution;
+            gadgetManager = (GadgetManager) Class.forName(
+                    contrib.getGadgetFactory()).newInstance();
+            containerManager = (ContainerManager) Class.forName(
+                    contrib.getContainerFactory()).newInstance();
+        }
     }
-  }
 
-  @Override
-  public void unregisterContribution(Object contribution,
-      String extensionPoint, ComponentInstance contributor) throws Exception {
-    super.unregisterContribution(contribution, extensionPoint, contributor);
-  }
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        super.unregisterContribution(contribution, extensionPoint, contributor);
+    }
 
-  public GadgetManager getGadgetFactory() {
-    return gadgetManager;
-  };
+    public GadgetManager getGadgetFactory() {
+        return gadgetManager;
+    };
 
-  public ContainerManager getContainerFactory() {
-    return containerManager;
-  };
+    public ContainerManager getContainerFactory() {
+        return containerManager;
+    };
 
 }

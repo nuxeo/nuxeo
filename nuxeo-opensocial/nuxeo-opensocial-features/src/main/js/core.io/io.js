@@ -17,6 +17,9 @@
  * under the License.
  */
 
+/*global ActiveXObject, DOMParser */
+/*global shindig */
+
 var gadgets = gadgets || {};
 
 /**
@@ -45,14 +48,16 @@ gadgets.io = function() {
    * Internal facility to create an xhr request.
    */
   function makeXhr() {
-    if (window.XMLHttpRequest) {
-      return new window.XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-      var x = new ActiveXObject("Msxml2.XMLHTTP");
+    var x;
+    if (window.ActiveXObject) {
+      x = new ActiveXObject("Msxml2.XMLHTTP");
       if (!x) {
         x = new ActiveXObject("Microsoft.XMLHTTP");
       }
       return x;
+    }
+    else if (window.XMLHttpRequest) {
+      return new window.XMLHttpRequest();
     }
   }
 
@@ -70,12 +75,23 @@ gadgets.io = function() {
     }
     try {
       if (xobj.status !== 200) {
-        // TODO Need to work on standardizing errors
-        callback({errors : ["Error " + xobj.status]});
+        var error = ("" + xobj.status);
+        if(xobj.responseText) {
+          error = error + " " + xobj.responseText;
+        }
+        callback({
+          errors : [error],
+          rc : xobj.status,
+          text : xobj.responseText
+          });
         return true;
       }
     } catch(e) {
-      callback({errors : ["Error not specified"]});
+      callback({
+         errors : [e.number + " Error not specified"],
+          rc : e.number,
+          text : e.description
+      });
       return true;
     }
     return false;
@@ -132,22 +148,34 @@ gadgets.io = function() {
   }
 
   function transformResponseData(params, data) {
+    // Sometimes rc is not present, generally when used
+    // by jsonrpccontainer, so assume 200 in its absence.
     var resp = {
      text: data.body,
-     rc: data.rc,
+     rc: data.rc || 200,
      headers: data.headers,
      oauthApprovalUrl: data.oauthApprovalUrl,
      oauthError: data.oauthError,
      oauthErrorText: data.oauthErrorText,
      errors: []
     };
-    if (resp.text) {
+
+    if (resp.rc < 200 || resp.rc >= 400){
+      resp.errors = [resp.rc + " Error"]
+    } else if (resp.text) {
+      if (resp.rc >= 300 && resp.rc < 400) {
+        // Redirect pages will usually contain arbitrary
+        // HTML which will fail during parsing, inadvertently
+        // causing a 500 response. Thus we treat as text.
+        params.CONTENT_TYPE = "TEXT";
+      }
       switch (params.CONTENT_TYPE) {
         case "JSON":
         case "FEED":
           resp.data = gadgets.json.parse(resp.text);
           if (!resp.data) {
-            resp.errors.push("failed to parse JSON");
+            resp.errors.push("500 Failed to parse JSON");
+            resp.rc = 500;
             resp.data = null;
           }
           break;
@@ -159,7 +187,8 @@ gadgets.io = function() {
             dom.validateOnParse = false;
             dom.resolveExternals = false;
             if (!dom.loadXML(resp.text)) {
-              resp.errors.push("failed to parse XML");
+              resp.errors.push("500 Failed to parse XML");
+              resp.rc = 500;
             } else {
               resp.data = dom;
             }
@@ -167,7 +196,8 @@ gadgets.io = function() {
             var parser = new DOMParser();
             dom = parser.parseFromString(resp.text, "text/xml");
             if ("parsererror" === dom.documentElement.nodeName) {
-              resp.errors.push("failed to parse XML");
+              resp.errors.push("500 Failed to parse XML");
+              resp.rc = 500;
             } else {
               resp.data = dom;
             }
@@ -196,12 +226,16 @@ gadgets.io = function() {
       params, processResponseFunction, opt_contentType) {
     var xhr = makeXhr();
 
+    if (proxyUrl.indexOf('//') == 0) {
+      proxyUrl = document.location.protocol + proxyUrl;
+    }
+
     xhr.open(method, proxyUrl, true);
     if (callback) {
       xhr.onreadystatechange = gadgets.util.makeClosure(
           null, processResponseFunction, realUrl, callback, params, xhr);
     }
-    if (paramData != null) {
+    if (paramData !== null) {
       xhr.setRequestHeader('Content-Type', opt_contentType || 'application/x-www-form-urlencoded');
       xhr.send(paramData);
     } else {
@@ -223,28 +257,32 @@ gadgets.io = function() {
    *         false otherwise
    */
   function respondWithPreload(postData, params, callback) {
-    if (gadgets.io.preloaded_ && gadgets.io.preloaded_[postData.url]) {
-      var preload = gadgets.io.preloaded_[postData.url];
-      if (postData.httpMethod == "GET") {
-        delete gadgets.io.preloaded_[postData.url];
-        if (preload.rc !== 200) {
-          callback({errors : ["Error " + preload.rc]});
-        } else {
-          if (preload.oauthState) {
-            oauthState = preload.oauthState;
+    if (gadgets.io.preloaded_ && postData.httpMethod === "GET") {
+      for (var i = 0; i < gadgets.io.preloaded_.length; i++) {
+        var preload = gadgets.io.preloaded_[i];
+        if (preload && (preload.id === postData.url)) {
+          // Only satisfy once
+          delete gadgets.io.preloaded_[i];
+
+          if (preload.rc !== 200) {
+            callback({rc: preload.rc, errors : [preload.rc + " Error"]});
+          } else {
+            if (preload.oauthState) {
+              oauthState = preload.oauthState;
+            }
+            var resp = {
+              body: preload.body,
+              rc: preload.rc,
+              headers: preload.headers,
+              oauthApprovalUrl: preload.oauthApprovalUrl,
+              oauthError: preload.oauthError,
+              oauthErrorText: preload.oauthErrorText,
+              errors: []
+            };
+            callback(transformResponseData(params, resp));
           }
-          var resp = {
-            body: preload.body,
-            rc: preload.rc,
-            headers: preload.headers,
-            oauthApprovalUrl: preload.oauthApprovalUrl,
-            oauthError: preload.oauthError,
-            oauthErrorText: preload.oauthErrorText,
-            errors: []
-          }
-          callback(transformResponseData(params, resp));
+          return true;
         }
-        return true;
       }
     }
     return false;
@@ -255,7 +293,7 @@ gadgets.io = function() {
    * @private
    */
   function init (configuration) {
-    config = configuration["core.io"];
+    config = configuration["core.io"] || {};
   }
 
   var requiredConfig = {
@@ -345,11 +383,17 @@ gadgets.io = function() {
 
       // OAuth goodies
       if (auth === "oauth" || auth === "signed") {
+        if (gadgets.io.oauthReceivedCallbackUrl_) {
+          paramData.OAUTH_RECEIVED_CALLBACK = gadgets.io.oauthReceivedCallbackUrl_;
+          gadgets.io.oauthReceivedCallbackUrl_ = null;
+        }
         paramData.oauthState = oauthState || "";
         // Just copy the OAuth parameters into the req to the server
-        for (opt in params) if (params.hasOwnProperty(opt)) {
-          if (opt.indexOf("OAUTH_") === 0) {
-            paramData[opt] = params[opt];
+        for (opt in params) {
+          if (params.hasOwnProperty(opt)) {
+            if (opt.indexOf("OAUTH_") === 0) {
+              paramData[opt] = params[opt];
+            }
           }
         }
       }
@@ -357,6 +401,7 @@ gadgets.io = function() {
       var proxyUrl = config.jsonProxyUrl.replace("%host%", document.location.host);
       // Nuxeo change: added %protocol%
       proxyUrl = proxyUrl.replace("%protocol%", document.location.protocol);
+
 
       if (!respondWithPreload(paramData, params, callback, processResponse)) {
         if (httpMethod === "GET" && refreshInterval > 0) {
@@ -410,15 +455,17 @@ gadgets.io = function() {
 
       var buf = [];
       var first = false;
-      for (var i in fields) if (fields.hasOwnProperty(i)) {
-        if (!first) {
-          first = true;
-        } else {
-          buf.push("&");
+      for (var i in fields) {
+        if (fields.hasOwnProperty(i)) {
+          if (!first) {
+            first = true;
+          } else {
+            buf.push("&");
+          }
+          buf.push(escape ? encodeURIComponent(i) : i);
+          buf.push("=");
+          buf.push(escape ? encodeURIComponent(fields[i]) : fields[i]);
         }
-        buf.push(escape ? encodeURIComponent(i) : i);
-        buf.push("=");
-        buf.push(escape ? encodeURIComponent(fields[i]) : fields[i]);
       }
       return buf.join("");
     },
@@ -445,12 +492,15 @@ gadgets.io = function() {
 
       var urlParams = gadgets.util.getUrlParameters();
 
+      var rewriteMimeParam =
+          params.rewriteMime ? "&rewriteMime=" + encodeURIComponent(params.rewriteMime) : "";
       return config.proxyUrl.replace("%url%", encodeURIComponent(url)).
           replace("%host%", document.location.host).
           replace("%rawurl%", url).
           replace("%refresh%", encodeURIComponent(refresh)).
           replace("%gadget%", encodeURIComponent(urlParams.url)).
-          replace("%container%", encodeURIComponent(urlParams.container || urlParams.synd));
+          replace("%container%", encodeURIComponent(urlParams.container || urlParams.synd)).
+          replace("%rewriteMime%", rewriteMimeParam);
     }
   };
 }();
@@ -468,7 +518,8 @@ gadgets.io.RequestParameters = gadgets.util.makeEnum([
   "OAUTH_USE_TOKEN",
   "OAUTH_TOKEN_NAME",
   "OAUTH_REQUEST_TOKEN",
-  "OAUTH_REQUEST_TOKEN_SECRET"
+  "OAUTH_REQUEST_TOKEN_SECRET",
+  "OAUTH_RECEIVED_CALLBACK"
 ]);
 
 gadgets.io.MethodType = gadgets.util.makeEnum([

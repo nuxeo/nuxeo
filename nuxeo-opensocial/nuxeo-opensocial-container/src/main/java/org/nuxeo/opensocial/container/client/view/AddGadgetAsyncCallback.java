@@ -31,18 +31,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
 
-  private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
+    private final static ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
 
-  public void onFailure(Throwable arg0) {
-    ContainerPortal.showErrorMessage(CONSTANTS.error(),
-        CONSTANTS.addGadgetError());
-  }
+    public void onFailure(Throwable arg0) {
+        ContainerPortal.showErrorMessage(CONSTANTS.error(),
+                CONSTANTS.addGadgetError());
+    }
 
-  public void onSuccess(GadgetBean bean) {
-    GadgetPortlet port = ContainerEntryPoint.getContainerPortal()
-        .addGadget(bean);
-    port.getTools()
-        .launchGear();
-  }
+    public void onSuccess(GadgetBean bean) {
+        GadgetPortlet port = ContainerEntryPoint.getContainerPortal().addGadget(
+                bean);
+        port.getTools().launchGear();
+    }
 
 }

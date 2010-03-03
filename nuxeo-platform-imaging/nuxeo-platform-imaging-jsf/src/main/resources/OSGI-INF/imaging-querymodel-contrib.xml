@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.jsf.querymodel">
+
+  <require>org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService</require>
+
+  <extension
+      target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+      point="model">
+    <queryModel name="CURRENT_PICTUREBOOK_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+      </pattern>
+      <sortable value="true" defaultSortColumn="dc:title"
+                defaultSortAscending="true"/>
+      <max>20</max>
+    </queryModel>
+  </extension>
+
+</component>

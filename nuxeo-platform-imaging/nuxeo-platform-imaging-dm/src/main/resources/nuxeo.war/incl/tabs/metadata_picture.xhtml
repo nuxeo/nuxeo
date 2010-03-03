@@ -1,0 +1,12 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+    <h2><h:outputText value="#{messages['label.header.info.exif']}"/></h2>
+    <nxl:layout name="exif_info" mode="view" value="#{currentDocument}"/>
+
+    <h2><h:outputText value="#{messages['label.header.info.iptc']}"/></h2>
+    <nxl:layout name="iptc_info" mode="view" value="#{currentDocument}"/>
+
+</div>

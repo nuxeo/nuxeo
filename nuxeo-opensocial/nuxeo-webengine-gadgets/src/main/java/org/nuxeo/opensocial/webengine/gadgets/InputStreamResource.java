@@ -25,35 +25,30 @@ import org.nuxeo.ecm.webengine.WebEngine;
 
 public class InputStreamResource {
 
-  protected Response getObject(InputStream gadgetResource, String path) {
-    if (gadgetResource == null) {
-      return Response.ok(404)
-          .build();
-    }
-
-    int p = path.lastIndexOf('.');
-    if (p > -1) {
-      String mime = WebEngine.getActiveContext()
-          .getEngine()
-          .getMimeType(path.substring(p + 1));
-      if (mime == null) {
-        if (path.endsWith(".xsd")) {
-          mime = "text/xml";
+    protected Response getObject(InputStream gadgetResource, String path) {
+        if (gadgetResource == null) {
+            return Response.ok(404).build();
         }
-      }
 
-      // To Avoid a small bug....
-      if ("text/plain".equals(mime)) {
-        mime = "text/html";
-      }
+        int p = path.lastIndexOf('.');
+        if (p > -1) {
+            String mime = WebEngine.getActiveContext().getEngine().getMimeType(
+                    path.substring(p + 1));
+            if (mime == null) {
+                if (path.endsWith(".xsd")) {
+                    mime = "text/xml";
+                }
+            }
 
-      return Response.ok(new GadgetStream(gadgetResource))
-          .type(mime)
-          .build();
+            // To Avoid a small bug....
+            if ("text/plain".equals(mime)) {
+                mime = "text/html";
+            }
+
+            return Response.ok(new GadgetStream(gadgetResource)).type(mime).build();
+        }
+        return Response.ok(new GadgetStream(gadgetResource)).type(
+                "application/octet-stream").build();
+
     }
-    return Response.ok(new GadgetStream(gadgetResource))
-        .type("application/octet-stream")
-        .build();
-
-  }
 }

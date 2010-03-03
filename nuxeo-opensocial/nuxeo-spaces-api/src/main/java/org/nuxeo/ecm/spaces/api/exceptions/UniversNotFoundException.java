@@ -19,30 +19,27 @@ package org.nuxeo.ecm.spaces.api.exceptions;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
-
 public class UniversNotFoundException extends ClientException {
 
-  /**
+    /**
    *
    */
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public UniversNotFoundException() {
-    super();
-  }
+    public UniversNotFoundException() {
+        super();
+    }
 
-  public UniversNotFoundException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public UniversNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public UniversNotFoundException(String message) {
-    super(message);
-  }
+    public UniversNotFoundException(String message) {
+        super(message);
+    }
 
-  public UniversNotFoundException(Throwable cause) {
-    super(cause);
-  }
-
-
+    public UniversNotFoundException(Throwable cause) {
+        super(cause);
+    }
 
 }
