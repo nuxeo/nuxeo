@@ -7,6 +7,7 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Nuxeo-Component: OSGI-INF/dam-common-layouts-contrib.xml,
- OSGI-INF/dam-common-ecm-types-contrib.xml
+ OSGI-INF/dam-common-ecm-types-contrib.xml,
+ OSGI-INF/dam-common-actions-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.types.api

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.common.actions">
+
+  <require>org.nuxeo.ecm.platform.actions.ActionService</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+
+    <action id="damNewDocument"
+            link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
+            label="action.new.document" icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST_HREF</category>
+      <filter id="damCreate">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <facet>Folderish</facet>
+          <type>ImportRoot</type>
+          <type>ImportFolder</type>
+          <type>ImportSet</type>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+
+</component>

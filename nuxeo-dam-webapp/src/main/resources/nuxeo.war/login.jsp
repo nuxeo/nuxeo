@@ -293,6 +293,7 @@ nxthemes css is not used in login.jsp */
 				            <select class="login_input" name="language" id="language">
 				              <option value="en" selected>English</option>
 				              <option value="fr">français</option>
+				              <option value="ar">العربية</option>
 				            </select>
 				          </td>
 				        </tr>
