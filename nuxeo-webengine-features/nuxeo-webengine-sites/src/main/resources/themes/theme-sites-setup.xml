@@ -677,7 +677,7 @@
       <selector path=".facesStatusMessage">
         <position>absolute</position>
         <left>48%</left>
-        <top>19%</top>
+        <top>40%</top>
       </selector>
       <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
         <list-style-type>none</list-style-type>
