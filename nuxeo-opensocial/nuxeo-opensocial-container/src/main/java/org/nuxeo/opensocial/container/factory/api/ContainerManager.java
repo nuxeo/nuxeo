@@ -29,15 +29,15 @@ import org.nuxeo.opensocial.container.client.bean.GadgetBean;
  */
 public interface ContainerManager {
 
-  Container createContainer(Map<String, String> gwtParams)
-      throws ClientException;
+    Container createContainer(Map<String, String> gwtParams)
+            throws ClientException;
 
-  GadgetBean addGadget(String gadgetName, Map<String, String> gwtParams)
-      throws Exception;
+    GadgetBean addGadget(String gadgetName, Map<String, String> gwtParams)
+            throws Exception;
 
-  Map<String, ArrayList<String>> getGadgetList() throws ClientException;
+    Map<String, ArrayList<String>> getGadgetList() throws ClientException;
 
-  Container saveLayout(Map<String, String> gwtParams, String layout)
-      throws ClientException;
+    Container saveLayout(Map<String, String> gwtParams, String layout)
+            throws ClientException;
 
 }

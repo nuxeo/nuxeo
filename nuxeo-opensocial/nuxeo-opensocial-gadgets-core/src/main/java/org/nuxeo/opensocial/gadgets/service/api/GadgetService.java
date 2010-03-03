@@ -28,41 +28,45 @@ public interface GadgetService {
 
     /**
      * Return a gadget declaration
-     *
-     * @param gadgetSymbolicName
-     *            the symbolic name of the gadget
+     * 
+     * @param gadgetSymbolicName the symbolic name of the gadget
      * @return
      */
     GadgetDeclaration getGadget(String gadgetSymbolicName);
 
     /**
      * Returns the list of all registered gadgets declarations
+     * 
      * @return
      */
     List<GadgetDeclaration> getGadgetList();
 
     /**
      * Returns the list of gadget categories
+     * 
      * @return
      */
     List<String> getGadgetCategory();
 
     /**
      * Returns the list of the registered gadgets for a given category
+     * 
      * @param category The category
      * @return
      */
     List<GadgetDeclaration> getGadgetList(String category);
 
     /**
-     * Return a hashed map of all registered gadgets by category
-     * TODO: check if this is necessary in the API (perhaps a GWT tweak)
+     * Return a hashed map of all registered gadgets by category TODO: check if
+     * this is necessary in the API (perhaps a GWT tweak)
+     * 
      * @return
      */
     Map<String, ArrayList<String>> getGadgetNameByCategory();
 
     /**
      * Returns a stream on a resource of a gadget
+     * 
      * @param gadgetName the symbolic name of the gadget
      * @param resourcePath the relative path to the resources
      * @return
@@ -71,9 +75,9 @@ public interface GadgetService {
     InputStream getGadgetResource(String gadgetName, String resourcePath)
             throws IOException;
 
-
     /**
      * Returns a URL to the gadget definition
+     * 
      * @param gadgetName the gadget symbolic name
      * @return
      */
@@ -81,6 +85,7 @@ public interface GadgetService {
 
     /**
      * Returns a relative URL to the gadget icon
+     * 
      * @param gadgetName the gadget symbolic name
      * @return
      */

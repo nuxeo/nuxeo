@@ -45,7 +45,7 @@ public class SpaceContribDescriptor implements
     @XNode("restrictToUniverse")
     private String pattern;
 
-    @XNodeMap(value = "param", key="@key", type = HashMap.class, componentType = String.class)
+    @XNodeMap(value = "param", key = "@key", type = HashMap.class, componentType = String.class)
     protected Map<String, String> params;
 
     private SpaceProvider provider;
@@ -81,14 +81,15 @@ public class SpaceContribDescriptor implements
             try {
                 provider.initialize(params);
             } catch (Exception e) {
-                throw new InstantiationException("Unable to initialize provider " + name);
+                throw new InstantiationException(
+                        "Unable to initialize provider " + name);
             }
         }
         return provider;
     }
 
     public int compareTo(SpaceContribDescriptor o) {
-        return this.getOrder() - o.getOrder() ;
+        return this.getOrder() - o.getOrder();
     }
 
     public boolean matches(String universName) {

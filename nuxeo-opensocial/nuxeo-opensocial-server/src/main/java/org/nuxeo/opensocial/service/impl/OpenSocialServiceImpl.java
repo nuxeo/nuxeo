@@ -46,8 +46,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private static Injector injector;
 
-    private Map<String, String> keys = new HashMap<String, String>();
-
+    private final Map<String, String> keys = new HashMap<String, String>();
 
     public Injector getInjector() {
         return injector;
@@ -89,7 +88,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         LOG.info("Activate component OpenSocial service");
-        if (injector==null) {
+        if (injector == null) {
             injector = GuiceContextListener.guiceInjector;
         }
     }
@@ -98,7 +97,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     public void deactivate(ComponentContext arg0) {
         LOG.info("DeActivate component OpenSocial service");
     }
-
 
     public Object getInstance(Class<?> klass) {
         if (getInjector() != null)

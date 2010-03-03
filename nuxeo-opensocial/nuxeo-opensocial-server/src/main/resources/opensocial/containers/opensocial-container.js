@@ -77,6 +77,8 @@
 // Uncomment these to switch to a secure version
 //
 "gadgets.securityTokenType" : "secure",
+
+//Nuxeo Specific : The key is configured via the OpenSocialService with an XP
 //"gadgets.securityTokenKeyFile" :  "./config/key.txt",
 
 // This config data will be passed down to javascript. Please

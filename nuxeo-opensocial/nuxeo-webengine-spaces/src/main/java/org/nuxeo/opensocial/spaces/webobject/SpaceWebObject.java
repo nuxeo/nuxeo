@@ -119,35 +119,36 @@ public class SpaceWebObject extends DefaultObject {
     }
 
     private void injectTheme() throws ClientException {
-      if (space.getTheme() != null) {
-          getContext().getRequest().setAttribute("org.nuxeo.theme.theme",
-                  space.getTheme() + "/default");
-          LOGGER
-                  .debug("setting theme from space in context request wall again "
-                          + space.getTheme());
-      } else {
-          LOGGER.debug("no theme found from space ");
-      }
+        if (space.getTheme() != null) {
+            getContext().getRequest().setAttribute("org.nuxeo.theme.theme",
+                    space.getTheme() + "/default");
+            LOGGER.debug("setting theme from space in context request wall again "
+                    + space.getTheme());
+        } else {
+            LOGGER.debug("no theme found from space ");
+        }
     }
 
     public String getBaseUrl() {
-      ServletRequest request = getContext().getRequest();
-      return VirtualHostHelper.getBaseURL(request);
+        ServletRequest request = getContext().getRequest();
+        return VirtualHostHelper.getBaseURL(request);
     }
 
-  /* (non-Javadoc)
-   * @see org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang.Class)
-   */
-  @Override
-  public <A> A getAdapter(Class<A> adapter) {
-    // TODO open NXP before commit
-    if (adapter == DocumentModel.class) {
-      return adapter.cast(this.getDocument());
-    } else {
-      return super.getAdapter(adapter);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang
+     * .Class)
+     */
+    @Override
+    public <A> A getAdapter(Class<A> adapter) {
+        // TODO open NXP before commit
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(this.getDocument());
+        } else {
+            return super.getAdapter(adapter);
+        }
     }
-  }
-
-
 
 }

@@ -21,27 +21,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * ValuePair
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class ValuePair implements IsSerializable {
 
-  private String value;
-  private String displayValue;
+    private String value;
 
-  public ValuePair() {
-  }
+    private String displayValue;
 
-  public ValuePair(String value, String displayValue) {
-    this.value = value;
-    this.displayValue = displayValue;
-  }
+    public ValuePair() {
+    }
 
-  public String getValue() {
-    return value;
-  }
+    public ValuePair(String value, String displayValue) {
+        this.value = value;
+        this.displayValue = displayValue;
+    }
 
-  public String getDisplayValue() {
-    return displayValue;
-  }
+    public String getValue() {
+        return value;
+    }
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
 }

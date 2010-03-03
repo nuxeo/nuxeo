@@ -45,135 +45,136 @@ import com.google.common.collect.Lists;
 
 public class PreferenceManager {
 
-  static final Log log = LogFactory.getLog(PreferenceManager.class);
+    static final Log log = LogFactory.getLog(PreferenceManager.class);
 
-  /**
-   * Get Default Preferences
-   * 
-   * @param gadget
-   * @return ArrayList<PreferencesBean>
-   * @throws ClientException
-   */
-  public static ArrayList<PreferencesBean> getDefaultPreferences(Gadget gadget)
-      throws ClientException {
-    return mergePreferences(DefaultPreference.getPreferences(),
-        gadget.getPreferences());
-  }
-
-  public static ArrayList<PreferencesBean> getPreferences(Gadget gadget)
-      throws ClientException {
-    return mergePreferences(getOpenSocialPreferences(gadget),
-        gadget.getPreferences());
-  }
-
-  /**
-   * Merge preferences of gadget with preferences saving in Nuxeo
-   * 
-   * @param defaultPrefs
-   * @param loadPrefs
-   * @return rrayList<PreferencesBean>
-   */
-  protected static ArrayList<PreferencesBean> mergePreferences(
-      List<UserPref> defaultPrefs, Map<String, String> loadPrefs) {
-    ArrayList<PreferencesBean> prefs = new ArrayList<PreferencesBean>();
-    if (loadPrefs != null) {
-      for (UserPref pref : defaultPrefs)
-        prefs.add(setLoadValue(loadPrefs, buildPrefBean(pref)));
+    /**
+     * Get Default Preferences
+     * 
+     * @param gadget
+     * @return ArrayList<PreferencesBean>
+     * @throws ClientException
+     */
+    public static ArrayList<PreferencesBean> getDefaultPreferences(Gadget gadget)
+            throws ClientException {
+        return mergePreferences(DefaultPreference.getPreferences(),
+                gadget.getPreferences());
     }
-    return prefs;
-  }
 
-  private static PreferencesBean buildPrefBean(UserPref p) {
-    return new PreferencesBean(p.getDataType()
-        .toString(), p.getDefaultValue(), p.getDisplayName(),
-        getSerializableEnumValues(p.getOrderedEnumValues()), p.getName(), null);
-  }
-
-  protected static PreferencesBean setLoadValue(Map<String, String> prefs,
-      PreferencesBean p) {
-    for (String name : prefs.keySet()) {
-      if (name.equals(p.getName())) {
-        p.setValue(prefs.get(name));
-        break;
-      }
+    public static ArrayList<PreferencesBean> getPreferences(Gadget gadget)
+            throws ClientException {
+        return mergePreferences(getOpenSocialPreferences(gadget),
+                gadget.getPreferences());
     }
-    return p;
-  }
 
-  /**
-   * Get default preferences with OpensocialService (Parse XML gadget)
-   * 
-   * @param gadget
-   * @return List<UserPref>
-   */
-  protected static List<UserPref> getOpenSocialPreferences(Gadget gadget) {
-    try {
-      return GadgetsUtils.getGadgetSpec(gadget)
-          .getUserPrefs();
-    } catch (Exception e) {
-      log.error(e);
-      return new ArrayList<UserPref>();
+    /**
+     * Merge preferences of gadget with preferences saving in Nuxeo
+     * 
+     * @param defaultPrefs
+     * @param loadPrefs
+     * @return rrayList<PreferencesBean>
+     */
+    protected static ArrayList<PreferencesBean> mergePreferences(
+            List<UserPref> defaultPrefs, Map<String, String> loadPrefs) {
+        ArrayList<PreferencesBean> prefs = new ArrayList<PreferencesBean>();
+        if (loadPrefs != null) {
+            for (UserPref pref : defaultPrefs)
+                prefs.add(setLoadValue(loadPrefs, buildPrefBean(pref)));
+        }
+        return prefs;
     }
-  }
 
-  private static List<ValuePair> getSerializableEnumValues(
-      List<EnumValuePair> orderedEnumValues) {
-    List<ValuePair> values = new LinkedList<ValuePair>();
-    for (EnumValuePair vPair : orderedEnumValues)
-      values.add(new ValuePair(vPair.getValue(), vPair.getDisplayValue()));
-    return values;
-  }
+    private static PreferencesBean buildPrefBean(UserPref p) {
+        return new PreferencesBean(p.getDataType().toString(),
+                p.getDefaultValue(), p.getDisplayName(),
+                getSerializableEnumValues(p.getOrderedEnumValues()),
+                p.getName(), null);
+    }
+
+    protected static PreferencesBean setLoadValue(Map<String, String> prefs,
+            PreferencesBean p) {
+        for (String name : prefs.keySet()) {
+            if (name.equals(p.getName())) {
+                p.setValue(prefs.get(name));
+                break;
+            }
+        }
+        return p;
+    }
+
+    /**
+     * Get default preferences with OpensocialService (Parse XML gadget)
+     * 
+     * @param gadget
+     * @return List<UserPref>
+     */
+    protected static List<UserPref> getOpenSocialPreferences(Gadget gadget) {
+        try {
+            return GadgetsUtils.getGadgetSpec(gadget).getUserPrefs();
+        } catch (Exception e) {
+            log.error(e);
+            return new ArrayList<UserPref>();
+        }
+    }
+
+    private static List<ValuePair> getSerializableEnumValues(
+            List<EnumValuePair> orderedEnumValues) {
+        List<ValuePair> values = new LinkedList<ValuePair>();
+        for (EnumValuePair vPair : orderedEnumValues)
+            values.add(new ValuePair(vPair.getValue(), vPair.getDisplayValue()));
+        return values;
+    }
 
 }
 
 class DefaultPreference {
 
-  private static List<UserPref> defaultPreferences = null;
-  private static final String NAME = "default-preferences.xml";
+    private static List<UserPref> defaultPreferences = null;
 
-  static List<UserPref> getPreferences() {
-    if (defaultPreferences == null) {
-      try {
-        loadAndParse();
-      } catch (Exception e) {
-        PreferenceManager.log.error(e);
-      }
-    }
-    return defaultPreferences;
-  }
+    private static final String NAME = "default-preferences.xml";
 
-  private static void loadAndParse() throws SpecParserException, IOException {
-
-    BufferedReader br = new BufferedReader(new InputStreamReader(
-        Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream(NAME)));
-    StringBuilder sb = new StringBuilder();
-    String line;
-    while ((line = br.readLine()) != null) {
-      sb.append(line);
-    }
-    Element doc;
-    try {
-      doc = XmlUtil.parse(sb.toString());
-    } catch (XmlException e) {
-      throw new SpecParserException("Malformed XML in file " + NAME, e);
+    static List<UserPref> getPreferences() {
+        if (defaultPreferences == null) {
+            try {
+                loadAndParse();
+            } catch (Exception e) {
+                PreferenceManager.log.error(e);
+            }
+        }
+        return defaultPreferences;
     }
 
-    NodeList children = doc.getChildNodes();
-    List<UserPref> userPrefs = Lists.newLinkedList();
-    for (int i = 0, j = children.getLength(); i < j; ++i) {
-      Node child = children.item(i);
-      if (!(child instanceof Element)) {
-        continue;
-      }
-      Element element = (Element) child;
-      if ("UserPref".equals(element.getTagName())) {
-        UserPref pref = new UserPref(element);
-        userPrefs.add(pref);
-      }
-    }
+    private static void loadAndParse() throws SpecParserException, IOException {
 
-    defaultPreferences = userPrefs;
-  }
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                        Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                                NAME)));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        Element doc;
+        try {
+            doc = XmlUtil.parse(sb.toString());
+        } catch (XmlException e) {
+            throw new SpecParserException("Malformed XML in file " + NAME, e);
+        }
+
+        NodeList children = doc.getChildNodes();
+        List<UserPref> userPrefs = Lists.newLinkedList();
+        for (int i = 0, j = children.getLength(); i < j; ++i) {
+            Node child = children.item(i);
+            if (!(child instanceof Element)) {
+                continue;
+            }
+            Element element = (Element) child;
+            if ("UserPref".equals(element.getTagName())) {
+                UserPref pref = new UserPref(element);
+                userPrefs.add(pref);
+            }
+        }
+
+        defaultPreferences = userPrefs;
+    }
 }

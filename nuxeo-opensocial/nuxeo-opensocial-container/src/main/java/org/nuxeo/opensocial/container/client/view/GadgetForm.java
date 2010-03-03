@@ -41,92 +41,92 @@ import com.gwtext.client.widgets.form.FormPanel;
  */
 public class GadgetForm {
 
-  private final static ContainerMessages MESSAGES = GWT.create(ContainerMessages.class);
-  private static final ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
+    private final static ContainerMessages MESSAGES = GWT.create(ContainerMessages.class);
 
-  private String title;
+    private static final ContainerConstants CONSTANTS = GWT.create(ContainerConstants.class);
 
-  private GadgetBean gadget;
-  private GadgetPortlet portlet;
+    private String title;
 
-  public static final Window window = new Window();
+    private GadgetBean gadget;
 
-  public GadgetForm(GadgetPortlet portlet) {
-    this.portlet = portlet;
-    this.gadget = portlet.getGadgetBean();
-    this.title = portlet.getTitle();
-  }
+    private GadgetPortlet portlet;
 
-  public void showForm() {
-    FormPanel form = new FormPanel();
-    form.setLabelWidth(100);
-    form.setPaddings(10);
-    form.setWidth("100%");
-    form.setFrame(true);
-    createFields(form);
-    this.setTitle(title);
-    window.clear();
-    window.add(form);
-    window.setWidth(400);
-    window.setModal(true);
-    window.show();
-    window.syncSize();
-  }
+    public static final Window window = new Window();
 
-  private FormPanel createFields(FormPanel form) {
-    addFields(form, this.gadget.getDefaultPrefs());
-    Panel p = new Panel("", "");
-    p.addClass("form-separator");
-    form.add(p);
-    addFields(form, this.gadget.getUserPrefs());
-    return addButtons(form);
-  }
-
-  private void addFields(Panel p, List<PreferencesBean> prefs) {
-    for (PreferencesBean b : prefs) {
-      p.add(InputFactory.getInstance()
-          .createField(portlet, b));
+    public GadgetForm(GadgetPortlet portlet) {
+        this.portlet = portlet;
+        this.gadget = portlet.getGadgetBean();
+        this.title = portlet.getTitle();
     }
-  }
 
-  private FormPanel addButtons(final FormPanel form) {
-    Button save = new Button(CONSTANTS.save());
+    public void showForm() {
+        FormPanel form = new FormPanel();
+        form.setLabelWidth(100);
+        form.setPaddings(10);
+        form.setWidth("100%");
+        form.setFrame(true);
+        createFields(form);
+        this.setTitle(title);
+        window.clear();
+        window.add(form);
+        window.setWidth(400);
+        window.setModal(true);
+        window.show();
+        window.syncSize();
+    }
 
-    save.addListener(new ButtonListenerAdapter() {
-      public void onClick(Button button, EventObject e) {
-        savePreferences(form);
-      }
-    });
-    form.addButton(save);
+    private FormPanel createFields(FormPanel form) {
+        addFields(form, this.gadget.getDefaultPrefs());
+        Panel p = new Panel("", "");
+        p.addClass("form-separator");
+        form.add(p);
+        addFields(form, this.gadget.getUserPrefs());
+        return addButtons(form);
+    }
 
-    Button cancel = new Button(CONSTANTS.cancel());
-    cancel.addListener(new ButtonListenerAdapter() {
-      public void onClick(Button button, EventObject e) {
-        portlet.renderDefaultPreferences();
-        portlet.renderTitle();
+    private void addFields(Panel p, List<PreferencesBean> prefs) {
+        for (PreferencesBean b : prefs) {
+            p.add(InputFactory.getInstance().createField(portlet, b));
+        }
+    }
+
+    private FormPanel addButtons(final FormPanel form) {
+        Button save = new Button(CONSTANTS.save());
+
+        save.addListener(new ButtonListenerAdapter() {
+            public void onClick(Button button, EventObject e) {
+                savePreferences(form);
+            }
+        });
+        form.addButton(save);
+
+        Button cancel = new Button(CONSTANTS.cancel());
+        cancel.addListener(new ButtonListenerAdapter() {
+            public void onClick(Button button, EventObject e) {
+                portlet.renderDefaultPreferences();
+                portlet.renderTitle();
+                window.close();
+            }
+        });
+        form.addButton(cancel);
+        return form;
+    }
+
+    private void savePreferences(FormPanel form) {
+        ContainerEntryPoint.getService().saveGadgetPreferences(gadget,
+                form.getForm().getValues(), ContainerEntryPoint.getGwtParams(),
+                new SavePreferenceAsyncCallback<GadgetBean>(gadget));
+        JsLibrary.loadingShow();
         window.close();
-      }
-    });
-    form.addButton(cancel);
-    return form;
-  }
+    }
 
-  private void savePreferences(FormPanel form) {
-    ContainerEntryPoint.getService()
-        .saveGadgetPreferences(gadget, form.getForm()
-            .getValues(), ContainerEntryPoint.getGwtParams(),
-            new SavePreferenceAsyncCallback<GadgetBean>(gadget));
-    JsLibrary.loadingShow();
-    window.close();
-  }
+    public void setTitle(String title) {
+        this.title = title;
+        window.setTitle(MESSAGES.preferencesGadget((title != null) ? title : ""));
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-    window.setTitle(MESSAGES.preferencesGadget((title != null) ? title : ""));
-  }
-
-  public void setGadget(GadgetBean gadget) {
-    this.gadget = gadget;
-  }
+    public void setGadget(GadgetBean gadget) {
+        this.gadget = gadget;
+    }
 
 }

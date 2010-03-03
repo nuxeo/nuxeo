@@ -40,18 +40,20 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
+ * 
  * @author 10044893
- *
+ * 
  */
 public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     private static final Log LOGGER = LogFactory.getLog(SpaceManagerImpl.class);
 
     private static final String UNIVERS_CONTRIB = "universContrib";
+
     private static final String SPACE_CONTRIB = "spaceContrib";
 
     private List<UniversContribDescriptor> universProvider = new ArrayList<UniversContribDescriptor>();
+
     private List<SpaceContribDescriptor> spaceProvider = new ArrayList<SpaceContribDescriptor>();
 
     @Override
@@ -99,7 +101,8 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
     /**
      * Universe list
      */
-    public List<Univers> getUniversList(CoreSession session) throws SpaceException {
+    public List<Univers> getUniversList(CoreSession session)
+            throws SpaceException {
         List<Univers> list = new ArrayList<Univers>();
 
         for (UniversContribDescriptor descriptor : universProvider) {
@@ -115,9 +118,8 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     /**
      * Get a univers
-     *
-     * @throws UniversNotFoundException
-     *             , SpaceException
+     * 
+     * @throws UniversNotFoundException , SpaceException
      */
     public Univers getUnivers(String name, CoreSession coreSession)
             throws UniversNotFoundException {
@@ -129,7 +131,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                 provider = descriptor.getProvider();
                 return provider.getUnivers(name, coreSession);
             } catch (UniversNotFoundException e) {
-                //Do nothing
+                // Do nothing
             } catch (Exception e) {
                 LOGGER.error("Unable to get the provider for : "
                         + descriptor.getName());
@@ -152,24 +154,25 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                 try {
                     list.addAll(descriptor.getProvider().getAll(coreSession));
                 } catch (SpaceNotFoundException e) {
-                    //This can be absolutely normal
+                    // This can be absolutely normal
                     continue;
                 } catch (InstantiationException e) {
                     LOGGER.warn("Unable instanciate provider : "
-                            + descriptor.getName(),e);
+                            + descriptor.getName(), e);
                 } catch (IllegalAccessException e) {
                     LOGGER.warn("Unable to instanciate provider : "
-                            + descriptor.getName(),e);
+                            + descriptor.getName(), e);
                 }
             }
         }
         return list;
     }
 
-    public Space getSpaceFromId(String spaceId, CoreSession session) throws SpaceException {
+    public Space getSpaceFromId(String spaceId, CoreSession session)
+            throws SpaceException {
         DocumentRef spaceRef = new IdRef(spaceId);
         try {
-            if(session.exists(spaceRef)) {
+            if (session.exists(spaceRef)) {
                 return session.getDocument(spaceRef).getAdapter(Space.class);
             } else {
                 throw new SpaceNotFoundException();
@@ -179,16 +182,16 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         }
     }
 
-    public Space getSpace(String name, SpaceProvider provider, CoreSession session)
-            throws SpaceException {
-        for(SpaceContribDescriptor desc : spaceProvider) {
+    public Space getSpace(String name, SpaceProvider provider,
+            CoreSession session) throws SpaceException {
+        for (SpaceContribDescriptor desc : spaceProvider) {
             try {
                 Space space = desc.getProvider().getSpace(name, session);
-                if(space != null) {
+                if (space != null) {
                     return space;
                 }
             } catch (Exception e) {
-                LOGGER.error("Unable to query provider "+ desc.getName(),e);
+                LOGGER.error("Unable to query provider " + desc.getName(), e);
             }
         }
         throw new SpaceNotFoundException();
@@ -219,13 +222,13 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         }
         return result;
     }
-    
+
     public String getProviderName(SpaceProvider provider) {
         for (SpaceContribDescriptor desc : spaceProvider) {
             try {
-            	if (desc.getProvider().equals(provider)) {
-            		return desc.getName();
-            	}
+                if (desc.getProvider().equals(provider)) {
+                    return desc.getName();
+                }
             } catch (Exception e) {
                 LOGGER.warn("Unable to instanciate " + desc.getName(), e);
             }
@@ -233,10 +236,11 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         return null;
     }
 
-    public Univers getUniversFromId(String universId, CoreSession session) throws SpaceException {
+    public Univers getUniversFromId(String universId, CoreSession session)
+            throws SpaceException {
         DocumentRef spaceRef = new IdRef(universId);
         try {
-            if(session.exists(spaceRef)) {
+            if (session.exists(spaceRef)) {
                 return session.getDocument(spaceRef).getAdapter(Univers.class);
             } else {
                 throw new SpaceNotFoundException();
@@ -249,7 +253,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
     public Space getSpace(String name, Univers univers, CoreSession session)
             throws SpaceException {
 
-        for(SpaceProvider provider : getSpacesProvider(univers)) {
+        for (SpaceProvider provider : getSpacesProvider(univers)) {
             try {
                 return provider.getSpace(name, session);
             } catch (SpaceNotFoundException e) {

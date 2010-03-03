@@ -22,7 +22,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoPropertiesModule extends PropertiesModule {
 
-  public NuxeoPropertiesModule() {
-    super(Framework.getProperties());
-  }
+    public NuxeoPropertiesModule() {
+        super(Framework.getProperties());
+    }
 }

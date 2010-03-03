@@ -38,7 +38,6 @@ public class DocUniversImpl extends AbstractUnivers {
         return univers.getId() != null && univers.getId().equals(getId());
     }
 
-
     public String getDescription() {
         try {
             return (String) doc.getPropertyValue("dc:description");
@@ -62,7 +61,5 @@ public class DocUniversImpl extends AbstractUnivers {
             return "";
         }
     }
-
-
 
 }

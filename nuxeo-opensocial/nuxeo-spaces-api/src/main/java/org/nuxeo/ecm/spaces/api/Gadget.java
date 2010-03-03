@@ -24,113 +24,113 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 public interface Gadget {
 
-  /**
-   * Unique identifier of a gadget
-   * 
-   * @return
-   */
-  String getId();
+    /**
+     * Unique identifier of a gadget
+     * 
+     * @return
+     */
+    String getId();
 
-  /**
-   * name
-   * 
-   * @return
-   */
-  String getName() throws ClientException;
+    /**
+     * name
+     * 
+     * @return
+     */
+    String getName() throws ClientException;
 
-  void setName(String name) throws ClientException;
+    void setName(String name) throws ClientException;
 
-  URL getDefinitionUrl() throws ClientException;
+    URL getDefinitionUrl() throws ClientException;
 
-  void setDefinitionUrl(URL url) throws ClientException;
+    void setDefinitionUrl(URL url) throws ClientException;
 
-  /**
-   * description
-   * 
-   * @return
-   */
-  String getDescription() throws ClientException;
+    /**
+     * description
+     * 
+     * @return
+     */
+    String getDescription() throws ClientException;
 
-  void setDescription(String description) throws ClientException;
+    void setDescription(String description) throws ClientException;
 
-  /**
-   * title
-   * 
-   * @return
-   */
-  String getTitle() throws ClientException;
+    /**
+     * title
+     * 
+     * @return
+     */
+    String getTitle() throws ClientException;
 
-  void setTitle(String title) throws ClientException;
+    void setTitle(String title) throws ClientException;
 
-  /**
-   * creator name
-   * 
-   * @return
-   */
-  String getOwner() throws ClientException;
+    /**
+     * creator name
+     * 
+     * @return
+     */
+    String getOwner() throws ClientException;
 
-  String getViewer() throws ClientException;
+    String getViewer() throws ClientException;
 
-  /**
-   * category of a gadget
-   * 
-   * @return
-   */
-  String getCategory() throws ClientException;
+    /**
+     * category of a gadget
+     * 
+     * @return
+     */
+    String getCategory() throws ClientException;
 
-  void setCategory(String category) throws ClientException;
+    void setCategory(String category) throws ClientException;
 
-  /**
-   * preferences values
-   * 
-   * @return
-   */
-  Map<String, String> getPreferences() throws ClientException;
+    /**
+     * preferences values
+     * 
+     * @return
+     */
+    Map<String, String> getPreferences() throws ClientException;
 
-  void setPreferences(Map<String, String> prefs) throws ClientException;
+    void setPreferences(Map<String, String> prefs) throws ClientException;
 
-  String getPref(String prefKey) throws ClientException;
+    String getPref(String prefKey) throws ClientException;
 
-  /**
-   * Key corresponding to the place where the gadget will be positionned in the
-   * view
-   * 
-   * @return
-   */
-  String getPlaceId() throws ClientException;
+    /**
+     * Key corresponding to the place where the gadget will be positionned in
+     * the view
+     * 
+     * @return
+     */
+    String getPlaceId() throws ClientException;
 
-  void setPlaceId(String placeId) throws ClientException;
+    void setPlaceId(String placeId) throws ClientException;
 
-  /**
-   * Relative position in the parent container at the place id "getPlaceID()"
-   * 
-   * @return
-   */
-  int getPosition() throws ClientException;
+    /**
+     * Relative position in the parent container at the place id "getPlaceID()"
+     * 
+     * @return
+     */
+    int getPosition() throws ClientException;
 
-  public void setPosition(int position) throws ClientException;
+    public void setPosition(int position) throws ClientException;
 
-  /**
-   * Determines if the display state of the gadget
-   * 
-   * @return
-   */
-  boolean isCollapsed() throws ClientException;
+    /**
+     * Determines if the display state of the gadget
+     * 
+     * @return
+     */
+    boolean isCollapsed() throws ClientException;
 
-  void setCollapsed(boolean collapsed) throws ClientException;
+    void setCollapsed(boolean collapsed) throws ClientException;
 
-  boolean isEqualTo(Gadget gadget) throws ClientException;
+    boolean isEqualTo(Gadget gadget) throws ClientException;
 
-  Space getParent() throws ClientException;
+    Space getParent() throws ClientException;
 
-  int getHeight() throws ClientException;
+    int getHeight() throws ClientException;
 
-  void setHeight(int height) throws ClientException;
+    void setHeight(int height) throws ClientException;
 
-  void copyFrom(Gadget gadget) throws ClientException;
+    void copyFrom(Gadget gadget) throws ClientException;
 
-  boolean hasPermission(String permissioName) throws ClientException;
+    boolean hasPermission(String permissioName) throws ClientException;
 
-  void save() throws ClientException;
+    void save() throws ClientException;
 
 }

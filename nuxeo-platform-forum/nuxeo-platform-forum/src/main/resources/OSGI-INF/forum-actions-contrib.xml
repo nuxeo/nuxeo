@@ -34,22 +34,6 @@
       </filter>
     </action>
 
-    <action id="newDocument">
-      <filter id="not_inside_forum">
-        <rule grant="false">
-          <type>Forum</type>
-        </rule>
-      </filter>
-    </action>
-
-    <action id="newFile">
-      <filter id="no_file_in_Forum">
-        <rule grant="false">
-          <type>Forum</type>
-        </rule>
-      </filter>
-    </action>
-
     <!--  add the thread creation button -->
     <action id="newForumThread" link="#{documentActions.createDocument('Thread')}"
         enabled="true" label="command.create.thread" icon="/icons/action_add.gif">

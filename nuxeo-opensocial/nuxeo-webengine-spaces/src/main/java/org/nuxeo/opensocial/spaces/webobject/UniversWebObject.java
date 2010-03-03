@@ -47,87 +47,86 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html; charset=UTF-8")
 public class UniversWebObject extends DefaultObject {
 
-  /**
-   * Current universe
-   */
-  private Univers univers = null;
+    /**
+     * Current universe
+     */
+    private Univers univers = null;
 
-  /**
-   * all spaces in the current universe
-   */
-  private List<Space> spaces = null;
-  private static final Log log = LogFactory.getLog(UniversWebObject.class);
+    /**
+     * all spaces in the current universe
+     */
+    private List<Space> spaces = null;
 
-  public List<Space> getSpaces() throws Exception {
-    if (this.spaces == null) {
-      this.spaces = Framework.getService(SpaceManager.class)
-          .getSpacesForUnivers(univers, getSession());
-    }
-    return spaces;
-  }
+    private static final Log log = LogFactory.getLog(UniversWebObject.class);
 
-  @GET
-  public Response doGet() {
-    List<Space> spaces;
-    try {
-      spaces = getSpaces();
-      if (spaces.size() > 0) {
-        return redirect(getPath() + "/" + spaces.get(0)
-            .getName());
-      } else {
-        throw new WebResourceNotFoundException(
-            "No space found for this universe");
-      }
-    } catch (Exception e) {
-      throw new WebResourceNotFoundException(e.getMessage(), e);
+    public List<Space> getSpaces() throws Exception {
+        if (this.spaces == null) {
+            this.spaces = Framework.getService(SpaceManager.class).getSpacesForUnivers(
+                    univers, getSession());
+        }
+        return spaces;
     }
 
-  }
+    @GET
+    public Response doGet() {
+        List<Space> spaces;
+        try {
+            spaces = getSpaces();
+            if (spaces.size() > 0) {
+                return redirect(getPath() + "/" + spaces.get(0).getName());
+            } else {
+                throw new WebResourceNotFoundException(
+                        "No space found for this universe");
+            }
+        } catch (Exception e) {
+            throw new WebResourceNotFoundException(e.getMessage(), e);
+        }
 
-  public Univers getUnivers() {
-    return univers;
-  }
-
-  @Override
-  public void initialize(Object... args) {
-    assert args != null && args.length == 1;
-    this.univers = (Univers) args[0];
-
-  }
-
-  /**
-   * Read a space with spaces API
-   * 
-   * @param spacename
-   * @return
-   */
-  @Path("{spacename}")
-  public Resource doGetSpace(@PathParam("spacename") String spacename) {
-    getContext().getRequest()
-        .setAttribute("currentUnivers", this.univers);
-    try {
-
-      CoreSession coreSession = getSession();
-      SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-
-      Space space = spaceManager.getSpace(spacename, this.univers, coreSession);
-      if (space == null) {
-        throw new WebResourceNotFoundException("No space " + spacename
-            + " found");
-      }
-      return newObject("Space", space);
-
-    } catch (SpaceNotFoundException e) {
-      throw new WebResourceNotFoundException("No space " + spacename
-          + " found for this universe");
-    } catch (Exception e) {
-      throw WebException.wrap(e);
     }
-  }
 
-  private CoreSession getSession() {
-    return WebEngine.getActiveContext()
-        .getCoreSession();
-  }
+    public Univers getUnivers() {
+        return univers;
+    }
+
+    @Override
+    public void initialize(Object... args) {
+        assert args != null && args.length == 1;
+        this.univers = (Univers) args[0];
+
+    }
+
+    /**
+     * Read a space with spaces API
+     * 
+     * @param spacename
+     * @return
+     */
+    @Path("{spacename}")
+    public Resource doGetSpace(@PathParam("spacename") String spacename) {
+        getContext().getRequest().setAttribute("currentUnivers", this.univers);
+        try {
+
+            CoreSession coreSession = getSession();
+            SpaceManager spaceManager = Framework.getService(SpaceManager.class);
+
+            Space space = spaceManager.getSpace(spacename, this.univers,
+                    coreSession);
+            if (space == null) {
+                throw new WebResourceNotFoundException("No space " + spacename
+                        + " found");
+            }
+            return newObject("Space", space);
+
+        } catch (SpaceNotFoundException e) {
+            throw new WebResourceNotFoundException("No space " + spacename
+                    + " found for this universe");
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    private CoreSession getSession() {
+        return WebEngine.getActiveContext().getCoreSession();
+    }
 
 }

@@ -37,7 +37,7 @@ public class UniversContribDescriptor {
     @XNode("class")
     private Class<? extends UniversProvider> klass;
 
-    @XNodeMap(value = "param", key="@key", type = HashMap.class, componentType = String.class)
+    @XNodeMap(value = "param", key = "@key", type = HashMap.class, componentType = String.class)
     protected Map<String, String> params;
 
     private UniversProvider provider;
@@ -57,7 +57,6 @@ public class UniversContribDescriptor {
     public void setRemove(boolean remove) {
         this.remove = remove;
     }
-
 
     public UniversProvider getProvider() throws InstantiationException,
             IllegalAccessException {
