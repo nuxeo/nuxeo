@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl">
+
+    <implementation class="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl" />
+
+    <service>
+        <provide interface="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService" />
+    </service>
+
+    <extension-point name="computer">
+        <documentation>
+    Extension point to contribute an new class to compute virtual groups.
+
+    The contribution should be of the form :
+    <code>
+        <groupComputer name="MyGroupComputerName">
+            <computer>fullClassName</computer>
+        </groupComputer>
+    </code>
+
+    The contributed class must implement the org.nuxeo.ecm.platform.computedgroups.GroupComputer interface.
+
+    @author Thierry Delprat (td@nuxeo.com)
+        </documentation>
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor" />
+    </extension-point>
+
+    <extension-point name="computerChain">
+        <documentation>
+    Extension point to set or update the chain of group computer.
+    The GroupComputers will be called sequentially accorting to the chain definition.
+
+    The contribution should be of the form :
+    <code>
+      <groupComputerChain>
+         <computers>
+           <computer>companyGroupComputer</computer>
+           <computer>myOtherGroupComputer</computer>
+         </computers>
+      </groupComputerChain>
+    </code>
+
+    By default, each contribution will completly overwrite the chain.
+    If you just want to add a new computer to the existing chain, set the append attribute to true.
+
+    <code>
+          <groupComputerChain append="true">
+             <computers>
+               <computer>myAdditionnalGroupComputer</computer>
+             </computers>
+          </groupComputerChain>
+    </code>
+
+    @author Thierry Delprat (td@nuxeo.com)
+        </documentation>
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.GroupComputerChainDescriptor" />
+    </extension-point>
+
+</component>

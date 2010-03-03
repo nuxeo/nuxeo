@@ -451,12 +451,16 @@ public class UserManagerImpl implements UserManager {
         return BaseSession.createEntryModel(null, schema, null, null);
     }
 
-    public NuxeoGroup getGroup(String groupName) throws ClientException {
+    protected NuxeoGroup getGroup(String groupName, boolean create) throws ClientException {
         DocumentModel groupEntry = getGroupModel(groupName);
-        if (groupEntry != null) {
+        if (groupEntry != null && create) {
             return makeGroup(groupEntry);
         }
         return null;
+    }
+
+    public NuxeoGroup getGroup(String groupName) throws ClientException {
+        return getGroup(groupName, true);
     }
 
     public DocumentModel getGroupModel(String groupName) throws ClientException {

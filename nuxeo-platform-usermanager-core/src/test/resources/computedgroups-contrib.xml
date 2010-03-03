@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.computedgroups.UserManager.testcontrib">
+    <require>org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl</require>
+    <extension target="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl"
+        point="computer">
+        <groupComputer name="dummy">
+            <allowOverride>true</allowOverride>
+            <cacheEnable>true</cacheEnable>
+            <cacheTimeout>120</cacheTimeout>
+            <computer>org.nuxeo.ecm.platform.computedgroups.test.DummyGroupComputer</computer>
+        </groupComputer>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl"
+        point="computerChain">
+    <groupComputerChain>
+       <computers>
+         <computer>dummy</computer>
+       </computers>
+    </groupComputerChain>
+
+    </extension>
+
+</component>
