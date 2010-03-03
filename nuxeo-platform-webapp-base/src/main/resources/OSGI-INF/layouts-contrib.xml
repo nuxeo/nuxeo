@@ -36,6 +36,9 @@
         <row>
           <widget>groups</widget>
         </row>
+        <row>
+          <widget>vgroups</widget>
+        </row>
       </rows>
       <widget name="username" type="text">
         <labels>
@@ -187,7 +190,22 @@
           <property name="template">
             /widgets/user_suggestion_widget_template.xhtml
           </property>
+          <property name="hideVirtualGroups">true</property>
           <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+       <widget name="vgroups" type="template">
+        <labels>
+          <label mode="any">label.userManager.userVirtualGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="template">
+            /widgets/user_vgoups_widget_template.xhtml
+          </property>
         </properties>
       </widget>
     </layout>

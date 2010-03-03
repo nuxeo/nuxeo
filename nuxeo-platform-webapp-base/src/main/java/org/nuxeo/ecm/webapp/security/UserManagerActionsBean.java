@@ -61,6 +61,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -487,6 +488,16 @@ public class UserManagerActionsBean implements UserManagerActions {
     @Factory(value = "notReadOnly", scope = APPLICATION)
     public boolean isNotReadOnly() {
         return !"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false"));
+    }
+
+    public List<String> getUserVirtualGroups(String userId) throws Exception {
+
+        NuxeoPrincipal principal = userManager.getPrincipal(userId);
+        if (principal instanceof NuxeoPrincipalImpl) {
+            NuxeoPrincipalImpl user = (NuxeoPrincipalImpl) principal;
+            return user.getVirtualGroups();
+        }
+        return null;
     }
 
 }

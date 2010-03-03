@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -118,5 +119,7 @@ public interface UserManagerActions extends Serializable {
     String clearSearchAdvanced() throws ClientException;
 
     boolean isNotReadOnly();
+
+    List<String> getUserVirtualGroups(String userId) throws Exception;
 
 }

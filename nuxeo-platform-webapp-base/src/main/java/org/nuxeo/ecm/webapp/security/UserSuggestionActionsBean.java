@@ -93,6 +93,9 @@ public class UserSuggestionActionsBean implements Serializable {
     @RequestParameter
     protected Integer userSuggestionMaxSearchResults;
 
+    @RequestParameter
+    protected Boolean hideVirtualGroups;
+
     protected Integer cachedUserSuggestionMaxSearchResults;
 
     protected Object cachedInput;
@@ -129,6 +132,9 @@ public class UserSuggestionActionsBean implements Serializable {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
+            }
+            if (hideVirtualGroups!=null && hideVirtualGroups==true) {
+                filter.put("virtual", false);
             }
             // parameters must be serializable so copy keySet to HashSet
             return userManager.searchGroups(filter, new HashSet<String>(

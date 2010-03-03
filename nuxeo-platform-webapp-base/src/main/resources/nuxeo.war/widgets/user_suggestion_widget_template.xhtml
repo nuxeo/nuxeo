@@ -39,6 +39,7 @@
     <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
     <c:set var="searchType" value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
     <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+    <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
 
     <h:outputText value="#{messages['label.security.searchUsers']}"
       rendered="#{searchType =='USER_TYPE'}"
@@ -72,6 +73,7 @@
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+            <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
             <a4j:support event="onselect"
               focus="#{widget.id}_suggest"
               bypassUpdates="true"
@@ -83,6 +85,7 @@
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
               <f:param name="userSuggestionSearchType" value="#{searchType}" />
               <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+              <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
             </a4j:support>
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">

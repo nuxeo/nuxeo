@@ -1,0 +1,19 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <nxu:methodResult name="vgroups" value="#{userManagerActions.getUserVirtualGroups(field_0)}">
+    <h:dataTable value="#{vgroups}"
+      var="item" rendered="#{not empty vgroups}">
+      <h:column>
+            <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+            <h:outputText value="#{item}" />
+      </h:column>
+    </h:dataTable>
+  </nxu:methodResult>
+
+</div>

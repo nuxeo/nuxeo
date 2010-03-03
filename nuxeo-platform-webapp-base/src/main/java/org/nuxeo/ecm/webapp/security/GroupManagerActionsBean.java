@@ -174,6 +174,11 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return "edit_group";
     }
 
+    public boolean isSelectedGroupReadOnly() {
+        Serializable virtualFlag = selectedGroup.getContextData().getScopedValue("virtual");
+        return (virtualFlag!=null && virtualFlag.equals(true));
+    }
+
     public DocumentModel getSelectedGroup() {
         return selectedGroup;
     }
