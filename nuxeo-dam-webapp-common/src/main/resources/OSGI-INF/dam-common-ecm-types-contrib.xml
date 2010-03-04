@@ -147,6 +147,7 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
+        <layout>file</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
@@ -165,6 +166,7 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
+        <layout>file</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
