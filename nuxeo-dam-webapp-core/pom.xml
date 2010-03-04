@@ -165,6 +165,11 @@
       <artifactId>nuxeo-platform-audio-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>net.sf.opencsv</groupId>

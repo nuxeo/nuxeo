@@ -43,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy({
         "org.nuxeo.ecm.core.api",
+        "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.video.core",

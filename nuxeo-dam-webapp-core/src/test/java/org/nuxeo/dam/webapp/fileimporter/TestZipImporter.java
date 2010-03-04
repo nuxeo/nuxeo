@@ -53,6 +53,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.video.core",
