@@ -68,7 +68,12 @@ public class WebengineError extends ModuleRoot {
     public Object handleError(WebApplicationException e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
+        pw.println("<html>");
+        pw.println("<head><title>WebEbgine Error Test</title></head>");
+        pw.println("<body>");
         e.printStackTrace(pw);
+        pw.println("</body>");
+        pw.println("</html>");
         pw.close();
         return Response.status(500).entity(
                 "WEBENGINE HANDLED ERROR: \n" + sw.toString()).build();
