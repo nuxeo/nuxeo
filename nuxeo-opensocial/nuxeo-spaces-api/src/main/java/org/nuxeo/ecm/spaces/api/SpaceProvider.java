@@ -37,4 +37,12 @@ public interface SpaceProvider {
      * @throws SpaceException if space manager is not reachable
      */
     String getName() throws SpaceException;
+
+    /**
+     * Gets all {@link Space}s supplied by {@link SpaceProvider}. This method does not throw any exception,
+     * it can be useful in some cases.
+     * @param session core session
+     * @return list of {@link Space} OR an empty list if no spaces are supplied by space provider (never returns null)
+     */
+    List<Space> getAllSpaces(CoreSession session);
 }
