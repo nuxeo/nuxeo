@@ -5,6 +5,7 @@
 
   <service>
     <provide interface="org.nuxeo.opensocial.service.api.OpenSocialService" />
+    <provide interface="org.apache.shindig.auth.SecurityTokenDecoder" />
   </service>
 
   <extension-point name="cryptoConfig">
