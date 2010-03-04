@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KE
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_MESSAGE_TYPE;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MESSAGE_ID_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MESSAGE_ID_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_PROPERTY_NAME;
@@ -61,6 +63,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
     private static final Log log = LogFactory.getLog(CreateDocumentsAction.class);
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean execute(ExecutionContext context) throws Exception {
         CoreSession session = getCoreSession(context);
@@ -78,6 +81,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
         ArrayList<String> ccRecipients = (ArrayList<String>) context.get(CC_RECIPIENTS_KEY);
         List<FileBlob> attachments = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
         String text = (String) context.get(TEXT_KEY);
+        String messageId = (String) context.get(MESSAGE_ID_KEY);
 
         String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
 
@@ -85,6 +89,8 @@ public class CreateDocumentsAction extends AbstractMailAction {
                 IdUtils.generateId(subject + System.currentTimeMillis()),
                 MAIL_MESSAGE_TYPE);
         documentModel.setPropertyValue("dc:title", subject);
+        documentModel.setPropertyValue(MESSAGE_ID_PROPERTY_NAME,
+                messageId);
         documentModel.setPropertyValue(SENDER_PROPERTY_NAME, sender);
         documentModel.setPropertyValue(SENDING_DATE_PROPERTY_NAME, sendingDate);
         documentModel.setPropertyValue(RECIPIENTS_PROPERTY_NAME, recipients);
@@ -111,10 +117,6 @@ public class CreateDocumentsAction extends AbstractMailAction {
         unrestrictedCreateDocument.runUnrestricted();
 
         return true;
-    }
-
-    public void reset(ExecutionContext context) throws Exception {
-        // do nothing
     }
 
     // Helper inner class to do the unrestricted creation of the documents

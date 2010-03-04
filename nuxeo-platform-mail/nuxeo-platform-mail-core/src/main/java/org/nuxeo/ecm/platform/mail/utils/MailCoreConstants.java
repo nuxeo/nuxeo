@@ -40,6 +40,8 @@ public final class MailCoreConstants {
 
     public static final String TEXT_PROPERTY_NAME = "mail:text";
 
+    public static final String MESSAGE_ID_PROPERTY_NAME = "mail:messageId";
+
     public static final String EMAIL_PROPERTY_NAME = "prot:email";
 
     public static final String PASSWORD_PROPERTY_NAME = "prot:password";
@@ -83,6 +85,8 @@ public final class MailCoreConstants {
     public static final String ATTACHMENTS_KEY = "attachments";
 
     public static final String TEXT_KEY = "text";
+
+    public static final String MESSAGE_ID_KEY = "messageId";
 
     public static final String IMAP = "imap";
 

@@ -23,8 +23,8 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KE
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_EMAIL_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDING_DATE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
@@ -50,6 +50,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
+import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 
 /**
@@ -69,6 +70,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
     private String bodyContent;
 
+    @Override
     public boolean execute(ExecutionContext context) throws Exception {
         bodyContent = "";
 
@@ -144,6 +146,12 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 }
             }
             context.put(CC_RECIPIENTS_KEY, ccRecipients);
+
+            String[] messageIdHeader = message.getHeader("Message-ID");
+            if (messageIdHeader != null) {
+                context.put(MailCoreConstants.MESSAGE_ID_KEY,
+                        messageIdHeader[0]);
+            }
 
             MimetypeRegistry mimeService = (MimetypeRegistry) context.getInitialContext().get(
                     MIMETYPE_SERVICE_KEY);
@@ -233,10 +241,6 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                     mimeService, context);
         }
 
-    }
-
-    public void reset(ExecutionContext context) throws Exception {
-        // do nothing
     }
 
     /**

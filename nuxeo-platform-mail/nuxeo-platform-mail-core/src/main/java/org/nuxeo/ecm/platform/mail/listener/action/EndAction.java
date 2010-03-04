@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAP;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAPS;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.LEAVE_ON_SERVER_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_KEY;
 
 import javax.mail.Message;
 import javax.mail.Flags.Flag;
@@ -38,6 +38,7 @@ public class EndAction extends AbstractMailAction {
 
     private static final Log log = LogFactory.getLog(EndAction.class);
 
+    @Override
     public boolean execute(ExecutionContext context) throws Exception {
     	try {
     		Message message = context.getMessage();
@@ -59,10 +60,6 @@ public class EndAction extends AbstractMailAction {
     	} catch (Exception e) {
             return false;
         }
-    }
-
-    public void reset(ExecutionContext context) throws Exception {
-        // do nothing
     }
 
 }

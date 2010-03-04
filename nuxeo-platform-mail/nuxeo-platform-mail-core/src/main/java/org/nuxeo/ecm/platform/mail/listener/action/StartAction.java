@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
  */
 public class StartAction extends AbstractMailAction {
 
+    @Override
     public boolean execute(ExecutionContext context) throws Exception {
         Message message = context.getMessage();
         if (message == null) {
@@ -44,10 +45,6 @@ public class StartAction extends AbstractMailAction {
         // flag it in case it is not treated correctly
         message.setFlag(Flag.FLAGGED, true);
         return true;
-    }
-
-    public void reset(ExecutionContext context) throws Exception {
-        // do nothing
     }
 
 }
