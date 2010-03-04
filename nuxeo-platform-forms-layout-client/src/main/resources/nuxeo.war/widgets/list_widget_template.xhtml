@@ -10,8 +10,8 @@
 
     <table>
       <tbody>
-        <nxu:inputList value="#{field_0}" id="#{widget.id}_table" model="model"
-          rendered="#{not empty field_0}">
+        <nxu:inputList value="#{field}" id="#{widget.id}_table" model="model"
+          rendered="#{not empty field}">
           <nxl:subWidget>
             <tr>
               <td class="labelColumn"><h:outputText
@@ -34,7 +34,7 @@
         <c:set value="#{widget.fieldDefinitions[0].propertyName}"
           var="propValueForTemplate"/>
 
-        <nxu:inputList value="#{field_0}" id="#{widget.id}_input" model="model"
+        <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
           template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
           required="#{widget.required}" diff="#{widget.properties['diff']}">
 

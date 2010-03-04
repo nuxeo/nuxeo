@@ -96,19 +96,37 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return leaf;
         }
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
-        for (int i = 0; i < fieldDefs.length; i++) {
-            String computedName = String.format("%s_%s",
-                    RenderVariables.widgetVariables.field.name(), i);
-            TagAttribute name = helper.createAttribute("name", computedName);
-            String computedValue = ValueExpressionHelper.createExpressionString(
-                    widget.getValueName(), fieldDefs[i]);
-            TagAttribute value = helper.createAttribute("value", computedValue);
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
-            paramHandlers.add(new ParamHandler(config));
+        for (Integer i = 0; i < fieldDefs.length; i++) {
+            if (i == 0) {
+                paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
+                        leaf, widget, fieldDefs[i], null));
+            }
+            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
+                    leaf, widget, fieldDefs[i], i));
         }
         return new CompositeFaceletHandler(
                 paramHandlers.toArray(new ParamHandler[] {}));
+    }
+
+    protected ParamHandler getFieldParamHandler(FaceletContext ctx,
+            TagConfig tagConfig, FaceletHandlerHelper helper,
+            FaceletHandler leaf, Widget widget, FieldDefinition fieldDef,
+            Integer index) {
+        String computedName;
+        if (index == null) {
+            computedName = String.format("%s",
+                    RenderVariables.widgetVariables.field.name());
+        } else {
+            computedName = String.format("%s_%s",
+                    RenderVariables.widgetVariables.field.name(), index);
+        }
+        TagAttribute name = helper.createAttribute("name", computedName);
+        String computedValue = ValueExpressionHelper.createExpressionString(
+                widget.getValueName(), fieldDef);
+        TagAttribute value = helper.createAttribute("value", computedValue);
+        TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
+                FaceletHandlerHelper.getTagAttributes(name, value), leaf);
+        return new ParamHandler(config);
     }
 
     /**
