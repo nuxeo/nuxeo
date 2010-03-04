@@ -17,4 +17,16 @@
       </properties>
     </sessionFactory>
   </extension>
+
+  <extension target="org.nuxeo.ecm.platform.MailService" point="actionPipes">
+    <pipe name="nxmail">
+      <action id="ExtractMessageInformationAction" to="OtherAction">
+        org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
+      </action>
+      <action id="OtherAction" to="CreateDocumentsAction">
+        org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
+      </action>
+    </pipe>
+  </extension>
+
 </component>

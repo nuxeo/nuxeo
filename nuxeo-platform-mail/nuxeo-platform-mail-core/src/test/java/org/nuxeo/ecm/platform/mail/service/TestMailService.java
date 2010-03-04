@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MessageAction;
+import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.test.Server;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -57,13 +58,13 @@ public class TestMailService extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
-        Server.start();
+//        Server.start();
         super.setUp();
         deployBundle("org.nuxeo.ecm.webapp.base");
-        deployBundle("org.nuxeo.ecm.platform.mail");
-        deployBundle("org.nuxeo.ecm.platform.mail.test");
-        mailService = Framework.getService(MailService.class);
-        internetAddress = new InternetAddress("alex@localhost");
+//        deployBundle("org.nuxeo.ecm.platform.mail");
+//        deployBundle("org.nuxeo.ecm.platform.mail.test");
+//        mailService = Framework.getService(MailService.class);
+//        internetAddress = new InternetAddress("alex@localhost");
     }
 
     @Override
@@ -144,6 +145,38 @@ public class TestMailService extends NXRuntimeTestCase {
         }
         rootFolder.close(true);
         store.close();
+    }
+
+    public void testServiceRegistration() throws Exception{
+        deployBundle("org.nuxeo.ecm.platform.mail");
+        MailService mailService = Framework.getLocalService(MailService.class);
+        assertNotNull(mailService);
+        MessageActionPipe pipe = mailService.getPipe("nxmail");
+        assertNotNull(pipe);
+        assertEquals(5, pipe.size());
+        assertEquals(pipe.get(0).getClass().getSimpleName(), "StartAction");
+        assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
+        assertEquals(pipe.get(2).getClass().getSimpleName(), "CheckMailUnicity");
+        assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
+        assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
+        // test contribution merge
+        deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-test-contrib.xml");
+        pipe = mailService.getPipe("nxmail");
+        assertNotNull(pipe);
+        assertEquals(5, pipe.size());
+        assertEquals(pipe.get(0).getClass().getSimpleName(), "StartAction");
+        assertEquals(pipe.get(1).getClass().getSimpleName(), "ExtractMessageInformationAction");
+        assertEquals(pipe.get(2).getClass().getSimpleName(), "CreateDocumentsAction");
+        assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
+        assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
+        // test contribution override
+        deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-override-test-contrib.xml");
+        pipe = mailService.getPipe("nxmail");
+        assertNotNull(pipe);
+        assertEquals(2, pipe.size());
+        assertEquals(pipe.get(0).getClass().getSimpleName(), "ExtractMessageInformationAction");
+        assertEquals(pipe.get(1).getClass().getSimpleName(), "CreateDocumentsAction");
+
     }
 
     static class TestMailAction implements MessageAction {

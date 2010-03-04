@@ -17,6 +17,9 @@
         org.nuxeo.ecm.platform.mail.listener.action.ExtractMessageInformationAction
       </action>
       <action>
+        org.nuxeo.ecm.platform.mail.listener.action.CheckMailUnicity
+      </action>
+      <action>
         org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
       </action>
       <action>
