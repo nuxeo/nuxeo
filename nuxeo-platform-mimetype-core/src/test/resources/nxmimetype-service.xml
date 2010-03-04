@@ -650,6 +650,18 @@
         <extension>jpeg</extension>
       </extensions>
     </mimetype>
+    
+    <mimetype normalized="image/pjpeg" binary="true"
+      iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/pjpeg</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>jpg</extension>
+        <extension>jpeg</extension>
+      </extensions>
+    </mimetype>
+    
     <mimetype normalized="image/x-portable-bitmap" binary="true"
       iconPath="image.gif">
       <mimetypes>
