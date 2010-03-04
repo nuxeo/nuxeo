@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.app;
 
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 import org.nuxeo.ecm.webengine.app.impl.DefaultModule;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.osgi.framework.Bundle;
@@ -101,10 +102,10 @@ public class ModuleHandler {
     }
 
 
-    public Class<?>[] getContributions() {
+    public Class<? extends ResourceContribution>[] getContributions() {
         return ((WebEngineModule)app.getApplication()).getContributions();
     }
-    
+        
     public Class<? extends WebEngineModule> getBaseModule() {
         return ((WebEngineModule)app.getApplication()).getBaseModule();
     }

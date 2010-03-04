@@ -39,6 +39,7 @@ public class WebException extends WebApplicationException {
 
     protected String message;
     protected boolean byPassAppResponse = false;
+    protected int status = 500;
 
     public WebException() {
     }
@@ -49,10 +50,12 @@ public class WebException extends WebApplicationException {
 
     public WebException(int status) {
         super(status);
+        this.status = status;
     }
 
     public WebException(Response.Status status) {
         super(status);
+        this.status = status.getStatusCode();
     }
 
     protected WebException(Throwable cause, Response response) {
@@ -64,10 +67,12 @@ public class WebException extends WebApplicationException {
 
     protected WebException(Throwable cause, Response.Status status) {
         super(cause, status);
+        this.status = status.getStatusCode();
     }
 
     protected WebException(Throwable cause, int status) {
         super(cause, status);
+        this.status = status;
     }
 
     protected WebException(Throwable cause) {
@@ -81,6 +86,7 @@ public class WebException extends WebApplicationException {
     public WebException(String message, int code) {
         super(code);
         this.message = message;
+        this.status = code;
     }
 
     protected WebException(String message, Throwable t) {
@@ -91,6 +97,7 @@ public class WebException extends WebApplicationException {
     protected WebException(String message, Throwable t, int code) {
         super(t, code);
         this.message = message;
+        this.status = code;
     }
 
     @Override
@@ -98,6 +105,10 @@ public class WebException extends WebApplicationException {
         return message;
     }
 
+    public int getStatusCode() {
+        return status;
+    }
+    
     /**
      * For compatibiliy only.
      */
@@ -124,7 +135,7 @@ public class WebException extends WebApplicationException {
                 }
             }
         }
-        return toResponse(this);
+        return Response.status(getStatusCode()).entity(toString(this)).build();
     }
 
     public String getStackTraceString() {

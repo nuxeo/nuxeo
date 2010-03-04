@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,28 +13,22 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.model.exceptions;
-
-import org.nuxeo.ecm.webengine.WebException;
+package org.nuxeo.ecm.webengine.app.impl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebResourceNotFoundException extends WebException {
+public class ClassRegistry<V> extends SuperKeyedRegistry<Class<?>, V> {
 
-    private static final long serialVersionUID = 1L;
-
-    public WebResourceNotFoundException(String message) {
-        super(message, 404);
+    public ClassRegistry(Class<?> root) {
+        super (root);
     }
 
-    public WebResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause, 404);
+    @Override
+    protected Class<?> getSuperKey(Class<?> key) {
+        return key.getSuperclass();
     }
 
 }

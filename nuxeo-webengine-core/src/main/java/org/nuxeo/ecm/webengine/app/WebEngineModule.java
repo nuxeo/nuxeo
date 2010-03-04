@@ -25,6 +25,7 @@ import javax.ws.rs.core.Application;
 import org.nuxeo.ecm.webengine.app.annotations.ResourceExtension;
 import org.nuxeo.ecm.webengine.app.annotations.ResourceExtensions;
 import org.nuxeo.ecm.webengine.app.annotations.WebModule;
+import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 
 /**
  * Base application class for WebEngine modules.
@@ -39,7 +40,7 @@ public abstract class WebEngineModule extends Application {
     protected String name;
     protected Class<?>[] roots;
     protected Class<? extends WebEngineModule> base;
-    protected Class<?>[] contributions;
+    protected Class<? extends ResourceContribution>[] contributions;
     
     public WebEngineModule() {
         Class<?> type = getClass();
@@ -102,7 +103,7 @@ public abstract class WebEngineModule extends Application {
         return roots;
     }
 
-    public Class<?>[] getContributions() {
+    public Class<? extends ResourceContribution>[] getContributions() {
         return contributions;
     }
     

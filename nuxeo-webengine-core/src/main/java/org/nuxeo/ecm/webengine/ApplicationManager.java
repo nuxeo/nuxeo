@@ -16,10 +16,15 @@
  */
 package org.nuxeo.ecm.webengine;
 
+import java.util.List;
+
 import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.webengine.app.BundledApplication;
 import org.nuxeo.ecm.webengine.app.ModuleHandler;
+import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
+import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.osgi.framework.Bundle;
 
 /**
@@ -40,8 +45,12 @@ public interface ApplicationManager {
 
     public ModuleHandler[] getModuleHandlers();
 
-    public Object getContribution(Object target, String key) throws Exception;
+    public Object getContribution(Resource target, String key) throws Exception;
 
+    public List<ResourceContribution> getContributions(ExtensibleResource target, String category);
+    
+    public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category);
+    
     public ModuleHandler getModuleHandlerFor(Class<?> rootResource);
 
     /**

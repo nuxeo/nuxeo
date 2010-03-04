@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,9 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.app.BundledApplication;
 import org.nuxeo.ecm.webengine.app.ModuleHandler;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
+import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
+import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -142,7 +146,19 @@ public class DefaultApplicationManager implements ApplicationManager {
         return getRegistry().getModuleHandlers();
     }
 
-    public Object getContribution(Object target, String key) throws Exception {
+    public Object getContribution(Resource target, String key) throws Exception {
+        return getRegistry().getContribution(target, key);
+    }
+    
+    public List<ResourceContribution> getContributions(ExtensibleResource target, String category) {
+        return getRegistry().getContributions(target, category);
+    }
+    
+    public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
+        return getRegistry().getContributions(target, category);
+    }
+
+    public ResourceContribution getContribution(Class<? extends ExtensibleResource> target, String key) throws Exception {
         return getRegistry().getContribution(target, key);
     }
 

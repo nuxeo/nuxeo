@@ -17,12 +17,15 @@
 package org.nuxeo.ecm.webengine.app.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.webengine.app.annotations.ResourceExtension;
+import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
+import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 
 /**
  * Describe the external contributions on a parent resource
@@ -43,41 +46,53 @@ public class ResourceContributions {
     /**
      * A map of key : values where key is the segment name that should match a contribution resource and value is the contribution resource class
      */
-    protected Map<String, Class<?>> contribs;
+    protected Map<String, ResourceContribution> contribs;
     
     /**
      * contributions by category cache
      */
-    protected ConcurrentMap<String, List<Class<?>>> contribsByCategories;
+    protected ConcurrentMap<String, List<ResourceContribution>> contribsByCategories;
+    
     
     public ResourceContributions(Class<?> target) {
         this.target = target;
-        contribs = new ConcurrentHashMap<String, Class<?>>();
-        contribsByCategories = new ConcurrentHashMap<String, List<Class<?>>>();
+        contribs = new HashMap<String, ResourceContribution>();
+        contribsByCategories = new ConcurrentHashMap<String, List<ResourceContribution>>();
     }
     
     public Class<?> getTarget() {
         return target;
     }
     
-    public Class<?> getContribution(String key) {
+    public ResourceContribution getContribution(String key) {
         return contribs.get(key);
     }
     
-    public Class<?>[] getContributions() {
-        return contribs.values().toArray(new Class<?>[contribs.size()]);
+    public ResourceContribution[] getContributions() {
+        return contribs.values().toArray(new ResourceContribution[contribs.size()]);
     }
 
-    public List<Class<?>> getContributions(String category) {
-        List<Class<?>> result = contribsByCategories.get(category);
+    public List<ResourceContribution> getContributions(ExtensibleResource target, String category) {
+        List<ResourceContribution> contribs = getContributions(target.getClass(), category);
+        if (!contribs.isEmpty()) {
+            List<ResourceContribution> result = new ArrayList<ResourceContribution>();
+            for (ResourceContribution c : contribs) {
+                if (c.accept(target)) {
+                    result.add(c);
+                }
+            }
+            return result;
+        }
+        return contribs;
+    }
+
+    public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
+        List<ResourceContribution> result = contribsByCategories.get(category);
         if (result == null) {
-            result = new ArrayList<Class<?>>();   
-            for (Class<?> c : contribs.values()) {
-                String[] cats = c.getAnnotation(ResourceExtension.class).categories();
-                for (String cat : cats) {
-                    if (category.equals(cat)) {
-                        result.add(c);
-                    }
+            result = new ArrayList<ResourceContribution>();   
+            for (ResourceContribution c : contribs.values()) {
+                if (c.hasCategory(category)) {                    
+                    result.add(c);
                 }
             }
             contribsByCategories.put(category, result);
@@ -85,26 +100,23 @@ public class ResourceContributions {
         return result;
     }
 
-    public void addContribution(String key, Class<?> resourceType) {
-        contribs.put(key, resourceType);
+    public void addContribution(ResourceContribution c) throws Exception {
+        contribs.put(c.getKey(), c);
     }
     
     public void removeContribution(String key) {
         contribs.remove(key);
     }
     
-    public void addContribution(Class<?> contrib) {
-        ResourceExtension xt = contrib.getAnnotation(ResourceExtension.class);
-        if (xt == null) {
-            throw new Error("Tried to contribute an extension resource "+contrib+" which is not annotated using "+ResourceExtension.class);
-        }
-        addContribution(xt.key(), xt.target());
+    public void addContribution(Class<? extends ResourceContribution> contrib) throws Exception {
+        ResourceContribution c = contrib.newInstance();
+        addContribution(c);
     }
-    
+
     public void removeContribution(Class<?> contrib) {
         ResourceExtension xt = contrib.getAnnotation(ResourceExtension.class);
         if (xt != null) {
-            removeContribution(xt.key());    
+            removeContribution(xt.key());
         }        
     }
     

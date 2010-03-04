@@ -14,27 +14,34 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.app.annotations;
+package org.nuxeo.ecm.webengine.app.document;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.webengine.app.impl.SuperKeyedRegistry;
+import org.nuxeo.runtime.api.Framework;
 
-import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ResourceExtensions {
+public class TypeRegistry<V> extends SuperKeyedRegistry<DocumentType, V> {
 
-    /**
-     * An array of resource extension classes (i.e. resources annotated with {@link ResourceExtension})
-     * @return
-     */
-    Class<? extends ResourceContribution>[] value();
+    protected SchemaManager mgr;
     
+    public TypeRegistry() throws Exception {
+        this (Framework.getService(SchemaManager.class));
+    }
+    
+    public TypeRegistry(SchemaManager mgr) {        
+        super (mgr.getDocumentType("Document"));
+        this.mgr = mgr;
+    }
+
+    @Override
+    protected DocumentType getSuperKey(DocumentType key) {
+        return (DocumentType)key.getSuperType();
+    }
+
 }

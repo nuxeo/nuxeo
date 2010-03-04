@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

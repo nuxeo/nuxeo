@@ -22,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.Reloadable;
 import org.nuxeo.ecm.webengine.app.Reloader;
@@ -39,6 +41,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(ReloadingJerseyServlet.class);
 
     protected Reloader reloader;
 
