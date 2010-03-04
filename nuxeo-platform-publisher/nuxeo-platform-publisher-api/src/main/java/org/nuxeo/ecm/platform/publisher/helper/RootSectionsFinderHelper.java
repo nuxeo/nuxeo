@@ -45,7 +45,7 @@ public class RootSectionsFinderHelper {
         return new RootSectionsFinder(coreSession, getSectionRootTypes(), getSectionTypes());
     }
 
-    private static Set<String> getSectionRootTypes() {
+    public static Set<String> getSectionRootTypes() {
         if (sectionRootTypes == null) {
             sectionRootTypes = getTypeNamesForFacet("MasterPublishSpace");
             if (sectionRootTypes == null) {
@@ -56,7 +56,7 @@ public class RootSectionsFinderHelper {
         return sectionRootTypes;
     }
 
-    private static Set<String> getTypeNamesForFacet(String facetName) {
+    public static Set<String> getTypeNamesForFacet(String facetName) {
         TypeService schemaService;
         try {
             // XXX should use getService(SchemaManager.class)
@@ -75,7 +75,7 @@ public class RootSectionsFinderHelper {
         return publishRoots;
     }
 
-    private static Set<String> getSectionTypes() {
+    public static Set<String> getSectionTypes() {
         if (sectionTypes == null) {
             sectionTypes = getTypeNamesForFacet("PublishSpace");
             if (sectionTypes == null) {
