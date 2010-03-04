@@ -9,7 +9,7 @@
 
   <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
-    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field_0}"
+    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
       displayValueOnly="true" multiSelect="true">
       <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
         localize="true" id="#{widget.id}_topic" />
@@ -23,7 +23,7 @@
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <a4j:region id="#{widget.id}_region">
-      <nxdir:chainSelect size="2" value="#{field_0}"
+      <nxdir:chainSelect size="2" value="#{field}"
         id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
         allowBranchSelection="false">
         <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"

@@ -8,7 +8,7 @@
 
   <f:subview rendered="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
-    <h:dataTable value="#{field_0}" var="item" rendered="#{not empty field_0}"
+    <h:dataTable value="#{field}" var="item" rendered="#{not empty field}"
       id="#{widget.id}_table">
       <h:column>
         <h:panelGrid columnClasses="fieldColumn">
@@ -26,7 +26,7 @@
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
       <a4j:outputPanel ajaxRendered="true">
-        <nxu:inputList value="#{field_0}" id="#{widget.id}_input" model="model"
+        <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
           template="#{nxd:defaultValue(widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName)}"
           required="#{widget.required}">
 

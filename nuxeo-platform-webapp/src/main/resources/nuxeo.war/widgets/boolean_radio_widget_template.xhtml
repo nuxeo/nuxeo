@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
   <f:subview rendered="#{widget.mode == 'edit' }">
-    <h:selectOneRadio value="#{field_0}" id="#{widget.id}_checkbox">
+    <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox">
       <f:selectItem itemValue="#{true}" itemLabel="#{messages['label.yes']}" />
       <f:selectItem itemValue="#{false}" itemLabel="#{messages['label.no']}" />
     </h:selectOneRadio>
@@ -16,8 +16,8 @@
   </f:subview>
 
   <f:subview rendered="#{widget.mode == 'view' }">
-    <h:outputText rendered="#{field_0}" value="#{messages['label.yes']}" />
-    <h:outputText rendered="#{! field_0}"
+    <h:outputText rendered="#{field}" value="#{messages['label.yes']}" />
+    <h:outputText rendered="#{! field}"
       value="#{messages['label.no']}" />
   </f:subview>
 

@@ -9,12 +9,12 @@
   <c:if test="#{widget.mode != 'edit'}">
 
     <h:outputText value="#{messages['label.files.noAttachedFiles']}"
-      rendered="#{empty field_0}" />
+      rendered="#{empty field}" />
 
     <table>
       <tbody>
-        <nxu:inputList value="#{field_0}" id="#{widget.id}_table" model="model"
-          rendered="#{not empty field_0}">
+        <nxu:inputList value="#{field}" id="#{widget.id}_table" model="model"
+          rendered="#{not empty field}">
           <nxl:subWidget>
             <tr>
               <td class="fieldColumn">
@@ -39,7 +39,7 @@
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
       <a4j:outputPanel ajaxRendered="true">
-        <nxu:inputList value="#{field_0}" id="#{widget.id}_input" model="model"
+        <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
           template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
           required="#{widget.required}" diff="#{widget.properties['diff']}">
 

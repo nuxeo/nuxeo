@@ -11,7 +11,7 @@
     http://forums.sun.com/thread.jspa?forumID=427&amp;threadID=500387
   </c:if>
   <c:if test="#{widget.mode == 'edit'}">
-    <h:selectOneRadio value="#{field_0}" id="#{widget.id}_checkbox">
+    <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox">
       <f:selectItem itemValue="#{0}" itemLabel="#{messages['label.no']}" />
       <f:selectItem itemValue="#{1}"
         itemLabel="#{messages['label.yes']}" />
@@ -21,9 +21,9 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'view' }">
-    <h:outputText rendered="#{field_0 != '0'}"
+    <h:outputText rendered="#{field != '0'}"
       value="#{messages['label.yes']}" id="#{widget.id}_yes" />
-    <h:outputText rendered="#{field_0 == 0}"
+    <h:outputText rendered="#{field == 0}"
       value="#{messages['label.no']}" id="#{widget.id}_no" />
   </c:if>
   
