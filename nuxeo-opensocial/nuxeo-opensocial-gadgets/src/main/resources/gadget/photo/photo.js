@@ -19,13 +19,11 @@ jQuery(document).ready(function(){
 
 
   jQuery('#upload').click(function(){
-    jQuery("#resize_width").val(gadgets.window.getViewportDimensions().width);
     if (jQuery("#file").val() != ""){
       jQuery('#formUpload').ajaxSubmit({
           success:function(data){
-        savePrefs();
-          launchGadget();
-
+            savePrefs();
+            launchGadget();
           },
           error: function(xhr,rs) {
             alert(xhr.responseText);

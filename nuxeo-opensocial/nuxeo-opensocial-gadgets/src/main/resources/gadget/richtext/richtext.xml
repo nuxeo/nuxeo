@@ -158,7 +158,6 @@
        </form>
 
        <form method="post" id="fileUploadForm" enctype="multipart/form-data" action="#">
-         <input type="hidden" name="resize_width" id="resize_width" value="" />
          <table style="width:100%" class="form">
             <tr>
               <td>

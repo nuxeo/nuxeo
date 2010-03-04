@@ -61,8 +61,6 @@ jQuery(document).ready(function(){
 
 
   jQuery('#fileuploadBtn').click(function(){
-      var width = Math.round(gadgets.window.getViewportDimensions().width / 2)
-      jQuery("#resize_width").val(width);
       jQuery('#fileUploadForm').ajaxSubmit({
           beforeSubmit: control,
           success:function(){
