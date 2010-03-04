@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.annotations.service;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEventListener;
 
@@ -31,43 +32,44 @@ public class DummyDocumentEventListener implements
         AnnotatedDocumentEventListener {
     private static int test;
 
-    public void afterAnnotationCreated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void afterAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 1;
     }
 
-    public void afterAnnotationDeleted(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void afterAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 7;
     }
 
-    public void afterAnnotationRead(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void afterAnnotationRead(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 3;
 
     }
 
-    public void afterAnnotationUpdated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void afterAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 5;
     }
 
-    public void beforeAnnotationCreated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1;
     }
 
-    public void beforeAnnotationDeleted(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 6;
     }
 
-    public void beforeAnnotationRead(String anId) {
+    public void beforeAnnotationRead(NuxeoPrincipal principal,
+            String annotationId) {
         test |= 1 << 2;
     }
 
-    public void beforeAnnotationUpdated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         test |= 1 << 4;
     }
 

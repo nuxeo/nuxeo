@@ -19,14 +19,20 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -35,14 +41,7 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AnnotatedDocumentEventListenerImpl implements
         AnnotatedDocumentEventListener {
@@ -57,53 +56,53 @@ public class AnnotatedDocumentEventListenerImpl implements
 
     private transient EventService eventService;
 
-    public void beforeAnnotationCreated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void beforeAnnotationDeleted(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void beforeAnnotationRead(String annId) {
+    public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
         // NOP
     }
 
-    public void beforeAnnotationUpdated(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void beforeAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         // NOP
     }
 
-    public void afterAnnotationCreated(DocumentLocation documentLoc,
-            Annotation annotation) {
-        notifyEvent(ANNOTATION_CREATED, annotation, documentLoc);
+    public void afterAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
+        notifyEvent(ANNOTATION_CREATED, annotation, documentLoc, principal);
     }
 
-    public void afterAnnotationDeleted(DocumentLocation documentLoc,
-            Annotation annotation) {
-        notifyEvent(ANNOTATION_DELETED, annotation, documentLoc);
+    public void afterAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
+        notifyEvent(ANNOTATION_DELETED, annotation, documentLoc, principal);
     }
 
-    public void afterAnnotationRead(DocumentLocation documentLoc,
-            Annotation annotation) {
+    public void afterAnnotationRead(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
         // NOP for now
     }
 
-    public void afterAnnotationUpdated(DocumentLocation documentLoc,
-            Annotation annotation) {
-        notifyEvent(ANNOTATION_UPDATED, annotation, documentLoc);
+    public void afterAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation) {
+        notifyEvent(ANNOTATION_UPDATED, annotation, documentLoc, principal);
     }
 
     protected void notifyEvent(String eventId, Annotation annotation,
-            DocumentLocation documentLocation) {
+            DocumentLocation documentLocation, NuxeoPrincipal principal) {
         try {
             DocumentModel dm = getDocument(documentLocation);
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
 
             DocumentEventContext ctx = new DocumentEventContext(null,
-                    new NuxeoPrincipalImpl(annotation.getCreator()), dm);
+                    principal, dm);
             ctx.setRepositoryName(dm.getRepositoryName());
             ctx.setProperties(properties);
             ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);

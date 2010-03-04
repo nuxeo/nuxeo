@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.annotations;
 
+import java.security.Principal;
+
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.service.EventListener;
@@ -29,34 +31,34 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
  */
 public class FakeEventListener implements EventListener {
 
-    public void afterAnnotationCreated(Annotation annotation)
+    public void afterAnnotationCreated(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void afterAnnotationDeleted(Annotation annotation)
+    public void afterAnnotationDeleted(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void afterAnnotationRead(Annotation annotation)
+    public void afterAnnotationRead(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void afterAnnotationUpdated(Annotation annotation)
+    public void afterAnnotationUpdated(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void beforeAnnotationCreated(Annotation annotation)
+    public void beforeAnnotationCreated(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void beforeAnnotationDeleted(Annotation annotation)
+    public void beforeAnnotationDeleted(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
-    public void beforeAnnotationRead(String annId) throws AnnotationException {
+    public void beforeAnnotationRead(Principal principal, String annotationId) throws AnnotationException {
     }
 
-    public void beforeAnnotationUpdated(Annotation annotation)
+    public void beforeAnnotationUpdated(Principal principal, Annotation annotation)
             throws AnnotationException {
     }
 
