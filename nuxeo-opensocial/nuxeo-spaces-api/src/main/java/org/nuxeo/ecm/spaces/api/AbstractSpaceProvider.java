@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.spaces.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -69,5 +71,21 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
             throw new SpaceException("Unable to get Space Manager", e);
         }
         return sm.getProviderName(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.spaces.api.SpaceProvider#getAllSpaces(org.nuxeo.ecm.core.api.CoreSession)
+     */
+    final public List<Space> getAllSpaces(CoreSession session) {
+        try {
+            List<Space> list = getAll(session);
+            if (list == null) {
+                return new ArrayList<Space>();
+            } else {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList<Space>();
+        }
     }
 }
