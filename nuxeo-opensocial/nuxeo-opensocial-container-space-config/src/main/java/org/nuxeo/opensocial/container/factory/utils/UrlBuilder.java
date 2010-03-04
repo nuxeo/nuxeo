@@ -106,6 +106,9 @@ public class UrlBuilder {
         // up_=150&
         sb.append("up_" + gadget.getHeight() + "&");
 
+        // turn on debugging for the JS (avoid compression)
+        sb.append("debug=1" + "&");
+
         // st=qdlfjqsmfkjqf&
         try {
             sb.append(SECURITY_TOKEN_KEY + "="

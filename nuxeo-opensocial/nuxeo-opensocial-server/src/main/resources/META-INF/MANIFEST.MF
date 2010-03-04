@@ -10,6 +10,5 @@ Require-Bundle: org.nuxeo.runtime,
 Nuxeo-Component: OSGI-INF/opensocial-service.xml,
  OSGI-INF/person-service.xml,
  OSGI-INF/activity-service.xml,
- OSGI-INF/appdata-service.xml,
- OSGI-INF/key-contrib.xml
+ OSGI-INF/appdata-service.xml
 Bundle-Category: stateless

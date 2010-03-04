@@ -26,9 +26,12 @@ import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.auth.SecurityTokenDecoder;
 import org.apache.shindig.social.opensocial.oauth.OAuthDataStore;
 import org.apache.shindig.social.opensocial.oauth.OAuthEntry;
+import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.crypto.NXBlobCrypterSecurityTokenDecoder;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
 
 public class NuxeoCryptoModule extends AbstractModule {
 
@@ -40,6 +43,27 @@ public class NuxeoCryptoModule extends AbstractModule {
             bind(SecurityTokenDecoder.class).to(
                     NXBlobCrypterSecurityTokenDecoder.class);
             bind(OAuthDataStore.class).to(FakeNuxeoDataStore.class);
+
+            String signingKeyPath = Framework.getService(
+                    OpenSocialService.class).getSigningStateKeyFile().getPath();
+            String privateKeyPath = Framework.getService(
+                    OpenSocialService.class).getOAuthPrivateKeyFile().getPath();
+            String privateKeyName = Framework.getService(
+                    OpenSocialService.class).getOAuthPrivateKeyName();
+            String callbackUrl = Framework.getService(OpenSocialService.class).getOAuthCallbackUrl();
+
+            bind(String.class).annotatedWith(
+                    Names.named("shindig.signing.state-key")).toInstance(
+                    signingKeyPath);
+            bind(String.class).annotatedWith(
+                    Names.named("shindig.signing.key-file")).toInstance(
+                    privateKeyPath);
+            bind(String.class).annotatedWith(
+                    Names.named("shindig.signing.key-name")).toInstance(
+                    privateKeyName);
+            bind(String.class).annotatedWith(
+                    Names.named("shindig.signing.global-callback-url")).toInstance(
+                    callbackUrl);
         } catch (Exception e) {
             LOG.error("Unable to bind Shindig services to Nuxeo components");
             LOG.error(e.getMessage());

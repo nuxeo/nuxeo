@@ -12,6 +12,13 @@
   <extension target="web#CONTEXT-PARAM">
     <context-param>
       <param-name>guice-modules</param-name>
+
+<!-- NOTE NOTE NOTE -->
+<!--  
+        org.apache.shindig.gadgets.oauth.OAuthModule: is not in this list
+        anymore because we must merge the bindings for this class with
+        some other bindings provided by nuxeo
+-->
       <param-value>
         org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
         org.nuxeo.opensocial.shindig.ProxyModule:
@@ -20,7 +27,6 @@
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
-        org.apache.shindig.gadgets.oauth.OAuthModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
       </param-value>
     </context-param>

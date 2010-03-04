@@ -17,31 +17,84 @@
 
 package org.nuxeo.opensocial.container.utils;
 
+import java.io.FileReader;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.BlobCrypterSecurityToken;
 import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.util.Utf8UrlCoder;
-import org.nuxeo.opensocial.container.component.PortalComponent;
-import org.nuxeo.opensocial.container.component.PortalConfig;
+import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Guillaume Cusnieux
  */
 public class SecureTokenBuilder {
 
+    private static final Log log = LogFactory.getLog(SecureTokenBuilder.class);
+
     public static String getSecureToken(String viewer, String owner,
             String gadgetUrl) throws Exception {
-
-        PortalConfig config = PortalComponent.getInstance().getConfig();
-
-        String key = config.getKey();
-        String container = config.getContainerName();
-        String domain = config.getDomain();
-
+        OpenSocialService svc = Framework.getService(OpenSocialService.class);
+        String key = IOUtils.toString(new FileReader(
+                svc.getSigningStateKeyFile()));
+        String container = "default";
+        String domain = "localhost";
+        if (svc.getPortalConfig() == null) {
+            log.warn("portal configuration suggests that there are "
+                    + svc.getPortalConfig().length
+                    + " choices but we don't know how to pick the correct configuration!");
+        }
         return getSecureToken(viewer, owner, gadgetUrl, key, container, domain);
+    }
+
+    /**
+     * XXX LeroyMerlin's old version.
+     * 
+     * @param viewer
+     * @param owner
+     * @param gadgetUrl
+     * @return
+     * @throws Exception
+     */
+    // private static String XXXgetSecureToken(String viewer, String owner,
+    // String gadgetUrl) throws Exception {
+
+    // PortalConfig config = PortalComponent.getInstance().getConfig();
+
+    // String key = config.getKey();
+    // String container = config.getContainerName();
+    // String domain = config.getDomain();
+
+    // return getSecureToken(viewer, owner, gadgetUrl, key, container,
+    // domain);
+
+    // }
+
+    public static String getSecureToken(String viewer, String owner,
+            String gadgetUrl, String key, String container, String domain)
+            throws Exception {
+        BlobCrypterSecurityToken st = new BlobCrypterSecurityToken(
+                new BasicBlobCrypter(key.getBytes()), container, domain);
+        st.setViewerId(viewer);
+        st.setOwnerId(owner);
+        st.setAppUrl(gadgetUrl);
+        return Utf8UrlCoder.encode(st.encrypt());
 
     }
 
-    private static String getSecureToken(String viewer, String owner,
+    /**
+     * XXX LeroyMerlin's old version.
+     * 
+     * @param viewer
+     * @param owner
+     * @param gadgetUrl
+     * @return
+     * @throws Exception
+     */
+    private static String XXXgetSecureToken(String viewer, String owner,
             String gadgetUrl, String key, String container, String domain)
             throws Exception {
         BlobCrypterSecurityToken st = new BlobCrypterSecurityToken(
