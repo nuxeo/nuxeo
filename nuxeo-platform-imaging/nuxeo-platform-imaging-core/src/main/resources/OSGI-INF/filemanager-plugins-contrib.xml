@@ -12,6 +12,7 @@
             class="org.nuxeo.ecm.platform.picture.extension.ImagePlugin"
             order="10">
       <filter>image/jpeg</filter>
+      <filter>image/pjpeg</filter>
       <filter>image/gif</filter>
       <filter>image/png</filter>
       <filter>image/tiff</filter>
