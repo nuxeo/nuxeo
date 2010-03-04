@@ -213,12 +213,12 @@
         can be used inside the tag:
         <ul>
           <li>
-            'layoutRow' and alias 'layoutColumn' reference the current layout
-            row or column.
+            'layoutRow' and since 5.3.1, alias 'layoutColumn' reference the
+            current layout row or column.
           </li>
           <li>
-            'layoutRowIndex' and alias 'layoutColumnIndex' reference its index
-            in the layout list of rows/columns.
+            'layoutRowIndex' and since 5.3.1, alias 'layoutColumnIndex' reference
+            its index in the layout list of rows/columns.
           </li>
         </ul>
       </p>
@@ -256,7 +256,9 @@
     <name>layoutColumn</name>
     <tag-class>None</tag-class>
     <body-content>None</body-content>
-    <description>Facelet tag handler equivalent to layoutRow tag.</description>
+    <description>
+      Facelet tag handler equivalent to layoutRow tag, available since 5.3.1.
+    </description>
   </tag>
 
   <tag>
@@ -318,7 +320,8 @@
     <tag-class>None</tag-class>
     <body-content>None</body-content>
     <description>
-      Facelet tag handler equivalent to layoutColumnWidget tag.
+      Facelet tag handler equivalent to layoutRowWidget tag, available since
+      5.3.1.
     </description>
   </tag>
 
