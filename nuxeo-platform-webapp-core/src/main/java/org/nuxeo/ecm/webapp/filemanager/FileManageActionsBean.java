@@ -59,7 +59,6 @@ import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -242,8 +241,7 @@ public class FileManageActionsBean extends InputController implements
                     documentManager, blob, path, true, fullName);
         } catch (Throwable t) {
             // Unwrap the Exception to get pertinent error message.
-            Throwable unwrappedException = DefaultNuxeoExceptionHandler.unwrapException(t);
-            if (unwrappedException.getMessage().contains(
+            if (t.getMessage().contains(
                     FileManagerPermissionException.class.getName())) {
                 // security check failed
                 log.debug("No permissions creating " + fullName);
