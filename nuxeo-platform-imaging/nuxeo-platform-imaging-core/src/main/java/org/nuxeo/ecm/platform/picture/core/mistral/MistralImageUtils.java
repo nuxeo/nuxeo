@@ -261,4 +261,7 @@ public class MistralImageUtils implements ImageUtils {
 
     }
 
+    public boolean isAvailable() {
+        return true; // we only need the mistral jar in the classpath
+    }
 }

@@ -36,14 +36,6 @@ public class ImageUtilsDescriptor {
         return name;
     }
 
-    public Class<ImageUtils> getAdapterClass() {
-        return adapterClass;
-    }
-
-    public void setAdapterClass(Class<ImageUtils> adapterClass) {
-        this.adapterClass = adapterClass;
-    }
-
     public ImageUtils getNewInstance() throws InstantiationException,
             IllegalAccessException {
         return adapterClass.newInstance();

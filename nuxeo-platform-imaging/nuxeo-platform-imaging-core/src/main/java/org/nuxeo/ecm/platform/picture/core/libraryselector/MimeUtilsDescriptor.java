@@ -36,14 +36,6 @@ public class MimeUtilsDescriptor {
         return name;
     }
 
-    public Class<MimeUtils> getAdapterClass() {
-        return adapterClass;
-    }
-
-    public void setAdapterClass(Class<MimeUtils> adapterClass) {
-        this.adapterClass = adapterClass;
-    }
-
     public MimeUtils getNewInstance() throws InstantiationException,
             IllegalAccessException {
         return adapterClass.newInstance();

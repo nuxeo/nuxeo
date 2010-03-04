@@ -36,14 +36,6 @@ public class MetadataUtilsDescriptor {
         return name;
     }
 
-    public Class<MetadataUtils> getAdapterClass() {
-        return adapterClass;
-    }
-
-    public void setAdapterClass(Class<MetadataUtils> adapterClass) {
-        this.adapterClass = adapterClass;
-    }
-
     public MetadataUtils getNewInstance() throws InstantiationException,
             IllegalAccessException {
         return adapterClass.newInstance();

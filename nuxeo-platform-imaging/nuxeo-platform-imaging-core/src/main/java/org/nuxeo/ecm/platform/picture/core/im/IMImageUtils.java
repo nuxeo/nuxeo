@@ -226,4 +226,10 @@ public class IMImageUtils implements ImageUtils {
         return suffix;
     }
 
+    public boolean isAvailable() {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandAvailability commandAvailability = cles.getCommandAvailability("identify");
+        return commandAvailability.isAvailable();
+    }
+
 }

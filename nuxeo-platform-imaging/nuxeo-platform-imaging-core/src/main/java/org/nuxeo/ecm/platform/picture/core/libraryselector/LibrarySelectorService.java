@@ -24,33 +24,36 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import org.nuxeo.ecm.platform.picture.core.MimeUtils;
+import org.nuxeo.ecm.platform.picture.core.mistral.MistralImageUtils;
+import org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils;
+import org.nuxeo.ecm.platform.picture.core.mistral.MistralMimeUtils;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class LibrarySelectorService extends DefaultComponent implements LibrarySelector{
-    public static final String NAME = "org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelectorService";
 
     public static final String LIBRARY_SELECTOR = "LibrarySelector";
 
     private static final Log log = LogFactory.getLog(LibrarySelectorService.class);
 
-    private static ImageUtilsDescriptor imageUtilsDescriptor;
+    protected static final ImageUtils DEFAULT_IMAGE_UTILS = new MistralImageUtils();
 
-    private static MetadataUtilsDescriptor metadataUtilsDescriptor;
+    protected static final MetadataUtils DEFAULT_METADATA_UTILS = new MistralMetadataUtils();
 
-    private static MimeUtilsDescriptor mimeUtilsDescriptor;
+    protected static final MimeUtils DEFAULT_MIME_UTILS = new MistralMimeUtils();
 
-    @Override
-    public void activate(ComponentContext context) {
+    protected ImageUtils imageUtils;
 
-    }
+    protected MetadataUtils metadataUtils;
+
+    protected MimeUtils mimeUtils;
 
     @Override
     public void deactivate(ComponentContext context) {
-        imageUtilsDescriptor = null;
-        metadataUtilsDescriptor = null;
-        mimeUtilsDescriptor = null;
+        imageUtils = null;
+        metadataUtils = null;
+        mimeUtils = null;
     }
 
     @Override
@@ -58,39 +61,60 @@ public class LibrarySelectorService extends DefaultComponent implements LibraryS
             String extensionPoint, ComponentInstance contributor) {
 
         if (extensionPoint.equals(LIBRARY_SELECTOR)) {
-            LibrarySelectorServiceDescriptor libraryDesc = (LibrarySelectorServiceDescriptor) contribution;
-            registerPictureAdapter(libraryDesc, contributor);
+            LibrarySelectorServiceDescriptor libraryDescriptor = (LibrarySelectorServiceDescriptor) contribution;
+            registerLibrarySelector(libraryDescriptor);
         } else {
             log.error("Extension point " + extensionPoint + "is unknown");
         }
-
     }
 
-    public static void registerPictureAdapter(
-            LibrarySelectorServiceDescriptor libraryDesc,
-            ComponentInstance contributor) {
-        imageUtilsDescriptor = libraryDesc.getImageUtils();
-        mimeUtilsDescriptor = libraryDesc.getMimeUtils();
-        metadataUtilsDescriptor = libraryDesc.getMetadataUtils();
-        log.debug("Using " + imageUtilsDescriptor.getName()
-                + " for ImageUtils.\n" + "Using "
-                + mimeUtilsDescriptor.getName() + " for MimeUtils.\n"
-                + "Using " + metadataUtilsDescriptor.getName()
-                + " for MeadataUtils.\n");
+    public void registerLibrarySelector(
+            LibrarySelectorServiceDescriptor libraryDescriptor) {
+        registerImageUtils(libraryDescriptor.getImageUtils());
+        registerMetadataUtils(libraryDescriptor.getMetadataUtils());
+        registerMimeUtils(libraryDescriptor.getMimeUtils());
     }
 
-    public ImageUtils getImageUtils() throws InstantiationException,
-            IllegalAccessException {
-        return imageUtilsDescriptor.getNewInstance();
+    protected void registerImageUtils(ImageUtilsDescriptor imageUtilsDescriptor) {
+        try {
+            imageUtils = imageUtilsDescriptor.getNewInstance();
+        } catch (Exception e) {
+            imageUtils = DEFAULT_IMAGE_UTILS;
+        }
+        if (!imageUtils.isAvailable()) {
+            imageUtils = DEFAULT_IMAGE_UTILS;
+        }
+        log.debug("Using " + imageUtils.getClass().getName() + " for ImageUtils.");
     }
 
-    public MimeUtils getMimeUtils() throws InstantiationException,
-            IllegalAccessException {
-        return mimeUtilsDescriptor.getNewInstance();
+    protected void registerMetadataUtils(MetadataUtilsDescriptor metadataUtilsDescriptor) {
+        try {
+            metadataUtils = metadataUtilsDescriptor.getNewInstance();
+        } catch (Exception e) {
+            metadataUtils = DEFAULT_METADATA_UTILS;
+        }
+        log.debug("Using " + metadataUtils.getClass().getName() + " for MetadataUtils.");
     }
 
-    public MetadataUtils getMetadataUtils()
-            throws InstantiationException, IllegalAccessException {
-        return metadataUtilsDescriptor.getNewInstance();
+    protected void registerMimeUtils(MimeUtilsDescriptor mimeUtilsDescriptor) {
+        try {
+            mimeUtils = mimeUtilsDescriptor.getNewInstance();
+        } catch (Exception e) {
+            mimeUtils = DEFAULT_MIME_UTILS;
+        }
+        log.debug("Using " + mimeUtils.getClass().getName() + " for MimeUtils.");
     }
+
+    public ImageUtils getImageUtils() {
+        return imageUtils;
+    }
+
+    public MimeUtils getMimeUtils() {
+        return mimeUtils;
+    }
+
+    public MetadataUtils getMetadataUtils() {
+        return metadataUtils;
+    }
+
 }

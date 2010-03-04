@@ -279,4 +279,7 @@ public class ImageJImageUtils implements ImageUtils {
         return null;
     }
 
+    public boolean isAvailable() {
+        return true; // we only need the imagej jars in the classpath
+    }
 }
