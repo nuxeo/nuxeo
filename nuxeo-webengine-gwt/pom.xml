@@ -34,11 +34,11 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -46,11 +46,12 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
+      <optional>true</optional>
       <scope>compile</scope>
       <version>2.0</version>
     </dependency>
 
-    <!-- 
+    <!--
     This artifact is required only in gwt dev mode - to launch a nuxeo server.
     It is not required at runtime in web mode
      -->
