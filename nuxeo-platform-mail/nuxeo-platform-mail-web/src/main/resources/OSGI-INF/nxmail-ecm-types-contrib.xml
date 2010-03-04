@@ -33,6 +33,10 @@
       <layouts mode="any">
         <layout>mail_folder</layout>
       </layouts>
+      <layouts mode="listing">
+        <layout>mail_listing</layout>
+        <layout>document_listing</layout>
+      </layouts> 
       <subtypes>
         <type>MailMessage</type>
       </subtypes>
