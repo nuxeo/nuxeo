@@ -20,6 +20,10 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-server</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-gadgets</artifactId>
     </dependency>
@@ -33,6 +37,10 @@
       <artifactId>gwt-dev</artifactId>
       <scope>provided</scope>
       <classifier>${platform}</classifier>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
 
     <dependency>

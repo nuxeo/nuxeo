@@ -17,16 +17,26 @@
 
 package org.nuxeo.opensocial.service.impl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.ProxySelector;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.common.crypto.BasicBlobCrypter;
+import org.apache.shindig.common.crypto.Crypto;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.servlet.GuiceContextListener;
 import org.nuxeo.opensocial.shindig.crypto.KeyDescriptor;
+import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
+import org.nuxeo.opensocial.shindig.crypto.OpenSocialDescriptor;
+import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -36,6 +46,9 @@ import com.google.inject.Injector;
 
 public class OpenSocialServiceImpl extends DefaultComponent implements
         OpenSocialService {
+
+    private static final Log log = LogFactory.getLog(OpenSocialServiceImpl.class);
+
     public static final String ID = "org.nuxeo.opensocial.service.impl.OpenSocialServiceImpl";
 
     public static final ComponentName NAME = new ComponentName(ID);
@@ -44,9 +57,17 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private static final String XP_CRYPTO = "cryptoConfig";
 
+    private static final String XP_OPENSOCIAL = "openSocialConfig";
+
     private static Injector injector;
 
+    protected File signingStateKeyFile;
+
+    protected OpenSocialDescriptor os;
+
     private final Map<String, String> keys = new HashMap<String, String>();
+
+    protected File oauthPrivateKeyFile;
 
     public Injector getInjector() {
         return injector;
@@ -58,10 +79,15 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
         if (XP_CRYPTO.equals(extensionPoint)) {
             KeyDescriptor kd = (KeyDescriptor) contribution;
             keys.put(kd.getContainer(), kd.getKey());
+        }
+        if (XP_OPENSOCIAL.equals(extensionPoint)) {
+            os = (OpenSocialDescriptor) contribution;
+            setupOpenSocial();
         }
     }
 
@@ -123,4 +149,87 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return new SimpleProxySelector();
     }
 
+    protected void setupOpenSocial() throws Exception {
+        // state key
+        if (StringUtils.isBlank(os.getSigningKey())) {
+            byte[] b64 = Base64.encodeBase64(Crypto.getRandomBytes(BasicBlobCrypter.MASTER_KEY_MIN_LEN));
+            os.setSigningKey(new String(b64, "UTF-8"));
+        }
+        try {
+            signingStateKeyFile = createTempFileForAKey(os.getSigningKey());
+            // shindig doesn't make it's constants visible to us
+            System.setProperty("shindig.signing.state-key",
+                    signingStateKeyFile.getPath());
+        } catch (IOException e) {
+            log.warn("ignoring signing key " + os.getSigningKey()
+                    + " because we cannot write temp file!", e);
+        }
+
+        // private key
+        if (!StringUtils.isBlank(os.getExternalPrivateKey())) {
+            String name = os.getExternalPrivateKeyName();
+            if (StringUtils.isBlank(name)) {
+                log.warn("no key name provided for oauth external private key "
+                        + " so we are using default name of 'nuxeo'");
+                name = "nuxeo";
+            }
+            oauthPrivateKeyFile = createTempFileForAKey(os.getExternalPrivateKey());
+            System.setProperty("shindig.signing.key-file",
+                    oauthPrivateKeyFile.getPath());
+            System.setProperty("shindig.signing.key-name", name);
+        } else {
+            log.warn("OAuth is not likely to work properly for dashboard "
+                    + "because no external private key was found");
+        }
+
+        // callback URL
+        if (!StringUtils.isBlank(os.getCallbackUrl())) {
+            // shindig doesn't make it's constants visible to us
+            System.setProperty("shindig.signing.global-callback-url",
+                    os.getCallbackUrl());
+        } else {
+            throw new Exception(
+                    "Unable to start because the global callback url"
+                            + " is not set.  See default-opensocial-config.xml");
+        }
+
+    }
+
+    // if you are worried about the security of this, you probably should be
+    // however, this is required (as far as I can tell)
+    // by the design of the shindig system--which does make some
+    // assumptions that the container is reasonably secure
+    protected File createTempFileForAKey(String keyValue) throws IOException {
+        File f = File.createTempFile("nxkey", ".txt");
+        f.deleteOnExit();
+        FileWriter writer = new FileWriter(f);
+        writer.append(keyValue);
+        writer.flush();
+        writer.close();
+        return f;
+    }
+
+    public File getSigningStateKeyFile() {
+        return signingStateKeyFile;
+    }
+
+    public PortalConfig[] getPortalConfig() {
+        return os.getPortalConfig();
+    }
+
+    public File getOAuthPrivateKeyFile() {
+        return oauthPrivateKeyFile;
+    }
+
+    public OAuthServiceDescriptor[] getOAuthServices() {
+        return os.getOAuthServices();
+    }
+
+    public String getOAuthCallbackUrl() {
+        return os.getCallbackUrl();
+    }
+
+    public String getOAuthPrivateKeyName() {
+        return os.getExternalPrivateKeyName();
+    }
 }

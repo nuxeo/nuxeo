@@ -17,9 +17,12 @@
 
 package org.nuxeo.opensocial.service.api;
 
+import java.io.File;
 import java.net.ProxySelector;
 
 import org.apache.shindig.gadgets.GadgetSpecFactory;
+import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
+import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
 
 import com.google.inject.Injector;
 
@@ -54,4 +57,49 @@ public interface OpenSocialService {
      */
     ProxySelector getProxySelector();
 
+    /**
+     * Returns a file handle to the base64 encoded key that is used to sign
+     * internal requests.
+     * 
+     * @return
+     */
+    File getSigningStateKeyFile();
+
+    /**
+     * Returns a file handle to the default private key for communicating with
+     * external resources.
+     * 
+     * @return
+     */
+    File getOAuthPrivateKeyFile();
+
+    /**
+     * Get a list of the configured external service providers that we want to
+     * communicate with.
+     */
+    OAuthServiceDescriptor[] getOAuthServices();
+
+    /**
+     * PortalConfig array that represents the contribution from the user in the
+     * opensocial xp. This is normally null.
+     * 
+     * @return
+     */
+    PortalConfig[] getPortalConfig();
+
+    /**
+     * Returns the name of the private key. Most service providers don't use
+     * this.
+     * 
+     * @return
+     */
+    String getOAuthPrivateKeyName();
+
+    /**
+     * Where the Oauth "return callback" shoud go. This has to be configured to
+     * the name (and path) that other servers see the nuxeo instanec as.
+     * 
+     * @return
+     */
+    String getOAuthCallbackUrl();
 }
