@@ -71,12 +71,13 @@ public class WebengineError extends ModuleRoot {
         pw.println("<html>");
         pw.println("<head><title>WebEbgine Error Test</title></head>");
         pw.println("<body>");
+        pw.println("WEBENGINE HANDLED ERROR: ");
         e.printStackTrace(pw);
         pw.println("</body>");
         pw.println("</html>");
         pw.close();
         return Response.status(500).entity(
-                "WEBENGINE HANDLED ERROR: \n" + sw.toString()).build();
+                sw.toString()).build();
     }
 
 }
