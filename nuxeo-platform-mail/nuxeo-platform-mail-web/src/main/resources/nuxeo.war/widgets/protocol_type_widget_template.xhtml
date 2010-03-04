@@ -7,11 +7,11 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
   <c:if test="#{widget.mode == 'view'}">
-    <h:outputText value="#{field_0}" />
+    <h:outputText value="#{field}" />
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
-    <h:selectOneRadio id="#{widget.id}_field" value="#{field_0}" required="#{widget.properties['required']}">
+    <h:selectOneRadio id="#{widget.id}_field" value="#{field}" required="#{widget.properties['required']}">
       <f:selectItem itemValue="imap" itemLabel="IMAP" />
       <f:selectItem itemValue="pop3" itemLabel="POP3" />
       <f:selectItem itemValue="imaps" itemLabel="IMAPS" />

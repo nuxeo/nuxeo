@@ -3,11 +3,11 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
   <c:if test="#{widget.mode != 'edit'}">
-    <h:outputText value="#{messages[field_0]}" />
+    <h:outputText value="#{messages[field]}" />
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
-    <h:selectOneMenu value="#{field_0}" id="#{widget.id}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}">
       <f:selectItem itemValue="workflowDirectiveValidation"
         itemLabel="#{messages['workflowDirectiveValidation']}" />
       <f:selectItem itemValue="workflowDirectiveOpinion"
