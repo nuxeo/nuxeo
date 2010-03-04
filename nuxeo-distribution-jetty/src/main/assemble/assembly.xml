@@ -234,6 +234,7 @@
       <artifact:resolveFile key="net.sourceforge.nekohtml:nekohtml" />
       <artifact:resolveFile key="joda-time:joda-time" />
       <artifact:resolveFile key="org.json:json" />
+      <artifact:resolveFile key="com.googlecode.json-simple:json-simple"/>
       <artifact:resolveFile key="de.odysseus.juel:juel-impl" />
       <artifact:resolveFile key="aopalliance:aopalliance" />
       <artifact:resolveFile key="org.apache.sanselan:sanselan" />
