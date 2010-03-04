@@ -82,7 +82,13 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         if (adapter.isAssignableFrom(this.getClass())) {
             return (T) this;
         }
-        return null;
+
+        //Try the inject to find the class
+        try {
+            return getInjector().getInstance(adapter);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
