@@ -82,12 +82,16 @@
     <widgetType name="listing_mail_attachments">
 
       <documentation>
-        This widget type displays the mail attachments.
+        This widget type displays the mail attachments. This widget requires
+        a document with the files schema.
         <br />
         It requires the following fields configuration:
         <ul>
           <li>
             first field mapping the files property.
+          </li>
+          <li>
+            second field mapping the document.
           </li>
         </ul>
       </documentation>
@@ -184,10 +188,6 @@
           <field>data.files.files</field>
           <field>data</field>
         </fields>
-        <properties mode="any">
-          <property name="files_property_name">files:diles</property>
-          <property name="content_property_name">file</property>
-        </properties>
       </widget>
     </layout>
 
