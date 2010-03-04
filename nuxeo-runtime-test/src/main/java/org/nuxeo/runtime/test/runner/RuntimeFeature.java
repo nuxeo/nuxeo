@@ -174,9 +174,9 @@ public class RuntimeFeature extends SimpleFeature {
                 throw new RuntimeException("Failed to bind service: "+svc, e);
             }
         }
+        binder.bind(RuntimeHarness.class).toInstance(getHarness());
 //        binder.bind(FeaturesRunner.class).toInstance(runner);
 //        binder.bind(NuxeoRunner.class).toInstance(runner);
-//        binder.bind(RuntimeHarness.class).toInstance(getHarness());
     }
 
 
