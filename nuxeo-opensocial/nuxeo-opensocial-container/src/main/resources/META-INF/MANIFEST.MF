@@ -5,8 +5,6 @@ Bundle-SymbolicName: org.nuxeo.opensocial.container
 Bundle-Version: 1.0.0
 Bundle-Vendor: Leroy Merlin
 Provide-Package: org.nuxeo.opensocial.container
-Nuxeo-Component:  OSGI-INF/opensocial-config-component.xml,
- OSGI-INF/opensocial-config-default-contrib.xml,
- OSGI-INF/opensocial-factory-component.xml,
+Nuxeo-Component: OSGI-INF/opensocial-factory-component.xml,
  OSGI-INF/querymodel-contrib.xml
 Require-Bundle: org.nuxeo.ecm.spaces.api

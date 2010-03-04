@@ -33,7 +33,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActionsImpl;
-import org.nuxeo.ecm.platform.mail.action.MessageAction;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcher;
@@ -61,6 +60,8 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     private final Map<String, MessageActionPipe> actionPipesRegistry = new HashMap<String, MessageActionPipe>();
 
+    private final Map<String, MessageActionPipeDescriptor> actionPipeDecriptorsRegistry = new HashMap<String, MessageActionPipeDescriptor>();
+
     static {
         setDeocodeUTFFileNamesSystemProperty();
     }
@@ -77,11 +78,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
             fetchers.put(descriptor.getName(), descriptor.getFetcher());
         } else if (extensionPoint.equals(ACTION_PIPES)) {
             MessageActionPipeDescriptor descriptor = (MessageActionPipeDescriptor) contribution;
-            MessageActionPipe pipe = new MessageActionPipe();
-            for (Class<? extends MessageAction> klass : descriptor.getActions()) {
-                pipe.add(klass.newInstance());
-            }
-            actionPipesRegistry.put(descriptor.getName(), pipe);
+            registerActionPipe(descriptor);
         }
     }
 
@@ -101,12 +98,25 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         sessionFactories.put(descriptor.getName(), descriptor);
     }
 
-    private static void setDeocodeUTFFileNamesSystemProperty(){
-        String toDecodeTheFilenames = Framework.getRuntime().getProperty("mail.mime.decodefilename");
+    private void registerActionPipe(MessageActionPipeDescriptor descriptor)
+            throws Exception {
+        if (!descriptor.getOverride()) {
+            MessageActionPipeDescriptor existingDescriptor = actionPipeDecriptorsRegistry.get(descriptor.getName());
+            if (existingDescriptor != null) {
+                descriptor.merge(existingDescriptor);
+            }
+        }
+        actionPipeDecriptorsRegistry.put(descriptor.getName(), descriptor);
+        actionPipesRegistry.put(descriptor.getName(), descriptor.getPipe());
+    }
+
+    private static void setDeocodeUTFFileNamesSystemProperty() {
+        String toDecodeTheFilenames = Framework.getRuntime().getProperty(
+                "mail.mime.decodefilename");
         if (toDecodeTheFilenames == null) {
             return;
         }
-        toDecodeTheFilenames =  toDecodeTheFilenames.trim().toLowerCase();
+        toDecodeTheFilenames = toDecodeTheFilenames.trim().toLowerCase();
         if (toDecodeTheFilenames.equals("true")
                 || toDecodeTheFilenames.equals("yes")) {
             System.setProperty("mail.mime.decodefilename", "true");
@@ -124,8 +134,8 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         Properties props = getProperties(name, context);
         Session session = Session.getDefaultInstance(props);
         Store store = session.getStore();
-        store.connect(props.getProperty("user").toString(),
-                props.getProperty("password").toString());
+        store.connect(props.getProperty("user").toString(), props.getProperty(
+                "password").toString());
         return store;
     }
 

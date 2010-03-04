@@ -52,6 +52,29 @@
   <extension-point name="actionPipes">
     <documentation>
       Extension point to register a list of actions.
+
+      <p>
+        An ActionPipe is a list of ActionMessage used for mail import. Default contribution
+        are merged but you can override them using 'override' attribute. 
+
+      <code>
+        <pipe name="nxmail" override="true">
+          <action id="StartAction" to="CreateDocumentsAction">
+            org.nuxeo.ecm.platform.mail.listener.action.StartAction
+          </action>
+          <action id="CreateDocumentsAction">
+            org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
+          </action>
+        </pipe>
+      </code>
+      </p>
+
+      <p>
+        When registering the ActionPipe, the service looks for an ActionMessage named
+        'StartAction', so this is a mandatory attribute. Registration of the pipe ends when
+        service doesn't find the next action.
+      </p>
+
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor" />

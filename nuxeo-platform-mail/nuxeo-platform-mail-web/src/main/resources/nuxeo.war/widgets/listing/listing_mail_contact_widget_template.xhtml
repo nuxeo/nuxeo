@@ -1,0 +1,30 @@
+<f:subview id="#{widget.id}"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:outputText value="#{messages['label.mail.from']}: " styleClass="boldLabel" />
+  <h:outputText value="#{field_0}" escape="false">
+    <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+  </h:outputText>
+  <h:outputText value=" " />
+
+  <h:outputText value="#{messages['label.mail.to']}: " styleClass="boldLabel" />
+  <nxu:repeat value="#{field_1}" var="contact">
+    <h:outputText value="#{contact}" escape="false">
+      <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+    </h:outputText>
+    <h:outputText value=" " />
+  </nxu:repeat>
+
+  <f:subview rendered="#{not empty field_2}" >
+    <h:outputText value="#{messages['label.mail.tocc']}: " styleClass="boldLabel" />
+    <nxu:repeat value="#{field_2}" var="contact">
+      <h:outputText value="#{contact}" escape="false">
+        <f:converter converterId="org.nuxeo.ecm.platform.mail.web.converter.mailconverter" />
+      </h:outputText>
+      <h:outputText value=" " />
+    </nxu:repeat>
+  </f:subview>
+
+</f:subview>

@@ -1,0 +1,16 @@
+<f:subview id="#{widget.id}"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <f:subview rendered="#{100 > fn:length(field_0)}" > 
+    <h:outputText  value="#{field_0}" />
+  </f:subview>  
+  
+  <f:subview rendered="#{fn:length(field_0) > 99}" > 
+    <span title="#{field_0}">
+      <h:outputText value="#{fn:substring(field_0,0,99)}..." />
+    </span>
+  </f:subview>  
+   
+</f:subview>

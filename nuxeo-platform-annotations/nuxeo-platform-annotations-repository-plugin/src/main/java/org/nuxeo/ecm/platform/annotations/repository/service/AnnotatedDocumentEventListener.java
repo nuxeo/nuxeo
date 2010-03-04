@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 
 /**
@@ -28,19 +29,26 @@ import org.nuxeo.ecm.platform.annotations.api.Annotation;
  */
 public interface AnnotatedDocumentEventListener {
 
-    void beforeAnnotationCreated(DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationCreated(DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationCreated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void beforeAnnotationRead(String annId);
+    void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId);
 
-    void afterAnnotationRead(DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationRead(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void beforeAnnotationUpdated(DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationUpdated(DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationUpdated(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void beforeAnnotationDeleted(DocumentLocation documentLoc, Annotation annotation);
+    void beforeAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 
-    void afterAnnotationDeleted(DocumentLocation documentLoc, Annotation annotation);
+    void afterAnnotationDeleted(NuxeoPrincipal principal,
+            DocumentLocation documentLoc, Annotation annotation);
 }

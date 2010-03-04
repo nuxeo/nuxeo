@@ -91,12 +91,12 @@ public class AnnotationServiceProxy implements AnnotationsService {
         checkPermission(annotation, user,
                 configurationService.getCreateAnnotationPermission());
         for (EventListener listener : listeners) {
-            listener.beforeAnnotationCreated(translatedAnnotation);
+            listener.beforeAnnotationCreated(user, translatedAnnotation);
         }
         Annotation tmpResult = service.addAnnotation(translatedAnnotation,
                 user, baseUrl);
         for (EventListener listener : listeners) {
-            listener.afterAnnotationCreated(tmpResult);
+            listener.afterAnnotationCreated(user, tmpResult);
         }
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl,
                 tmpResult);
@@ -135,11 +135,11 @@ public class AnnotationServiceProxy implements AnnotationsService {
                 configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
         for (EventListener listener : listeners) {
-            listener.beforeAnnotationDeleted(translatedAnnotation);
+            listener.beforeAnnotationDeleted(user, translatedAnnotation);
         }
         service.deleteAnnotation(translatedAnnotation, user);
         for (EventListener listener : listeners) {
-            listener.afterAnnotationDeleted(translatedAnnotation);
+            listener.afterAnnotationDeleted(user, translatedAnnotation);
         }
     }
 
@@ -149,24 +149,24 @@ public class AnnotationServiceProxy implements AnnotationsService {
                 configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
         for (EventListener listener : listeners) {
-            listener.beforeAnnotationDeleted(translatedAnnotation);
+            listener.beforeAnnotationDeleted(user, translatedAnnotation);
         }
         service.deleteAnnotationFor(resolver.translateToGraphURI(uri), translatedAnnotation, user);
         for (EventListener listener : listeners) {
-            listener.afterAnnotationDeleted(translatedAnnotation);
+            listener.afterAnnotationDeleted(user, translatedAnnotation);
         }
     }
 
     public Annotation getAnnotation(String annotationId, NuxeoPrincipal user,
             String baseUrl) throws AnnotationException {
         for (EventListener listener : listeners) {
-            listener.beforeAnnotationRead(annotationId);
+            listener.beforeAnnotationRead(user, annotationId);
         }
         Annotation result = service.getAnnotation(annotationId, user, null);
         checkPermission(result, user,
                 configurationService.getReadAnnotationPermission());
         for (EventListener listener : listeners) {
-            listener.afterAnnotationRead(result);
+            listener.afterAnnotationRead(user, result);
         }
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl,
                 result);
@@ -190,7 +190,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
             Annotation translatedAnnotation = annotationManager.translateAnnotationFromRepo(
                     resolver, baseUrl, annotation);
             for (EventListener listener : listeners) {
-                listener.afterAnnotationRead(translatedAnnotation);
+                listener.afterAnnotationRead(user, translatedAnnotation);
             }
             checkPermission(translatedAnnotation, user,
                     configurationService.getReadAnnotationPermission());
@@ -204,12 +204,12 @@ public class AnnotationServiceProxy implements AnnotationsService {
         checkPermission(annotation, user,
                 configurationService.getUpdateAnnotationPermission());
         for (EventListener listener : listeners) {
-            listener.beforeAnnotationUpdated(annotation);
+            listener.beforeAnnotationUpdated(user, annotation);
         }
         Annotation result = service.updateAnnotation(
                 getTranslatedAnnotation(annotation), user, baseUrl);
         for (EventListener listener : listeners) {
-            listener.afterAnnotationUpdated(result);
+            listener.afterAnnotationUpdated(user, result);
         }
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl,
                 result);

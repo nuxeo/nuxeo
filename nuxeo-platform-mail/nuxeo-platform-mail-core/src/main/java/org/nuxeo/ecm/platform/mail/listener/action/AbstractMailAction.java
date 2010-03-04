@@ -19,17 +19,26 @@
 
 package org.nuxeo.ecm.platform.mail.listener.action;
 
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_ID_KEY;
+
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MessageAction;
 
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_ID_KEY;
-
 /**
  * @author Catalin Baican
+ * @author Laurent Doguin
  */
 public abstract class AbstractMailAction implements MessageAction {
+
+    public boolean execute(ExecutionContext context) throws Exception {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public void reset(ExecutionContext context) throws Exception {
+        // do nothing
+    }
 
     protected CoreSession getCoreSession(ExecutionContext context)
             throws Exception {

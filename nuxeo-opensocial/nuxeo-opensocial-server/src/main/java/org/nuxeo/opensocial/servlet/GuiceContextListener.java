@@ -26,14 +26,23 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.gadgets.http.HttpFetcher;
+import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
+import org.apache.shindig.gadgets.oauth.OAuthModule;
+import org.apache.shindig.gadgets.oauth.OAuthRequest;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.shindig.oauth.NuxeoOAuthRequest;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.inject.Binder;
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Provider;
 import com.google.inject.Stage;
 import com.google.inject.tools.jmx.Manager;
+import com.google.inject.util.Modules;
 
 public class GuiceContextListener implements ServletContextListener {
     public static final String INJECTOR_ATTRIBUTE = "guice-injector";
@@ -56,6 +65,8 @@ public class GuiceContextListener implements ServletContextListener {
         try {
 
             log.info("GuiceContextListener createInjector");
+            modules.add(Modules.override(new OAuthModule()).with(
+                    new NuxeoOverrides()));
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
             OpenSocialService service = Framework.getService(OpenSocialService.class);
             if (service != null) {
@@ -120,5 +131,31 @@ public class GuiceContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent event) {
         ServletContext context = event.getServletContext();
         context.removeAttribute(INJECTOR_ATTRIBUTE);
+    }
+}
+
+class NuxeoOverridesRequestProvider implements Provider<OAuthRequest> {
+    private final HttpFetcher fetcher;
+
+    private final OAuthFetcherConfig config;
+
+    @Inject
+    public NuxeoOverridesRequestProvider(HttpFetcher fetcher,
+            OAuthFetcherConfig config) {
+        this.fetcher = fetcher;
+        this.config = config;
+    }
+
+    public OAuthRequest get() {
+        return new NuxeoOAuthRequest(config, fetcher);
+    }
+
+}
+
+class NuxeoOverrides implements Module {
+
+    public void configure(Binder binder) {
+        binder.bind(OAuthRequest.class).toProvider(
+                NuxeoOverridesRequestProvider.class);
     }
 }
