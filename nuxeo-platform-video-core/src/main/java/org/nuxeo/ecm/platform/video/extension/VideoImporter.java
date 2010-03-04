@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.video.extension;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +32,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
+import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.video.convert.Constants;
@@ -52,10 +59,22 @@ public class VideoImporter extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(VideoImporter.class);
 
     public static final String VIDEO_TYPE = "Video";
+
+    // TODO: make this not static and configurable somehow?
+    public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<Map<String, Object>>();
+    static {
+        Map<String, Object> thumbnailView = new HashMap<String, Object>();
+        thumbnailView.put("title", "thumbnail");
+        thumbnailView.put("maxsize", AbstractPictureAdapter.THUMB_SIZE);
+        THUMBNAILS_VIEWS.add(thumbnailView);
+        Map<String, Object> staticPlayerView = new HashMap<String, Object>();
+        staticPlayerView.put("title", "staticPlayerView");
+        staticPlayerView.put("maxsize", AbstractPictureAdapter.MEDIUM_SIZE);
+        THUMBNAILS_VIEWS.add(thumbnailView);
+    }
 
     protected ConversionService cs;
 
@@ -76,7 +95,6 @@ public class VideoImporter extends AbstractFileImporter {
             updateProperties(docModel, content, filename);
             docModel = overwriteAndIncrementversion(documentManager, docModel);
         } else {
-
             // Creating an unique identifier
             String docId = IdUtils.generateId(title);
 
@@ -96,23 +114,76 @@ public class VideoImporter extends AbstractFileImporter {
         return docModel;
     }
 
+    /**
+     * Compute the JPEG story-board and previews for a video document from the
+     * blob content of the video.
+     */
     protected void updateProperties(DocumentModel docModel, Blob content,
-            String filename) throws ClientException {
+            String filename) throws ClientException, IOException {
 
+        // compute the story-board and the duration
         try {
-            BlobHolder result = getConversionService().convert(
-                    Constants.STORYBOARD_CONVERTER,
-                    new SimpleBlobHolder(content), null);
-            docModel.setPropertyValue("video:storyboard",
-                    (Serializable) result.getBlobs());
-            docModel.setPropertyValue("video:duration",
-                    result.getProperty("duration"));
+            updateStoryboard(docModel, content);
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+
+        // grab a full size screenshot of the video at a given position and use
+        // it a
+        try {
+            Double duration = (Double) docModel.getPropertyValue("video:duration");
+            Double position = 0.0;
+            if (duration != null) {
+                // take a screen-shot at 10% of the duration to skip intro
+                // screen
+                position = duration * 0.1;
+            }
+            updatePreviews(docModel, content, filename, position,
+                    THUMBNAILS_VIEWS);
         } catch (Exception e) {
             log.error(e, e);
         }
 
         docModel.setPropertyValue("file:content", (Serializable) content);
         docModel.setPropertyValue("file:filename", filename);
+    }
+
+    /**
+     * Update the JPEG story board and duration in seconds of a Video document
+     * from the video blob content.
+     */
+    public void updateStoryboard(DocumentModel docModel, Blob video)
+            throws ConversionException, Exception, PropertyException,
+            ClientException {
+        BlobHolder result = getConversionService().convert(
+                Constants.STORYBOARD_CONVERTER, new SimpleBlobHolder(video),
+                null);
+        docModel.setPropertyValue("video:storyboard",
+                (Serializable) result.getBlobs());
+        docModel.setPropertyValue("video:duration",
+                result.getProperty("duration"));
+    }
+
+    /**
+     * Update the JPEG previews of a Video document from the video blob content
+     * by taking a screen-shot of the movie at timecode offset given in seconds.
+     */
+    public void updatePreviews(DocumentModel docModel, Blob video,
+            String filename, Double position,
+            ArrayList<Map<String, Object>> templates)
+            throws ConversionException, Exception, ClientException, IOException {
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        parameters.put(Constants.POSITION_PARAMETER, position);
+        BlobHolder result = getConversionService().convert(
+                Constants.SCREENSHOT_CONVERTER, new SimpleBlobHolder(video),
+                parameters);
+
+        // compute the thumbnail preview
+        if (result != null && result.getBlob() != null) {
+            PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
+            picture.createPicture(result.getBlob(), filename,
+                    docModel.getTitle(), templates);
+        }
     }
 
     protected ConversionService getConversionService() throws Exception {

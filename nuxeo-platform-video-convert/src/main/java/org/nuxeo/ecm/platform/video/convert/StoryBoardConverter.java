@@ -92,10 +92,10 @@ public class StoryBoardConverter implements Converter {
             commonParams.put(RATE_PARAM, "0.1");
         }
         if (!commonParams.containsKey(WIDTH_PARAM)) {
-            commonParams.put(WIDTH_PARAM, "176");
+            commonParams.put(WIDTH_PARAM, "100");
         }
         if (!commonParams.containsKey(HEIGHT_PARAM)) {
-            commonParams.put(HEIGHT_PARAM, "144");
+            commonParams.put(HEIGHT_PARAM, "62");
         }
         if (commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
             numberOfThumbnails = Integer.parseInt(commonParams.get(THUMBNAIL_NUMBER_PARAM));
