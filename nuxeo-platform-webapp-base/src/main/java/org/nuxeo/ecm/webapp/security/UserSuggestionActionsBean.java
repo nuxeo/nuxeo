@@ -133,9 +133,11 @@ public class UserSuggestionActionsBean implements Serializable {
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
             }
-            if (hideVirtualGroups!=null && hideVirtualGroups==true) {
-                filter.put("virtual", false);
-            }
+            // FIXME NXP-4754: this makes an error if the "virtual" column does
+            // not exist
+            // if (hideVirtualGroups!=null && hideVirtualGroups==true) {
+            // filter.put("virtual", false);
+            // }
             // parameters must be serializable so copy keySet to HashSet
             return userManager.searchGroups(filter, new HashSet<String>(
                     filter.keySet()));
