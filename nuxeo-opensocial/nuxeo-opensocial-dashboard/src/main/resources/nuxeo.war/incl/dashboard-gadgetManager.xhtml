@@ -10,7 +10,7 @@
 	<div id="listCategories"><c:forEach
 		items="#{opensocialDashboard.categories}" var="category">
 		<div class="button-container"><a class="nv-category"
-			category="#{category}">#{category}</a></div>
+			category="#{category}">#{messages[category]}</a></div>
 	</c:forEach></div>
 	<div id="listGadgets">
 	<ul class="option" id="tabGadgets">
@@ -18,7 +18,7 @@
 			<li class="invisible">
 			<div class="nameGadget">#{gadget.name}</div>
 			<a href="#_" name="#{gadget.name}" class="typeGadget"
-				category="#{gadget.category}"
+				category="#{messages[gadget.category]}"
 				style="background-image: url(#{gadget.iconUrl})"></a>
 			<div class="directAdd"><a href="#"
 				class="directAddLink linkAdd" name="#{gadget.name}"> <span
