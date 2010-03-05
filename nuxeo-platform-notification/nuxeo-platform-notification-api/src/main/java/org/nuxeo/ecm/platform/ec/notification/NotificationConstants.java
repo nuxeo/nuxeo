@@ -59,6 +59,10 @@ public class NotificationConstants {
 
     public static final String EVENT_ID_KEY = "eventId";
 
+    public static final String USER_PREFIX = "user:";
+
+    public static final String GROUP_PREFIX = "group:";
+
     private NotificationConstants() {
     }
 

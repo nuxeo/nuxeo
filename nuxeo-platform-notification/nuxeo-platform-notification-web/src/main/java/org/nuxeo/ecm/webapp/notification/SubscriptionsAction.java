@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -143,7 +144,7 @@ public class SubscriptionsAction extends InputController implements
                     currentSubscription.getNotification().getName(),
                     currentDoc.getId());
         } else {
-            notificationManager.addSubscription("user:" + principal.getName(),
+            notificationManager.addSubscription(NotificationConstants.USER_PREFIX + principal.getName(),
                     currentSubscription.getNotification().getName(),
                     currentDoc, false, principal, "");
         }
