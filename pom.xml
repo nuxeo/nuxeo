@@ -70,6 +70,7 @@
     <module>nuxeo-platform-convert</module>
     <module>nuxeo-platform-forms-layout-api</module>
     <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-platform-htmlsanitizer</module>
     <module>nuxeo-shell-core</module>
     <module>nuxeo-platform-test</module>
   </modules>
@@ -682,6 +683,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
 

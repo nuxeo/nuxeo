@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo HTML Sanitizer Service
+Bundle-Vendor: Nuxeo
+Bundle-SymbolicName: org.nuxeo.ecm.platform.htmlsanitizer
+Bundle-Localization: plugin
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.runtime,
+ org.nuxeo.ecm.core.event
+Nuxeo-Component: OSGI-INF/htmlsanitizer-service.xml,
+ OSGI-INF/htmlsanitizer-contrib.xml
