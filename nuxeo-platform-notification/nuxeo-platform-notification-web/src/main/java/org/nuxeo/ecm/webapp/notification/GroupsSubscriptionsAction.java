@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -128,7 +129,7 @@ public class GroupsSubscriptionsAction extends InputController implements
         // adding the newly selected subscriptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
-                notificationManager.addSubscription("user:"
+                notificationManager.addSubscription(NotificationConstants.USER_PREFIX
                         + principal.getName(), subscription, currentDoc, false,
                         principal, "");
             }

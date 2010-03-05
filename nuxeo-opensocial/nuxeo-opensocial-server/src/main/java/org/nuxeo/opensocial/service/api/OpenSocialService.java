@@ -23,6 +23,7 @@ import java.net.ProxySelector;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
+import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Injector;
 
@@ -102,4 +103,15 @@ public interface OpenSocialService {
      * @return
      */
     String getOAuthCallbackUrl();
+
+    /**
+     * Used for delaying the injection process until we are sure that the
+     * opensocial is fully loaded.
+     * 
+     * @param frameworkListener
+     * @return true if this is actually delaying the call of the listener if
+     *         false then this method does nothing because we are already
+     *         initialized and so this method has no point.
+     */
+    boolean setFrameworkListener(FrameworkListener frameworkListener);
 }
