@@ -44,9 +44,9 @@ import com.gwtext.client.widgets.portal.PortalDropZone;
 /**
  * DropZone serve for catch drag and drop event and call container service for
  * save
- * 
+ *
  * @author Guillaume Cusnieux
- * 
+ *
  */
 public class DropZone extends PortalDropZone {
 
@@ -225,25 +225,20 @@ public class DropZone extends PortalDropZone {
 
         for (pos = 0; pos < items.length; pos++) {
             p = items[pos];
-            int height = p.getEl()
-                    .getHeight();
-            if (height != 0 && (p.getEl()
-                    .getY() + (height / 2)) > xy[1]) {
+            int height = p.getEl().getHeight();
+            if (height != 0 && (p.getEl().getY() + (height / 2)) > xy[1]) {
                 match = true;
                 break;
             }
         }
 
-        proxy.getProxy()
-                .setWidth("auto", false);
+        proxy.getProxy().setWidth("auto", false);
 
         if (p != null) {
-            proxy.moveProxy(p.getEl()
-                    .getParentNode(), (match ? p.getEl()
-                    .getDOM() : null));
+            proxy.moveProxy(p.getEl().getParentNode(),
+                    (match ? p.getEl().getDOM() : null));
         } else {
-            proxy.moveProxy(lastPosC.getEl()
-                    .getDOM(), null);
+            proxy.moveProxy(lastPosC.getEl().getDOM(), null);
         }
     }
 
@@ -267,26 +262,28 @@ public class DropZone extends PortalDropZone {
         gp.reloadRenderUrl();
         final GadgetPosition dropPosition = portal.getDropPosition();
         final GadgetBean bean = gp.getGadgetBean();
+        boolean doMove = false;
         if (dropPosition != null) {
-            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
-                    .getPlaceID());
+            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition().getPlaceID());
             PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
-            saveDropZone(bean, dropPosition, dragCol, dropCol);
+            int maxGadgets = portal.getMaxGadget(dropPosition.getPlaceID());
+            doMove = (maxGadgets == -1
+                    || dropCol.getComponents().length < maxGadgets || dragCol.equals(dropCol));
+            if (doMove) {
+                saveDropZone(bean, dropPosition, dragCol, dropCol);
+            }
         }
 
         grid = null;
 
-        PanelProxy proxy = new PanelProxy(source.getProxy()
-                .getJsObj());
+        PanelProxy proxy = new PanelProxy(source.getProxy().getJsObj());
 
-        proxy.getProxy()
-                .remove();
+        proxy.getProxy().remove();
 
-        if (lastPosC != null) {
+        if (lastPosC != null && doMove) {
             if (dropPosition != null) {
                 lastPosC.remove(gp.getId());
-                lastPosC.insert(bean.getGadgetPosition()
-                        .getPosition(), gp);
+                lastPosC.insert(bean.getGadgetPosition().getPosition(), gp);
             }
             lastPosC.doLayout();
             lastPosC = null;
