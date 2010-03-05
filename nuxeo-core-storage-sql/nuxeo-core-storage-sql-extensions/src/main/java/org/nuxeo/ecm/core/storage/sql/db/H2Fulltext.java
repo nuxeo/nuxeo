@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -38,6 +40,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hit;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searcher;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.h2.api.CloseListener;
 import org.h2.message.Message;
 import org.h2.store.fs.FileSystem;
@@ -53,6 +56,8 @@ import org.h2.value.DataType;
  * @author Florent Guillaume
  */
 public class H2Fulltext {
+
+    private static final Log log = LogFactory.getLog(H2Fulltext.class);
 
     private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
@@ -404,6 +409,9 @@ public class H2Fulltext {
                         boolean recreate = !IndexReader.indexExists(indexPath);
                         indexWriter = new IndexWriter(indexPath,
                                 getAnalyzer(analyzer), recreate);
+                    } catch (LockObtainFailedException e) {
+                        log.error("Cannot open fulltext index", e);
+                        throw convertException(e);
                     } catch (IOException e) {
                         throw convertException(e);
                     }
@@ -606,6 +614,9 @@ public class H2Fulltext {
          */
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
+            if (indexWriter == null) {
+                throw new SQLException("Fulltext index was not initialized");
+            }
             if (oldRow != null) {
                 delete(oldRow);
             }
