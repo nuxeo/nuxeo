@@ -167,11 +167,8 @@ function setLegend(legend) {
 };
 
 function setPlace(place) {
-    jQuery('link[@rel*=style][title]').each(function(i)
-    {
-      this.disabled = true;
-      if (this.getAttribute('title') == prefs.getString("templates")) this.disabled = false;
-    });
+    jQuery("#mainContainer").removeClass();
+    jQuery("#mainContainer").addClass(prefs.getString("templates"));
 };
 
 function loadHtml(id){
@@ -210,14 +207,14 @@ function loadImage(id){
         },
         success : function(data, textStatus) {
           if (_isSet(prefs.getString("link")))
-              imgContainer = jQuery("<a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a>");
+              imgContainer = jQuery("<div id=\"upContainer\"><a id=\"link\" href=\""+prefs.getString("link")+"\" target=\"_tab\" ><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></a></div>");
             else
-              imgContainer = jQuery("<img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\">");
+              imgContainer = jQuery("<div id=\"upContainer\"><img style=\"border:0;\" id=\"picture\" src=\"\" onload=\"gadgets.window.adjustHeight()\"></div>");
 
            jQuery("#imgPreview").attr("src", photoUrl);
            jQuery("#pictureContainer").prepend(imgContainer);
            jQuery("#picture").attr("src", photoUrl);
-           jQuery("#pictureContainer").append("<span id=\"legend\"></span>");
+           jQuery("#upContainer").append("<span id=\"legend\"></span>");
            jQuery("#legend").text(gadgets.util.unescapeString(prefs.getString("legend")));
            gadgets.window.adjustHeight();
 
