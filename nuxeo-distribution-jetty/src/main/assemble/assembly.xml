@@ -173,6 +173,7 @@
       <artifact:resolveFile key="org.richfaces.framework:richfaces-impl" />
       <artifact:resolveFile key="org.richfaces.ui:richfaces-ui" />
       <artifact:resolveFile key="org.richfaces.framework:richfaces-api" />
+      <artifact:resolveFile key="org.apache.directory.shared:shared-ldap" />
       <artifact:resolveFile key="javax.script:script-api" />
       <artifact:resolveFile key="org.apache.lucene:lucene-analyzers" />
 
