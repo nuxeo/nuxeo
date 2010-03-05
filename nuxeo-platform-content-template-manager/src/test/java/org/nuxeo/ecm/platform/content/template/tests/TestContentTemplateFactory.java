@@ -19,28 +19,25 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactory;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl;
 import org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor;
+import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestContentTemplateFactory extends RepositoryTestCase {
-
-    protected CoreSession session;
+public class TestContentTemplateFactory extends SQLRepositoryTestCase {
 
     protected ContentTemplateService service;
 
@@ -49,17 +46,25 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.placeful.api");
+        deployBundle("org.nuxeo.ecm.platform.placeful.core");
 
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core",
+                "nxplacefulservice-configs-tests.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core",
+                "nxplaceful-tests.xml");
+
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "LifeCycleService.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "DefaultPlatform.xml");
+
+
+        deployBundle("org.nuxeo.ecm.platform.notification.api");
+        deployBundle("org.nuxeo.ecm.platform.notification.core");
 
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "test-content-template-framework.xml");
@@ -68,14 +73,15 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "test-content-template-listener.xml");
 
-        // Framework.login();
-        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-        assertNotNull(mgr);
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", "Administrator");
-        session = mgr.getDefaultRepository().open(ctx);
+        openSession();
         assertNotNull(session);
+
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        assertNotNull(root);
+
         service = Framework.getLocalService(ContentTemplateService.class);
+        service.executeFactoryForType(root);
+
         assertNotNull(service);
     }
 
@@ -118,6 +124,43 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         assertNotNull(factory);
         assertNotNull(factory.getRootAcl());
         assertEquals(3, factory.getRootAcl().size());
+    }
+
+    public void testServiceFactoryForNotifications() throws Exception {
+        ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
+        assertNotNull(serviceImpl);
+        Map<String, FactoryBindingDescriptor> factoryBindings = serviceImpl.getFactoryBindings();
+
+        FactoryBindingDescriptor factory = factoryBindings.get("Workspace");
+        assertNotNull(factory);
+
+        List<NotificationDescriptor> notif = factory.getTemplate().get(1).getNotifications();
+        assertNotNull(notif);
+        assertTrue(!notif.isEmpty());
+        assertEquals(2, notif.size());
+        NotificationDescriptor notif1 = notif.get(0);
+        assertEquals("Modification", notif1.getEvent());
+        List<String> users = notif1.getUsers();
+        assertNotNull(users);
+        assertTrue(!users.isEmpty());
+        assertEquals(2, users.size());
+        assertEquals("jdoe", users.get(0));
+        assertEquals("bree", users.get(1));
+        List<String> groups = notif1.getGroups();
+        assertNotNull(groups);
+        assertTrue(!groups.isEmpty());
+        assertEquals(1, groups.size());
+        assertEquals("members", groups.get(0));
+        NotificationDescriptor notif2 = notif.get(1);
+        assertEquals("Creation", notif2.getEvent());
+        users = notif2.getUsers();
+        assertNotNull(users);
+        assertTrue(users.isEmpty());
+        groups = notif2.getGroups();
+        assertNotNull(groups);
+        assertTrue(!groups.isEmpty());
+        assertEquals(1, groups.size());
+        assertEquals("members", groups.get(0));
     }
 
     public void testServiceFactoryInstancesContribs() {

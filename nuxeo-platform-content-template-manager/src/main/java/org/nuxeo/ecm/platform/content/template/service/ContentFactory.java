@@ -28,7 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface ContentFactory {
 
     boolean initFactory(Map<String, String> options,
-            List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template);
+            List<ACEDescriptor> rootAcl,
+            List<NotificationDescriptor> notifications,
+            List<TemplateItemDescriptor> template);
 
     void createContentStructure(DocumentModel eventDoc) throws ClientException;
 

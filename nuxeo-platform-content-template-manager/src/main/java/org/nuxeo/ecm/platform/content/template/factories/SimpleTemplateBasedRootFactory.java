@@ -38,6 +38,7 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
             }
             // init root ACL if really empty
             setAcl(acl, eventDoc.getRef());
+            setNotifications(notifications, eventDoc.getRef());
         }
     }
 

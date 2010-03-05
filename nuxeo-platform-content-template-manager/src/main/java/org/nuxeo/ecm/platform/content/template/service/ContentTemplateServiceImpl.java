@@ -101,7 +101,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                     ContentFactory factory = factoryDescriptor.getClassName().newInstance();
                     Boolean factoryOK = factory.initFactory(
                             descriptor.getOptions(), descriptor.getRootAcl(),
-                            descriptor.getTemplate());
+                            descriptor.getNotifications(), descriptor.getTemplate());
                     if (!factoryOK) {
                         log.error("Error while initializing instance of factory "
                                 + factoryDescriptor.getName());
