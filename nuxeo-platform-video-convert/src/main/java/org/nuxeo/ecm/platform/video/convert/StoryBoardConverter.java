@@ -28,8 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -37,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -46,8 +43,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Converter to extract a list of equally spaced JPEG thumbnails to represent
@@ -55,7 +50,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  *
  * @author ogrisel
  */
-public class StoryBoardConverter implements Converter {
+public class StoryBoardConverter extends BaseVideoConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(StoryBoardConverter.class);
 
@@ -69,13 +64,9 @@ public class StoryBoardConverter implements Converter {
 
     public static final String THUMBNAIL_NUMBER_PARAM = "thumbnail_number";
 
-    protected CommandLineExecutorService cleService;
-
     protected int numberOfThumbnails = 8;
 
     protected Map<String, String> commonParams = new HashMap<String, String>();
-
-    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d\\d)");
 
     public void init(ConverterDescriptor descriptor) {
         try {
@@ -105,39 +96,19 @@ public class StoryBoardConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        boolean cleanInFile = false;
-        File inFile = null;
         File outFolder = null;
+        InputFile inputFile = null;
         Blob blob = null;
         try {
             blob = blobHolder.getBlob();
-            if (blob instanceof FileBlob) {
-                // avoid creating temporary files when unnecessary
-                FileBlob fileBlob = (FileBlob) blob;
-                inFile = fileBlob.getFile();
-            } else if (blob instanceof StreamingBlob) {
-                StreamingBlob streamingBlob = (StreamingBlob) blob;
-                StreamSource source = streamingBlob.getStreamSource();
-                if (source instanceof FileSource) {
-                    FileSource fileSource = (FileSource) source;
-                    inFile = fileSource.getFile();
-                }
-            }
-
-            if (inFile == null) {
-                // create temporary dfile
-                inFile = File.createTempFile("StoryBoardConverter-in-", "-"
-                        + blob.getFilename());
-                blob.transferTo(inFile);
-                cleanInFile = true;
-            }
+            inputFile = new InputFile(blob);
 
             outFolder = File.createTempFile("StoryBoardConverter-out-", "-tmp");
             outFolder.delete();
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath", inFile.getAbsolutePath());
+            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFolderPath",
                     outFolder.getAbsolutePath());
             params.addNamedParameter(RATE_PARAM, commonParams.get(RATE_PARAM));
@@ -166,25 +137,13 @@ public class StoryBoardConverter implements Converter {
             }
         } finally {
             FileUtils.deleteQuietly(outFolder);
-            if (cleanInFile) {
-                FileUtils.deleteQuietly(inFile);
+            if (inputFile != null && inputFile.isTempFile) {
+                FileUtils.deleteQuietly(inputFile.file);
             }
         }
     }
 
-    protected Double extractDuration(List<String> output) {
-        for (String line : output) {
-            Matcher matcher = DURATION_PATTERN.matcher(line);
-            if (matcher.find()) {
-                return Double.parseDouble(matcher.group(1)) * 3600
-                        + Double.parseDouble(matcher.group(2)) * 60
-                        + Double.parseDouble(matcher.group(3))
-                        + Double.parseDouble(matcher.group(3)) / 100;
-            }
-        }
-        return null;
-    }
-
+    @SuppressWarnings("unchecked")
     protected List<Blob> collectBlobs(File outFolder) throws IOException,
             FileNotFoundException {
 

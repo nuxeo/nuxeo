@@ -13,8 +13,8 @@
     
     <command name="ffmpeg-screenshot" enabled="true">
       <commandLine>ffmpeg</commandLine>
-      <parameterString> -y -i #{inFilePath} -f image2 -ss #{position} -o #{outFilePath}</parameterString>
-      <winParameterString> -y -i #{inFilePath} -f image2 -ss #{position} -o #{outFilePath}</winParameterString>
+      <parameterString> -y -i #{inFilePath} -f image2 -ss #{position} #{outFilePath}</parameterString>
+      <winParameterString> -y -i #{inFilePath} -f image2 -ss #{position} #{outFilePath}</winParameterString>
       <installationDirective>You need to install ffmpeg</installationDirective>
     </command>
 

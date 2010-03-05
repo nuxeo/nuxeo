@@ -22,7 +22,7 @@ public class Constants {
 
     public static final String STORYBOARD_CONVERTER = "videoStoryBoard";
 
-    public static final String SCREENSHOT_CONVERTER = "screenshot";
+    public static final String SCREENSHOT_CONVERTER = "videoScreenshot";
 
     public static final String POSITION_PARAMETER = "position";
 }

@@ -16,6 +16,18 @@
       <destinationMimeType>image/jpeg</destinationMimeType>
     </converter>
 
+    <converter name="videoScreenshot"
+     class="org.nuxeo.ecm.platform.video.convert.ScreenshotConverter">
+      <sourceMimeType>video/mpeg</sourceMimeType>
+      <sourceMimeType>video/mp4</sourceMimeType>
+      <sourceMimeType>video/quicktime</sourceMimeType>
+      <sourceMimeType>video/ogg</sourceMimeType>
+      <sourceMimeType>video/x-ms-asf</sourceMimeType>
+      <sourceMimeType>video/x-msvideo</sourceMimeType>
+      <sourceMimeType>video/flv</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+    </converter>
+
   </extension>
 
 </component>

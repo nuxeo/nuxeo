@@ -20,7 +20,10 @@ package org.nuxeo.ecm.platform.video.convert;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,12 +62,17 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
                 StreamingBlob.createFromStream(is, path).persist());
     }
 
-    protected BlobHolder applyConverter(String converter, String fileName)
-            throws Exception {
+    protected BlobHolder applyConverter(String converter, String fileName,
+            Double position) throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName);
-        BlobHolder result = cs.convert(converter, in, null);
+        Map<String, Serializable> params = null;
+        if (position != null) {
+            params = new HashMap<String, Serializable>();
+            params.put("position", position);
+        }
+        BlobHolder result = cs.convert(converter, in, params);
         assertNotNull(result);
         return result;
     }
@@ -78,12 +86,37 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
             return;
         }
         BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER,
-                ELEPHANTS_DREAM);
+                ELEPHANTS_DREAM, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(8, blobs.size());
         assertEquals("00000.000-seconds.jpeg", blobs.get(0).getFilename());
         assertEquals("00080.000-seconds.jpeg", blobs.get(1).getFilename());
         assertEquals("00560.000-seconds.jpeg", blobs.get(7).getFilename());
+        assertEquals(653.53, result.getProperty("duration"));
+    }
+
+    public void testScreenshotConverter() throws Exception {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        assertNotNull(cles);
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
+        if (!ca.isAvailable()) {
+            log.warn("ffmpeg is not avalaible, skipping test");
+            return;
+        }
+        BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER,
+                ELEPHANTS_DREAM, null);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        assertEquals("video-screenshot-00000.000.jpeg",
+                blobs.get(0).getFilename());
+        assertEquals(653.53, result.getProperty("duration"));
+
+        result = applyConverter(Constants.SCREENSHOT_CONVERTER,
+                ELEPHANTS_DREAM, 10.0);
+        blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        assertEquals("video-screenshot-00010.000.jpeg",
+                blobs.get(0).getFilename());
         assertEquals(653.53, result.getProperty("duration"));
     }
 
