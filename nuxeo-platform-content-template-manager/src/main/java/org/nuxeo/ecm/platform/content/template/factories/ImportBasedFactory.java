@@ -26,7 +26,6 @@ import org.jboss.util.NotImplementedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
-import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 public class ImportBasedFactory extends BaseContentFactory {
@@ -37,7 +36,7 @@ public class ImportBasedFactory extends BaseContentFactory {
     }
 
     public boolean initFactory(Map<String, String> options,
-            List<ACEDescriptor> rootAcl, List<NotificationDescriptor> notifications, List<TemplateItemDescriptor> template) {
+            List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
         throw new NotImplementedException();
     }
 

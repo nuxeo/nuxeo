@@ -57,9 +57,6 @@ public class TemplateItemDescriptor  implements Serializable {
     @XNodeList(value = "properties/property", type = ArrayList.class, componentType = PropertyDescriptor.class)
     public List<PropertyDescriptor> properties;
 
-    @XNodeList(value = "notifications/notification", type = ArrayList.class, componentType = NotificationDescriptor.class)
-    public List<NotificationDescriptor> notifications;
-
     public String getPath() {
         return path;
     }
@@ -86,10 +83,6 @@ public class TemplateItemDescriptor  implements Serializable {
 
     public List<PropertyDescriptor> getProperties() {
         return properties;
-    }
-
-    public List<NotificationDescriptor> getNotifications() {
-        return notifications;
     }
 
 }

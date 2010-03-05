@@ -57,9 +57,6 @@ public class FactoryBindingDescriptor {
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
     private List<ACEDescriptor> rootAcl;
 
-    @XNodeList(value = "notifications/notification", type = ArrayList.class, componentType = NotificationDescriptor.class)
-    public List<NotificationDescriptor> notifications;
-
     public String getFactoryName() {
         return factoryName;
     }
@@ -86,10 +83,6 @@ public class FactoryBindingDescriptor {
 
     public List<ACEDescriptor> getRootAcl() {
         return rootAcl;
-    }
-
-    public List<NotificationDescriptor> getNotifications() {
-        return notifications;
     }
 
 }

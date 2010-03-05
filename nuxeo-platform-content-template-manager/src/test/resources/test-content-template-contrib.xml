@@ -59,16 +59,6 @@
             <ace granted="true" permission="Everything" userName="Administrator"/>
             <ace granted="false" permission="Everything" userName="Everyone"/>
           </acl>
-          <notifications>
-            <notification event="Modification">
-              <user>jdoe</user>
-              <user>bree</user>
-              <group>members</group>
-              </notification>
-            <notification event="Creation">
-              <group>members</group>
-            </notification>
-          </notifications>
         </templateItem>
         <templateItem typeName="Folder" id="Folder2" title="Folder2" description="Second Folder"/>
       </template>
