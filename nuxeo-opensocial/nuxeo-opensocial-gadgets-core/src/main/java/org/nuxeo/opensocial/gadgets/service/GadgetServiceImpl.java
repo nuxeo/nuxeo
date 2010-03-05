@@ -86,9 +86,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
         if (gadgets.containsKey(gadget.getName())) {
             gadgets.remove(gadget.getName());
         }
-
-        gadget.setComponentName(contributor.getName());
-        gadgets.put(gadget.getName(), gadget);
+        if (!gadget.getDisabled()) {
+            gadget.setComponentName(contributor.getName());
+            gadgets.put(gadget.getName(), gadget);
+        }
     }
 
     private void unregisterNewGadget(GadgetDeclaration gadget,

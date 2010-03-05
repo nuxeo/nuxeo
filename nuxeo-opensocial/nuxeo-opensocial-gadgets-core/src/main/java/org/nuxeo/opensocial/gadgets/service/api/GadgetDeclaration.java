@@ -29,6 +29,9 @@ public class GadgetDeclaration {
     @XNode("@name")
     private String name;
 
+    @XNode("@disabled")
+    private Boolean disabled;
+
     // File Name of the gadget's XML
     @XNode("entryPoint")
     private String entryPoint = "";
@@ -53,6 +56,13 @@ public class GadgetDeclaration {
 
     public String getName() {
         return name;
+    }
+
+    public Boolean getDisabled() {
+        if (disabled == null) {
+            return false;
+        }
+        return disabled;
     }
 
     public String getIcon() {
