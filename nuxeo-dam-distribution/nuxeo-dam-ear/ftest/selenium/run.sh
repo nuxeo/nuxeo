@@ -24,7 +24,7 @@ rm -f $HERE/result-*.html
 
 cd $HERE
 # Download selenium-server.jar
-#mvn dependency:copy
+mvn dependency:copy
 # Update path in user-extensions.js
 sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
 
