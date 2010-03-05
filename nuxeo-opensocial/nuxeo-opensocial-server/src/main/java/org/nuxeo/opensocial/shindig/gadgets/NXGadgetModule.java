@@ -1,5 +1,7 @@
 package org.nuxeo.opensocial.shindig.gadgets;
 
+import org.apache.shindig.gadgets.GadgetSpecFactory;
+
 import com.google.inject.AbstractModule;
 
 /** @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a> */
@@ -14,6 +16,7 @@ public class NXGadgetModule extends AbstractModule {
         // "/Users/iansmith/googledocs/nuxeo-source/nuxeo");
         // nuxeo.put("OAUTH_SIGNING_KEY_NAME", "nuxeo opensocial");
         // Names.bindProperties(binder(), nuxeo);
+        bind(GadgetSpecFactory.class).to(NXGadgetSpecFactory.class);
     }
 
 }

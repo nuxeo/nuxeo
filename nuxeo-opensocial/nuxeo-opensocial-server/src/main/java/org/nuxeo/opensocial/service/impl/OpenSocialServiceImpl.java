@@ -41,11 +41,13 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Injector;
 
 public class OpenSocialServiceImpl extends DefaultComponent implements
-        OpenSocialService {
+        OpenSocialService, FrameworkListener {
 
     private static final Log log = LogFactory.getLog(OpenSocialServiceImpl.class);
 
@@ -69,6 +71,18 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     protected File oauthPrivateKeyFile;
 
+    protected FrameworkListener frameworkListener = null;
+
+    protected boolean readyWithContribution = false;
+
+    public boolean setFrameworkListener(FrameworkListener frameworkListener) {
+        if (readyWithContribution) {
+            return false;
+        }
+        this.frameworkListener = frameworkListener;
+        return true;
+    }
+
     public Injector getInjector() {
         return injector;
     }
@@ -81,13 +95,14 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (XP_CRYPTO.equals(extensionPoint)) {
-            KeyDescriptor kd = (KeyDescriptor) contribution;
-            keys.put(kd.getContainer(), kd.getKey());
-        }
+        // if (XP_CRYPTO.equals(extensionPoint)) {
+        // KeyDescriptor kd = (KeyDescriptor) contribution;
+        // keys.put(kd.getContainer(), kd.getKey());
+        // }
         if (XP_OPENSOCIAL.equals(extensionPoint)) {
             os = (OpenSocialDescriptor) contribution;
             setupOpenSocial();
+            readyWithContribution = true;
         }
     }
 
@@ -109,7 +124,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
             return (T) this;
         }
 
-        //Try the inject to find the class
+        // Try the inject to find the class
         try {
             return getInjector().getInstance(adapter);
         } catch (Exception e) {
@@ -123,6 +138,9 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         if (injector == null) {
             injector = GuiceContextListener.guiceInjector;
         }
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                this);
+
     }
 
     @Override
@@ -231,5 +249,11 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     public String getOAuthPrivateKeyName() {
         return os.getExternalPrivateKeyName();
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        if (frameworkListener != null) {
+            frameworkListener.frameworkEvent(event);
+        }
     }
 }

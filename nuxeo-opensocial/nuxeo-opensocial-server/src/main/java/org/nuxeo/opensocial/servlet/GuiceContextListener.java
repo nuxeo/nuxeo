@@ -33,6 +33,8 @@ import org.apache.shindig.gadgets.oauth.OAuthRequest;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.oauth.NuxeoOAuthRequest;
 import org.nuxeo.runtime.api.Framework;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -49,25 +51,48 @@ public class GuiceContextListener implements ServletContextListener {
 
     public static final String MODULES_ATTRIBUTE = "guice-modules";
 
-    private boolean jmxInitialized = false;
+    protected boolean jmxInitialized = false;
 
     private static final Log log = LogFactory.getLog(GuiceContextListener.class);
 
     public static Injector guiceInjector = null;
 
+    protected List<Module> modules;
+
+    protected ServletContext context;
+
     public void contextInitialized(ServletContextEvent event) {
         log.info("GuiceContextListener contextInitialized");
-        ServletContext context = event.getServletContext();
+        context = event.getServletContext();
 
-        List<Module> modules = getModuleList(context.getInitParameter(MODULES_ATTRIBUTE));
+        modules = getModuleList(context.getInitParameter(MODULES_ATTRIBUTE));
         log.info("GuiceContextListener getModuleList");
+        try {
+            if (!Framework.getService(OpenSocialService.class).setFrameworkListener(
+                    new FrameworkListener() {
+
+                        public void frameworkEvent(FrameworkEvent event) {
+                            runInjection();
+                        }
+                    })) {
+                // we run it now if the code informed us that we are already
+                // initialized...
+                runInjection();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot find opensocial service for "
+                    + "initialization!", e);
+        }
+    }
+
+    protected void runInjection() {
         Injector injector = null;
         try {
-
             log.info("GuiceContextListener createInjector");
             modules.add(Modules.override(new OAuthModule()).with(
                     new NuxeoOverrides()));
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
+
             OpenSocialService service = Framework.getService(OpenSocialService.class);
             if (service != null) {
                 service.setInjector(injector);
@@ -81,7 +106,6 @@ public class GuiceContextListener implements ServletContextListener {
                     + " exception during injection process", e);
             throw new RuntimeException(e);
         }
-
         try {
             if (!jmxInitialized) {
                 Manager.manage("ShindigGuiceContext", injector);
