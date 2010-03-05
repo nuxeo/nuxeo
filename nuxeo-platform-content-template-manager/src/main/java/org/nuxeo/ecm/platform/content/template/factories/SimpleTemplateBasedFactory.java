@@ -29,12 +29,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
-import org.nuxeo.ecm.platform.content.template.service.NotificationDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.PropertyDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
-import org.nuxeo.runtime.api.Framework;
 
 public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
@@ -42,16 +38,12 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
     protected List<ACEDescriptor> acl;
 
-    protected List<NotificationDescriptor> notifications;
-
-    protected NotificationManager notificationManager;
-
-    protected boolean isTargetEmpty(DocumentModel eventDoc)
-            throws ClientException {
+    protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
         // If we already have children : exit !!!
         if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
             return false;
-        } else {
+        }
+        else {
             return true;
         }
 
@@ -80,7 +72,6 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
-            setNotifications(item.getNotifications(), newChild.getRef());
         }
     }
 
@@ -114,49 +105,11 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         }
     }
 
-    protected void setNotifications(List<NotificationDescriptor> notifications,
-            DocumentRef ref) throws ClientException {
-        if (notifications != null && !notifications.isEmpty()) {
-            DocumentModel doc = session.getDocument(ref);
-            for (NotificationDescriptor notification : notifications) {
-                List<String> users = notification.getUsers();
-                for (String user : users) {
-                    getNotificationManager().addSubscription(
-                            NotificationConstants.USER_PREFIX + user,
-                            notification.getEvent(), doc, false,
-                            null, "");
-                }
-                List<String> groups = notification.getGroups();
-                for (String group : groups) {
-                    getNotificationManager().addSubscription(
-                            NotificationConstants.GROUP_PREFIX + group,
-                            notification.getEvent(), doc, false,
-                            null, "");
-
-                }
-            }
-        }
-    }
-
     public boolean initFactory(Map<String, String> options,
-            List<ACEDescriptor> rootAcl,
-            List<NotificationDescriptor> notifications,
-            List<TemplateItemDescriptor> template) {
+            List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
         this.template = template;
         acl = rootAcl;
-        this.notifications = notifications;
         return true;
     }
 
-    protected NotificationManager getNotificationManager() {
-        if (notificationManager == null) {
-            try {
-                notificationManager = Framework.getService(NotificationManager.class);
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Could not get NotificationManager service", e);
-            }
-        }
-        return notificationManager;
-    }
 }
