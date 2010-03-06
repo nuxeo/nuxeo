@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.models;
 
-
 public class Feed extends AbstractModel {
 
     private String title;
@@ -23,9 +22,14 @@ public class Feed extends AbstractModel {
 
     private String url;
 
+    private String feedUrl;
+
     public Feed() {
     }
 
+    /*
+     * The title of the feed
+     */
     public String getTitle() {
         return title;
     }
@@ -34,6 +38,9 @@ public class Feed extends AbstractModel {
         this.title = title;
     }
 
+    /*
+     * The URL of the site, or of a section of the site
+     */
     public String getUrl() {
         return url;
     }
@@ -42,12 +49,26 @@ public class Feed extends AbstractModel {
         this.url = url;
     }
 
+    /*
+     * The description of the feed
+     */
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /*
+     * The published URL of the feed
+     */
+    public String getFeedUrl() {
+        return feedUrl;
+    }
+
+    public void setFeedUrl(String feedUrl) {
+        this.feedUrl = feedUrl;
     }
 
 }
