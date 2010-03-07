@@ -19,12 +19,10 @@ package org.nuxeo.runtime.test.runner.web;
 import org.openqa.selenium.WebDriver;
 
 /**
- * WebDriver test configuration that can be configured either from 
+ * WebDriver test configuration that can be configured either from
  * system properties or for annotations.
- * 
- *  
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Configuration {
 
@@ -32,60 +30,60 @@ public class Configuration {
      * The current driver
      */
     protected WebDriver driver;
-    
+
     /**
      * Custom factory to create the driver
      */
     protected DriverFactory factory;
-        
+
     /**
      * Initial URL (the one to be used by the home page)
      */
-    protected String home; 
-    
+    protected String home;
+
     /**
      * The home page class
      */
     protected Class<?> homePageClass;
-    
-    
+
+
     public Configuration(DriverFactory factory) {
         this.factory = factory;
     }
-    
+
     protected WebDriver createDriver() {
         return factory.createDriver();
     }
-    
+
     protected void disposeDriver(WebDriver driver) {
         factory.disposeDriver(driver);
     }
-    
+
     public BrowserFamily getBrowserFamily() {
-        return factory.getBrowserFamily(); 
+        return factory.getBrowserFamily();
     }
-    
+
     public void setFactory(DriverFactory factory) {
         resetDriver();
         this.factory = factory;
     }
-    
+
     public DriverFactory getFactory() {
         return factory;
     }
-    
-    public void setHome(String url) {        
+
+    public void setHome(String url) {
         this.home = url;
     }
-    
+
     public String getHome() {
         return home;
     }
-    
+
     public void setHomePageClass(Class<?> homePageClass) {
         this.homePageClass = homePageClass;
     }
-    
+
     public Class<?> getHomePageClass() {
         return homePageClass;
     }
@@ -95,7 +93,7 @@ public class Configuration {
             driver.get(home);
         }
     }
-    
+
     public WebDriver getDriver() {
         if (driver == null) {
             driver = createDriver();
@@ -103,7 +101,7 @@ public class Configuration {
         }
         return driver;
     }
-    
+
     public void resetDriver() {
         if (driver != null) {
             driver.quit();
@@ -111,6 +109,5 @@ public class Configuration {
             driver = null;
         }
     }
-    
-    
+
 }

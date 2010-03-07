@@ -36,5 +36,5 @@ public class DistributionTest {
     @Test public void testAgainstDistribution() throws Exception {
         System.out.println(Framework.getProperties());
     }
-    
+
 }

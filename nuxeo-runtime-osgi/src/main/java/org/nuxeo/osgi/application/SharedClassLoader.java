@@ -23,18 +23,18 @@ import java.net.URL;
 
 /**
  * Used to decorate a classloader with a public {@link #addURL(URL)} method.
- *   
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface SharedClassLoader {
 
-    public void addURL(URL url);
-    
+    void addURL(URL url);
+
     /**
      * Must return itself.
      */
-    public ClassLoader getLoader();
-    
-    public URL[] getURLs();
-    
+    ClassLoader getLoader();
+
+    URL[] getURLs();
+
 }

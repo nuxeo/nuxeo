@@ -25,24 +25,22 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**
- * Move this to org.nuxeo.runtime package
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * TODO: Move this to org.nuxeo.runtime package
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RuntimeHarness {
-    
+
     /**
-     * Get the framework working directory
-     * @return
+     * Gets the framework working directory.
      */
-    public File getWorkingDir();
-    
+    File getWorkingDir();
+
     /**
-     * Fire the event {@code FrameworkEvent.STARTED}.
+     * Fires the event {@code FrameworkEvent.STARTED}.
      */
-    public void fireFrameworkStarted() throws Exception;
- 
+    void fireFrameworkStarted() throws Exception;
+
     /**
      * Deploys a whole OSGI bundle.
      * <p>
@@ -52,8 +50,8 @@ public interface RuntimeHarness {
      *
      * @param bundle the symbolic name
      */
-    public void deployBundle(String bundle) throws Exception;
-    
+    void deployBundle(String bundle) throws Exception;
+
     /**
      * Undeploys a contribution from a given bundle.
      * <p>
@@ -66,25 +64,24 @@ public interface RuntimeHarness {
      * @param bundle the bundle
      * @param contrib the contribution
      */
-    public void undeployContrib(String bundle, String contrib) throws Exception;
-    
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Deprecated
-    public void undeployContrib(String contrib);
-        
+    void undeployContrib(String bundle, String contrib) throws Exception;
 
     /**
      * @deprecated use {@link #undeployContrib(String, String)} instead
      */
     @Deprecated
-    public void undeploy(String contrib);
-    
-    public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
-    
+    void undeployContrib(String contrib);
+
     /**
-     * Deploy an XML contribution from outside a bundle.
+     * @deprecated use {@link #undeployContrib(String, String)} instead
+     */
+    @Deprecated
+    void undeploy(String contrib);
+
+    RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
+
+    /**
+     * Deploys an XML contribution from outside a bundle.
      * <p>
      * This should be used by tests
      * wiling to deploy test contribution as part of a real bundle.
@@ -97,8 +94,8 @@ public interface RuntimeHarness {
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
-    public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
-    
+    RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception;
+
     /**
      * Deploys a contribution from a given bundle.
      * <p>
@@ -114,8 +111,8 @@ public interface RuntimeHarness {
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
      */
-    public void deployContrib(String bundle, String contrib) throws Exception;
-    
+    void deployContrib(String bundle, String contrib) throws Exception;
+
     /**
      * Deploys a contribution file by looking for it in the class loader.
      * <p>
@@ -126,21 +123,22 @@ public interface RuntimeHarness {
      * @param contrib the relative path to the contribution file
      */
     @Deprecated
-    public void deployContrib(String contrib);
-    
+    void deployContrib(String contrib);
+
     /**
      * @deprecated use <code>deployContrib()</code> instead
      */
     @Deprecated
-    public void deploy(String contrib);
-    
-    public void start() throws Exception;
-    
-    public void stop() throws Exception;
+    void deploy(String contrib);
 
-    public boolean isStarted();
-    
-    public void deployFolder(File folder, ClassLoader loader) throws Exception;
-    
-    public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
+    void start() throws Exception;
+
+    void stop() throws Exception;
+
+    boolean isStarted();
+
+    void deployFolder(File folder, ClassLoader loader) throws Exception;
+
+    void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
+
 }

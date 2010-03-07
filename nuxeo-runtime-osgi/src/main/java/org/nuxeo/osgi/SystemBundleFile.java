@@ -32,7 +32,7 @@ public class SystemBundleFile extends DirectoryBundleFile {
     public SystemBundleFile(File file) {
         super (file, createManifest());
     }
-    
+
     public static Manifest createManifest() {
         Manifest mf = new Manifest();
         Attributes attrs = mf.getMainAttributes();
@@ -42,5 +42,5 @@ public class SystemBundleFile extends DirectoryBundleFile {
         attrs.putValue("Bundle-Version", "1.0.0");
         return mf;
     }
-    
+
 }

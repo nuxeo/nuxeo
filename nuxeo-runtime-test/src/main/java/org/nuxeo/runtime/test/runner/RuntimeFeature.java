@@ -41,36 +41,35 @@ import com.google.inject.Scopes;
 public class RuntimeFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(RuntimeFeature.class);
-    
+
     protected RuntimeHarness harness;
-    
+
     protected DeploymentSet deploy;
-    
+
     /**
-     * providers contributed by other features to override the default service provider
-     * used for a nuxeo service
+     * Providers contributed by other features to override the default service provider
+     * used for a nuxeo service.
      */
-    protected Map<Class<?>, Provider<?>> serviceProviders; 
-    
+    protected Map<Class<?>, Provider<?>> serviceProviders;
+
     public RuntimeFeature() {
         harness = new NXRuntimeTestCase();
         deploy = new DeploymentSet();
         serviceProviders = new HashMap<Class<?>, Provider<?>>();
     }
-    
+
     public <T> void addServiceProvider(Class<T> clazz, Provider<T> provider) {
         serviceProviders.put(clazz, provider);
     }
-    
+
     public RuntimeHarness getHarness() {
         return harness;
     }
-    
 
     public DeploymentSet deployments() {
         return deploy;
     }
-    
+
     private void scanDeployments(FeaturesRunner runner) {
         List<RunnerFeature> features = runner.getFeatures();
         if (features == null) {
@@ -82,7 +81,7 @@ public class RuntimeFeature extends SimpleFeature {
         // load deployments from class to run
         deploy.load(FeaturesRunner.getScanner(), runner.getTestClass().getJavaClass());
     }
-    
+
 
     public String[] getDeployments() {
         return deploy.getDeployments().toArray(new String[deploy.getDeployments().size()]);
@@ -109,7 +108,7 @@ public class RuntimeFeature extends SimpleFeature {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error("Unable to deploy artifact: " + bundle, e);        
+                    log.error("Unable to deploy artifact: " + bundle, e);
                 }
             }
         }
@@ -126,7 +125,7 @@ public class RuntimeFeature extends SimpleFeature {
                         harness.deployTestContrib(bundle.substring(0, p), url);
                     }
                 } catch (Exception e) {
-                    log.error("Unable to deploy artifact: " + bundle, e);        
+                    log.error("Unable to deploy artifact: " + bundle, e);
                 }
             }
         }
@@ -134,10 +133,10 @@ public class RuntimeFeature extends SimpleFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {        
+    public void initialize(FeaturesRunner runner) throws Exception {
         scanDeployments(runner);
     }
-    
+
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         // Starts Nuxeo Runtime
@@ -145,7 +144,7 @@ public class RuntimeFeature extends SimpleFeature {
             harness.start();
         }
         // Deploy bundles
-        deployTestClassBundles();  
+        deployTestClassBundles();
     }
 
     @Override
@@ -166,7 +165,7 @@ public class RuntimeFeature extends SimpleFeature {
                 Class clazz = Class.forName(svc);
                 Provider provider = serviceProviders.get(clazz);
                 if (provider == null) {
-                    bind0(binder, clazz);    
+                    bind0(binder, clazz);
                 } else {
                     bind0(binder, clazz, provider);
                 }
@@ -189,9 +188,8 @@ public class RuntimeFeature extends SimpleFeature {
     }
 
     public static void bindDatasource(String key, DataSource ds) throws Exception {
-        InitialContext initialCtx = new InitialContext();        
+        InitialContext initialCtx = new InitialContext();
         JndiHelper.rebind(initialCtx, DataSourceHelper.getDataSourceJNDIName(key), ds);
     }
-    
-    
+
 }

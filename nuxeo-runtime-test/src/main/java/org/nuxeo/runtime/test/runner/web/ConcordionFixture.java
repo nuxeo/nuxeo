@@ -24,16 +24,15 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ConcordionFixture {
 
     protected ConcordionBuilder concordionBuilder = new ConcordionBuilder();
-    
+
     @Test public void test() throws IOException {
-        ResultSummary resultSummary = concordionBuilder.build().process(this);        
+        ResultSummary resultSummary = concordionBuilder.build().process(this);
         resultSummary.print(System.out);
         resultSummary.assertIsSatisfied();
     }
-    
+
 }

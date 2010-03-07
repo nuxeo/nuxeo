@@ -29,9 +29,8 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
  */
 public enum BrowserFamily {
 
-    FIREFOX, IE, CHROME, HTML_UNIT, HTML_UNIT_JS; 
-    
-    
+    FIREFOX, IE, CHROME, HTML_UNIT, HTML_UNIT_JS;
+
     public DriverFactory getDriverFactory() {
         switch (this) {
         case FIREFOX:
@@ -45,9 +44,8 @@ public enum BrowserFamily {
         default:
             return new HtmlUnitDriverFactory();
         }
-    };
+    }
 
-    
     class FirefoxDriverFactory implements DriverFactory {
         public WebDriver createDriver() {
             FirefoxDriver ff = new FirefoxDriver();
@@ -87,7 +85,7 @@ public enum BrowserFamily {
             return BrowserFamily.this;
         }
     }
-    
+
     class HtmlUnitDriverFactory implements DriverFactory {
         public WebDriver createDriver() {
             return new HtmlUnitDriver();
@@ -112,7 +110,6 @@ public enum BrowserFamily {
         }
     }
 
-
 //    private WebDriver _old_makeFirefoxDriver() {
 //        String Xport = System.getProperty("nuxeo.xvfb.id", ":0");
 //        File firefoxPath = new File(System.getProperty("firefox.path",
@@ -125,5 +122,4 @@ public enum BrowserFamily {
 //        return driver;
 //    }
 
-    
 }

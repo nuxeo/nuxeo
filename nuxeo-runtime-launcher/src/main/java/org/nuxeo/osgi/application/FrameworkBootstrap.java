@@ -40,7 +40,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*";
     protected static final String DEFAULT_LIBS_CP = "lib/*:.:config";
-    
+
     protected File home;
     protected MutableClassLoader loader;
     protected Map<String,Object> env;
@@ -49,11 +49,10 @@ public class FrameworkBootstrap implements LoaderConstants {
     protected long startTime;
     protected boolean scanForNestedJars = true;
     protected boolean flushCache = false;
-    
-    
+
 
     public FrameworkBootstrap(ClassLoader cl, File home) throws IOException {
-        this (new MutableClassLoaderDelegate(cl), home);
+        this(new MutableClassLoaderDelegate(cl), home);
     }
 
     public FrameworkBootstrap(MutableClassLoader loader, File home) throws IOException {
@@ -61,7 +60,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         this.loader = loader;
         initializeEnvironment();
     }
-    
+
     public void setHostName(String value) {
         env.put(HOST_NAME, value);
     }
@@ -69,7 +68,7 @@ public class FrameworkBootstrap implements LoaderConstants {
     public void setHostVersion(String value) {
         env.put(HOST_VERSION, value);
     }
-    
+
     public void setDoPreprocessing(boolean doPreprocessing) {
         env.put(PREPROCESSING, Boolean.toString(doPreprocessing));
     }
@@ -81,15 +80,15 @@ public class FrameworkBootstrap implements LoaderConstants {
     public void setFlushCache(boolean flushCache) {
         this.flushCache = flushCache;
     }
-    
+
     public void setScanForNestedJars(boolean scanForNestedJars) {
         this.scanForNestedJars = scanForNestedJars;
     }
-    
+
     public Map<String, Object> env() {
         return env;
     }
-    
+
     public MutableClassLoader getLoader() {
         return loader;
     }
@@ -101,7 +100,7 @@ public class FrameworkBootstrap implements LoaderConstants {
     public File getHome() {
         return home;
     }
-    
+
     public void initialize() throws Exception {
         startTime = System.currentTimeMillis();
         List<File> bundleFiles = buildClassPath();
@@ -109,7 +108,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         Method init = frameworkLoaderClass.getMethod("initialize", ClassLoader.class, File.class, List.class, Map.class);
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
-    
+
     public void start() throws Exception {
         if (frameworkLoaderClass == null) {
             throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
@@ -124,8 +123,8 @@ public class FrameworkBootstrap implements LoaderConstants {
             throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
         }
         Method stop = frameworkLoaderClass.getMethod("stop");
-        stop.invoke(null);        
-    }    
+        stop.invoke(null);
+    }
 
     @SuppressWarnings("unchecked")
     protected void initializeEnvironment() throws IOException {
@@ -151,16 +150,16 @@ public class FrameworkBootstrap implements LoaderConstants {
             v = (String)env.get(FLUSH_CACHE);
             if (v != null) {
                 flushCache = Boolean.parseBoolean(v);
-            }            
+            }
         } finally {
             in.close();
         }
     }
-    
+
     protected void printStartedMessage() {
-        System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec."); 
+        System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");
     }
-    
+
     protected File newFile(String path) throws IOException {
         if (path.startsWith("/")) {
             return new File(path).getCanonicalFile();
@@ -171,8 +170,8 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     * 
-     * @return the list of bundle files. 
+     *
+     * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
         List<File> bundleFiles = new ArrayList<File>();
@@ -205,7 +204,7 @@ public class FrameworkBootstrap implements LoaderConstants {
                 entryFile = newFile(entry);
                 loader.addURL(entryFile.toURI().toURL());
             }
-        }                
+        }
     }
 
     protected void buildBundlesClassPath(String bundlesCp, List<File> bundleFiles) throws IOException {
@@ -233,7 +232,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    
+
     protected void extractNestedJars(List<File> bundleFiles, File dir) throws IOException {
         if (!scanForNestedJars) {
             return;
@@ -256,7 +255,7 @@ public class FrameworkBootstrap implements LoaderConstants {
             if (f.isFile()) {
                 extractNestedJars(f, dir);
             }
-        }    
+        }
     }
 
     protected void extractNestedJars(File file, File tmpDir) throws IOException {
@@ -300,14 +299,14 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     public static void copyFile(File src, File file) throws IOException {
-        FileInputStream in = new FileInputStream(src); 
+        FileInputStream in = new FileInputStream(src);
         try {
             copyToFile(in, file);
         } finally {
             in.close();
         }
     }
-    
+
     public static void copyToFile(InputStream in, File file) throws IOException {
         OutputStream out = null;
         try {

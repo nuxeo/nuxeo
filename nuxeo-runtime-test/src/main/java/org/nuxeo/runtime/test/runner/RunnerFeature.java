@@ -27,12 +27,12 @@ import com.google.inject.Binder;
 public interface RunnerFeature {
 
 //    private final Class<T> type;
-//    
+//
 //    @SuppressWarnings("unchecked")
 //    protected RunnerFeature() {
 //        Type superclass = getClass().getGenericSuperclass();
 //        while (superclass instanceof Class<?>) {
-//            superclass = ((Class<?>)superclass).getGenericSuperclass(); 
+//            superclass = ((Class<?>)superclass).getGenericSuperclass();
 //        }
 //        if (superclass == null) {
 //            throw new RuntimeException("Missing type parameter.");
@@ -43,82 +43,61 @@ public interface RunnerFeature {
 //        }
 //        this.type = (Class<T>)type;
 //    }
-//    
+//
 //    public <R extends FeaturesRunner> boolean acceptRunner(R runner) {
 //        return type.isAssignableFrom(runner.getClass());
 //    }
-//    
+//
 //    public Class<T> runnerType() {
 //        return type;
 //    }
-//    
+//
 //    public T castRunner(FeaturesRunner runner) {
 //        return null;
 //    }
-//    
-    
+//
+
     /**
      * Called when preparing to run the test class. Framework is not started at this point.
-     * Here is time for the feature to configure the runner from annotations on the test class. 
-     * @param runner
-     * @throws Exception
+     * Here is time for the feature to configure the runner from annotations on the test class.
      */
-    public void initialize(FeaturesRunner runner) throws Exception;
-        
+    void initialize(FeaturesRunner runner) throws Exception;
+
     /**
-     * Configure Guice bindings if any is required by the feature.
-     * This is called after the framework is started and before guice module is built.
-     * The tests are launched after guice module is built. 
-     * @param runner
-     * @param binder
+     * Configures Guice bindings if any is required by the feature.
+     * This is called after the framework is started and before Guice module is built.
+     * The tests are launched after guice module is built.
      */
-    public void configure(FeaturesRunner runner, Binder binder);
-        
+    void configure(FeaturesRunner runner, Binder binder);
+
     /**
      * Before running tests. At this point Guice modules are registered and injector created.
-     * @param runner
-     * @throws Exception
      */
-    public void beforeRun(FeaturesRunner runner) throws Exception;
-    
+    void beforeRun(FeaturesRunner runner) throws Exception;
 
     /**
      * After tests were run.
-     * @param runner
-     * @throws Exception
      */
-    public void afterRun(FeaturesRunner runner) throws Exception;
-    
-    
+    void afterRun(FeaturesRunner runner) throws Exception;
+
     /**
      * Features are initialized. Runner is ready to create the injector.
-     * @param runner
-     * @throws Exception
      */
-    public void start(FeaturesRunner runner) throws Exception;
-    
+    void start(FeaturesRunner runner) throws Exception;
+
     /**
      * Before exiting the test.
-     * @throws Exception
      */
-    public void stop(FeaturesRunner runner) throws Exception;
-    
+    void stop(FeaturesRunner runner) throws Exception;
+
     /**
-     * Before a test method is invoked
-     * @param runner
-     * @param method
-     * @param test
-     * @throws Exception
+     * Before a test method is invoked.
      */
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
-    
+    void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
+
     /**
-     * After a test method was ran
-     * @param runner
-     * @param method
-     * @param test
-     * @throws Exception
+     * After a test method was ran.
      */
-    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
-    
+    void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception;
+
 }

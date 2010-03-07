@@ -419,9 +419,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                                 + getName());
                 continue;
             }
-          //TODO do nothing for now -> fix the faulty components and then activate these warnings            
-//            String key = xt.target.getName()+"#"+xt.getExtensionPoint();            
-//            if (targets.contains(key)) { // multiple extensions to same target point declared in same component                 
+          //TODO do nothing for now -> fix the faulty components and then activate these warnings
+//            String key = xt.target.getName()+"#"+xt.getExtensionPoint();
+//            if (targets.contains(key)) { // multiple extensions to same target point declared in same component
 //                String message = "Component "+getName()+" contains multiple extensions to "+key;
 //                Framework.getRuntime().getWarnings().add(message);
 //                //TODO: un-comment the following line if you want to treat this as a dev. error

@@ -23,15 +23,15 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Jetty {
 
     String host() default "localhost";
-    
+
     int port() default 8080;
-    
+
     String config() default "";
+
 }

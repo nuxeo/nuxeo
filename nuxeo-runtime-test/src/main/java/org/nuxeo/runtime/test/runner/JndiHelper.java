@@ -33,7 +33,7 @@ public class JndiHelper {
 
     /**
      * Create a subcontext including any intermediate contexts.
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx of the subcontext.
      * @return The new or existing JNDI subcontext
@@ -47,7 +47,7 @@ public class JndiHelper {
 
     /**
      * Create a subcontext including any intermediate contexts.
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx of the subcontext.
      * @return The new or existing JNDI subcontext
@@ -72,7 +72,7 @@ public class JndiHelper {
     /**
      * Bind val to name in ctx, and make sure that all intermediate contexts
      * exist
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx where value will be bound
      * @param value the value to bind.
@@ -87,7 +87,7 @@ public class JndiHelper {
     /**
      * Bind val to name in ctx, and make sure that all intermediate contexts
      * exist
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx where value will be bound
      * @param value the value to bind.
@@ -104,7 +104,7 @@ public class JndiHelper {
     /**
      * Rebind val to name in ctx, and make sure that all intermediate contexts
      * exist
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx where value will be bound
      * @param value the value to bind.
@@ -119,7 +119,7 @@ public class JndiHelper {
     /**
      * Rebind val to name in ctx, and make sure that all intermediate contexts
      * exist
-     * 
+     *
      * @param ctx the parent JNDI Context under which value will be bound
      * @param name the name relative to ctx where value will be bound
      * @param value the value to bind.
@@ -135,7 +135,7 @@ public class JndiHelper {
 
     /**
      * Unbinds a name from ctx, and removes parents if they are empty
-     * 
+     *
      * @param ctx the parent JNDI Context under which the name will be unbound
      * @param name The name to unbind
      * @throws NamingException for any error
@@ -146,7 +146,7 @@ public class JndiHelper {
 
     /**
      * Unbinds a name from ctx, and removes parents if they are empty
-     * 
+     *
      * @param ctx the parent JNDI Context under which the name will be unbound
      * @param name The name to unbind
      * @throws NamingException for any error

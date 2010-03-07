@@ -24,18 +24,17 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DeploymentSet {
-    
+
     protected LinkedHashSet<String> deployments;
     protected LinkedHashSet<String> localDeployments;
-    
+
     public DeploymentSet() {
         deployments = new LinkedHashSet<String>();
-        localDeployments = new LinkedHashSet<String>();        
+        localDeployments = new LinkedHashSet<String>();
     }
-    
+
     public void load(AnnotationScanner scanner, Class<?> clazz) {
         scanner.scan(clazz);
         List<? extends Annotation> annos = scanner.getAnnotations(clazz);
@@ -44,17 +43,17 @@ public class DeploymentSet {
         }
         for (Annotation anno : annos) {
             if (anno.annotationType() == Deploy.class) {
-                for (String key : ((Deploy)anno).value()) {
+                for (String key : ((Deploy) anno).value()) {
                     deployments.add(key);
                 }
             } else if (anno.annotationType() == LocalDeploy.class) {
-                for (String key : ((LocalDeploy)anno).value()) {
+                for (String key : ((LocalDeploy) anno).value()) {
                     localDeployments.add(key);
-                }                
+                }
             }
         }
     }
-    
+
     public void addDeployment(String key) {
         deployments.add(key);
     }
@@ -62,7 +61,7 @@ public class DeploymentSet {
     public void addLocalDeployment(String key) {
         localDeployments.add(key);
     }
-    
+
     public void addDeployment(Collection<String> key) {
         deployments.addAll(key);
     }
@@ -70,7 +69,6 @@ public class DeploymentSet {
     public void addLocalDeployment(Collection<String> key) {
         localDeployments.addAll(key);
     }
-        
 
     public Set<String> getDeployments() {
         return deployments;

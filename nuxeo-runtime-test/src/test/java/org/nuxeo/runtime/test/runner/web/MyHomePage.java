@@ -35,5 +35,5 @@ public class MyHomePage extends WebPage {
         search.submit();
         return getPage(SearchResultPage.class);
     }
-    
+
 }

@@ -31,7 +31,7 @@ import com.google.inject.Inject;
 public class JettyTest {
 
     @Inject org.mortbay.jetty.Server server;
-    
+
     @Test public void jettyComponentIsDeployed() throws Exception {
         assertNotNull(server);
     }

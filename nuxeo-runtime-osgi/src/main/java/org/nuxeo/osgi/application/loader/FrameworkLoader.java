@@ -58,23 +58,23 @@ public class FrameworkLoader {
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
     public static final String ARGS = "org.nuxeo.app.args";
 
-    
+
     private static boolean isInitialized;
     private static boolean isStarted;
-    private static File home;    
+    private static File home;
     private static ClassLoader loader;
     private static List<File> bundleFiles;
     private static OSGiAdapter osgi;
-    
-    
+
+
     public static OSGiAdapter osgi() {
         return osgi;
     }
-    
+
     public static ClassLoader getLoader() {
         return loader;
     }
-    
+
     public static synchronized void initialize(ClassLoader cl, File home, List<File> bundleFiles, Map<String,Object> hostEnv) throws Exception {
         if (isInitialized) {
             return;
@@ -86,7 +86,7 @@ public class FrameworkLoader {
         osgi = new OSGiAdapter(home);
         isInitialized = true;
     }
-    
+
     public static synchronized void start() throws Exception {
         if (isStarted) {
             return;
@@ -101,7 +101,7 @@ public class FrameworkLoader {
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
-        isStarted = true;   
+        isStarted = true;
     }
 
     public static synchronized void stop() throws Exception {
@@ -118,7 +118,7 @@ public class FrameworkLoader {
         isStarted = false;
     }
 
-    
+
     private static void doInitialize(Map<String, Object> hostEnv) {
         System.setProperty(HOME_DIR, home.getAbsolutePath()); // mkae sure this property was correctly initialized
         boolean doPreprocessing = true;
@@ -127,7 +127,7 @@ public class FrameworkLoader {
             doPreprocessing = Boolean.parseBoolean(v);
         }
         // build environment
-        Environment env = createEnvironment(home, hostEnv);        
+        Environment env = createEnvironment(home, hostEnv);
         Environment.setDefault(env);
         loadSystemProperties();
         // start bundle pre-processing if requested
@@ -165,9 +165,9 @@ public class FrameworkLoader {
     }
 
     private static void doStop() throws Exception {
-        osgi.shutdown();        
+        osgi.shutdown();
     }
-    
+
     public static void preprocess() throws Exception {
         File f = new File(home, "OSGI-INF/deployment-container.xml");
         if (!f.isFile()) { // make sure a preprocessing container is defined
@@ -187,7 +187,7 @@ public class FrameworkLoader {
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
-            Properties p = new Properties();            
+            Properties p = new Properties();
             p.load(in);
             for (Map.Entry<Object,Object> entry : p.entrySet()) {
                 String v = (String)entry.getValue();
@@ -240,10 +240,10 @@ public class FrameworkLoader {
         env.getData().mkdirs();
         env.getLog().mkdirs();
         env.getTemp().mkdirs();
-        
+
         return env;
     }
-    
+
 
     protected static void printStartMessage() {
         Environment env = Environment.getDefault();
@@ -259,5 +259,5 @@ public class FrameworkLoader {
 //        System.out.println("  * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         System.out.println("======================================================================");
     }
-    
+
 }

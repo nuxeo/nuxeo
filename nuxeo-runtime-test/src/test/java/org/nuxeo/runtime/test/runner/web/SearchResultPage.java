@@ -33,5 +33,5 @@ public class SearchResultPage extends WebPage {
     public String getFirstResult() {
         return firstLink.getText();
     }
-    
+
 }

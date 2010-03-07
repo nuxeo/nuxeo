@@ -36,28 +36,28 @@ import com.google.inject.Module;
 
 /**
  * A Test Case runner that can be extended through features and provide injection
- * though Guice 
- * 
+ * though Guice
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
-    
+
     protected static AnnotationScanner scanner = new AnnotationScanner();
 
     /**
      * Guice injector.
      */
     protected Injector injector;
-    
+
     protected List<RunnerFeature> features;
 
     public static AnnotationScanner getScanner() {
         return scanner;
     }
 
-    
+
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
         try {
@@ -68,17 +68,17 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    
+
     public Class<?> getTargetTestClass() {
         return super.getTestClass().getJavaClass();
     }
-    
+
     protected void loadFeature(HashSet<Class<?>> cycles, LinkedHashSet<Class<? extends RunnerFeature>> features, Class<? extends RunnerFeature> clazz) throws Exception {
         if (features.contains(clazz)) {
             return;
         }
-        if (cycles.contains(clazz)) { 
-            throw new Error("Cycle detected in features dependencies of "+clazz); 
+        if (cycles.contains(clazz)) {
+            throw new Error("Cycle detected in features dependencies of "+clazz);
         }
         cycles.add(clazz);
         scanner.scan(clazz);
@@ -95,10 +95,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
         features.add(clazz); // add at the end to ensure requirements are added first
     }
-    
+
     protected void loadFeatures(Class<?> classToRun) throws Exception {
         scanner.scan(classToRun);
-        LinkedHashSet<Class<? extends RunnerFeature>> features = new LinkedHashSet<Class<? extends RunnerFeature>>();        
+        LinkedHashSet<Class<? extends RunnerFeature>> features = new LinkedHashSet<Class<? extends RunnerFeature>>();
         // load required features from annotation
         List<Features> annos = scanner.getAnnotations(classToRun, Features.class);
         if (annos != null) {
@@ -117,7 +117,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             this.features.add(rf);
         }
     }
-    
+
     public <T extends RunnerFeature> T getFeature(Class<T> type) {
         for (RunnerFeature rf : features) {
             if (rf.getClass() == type) {
@@ -147,13 +147,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected void beforeMethodRun(FrameworkMethod method, Object test) throws Exception {
         for (RunnerFeature feature : features) {
             feature.beforeMethodRun(this, method, test);
-        }        
+        }
     }
-    
+
     protected void afterMethodRun(FrameworkMethod method, Object test) throws Exception {
         for (RunnerFeature feature : features) {
             feature.afterMethodRun(this, method, test);
-        }    
+        }
     }
 
     protected void afterRun() throws Exception {
@@ -192,7 +192,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     public void resetInjector() {
         this.injector = createInjector();
     }
-    
+
     protected Injector createInjector() {
         Module module = new Module() {
             public void configure(Binder arg0) {
@@ -200,10 +200,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         };
         // build injector
-        return Guice.createInjector(module);    
+        return Guice.createInjector(module);
     }
-    
-    
+
+
     @Override
     public void run(final RunNotifier notifier) {
         try {
@@ -231,7 +231,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         // Return a Guice injected test class
         return injector.getInstance(getTestClass().getJavaClass());
     }
-    
+
     @Override
     protected void validateZeroArgConstructor(List<Throwable> errors) {
         // Guice can inject constructors with parameters so we don't want this
@@ -245,20 +245,20 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected class InvokeMethod extends Statement {
         protected FrameworkMethod testMethod;
-        protected Object target;        
+        protected Object target;
         public InvokeMethod(FrameworkMethod testMethod, Object target) {
             this.testMethod= testMethod;
             this.target= target;
-        }        
+        }
         public void evaluate() throws Throwable {
             beforeMethodRun(testMethod, target);
             try {
                 testMethod.invokeExplosively(target);
             } finally {
-                afterMethodRun(testMethod, target);    
+                afterMethodRun(testMethod, target);
             }
         }
     }
-   
+
 
 }

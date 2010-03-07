@@ -20,26 +20,22 @@ import org.openqa.selenium.WebDriver;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DriverFactory {
 
     /**
-     * Get the family of the driver this factory can create
-     * @return
+     * Gets the family of the driver this factory can create.
      */
-    public BrowserFamily getBrowserFamily();
-    
+    BrowserFamily getBrowserFamily();
+
     /**
-     * Create the driver
-     * @return
+     * Creates the driver.
      */
-    public WebDriver createDriver();
-    
+    WebDriver createDriver();
+
     /**
-     * Dispose any needed resources after the driver was closed
-     * @param driver
+     * Disposes any needed resources after the driver was closed.
      */
-    public void disposeDriver(WebDriver driver);
-    
+    void disposeDriver(WebDriver driver);
+
 }

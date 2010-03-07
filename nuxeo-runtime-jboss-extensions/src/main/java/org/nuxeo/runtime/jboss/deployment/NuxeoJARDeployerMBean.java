@@ -25,6 +25,6 @@ import org.jboss.deployment.SubDeployerExtMBean;
  */
 public interface NuxeoJARDeployerMBean extends SubDeployerExtMBean {
 
-    public SubDeployer getDeployer();
-    
+    SubDeployer getDeployer();
+
 }

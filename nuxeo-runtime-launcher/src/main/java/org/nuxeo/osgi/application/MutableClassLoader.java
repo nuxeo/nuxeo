@@ -25,7 +25,7 @@ import java.net.URL;
 public interface MutableClassLoader {
 
     void addURL(URL url);
-    
-    public ClassLoader getClassLoader();
+
+    ClassLoader getClassLoader();
 
 }

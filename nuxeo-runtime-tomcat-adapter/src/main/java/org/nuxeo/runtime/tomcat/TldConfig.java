@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,7 +67,7 @@ import org.xml.sax.InputSource;
  * @author Craig R. McClanahan
  * @author Jean-Francois Arcand
  * @author Costin Manolache
- * 
+ *
  * BS: patched to avoid lookups in parent class loaders - see BS comments
  */
 public final class TldConfig  implements LifecycleListener {
@@ -171,8 +171,8 @@ public final class TldConfig  implements LifecycleListener {
     /**
      * Sets the list of JARs that are known not to contain any TLDs.
      *
-     * @param jarNames List of comma-separated names of JAR files that are 
-     * known not to contain any TLDs 
+     * @param jarNames List of comma-separated names of JAR files that are
+     * known not to contain any TLDs
      */
     public static void setNoTldJars(String jarNames) {
         if (jarNames != null) {
@@ -219,7 +219,7 @@ public final class TldConfig  implements LifecycleListener {
      */
     public void setTldNamespaceAware(boolean tldNamespaceAware){
         TldConfig.tldNamespaceAware = tldNamespaceAware;
-    }    
+    }
 
 
     public boolean isRescan() {
@@ -549,7 +549,7 @@ public final class TldConfig  implements LifecycleListener {
                  (sm.getString("contextConfig.tldFileException", resourcePath,
                                context.getPath()),
                   e);
-        } 
+        }
 
     }
 
@@ -614,7 +614,7 @@ public final class TldConfig  implements LifecycleListener {
      */
     private void tldScanResourcePathsWebInf(DirContext resources,
                                             String rootPath,
-                                            Set tldPaths) 
+                                            Set tldPaths)
             throws IOException {
 
         if (log.isTraceEnabled()) {
@@ -656,7 +656,7 @@ public final class TldConfig  implements LifecycleListener {
      *
      * The latter constitutes a Tomcat-specific extension to the TLD search
      * order defined in the JSP spec. It allows tag libraries packaged as JAR
-     * files to be shared by web applications by simply dropping them in a 
+     * files to be shared by web applications by simply dropping them in a
      * location that all web applications have access to (e.g.,
      * <CATALINA_HOME>/common/lib).
      *
@@ -683,12 +683,12 @@ public final class TldConfig  implements LifecycleListener {
                     // This is definitely not as clean as using JAR URLs either
                     // over file or the custom jndi handler, but a lot less
                     // buggy overall
-                    
+
                     // Check that the URL is using file protocol, else ignore it
                     if (!"file".equals(urls[i].getProtocol())) {
                         continue;
                     }
-                    
+
                     File file = null;
                     try {
                         file = new File(urls[i].toURI());
@@ -739,7 +739,7 @@ public final class TldConfig  implements LifecycleListener {
             log.error(sm.getString("tldConfig.cce", event.getLifecycle()), e);
             return;
         }
-        
+
         if (event.getType().equals(Lifecycle.INIT_EVENT)) {
             init();
         } else if (event.getType().equals(Lifecycle.START_EVENT)) {
@@ -749,30 +749,30 @@ public final class TldConfig  implements LifecycleListener {
                 log.error(sm.getString(
                         "tldConfig.execute", context.getPath()), e);
             }
-        } // Ignore the other event types - nothing to do 
+        } // Ignore the other event types - nothing to do
     }
-    
+
     private void init() {
         if (tldDigester == null){
             // (1)  check if the attribute has been defined
             //      on the context element.
             setTldValidation(context.getTldValidation());
             setTldNamespaceAware(context.getTldNamespaceAware());
-    
+
             // (2) if the attribute wasn't defined on the context
             //     try the host.
             if (!tldValidation) {
               setTldValidation(
                       ((StandardHost) context.getParent()).getXmlValidation());
             }
-    
+
             if (!tldNamespaceAware) {
               setTldNamespaceAware(
                       ((StandardHost) context.getParent()).getXmlNamespaceAware());
             }
 
-            tldDigester = DigesterFactory.newDigester(tldValidation, 
-                    tldNamespaceAware, 
+            tldDigester = DigesterFactory.newDigester(tldValidation,
+                    tldNamespaceAware,
                     new TldRuleSet());
             tldDigester.getParser();
         }

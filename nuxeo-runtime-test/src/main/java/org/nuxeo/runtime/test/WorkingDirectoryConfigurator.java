@@ -26,6 +26,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 public interface WorkingDirectoryConfigurator {
 
-    public void configure(RuntimeHarness harness, File workingDir) throws Exception;
-    
+    void configure(RuntimeHarness harness, File workingDir) throws Exception;
+
 }

@@ -26,16 +26,16 @@ public class DistributionFeature extends SimpleFeature {
 
 //    protected NuxeoDistribution distrib;
 //    protected NuxeoApp app;
-//    
+//
 //    @Override
 //    public void initialize(FeaturesRunner runner) throws Exception {
 //        distrib = FeaturesRunner.getScanner().getFirstAnnotation(runner.getTargetTestClass(), NuxeoDistribution.class);
 //        if (distrib == null) {
 //            throw new IllegalArgumentException("No distribution specified. Use @NuxeoDistribution on your class to specify the distribution to be used");
 //        }
-//        
+//
 //    }
-//    
+//
 //    @Override
 //    public void start(FeaturesRunner runner) throws Exception {
 //        File home = makeHome(distrib.home());
@@ -48,24 +48,24 @@ public class DistributionFeature extends SimpleFeature {
 //        } else {
 //            app.build(distrib.profile(), distrib.useCache());
 //        }
-//        NuxeoApp.setHttpServerAddress(distrib.host(), distrib.port());        
+//        NuxeoApp.setHttpServerAddress(distrib.host(), distrib.port());
 //        app.start();
 //    }
-//    
+//
 //    protected File makeHome(String path) {
 //        if (path.startsWith("~")) {
 //            path = System.getProperty("user.home") + path.substring(1);
 //        }
 //        path = path.replace("{profile}", distrib.profile());
 //        path = path.replace("{tmp}", System.getProperty("java.io.tmpdir"));
-//        return new File(path); 
+//        return new File(path);
 //    }
-//    
+//
 //    @Override
 //    public void stop(FeaturesRunner runner) throws Exception {
 //        app.shutdown();
 //    }
-//    
+//
 //
 //    protected static URL makeUrl(String spec) {
 //        try {
@@ -89,12 +89,12 @@ public class DistributionFeature extends SimpleFeature {
 //            return null;
 //        }
 //    }
-//    
+//
 //    protected static void fail(String msg) {
 //        System.err.println(msg);
 //        System.exit(2);
 //    }
-//    
+//
 //    protected static ClassLoader getContextClassLoader() {
 //        ClassLoader cl = Thread.currentThread().getContextClassLoader();
 //        return cl == null ? DistributionFeature.class.getClassLoader() : cl;

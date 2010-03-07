@@ -24,9 +24,8 @@ import java.lang.annotation.Target;
 
 /**
  * Browser configuration
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -34,17 +33,15 @@ public @interface Browser {
 
     /**
      * The type of the browser to use. Ignored if a factory is also specified.
-     * When the type is specified a default driver for that type will be automatically created. 
-     * @return
+     * When the type is specified a default driver for that type will be automatically created.
      */
     BrowserFamily type() default BrowserFamily.HTML_UNIT;
-    
+
     /**
      * A custom factory to create WebDriver objects.
      * If a factory is specified the {@link #type()} is ignored.
-     * Factories are good for customizing the driver creation in QA tests. 
-     * @return
+     * Factories are good for customizing the driver creation in QA tests.
      */
     Class<? extends DriverFactory> factory() default DriverFactory.class;
-    
+
 }

@@ -52,10 +52,10 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     /**
      * Property that controls whether or not to redirect JUL to JCL.
-     * By default is true (JUL will be redirected)  
+     * By default is true (JUL will be redirected)
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
-    
+
     private static final Log log = LogFactory.getLog(RuntimeService.class);
 
     protected boolean isStarted = false;

@@ -32,31 +32,29 @@ public @interface NuxeoDistribution {
     /**
      * The distribution name.
      * if config is not specified will try to locate a distribution configuration matching the profile.
-     * @return
      */
     String profile();
 
     /**
      * An URL that points to a custom distribution configuration.
-     * Use "java:path_to_resource" to locate the configuration using the classloader 
-     * @return
+     * Use "java:path_to_resource" to locate the configuration using the classloader
      */
     String config() default "";
 
     /**
-     * The nuxeo server home. Can use variables like {profile}, {tmp} for the temporary directory and ~ for the home directory 
-     * @return
+     * The nuxeo server home.
+     * Can use variables like {profile}, {tmp} for the temporary directory and ~ for the home directory.
      */
     String home() default "~/.nxserver/distrib/{profile}";
-    
+
     String host() default "localhost";
-    
+
     int port() default 8989;
-    
+
     boolean useCache() default true;
-    
+
     boolean offline() default false;
-    
+
     String updatePolicy() default "daily";
 
 }

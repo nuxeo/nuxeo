@@ -22,6 +22,7 @@ import com.google.inject.Binder;
 
 /**
  * These are the states the runner goes through when using runtime feature:
+ * <pre>
  * CREATE FRAMEWORK
  * new feature()        --> constructor
  * COLLECT DEFINED DEPLOYMENTS
@@ -29,15 +30,15 @@ import com.google.inject.Binder;
  * START FRAMEWORK
  * feature.start()
  * CREATE INJECTOR => feature.configure() --> can be used to add guice bindings and to dynamically deploy components using the harness
- * feature.beforeRun()   
+ * feature.beforeRun()
  * feature.beforeMethodRun()  --> test method interceptor
  * feature.afterMethodRun()   --> test method interceptor
  * feature.afterRun() --> cleanup that require framework to be started
  * STOP FRAMEWORK
  * feature.stop()  --> destructor
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * </pre>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class SimpleFeature implements RunnerFeature {
 
@@ -49,7 +50,7 @@ public class SimpleFeature implements RunnerFeature {
 
     public void start(FeaturesRunner runner) throws Exception {
     }
-    
+
     public void stop(FeaturesRunner runner) throws Exception {
     }
 
@@ -59,11 +60,11 @@ public class SimpleFeature implements RunnerFeature {
     public void initialize(FeaturesRunner runner)
             throws Exception {
     }
-    
+
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
     }
-    
+
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
     }

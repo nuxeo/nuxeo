@@ -31,20 +31,20 @@ import java.util.Set;
 public class AnnotationScanner {
 
     protected Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
-    
+
     public synchronized void scan(Class<?> clazz) {
         if (classes.containsKey(clazz)) {
             return;
         }
-        ArrayList<Annotation> result = new ArrayList<Annotation>();
-        HashSet<Class<?>> visitedClasses = new HashSet<Class<?>>();        
+        List<Annotation> result = new ArrayList<Annotation>();
+        Set<Class<?>> visitedClasses = new HashSet<Class<?>>();
         collectAnnotations(clazz, result, visitedClasses);
     }
 
     public List<? extends Annotation> getAnnotations(Class<?> clazz) {
         return classes.get(clazz);
     }
-    
+
     public <T extends Annotation> T getFirstAnnotation(Class<?> clazz, Class<T> annotationType) {
         List<T> result = getAnnotations(clazz, annotationType);
         if (result != null && !result.isEmpty()) {
@@ -52,12 +52,12 @@ public class AnnotationScanner {
         }
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
         List<Annotation> list = classes.get(clazz);
         if (list != null) {
-            ArrayList<T> result = new ArrayList<T>();
+            List<T> result = new ArrayList<T>();
             for (Annotation anno : list) {
                 if (anno.annotationType() == annotationType) {
                     result.add((T)anno);
@@ -67,18 +67,18 @@ public class AnnotationScanner {
         }
         return null;
     }
-    
+
     protected void collectAnnotations(Class<?> clazz, List<Annotation> result, Set<Class<?>> visitedClasses) {
         if (visitedClasses.contains(clazz)) {
             return;
         }
         visitedClasses.add(clazz);
-        ArrayList<Annotation> partialResult = new ArrayList<Annotation>(); // collect only the annotation on this class
+        List<Annotation> partialResult = new ArrayList<Annotation>(); // collect only the annotation on this class
         List<Annotation> annos = classes.get(clazz);
         if (annos != null) {
             partialResult.addAll(annos);
             return;
-        }        
+        }
         // collect local annotations
         for (Annotation anno : clazz.getAnnotations()) {
             partialResult.add(anno);
@@ -91,11 +91,11 @@ public class AnnotationScanner {
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             collectAnnotations(superClass, partialResult, visitedClasses);
-        }        
+        }
         if (!partialResult.isEmpty()) {
             result.addAll(partialResult);
         }
         classes.put(clazz, partialResult);
     }
-    
+
 }

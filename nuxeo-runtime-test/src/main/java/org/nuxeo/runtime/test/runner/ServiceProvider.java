@@ -27,11 +27,11 @@ import com.google.inject.Provider;
 public class ServiceProvider<T> implements Provider<T> {
 
     protected Class<?> clazz;
-    
+
     public ServiceProvider(Class<?> clazz) {
         this.clazz = clazz;
     }
-    
+
     @SuppressWarnings("unchecked")
     public T get() {
         try {

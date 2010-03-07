@@ -23,17 +23,15 @@ import java.lang.annotation.Target;
 
 /**
  * The home page implementation to use and its associated URL.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HomePage {
 
     Class<? extends WebPage> type();
-    
-    String url();
-    
-}
 
+    String url();
+
+}

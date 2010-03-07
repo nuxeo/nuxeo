@@ -93,7 +93,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     protected Bundle runtimeBundle;
 
     protected List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
-    
+
     public NXRuntimeTestCase() {
     }
 
@@ -104,11 +104,11 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config) {
         wdConfigs.add(config);
     }
-    
+
     public File getWorkingDir() {
         return workingDir;
     }
-    
+
     /**
      * Restarts the runtime and preserve homes directory.
      */
@@ -125,7 +125,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     public void start() throws Exception {
         setUp();
     }
-    
+
     @Override
     public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
@@ -136,7 +136,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
             initTestRuntime();
         } else {
             initOsgiRuntime();
-        }        
+        }
     }
 
     /**
@@ -160,11 +160,11 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         ServiceManager.getInstance().reset();
         super.tearDown();
     }
-    
+
     public void stop() throws Exception {
         tearDown();
     }
-    
+
     public boolean isStarted() {
         return runtime != null;
     }
@@ -194,7 +194,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         for (WorkingDirectoryConfigurator cfg : wdConfigs) {
             cfg.configure(this, workingDir);
         }
-        
+
         bundleLoader.setScanForNestedJARs(false); // for now
         bundleLoader.setExtractNestedJARs(false);
 
@@ -564,10 +564,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         return bundleFile;
     }
 
-    
     public void deployFolder(File folder, ClassLoader loader) throws Exception {
         DirectoryBundleFile bf = new DirectoryBundleFile(folder);
         BundleImpl bundle = new BundleImpl(osgi, bf, loader);
         osgi.install(bundle);
     }
+
 }

@@ -34,9 +34,9 @@ public class WebDriverFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(WebDriverFeature.class);
 
-    protected Configuration config; 
+    protected Configuration config;
     protected Class<? extends WebPage> home;
-    
+
     public void initialize(FeaturesRunner runner)
             throws Exception {
         Class<?> classToTest = runner.getTargetTestClass();
@@ -59,7 +59,7 @@ public class WebDriverFeature extends SimpleFeature {
             }
         }
         config = new Configuration(factory);
-        
+
         // get the home page and the url - first check for an url from the environment
         String url = System.getProperty(HomePage.class.getName()+".url");
         HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, HomePage.class);
@@ -69,7 +69,7 @@ public class WebDriverFeature extends SimpleFeature {
                 url = home.url();
             }
         }
-        config.setHome(url);             
+        config.setHome(url);
         try {
             runner.filter(new Filter() {
                 @Override
@@ -115,14 +115,14 @@ public class WebDriverFeature extends SimpleFeature {
                         ((WebPage)obj).ensureLoaded();
                     }
                     return obj;
-                } 
+                }
             }).in(Scopes.SINGLETON);
         }
     }
-    
+
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         config.resetDriver();
     }
-    
+
 }
