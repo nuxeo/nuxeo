@@ -3,8 +3,8 @@
   xmlns:c="http://java.sun.com/jstl/core">
 
   <c:if test="#{!empty currentDocumentLockDetails}">
-    <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
-    <h:outputText class="summary_locked" value="#{messages['label.summary.locked']}"/>
+    <h:outputText value="#{messages['label.summary.locked.intro']} " /> 
+    <h:outputText value="#{messages['label.summary.locked']}" styleClass="summary_locked" />
     <c:if test="#{currentDocumentCanBeUnlocked}">
       <h:outputText value=" | " />
       <h:commandLink value="#{messages['command.unlock']}"
