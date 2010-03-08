@@ -15,7 +15,8 @@
 <body style="padding: 0; margin: 0">
 
   <f:view>
-
+    <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+	
     <nxthemes:accesskeys />
 
     <div id="nxthemesHeader">
@@ -193,7 +194,15 @@
       url="%{contextPath}/site/nxthemes-editor/fragmentFactory"
       controlledBy="editor perspectives"
       visibleInPerspectives="fragment factory" />
-
+  
+  </f:subview>
+  
+  <f:subview rendered="#{!currentNuxeoPrincipal.administrator}">
+    <script type="text/javascript"><!--
+      NXThemesEditor.accessDenied();
+    //--></script>
+  </f:subview>
+	
 </f:view>
 
 </body>

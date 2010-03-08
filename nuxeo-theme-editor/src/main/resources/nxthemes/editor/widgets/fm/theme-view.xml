@@ -12,6 +12,8 @@
 
 <body style="padding: 0; margin: 0">
 
+<#if Context.principal.administrator>
+
     <@nxthemes_accesskeys />
 
     <div id="nxthemesHeader">
@@ -188,6 +190,12 @@
       url="${basePath}/nxthemes-editor/fragmentFactory"
       controlledBy="editor perspectives"
       visibleInPerspectives="fragment factory" />
+
+<#else>
+  <script type="text/javascript"><!--
+    NXThemesEditor.accessDenied();
+  //--></script>
+</#if>
 
 </body>
 
