@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "GadgetDocument")
-@Produces( { "application/octet-stream" })
 public class GadgetDocument extends DocumentObject {
 
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
@@ -72,7 +70,7 @@ public class GadgetDocument extends DocumentObject {
             throw WebException.wrap(e);
         }
 
-        return Response.ok()
+        return Response.ok("File upload ok", MediaType.TEXT_PLAIN)
                 .build();
     }
 
@@ -121,10 +119,8 @@ public class GadgetDocument extends DocumentObject {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
-
-        return Response.ok("File upload ok!")
+        return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)
                 .build();
-
     }
 
     protected Blob getResizedBlobl(Blob blob, int newWidth)
