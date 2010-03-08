@@ -114,7 +114,7 @@ a:hover {
   Boolean securityError = (Boolean) request.getAttribute("securityError");
   String request_dump = (String) request.getAttribute("request_dump");
 
-  String pageTitle="An error occured";
+  String pageTitle="An error occurred";
   if ((securityError!=null) && (securityError.booleanValue()==true))
   {
     pageTitle = "You don't have the neccessary permission to do the requested action";
