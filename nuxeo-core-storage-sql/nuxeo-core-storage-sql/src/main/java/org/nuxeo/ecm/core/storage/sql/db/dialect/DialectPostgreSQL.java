@@ -1126,6 +1126,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "-- Rebuild only necessary read acls\n" //
                         + "DECLARE\n" //
                         + "  update_count integer;\n" //
+                        + "  reset_cache boolean := false;" //
                         + "BEGIN\n" //
                         + "  -- New hierarchy_read_acl entry\n" //
                         + "  RAISE DEBUG 'nx_update_read_acls inserting new hierarchy_read_acl ...';\n" //
@@ -1148,8 +1149,7 @@ public class DialectPostgreSQL extends Dialect {
                         + "  RAISE DEBUG 'nx_update_read_acls mark % lines to update', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE NOT is_new;\n" //
                         + "  IF (update_count > 0) THEN\n" // list of read_acls have changed
-                        + "    RAISE DEBUG 'nx_update_read_acls reset read_acls cache';\n" //
-                        + "    TRUNCATE TABLE read_acls_cache;\n" //
+                        + "    reset_cache = true;" //
                         + "  END IF;\n" //
                         + "\n" //
                         + "  -- Mark all childrens\n" //
@@ -1171,6 +1171,11 @@ public class DialectPostgreSQL extends Dialect {
                         + "  UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;\n" //
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE INFO 'nx_update_read_acls % updated.', update_count;\n" //
+                        + "\n" //
+                        + "  IF (reset_cache) THEN\n" //
+                        + "    RAISE DEBUG 'nx_update_read_acls reset read_acls cache';\n" //
+                        + "    TRUNCATE TABLE read_acls_cache;\n" //
+                        + "  END IF;\n" //
                         + "\n" //
                         + "  RETURN;\n" //
                         + "END $$\n" //
