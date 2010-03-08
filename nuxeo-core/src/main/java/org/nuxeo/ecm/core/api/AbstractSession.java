@@ -240,8 +240,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -1782,13 +1782,14 @@ public abstract class AbstractSession implements CoreSession,
     private DocumentModel createDocumentSnapshot(DocumentModel docModel,
             Document doc, Map<String, Serializable> options, boolean pendingSave)
             throws ClientException {
-        if (!isDirty(docModel.getRef())) {
-            log.debug("Document not dirty -> avoid creating a new version");
+        DocumentRef docRef = docModel.getRef();
+        if (!isDirty(docRef) && getLastVersion(docRef) != null) {
+            log.debug("Document not dirty and has a last version "
+                    + "-> avoid creating a new version");
             return null;
         }
 
         // Do a checkin / checkout of the edited version
-        DocumentRef docRef = docModel.getRef();
         VersionModel newVersion = new VersionModelImpl();
         String vlabel = generateVersionLabelFor(docRef);
         newVersion.setLabel(vlabel);
@@ -1835,6 +1836,9 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, VERSION);
 
             DocumentVersion version = doc.getLastVersion();
+            if (version == null) {
+                return null;
+            }
             VersionModel versionModel = new VersionModelImpl();
             versionModel.setCreated(version.getCreated());
             versionModel.setDescription(version.getDescription());
@@ -2213,7 +2217,8 @@ public abstract class AbstractSession implements CoreSession,
             String vlabel = version.getLabel();
 
             if (overwriteExistingProxy) {
-                Document target = getSession().getVersion(doc.getUUID(), version);
+                Document target = getSession().getVersion(doc.getUUID(),
+                        version);
                 if (target == null) {
                     throw new ClientException("Document " + docRef
                             + " has no version " + vlabel);
@@ -2745,6 +2750,10 @@ public abstract class AbstractSession implements CoreSession,
             // snapshot the document
             createDocumentSnapshot(docToPublish, null, null, false);
             VersionModel version = getLastVersion(docRef);
+            if (version == null) {
+                throw new ClientException("Cannot create proxy: "
+                        + "there is no version to point to");
+            }
             DocumentModel newProxy = createProxy(sectionRef, docRef, version,
                     overwriteExistingProxy);
             return newProxy;

@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -297,7 +298,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     private void checkVersions(DocumentModel doc, String... labels)
-            throws Exception {
+            throws ClientException {
         List<String> actual = new LinkedList<String>();
         for (DocumentModel ver : session.getVersions(doc.getRef())) {
             assertTrue(ver.isVersion());
@@ -559,7 +560,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("princ1", acl.get(0).getUsername());
 
         // remove live document (create a proxy so the version stays)
-        DocumentModel proxy = session.createProxy(folder.getRef(), file.getRef(), vm, true);
+        DocumentModel proxy = session.createProxy(folder.getRef(),
+                file.getRef(), vm, true);
         session.save();
         session.removeDocument(file.getRef());
         session.save();
@@ -635,11 +637,101 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         Collection<String> transitions = proxy.getAllowedStateTransitions();
         assertEquals(transitions.size(), 3);
 
-        if (proxy.getAllowedStateTransitions().contains(
-                "delete")) {
+        if (proxy.getAllowedStateTransitions().contains("delete")) {
             proxy.followTransition("delete");
         }
         assertEquals(proxy.getCurrentLifeCycleState(), "deleted");
+    }
+
+    public void testPublishingAfterVersionDelete() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        checkVersions(doc);
+
+        VersionModel lastVersion = session.getLastVersion(doc.getRef());
+        assertNull(lastVersion);
+        DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNull(lastVersionDocument);
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        checkVersions(proxy);
+        checkVersions(doc, "1");
+        lastVersion = session.getLastVersion(doc.getRef());
+        assertNotNull(lastVersion);
+        assertEquals("1", lastVersion.getLabel());
+        lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNotNull(lastVersionDocument);
+        assertEquals("file", lastVersionDocument.getName());
+
+        // unpublish
+        session.removeDocument(proxy.getRef());
+        // delete the version
+        List<VersionModel> versions = session.getVersionsForDocument(doc.getRef());
+        assertEquals(1, versions.size());
+        DocumentModel docVersion = session.getDocumentWithVersion(doc.getRef(),
+                versions.get(0));
+        session.removeDocument(docVersion.getRef());
+
+        checkVersions(doc);
+        lastVersion = session.getLastVersion(doc.getRef());
+        assertNull(lastVersion);
+        lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNull(lastVersionDocument);
+
+        // republish
+        DocumentModel newProxy = session.publishDocument(doc, folder);
+        checkVersions(newProxy);
+        checkVersions(doc, "1");
+        lastVersion = session.getLastVersion(doc.getRef());
+        assertNotNull(lastVersion);
+        assertEquals("1", lastVersion.getLabel());
+        lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNotNull(lastVersionDocument);
+        assertEquals("file", lastVersionDocument.getName());
+    }
+
+    public void testPublishingAfterCopy() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        checkVersions(doc);
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        checkVersions(proxy);
+        checkVersions(doc, "1");
+        VersionModel lastVersion = session.getLastVersion(doc.getRef());
+        assertNotNull(lastVersion);
+        assertEquals("1", lastVersion.getLabel());
+        DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNotNull(lastVersionDocument);
+        assertEquals("file", lastVersionDocument.getName());
+
+        // copy published file
+        DocumentModel copy = session.copy(doc.getRef(), folder.getRef(),
+                "fileCopied");
+        checkVersions(copy);
+        lastVersion = session.getLastVersion(copy.getRef());
+        assertNull(lastVersion);
+        lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
+        assertNull(lastVersionDocument);
+
+        // republish
+        DocumentModel newProxy = session.publishDocument(copy, folder);
+        checkVersions(newProxy);
+        checkVersions(copy, "1");
+        lastVersion = session.getLastVersion(copy.getRef());
+        assertNotNull(lastVersion);
+        assertEquals("1", lastVersion.getLabel());
+        lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
+        assertNotNull(lastVersionDocument);
+        assertEquals("fileCopied", lastVersionDocument.getName());
     }
 
 }
