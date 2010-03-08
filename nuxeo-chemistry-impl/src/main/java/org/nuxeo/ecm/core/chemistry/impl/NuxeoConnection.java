@@ -786,7 +786,7 @@ public class NuxeoConnection implements Connection, SPI {
             iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
                     this);
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e);
+            throw new CMISRuntimeException(e.toString(), e);
         }
 
         iterable = getPolicyFilteredMaps(iterable);
@@ -846,7 +846,7 @@ public class NuxeoConnection implements Connection, SPI {
             iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
                     this);
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e);
+            throw new CMISRuntimeException(e.toString(), e);
         }
 
         List<String> ids = getPolicyFilteredIds(iterable);

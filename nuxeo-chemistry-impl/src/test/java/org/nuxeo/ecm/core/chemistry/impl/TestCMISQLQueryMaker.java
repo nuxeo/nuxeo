@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.util.GregorianCalendar;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
@@ -204,6 +205,26 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
         assertEquals(expectedP, q.selectParams.subList(3, 4));
+
+        // boolean / datetime
+
+        query = "SELECT cmis:objectId FROM cmis:document "
+                + "WHERE dc:title = true or dc:title = TIMESTAMP '2010-01-01T00:00:00.123Z'";
+        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
+                captured.session, query, null, conn);
+        assertNotNull(q);
+        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
+                + " FROM HIERARCHY"
+                + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
+                + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                + "   AND ((DUBLINCORE.TITLE = ?) OR (DUBLINCORE.TITLE = ?))";
+        expectedP = Arrays.<Serializable> asList(Boolean.TRUE,
+                GregorianCalendar.fromAtomPub("2010-01-01T00:00:00.123Z"));
+        assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(0, 3)));
+        assertEquals(expectedP, q.selectParams.subList(3, 5));
     }
 
 }

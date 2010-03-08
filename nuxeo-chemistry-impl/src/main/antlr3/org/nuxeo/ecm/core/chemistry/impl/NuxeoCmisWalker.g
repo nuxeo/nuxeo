@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import org.apache.chemistry.Property;
+import org.apache.chemistry.util.GregorianCalendar;
 import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.Join;
 import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.SelectedColumn;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -403,6 +404,20 @@ literal returns [Serializable value]:
         {
             String s = $STRING_LIT.text;
             $value = s.substring(1, s.length() - 1);
+        }
+    | TIME_LIT
+        {
+            String s = $TIME_LIT.text;
+            s = s.substring(s.indexOf('\'') + 1, s.length() - 1);
+            try {
+                $value = GregorianCalendar.fromAtomPub(s);
+            } catch (IllegalArgumentException e) {
+                throw new UnwantedTokenException(Token.INVALID_TOKEN_TYPE, input);
+            }
+        }
+    | BOOL_LIT
+        {
+            $value = Boolean.valueOf($BOOL_LIT.text);
         }
     ;
 

@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
+import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -89,6 +90,9 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         if (database instanceof DatabaseH2) {
             String contrib = "OSGI-INF/test-repo-repository-h2-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
+        } else if (database instanceof DatabasePostgreSQL) {
+            String contrib = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
         } else if (database instanceof DatabaseOracle) {
             String contrib = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
@@ -106,6 +110,11 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
+
+        // MyDocType
+        deployContrib("org.nuxeo.ecm.core.chemistry.tests.test",
+                "OSGI-INF/types-contrib.xml");
+
         openSession();
 
         // cmis
@@ -493,11 +502,18 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         DocumentModel file3 = session.getDocument(new PathRef(
                 "/testfolder1/testfile3"));
 
+        DocumentModel mydoc = new DocumentModelImpl("/", "mydoc", "MyDocType");
+        mydoc.setPropertyValue("dc:title", "My Doc");
+        mydoc.setPropertyValue("my:boolean", Boolean.TRUE);
+        mydoc.setPropertyValue("my:date", Calendar.getInstance());
+        mydoc = session.createDocument(mydoc);
+        session.save();
+
         // simple query through SPI
 
         query = "SELECT * FROM cmis:document";
         col = spi.query(query, false, null, null);
-        assertEquals(4, col.size());
+        assertEquals(5, col.size());
 
         query = "SELECT * FROM cmis:folder";
         col = spi.query(query, false, null, null);
@@ -530,7 +546,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
 
         res = conn.query("SELECT * FROM cmis:document", false);
         assertNotNull(res);
-        assertEquals(4, res.size());
+        assertEquals(5, res.size());
 
         res = conn.query("SELECT * FROM cmis:folder", false);
         assertEquals(3, res.size());
@@ -545,6 +561,28 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM CMIS:DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
                 false);
         assertEquals(1, res.size());
+
+        // boolean
+        res = conn.query("SELECT * FROM MyDocType WHERE my:boolean = true",
+                false);
+        assertEquals(1, res.size());
+        res = conn.query(
+                "SELECT * FROM MyDocType WHERE my:boolean <> FALSE", false);
+        assertEquals(1, res.size());
+
+        // datetime
+        res = conn.query(
+                "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP '1999-09-09T01:01:01Z'",
+                false);
+        assertEquals(1, res.size());
+        try {
+            res = conn.query(
+                    "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'",
+                    false);
+            fail();
+        } catch (CMISRuntimeException e) {
+            // ok
+        }
     }
 
     // note is specified as largetext in the repo config
