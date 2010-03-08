@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
@@ -428,7 +429,7 @@ public class Model {
     protected final FulltextInfo fulltextInfo;
 
     public Model(RepositoryImpl repository, SchemaManager schemaManager,
-            Dialect dialect) {
+            Dialect dialect) throws StorageException {
         binaryManager = repository.getBinaryManager();
         repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
@@ -1066,7 +1067,8 @@ public class Model {
     /**
      * Creates all the models.
      */
-    private void initModels(SchemaManager schemaManager) {
+    private void initModels(SchemaManager schemaManager)
+            throws StorageException {
         log.debug("Schemas fields from descriptor: "
                 + repositoryDescriptor.schemaFields);
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
@@ -1311,7 +1313,8 @@ public class Model {
      * @return the fragment table name for this type, or {@code null} if this
      *         type doesn't directly hold data
      */
-    private String initTypeModel(ComplexType complexType) {
+    private String initTypeModel(ComplexType complexType)
+            throws StorageException {
         String typeName = complexType.getName();
         if (schemaFragment.containsKey(typeName)) {
             return schemaFragment.get(typeName); // may be null
@@ -1384,6 +1387,13 @@ public class Model {
                                 + "' using column type " + type);
                     }
                     String fragmentKey = field.getName().getLocalName();
+                    if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {
+                        String msg = "A property cannot be named '"
+                                + fragmentKey
+                                + "' because this is a reserved name, in type: "
+                                + typeName;
+                        throw new StorageException(msg);
+                    }
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
                         // HACK special-case the "uid" schema, put major/minor
