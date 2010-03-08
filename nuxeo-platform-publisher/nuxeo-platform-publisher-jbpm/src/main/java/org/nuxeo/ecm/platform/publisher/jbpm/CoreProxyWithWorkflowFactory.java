@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -86,7 +88,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
     public PublishedDocument publishDocument(DocumentModel doc,
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
-        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
         DocumentModel targetDocModel;
         if (targetNode instanceof CoreFolderPublicationNode) {
             CoreFolderPublicationNode coreNode = (CoreFolderPublicationNode) targetNode;
@@ -95,123 +96,17 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             targetDocModel = coreSession.getDocument(new PathRef(
                     targetNode.getPath()));
         }
-        DocumentModelList list = getProxiesUnrestricted(coreSession, doc,
-                targetDocModel);
-        if (list.isEmpty()) {// first publication
-            DocumentModel proxy = publishUnrestricted(doc, targetDocModel);
-            SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                    proxy);
-            if (!isValidator(proxy, principal)) {
-                notifyEvent(PublishingEvent.documentWaitingPublication, proxy,
-                        coreSession);
-                restrictPermission(proxy, principal, coreSession, null);
-                createTask(proxy, coreSession, principal);
-                publishedDocument.setPending(true);
-            } else {
-                notifyEvent(PublishingEvent.documentPublished, proxy,
-                        coreSession);
-            }
-            return publishedDocument;
-        } else if (list.size() == 1) {
-            // one doc is already published or waiting for publication
-            if (isPublishedDocWaitingForPublication(list.get(0))) {
-                DocumentModel proxy = publishUnrestricted(doc, targetDocModel);
-                if (!isValidator(proxy, principal)) {
-                    // we're getting the old proxy acl
-                    ACL acl = list.get(0).getACP().getACL(ACL_NAME);
-                    acl.add(new ACE(principal.getName(),
-                            SecurityConstants.READ, true));
-                    proxy.getACP().addACL(acl);
-                    SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                            proxy);
-                    publishedDocument.setPending(true);
-                    return publishedDocument;
-                } else {
-                    endTask(proxy, principal, coreSession, null,
-                            PublishingEvent.documentPublicationApproved);
-                    notifyEvent(PublishingEvent.documentPublished, proxy,
-                            coreSession);
-                }
-            } else {
-                if (!isValidator(list.get(0), principal)) {
-                    DocumentModel proxy = publishUnrestricted(doc,
-                            targetDocModel, false);
-                    SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                            proxy);
-                    notifyEvent(PublishingEvent.documentWaitingPublication,
-                            proxy, coreSession);
-                    restrictPermission(proxy, principal, coreSession, null);
-                    createTask(proxy, coreSession, principal);
-                    publishedDocument.setPending(true);
-                    return publishedDocument;
-                } else {
-                    DocumentModel proxy = publishUnrestricted(doc, targetDocModel);
-                    notifyEvent(PublishingEvent.documentPublished, proxy,
-                            coreSession);
-                    SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                            proxy);
-                    return publishedDocument;
-                }
-            }
-        } else if (list.size() == 2) {
-            DocumentModel publishedDoc = null;
-            for(DocumentModel dm : list) {
-                if(dm.getACP().getACL(ACL_NAME) != null) {
-                    publishedDoc = dm;
-                }
-            }
-            if(!isValidator(publishedDoc, principal)) {
-                // we're getting the old proxy acl
-                ACL acl = list.get(0).getACP().getACL(ACL_NAME);
-                acl.add(new ACE(principal.getName(),
-                        SecurityConstants.READ, true));
-                // remove publishedDoc
-                publishedDoc.getACP().addACL(acl);
-                SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                        publishedDoc);
-                publishedDocument.setPending(true);
-                return publishedDocument;
-            } else {
-                coreSession.removeDocument(publishedDoc.getRef());
-                DocumentModel proxy = publishUnrestricted(doc, targetDocModel);
-                notifyEvent(PublishingEvent.documentPublished, proxy,
-                        coreSession);
-                SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
-                        proxy);
-                return publishedDocument;
-            }
-        }
-        throw new IllegalStateException(
-        "No more than 2 doc can be published");
-    }
-
-    private DocumentModelList getProxiesUnrestricted(CoreSession session,
-            DocumentModel doc, DocumentModel targetDocModel)
-            throws ClientException {
-        GetProxiesUnrestricted runner = new GetProxiesUnrestricted(session,
-                targetDocModel, doc);
+        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        DocumentPublisherUnrestricted runner = new DocumentPublisherUnrestricted(
+                coreSession, doc.getRef(), targetDocModel.getRef(), principal,
+                null);
         runner.runUnrestricted();
-        return runner.getDocumentModelList();
+        return runner.getPublishedDocument();
     }
 
     protected boolean isPublishedDocWaitingForPublication(
             DocumentModel documentModel) throws ClientException {
         return documentModel.getACP().getACL(ACL_NAME) != null;
-    }
-
-    protected DocumentModel publishUnrestricted(DocumentModel doc,
-            DocumentModel targetDocModel, boolean overwrite)
-            throws ClientException {
-        PublishUnrestricted publisher = new PublishUnrestricted(coreSession,
-                doc, targetDocModel, overwrite);
-        publisher.runUnrestricted();
-        DocumentModel proxy = publisher.getModel();
-        return proxy;
-    }
-
-    protected DocumentModel publishUnrestricted(DocumentModel doc,
-            DocumentModel targetDocModel) throws ClientException {
-        return publishUnrestricted(doc, targetDocModel, true);
     }
 
     protected boolean isValidator(DocumentModel document,
@@ -377,6 +272,25 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             String comment) throws PublishingException {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        try {
+
+            DocumentModel sourceVersion = coreSession.getSourceDocument(proxy.getRef());
+            DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
+            DocumentModelList brothers = coreSession.getProxies(dm.getRef(), proxy.getParentRef());
+            if(brothers != null && brothers.size() > 1) {
+                // we remove the brothers of the published document if any
+                // the use case is:
+                // v1 is published, v2 is waiting for publication and was just validated
+                // v1 is removed and v2 is now being published
+                for(DocumentModel doc : brothers) {
+                    if(!doc.getId().equals(proxy.getId())) {
+                        coreSession.removeDocument(doc.getRef());
+                    }
+                }
+            }
+        } catch (ClientException e1) {
+            throw new PublishingException(e1.getMessage(), e1);
+        }
         try {
             removeACL(proxy, coreSession);
             endTask(proxy, principal, coreSession, comment,
@@ -544,5 +458,147 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             liveDocument = session.getDocument(new IdRef(
                     sourceDocument.getSourceId()));
         }
+    }
+
+    /**
+     * @author arussel
+     *
+     */
+    protected class DocumentPublisherUnrestricted extends
+            UnrestrictedSessionRunner {
+
+        protected PublishedDocument result;
+        protected DocumentRef docRef;
+        protected DocumentRef targetRef;
+        protected NuxeoPrincipal principal;
+        protected String comment = "";
+
+        public DocumentPublisherUnrestricted(CoreSession session,
+                DocumentRef docRef, DocumentRef targetRef,
+                NuxeoPrincipal principal, String comment) {
+            super(session);
+            this.docRef = docRef;
+            this.targetRef = targetRef;
+            this.principal = principal;
+            this.comment = comment;
+        }
+
+        public PublishedDocument getPublishedDocument() {
+            return result;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModelList list = session.getProxies(docRef, targetRef);
+            if (list.isEmpty()) {// first publication
+                DocumentModel proxy = session.publishDocument(
+                        session.getDocument(docRef),
+                        session.getDocument(targetRef));
+                SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                        proxy);
+                session.save();
+                if (!isValidator(proxy, principal)) {
+                    notifyEvent(PublishingEvent.documentWaitingPublication,
+                            coreSession.getDocument(proxy.getRef()),
+                            coreSession);
+                    restrictPermission(proxy, principal, session, null);
+                    createTask(proxy, coreSession, principal);
+                    publishedDocument.setPending(true);
+                } else {
+                    notifyEvent(PublishingEvent.documentPublished, proxy,
+                            coreSession);
+                }
+                result = publishedDocument;
+            } else if (list.size() == 1) {
+                // one doc is already published or waiting for publication
+                if (isPublishedDocWaitingForPublication(list.get(0))) {
+                    DocumentModel proxy = session.publishDocument(
+                            session.getDocument(docRef),
+                            session.getDocument(targetRef));
+                    if (!isValidator(proxy, principal)) {
+                        // we're getting the old proxy acl
+                        ACL acl = list.get(0).getACP().getACL(ACL_NAME);
+                        acl.add(0, new ACE(principal.getName(),
+                                SecurityConstants.READ, true));
+                        ACP acp = proxy.getACP();
+                        acp.addACL(acl);
+                        session.setACP(proxy.getRef(), acp, true);
+                        session.save();
+                        SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                                proxy);
+                        publishedDocument.setPending(true);
+                        result = publishedDocument;
+                    } else {
+                        endTask(proxy, principal, coreSession, "",
+                                PublishingEvent.documentPublicationApproved);
+                        notifyEvent(PublishingEvent.documentPublished, proxy,
+                                coreSession);
+                        ACP acp = proxy.getACP();
+                        acp.removeACL(ACL_NAME);
+                        session.setACP(proxy.getRef(), acp, true);
+                        session.save();
+                        result = new SimpleCorePublishedDocument(proxy);
+                    }
+                } else {
+                    if (!isValidator(list.get(0), principal)) {
+                        DocumentModel proxy = session.publishDocument(
+                                session.getDocument(docRef),
+                                session.getDocument(targetRef), false);
+                        SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                                proxy);
+                        notifyEvent(PublishingEvent.documentWaitingPublication,
+                                proxy, coreSession);
+                        restrictPermission(proxy, principal, coreSession, null);
+                        createTask(proxy, coreSession, principal);
+                        publishedDocument.setPending(true);
+                        result = publishedDocument;
+                    } else {
+                        DocumentModel proxy = session.publishDocument(
+                                session.getDocument(docRef),
+                                session.getDocument(targetRef));
+                        notifyEvent(PublishingEvent.documentPublished, proxy,
+                                coreSession);
+                        SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                                proxy);
+                        result = publishedDocument;
+                    }
+                }
+            } else if (list.size() == 2) {
+                DocumentModel waitingForPublicationDoc = null;
+                for (DocumentModel dm : list) {
+                    if (session.getACP(dm.getRef()).getACL(ACL_NAME) != null) {
+                        waitingForPublicationDoc = dm;
+                    }
+                }
+                if (!isValidator(waitingForPublicationDoc, principal)) {
+                    // we're getting the old proxy acl
+                    ACL acl = waitingForPublicationDoc.getACP().getACL(ACL_NAME);
+                    acl.add(0, new ACE(principal.getName(),
+                            SecurityConstants.READ, true));
+                    // remove publishedDoc
+                    ACP acp = session.getACP(waitingForPublicationDoc.getRef());
+                    acp.addACL(acl);
+                    session.setACP(waitingForPublicationDoc.getRef(), acp, true);
+                    SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                            waitingForPublicationDoc);
+                    publishedDocument.setPending(true);
+                    result = publishedDocument;
+                } else {
+                    endTask(waitingForPublicationDoc, principal, coreSession,
+                            comment,
+                            PublishingEvent.documentPublicationApproved);
+                    session.removeDocument(waitingForPublicationDoc.getRef());
+                    DocumentModel proxy = session.publishDocument(
+                            session.getDocument(docRef),
+                            session.getDocument(targetRef));
+                    notifyEvent(PublishingEvent.documentPublished, proxy,
+                            coreSession);
+                    SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
+                            proxy);
+                    result = publishedDocument;
+                }
+            }
+        }
+
     }
 }
