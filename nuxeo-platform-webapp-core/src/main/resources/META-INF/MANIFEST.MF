@@ -19,6 +19,7 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/urlservice-contrib.xml,
   OSGI-INF/search-types-contrib.xml,
   OSGI-INF/layouts-contrib.xml,
+  OSGI-INF/layouts-summary-contrib.xml,  
   OSGI-INF/exceptionhandling-contrib.xml,
   OSGI-INF/seamremotingjsbuilder-contrib.xml,
   OSGI-INF/directory-ui-contrib.xml

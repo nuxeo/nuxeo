@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -96,6 +97,8 @@ public class DocumentActionsBean extends InputController implements
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
+
+    public static String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -146,6 +149,20 @@ public class DocumentActionsBean extends InputController implements
     @PostActivate
     public void readState() {
         log.debug("PostActivate");
+    }
+
+    @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
+    public String getCurrentDocumentSummaryLayout() {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc == null) {
+            return null;
+        }
+        String[] layouts =  typeManager.getType(doc.getType()).getLayouts(BuiltinModes.SUMMARY, null);
+
+        if (layouts!=null && layouts.length>0) {
+            return layouts[0];
+        }
+        return DEFAULT_SUMMARY_LAYOUT;
     }
 
     @Factory(autoCreate = true, value = "currentDocumentType", scope = EVENT)
@@ -672,5 +689,6 @@ public class DocumentActionsBean extends InputController implements
         }
         return false;
     }
+
 
 }
