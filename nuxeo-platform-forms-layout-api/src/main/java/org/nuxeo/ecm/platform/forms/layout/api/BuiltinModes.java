@@ -39,6 +39,8 @@ public class BuiltinModes {
 
     public static final String LISTING = "listing";
 
+    public static final String SUMMARY = "summary";
+
     private BuiltinModes() {
     }
 
