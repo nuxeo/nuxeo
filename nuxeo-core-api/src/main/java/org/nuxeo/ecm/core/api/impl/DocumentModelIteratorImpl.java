@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api.impl;
@@ -35,13 +34,10 @@ import org.nuxeo.ecm.core.api.Filter;
 /**
  * Iterator implementation. Keeps track of the last item retrieved from the
  * underlying iterator.
- *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class DocumentModelIteratorImpl implements DocumentModelIterator {
 
-    private static final long serialVersionUID = -3162681222304518136L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentModelIteratorImpl.class);
 
@@ -94,7 +90,8 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
         this.filter = filter;
 
         // do not: retrieveNextChunk();
-        dmChunk = coreSession.getDocsResultChunk(def, type, perm, filter, 0, chunkSize);
+        dmChunk = coreSession.getDocsResultChunk(def, type, perm, filter, 0,
+                chunkSize);
     }
 
     private void retrieveNextChunk() throws ClientException {
@@ -106,7 +103,8 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
         } else {
             offset = dmChunk.lastIndex;
         }
-        dmChunk = coreSession.getDocsResultChunk(def, type, perm, filter, offset, chunkSize);
+        dmChunk = coreSession.getDocsResultChunk(def, type, perm, filter,
+                offset, chunkSize);
     }
 
     public boolean hasNext() {
@@ -136,7 +134,6 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
                 throw new NoSuchElementException("no more elements");
             }
         }
-        //System.err.println(lastDoc);
         return lastDoc;
     }
 
@@ -149,8 +146,7 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
     }
 
     public long size() {
-        //return UNKNOWN_SIZE;
-        return dmChunk.getMax();
+        return dmChunk.lastIndex < chunkSize ? dmChunk.getSize() : UNKNOWN_SIZE;
     }
 
 }

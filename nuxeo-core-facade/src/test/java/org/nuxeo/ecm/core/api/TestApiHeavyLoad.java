@@ -134,7 +134,7 @@ public class TestApiHeavyLoad extends BaseTestCase {
         int pageSize = 10;
         DocumentModelIterator docsIt = session.querySimpleFtsIt("file", null, pageSize);
 
-        assertEquals(50, docsIt.size());
+        assertEquals(DocumentModelIterator.UNKNOWN_SIZE, docsIt.size());
     }
 
     public void OBSOLETEtestFtsQueryWithinPath() throws ClientException {
