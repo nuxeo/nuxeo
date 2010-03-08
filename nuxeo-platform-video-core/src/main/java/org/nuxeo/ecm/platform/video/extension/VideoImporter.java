@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -66,14 +67,16 @@ public class VideoImporter extends AbstractFileImporter {
     // TODO: make this not static and configurable somehow?
     public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<Map<String, Object>>();
     static {
-        Map<String, Object> thumbnailView = new HashMap<String, Object>();
-        thumbnailView.put("title", "thumbnail");
-        thumbnailView.put("maxsize", AbstractPictureAdapter.THUMB_SIZE);
+        Map<String, Object> thumbnailView = new LinkedHashMap<String, Object>();
+        thumbnailView.put("title", "Thumbnail");
+        thumbnailView.put("maxsize",
+                Long.valueOf(AbstractPictureAdapter.THUMB_SIZE));
         THUMBNAILS_VIEWS.add(thumbnailView);
         Map<String, Object> staticPlayerView = new HashMap<String, Object>();
-        staticPlayerView.put("title", "staticPlayerView");
-        staticPlayerView.put("maxsize", AbstractPictureAdapter.MEDIUM_SIZE);
-        THUMBNAILS_VIEWS.add(thumbnailView);
+        staticPlayerView.put("title", "StaticPlayerView");
+        staticPlayerView.put("maxsize",
+                Long.valueOf(AbstractPictureAdapter.MEDIUM_SIZE));
+        THUMBNAILS_VIEWS.add(staticPlayerView);
     }
 
     protected ConversionService cs;
@@ -181,8 +184,12 @@ public class VideoImporter extends AbstractFileImporter {
         // compute the thumbnail preview
         if (result != null && result.getBlob() != null) {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-            picture.createPicture(result.getBlob(), filename,
-                    docModel.getTitle(), templates);
+            picture.createPicture(result.getBlob(),
+                    result.getBlob().getFilename(), docModel.getTitle(),
+                    templates);
+        } else {
+            // TODO: put a set of default thumbnails here to tell the user that the
+            // preview is not available for this document
         }
     }
 

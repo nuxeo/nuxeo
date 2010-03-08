@@ -40,6 +40,8 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
+        deployBundle("org.nuxeo.ecm.platform.picture.api");
+        deployBundle("org.nuxeo.ecm.platform.picture.convert");
         deployBundle("org.nuxeo.ecm.platform.video.convert");
         deployBundle("org.nuxeo.ecm.platform.video.core");
 
@@ -133,12 +135,22 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         // is this an artifact of the very short video and ffmpeg or is this a bug?
         assertEquals("00010.000-seconds.jpeg", storyboard.get(1).getFilename());
 
-        // TODO: add thumbnail generation and picture metadata extraction where
+
+        // check that the thumbnails where extracted
+        assertEquals("Thumbnail", docModel.getPropertyValue("picture:views/0/title"));
+        assertEquals(100L, docModel.getPropertyValue("picture:views/0/height"));
+        assertEquals(1373L, docModel.getPropertyValue("picture:views/0/content/length"));
+
+
+        // the original video is also 100 pixels high hence the player preview has the same size
+        assertEquals("StaticPlayerView", docModel.getPropertyValue("picture:views/1/title"));
+        assertEquals(100L, docModel.getPropertyValue("picture:views/1/height"));
+        assertEquals(1373L, docModel.getPropertyValue("picture:views/1/content/length"));
+
+        // TODO: add picture metadata extraction where if
         // they make sense for videos (ie. extract these from the metadata already included in the video
         // and use them to set the appropriate schema properties)
-        assertNull(docModel.getPropertyValue("picture:credit"));
-
-        tearDown();
+        assertNull("", docModel.getPropertyValue("picture:credit"));
 
     }
 
