@@ -34,11 +34,6 @@ public class Resources {
         final String basepath = params.get("basepath");
         String nxthemeBasePath = basepath;
 
-        if (virtualHosting) {
-            resourcePath = path + "/nxthemes-lib/";
-            nxthemeBasePath = path;
-        }
-
         final ResourceManager resourceManager = Manager.getResourceManager();
 
         final StringBuilder combinedStyles = new StringBuilder();

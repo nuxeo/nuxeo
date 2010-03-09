@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.Utils;
@@ -41,11 +40,8 @@ public class ThemeStyles {
         String path = params.get("path");
         String basePath = params.get("basepath");
 
-        String cssPath =  VirtualHostHelper.getContextPathProperty()
-                +"/nxthemes-css";
-        if (virtualHosting) {
-            cssPath = path + "/nxthemes-css";
-        }
+        String cssPath = VirtualHostHelper.getContextPathProperty()
+                + "/nxthemes-css";
 
         if (inline) {
             final StringBuilder sb = new StringBuilder();
