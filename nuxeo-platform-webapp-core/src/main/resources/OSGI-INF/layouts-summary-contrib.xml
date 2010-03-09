@@ -174,6 +174,27 @@
       </property>
     </widgetType>
 
+    <widgetType name="summary_current_document_lc_and_version">
+
+      <documentation>
+        This widgets displays the life-cycle state and version of the currentDocument
+
+        It requires the following variables to be present in the EL
+        context:
+        <ul>
+          <li>currentDocument: the current document</li>
+          <li>currentDocumentVersionInfo: the current document versionning information</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/lc_and_version_widget_template.xhtml
+      </property>
+    </widgetType>
+
 
 
   </extension>
@@ -189,6 +210,9 @@
        <row>
            <widget>summary_current_document_description</widget>
            <widget>summary_current_document_actions</widget>
+       </row>
+       <row>
+           <widget>summary_current_document_lc_and_version</widget>
        </row>
        <row>
            <widget>summary_current_document_files</widget>
@@ -223,6 +247,8 @@
     <widget name="summary_current_document_comments" type="summary_current_document_comments">
       </widget>
     <widget name="summary_current_document_publications" type="summary_current_document_publications">
+      </widget>
+    <widget name="summary_current_document_lc_and_version" type="summary_current_document_lc_and_version">
       </widget>
 
    </layout>

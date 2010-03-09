@@ -1,4 +1,4 @@
-<div class="comments_block"
+<div class="actions_block"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -6,6 +6,7 @@
 
   <br/>
 
+<div class="lockFile_block" id='lock_unlock_button'>
   <c:if test="#{!empty currentDocumentLockDetails}">
     <h:outputText value="#{messages['label.summary.locked.intro']} "/>
     <h:outputText class="summary_locked" value="#{messages['label.summary.locked']}"/>
@@ -29,7 +30,7 @@
         action="#{lockActions.lockCurrentDocument}"/>
     </c:if>
   </c:if>
-
+</div>
 
    <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
         <h3>
