@@ -4,19 +4,20 @@
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
       point="userManager">
 
+  <!--
     <userManager
         class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
       <users>
         <listingMode>search_only</listingMode>
       </users>
-    </userManager>
+    </userManager> -->
 
-    <!--userManager
+    <userManager
             class="org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups">
             <users>
                 <listingMode>search_only</listingMode>
             </users>
-    </userManager-->
+    </userManager>
   </extension>
 
 </component>

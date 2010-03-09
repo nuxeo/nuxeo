@@ -87,6 +87,8 @@ public class UserManagerImpl implements UserManager {
 
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
+    public static final String VIRTUAL_FIELD_FILTER_PREFIX = "__";
+
     protected final DirectoryService dirService;
 
     protected String userDirectoryName;
@@ -451,16 +453,12 @@ public class UserManagerImpl implements UserManager {
         return BaseSession.createEntryModel(null, schema, null, null);
     }
 
-    protected NuxeoGroup getGroup(String groupName, boolean create) throws ClientException {
+    public NuxeoGroup getGroup(String groupName) throws ClientException {
         DocumentModel groupEntry = getGroupModel(groupName);
-        if (groupEntry != null && create) {
+        if (groupEntry != null) {
             return makeGroup(groupEntry);
         }
         return null;
-    }
-
-    public NuxeoGroup getGroup(String groupName) throws ClientException {
-        return getGroup(groupName, true);
     }
 
     public DocumentModel getGroupModel(String groupName) throws ClientException {
@@ -863,10 +861,25 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
+
+    protected void removeVirtualFilters (Map<String, Serializable> filter) {
+        if (filter==null) {
+            return;
+        }
+        List<String> keys = new ArrayList<String>(filter.keySet());
+        for (String key : keys) {
+            if (key.startsWith(VIRTUAL_FIELD_FILTER_PREFIX)) {
+                filter.remove(key);
+            }
+        }
+    }
+
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext) throws ClientException {
         Session groupDir = null;
         try {
+
+            removeVirtualFilters(filter);
             groupDir = dirService.open(groupDirectoryName);
 
             String sortField = groupSortField != null ? groupSortField
@@ -891,6 +904,8 @@ public class UserManagerImpl implements UserManager {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
+
+            removeVirtualFilters(filter);
 
             // XXX: do not fetch references, can be costly
             DocumentModelList entries = userDir.query(filter, fulltext, null,
@@ -1053,6 +1068,8 @@ public class UserManagerImpl implements UserManager {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
+            removeVirtualFilters(filter);
+
             DocumentModelList entries = userDir.query(filter, pattern);
             List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(
                     entries.size());

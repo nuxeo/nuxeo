@@ -52,7 +52,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
     protected static Boolean useComputedGroup = null;
 
-    public static final String VIRTUAL_GROUP_MARKER = "virtual";
+    public static final String VIRTUAL_GROUP_MARKER = "__virtualGroup";
 
 
     protected ComputedGroupsService getService() {
@@ -113,7 +113,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
     @Override
     public NuxeoGroup getGroup(String groupName) throws ClientException {
-        NuxeoGroup grp = super.getGroup(groupName, false);
+        NuxeoGroup grp = super.getGroup(groupName);
         if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
             grp = getService().getComputedGroup(groupName);
         }
@@ -152,10 +152,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
             searchInVirtualGroups=false;
         }
-        if (filter.containsKey(VIRTUAL_GROUP_MARKER)) {
-            filter.remove(VIRTUAL_GROUP_MARKER);
-        }
 
+        removeVirtualFilters(filter);
         DocumentModelList groups = super.searchGroups(filter, fulltext);
 
         if (searchInVirtualGroups) {

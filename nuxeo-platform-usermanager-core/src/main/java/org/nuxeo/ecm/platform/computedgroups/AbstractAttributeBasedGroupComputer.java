@@ -72,11 +72,12 @@ public abstract class AbstractAttributeBasedGroupComputer extends
 
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
             throws Exception {
-
-        List<String> companies = new ArrayList<String>();
-        companies.add(nuxeoPrincipal.getCompany());
-
-        return companies;
+        List<String> grpNames = new ArrayList<String>();
+        String property = (String) nuxeoPrincipal.getModel().getProperty(getUM().getUserSchemaName(), getAttributeForGroupComputation());
+        if (property!=null && ! "".equals(property.trim())) {
+            grpNames.add(property);
+        }
+        return grpNames;
     }
 
     public List<String> getParentsGroupNames(String groupName) throws Exception {
