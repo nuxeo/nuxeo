@@ -18,14 +18,15 @@
         org.apache.shindig.gadgets.oauth.OAuthModule: is not in this list
         anymore because we must merge the bindings for this class with
         some other bindings provided by nuxeo
+      
 -->
       <param-value>
         org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
         org.nuxeo.opensocial.shindig.ProxyModule:
-        org.nuxeo.opensocial.services.NXGuiceModule:
-        org.apache.shindig.social.core.config.SocialApiGuiceModule:
+        org.nuxeo.opensocial.services.NXGuiceModule:       
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
+        org.apache.shindig.social.core.config.SocialApiGuiceModule: 
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
       </param-value>

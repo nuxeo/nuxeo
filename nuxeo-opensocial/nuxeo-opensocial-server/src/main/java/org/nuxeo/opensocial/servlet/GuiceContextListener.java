@@ -90,7 +90,8 @@ public class GuiceContextListener implements ServletContextListener {
         try {
             log.info("GuiceContextListener createInjector");
             modules.add(Modules.override(new OAuthModule()).with(
-                    new NuxeoOverrides()));
+                    new NuxeoRequestOverrides()));
+
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
 
             OpenSocialService service = Framework.getService(OpenSocialService.class);
@@ -176,7 +177,7 @@ class NuxeoOverridesRequestProvider implements Provider<OAuthRequest> {
 
 }
 
-class NuxeoOverrides implements Module {
+class NuxeoRequestOverrides implements Module {
 
     public void configure(Binder binder) {
         binder.bind(OAuthRequest.class).toProvider(

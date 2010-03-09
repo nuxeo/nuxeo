@@ -26,7 +26,7 @@
 //  change
 //		{"gadgets.container" : ["default"],
 //  to
-//		{"gadgets.container" : ["myContainer"],
+//		﻿{"gadgets.container" : ["myContainer"],
 // And make your changes that you need to myContainer.js.
 // Just make sure on the iframe URL you specify &container=myContainer
 // for it to use that config.
@@ -64,22 +64,28 @@
 // iframeBaseUri will automatically have the host inserted
 // if locked domain is enabled and the implementation supports it.
 // query parameters will be added.
-"gadgets.iframeBaseUri" : "/nuxeo/opensocial/gadgets/ifr",
+"gadgets.iframeBaseUri" :  "/nuxeo/opensocial/gadgets/ifr",
 
 // jsUriTemplate will have %host% and %js% substituted.
 // No locked domain special cases, but jsUriTemplate must
 // never conflict with a lockedDomainSuffix.
 "gadgets.jsUriTemplate" : "http://%host%/nuxeo/opensocial/gadgets/js/%js%",
 
+// Callback URL.  Scheme relative URL for easy switch between https/http.
+"gadgets.oauthGadgetCallbackTemplate" : "//%host%/nuxeo/opensocial/gadgets/oauthcallback",
+
 // Use an insecure security token by default
-//"gadgets.securityTokenType" : "insecure",
+"gadgets.securityTokenType" : "secure",
+
+// Config param to load Opensocial data for social
+// preloads in data pipelining.  %host% will be
+// substituted with the current host.
+"gadgets.osDataUri" : "http://%host%/nuxeo/opensocial/social/rpc",
 
 // Uncomment these to switch to a secure version
 //
-"gadgets.securityTokenType" : "secure",
-
-//Nuxeo Specific : The key is configured via the OpenSocialService with an XP
-//"gadgets.securityTokenKeyFile" :  "./config/key.txt",
+//"gadgets.securityTokenType" : "secure",
+//"gadgets.securityTokenKeyFile" : "/path/to/key/file.txt",
 
 // This config data will be passed down to javascript. Please
 // configure your object using the feature name rather than
@@ -96,12 +102,12 @@
   "views" : {
     "profile" : {
       "isOnlyVisible" : false,
-      "urlTemplate" : "http://%host%/nuxeo/opensocial/gadgets/profile?{var}",
+      "urlTemplate" : "http://localhost/gadgets/profile?{var}",
       "aliases": ["DASHBOARD", "default"]
     },
     "canvas" : {
       "isOnlyVisible" : true,
-      "urlTemplate" : "http://%host%/nuxeo/opensocial/gadgets/canvas?{var}",
+      "urlTemplate" : "http://localhost/gadgets/canvas?{var}",
       "aliases" : ["FULL_PAGE"]
     }
   },
@@ -127,17 +133,36 @@
       "ANCHOR_COLOR": ""
     }
   },
-  "opensocial-0.8" : {
+  "opensocial" : {
     // Path to fetch opensocial data from
     // Must be on the same domain as the gadget rendering server
-    "impl" : "rpc",  //Use "rpc" to enable JSON-RPC, "rest' for REST
-    "path" : "http://%host%/nuxeo/opensocial/social",
+    "path" : "http://%host%/nuxeo/opensocial/gadgets/rpc",
+    // Path to issue invalidate calls
+    "invalidatePath" : "http://%host%/nuxeo/opensocial/gadgets/api/rpc",
     "domain" : "shindig",
     "enableCaja" : false,
     "supportedFields" : {
        "person" : ["id", {"name" : ["familyName", "givenName", "unstructured"]}, "thumbnailUrl", "profileUrl"],
        "activity" : ["id", "title"]
     }
+  },
+  "osapi.services" : {
+    // Specifying a binding to "container.listMethods" instructs osapi to dynamicaly introspect the services
+    // provided by the container and delay the gadget onLoad handler until that introspection is
+    // complete.
+    // Alternatively a container can directly configure services here rather than having them 
+    // introspected. Simply list out the available servies and omit "container.listMethods" to
+    // avoid the initialization delay caused by gadgets.rpc
+    // E.g. "gadgets.rpc" : ["activities.requestCreate", "messages.requestSend", "requestShareApp", "requestPermission"]
+    "gadgets.rpc" : ["container.listMethods"]
+  },
+  "osapi" : {
+    // The endpoints to query for available JSONRPC/REST services
+    "endPoints" : [ "http://%host%/nuxeo/opensocial/gadgets/rpc", "http://%host%/nuxeo/opensocial/gadgets/api/rpc" ]                   
+  },
+  "osml": {
+    // OSML library resource.  Can be set to null or the empty string to disable OSML
+    // for a container.
+    "library": "config/OSML_library.xml"
   }
-
 }}

@@ -36,7 +36,16 @@ if (typeof NXThemesEditor == "undefined") {
 	}
     };
 
-}
+};
+
+NXThemesEditor.accessDenied = function() {
+    alert('Administrator rights are required to access the theme editor.');
+    NXThemes.expireCookie("nxthemes.theme");
+    NXThemes.expireCookie("nxthemes.engine");
+    NXThemes.expireCookie("nxthemes.mode");
+    NXThemes.expireCookie("nxthemes.perspective");
+    window.location.reload();  
+};
 
 NXThemesEditor.setViewMode =  function(mode) {
     NXThemes.setCookie("nxthemes.mode", mode);

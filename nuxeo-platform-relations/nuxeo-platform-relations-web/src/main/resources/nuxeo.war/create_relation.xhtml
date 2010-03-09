@@ -74,11 +74,13 @@
             <h:inputHidden id="objectDocumentUid"
               value="#{relationActions.objectDocumentUid}"
               binding="#{relationCreationBean.objectDocumentUidInput}"/>
-            <nxu:methodResult name="url"
-              value="#{restHelper.addCurrentConversationParameters('#{contextPath}/create_relation_search_document_popup.faces')}">
-              <input type="button" value="#{messages['command.search']}" class="button"
-                onclick="javascript:popupSearch(this.form.id, '#{url}');" />
-            </nxu:methodResult>
+            <nxu:set var="url" value="#{contextPath}/create_relation_search_document_popup.faces">
+              <nxu:set var="urlWithConversation"
+                value="#{restHelper.addCurrentConversationParameters(url)}">
+                <input type="button" value="#{messages['command.search']}" class="button"
+                  onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');" />
+              </nxu:set>
+            </nxu:set>
           </h:panelGroup>
 
         </h:panelGrid>

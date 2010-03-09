@@ -18,6 +18,7 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
 /**
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ContainerPortal extends Portal {
@@ -358,6 +359,18 @@ public class ContainerPortal extends Portal {
             p.setVisible(true);
         }
 
+    }
+
+    public int getColumnIndex(String colId) {
+        return Arrays.binarySearch(COLS, colId);
+    }
+
+    public int getMaxGadget(String colId) {
+        int[] maxGadgets = container.getMaxGadgets();
+        if (maxGadgets == null) {
+            return -1;
+        }
+        return maxGadgets[getColumnIndex(colId)];
     }
 
 }

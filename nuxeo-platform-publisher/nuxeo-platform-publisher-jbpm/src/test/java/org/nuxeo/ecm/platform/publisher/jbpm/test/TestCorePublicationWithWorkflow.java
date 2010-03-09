@@ -418,6 +418,102 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         assertFalse(publishedDocument.isPending());
 
     }
+
+    public void testMultiplePublishThenPublishByValidator() throws Exception {
+        // my user1 ask for publication
+        changeUser("myuser1");
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        PublicationTree treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish,
+                targetNode);
+        assertTrue(publishedDocument.isPending());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
+        session.save();
+        // my user3 ask for publication
+        changeUser("myuser3");
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+        publishedDocument = treeUser1.publish(doc2Publish,
+                targetNode);
+        assertTrue(publishedDocument.isPending());
+        session.save();
+        // my user1 can still see the document
+        changeUser("myuser1");
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+
+        targetNode = nodes.get(0);
+        assertEquals(1, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
+        // my user4 don't see the document
+        changeUser("myuser4");
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+
+        targetNode = nodes.get(0);
+        assertEquals(0, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
+
+        //my user 2 publish the document
+        changeUser("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
+                doc2Publish));
+        assertEquals(1, publishedDocuments.size());
+
+        publishedDocument = publishedDocuments.get(0);
+        assertTrue(publishedDocument.isPending());
+
+        treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
+        assertFalse(publishedDocument.isPending());
+
+        // my user4 see the document
+        changeUser("myuser4");
+        defaultTreeName = publisherService.getAvailablePublicationTree().get(
+                0);
+        treeUser1 = publisherService.getPublicationTree(
+                defaultTreeName, session, null);
+
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+
+        targetNode = nodes.get(0);
+        assertEquals(1, treeUser1.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish)).size());
+
+    }
     private void changeUser(String userName) throws Exception {
         Session userdir = directoryService.open("userDirectory");
         DocumentModel userModel = userdir.getEntry(userName);

@@ -47,8 +47,7 @@ import com.google.common.collect.Maps;
 
 /***
  * This is complete crap. I end up copying the class because the idiots made all
- * the implementation classes private for no reason. My changes are basically
- * three lines in the method isContainerInjectedParamater
+ * the implementation classes private for no reason.
  * 
  * @author Ian Smith<ismith@nuxeo.com>
  * 
@@ -435,8 +434,8 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         }
 
         /*
-         * NUXEO CHANGE! We cannot reliably determine how to compute this so we
-         * just omit it.
+         * NUXEO NUXEO NUXEO CHANGE! We cannot reliably determine how to compute
+         * this so we just omit it.
          * 
          * String app = realRequest.getSecurityToken().getAppId(); if (app !=
          * null) { params.add(new Parameter(OPENSOCIAL_APPID, app)); }

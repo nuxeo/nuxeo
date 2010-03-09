@@ -15,7 +15,7 @@
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
  */
 
-package org.nuxeo.opensocial.container.factory.utils;
+package org.nuxeo.opensocial.shindig.gadgets;
 
 import org.apache.shindig.auth.SecurityToken;
 
@@ -27,13 +27,28 @@ import org.apache.shindig.auth.SecurityToken;
  */
 public class NxSecurityToken implements SecurityToken {
 
-    private final String viewer;
+    protected final String viewer;
 
-    private final String owner;
+    protected final String owner;
 
-    public NxSecurityToken(String viewer, String owner) {
+    protected final String pwd;
+
+    protected final String header;
+
+    public NxSecurityToken(String viewer, String owner, String pwd,
+            String header) {
         this.viewer = viewer;
         this.owner = owner;
+        this.pwd = pwd;
+        this.header = header;
+    }
+
+    public String getNuxeoHeader() {
+        return header;
+    }
+
+    public String getNuxeoPassword() {
+        return pwd;
     }
 
     public String getAppId() {
@@ -75,8 +90,10 @@ public class NxSecurityToken implements SecurityToken {
     }
 
     public boolean isAnonymous() {
-        // TODO Auto-generated method stub
-        return false;
+        if ((pwd != null) || (header != null)) {
+            return false;
+        }
+        return true;
     }
 
     public String getActiveUrl() {

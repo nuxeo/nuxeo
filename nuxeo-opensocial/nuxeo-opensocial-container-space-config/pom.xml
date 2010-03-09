@@ -24,10 +24,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-spaces-api</artifactId>
     </dependency>
     <dependency>
