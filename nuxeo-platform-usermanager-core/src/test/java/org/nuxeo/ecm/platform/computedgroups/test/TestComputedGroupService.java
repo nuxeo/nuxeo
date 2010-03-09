@@ -86,7 +86,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         assertTrue(vGroups.contains("Grp2"));
     }
 
-    public void _testUserManagerIntegration() throws Exception {
+    public void testUserManagerIntegration() throws Exception {
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -159,7 +159,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
     }
 
 
-    public void _testCompanyComputer() throws Exception {
+    public void testCompanyComputer() throws Exception {
 
             deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
             deployBundle("org.nuxeo.ecm.core.schema");
