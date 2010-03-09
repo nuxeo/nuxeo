@@ -14,19 +14,19 @@
       <param-name>guice-modules</param-name>
 
 <!-- NOTE NOTE NOTE -->
-<!--  
+<!--
         org.apache.shindig.gadgets.oauth.OAuthModule: is not in this list
         anymore because we must merge the bindings for this class with
         some other bindings provided by nuxeo
-      
+
 -->
       <param-value>
         org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
         org.nuxeo.opensocial.shindig.ProxyModule:
-        org.nuxeo.opensocial.services.NXGuiceModule:       
+        org.nuxeo.opensocial.services.NXGuiceModule:
         org.nuxeo.opensocial.services.NuxeoServiceModule:
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
-        org.apache.shindig.social.core.config.SocialApiGuiceModule: 
+        org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
         org.apache.shindig.common.cache.ehcache.EhCacheModule
       </param-value>
@@ -67,8 +67,15 @@
 
     <filter-mapping>
       <filter-name>authFilter</filter-name>
-      <url-pattern>/gadgets/*</url-pattern>
+      <url-pattern>/opensocial/gadgets/api/rpc/*</url-pattern>
     </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>authFilter</filter-name>
+      <url-pattern>/opensocial/gadgets/api/rest/*</url-pattern>
+    </filter-mapping>
+
+
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">
@@ -122,20 +129,20 @@
       </servlet-class>
     </servlet>
 
-    <servlet>
-      <servlet-name>concat</servlet-name>
-      <servlet-class>
-        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
-    </servlet-class>
-    </servlet>
-
-
     <!-- makeRequest -->
     <servlet>
       <servlet-name>makeRequest</servlet-name>
       <servlet-class>
         org.apache.shindig.gadgets.servlet.MakeRequestServlet
       </servlet-class>
+    </servlet>
+
+    <!--  Concat -->
+    <servlet>
+      <servlet-name>concat</servlet-name>
+      <servlet-class>
+        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
+    </servlet-class>
     </servlet>
 
     <!-- OAuth callback -->
@@ -154,6 +161,37 @@
       </servlet-class>
     </servlet>
 
+    <!-- javascript serving -->
+    <servlet>
+      <servlet-name>js</servlet-name>
+      <servlet-class>org.apache.shindig.gadgets.servlet.JsServlet
+      </servlet-class>
+    </servlet>
+
+    <!-- Serve social REST api -->
+    <servlet>
+      <servlet-name>socialRestapiServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.DataServiceServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.social.handlers</param-value>
+      </init-param>
+    </servlet>
+
+    <!-- Serve social RPC api -->
+    <servlet>
+      <servlet-name>socialJsonRpcServlet</servlet-name>
+      <servlet-class>
+        org.apache.shindig.protocol.JsonRpcServlet
+      </servlet-class>
+      <init-param>
+        <param-name>handlers</param-name>
+        <param-value>org.apache.shindig.social.handlers</param-value>
+      </init-param>
+    </servlet>
+
     <!-- Serve gadgets RPC api -->
     <servlet>
       <servlet-name>gadgetsJsonRpcServlet</servlet-name>
@@ -166,6 +204,7 @@
       </init-param>
     </servlet>
 
+    <!-- Serve gadet REST api -->
     <servlet>
       <servlet-name>gadgetsRestapiServlet</servlet-name>
       <servlet-class>
@@ -175,14 +214,6 @@
         <param-name>handlers</param-name>
         <param-value>org.apache.shindig.gadgets.handlers</param-value>
       </init-param>
-    </servlet>
-
-
-    <!-- javascript serving -->
-    <servlet>
-      <servlet-name>js</servlet-name>
-      <servlet-class>org.apache.shindig.gadgets.servlet.JsServlet
-      </servlet-class>
     </servlet>
   </extension>
 
@@ -200,6 +231,16 @@
     <servlet-mapping>
       <servlet-name>makeRequest</servlet-name>
       <url-pattern>/opensocial/gadgets/makeRequest</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
+      <url-pattern>/opensocial/gadgets/api/rpc/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>gadgetsRestapiServlet</servlet-name>
+      <url-pattern>/opensocial/gadgets/api/rest/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -223,13 +264,14 @@
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>gadgetsRestapiServlet</servlet-name>
+      <servlet-name>socialRestapiServlet</servlet-name>
       <url-pattern>/opensocial/social/rest/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-      <servlet-name>gadgetsJsonRpcServlet</servlet-name>
+      <servlet-name>socialJsonRpcServlet</servlet-name>
       <url-pattern>/opensocial/social/rpc/*</url-pattern>
     </servlet-mapping>
+
   </extension>
 </fragment>
