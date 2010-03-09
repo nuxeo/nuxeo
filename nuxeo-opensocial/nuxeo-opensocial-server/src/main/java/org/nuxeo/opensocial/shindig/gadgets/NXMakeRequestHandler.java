@@ -17,37 +17,23 @@
 
 package org.nuxeo.opensocial.shindig.gadgets;
 
-import java.util.Collections;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.shindig.auth.SecurityToken;
-import org.apache.shindig.common.JsonSerializer;
-import org.apache.shindig.gadgets.FetchResponseUtils;
 import org.apache.shindig.gadgets.GadgetException;
 import org.apache.shindig.gadgets.http.HttpRequest;
-import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.RequestPipeline;
 import org.apache.shindig.gadgets.rewrite.RequestRewriterRegistry;
 import org.apache.shindig.gadgets.servlet.MakeRequestHandler;
-import org.apache.shindig.gadgets.servlet.ProxyBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * @author cusgu
- * 
- *         Patch FeedProcessor in order to retrieve extra elements from RSS 2.0
- *         feeds : - enclosure
- * 
- * @hacker iansmith THIS IS BASICALLY A COPY OF MakeRequestHandler because I
- *         just needed to add a single line to the function buildHttpRequest
+ * This is a way to pass our session through the make request handler mechanism.
+ * We can't use cookies directly because shindig will strip them.
  */
 @Singleton
 public class NXMakeRequestHandler extends MakeRequestHandler {
-    public static String AUTH_SESSION_HEADER = "X-NUXEO-INTEGRATED-AUTH";
 
     @Inject
     public NXMakeRequestHandler(RequestPipeline requestPipeline,
@@ -56,55 +42,19 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
     }
 
     @Override
-    protected void setRequestHeaders(HttpServletRequest servletRequest,
-            HttpRequest req) {
-
-        super.setRequestHeaders(servletRequest, req);
-        String sessionId = req.getHeader(AUTH_SESSION_HEADER);
-        if (sessionId != null) {
-            req.addHeader("Cookie", "JSESSIONID=" + sessionId);
-        }
-    }
-
-    /**
-     * Format a response as JSON, including additional JSON inserted by chained
-     * content fetchers.
-     */
-    @Override
-    protected String convertResponseToJson(SecurityToken authToken,
-            HttpServletRequest request, HttpResponse results)
+    protected HttpRequest buildHttpRequest(HttpServletRequest request)
             throws GadgetException {
-        String originalUrl = request.getParameter(ProxyBase.URL_PARAM);
-        String body = results.getResponseAsString();
-        if (body.length() > 0) {
-            if ("FEED".equals(request.getParameter(CONTENT_TYPE_PARAM))) {
-                body = NXprocessFeed(originalUrl, request, body);
+        HttpRequest req = super.buildHttpRequest(request);
+        if (request.isRequestedSessionIdValid()) {
+            if (request.isRequestedSessionIdFromCookie()) {
+                req.addHeader("Cookie", "JSESSIONID="
+                        + request.getRequestedSessionId());
             }
         }
-        Map<String, Object> resp = FetchResponseUtils.getResponseAsJson(
-                results, null, body);
-
-        if (authToken != null) {
-            String updatedAuthToken = authToken.getUpdatedToken();
-            if (updatedAuthToken != null) {
-                resp.put("st", updatedAuthToken);
-            }
-        }
-
-        // Use raw param as key as URL may have to be decoded
-        return JsonSerializer.serialize(Collections.singletonMap(originalUrl,
-                resp));
-    }
-
-    /**
-     * Processes a feed (RSS or Atom) using FeedProcessor.
-     */
-    private String NXprocessFeed(String url, HttpServletRequest req, String xml)
-            throws GadgetException {
-        boolean getSummaries = Boolean.parseBoolean(getParameter(req,
-                GET_SUMMARIES_PARAM, "false"));
-        int numEntries = Integer.parseInt(getParameter(req, NUM_ENTRIES_PARAM,
-                DEFAULT_NUM_ENTRIES));
-        return new NXFeedProcessor().process(url, xml, getSummaries, numEntries).toString();
+        // if (req.getHeader("X-NUXEO-INTEGRATED-AUTH") != null) {
+        // req.addHeader("Cookie", "JSESSIONID="
+        // + req.getHeader("X-NUXEO-INTEGRATED-AUTH"));
+        // }
+        return req;
     }
 }

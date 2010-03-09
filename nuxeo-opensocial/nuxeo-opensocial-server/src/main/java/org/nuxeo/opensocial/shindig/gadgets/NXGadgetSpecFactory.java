@@ -1,7 +1,13 @@
 package org.nuxeo.opensocial.shindig.gadgets;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.auth.SecurityToken;
+import org.apache.shindig.auth.SecurityTokenDecoder;
 import org.apache.shindig.common.cache.Cache;
 import org.apache.shindig.common.cache.CacheProvider;
 import org.apache.shindig.common.uri.Uri;
@@ -14,20 +20,24 @@ import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.RequestPipeline;
-import org.apache.shindig.gadgets.servlet.HttpGadgetContext;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 import org.apache.shindig.gadgets.spec.SpecParserException;
+import org.nuxeo.opensocial.shindig.crypto.NXBlobCrypterSecurityTokenDecoder;
 import org.w3c.dom.Element;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 //I had to copy defaultgadgetspecfactory because it uses a call to super
 //in getgagdetspec and thus I cannot override it properly (since I cannot
 //call supersuper.getgadgetspec
 
+@Singleton
 public class NXGadgetSpecFactory extends AbstractSpecFactory<GadgetSpec>
         implements GadgetSpecFactory {
+    private static final Log log = LogFactory.getLog(NXGadgetSpecFactory.class);
+
     public static final String CACHE_NAME = "gadgetSpecs";
 
     static final String RAW_GADGETSPEC_XML_PARAM_NAME = "rawxml";
@@ -38,14 +48,18 @@ public class NXGadgetSpecFactory extends AbstractSpecFactory<GadgetSpec>
 
     protected RequestPipeline pipeline;
 
+    protected SecurityTokenDecoder decoder;
+
     @Inject
     public NXGadgetSpecFactory(ExecutorService executor,
             RequestPipeline pipeline, CacheProvider cacheProvider,
-            @Named("shindig.cache.xml.refreshInterval") long refresh) {
+            @Named("shindig.cache.xml.refreshInterval") long refresh,
+            NXBlobCrypterSecurityTokenDecoder decoder) {
         super(GadgetSpec.class, executor, pipeline, makeCache(cacheProvider),
                 refresh);
         this.refresh = refresh;
         this.pipeline = pipeline;
+        this.decoder = decoder;
     }
 
     private static Cache<Uri, Object> makeCache(CacheProvider cacheProvider) {
@@ -70,35 +84,35 @@ public class NXGadgetSpecFactory extends AbstractSpecFactory<GadgetSpec>
         }
 
         Uri gadgetUri = context.getUrl();
-        if (context instanceof HttpGadgetContext) {
-            HttpGadgetContext ctx = (HttpGadgetContext) context;
+        SecurityToken token = context.getToken();
+        Query query;
+        if (!(token instanceof NxSecurityToken)) {
+            log.warn("Internal error inside Opensocial server"
+                    + "can't find NXSecurity Token");
+            query = new MyQuery();
+        } else {
+            NxSecurityToken t = (NxSecurityToken) token;
+            if (t.getNuxeoHeader() != null) {
+                query = new MyQuery("cookie", t.getNuxeoHeader());
+            } else if (t.getNuxeoPassword() != null) {
+                NxSecurityToken nxToken = (NxSecurityToken) token;
+                String srcMaterial = "" + nxToken.getViewerId() + ":"
+                        + nxToken.getNuxeoPassword();
+                byte[] encoded = Base64.encodeBase64(srcMaterial.getBytes());
+                try {
+                    String base64d = new String(encoded, "UTF-8");
+                    query = new MyQuery("Authorization", "Basic " + base64d);
+                } catch (UnsupportedEncodingException e) {
+                    log.error("Unable to understand base64 data!", e);
+                    query = new MyQuery();
+                }
+            } else {
+                query = new MyQuery();
+            }
         }
-        // if (context instanceof HttpGadgetContext) {
-        // HttpGadgetContext ctx = (HttpGadgetContext) context;
-        // try {
-        // Field f = ctx.getClass().getField("request");
-        // Object raw = f.get(ctx);
-        // HttpServletRequest request = (HttpServletRequest) raw;
-        // String val = request.getHeader("Cookie");
-        //
-        // } catch (SecurityException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (NoSuchFieldException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (IllegalArgumentException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (IllegalAccessException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // }
 
-        Query query = new MyQuery("jsessionid", "foo").setSpecUri(gadgetUri).setContainer(
-                context.getContainer()).setGadgetUri(gadgetUri).setIgnoreCache(
-                context.getIgnoreCache());
+        query.setSpecUri(gadgetUri).setContainer(context.getContainer()).setGadgetUri(
+                gadgetUri).setIgnoreCache(context.getIgnoreCache());
         return super.getSpec(query);
     }
 
@@ -110,7 +124,9 @@ public class NXGadgetSpecFactory extends AbstractSpecFactory<GadgetSpec>
 
         if (query instanceof MyQuery) {
             MyQuery q = (MyQuery) query;
-            request.addHeader(q.getName(), q.getValue());
+            if (q.getName() != null) {
+                request.addHeader(q.getName(), q.getValue());
+            }
         }
 
         // Since we don't allow any variance in cache time, we should just force
@@ -161,6 +177,10 @@ public class NXGadgetSpecFactory extends AbstractSpecFactory<GadgetSpec>
 
         public String getValue() {
             return value;
+        }
+
+        public MyQuery() {
+            super();
         }
     }
 }

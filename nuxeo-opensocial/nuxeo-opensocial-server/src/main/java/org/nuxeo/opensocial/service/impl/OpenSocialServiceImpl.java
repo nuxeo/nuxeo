@@ -33,7 +33,6 @@ import org.apache.shindig.common.crypto.Crypto;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.servlet.GuiceContextListener;
-import org.nuxeo.opensocial.shindig.crypto.KeyDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.OpenSocialDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
@@ -109,12 +108,12 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        if (XP_CRYPTO.equals(extensionPoint)) {
-            KeyDescriptor kd = (KeyDescriptor) contribution;
-            if (keys.containsKey(kd.getContainer())) {
-                keys.remove(kd.getContainer());
-            }
-        }
+        // if (XP_CRYPTO.equals(extensionPoint)) {
+        // KeyDescriptor kd = (KeyDescriptor) contribution;
+        // if (keys.containsKey(kd.getContainer())) {
+        // keys.remove(kd.getContainer());
+        // }
+        // }
     }
 
     @Override

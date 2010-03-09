@@ -10,10 +10,12 @@ import org.apache.shindig.gadgets.rewrite.CssRequestRewriter;
 import org.apache.shindig.gadgets.rewrite.GadgetRewriter;
 import org.apache.shindig.gadgets.rewrite.HTMLContentRewriter;
 import org.apache.shindig.gadgets.rewrite.PipelineDataGadgetRewriter;
+import org.apache.shindig.gadgets.rewrite.ProxyingLinkRewriterFactory;
 import org.apache.shindig.gadgets.rewrite.RequestRewriter;
 import org.apache.shindig.gadgets.rewrite.TemplateRewriter;
 import org.apache.shindig.gadgets.servlet.CajaContentRewriter;
 import org.nuxeo.opensocial.shindig.gadgets.rewrite.NXHTMLContentRewriter;
+import org.nuxeo.opensocial.shindig.gadgets.rewrite.NXProxyingLinkRewriterFactory;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
@@ -36,6 +38,9 @@ public class NXRewriteModule extends AbstractModule {
         }).toProvider(GadgetRewritersProvider.class);
         bind(new TypeLiteral<List<RequestRewriter>>() {
         }).toProvider(RequestRewritersProvider.class);
+
+        bind(ProxyingLinkRewriterFactory.class).to(
+                NXProxyingLinkRewriterFactory.class);
     }
 
     private static class GadgetRewritersProvider implements

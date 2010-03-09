@@ -21,16 +21,18 @@ import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.common.uri.UriBuilder;
 import org.apache.shindig.gadgets.GadgetContext;
+import org.nuxeo.opensocial.shindig.gadgets.NxSecurityToken;
 
 public class NxGadgetContext extends GadgetContext {
 
-    private final String gadgetDef;
+    protected final String gadgetDef;
 
-    private final SecurityToken securityToken;
+    protected final SecurityToken securityToken;
 
-    public NxGadgetContext(String gadgetDef, String viewer, String owner) {
+    public NxGadgetContext(String gadgetDef, String viewer, String owner,
+            String pwd) {
         this.gadgetDef = gadgetDef;
-        this.securityToken = new NxSecurityToken(viewer, owner);
+        this.securityToken = new NxSecurityToken(viewer, owner, pwd, null);
     }
 
     @Override
