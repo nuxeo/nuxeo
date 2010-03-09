@@ -1,16 +1,12 @@
 package org.nuxeo.opensocial.shindig.crypto;
 
 import java.io.FileReader;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.shindig.auth.BlobCrypterSecurityToken;
 import org.apache.shindig.auth.BlobCrypterSecurityTokenDecoder;
-import org.apache.shindig.auth.SecurityToken;
-import org.apache.shindig.auth.SecurityTokenException;
 import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.config.ContainerConfig;
@@ -20,8 +16,6 @@ import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret;
 import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
-import org.nuxeo.opensocial.shindig.gadgets.NXAuthenticationHandler;
-import org.nuxeo.opensocial.shindig.gadgets.NxSecurityToken;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
@@ -82,24 +76,24 @@ public class NXBlobCrypterSecurityTokenDecoder extends
         }
     }
 
-    @Override
-    public SecurityToken createToken(Map<String, String> tokenParameters)
-            throws SecurityTokenException {
-        SecurityToken anon = super.createToken(tokenParameters);
-        if (anon.isAnonymous()) {
-            if (tokenParameters.get(NXAuthenticationHandler.NX_COOKIE) != null) {
-                return new NxSecurityToken(anon.getViewerId(),
-                        anon.getOwnerId(), null,
-                        tokenParameters.get(NXAuthenticationHandler.NX_COOKIE));
-            } else {
-                return anon;
-            }
-        }
-        BlobCrypterSecurityToken token = (BlobCrypterSecurityToken) anon;
-        // convert to nuxeo token
-        NxSecurityToken tokenResult = new NxSecurityToken(token.getViewerId(),
-                token.getOwnerId(), null,
-                tokenParameters.get(NXAuthenticationHandler.NX_COOKIE));
-        return tokenResult;
-    }
+    // @Override
+    // public SecurityToken createToken(Map<String, String> tokenParameters)
+    // throws SecurityTokenException {
+    // SecurityToken anon = super.createToken(tokenParameters);
+    // if (anon.isAnonymous()) {
+    // if (tokenParameters.get(NXAuthenticationHandler.NX_COOKIE) != null) {
+    // return new NxSecurityToken(anon.getViewerId(),
+    // anon.getOwnerId(), null,
+    // tokenParameters.get(NXAuthenticationHandler.NX_COOKIE));
+    // } else {
+    // return anon;
+    // }
+    // }
+    // BlobCrypterSecurityToken token = (BlobCrypterSecurityToken) anon;
+    // // convert to nuxeo token
+    // NxSecurityToken tokenResult = new NxSecurityToken(token.getViewerId(),
+    // token.getOwnerId(), null,
+    // tokenParameters.get(NXAuthenticationHandler.NX_COOKIE));
+    // return tokenResult;
+    // }
 }

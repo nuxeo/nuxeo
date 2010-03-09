@@ -114,4 +114,11 @@ public interface OpenSocialService {
      *         initialized and so this method has no point.
      */
     boolean setFrameworkListener(FrameworkListener frameworkListener);
+
+    /**
+     * Return a list of hosts to whom we *should* pass the users current
+     * JSESSIONID.
+     */
+    String[] getTrustedHosts();
+
 }

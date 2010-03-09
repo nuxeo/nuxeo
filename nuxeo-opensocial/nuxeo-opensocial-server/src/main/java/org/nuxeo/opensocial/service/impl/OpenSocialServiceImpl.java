@@ -56,7 +56,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private static final Log LOG = LogFactory.getLog(OpenSocialService.class);
 
-    private static final String XP_CRYPTO = "cryptoConfig";
+    // private static final String XP_CRYPTO = "cryptoConfig";
 
     private static final String XP_OPENSOCIAL = "openSocialConfig";
 
@@ -254,5 +254,9 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         if (frameworkListener != null) {
             frameworkListener.frameworkEvent(event);
         }
+    }
+
+    public String[] getTrustedHosts() {
+        return os.getTrustedHosts();
     }
 }

@@ -44,6 +44,18 @@
        <openUrl name="OpenSocialXML">
             <grantPattern>${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.xml</grantPattern>
        </openUrl>
+       <openUrl name="OpenSocialRPCInquiry">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc</grantPattern>
+       </openUrl>
+       <openUrl name="OpenSocialRestInquiry">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest</grantPattern>
+       </openUrl>
+       <openUrl name="OpenSocialRPC">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc/*</grantPattern>
+       </openUrl>
+       <openUrl name="OpenSocialRest">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest/*</grantPattern>
+       </openUrl>
 
      </extension>
 

@@ -119,6 +119,16 @@ rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
     </oauthservice>
   </oauthservices>
 
+    <!--
+      This a list of nuxeo trusted hosts. Such a host will be passed the
+      browsers jsession id to avoid the need to constantly re-authenticate to
+      retrieve nuxeo data when the user is already logged into a nuxeo server
+      to access the dashboard. List should be colon separated.
+     -->
+     <trustedHosts>
+      localhost:127.0.0.1
+     </trustedHosts>
+
   </opensocial>
   </extension>
 </component>

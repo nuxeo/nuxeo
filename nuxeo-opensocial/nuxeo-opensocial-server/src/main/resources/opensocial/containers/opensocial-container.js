@@ -136,7 +136,8 @@
   "opensocial" : {
     // Path to fetch opensocial data from
     // Must be on the same domain as the gadget rendering server
-    "path" : "http://%host%/nuxeo/opensocial/gadgets/rpc",
+	//    "path" : "http://%host%/nuxeo/opensocial/gadgets/rpc",
+	    "path" : "http://%host%/nuxeo/opensocial/social/rpc",
     // Path to issue invalidate calls
     "invalidatePath" : "http://%host%/nuxeo/opensocial/gadgets/api/rpc",
     "domain" : "shindig",
@@ -158,7 +159,7 @@
   },
   "osapi" : {
     // The endpoints to query for available JSONRPC/REST services
-    "endPoints" : [ "http://%host%/nuxeo/opensocial/gadgets/rpc", "http://%host%/nuxeo/opensocial/gadgets/api/rpc" ]                   
+    "endPoints" : [ "http://%host%/nuxeo/opensocial/social/rpc", "http://%host%/nuxeo/opensocial/social/rest" ]                   
   },
   "osml": {
     // OSML library resource.  Can be set to null or the empty string to disable OSML

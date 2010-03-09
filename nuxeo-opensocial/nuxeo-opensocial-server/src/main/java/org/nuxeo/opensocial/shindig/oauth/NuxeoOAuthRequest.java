@@ -49,7 +49,9 @@ import com.google.common.collect.Maps;
  * This is complete crap. I end up copying the class because the idiots made all
  * the implementation classes private for no reason.
  * 
- * @author Ian Smith<ismith@nuxeo.com>
+ * Look for the string "NUXEO NUXEO NUXEO CHANGE" to see my changes.
+ * 
+ * irritated @author Ian Smith<ismith@nuxeo.com>
  * 
  */
 public class NuxeoOAuthRequest extends OAuthRequest {

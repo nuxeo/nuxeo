@@ -44,6 +44,9 @@ public class NuxeoCryptoModule extends AbstractModule {
                     NXBlobCrypterSecurityTokenDecoder.class);
             bind(OAuthDataStore.class).to(FakeNuxeoDataStore.class);
 
+            // These are here because they are no longer supplied in the
+            // open social properties file but rather are computed from
+            // a contribution to an extension point.
             String signingKeyPath = Framework.getService(
                     OpenSocialService.class).getSigningStateKeyFile().getPath();
             String privateKeyPath = Framework.getService(
@@ -64,6 +67,7 @@ public class NuxeoCryptoModule extends AbstractModule {
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.global-callback-url")).toInstance(
                     callbackUrl);
+
         } catch (Exception e) {
             LOG.error("Unable to bind Shindig services to Nuxeo components");
             LOG.error(e.getMessage());

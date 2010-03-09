@@ -95,6 +95,15 @@ public class OpenSocialDescriptor {
     @XNode("externalPublicCertificate")
     protected String externalPublicCertificate;
 
+    /**
+     * This a list of nuxeo trusted hosts. Such a host will be passed the
+     * browsers jsession id to avoid the need to constantly re-authenticate to
+     * retrieve nuxeo data when the user is already logged into a nuxeo server
+     * to access the dashboard. Will be colon separated.
+     */
+    @XNode("trustedHosts")
+    protected String trustedHosts;
+
     public String getSigningKey() {
         return signingKey;
     }
@@ -123,6 +132,10 @@ public class OpenSocialDescriptor {
     public String getExternalPrivateKey() {
         return externalPrivateKey;
 
+    }
+
+    public String[] getTrustedHosts() {
+        return trustedHosts.split(":");
     }
 
     /**
