@@ -1,11 +1,13 @@
 var perm = gadgets.nuxeo.isEditable();
 var firstTime = true;
+var formUrl;
 
 function launchGadget(){
 jQuery(document).ready(function(){
   var idGadget = gadgets.nuxeo.getGadgetId();
-  jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
-  jQuery("#fileUploadForm").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+  formUrl = gadgets.nuxeo.getFormActionUrl(idGadget);
+  jQuery("#formUpload").attr("action", formUrl);
+  jQuery("#fileUploadForm").attr("action", formUrl);
 
   loadHtml(idGadget);
   loadImage(idGadget);
@@ -13,15 +15,14 @@ jQuery(document).ready(function(){
   setTitle(gadgets.util.unescapeString(prefs.getString("richTitle")));
   setLink(gadgets.util.unescapeString(prefs.getString("link")));
   setLegend(gadgets.util.unescapeString(prefs.getString("legend")));
-  setPlace(gadgets.util.unescapeString(prefs.getString("place")));
+  setPlace(gadgets.util.unescapeString(prefs.getString("templates")));
 
   jQuery.ajax({
     type : "GET",
-    url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/hasFile",
+    url : [formUrl,"/hasFile"].join(""),
     success:function(data){
-      if (data == "false")
-        jQuery('#deletePhoto').hide();
-      }
+      if (data == "false") jQuery('#deletePhoto').hide();
+    }
   });
 
   jQuery('#show').click(function(){
@@ -68,18 +69,17 @@ jQuery(document).ready(function(){
     jQuery.ajax({
       async:false,
       type : "POST",
-        url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/deletePicture",
-        success:function(data){
-            loadImage(gadgets.nuxeo.getGadgetId());
-        }
-      });
-      return false;
+      url : [formUrl,"/deletePicture"].join(""),
+      success:function(data){
+      	jQuery('#deletePhoto').hide();
+        jQuery("#imgPreview").hide();
+        jQuery("#upContainer").remove();
+      }
+    });
+    return false;
   });
 
-  var myEditor = new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif'}).panelInstance('richtext');
-  myEditor.addEvent("key", function() {
-    gadgets.window.adjustHeight();
-  });
+  new nicEditor({iconsPath : '/nuxeo/site/gadgets/richtext/nicEditorIcons.gif', buttonList : ['bold','italic','underline','left','center','right','justify','ul','ol','link','unlink','forecolor','bgcolor','fontSize','fontFamily']}).panelInstance('richtext');
 
   setWidthAndBindEvents();
   jQuery('#loader').remove();
@@ -95,11 +95,12 @@ function control(){
 function savePrefs(){
   prefs.set("richTitle",val("title-field"),
   "link",val("link-field"),
-  "legend",val("legend-field"));
+  "legend",val("legend-field"),
+  "tmp",["",Math.random()].join(""));
 };
 
 function val(id){
-  return gadgets.util.escapeString(jQuery("#"+id).val());
+  return gadgets.util.escapeString(jQuery(["#",id].join("")).val());
 };
 
 function setWidthAndBindEvents(){
@@ -129,20 +130,15 @@ function setTitle(title) {
 };
 
 function setLink(link) {
-  if(_isSet(link)){
-    jQuery("#link-field").val(link);
-  }
+  if(_isSet(link)) jQuery("#link-field").val(link);
 };
 
 function setLegend(legend) {
-  if(_isSet(legend)){
-    jQuery("#legend-field").val(legend);
-  }
+  if(_isSet(legend)) jQuery("#legend-field").val(legend);
 };
 
-function setPlace(place) {
-    jQuery("#mainContainer").removeClass();
-    jQuery("#mainContainer").addClass(prefs.getString("templates"));
+function setPlace(templates) {
+  jQuery("#mainContainer").attr("class",templates);
 };
 
 function loadHtml(id){
@@ -156,17 +152,17 @@ function loadHtml(id){
 };
 
 function setHtml(content) {
-     if(_isSet(content)){
-       jQuery(".nicEdit-main").html(content);
-       jQuery("#pictureContainer").append(content);
-       gadgets.window.adjustHeight();
-    }
+  if(_isSet(content)){
+    jQuery(".nicEdit-main").html(content);
+    jQuery("#pictureContainer").append(content);
+    gadgets.window.adjustHeight();
+  }
 };
 
 function loadImage(id){
   jQuery.ajax({
     type : "GET",
-    url : gadgets.nuxeo.getFormActionUrl(gadgets.nuxeo.getGadgetId())+"/hasFile",
+    url :[formUrl,"/hasFile"].join(""),
     success: function(data) {
       if (data == "true"){
         jQuery("#imgPreview").show();
@@ -176,9 +172,6 @@ function loadImage(id){
         jQuery.ajax({
           type : "GET",
           url : photoUrl,
-          error : function(){
-        	imgContainer="<div>Pas de Photo</div>";
-          },
           success : function(data, textStatus) {
             var imgContainer = jQuery("#upContainer");
             imgContainer.remove();
@@ -199,6 +192,7 @@ function loadImage(id){
           });
       } else {
         jQuery("#imgPreview").hide();
+        jQuery("#upContainer").remove();
       }
     }
   });

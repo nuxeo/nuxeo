@@ -23,6 +23,7 @@
   <UserPref name="richTitle" datatype="hidden"/>
   <UserPref name="link" datatype="hidden"/>
   <UserPref name="legend" datatype="hidden"/>
+  <UserPref name="tmp" datatype="hidden"/>
 
   <Content type="html" view="default">
   <![CDATA[
@@ -30,11 +31,20 @@
   <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
 
   <style type='text/css'>
-   * {
-      font-family:Arial,Verdana;
-        font-size:11px;
-    }
 
+    * {
+      font-family: Arial,Verdana;
+	}
+	
+	.nicEdit-main{
+	  font-size:11px;
+	}
+	
+	#show{
+	  text-align:right;
+	  font-size:11px;
+	}
+	
     img{
       border:0;
     }
@@ -80,6 +90,8 @@
 
     .form{
        background:#666666;
+       font-family:Arial,Verdana;
+       font-size:11px;
     }
 
     #title-field,#link-field,#legend-field{
@@ -109,20 +121,14 @@
      });
     </script>
 
-    <div id="mainContainer" class="">
-         <div id="title">
-
-         </div>
-         <div id="pictureContainer">
-
-
-         </div>
-         <div style="clear:both"></div>
+    <div id="mainContainer">
+      <div id="title"></div>
+      <div id="pictureContainer"></div>
+      <div style="clear:both"></div>
     </div>
-  <div id="perm">
+    <div id="perm">
         <div id="show"><a href="#">Modifier</a></div>
     </div>
-
 
    <div style="margin:auto;display:none;" id="form">
     <div id="hideContainer">
@@ -137,7 +143,7 @@
           </tr>
         </table>
         <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
-        <table style="width:100%" class="form">
+        <table style="width:100%" class="form ">
                 <tr>
                   <td style="width:30%"><label for="link">Lien</label></td>
                     <td style="width:70%"><input type="text" name="link" id="link-field" /></td>
@@ -165,7 +171,7 @@
                 <img id="imgPreview" width="60" />
               </td>
               <td>
-                <input type="file" name="file" id="file" size="20" />
+                <input type="file" name="file" id="file" size="12" />
               </td>
 
             </tr>
