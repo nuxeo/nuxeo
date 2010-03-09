@@ -159,9 +159,10 @@ public class DocumentModelFactory {
         Set<String> typeFacets = type.getFacets();
         if (immutable) {
             // clone facets to avoid modifying doc type facets
-            typeFacets = new HashSet<String>();
             if (typeFacets != null) {
-                typeFacets.addAll(typeFacets);
+                typeFacets = new HashSet<String>(typeFacets);
+            } else {
+                typeFacets = new HashSet<String>();
             }
             typeFacets.add(FacetNames.IMMUTABLE);
         }

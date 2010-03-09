@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
  * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
@@ -2846,6 +2847,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(proxy.isProxy());
         assertFalse(proxy.isVersion());
         assertTrue(proxy.isImmutable());
+        assertTrue(proxy.hasFacet(FacetNames.IMMUTABLE)); // dynamic facet
+        assertTrue(proxy.hasFacet(FacetNames.VERSIONABLE)); // facet from type
 
         // republish a proxy
         DocumentModel proxy2 = session.publishDocument(proxy, folder);
