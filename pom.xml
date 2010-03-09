@@ -1041,6 +1041,11 @@
         <artifactId>nuxeo-platform-management</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
 
       <!-- scope test -->
       <dependency>
