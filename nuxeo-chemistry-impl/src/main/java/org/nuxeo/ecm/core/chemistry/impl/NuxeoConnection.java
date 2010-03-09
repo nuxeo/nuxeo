@@ -500,8 +500,7 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public Set<QName> getAllowableActions(ObjectId object) {
-        // TODO
-        return null;
+        return getObjectEntry(object).getAllowableActions();
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {

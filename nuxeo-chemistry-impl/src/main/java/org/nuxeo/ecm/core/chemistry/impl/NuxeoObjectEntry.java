@@ -21,11 +21,13 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.chemistry.AllowableAction;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.ChangeInfo;
 import org.apache.chemistry.ObjectEntry;
@@ -33,6 +35,7 @@ import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Type;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
 
@@ -40,9 +43,21 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
 
     private final Type type;
 
+    private final boolean canWrite;
+
     protected NuxeoObjectEntry(DocumentModel doc, NuxeoConnection connection) {
         this.doc = doc;
         type = connection.repository.getType(NuxeoType.mappedId(doc.getType()));
+        // connection is not stored as the ObjectEntry must be stateless
+        boolean canWrite;
+        try {
+            canWrite = connection.session.hasPermission(doc.getRef(),
+                    SecurityConstants.WRITE);
+        } catch (ClientException e) {
+            canWrite = false;
+        }
+        // TODO more fine-grained permissions
+        this.canWrite = canWrite;
     }
 
     // ----- DocumentModelHolder -----
@@ -101,7 +116,49 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
     }
 
     public Set<QName> getAllowableActions() {
-        return null;
+        boolean isFolder = doc.isFolder();
+        Set<QName> set = new HashSet<QName>();
+        set.add(AllowableAction.CAN_GET_OBJECT_PARENTS);
+        set.add(AllowableAction.CAN_GET_PROPERTIES);
+        if (isFolder) {
+            set.add(AllowableAction.CAN_GET_DESCENDANTS);
+            set.add(AllowableAction.CAN_GET_FOLDER_PARENT);
+            set.add(AllowableAction.CAN_GET_FOLDER_TREE);
+            set.add(AllowableAction.CAN_GET_CHILDREN);
+        } else {
+            set.add(AllowableAction.CAN_GET_CONTENT_STREAM);
+        }
+        if (canWrite) {
+            if (isFolder) {
+                set.add(AllowableAction.CAN_CREATE_DOCUMENT);
+                set.add(AllowableAction.CAN_CREATE_FOLDER);
+                set.add(AllowableAction.CAN_CREATE_RELATIONSHIP);
+                set.add(AllowableAction.CAN_DELETE_TREE);
+                set.add(AllowableAction.CAN_ADD_OBJECT_TO_FOLDER);
+                set.add(AllowableAction.CAN_REMOVE_OBJECT_FROM_FOLDER);
+            } else {
+                set.add(AllowableAction.CAN_SET_CONTENT_STREAM);
+                set.add(AllowableAction.CAN_DELETE_CONTENT_STREAM);
+            }
+            set.add(AllowableAction.CAN_UPDATE_PROPERTIES);
+            set.add(AllowableAction.CAN_MOVE_OBJECT);
+            set.add(AllowableAction.CAN_DELETE_OBJECT);
+        }
+        if (Boolean.FALSE.booleanValue()) {
+            // TODO
+            set.add(AllowableAction.CAN_GET_RENDITIONS);
+            set.add(AllowableAction.CAN_CHECK_OUT);
+            set.add(AllowableAction.CAN_CANCEL_CHECK_OUT);
+            set.add(AllowableAction.CAN_CHECK_IN);
+            set.add(AllowableAction.CAN_GET_ALL_VERSIONS);
+            set.add(AllowableAction.CAN_GET_OBJECT_RELATIONSHIPS);
+            set.add(AllowableAction.CAN_APPLY_POLICY);
+            set.add(AllowableAction.CAN_REMOVE_POLICY);
+            set.add(AllowableAction.CAN_GET_APPLIED_POLICIES);
+            set.add(AllowableAction.CAN_GET_ACL);
+            set.add(AllowableAction.CAN_APPLY_ACL);
+        }
+        return set;
     }
 
     public Collection<ObjectEntry> getRelationships() {
