@@ -58,7 +58,6 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-distribution-tools</artifactId>
-      <version>0.8</version>
       <scope>provided</scope>
     </dependency>
 
