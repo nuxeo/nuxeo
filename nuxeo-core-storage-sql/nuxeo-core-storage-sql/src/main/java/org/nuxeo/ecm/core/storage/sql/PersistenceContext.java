@@ -546,6 +546,21 @@ public class PersistenceContext {
     }
 
     /**
+     * Removes the fragments in all contexts for a given id.
+     *
+     * @param id the fragment id
+     * @throws StorageException
+     */
+    public void remove(Serializable id) throws StorageException {
+        for (Context context : contexts.values()) {
+            Fragment fragment = context.getIfPresent(id);
+            if (fragment != null) {
+                context.remove(fragment);
+            }
+        }
+    }
+
+    /**
      * Checks in a node.
      *
      * @param node the node to check in

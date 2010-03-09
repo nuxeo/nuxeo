@@ -154,14 +154,7 @@ public class Node {
      * @throws StorageException
      */
     protected void remove() throws StorageException {
-        context.remove(mainFragment);
-        if (hierFragment != null) {
-            context.remove(hierFragment);
-        }
-        for (Fragment fragment : fragments.values()) {
-            context.remove(fragment);
-            // XXX TODO must remove all fragments, even unfetched ones
-        }
+        context.remove(getId());
     }
 
     // ----- properties -----

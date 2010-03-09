@@ -37,6 +37,8 @@ public abstract class CollectionFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
+    protected boolean dirty;
+
     public CollectionFragment(Serializable id, State state, Context context) {
         super(id, state, context);
     }
@@ -46,7 +48,7 @@ public abstract class CollectionFragment extends Fragment {
      *
      * @param value the value
      */
-    public abstract void set(Serializable[] value);
+    public abstract void set(Serializable[] value) throws StorageException;
 
     /**
      * Gets the value.
@@ -95,6 +97,20 @@ public abstract class CollectionFragment extends Fragment {
         void setToPreparedStatement(List<Column> columns, PreparedStatement ps,
                 Model model, List<Serializable> debugValues)
                 throws SQLException;
+    }
+
+    /**
+     * Checks if the fragment is dirty (value changed since last clear).
+     */
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    /**
+     * Sets the fragment's dirty state;
+     */
+    protected void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
 }

@@ -91,7 +91,10 @@ public class SQLComplexListProperty extends SQLBaseProperty {
      */
 
     public void setList(List<?> list) throws DocumentException {
-        // TODO optimize this to keep existing nodes
+        // don't add/remove nodes for unchanged complex value
+        if (getValue().equals(list)) {
+            return;
+        }
         // remove previous nodes
         List<Node> nodes = session.getComplexList(node, name);
         for (Node n : nodes) {

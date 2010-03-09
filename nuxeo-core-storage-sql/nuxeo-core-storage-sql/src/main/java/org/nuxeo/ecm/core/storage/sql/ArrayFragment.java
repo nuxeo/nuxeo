@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +67,18 @@ public class ArrayFragment extends CollectionFragment {
     }
 
     @Override
-    public void set(Serializable[] value) {
-        // no need to call accessed() as we overwrite all
+    public void set(Serializable[] value) throws StorageException {
+        // unless invalidated (in which case don't try to refetch the value just
+        // to compare state), don't mark modified or dirty if there is no change
+        if (getState() != State.INVALIDATED_MODIFIED) {
+            // not invalidated, so no need to call accessed()
+            if (Arrays.equals(array, value)) {
+                return;
+            }
+        }
         array = value.clone();
         markModified();
+        setDirty(true);
     }
 
     @Override

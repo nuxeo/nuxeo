@@ -1477,8 +1477,12 @@ public class Mapper {
      */
     public void updateCollectionRows(CollectionFragment fragment)
             throws StorageException {
+        if (!fragment.isDirty())  {
+            return;
+        }
         deleteFragment(fragment);
         insertCollectionRows(fragment);
+        fragment.setDirty(false);
     }
 
     /**

@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -629,6 +630,15 @@ public class SessionImpl implements Session {
 
     public void removeNode(Node node) throws StorageException {
         checkLive();
+        if (node.mainFragment.getState() == State.CREATED) {
+            // recurse in children, safe to do as they're in memory as well
+            for (Node n : getChildren(node, null, true)) {
+                removeNode(n);
+            }
+            for (Node n : getChildren(node, null, false)) {
+                removeNode(n);
+            }
+        }
         node.remove();
         // TODO XXX remove recursively the children
     }

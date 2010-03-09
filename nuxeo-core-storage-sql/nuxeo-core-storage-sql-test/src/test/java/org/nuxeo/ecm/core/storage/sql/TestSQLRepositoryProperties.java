@@ -397,4 +397,28 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
+    public void testSaveComplexTwice() throws Exception {
+        testComplexList();
+        doc.setPropertyValue("tp:stringArray", new String[] {}); // dirty dp
+        doc = session.saveDocument(doc); // rewrites complex list again
+        session.save();
+    }
+
+    // not many tests, logs have to be looked at to confirm behavior
+    public void testUpdateMinimalChanges() throws Exception {
+        // populate some properties
+        testStringArray();
+        testDateArray();
+        testComplexList();
+        testBlobListValue();
+        session.save();
+        closeSession();
+        openSession();
+        // change just one of the collection properties
+        doc.setPropertyValue("tp:stringArray", new String[] { "baz" });
+        doc = session.saveDocument(doc);
+        session.save();
+        // check that the minimal number of updates are done in the db
+    }
+
 }
