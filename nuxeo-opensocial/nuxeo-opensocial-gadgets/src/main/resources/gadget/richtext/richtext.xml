@@ -27,9 +27,7 @@
   <Content type="html" view="default">
   <![CDATA[
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-  <link rel="stylesheet" type="text/css" href="gauche.css" title="gauche" media="screen" />
-  <link rel="stylesheet" type="text/css" href="droite.css" title="droite" media="screen" />
-  <link rel="stylesheet" type="text/css" href="centre.css" title="centre" media="screen" />
+  <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
 
   <style type='text/css'>
    * {
@@ -111,7 +109,7 @@
      });
     </script>
 
-    <div id="mainContainer">
+    <div id="mainContainer" class="">
          <div id="title">
 
          </div>
@@ -158,7 +156,6 @@
        </form>
 
        <form method="post" id="fileUploadForm" enctype="multipart/form-data" action="#">
-         <input type="hidden" name="resize_width" id="resize_width" value="" />
          <table style="width:100%" class="form">
             <tr>
               <td>
