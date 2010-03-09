@@ -159,7 +159,7 @@
   },
   "osapi" : {
     // The endpoints to query for available JSONRPC/REST services
-    "endPoints" : [ "http://%host%/nuxeo/opensocial/social/rpc", "http://%host%/nuxeo/opensocial/social/rest" ]                   
+    "endPoints" : [ "http://%host%/nuxeo/opensocial/social/rpc", "http://%host%/nuxeo/opensocial/gadgets/api/rpc" ]                   
   },
   "osml": {
     // OSML library resource.  Can be set to null or the empty string to disable OSML

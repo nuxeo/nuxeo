@@ -67,6 +67,11 @@ public interface OpenSocialService {
     File getSigningStateKeyFile();
 
     /**
+     * Same as above, but in byte form. This is cached.
+     */
+    byte[] getSigningStateKeyBytes();
+
+    /**
      * Returns a file handle to the default private key for communicating with
      * external resources.
      * 
