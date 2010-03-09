@@ -173,7 +173,6 @@
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-distribution-tools</artifactId>
       <classifier>all</classifier>
-      <version>0.9</version>
     </dependency>
     -->
 
