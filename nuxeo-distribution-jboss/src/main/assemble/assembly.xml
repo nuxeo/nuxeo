@@ -186,6 +186,7 @@
       <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
       <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
       <artifact:resolveFile key="com.google.collections:google-collections" />
+      <artifact:resolveFile key="com.googlecode.json-simple:json-simple" />
     </copy>
   </target>
 
