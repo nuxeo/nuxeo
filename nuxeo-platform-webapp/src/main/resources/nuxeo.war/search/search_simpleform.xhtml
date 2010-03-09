@@ -248,11 +248,13 @@
       <td class="fieldColumn" colspan="3">
         <h:inputText value="#{doc.advanced_search.searchpath}"
           styleClass="dataInputText" id="searchscope" />
-        <nxu:methodResult name="url"
-          value="#{restHelper.addCurrentConversationParameters('#{contextPath}/search/choose_searchscope_popup.faces')}">
-          <input type="button" value="#{messages['command.advancedsearch.browse']}"
-            class="button" onclick="javascript:popupSearch(this.form.id, '#{url}');" />
-        </nxu:methodResult>
+        <nxu:set var="url" value="#{contextPath}/search/choose_searchscope_popup.faces">
+          <nxu:set var="urlWithConversation"
+            value="#{restHelper.addCurrentConversationParameters(url)}">
+            <input type="button" value="#{messages['command.advancedsearch.browse']}" class="button"
+              onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');" />
+          </nxu:set>
+        </nxu:set>
         <f:subview rendered="false">
           Example of how to put local search tree in an existing form
           <ui:include src="/search/search_path_tree_explorer.xhtml" />
