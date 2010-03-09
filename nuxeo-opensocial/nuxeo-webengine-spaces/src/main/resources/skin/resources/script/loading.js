@@ -48,23 +48,29 @@ function loading_show() {//function called when the user clicks on a thickbox li
   
   if($("#contentContainer").length>0){
   	var pos = $("#contentContainer").position();
+    var top = pos.top - $(document).scrollTop() ;
+	var left = pos.left - $(document).scrollLeft();
   	var w = $("#contentContainer").width();
-  	$("#LOADING_overlay").css({"left":pos.left,"top":pos.top});
+  	$("#LOADING_overlay").css({"left":left,"top":top});
   	$("#LOADING_overlay").width(w);
   }
+  
+  $(document).bind("scroll", function(){
+	$(document).scrollTop(0);
+	$(document).scrollLeft(0);
+  });
   
 }
 
 function loading_remove() {
-  if (loadOn == true)
-    {
+  if (loadOn == true) {
     loadOn = false;
     $("#LOADING_window").fadeOut("fast",function(){$('#LOADING_window,#LOADING_overlay,#LOADING_HideSelect').trigger("unload").unbind().remove();});
     if (typeof document.body.style.maxHeight == "undefined") {//if IE 6
       $("body","html").css({height: "auto", width: "auto"});
       $("html").css("overflow","");
     }
-
+    $(document).unbind("scroll");
     return false;
     }
   }

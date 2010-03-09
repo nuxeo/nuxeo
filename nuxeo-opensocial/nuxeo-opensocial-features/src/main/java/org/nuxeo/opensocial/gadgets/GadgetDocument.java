@@ -15,10 +15,11 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,12 +39,15 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "GadgetDocument")
-@Produces( { "application/octet-stream" })
 public class GadgetDocument extends DocumentObject {
 
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
 
+    private static final int DEFAULT_SIZE_WIDTH = 600;
+
     private ConversionService conversionService = null;
+
+    private static final Log log = LogFactory.getLog(GadgetDocument.class);
 
     private ImagingService imagingService;
 
@@ -66,7 +70,8 @@ public class GadgetDocument extends DocumentObject {
             throw WebException.wrap(e);
         }
 
-        return Response.ok().build();
+        return Response.ok("File upload ok", MediaType.TEXT_PLAIN)
+                .build();
     }
 
     @POST
@@ -85,15 +90,19 @@ public class GadgetDocument extends DocumentObject {
             } else {
                 if (!"".equals(blob.getFilename())) {
                     try {
-                        String resizeWidth = form.getString("resize_width");
-                        if (resizeWidth != null && !"".equals(resizeWidth)) {
-                            blob = getResizedBlobl(blob,
-                                    Integer.valueOf(resizeWidth));
+                        int resizeWidth = DEFAULT_SIZE_WIDTH;
+                        try {
+                            resizeWidth = Integer.parseInt(form.getString("resize_width"));
+                        } catch (NumberFormatException e) {
+                            log.info("No width for resize picture, use default size");
                         }
 
+                        blob = getResizedBlobl(blob, resizeWidth);
+
                         Property p = doc.getProperty(xpath);
-                        p.getParent().get("filename").setValue(
-                                blob.getFilename());
+                        p.getParent()
+                                .get("filename")
+                                .setValue(blob.getFilename());
 
                         p.setValue(blob);
                     } catch (Exception e) {
@@ -110,9 +119,8 @@ public class GadgetDocument extends DocumentObject {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
-
-        return Response.ok().build();
-
+        return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)
+                .build();
     }
 
     protected Blob getResizedBlobl(Blob blob, int newWidth)
@@ -183,10 +191,12 @@ public class GadgetDocument extends DocumentObject {
         try {
             getBlobFromDoc(doc);
         } catch (Exception e) {
-            return Response.ok("false").build();
+            return Response.ok("false")
+                    .build();
         }
 
-        return Response.ok("true").build();
+        return Response.ok("true")
+                .build();
 
     }
 
@@ -207,8 +217,10 @@ public class GadgetDocument extends DocumentObject {
                 contentDisposition = "inline;";
             }
 
-            return Response.ok(blob).header("Content-Disposition",
-                    contentDisposition).type(blob.getMimeType()).build();
+            return Response.ok(blob)
+                    .header("Content-Disposition", contentDisposition)
+                    .type(blob.getMimeType())
+                    .build();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
@@ -245,7 +257,8 @@ public class GadgetDocument extends DocumentObject {
     @Path("html")
     public Object doGetHtml() throws PropertyException, ClientException {
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
-        return Response.ok(htmlContent, MediaType.TEXT_HTML).build();
+        return Response.ok(htmlContent, MediaType.TEXT_HTML)
+                .build();
     }
 
     protected String computeViewFilename(String filename, String format) {
