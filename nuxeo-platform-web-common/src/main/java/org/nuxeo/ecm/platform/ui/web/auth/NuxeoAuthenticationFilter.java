@@ -39,7 +39,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -73,8 +72,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  */
 public class NuxeoAuthenticationFilter implements Filter {
-
-    public static final String X_NUXEO_INTEGRATED_AUTH = "X-NUXEO-INTEGRATED-AUTH";
 
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
@@ -388,21 +385,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if ((userIdent == null || !userIdent.containsValidIdentity())
                         && !bypassAuth(httpRequest)) {
 
-                    /*
-                     * if (httpRequest.getHeader(X_NUXEO_INTEGRATED_AUTH) !=
-                     * null) { String candidate =
-                     * httpRequest.getHeader(X_NUXEO_INTEGRATED_AUTH);
-                     * CookieUnwrapper reqWithCookie = new CookieUnwrapper(
-                     * httpRequest, candidate); StringBuffer buffer =
-                     * reqWithCookie.getRequestURL(); Map<String, String[]> map
-                     * = httpRequest.getParameterMap(); String sep = "?";
-                     * Iterator<String> iter = map.keySet().iterator(); while
-                     * (iter.hasNext()) { String key = (iter.next());
-                     * buffer.append(sep + key + "=" + map.get(key)[0]); sep =
-                     * "&"; } RequestDispatcher dispatch =
-                     * httpRequest.getRequestDispatcher(buffer.toString());
-                     * dispatch.forward(reqWithCookie, httpResponse); return; }
-                     */
                     boolean res = handleLoginPrompt(httpRequest, httpResponse);
                     if (res) {
                         return;
@@ -419,20 +401,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                             userIdent);
                     principal = doAuthenticate(cachableUserIdent, httpRequest);
                     if (principal != null) {
-                        // YYY EVIL
-                        // evil oauth hack
-                        // OAuthSecurityToken token = new OAuthSecurityToken(
-                        // principal.getName(), targetPageURL,
-                        // "nuxeo opensocial", "default");
-                        //
-                        // new
-                        // HackAuthInfoToMakeSomethingPublic(httpRequest).setAuthType(
-                        // "nuxeo-auth-filter").setSecurityToken(token);
-                        // // avoid redirect
-                        // targetPageURL = null;
-
-                        // YYY END EVIL
-
                         // Do the propagation too ????
                         propagateUserIdentificationInformation(cachableUserIdent);
                         // setPrincipalToSession(httpRequest, principal);
@@ -907,28 +875,4 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
     }
 
-}
-
-class CookieUnwrapper extends HttpServletRequestWrapper {
-
-    protected String cookie;
-
-    public CookieUnwrapper(HttpServletRequest request, String cookie) {
-        super(request);
-        this.cookie = cookie;
-    }
-
-    @Override
-    public Cookie[] getCookies() {
-        Cookie[] result = new Cookie[] { new Cookie("JSESSIONID", cookie) };
-        return result;
-    }
-
-    @Override
-    public String getHeader(String headerName) {
-        if (headerName.equals(NuxeoAuthenticationFilter.X_NUXEO_INTEGRATED_AUTH)) {
-            return null;
-        }
-        return super.getHeader(headerName);
-    }
 }
