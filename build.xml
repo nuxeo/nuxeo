@@ -2,7 +2,7 @@
 <project name="Nuxeo Distribution" default="distrib" basedir=".">
 
   <property file="build.properties" />
-  <property name="mvn.opts" value="" />
+  <property name="mvn.opts" value="-o" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="nuxeo.ear.root" value="${basedir}/nuxeo-distribution-dm/" />
