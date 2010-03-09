@@ -366,6 +366,9 @@ public class Model {
     /** Shared high-level properties that don't come from the schema manager. */
     private final Map<String, Type> specialPropertyTypes;
 
+    /** Per-schema/type info about properties, using their key. */
+    private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyKeyInfos;
+
     /** Per-schema/type info about properties. */
     private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
 
@@ -439,6 +442,7 @@ public class Model {
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
 
+        schemaPropertyKeyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         sharedPropertyInfos = new HashMap<String, PropertyInfo>();
         mergedPropertyInfos = new HashMap<String, PropertyInfo>();
@@ -560,10 +564,17 @@ public class Model {
             PropertyType propertyType, String fragmentName, String fragmentKey,
             boolean readonly, Type coreType, ColumnType type) {
         // per-type
+        Map<String, PropertyInfo> propertyKeyInfos;
         Map<String, PropertyInfo> propertyInfos;
         if (schemaName == null) {
+            propertyKeyInfos = null;
             propertyInfos = sharedPropertyInfos;
         } else {
+            propertyKeyInfos = schemaPropertyKeyInfos.get(schemaName);
+            if (propertyKeyInfos == null) {
+                propertyKeyInfos = new HashMap<String, PropertyInfo>();
+                schemaPropertyKeyInfos.put(schemaName, propertyKeyInfos);
+            }
             propertyInfos = schemaPropertyInfos.get(schemaName);
             if (propertyInfos == null) {
                 propertyInfos = new HashMap<String, PropertyInfo>();
@@ -573,6 +584,9 @@ public class Model {
         PropertyInfo propertyInfo = new PropertyInfo(propertyType,
                 fragmentName, fragmentKey, readonly);
         propertyInfos.put(propertyName, propertyInfo);
+        if (propertyKeyInfos != null && fragmentKey != null) {
+            propertyKeyInfos.put(fragmentKey, propertyInfo);
+        }
 
         // per-fragment keys type
         if (fragmentKey != null) {
@@ -849,7 +863,7 @@ public class Model {
             }
             return null;
         } else {
-            Map<String, PropertyInfo> infos = schemaPropertyInfos.get(fragmentName);
+            Map<String, PropertyInfo> infos = schemaPropertyKeyInfos.get(fragmentName);
             if (infos == null) {
                 return null;
             }
