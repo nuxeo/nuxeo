@@ -1031,6 +1031,11 @@
         <artifactId>nuxeo-chemistry-bindings</artifactId>
         <version>${nuxeo.chemistry.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

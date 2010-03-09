@@ -514,22 +514,22 @@
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-rendering</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-admin</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-theme-webengine</artifactId>
-      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
     </dependency>
 
     <!-- Language extension addon -->

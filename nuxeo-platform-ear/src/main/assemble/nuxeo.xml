@@ -223,6 +223,12 @@
       <artifact group="backport-util-concurrent" name="backport-util-concurrent"/>
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
+      
+      <artifact group="org.owasp" name="antisamy" />
+      <artifact group="batik" name="batik-css" />
+      <artifact group="batik" name="batik-ext" />
+      <artifact group="batik" name="batik-gui-util" />
+      <artifact group="batik" name="batik-util" />
     </artifacts>
   </artifactSet>
 
