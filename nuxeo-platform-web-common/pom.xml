@@ -60,6 +60,16 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
+    <!-- to get the OAuthSecurityToken into the HttpRequest during Filtering -->
+    <dependency>
+      <groupId>org.apache.shindig</groupId>
+      <artifactId>shindig-social-api</artifactId>
+    </dependency>
+    <!-- to get the AuthInfo that attaches tokens to requests-->
+    <dependency>
+      <groupId>org.apache.shindig</groupId>
+      <artifactId>shindig-common</artifactId>
+    </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
