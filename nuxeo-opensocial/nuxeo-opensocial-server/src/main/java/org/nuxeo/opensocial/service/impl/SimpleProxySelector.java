@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.nuxeo.runtime.api.Framework;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 public class SimpleProxySelector extends ProxySelector {
 
     private static final String SHINDIG_PROXY_PROXY_PORT = "shindig.proxy.proxyPort";
@@ -25,7 +27,21 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
 
+    private static final String SHINDIG_PROXY_EXCLUDE = "shindig.proxy.excludeHost";
+
     private Proxy proxySettings = null;
+
+    List<String> excludedHosts = new ArrayList<String>();
+
+    public SimpleProxySelector() {
+        String excludedHostsProperty = Framework.getProperty(SHINDIG_PROXY_EXCLUDE);
+        String[] hosts = excludedHostsProperty.split(",");
+        if (hosts.length > 0) {
+            excludedHosts.addAll(Arrays.asList(hosts));
+        }
+        excludedHosts.add("localhost");
+        excludedHosts.add("127.0.0.1");
+    }
 
     @Override
     public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
@@ -36,7 +52,16 @@ public class SimpleProxySelector extends ProxySelector {
     @Override
     public List<Proxy> select(URI uri) {
         List<Proxy> proxies = new ArrayList<Proxy>();
-        if ("localhost".equals(uri.getHost())) {
+
+        boolean proxy = true;
+
+        for(String host : excludedHosts) {
+            if(uri.getHost().endsWith(host)) {
+                proxy = false;
+            }
+        }
+
+        if (!proxy) {
             proxies.add(Proxy.NO_PROXY);
         } else {
             proxies.add(getProxySettings());
@@ -81,7 +106,8 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static boolean isProxySet() {
         return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET).equals("true");
+                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
+                        .equals("true");
     }
 
 }

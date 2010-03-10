@@ -41,7 +41,10 @@ import com.google.inject.name.Named;
 
 /**
  * We have to copy BasicHttpFetcher because we must override the way proxy is
- * used (it's not handling authentication)
+ * used (it's not handling authentication), and since the makeRespons method
+ * is private, we cant' use it. Therefore, as there is only two methods in
+ * the base class : the one we want to override and the one that is private,
+ * it makes non sense to find a way to override it.
  *
  * @author dmetzler
  *
