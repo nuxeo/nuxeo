@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.opensocial.gadgets.coregadgets" version="1.0">
-  <require>
-  org.nuxeo.opensocial.dashboard.gadget
-  </require>
-  
+
   <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
   <!--
     <internalGadget name="mappy">
@@ -73,7 +70,7 @@
     <internalGadget name="confluencefeed">
       <mountPoint>/confluencefeed</mountPoint>
       <entryPoint>confluencefeed.xml</entryPoint>
-      <category>gadget.category.utilities</category>
+      <category>Utilities</category>
       <icon>confluencefeed_icon.png</icon>
     </internalGadget>
 

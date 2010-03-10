@@ -18,7 +18,7 @@
           /nuxeo, you should set this to something like /<myPrefix>/opensocial/gadgets/oauthcallback -->
       <!--most people can just put the hostname that is visible to outside providers in the right
           place below and then keep the same path part -->
-      <oauthCallbackUrl>http://192.168.2.203/nuxeo/site/gadgets/oauthcallback/</oauthCallbackUrl>
+      <oauthCallbackUrl>http://192.168.2.203/nuxeo/opensocial/gadgets/oauthcallback/</oauthCallbackUrl>
 
       <!--very few folks need to use this, it's only needed if you want to use
           different servers than the "all in one shindig + nuxeo" configuration -->
