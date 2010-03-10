@@ -1,0 +1,33 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:nxd="http://nuxeo.org/nxweb/document">
+  
+  <a href="#" onclick="unhidePlayerAndPlay('videoPlayerObjectStaticPreview', 'videoPlayerObject'); return false;">
+    <nxh:graphicImage id="videoPlayerObjectStaticPreview"
+      url="#{nxd:fileUrl('downloadPicture', videoDocument, 'StaticPlayerView:content', videoDocument.dublincore.modified)}?conversationId=#{conversation.id}"
+      style="height: 350px; width:400px;"
+      styleClass="thumbViewPicture" />
+  </a>
+
+  <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B'
+   width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
+   id="videoPlayerObject" style="display: none">
+    <param name='src' value="#{nxd:bigFileUrl(videoDocument, 'file:content', videoDocument.file.filename)}"/>
+    <param name='autoplay' value="false"/>
+    <param name='controller' value="true"/>
+    <param name='loop' value="false"/>
+    <param name='scale' value="aspect"/>
+    <embed src="#{nxd:bigFileUrl(videoDocument, 'file:content', videoDocument.file.filename)}"
+     width="400" height="350" autoplay="false"
+     controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F"
+     pluginspage='http://www.apple.com/quicktime/download/'>
+    </embed>
+  </object>
+  
+</div>
