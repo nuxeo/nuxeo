@@ -18,7 +18,6 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -49,14 +48,11 @@ public class ContainerPortal extends Portal {
 
     private static final String PORTAL_CLASS = "containerPortal";
 
-    // note that this list is duplicated in DashboardSpaceProvider.java because
-    // of linkage issues
-    private static final String[] COLS = new String[] { "firstCol",
-            "secondCol", "thirdCol", "fourCol" };
-
     private static final String MAXIMIZED_COL_ID = "maximizedCol";
 
     private static final String SPACER_CLASS = "x-panel-dd-spacer";
+
+    private static final String COLUMN_ID_PREFIX = "column-";
 
     private PortalColumn maximizedCol;
 
@@ -115,6 +111,10 @@ public class ContainerPortal extends Portal {
             addGadget(bean, null);
     }
 
+    public static String getColumnId(int n) {
+        return COLUMN_ID_PREFIX + (n + 1);
+    }
+
     private GadgetPortlet addGadget(GadgetBean bean,
             List<GadgetBean> lostGadgets) {
         GadgetPosition pos = bean.getGadgetPosition();
@@ -122,7 +122,7 @@ public class ContainerPortal extends Portal {
         if (pos.getPlaceID() != null)
             col = columns.get(pos.getPlaceID());
         if (col == null) {
-            bean.getGadgetPosition().setPlaceId(COLS[0]);
+            bean.getGadgetPosition().setPlaceId(getColumnId(0));
             lostGadgets.add(bean);
             return null;
         } else {
@@ -201,23 +201,11 @@ public class ContainerPortal extends Portal {
     }
 
     private void buildLayout() {
-        switch (container.getStructure()) {
-        case 1:
-            createLayout1Col();
-            break;
-        case 2:
-            createLayout2Col();
-            break;
-        case 3:
-            createLayout3Cols();
-            break;
-        case 4:
-            createLayout4Col();
-            break;
-        default:
-            createLayout3Cols();
-            break;
+        int structure = container.getStructure();
+        if (structure == 0) {
+            structure = 3;
         }
+        createColumns(structure);
         createMaximizedCol();
     }
 
@@ -227,26 +215,11 @@ public class ContainerPortal extends Portal {
         maximizedCol.hide();
     }
 
-    private void createLayout1Col() {
-        createCol(COLS[0], 1.00);
-    }
-
-    private void createLayout2Col() {
-        createCol(COLS[0], .5);
-        createCol(COLS[1], .5);
-    }
-
-    private void createLayout3Cols() {
-        createCol(COLS[0], .33);
-        createCol(COLS[1], .33);
-        createCol(COLS[2], .33);
-    }
-
-    private void createLayout4Col() {
-        createCol(COLS[0], .25);
-        createCol(COLS[1], .25);
-        createCol(COLS[2], .25);
-        createCol(COLS[3], .25);
+    private void createColumns(int structure) {
+        double width = 1. / structure;
+        for (int i = 0; i < structure; i++) {
+            createCol(getColumnId(i), width);
+        }
     }
 
     private PortalColumn createCol(String id, double columnWidth) {
@@ -268,7 +241,7 @@ public class ContainerPortal extends Portal {
         GadgetPosition pos = gadget.getGadgetPosition();
         PortalColumn col = columns.get(pos.getPlaceID());
         if (col == null)
-            col = columns.get(COLS[0]);
+            col = columns.get(getColumnId(0));
         col.remove(id, true);
         col.doLayout();
     }
@@ -284,17 +257,17 @@ public class ContainerPortal extends Portal {
     }
 
     public GadgetPortlet addGadget(GadgetBean bean) {
-        bean.setPosition(new GadgetPosition(COLS[0],
-                columns.get(COLS[0]).getItems().length));
+        bean.setPosition(new GadgetPosition(getColumnId(0), columns.get(
+                getColumnId(0)).getItems().length));
         bean.setHeight(-1);
         GadgetPortlet g = addGadget(bean, null);
         g.setVisible(true);
-        columns.get(COLS[0]).doLayout();
+        columns.get(getColumnId(0)).doLayout();
         return g;
     }
 
     public static String getDefaultColId() {
-        return COLS[0];
+        return getColumnId(0);
     }
 
     public static Integer getDefaultPos() {
@@ -319,14 +292,14 @@ public class ContainerPortal extends Portal {
 
     private void addNewColumns(int oldStructure, int structure) {
         for (int i = oldStructure; i < structure; i++) {
-            createCol(COLS[i], .25);
+            createCol(getColumnId(i), .25);
         }
         this.doLayout();
     }
 
     private void removeOldColumns(int oldStructure, int structure) {
         for (int i = oldStructure; i > structure; i--) {
-            String colToDelete = COLS[i - 1];
+            String colToDelete = getColumnId(i - 1);
             for (GadgetPortlet portlet : portlets.values()) {
                 GadgetBean b = portlet.getGadgetBean();
                 if (b.getGadgetPosition().getPlaceID().equals(colToDelete)) {
@@ -362,7 +335,7 @@ public class ContainerPortal extends Portal {
     }
 
     public int getColumnIndex(String colId) {
-        return Arrays.binarySearch(COLS, colId);
+        return Integer.parseInt(colId.replaceFirst(COLUMN_ID_PREFIX, "")) - 1;
     }
 
     public int getMaxGadget(String colId) {

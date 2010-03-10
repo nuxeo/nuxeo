@@ -134,7 +134,7 @@
   min-height: 188px;
 }
 
-#firstCol.x-3-header2cols {
+#column-1.x-3-header2cols {
   min-width: 96%;
   width: 96%;
 }
@@ -169,12 +169,12 @@
   width: 31%;
 }
 
-#secondCol.x-3-header2cols,#thirdCol.x-3-header2cols {
+#column-2.x-3-header2cols,#column-3.x-3-header2cols {
   min-width: 47%;
   width: 47%;
 }
 
-#firstCol.x-4-footer3cols,#secondCol.x-4-footer3cols,#thirdCol.x-4-footer3cols
+#column-1.x-4-footer3cols,#column-2.x-4-footer3cols,#column-3.x-4-footer3cols
   {
   min-width: 31%;
   width: 31%;
@@ -185,7 +185,7 @@
   width: 100%;
 }
 
-#fourCol.x-4-footer3cols {
+#column-4.x-4-footer3cols {
   min-width: 97%;
   width: 97%;
 }

@@ -216,7 +216,7 @@
   min-height: 50px;
 }
 
-#firstCol.x-3-header2cols {
+#column-1.x-3-header2cols {
   min-width: 99%;
   width: 99%;
 }
@@ -263,22 +263,22 @@
   width: 100%;
 }
 
-#firstCol.x-2-66-33 {
+#column-1.x-2-66-33 {
   min-width: 63%;
   width: 63%;
 }
 
-#secondCol.x-2-66-33 {
+#column-2.x-2-66-33 {
   min-width: 33%;
   width: 33%;
 }
 
-#firstCol.x-2-33-66 {
+#column-1.x-2-33-66 {
   min-width: 33%;
   width: 33%;
 }
 
-#secondCol.x-2-33-66 {
+#column-2.x-2-33-66 {
   min-width: 63%;
   width: 63%;
 }
@@ -288,12 +288,12 @@
   width: 32%;
 }
 
-#secondCol.x-3-header2cols,#thirdCol.x-3-header2cols {
+#column-2.x-3-header2cols,#column-3.x-3-header2cols {
   min-width: 48.7%;
   width: 48.7%;
 }
 
-#firstCol.x-4-footer3cols,#secondCol.x-4-footer3cols,#thirdCol.x-4-footer3cols,#secondCol.x-4-header3cols,#thirdCol.x-4-header3cols,#fourCol.x-4-header3cols
+#column-1.x-4-footer3cols,#column-2.x-4-footer3cols,#column-3.x-4-footer3cols,#column-2.x-4-header3cols,#column-3.x-4-header3cols,#column-4.x-4-header3cols
 {
   min-width: 32%;
   width: 32%;
@@ -308,7 +308,7 @@
   width: 100%;
 }
 
-#fourCol.x-4-footer3cols,#firstCol.x-4-header3cols  {
+#column-4.x-4-footer3cols,#column-1.x-4-header3cols  {
   min-width: 98.5%;
   width: 98.5%;
 }
@@ -324,23 +324,23 @@
   width: 100%;
 }
 
-#firstCol.x-4-66-33-50-50,#thirdCol.x-4-50-50-66-33,#secondCol.x-4-100-66-33-100,#thirdCol.x-4-100-33-66-100{
+#column-1.x-4-66-33-50-50,#column-3.x-4-50-50-66-33,#column-2.x-4-100-66-33-100,#column-3.x-4-100-33-66-100{
   min-width: 63%;
   width: 63%;
 }
 
-#firstCol.x-4-100-66-33-100,#fourCol.x-4-100-66-33-100,#firstCol.x-4-100-33-66-100,#fourCol.x-4-100-33-66-100
+#column-1.x-4-100-66-33-100,#column-4.x-4-100-66-33-100,#column-1.x-4-100-33-66-100,#column-4.x-4-100-33-66-100
 {
   min-width: 99%;
   width: 99%;
 }
 
-#secondCol.x-4-66-33-50-50,#fourCol.x-4-50-50-66-33,#thirdCol.x-4-100-66-33-100,#secondCol.x-4-100-33-66-100{
+#column-2.x-4-66-33-50-50,#column-4.x-4-50-50-66-33,#column-3.x-4-100-66-33-100,#column-2.x-4-100-33-66-100{
   min-width: 34%;
   width: 34%;
 }
 
-#thirdCol.x-4-66-33-50-50,#fourCol.x-4-66-33-50-50,#firstCol.x-4-50-50-66-33,#secondCol.x-4-50-50-66-33{
+#column-3.x-4-66-33-50-50,#column-4.x-4-66-33-50-50,#column-1.x-4-50-50-66-33,#column-2.x-4-50-50-66-33{
   min-width: 48.5%;
   width: 48.5%;
 }

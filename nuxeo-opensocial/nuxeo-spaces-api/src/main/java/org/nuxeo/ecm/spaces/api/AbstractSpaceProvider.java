@@ -12,6 +12,8 @@ import org.nuxeo.runtime.api.Framework;
 
 abstract public class AbstractSpaceProvider implements SpaceProvider {
 
+    private static final String COLUMN_ID_PREFIX = "column-";
+
     public void add(Space o, CoreSession session) throws SpaceException {
         if (isReadOnly(session))
             throw new SpaceException("This SpaceProvider is read only");
@@ -72,7 +74,7 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
         }
         return sm.getProviderName(this);
     }
-    
+
     /* (non-Javadoc)
      * @see org.nuxeo.ecm.spaces.api.SpaceProvider#getAllSpaces(org.nuxeo.ecm.core.api.CoreSession)
      */
@@ -88,4 +90,9 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
             return new ArrayList<Space>();
         }
     }
+
+    public static String getColumnId(int n) {
+        return COLUMN_ID_PREFIX + (n + 1);
+    }
+
 }
