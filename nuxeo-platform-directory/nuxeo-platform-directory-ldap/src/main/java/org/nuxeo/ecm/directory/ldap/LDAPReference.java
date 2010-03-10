@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.naming.CompositeName;
+import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -702,8 +704,10 @@ public class LDAPReference extends AbstractReference {
                                                 attributeIdsToCollect, ", "),
                                         this));
                             }
+
+                            Name name = new CompositeName().add(targetDn);
                             entry = targetSession.dirContext.getAttributes(
-                                    targetDn, attributeIdsToCollect);
+                                    name, attributeIdsToCollect);
                         } catch (NamingException e) {
                             log.warn(String.format(
                                     "could not find target '%s' while fetching reference '%s'",
@@ -887,8 +891,9 @@ public class LDAPReference extends AbstractReference {
                     dn, scts.getSearchScope(), this));
         }
 
+        Name name = new CompositeName().add(dn);
         NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
-                dn, filter, scts);
+                name, filter, scts);
         while (results.hasMore()) {
             // NXP-2461: check that id field is filled
             Attribute attr = results.next().getAttributes().get(
