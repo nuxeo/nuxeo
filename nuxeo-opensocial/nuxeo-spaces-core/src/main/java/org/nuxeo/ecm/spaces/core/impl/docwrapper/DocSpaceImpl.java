@@ -39,9 +39,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
-import org.nuxeo.ecm.spaces.api.SpaceManager;
-import org.nuxeo.ecm.spaces.api.SpaceProvider;
-import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -77,7 +74,8 @@ public class DocSpaceImpl implements Space {
     }
 
     public boolean isEqualTo(Space space) {
-        return space.getId() != null && space.getId().equals(getId());
+        return space.getId() != null && space.getId()
+                .equals(getId());
     }
 
     public String getTheme() throws ClientException {
@@ -155,7 +153,8 @@ public class DocSpaceImpl implements Space {
     }
 
     public String getViewer() {
-        return session().getPrincipal().getName();
+        return session().getPrincipal()
+                .getName();
     }
 
     public boolean hasPermission(String permissionName) throws ClientException {
@@ -251,14 +250,17 @@ public class DocSpaceImpl implements Space {
         DocumentRef ref = new IdRef(gadget.getId());
         DocumentModel gadgetDoc = session.getDocument(ref);
 
-        if (gadgetDoc != null && gadgetDoc.getParentRef().equals(doc.getRef())) {
+        if (gadgetDoc != null && gadgetDoc.getParentRef()
+                .equals(doc.getRef())) {
             session.removeDocument(ref);
         }
     }
 
     public void save() throws ClientException {
-        doc.getCoreSession().saveDocument(doc);
-        doc.getCoreSession().save();
+        doc.getCoreSession()
+                .saveDocument(doc);
+        doc.getCoreSession()
+                .save();
 
     }
 
@@ -301,10 +303,8 @@ public class DocSpaceImpl implements Space {
 
     public int compareTo(Space o) {
         try {
-            Calendar dte1 = getPublicationDate();
-            Calendar dte2 = o.getPublicationDate();
-            return dte1.compareTo(dte2);
-        } catch (ClientException e) {
+            return getPublicationDate().compareTo(o.getPublicationDate());
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -318,7 +318,8 @@ public class DocSpaceImpl implements Space {
     public List<String> getPermissions() throws Exception {
         ACP acp = session().getACP(doc.getRef());
 
-        String user = session().getPrincipal().getName();
+        String user = session().getPrincipal()
+                .getName();
 
         UserManager userManager = Framework.getService(UserManager.class);
         List<String> perms = new ArrayList<String>();
@@ -328,13 +329,13 @@ public class DocSpaceImpl implements Space {
                     perms.add(ace.getPermission());
                 } else {
                     NuxeoGroup group = userManager.getGroup(ace.getUsername());
-                    if (group != null && group.getMemberUsers().contains(user))
+                    if (group != null && group.getMemberUsers()
+                            .contains(user))
                         perms.add(ace.getPermission());
                 }
             }
         }
         return perms;
     }
-
 
 }
