@@ -5,4 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.core.facade
 Bundle-Localization: plugin
 Require-Bundle: org.nuxeo.ecm.core
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/CoreServiceBindings.xml, OSGI-INF/CoreEventPublisher.xml
+Nuxeo-Component: OSGI-INF/CoreServiceBindings.xml
