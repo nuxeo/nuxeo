@@ -16,11 +16,18 @@
  */
 
 function unhidePlayerAndPlay(videoPreviewId, videoPlayerId) {
-	preview = document.getElementById(videoPreviewId);
-	preview.style = "display: none";
-	video = document.getElementById(videoPlayerId);
-	video.style = "display: block";
-	VideoController(videoPlayerId).play();
+	var preview = jQuery(document.getElementById(videoPreviewId));
+	preview.attr("style", "display: none");
+	var video = jQuery(document.getElementById(videoPlayerId));
+	video.attr("style", "display: block");
+	try {
+	  VideoController(videoPlayerId).play();
+	} catch (err) {
+		// catch exception if the video is not available
+		// to avoid triggering a page reload
+		// TODO: find a cross-platform way to log it
+	}
+	return false;
 }
 
 function VideoController(id) {
