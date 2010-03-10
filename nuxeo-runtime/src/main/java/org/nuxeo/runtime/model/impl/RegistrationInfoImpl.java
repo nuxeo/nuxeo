@@ -54,7 +54,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     private static final long serialVersionUID = -4135715215018199522L;
 
-    private static final Log log = LogFactory.getLog(RegistrationInfo.class);
+    private static final Log log = LogFactory.getLog(RegistrationInfoImpl.class);
 
     // Note: some of these instance variables are accessed directly from other
     // classes in this package.
@@ -254,7 +254,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         try {
             return new ComponentInstanceImpl(this);
         } catch (Exception e) {
-            log.error("Failed to instantiate component: " + implementation, e);
+            String msg = "Failed to instantiate component: " + implementation;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getWarnings().add(msg);
             Framework.handleDevError(e);
             throw e;
         }
@@ -291,10 +294,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.registerExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to register extension. Contributor: "
-                            + xt.getComponent() + " to "
-                            + xt.getTargetComponent() + "; xpoint: "
-                            + xt.getExtensionPoint(), e);
+                    String msg = "Failed to register extension to: "
+                            + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: "
+                            + xt.getComponent().getName();
+                    log.error(msg, e);
+                    msg += " (" + e.toString() + ')';
+                    Framework.getRuntime().getWarnings().add(msg);
                     Framework.handleDevError(e);
                 }
             }
@@ -309,10 +315,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     component.registerExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to register extension. Contributor: "
-                            + xt.getComponent() + " to "
-                            + xt.getTargetComponent() + "; xpoint: "
-                            + xt.getExtensionPoint(), e);
+                    String msg = "Failed to register extension to: "
+                            + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: "
+                            + xt.getComponent().getName();
+                    log.error(msg, e);
+                    msg += " (" + e.toString() + ')';
+                    Framework.getRuntime().getWarnings().add(msg);
                     Framework.handleDevError(e);
                 }
             }

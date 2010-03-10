@@ -20,6 +20,7 @@ package org.nuxeo.runtime.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -27,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +50,7 @@ import org.nuxeo.runtime.remoting.RemoteContext;
  */
 public class ComponentManagerImpl implements ComponentManager {
 
-    private static final Log log = LogFactory.getLog(ComponentManager.class);
+    private static final Log log = LogFactory.getLog(ComponentManagerImpl.class);
 
     // must use an ordered Set to avoid loosing the order of the pending extensions
     protected final Map<ComponentName, Set<Extension>> pendingExtensions;
@@ -84,11 +86,15 @@ public class ComponentManagerImpl implements ComponentManager {
                 pending.put(ri.getName(), ri.getRequiredComponents());
             }
         }
-        for (Map.Entry<ComponentName, Set<RegistrationInfoImpl>> e : dependsOnMe.entrySet()) {
+        for (Entry<ComponentName, Set<RegistrationInfoImpl>> e : dependsOnMe.entrySet()) {
             for (RegistrationInfo ri : e.getValue()) {
-                Set<ComponentName> deps = new HashSet<ComponentName>(1);
-                deps.add(e.getKey());
-                pending.put(ri.getName(), deps);
+                pending.put(ri.getName(), Collections.singleton(e.getKey()));
+            }
+        }
+        for (Set<Extension> exts : pendingExtensions.values()) {
+            for (Extension ext : exts) {
+                pending.put(ext.getComponent().getName(),
+                        Collections.singleton(ext.getTargetComponent()));
             }
         }
         return pending;
@@ -166,7 +172,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 // TODO fix the root cause and remove this
                 return;
             }
-            String msg = "Duplicate component name: '" + name + "'";
+            String msg = "Duplicate component name: " + name;
             log.error(msg);
             Framework.getRuntime().getWarnings().add(msg);
             return;
@@ -178,7 +184,10 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             ri.register();
         } catch (Exception e) {
-            log.error("Failed to register component: " + ri.getName(), e);
+            String msg = "Failed to register component: " + name;
+            log.error(msg, e);
+            msg += " (" + e.toString() + ')';
+            Framework.getRuntime().getWarnings().add(msg);
             return;
         }
 
@@ -193,10 +202,10 @@ public class ComponentManagerImpl implements ComponentManager {
             ri.dependsOnMe = pendings;
 
             // no blocking dependencies found - register it
-            log.info("Registering component: " + ri.getName());
+            log.info("Registering component: " + name);
             // create the component
             try {
-                registry.put(ri.name, ri);
+                registry.put(name, ri);
                 ri.resolve();
 
                 // if some objects are waiting for me notify them about my registration
@@ -218,7 +227,11 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
 
             } catch (Throwable e) {
-                log.error("Failed to create component: " + ri.name, e);
+                registry.remove(name);
+                String msg = "Failed to create component: " + name;
+                log.error(msg, e);
+                msg += " (" + e.toString() + ')';
+                Framework.getRuntime().getWarnings().add(msg);
             }
 
         } else {
