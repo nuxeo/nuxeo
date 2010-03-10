@@ -228,9 +228,6 @@ nxthemes css is not used in login.jsp */
     response.setHeader("Pragma", "no-cache"); // HTTP 1.0
     response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
 %> <!-- ;jsessionid=<%=request.getSession().getId()%> --> <!-- ImageReady Slices (login_cutted.psd) -->
-      <!--
-      <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
-      -->
         <div class="login">
           <table>
            <tr>
@@ -292,9 +289,11 @@ nxthemes css is not used in login.jsp */
       </form>
       </td>
       <td class="news_container" align="right" valign="center">
-        <iframe class="block_container" style="visibility:hidden"
-          onload="javascript:this.style.visibility='visible';"
-          src="http://www.nuxeo.com/layout/set/newslist/"></iframe>
+        <% if (!request.getHeader("User-Agent").contains("Nuxeo-Selenium-Tester")) { %>
+          <iframe class="block_container" style="visibility:hidden"
+            onload="javascript:this.style.visibility='visible';"
+            src="http://www.nuxeo.com/layout/set/newslist/"></iframe>
+        <% } %>
       </td>
     </tr>
       <tr class="footer">
