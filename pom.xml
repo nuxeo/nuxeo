@@ -697,7 +697,7 @@
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-impl</artifactId>
         <scope>provided</scope>
-        <version>3.3.1.GA-NX</version>
+        <version>3.3.1.GA-NX2</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.ui</groupId>
