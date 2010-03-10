@@ -70,7 +70,7 @@
     <internalGadget name="confluencefeed">
       <mountPoint>/confluencefeed</mountPoint>
       <entryPoint>confluencefeed.xml</entryPoint>
-      <category>gadget.category.utilities</category>
+      <category>Utilities</category>
       <icon>confluencefeed_icon.png</icon>
     </internalGadget>
 

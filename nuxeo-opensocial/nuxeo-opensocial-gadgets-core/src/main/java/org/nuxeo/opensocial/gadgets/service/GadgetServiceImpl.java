@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -39,26 +38,17 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     private static final String URL_SEPARATOR = "/";
 
-    private static final String HTTP_SEPARATOR = ":";
-
-    private static final String GADGETS_PORT = "gadgets.port";
-
-    private static final String GADGETS_HOST = "gadgets.host";
-
-    private static final String GADGETS_PATH = "gadgets.path";
-
     private static final String GWTGADGETS_PORT = "gwtgadgets.port";
 
     private static final String GWTGADGETS_HOST = "gwtgadgets.host";
 
     private static final String GWTGADGETS_PATH = "gwtgadgets.path";
 
-    private static final String HTTP = "http://";
-
     private static final String GADGET_XP = "gadget";
 
-    private Map<String, GadgetDeclaration> gadgets = new HashMap<String, GadgetDeclaration>();
+    private final Map<String, GadgetDeclaration> gadgets = new HashMap<String, GadgetDeclaration>();
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(GadgetServiceImpl.class);
 
     @Override
@@ -67,7 +57,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
             throws Exception {
 
         if (GADGET_XP.equals(extensionPoint)) {
-            registerNewGadget((GadgetDeclaration) contribution, contributor);
+            InternalGadgetDescriptor gadget = (InternalGadgetDescriptor) contribution;
+            gadget.setComponentName(contributor.getName());
+
+            registerNewGadget(gadget);
         }
     }
 
@@ -76,18 +69,21 @@ public class GadgetServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (GADGET_XP.equals(extensionPoint)) {
-            unregisterNewGadget((GadgetDeclaration) contribution, contributor);
+            InternalGadgetDescriptor gadget = (InternalGadgetDescriptor) contribution;
+
+            unregisterNewGadget(gadget, contributor);
         }
     }
 
-    private void registerNewGadget(GadgetDeclaration gadget,
-            ComponentInstance contributor) {
+    /*
+     * This is public primarily for testing. this is not exposed by the api.
+     */
+    public void registerNewGadget(GadgetDeclaration gadget) {
 
         if (gadgets.containsKey(gadget.getName())) {
             gadgets.remove(gadget.getName());
         }
         if (!gadget.getDisabled()) {
-            gadget.setComponentName(contributor.getName());
             gadgets.put(gadget.getName(), gadget);
         }
     }
@@ -108,17 +104,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     public InputStream getGadgetResource(String gadgetName, String resourcePath)
             throws IOException {
-        GadgetDeclaration gadget = getGadget(gadgetName);
-        URL gadgetURL;
-        ComponentInstance component = Framework.getRuntime().getComponentInstance(
-                gadget.getComponentName());
-        gadgetURL = component.getRuntimeContext().getBundle().getEntry(
-                "gadget/" + gadget.getDirectory() + "/" + resourcePath);
-        if (gadgetURL != null) {
-            return gadgetURL.openStream();
-        } else {
-            return null;
-        }
+        return getGadget(gadgetName).getResourceAsStream(resourcePath);
 
     }
 
@@ -154,30 +140,14 @@ public class GadgetServiceImpl extends DefaultComponent implements
         // TODO: FIX since it won't work on JBoss
 
         GadgetDeclaration gadget = getGadget(gadgetName);
-        StringBuilder sb = getUrlPrefix();
 
-        if (gadget != null) {
-            sb.append(gadget.getMountPoint());
-            sb.append(URL_SEPARATOR);
-            sb.append(gadget.getEntryPoint());
-            try {
-                return new URL(sb.toString());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+        try {
+            return gadget.getGadgetDefinition();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
         return null;
-    }
-
-    private StringBuilder getUrlPrefix() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(HTTP);
-        sb.append(Framework.getProperty(GADGETS_HOST));
-        sb.append(HTTP_SEPARATOR);
-        sb.append(Framework.getProperty(GADGETS_PORT));
-        sb.append(Framework.getProperty(GADGETS_PATH));
-        return sb;
     }
 
     public List<String> getGadgetCategory() {
@@ -189,14 +159,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
         return categories;
     }
 
-    public String getIconUrl(String gadgetName) {
-        StringBuilder sb = new StringBuilder(
-                Framework.getProperty(GADGETS_PATH));
-        GadgetDeclaration gadget = getGadget(gadgetName);
-        sb.append(gadget.getMountPoint());
-        sb.append(URL_SEPARATOR);
-        sb.append(gadget.getIcon());
-        return sb.toString();
+    public GadgetServiceImpl() {
     }
 
+    public String getIconUrl(String gadgetName) {
+        return getGadget(gadgetName).getIconUrl();
+    }
 }
