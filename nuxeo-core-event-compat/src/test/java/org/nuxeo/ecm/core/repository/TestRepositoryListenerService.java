@@ -58,7 +58,7 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
 
     public void testListenerRegistration() {
         Collection<EventListener> listeners = repositoryListenerService.getEventListeners();
-        assertEquals(4, listeners.size());
+        assertEquals(5, listeners.size());
     }
 
     public void testGetListenerByName() {
@@ -74,12 +74,12 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
         // Register a new one.
         repositoryListenerService.addEventListener(listener);
         Collection<EventListener> listeners = repositoryListenerService.getEventListeners();
-        assertEquals(5, listeners.size());
+        assertEquals(6, listeners.size());
 
         // Unregister
         repositoryListenerService.removeEventListener(listener);
         listeners = repositoryListenerService.getEventListeners();
-        assertEquals(4, listeners.size());
+        assertEquals(5, listeners.size());
     }
 
     public void testNotifyListeners() {
