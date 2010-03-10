@@ -59,6 +59,7 @@
 
     <doctype name="Video" extends="Document">
       <schema name="video"/>
+      <schema name="picture"/>
       <schema name="dam_common"/>
       <schema name="ip_rights"/>
       <schema name="common"/>

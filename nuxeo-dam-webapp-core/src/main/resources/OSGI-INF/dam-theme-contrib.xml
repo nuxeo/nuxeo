@@ -77,6 +77,10 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
+    <resource name="video-controller.js" />
+      <path>scripts/video-controller.js</path>
+    </resource>
+
     <resource name="jquery.js">
       <path>scripts/jquery.js</path>
     </resource>
