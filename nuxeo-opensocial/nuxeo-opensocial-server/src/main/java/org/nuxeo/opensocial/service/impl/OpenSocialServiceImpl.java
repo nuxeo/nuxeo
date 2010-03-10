@@ -18,6 +18,8 @@
 package org.nuxeo.opensocial.service.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ProxySelector;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,6 +76,8 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     protected FrameworkListener frameworkListener = null;
 
     protected boolean readyWithContribution = false;
+
+    protected String signingStateKeyBytes;
 
     public boolean setFrameworkListener(FrameworkListener frameworkListener) {
         if (readyWithContribution) {
@@ -258,5 +263,23 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     public String[] getTrustedHosts() {
         return os.getTrustedHosts();
+    }
+
+    public byte[] getSigningStateKeyBytes() {
+        try {
+            if (signingStateKeyBytes == null) {
+                signingStateKeyBytes = IOUtils.toString(new FileReader(
+                        getSigningStateKeyFile()));
+            }
+            return signingStateKeyBytes.getBytes();
+        } catch (FileNotFoundException e) {
+            log.error("Unable to find the signing key file! "
+                    + "Check default-opensocial-contrib.xml!", e);
+            return null;
+        } catch (IOException e) {
+            log.error("Unable to read the signing key file! "
+                    + "Check default-opensocial-contrib.xml!", e);
+            return null;
+        }
     }
 }

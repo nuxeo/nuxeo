@@ -16,6 +16,7 @@
  */
 package org.nuxeo.wss.fprpc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -96,10 +97,10 @@ public class FPRPCRequest extends WSSRequest {
 
         int byt = input.read();
         boolean beginBinary = false;
-        byte[] stringData = new byte[httpRequest.getContentLength()];
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int idx = 0;
         while (byt > 0 && !beginBinary) {
-            stringData[idx] = (byte) byt;
+            buffer.write(byt);
             if (byt == 10) {
                 beginBinary = true;
             } else {
@@ -108,7 +109,7 @@ public class FPRPCRequest extends WSSRequest {
             idx++;
         }
 
-        String paramData = new String(stringData, "utf-8");
+        String paramData = buffer.toString("utf-8");
         paramData = URLDecoder.decode(paramData, "utf-8");
         String[] parts = paramData.split("\\&");
         for (String part : parts) {

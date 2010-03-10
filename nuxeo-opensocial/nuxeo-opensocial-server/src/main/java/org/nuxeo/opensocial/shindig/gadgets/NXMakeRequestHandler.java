@@ -17,15 +17,23 @@
 
 package org.nuxeo.opensocial.shindig.gadgets;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.auth.SecurityToken;
+import org.apache.shindig.common.JsonSerializer;
+import org.apache.shindig.gadgets.FetchResponseUtils;
 import org.apache.shindig.gadgets.GadgetException;
 import org.apache.shindig.gadgets.http.HttpRequest;
+import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.RequestPipeline;
 import org.apache.shindig.gadgets.rewrite.RequestRewriterRegistry;
 import org.apache.shindig.gadgets.servlet.MakeRequestHandler;
+import org.apache.shindig.gadgets.servlet.ProxyBase;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -33,15 +41,26 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * This is a way to pass our session through the make request handler mechanism.
- * We can't use cookies directly because shindig will strip them.
+ * @author cusgu
+ * 
+ *         Patch FeedProcessor in order to retrieve extra elements from RSS 2.0
+ *         feeds : - enclosure
+ * 
  */
 @Singleton
 public class NXMakeRequestHandler extends MakeRequestHandler {
 
-    protected OpenSocialService svc;
-
     private static final Log log = LogFactory.getLog(NXMakeRequestHandler.class);
+
+    public static final String NUXEO_REST = "/nuxeo/restAPI";
+
+    public static final String NUXEO_WEBENG = "/nuxeo/site";
+
+    public static final String COOKIE = "Cookie";
+
+    public static final String JSESSIONCOOKIE = "JSESSIONID=";
+
+    protected OpenSocialService svc;
 
     @Inject
     public NXMakeRequestHandler(RequestPipeline requestPipeline,
@@ -52,6 +71,49 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
         } catch (Exception e) {
             log.error("Unable to find opensocial service!", e);
         }
+
+    }
+
+    /**
+     * Format a response as JSON, including additional JSON inserted by chained
+     * content fetchers.
+     */
+    @Override
+    protected String convertResponseToJson(SecurityToken authToken,
+            HttpServletRequest request, HttpResponse results)
+            throws GadgetException {
+        String originalUrl = request.getParameter(ProxyBase.URL_PARAM);
+        String body = results.getResponseAsString();
+        if (body.length() > 0) {
+            if ("FEED".equals(request.getParameter(CONTENT_TYPE_PARAM))) {
+                body = NXprocessFeed(originalUrl, request, body);
+            }
+        }
+        Map<String, Object> resp = FetchResponseUtils.getResponseAsJson(
+                results, null, body);
+
+        if (authToken != null) {
+            String updatedAuthToken = authToken.getUpdatedToken();
+            if (updatedAuthToken != null) {
+                resp.put("st", updatedAuthToken);
+            }
+        }
+
+        // Use raw param as key as URL may have to be decoded
+        return JsonSerializer.serialize(Collections.singletonMap(originalUrl,
+                resp));
+    }
+
+    /**
+     * Processes a feed (RSS or Atom) using FeedProcessor.
+     */
+    private String NXprocessFeed(String url, HttpServletRequest req, String xml)
+            throws GadgetException {
+        boolean getSummaries = Boolean.parseBoolean(getParameter(req,
+                GET_SUMMARIES_PARAM, "false"));
+        int numEntries = Integer.parseInt(getParameter(req, NUM_ENTRIES_PARAM,
+                DEFAULT_NUM_ENTRIES));
+        return new NXFeedProcessor().process(url, xml, getSummaries, numEntries).toString();
     }
 
     @Override
@@ -59,6 +121,7 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
             throws GadgetException {
         HttpRequest req = super.buildHttpRequest(request);
         String auth = req.getUri().getAuthority();
+        boolean done = false;
         if (auth != null) {
             if (auth.indexOf(':') != -1) {
                 auth = auth.substring(0, auth.indexOf(':')); // foo:8080
@@ -67,14 +130,24 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
                 if (host.trim().equalsIgnoreCase(auth.trim())) {
                     if (request.isRequestedSessionIdValid()) {
                         if (request.isRequestedSessionIdFromCookie()) {
-                            req.addHeader("Cookie", "JSESSIONID="
+                            req.addHeader(COOKIE, JSESSIONCOOKIE
                                     + request.getRequestedSessionId());
+                            done = true;
                         }
                     }
                     break;
                 }
             }
+            if (!done) {
+                String path = req.getUri().getPath();
+                if ((path.startsWith(NUXEO_REST))
+                        || (path.startsWith(NUXEO_WEBENG))) {
+                    req.addHeader(COOKIE, JSESSIONCOOKIE
+                            + request.getRequestedSessionId());
+                }
+            }
         }
         return req;
     }
+
 }

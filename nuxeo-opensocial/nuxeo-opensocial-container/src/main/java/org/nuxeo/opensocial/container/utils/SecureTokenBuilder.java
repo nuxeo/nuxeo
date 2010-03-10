@@ -17,9 +17,6 @@
 
 package org.nuxeo.opensocial.container.utils;
 
-import java.io.FileReader;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.BlobCrypterSecurityToken;
@@ -38,8 +35,6 @@ public class SecureTokenBuilder {
     public static String getSecureToken(String viewer, String owner,
             String gadgetUrl) throws Exception {
         OpenSocialService svc = Framework.getService(OpenSocialService.class);
-        String key = IOUtils.toString(new FileReader(
-                svc.getSigningStateKeyFile()));
         String container = "default";
         String domain = "localhost";
         if (svc.getPortalConfig() == null) {
@@ -47,7 +42,8 @@ public class SecureTokenBuilder {
                     + svc.getPortalConfig().length
                     + " choices but we don't know how to pick the correct configuration!");
         }
-        return getSecureToken(viewer, owner, gadgetUrl, key, container, domain);
+        return getSecureToken(viewer, owner, gadgetUrl,
+                svc.getSigningStateKeyBytes(), container, domain);
     }
 
     /**
@@ -74,10 +70,10 @@ public class SecureTokenBuilder {
     // }
 
     public static String getSecureToken(String viewer, String owner,
-            String gadgetUrl, String key, String container, String domain)
+            String gadgetUrl, byte[] key, String container, String domain)
             throws Exception {
         BlobCrypterSecurityToken st = new BlobCrypterSecurityToken(
-                new BasicBlobCrypter(key.getBytes()), container, domain);
+                new BasicBlobCrypter(key), container, domain);
         st.setViewerId(viewer);
         st.setOwnerId(owner);
         st.setAppUrl(gadgetUrl);
