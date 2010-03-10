@@ -303,7 +303,7 @@
       <artifact:resolveFile key="com.google.collections:google-collections" />
       <artifact:resolveFile key="com.googlecode.json-simple:json-simple" />
       <!-- Re-add because of duplicated jars in different versions -->
-      <!-- artifact:resolveFile key="commons-beanutils:commons-beanutils" / -->
+      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
       <artifact:resolveFile key="commons-collections:commons-collections" />
       <artifact:resolveFile key="commons-fileupload:commons-fileupload" />
       <artifact:resolveFile key="commons-io:commons-io" />

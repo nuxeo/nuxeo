@@ -360,17 +360,17 @@
       <artifact:resolveFile key="com.google.collections:google-collections" />
       <artifact:resolveFile key="com.googlecode.json-simple:json-simple" />
       <!-- Re-add because of duplicated jars in different versions -->
-      <artifact:resolveFile key="commons-beanutils" />
-      <artifact:resolveFile key="commons-collections" />
-      <artifact:resolveFile key="commons-fileupload" />
-      <artifact:resolveFile key="commons-io" />
-      <artifact:resolveFile key="ehcache" />
-      <artifact:resolveFile key="icu4j" />
-      <artifact:resolveFile key="lucene-core" />
-      <artifact:resolveFile key="nekohtml" />
-      <artifact:resolveFile key="poi" />
-      <artifact:resolveFile key="poi-ooxml" />
-      <artifact:resolveFile key="poi-scratchpad" />
+      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
+      <artifact:resolveFile key="commons-collections:commons-collections" />
+      <artifact:resolveFile key="commons-fileupload:commons-fileupload" />
+      <artifact:resolveFile key="commons-io:commons-io" />
+      <artifact:resolveFile key="net.sf.ehcache:ehcache" />
+      <artifact:resolveFile key="com.ibm.icu:icu4j" />
+      <artifact:resolveFile key="org.apache.lucene:lucene-core" />
+      <artifact:resolveFile key="net.sourceforge.nekohtml:nekohtml" />
+      <artifact:resolveFile key="org.apache.poi:poi" />
+      <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
+      <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
     </copy>
   </target>
 
