@@ -48,6 +48,7 @@
       <template>incl/selection_view.xhtml
       </template>
       <resource>dam.css</resource>
+      <resource>video-controller.js</resource>
     </view>
 
     <view name="dam includes" template-engine="jsf-facelets">
@@ -77,8 +78,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
-    <resource name="video-controller.js" />
-      <path>scripts/video-controller.js</path>
+    <resource name="video-controller.js">
+      <path>scripts/video-controller.js</path>   
     </resource>
 
     <resource name="jquery.js">

@@ -82,17 +82,12 @@
             </a>
             </c:if>
 
-            <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
-            <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
-              <param name='src' value="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}"/>
-              <param name='autoplay' value="false"/>
-              <param name='controller' value="true"/>
-              <param name='loop' value="false"/>
-              <param name='scale' value="aspect"/>
-              <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" width="400" height="350" autoplay="false"
-                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
-              </embed>
-            </object>
+          <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
+            <ui:include src="/incl/video/video_player.xhtml">
+              <ui:param name="videoDocument" value="#{documentActions.currentSelection}" />
+              <ui:param name="videoPropertyPath" value="#{'file:content'}" />
+              <ui:param name="videoFilename" value="#{documentActions.currentSelection.file.filename}" />
+            </ui:include>
           </c:if>
           <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
             <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' codebase='http://www.apple.com/qtactivex/qtplugin.cab'>
@@ -102,7 +97,7 @@
               <param name='loop' value="false"/>
               <param name='scale' value="aspect"/>
               <embed src="#{nxd:bigFileUrl(documentActions.currentSelection, 'file:content', documentActions.currentSelection.file.filename)}" autoplay="false"
-                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage='http://www.apple.com/quicktime/download/'>
+                controller="true" loop="false" scale="aspect" bgcolor="#6F6F6F" pluginspage="http://www.apple.com/quicktime/download/">
               </embed>
             </object>
          </c:if>
