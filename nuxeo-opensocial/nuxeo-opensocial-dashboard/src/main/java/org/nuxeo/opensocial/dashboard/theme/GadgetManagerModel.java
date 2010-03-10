@@ -7,30 +7,32 @@ import org.nuxeo.theme.models.AbstractModel;
 
 public class GadgetManagerModel extends AbstractModel {
 
-  private List<String> categories;
-  private List<GadgetDeclaration> gadgets;
-  private boolean anonymous;
+    private final List<String> categories;
 
-  public boolean isAnonymous() {
-    return anonymous;
-  }
+    private final List<GadgetDeclaration> gadgets;
 
-  public void setAnonymous(boolean anonymous) {
-    this.anonymous = anonymous;
-  }
+    private boolean anonymous;
 
-  public GadgetManagerModel(List<String> categories,
-      List<GadgetDeclaration> gadgets) {
-    this.categories = categories;
-    this.gadgets = gadgets;
-  }
+    public boolean isAnonymous() {
+        return anonymous;
+    }
 
-  public List<String> getCategories() {
-    return categories;
-  }
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
 
-  public List<GadgetDeclaration> getGadgets() {
-    return gadgets;
-  }
+    public GadgetManagerModel(List<String> categories,
+            List<GadgetDeclaration> gadgets) {
+        this.categories = categories;
+        this.gadgets = gadgets;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public List<GadgetDeclaration> getGadgets() {
+        return gadgets;
+    }
 
 }

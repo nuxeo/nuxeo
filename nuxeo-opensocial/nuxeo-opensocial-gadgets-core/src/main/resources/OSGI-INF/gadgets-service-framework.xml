@@ -8,7 +8,7 @@
   </service>
 
   <extension-point name="gadget" >
-    <object class="org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration" />
+    <object class="org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor" />
   </extension-point>
 
 </component>

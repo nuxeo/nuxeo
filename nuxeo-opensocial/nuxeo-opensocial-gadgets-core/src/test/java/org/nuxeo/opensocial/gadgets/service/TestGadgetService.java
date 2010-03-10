@@ -22,7 +22,6 @@ import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-
 public class TestGadgetService extends NXRuntimeTestCase {
 
     @Override
@@ -34,12 +33,21 @@ public class TestGadgetService extends NXRuntimeTestCase {
     public void testServiceRegistration() throws Exception {
         GadgetService service = Framework.getService(GadgetService.class);
         assertNotNull(service);
-        deployContrib("org.nuxeo.opensocial.gadgets.core.test", "OSGI-INF/gadget-contrib.xml");
+        deployContrib("org.nuxeo.opensocial.gadgets.core.test",
+                "OSGI-INF/gadget-contrib.xml");
         GadgetDeclaration meteoGadget = service.getGadget("meteo");
         assertNotNull(meteoGadget);
-        deployContrib("org.nuxeo.opensocial.gadgets.core.test", "OSGI-INF/gadget-override-contrib.xml");
+        deployContrib("org.nuxeo.opensocial.gadgets.core.test",
+                "OSGI-INF/gadget-override-contrib.xml");
         service = Framework.getService(GadgetService.class);
         meteoGadget = service.getGadget("meteo");
         assertNull(meteoGadget);
+    }
+
+    public void testRegisterExternal() throws Exception {
+        GadgetServiceImpl service = (GadgetServiceImpl) Framework.getService(GadgetService.class);
+        assertNotNull(service);
+
+        // service.registerNewGadget(external);
     }
 }
