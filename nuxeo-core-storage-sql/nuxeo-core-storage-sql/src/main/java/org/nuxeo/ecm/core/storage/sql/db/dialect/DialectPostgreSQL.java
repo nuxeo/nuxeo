@@ -955,12 +955,12 @@ public class DialectPostgreSQL extends Dialect {
                 "CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users character varying[]) RETURNS SETOF text AS $$\n" //
                         + "-- List read acl ids for a list of user/groups using cache\n" //
                         + "DECLARE\n" //
-                        + "  acl_in_cache integer;\n" //
+                        + "  in_cache boolean;\n" //
                         + "  md5_users varchar(34);\n" //
                         + "BEGIN\n" //
                         + "  SELECT md5(array_to_string(users, ',')) INTO md5_users;\n" //
-                        + "  SELECT COUNT(1) INTO acl_in_cache FROM read_acls_cache WHERE users_md5 = md5_users;\n" //
-                        + "  IF acl_in_cache = 0 THEN\n" //
+                        + "  SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM read_acls_cache WHERE users_md5 = md5_users);\n" //
+                        + "  IF in_cache IS NULL THEN\n" //
                         + "    INSERT INTO read_acls_cache SELECT md5_users, acl_id FROM nx_list_read_acls_for(users) AS acl_id;\n" //
                         + "  END IF;\n" //
                         + "  RETURN QUERY SELECT acl_id::text FROM read_acls_cache WHERE users_md5 = md5_users;\n" //
