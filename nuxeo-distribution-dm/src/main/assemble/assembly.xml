@@ -203,10 +203,10 @@
         <include name="derby-*" />
         <include name="dom4j-*" />
         <include name="ehcache-*" />
-        <include name="ejb-3.0-RC8-*" />
-        <include name="ejb-api-3.0-*" />
-        <include name="ejb3-3.0-RC8-*" />
-        <include name="el-api-unknown-*" />
+        <include name="ejb-3.0-RC8*" />
+        <include name="ejb-api-3.0*" />
+        <include name="ejb3-3.0-RC8*" />
+        <include name="el-api-unknown*" />
         <include name="freemarker-*" />
         <include name="geronimo-connector-*" />
         <include name="geronimo-jta_1.1_spec-*" />
@@ -216,7 +216,7 @@
         <include name="gwt-log-*" />
         <include name="gwt-user-*" />
         <include name="gwtext-*" />
-        <include name="h2-1.1.114-*" />
+        <include name="h2-1.1.114*" />
         <include name="hibernate-*" />
         <include name="hibernate-3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604-*" />
         <include name="hibernate-annotations-*" />
@@ -232,8 +232,8 @@
         <include name="jai_core-*" />
         <include name="javacc-*" />
         <include name="jenatest-*" />
-        <include name="jboss-4.0.4.GA-*" />
-        <include name="jboss-annotations-ejb3-3.0-RC8-*" />
+        <include name="jboss-4.0.4.GA*" />
+        <include name="jboss-annotations-ejb3-3.0-RC8*" />
         <include name="jboss-common-*" />
         <include name="jboss-j2ee-*" />
         <include name="jboss-jmx-*" />
