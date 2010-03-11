@@ -178,7 +178,7 @@ public class DefaultBinaryManager implements BinaryManager {
      *            must be created
      * @return the file for this digest
      */
-    protected File getFileForDigest(String digest, boolean createDir) {
+    public File getFileForDigest(String digest, boolean createDir) {
         int depth = descriptor.depth;
         StringBuilder buf = new StringBuilder(3 * depth - 1);
         for (int i = 0; i < depth; i++) {
