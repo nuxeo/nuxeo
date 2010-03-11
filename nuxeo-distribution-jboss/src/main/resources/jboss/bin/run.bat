@@ -70,7 +70,7 @@ rem Add -server to the JVM options, if supported
 if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
 
 rem JVM memory allocation pool parameters. Modify as appropriate.
-set JAVA_OPTS=%JAVA_OPTS% -server -Xms512m -Xmx1024m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
+set JAVA_OPTS=%JAVA_OPTS% -Xms512m -Xmx1024m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
 
 rem With Sun JVMs reduce the RMI GCs to once per hour
 set JAVA_OPTS=%JAVA_OPTS% -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000
