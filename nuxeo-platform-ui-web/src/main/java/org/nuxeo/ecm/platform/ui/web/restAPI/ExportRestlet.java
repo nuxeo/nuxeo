@@ -28,7 +28,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -55,6 +58,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
     protected void doHandleStatelessRequest(Request req, Response res) {
         boolean exportAsTree;
         boolean exportAsZip;
+        boolean needUnrestricted = false;
         String action = req.getResourceRef().getSegments().get(4);
         if (action.equals("exportTree")) {
             exportAsTree = true;
@@ -91,7 +95,34 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             if (docid == null || docid.equals("*")) {
                 root = session.getRootDocument();
             } else {
-                root = session.getDocument(new IdRef(docid));
+                if (session.hasPermission(new IdRef(docid),
+                        SecurityConstants.READ)) {
+                    root = session.getDocument(new IdRef(docid));
+                } else {
+                    UnrestrictedVersionExporter runner = new UnrestrictedVersionExporter(
+                            session, docid);
+                    runner.runUnrestricted();
+                    root = runner.root;
+                    needUnrestricted = true;
+
+                    // if user can't read version, export is authorized
+                    // if he can at least read a proxy pointing to this version
+                    if (root.isVersion()) {
+                        DocumentModelList docs = session.getProxies(root.getRef(), null);
+                        Boolean hasReadableProxy = false;
+                        for (DocumentModel doc : docs) {
+                            if (session.hasPermission(doc.getRef(), SecurityConstants.READ)) {
+                                hasReadableProxy = true;
+                                break;
+                            }
+                        }
+                        if (!hasReadableProxy) {
+                            throw new ClientException(
+                                    "Current user doesn't have access to any proxy pointing to version "
+                                            + root.getPathAsString());
+                        }
+                    }
+                }
             }
         } catch (ClientException e) {
             handleError(res, e);
@@ -116,16 +147,16 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         MediaType mediaType = exportAsZip ? MediaType.APPLICATION_ZIP
                 : MediaType.TEXT_XML;
         Representation entity = makeRepresentation(mediaType, root,
-                exportAsTree, exportAsZip);
+                exportAsTree, exportAsZip, needUnrestricted);
 
         res.setEntity(entity);
     }
 
     protected Representation makeRepresentation(MediaType mediaType,
             DocumentModel root, final boolean exportAsTree,
-            final boolean exportAsZip) {
+            final boolean exportAsZip, final boolean isUnrestricted) {
 
-        return new ExportRepresentation(mediaType, root) {
+        return new ExportRepresentation(mediaType, root, isUnrestricted) {
 
             @Override
             protected DocumentPipe makePipe() {
@@ -171,4 +202,23 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             }
         };
     }
+
+    protected static class UnrestrictedVersionExporter extends
+            UnrestrictedSessionRunner {
+
+        private final String docid;
+
+        public DocumentModel root;
+
+        public UnrestrictedVersionExporter(CoreSession session, String docId) {
+            super(session);
+            docid = docId;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            root = session.getDocument(new IdRef(docid));
+        }
+}
+
 }
