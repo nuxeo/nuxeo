@@ -15,10 +15,10 @@ Requirements
 Settings
 --------
 
-* copy jbossctl.conf.sample to jbossctl.conf and edit it if you want to change default values
+* edit jbossctl.conf if you want to change default values
 
-* edit bind.conf if you want to bind JBoss on a specific IP (by default, only localhost is binded; 
-  set BINDHOST=0.0.0.0 to bind all available addresses)
+* edit bind.conf if you want to bind JBoss on a specific IP 
+  By default, it is configured to bind all available addresses (0.0.0.0)
 
 Usage
 -----

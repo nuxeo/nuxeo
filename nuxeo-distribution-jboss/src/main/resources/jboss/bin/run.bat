@@ -120,7 +120,7 @@ echo.
 "%JAVA%" %JAVA_OPTS% ^
    -Djava.endorsed.dirs="%JBOSS_ENDORSED_DIRS%" ^
    -classpath "%JBOSS_CLASSPATH%" ^
-   org.jboss.Main %*
+   org.jboss.Main -b0.0.0.0 %*
 
 if ERRORLEVEL 10 goto RESTART
 
