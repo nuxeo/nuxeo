@@ -97,7 +97,11 @@ public class ExportedDocumentImpl implements ExportedDocument {
     public ExportedDocumentImpl(DocumentModel doc, Path path,
             boolean inlineBlobs) throws IOException {
         id = doc.getId();
-        this.path = path.makeRelative();
+        if (path == null) {
+            this.path = new Path("");
+        } else {
+            this.path = path.makeRelative();
+        }
         try {
             readDocument(doc, inlineBlobs);
         } catch (ClientException e) {
@@ -212,7 +216,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         systemElement.addElement(ExportConstants.TYPE_TAG).addText(
                 doc.getType());
         systemElement.addElement(ExportConstants.PATH_TAG).addText(
-                doc.getPath().toString());
+                path.toString());
         // lifecycle
         try {
             String lifeCycleState = doc.getCurrentLifeCycleState();
