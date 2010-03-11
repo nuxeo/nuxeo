@@ -70,10 +70,16 @@ rem Add -server to the JVM options, if supported
 if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
 
 rem JVM memory allocation pool parameters. Modify as appropriate.
-set JAVA_OPTS=%JAVA_OPTS% -Xms320m -Xmx640m -XX:MaxPermSize=256m
+set JAVA_OPTS=%JAVA_OPTS% -server -Xms512m -Xmx1024m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
 
 rem With Sun JVMs reduce the RMI GCs to once per hour
 set JAVA_OPTS=%JAVA_OPTS% -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000
+
+rem Enable jconsole
+rem set JAVA_OPTS=%JAVA_OPTS% -Dcom.sun.management.jmxremote=true
+
+rem log GC info into a file
+rem set JAVA_OPTS=%JAVA_OPTS% -Xloggc:%JBOSS_HOME%/log/gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps
 
 rem JPDA options. Uncomment and modify as appropriate to enable remote debugging.
 rem set JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y %JAVA_OPTS%
