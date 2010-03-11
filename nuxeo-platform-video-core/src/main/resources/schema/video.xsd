@@ -4,15 +4,26 @@
            targetNamespace="http://www.nuxeo.org/ecm/schemas/video">
 
   <xs:element name="duration" type="xs:float"/>
-  <xs:element name="storyboard" type="nxs:thumbs" />
+  <xs:element name="storyboard" type="nxs:storyboarditems" />
 
   <xs:include schemaLocation="core-types.xsd" />
-  <xs:complexType name="thumbs">
+  
+  <xs:complexType name="storyboarditems">
     <xs:sequence>
-      <xs:element name="thumb" type="nxs:content" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+       name="storyboarditem" type="nxs:storyboarditem"/>
     </xs:sequence>
   </xs:complexType>
+  
+  <xs:complexType name="storyboarditem">
+    <xs:sequence>
+      <xs:element name="content" type="nxs:content" />
+      <xs:element name="timecode" type="xs:float" />
+      <xs:element name="comment" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  
   
   <xs:element name="streamable" type="nxs:content"/>
 

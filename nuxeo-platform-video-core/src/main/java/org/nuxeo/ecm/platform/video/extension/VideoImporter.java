@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -155,15 +156,26 @@ public class VideoImporter extends AbstractFileImporter {
      * Update the JPEG story board and duration in seconds of a Video document
      * from the video blob content.
      */
+    @SuppressWarnings("unchecked")
     public void updateStoryboard(DocumentModel docModel, Blob video)
             throws ConversionException, Exception, PropertyException,
             ClientException {
         BlobHolder result = getConversionService().convert(
                 Constants.STORYBOARD_CONVERTER, new SimpleBlobHolder(video),
                 null);
-        docModel.setPropertyValue("video:storyboard",
-                (Serializable) result.getBlobs());
-        docModel.setPropertyValue("video:duration",
+        List<Blob> blobs = result.getBlobs();
+        List<String> comments = (List<String>) result.getProperty("comments");
+        List<Double> timecodes = (List<Double>) result.getProperty("timecodes");
+        List<Map<String, Serializable>> storyboard = new ArrayList<Map<String, Serializable>>();
+        for (int i = 0; i < blobs.size(); i++) {
+            Map<String, Serializable> item = new HashMap<String, Serializable>();
+            item.put("comment", comments.get(i));
+            item.put("timecode", timecodes.get(i));
+            item.put("content", (Serializable) blobs.get(i));
+            storyboard.add(item);
+        }
+        docModel.setPropertyValue("vid:storyboard", (Serializable) storyboard);
+        docModel.setPropertyValue("vid:duration",
                 result.getProperty("duration"));
     }
 
@@ -188,7 +200,8 @@ public class VideoImporter extends AbstractFileImporter {
                     result.getBlob().getFilename(), docModel.getTitle(),
                     templates);
         } else {
-            // TODO: put a set of default thumbnails here to tell the user that the
+            // TODO: put a set of default thumbnails here to tell the user that
+            // the
             // preview is not available for this document
         }
     }

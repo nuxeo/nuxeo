@@ -50,7 +50,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public class StoryBoardConverter extends BaseVideoConverter implements Converter {
+public class StoryBoardConverter extends BaseVideoConverter implements
+        Converter {
 
     public static final Log log = LogFactory.getLog(StoryBoardConverter.class);
 
@@ -108,7 +109,8 @@ public class StoryBoardConverter extends BaseVideoConverter implements Converter
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
+            params.addNamedParameter("inFilePath",
+                    inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFolderPath",
                     outFolder.getAbsolutePath());
             params.addNamedParameter(RATE_PARAM, commonParams.get(RATE_PARAM));
@@ -121,11 +123,9 @@ public class StoryBoardConverter extends BaseVideoConverter implements Converter
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
-            List<Blob> blobs = collectBlobs(outFolder);
-
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
             properties.put("duration", extractDuration(result.getOutput()));
-            return new SimpleBlobHolderWithProperties(blobs, properties);
+            return collectBlobs(outFolder, properties, blob.getFilename());
         } catch (Exception e) {
             if (blob != null) {
                 throw new ConversionException(
@@ -144,13 +144,16 @@ public class StoryBoardConverter extends BaseVideoConverter implements Converter
     }
 
     @SuppressWarnings("unchecked")
-    protected List<Blob> collectBlobs(File outFolder) throws IOException,
+    protected BlobHolder collectBlobs(File outFolder,
+            Map<String, Serializable> properties, String filename) throws IOException,
             FileNotFoundException {
 
         List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outFolder,
                 new String[] { "jpeg" }, false));
         Collections.sort(thumbs);
         List<Blob> blobs = new ArrayList<Blob>();
+        List<Double> timecodes = new ArrayList<Double>();
+        List<String> comments = new ArrayList<String>();
         int skip = 1;
         if (thumbs.size() > numberOfThumbnails) {
             skip = thumbs.size() / numberOfThumbnails;
@@ -160,14 +163,21 @@ public class StoryBoardConverter extends BaseVideoConverter implements Converter
                     new FileInputStream(thumbs.get(i)), "image/jpeg").persist();
             // TODO: 10s is a match for the default rate of 0.1 fps: need to
             // make it dynamic
-            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg", i * 10));
+            int timecode = i * 10;
+            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg", timecode));
             blobs.add(keptBlob);
+            timecodes.add(Double.valueOf(timecode));
+            comments.add(String.format("%s %d", filename, i + 1));
             if (blobs.size() >= numberOfThumbnails) {
-                // depending of the remainder of the euclidean division we might
+                // depending of the remainder of the Euclidean division we might
                 // get an additional unwanted blob, skip the last
                 break;
             }
         }
-        return blobs;
+        properties.put("timecodes", (Serializable) timecodes);
+        properties.put("comments", (Serializable) comments);
+        SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(
+                blobs, properties);
+        return bh;
     }
 }
