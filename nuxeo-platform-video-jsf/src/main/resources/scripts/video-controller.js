@@ -16,22 +16,25 @@
  */
 
 function unhidePlayerAndPlay(videoPreviewId, videoPlayerId) {
+	// hide the static jpeg preview
 	var preview = jQuery(document.getElementById(videoPreviewId));
 	preview.attr("style", "display: none");
-	var video = jQuery(document.getElementById(videoPlayerId));
+
+	// display the Quicktime Player
+	// video is set in autoplay="true" and the player will only
+	// start when display is not none
+	var video = jQuery(document.getElementById(videoPlayerId);
 	video.attr("style", "display: block");
-	try {
-	  VideoController(videoPlayerId).play();
-	} catch (err) {
-		// catch exception if the video is not available
-		// to avoid triggering a page reload
-		// TODO: find a cross-platform way to log it
-	}
-	return false;
+
+	// return false to make the click on the thumbnail avoid
+	// triggering a redirect
+    return false;
 }
 
 function VideoController(id) {
-	this._movie = eval("document." + id);
+	// getElementById does not initialize the QT
+	// javascript controls for some reason, hence using eval
+	this._movie = eval('document.' + id);
 	this._listenersRegistered = false;
 	
 	this._startTime = 0;
