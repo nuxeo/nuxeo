@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,33 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
             l.add(x);
         }
         assertEquals(3, l.size());
+
+        // cursor behavior
+        res = session.queryAndFetch("SELECT * FROM File", "NXQL");
+        Iterator<Map<String, Serializable>> it = res.iterator();
+        assertEquals(0, res.pos());
+        it.next();
+        assertEquals(1, res.pos());
+        assertEquals(3, res.size());
+        assertEquals(1, res.pos());
+        assertTrue(it.hasNext());
+        assertEquals(1, res.pos());
+        it.next();
+        assertEquals(2, res.pos());
+        assertTrue(it.hasNext());
+        assertEquals(2, res.pos());
+        it.next();
+        assertEquals(3, res.pos());
+        assertFalse(it.hasNext());
+        assertEquals(3, res.pos());
+
+        res.skipTo(1);
+        assertEquals(3, res.size());
+        assertTrue(it.hasNext());
+        assertEquals(1, res.pos());
+        it.next();
+        assertEquals(2, res.pos());
+        res.close();
     }
 
     @Override

@@ -20,24 +20,49 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * An iterable query result.
+ * An iterable query result based on a cursor.
  * <p>
- * The {@link #close()} method MUST be called if the iterator is not consumed
- * completely, otherwise underlying resources will be leaked.
- *
- * @author Florent Guillaume
+ * The {@link #close()} method MUST be called when the query result is no more
+ * needed, otherwise underlying resources will be leaked. There is no
+ * auto-closing at the end of the iteration.
  */
 public interface IterableQueryResult extends
         Iterable<Map<String, Serializable>> {
 
     /**
-     * Closes the underlying resources held by the iterator.
+     * Closes the query result and releases the underlying resources held by the
+     * cursor.
+     * <p>
+     * This MUST be called when the query result is no more needed, otherwise
+     * underlying resources will be leaked. There is no auto-closing at the end
+     * of the iteration.
      */
     void close();
 
     /**
-     * Skips to a given point in the iterator.
+     * Gets the total size of the query result.
+     * <p>
+     * Note that this may be costly, and that some backends may not be able to
+     * do this operation, in which case {@code -1} will be returned.
+     *
+     * @return the size, or {@code -1} for an unknown size
      */
-    void skipTo(long skipCount);
+    long size();
+
+    /**
+     * Gets the current position in the iterator.
+     * <p>
+     * Positions start at {@code 0}.
+     *
+     * @return the position
+     */
+    long pos();
+
+    /**
+     * Skips to a given position in the iterator.
+     * <p>
+     * Positions start at {@code 0}.
+     */
+    void skipTo(long pos);
 
 }

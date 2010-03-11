@@ -1477,7 +1477,7 @@ public class Mapper {
      */
     public void updateCollectionRows(CollectionFragment fragment)
             throws StorageException {
-        if (!fragment.isDirty())  {
+        if (!fragment.isDirty()) {
             return;
         }
         deleteFragment(fragment);
@@ -2066,7 +2066,7 @@ public class Mapper {
                     + queryType + ": " + query);
         }
         try {
-            return new IterableQueryResultImpl(queryMaker, query, queryFilter,
+            return new ResultSetQueryResult(queryMaker, query, queryFilter,
                     session, this, params);
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -2075,8 +2075,8 @@ public class Mapper {
         }
     }
 
-    protected static class IterableQueryResultImpl implements
-            IterableQueryResult, Iterator<Map<String, Serializable>> {
+    protected static class ResultSetQueryResult implements IterableQueryResult,
+            Iterator<Map<String, Serializable>> {
 
         private final long instanceNumber;
 
@@ -2086,11 +2086,15 @@ public class Mapper {
 
         private ResultSet rs;
 
-        private Map<String, Serializable> next = null;
+        private Map<String, Serializable> next;
 
         private boolean eof;
 
-        protected IterableQueryResultImpl(QueryMaker queryMaker, String query,
+        private long pos;
+
+        private long size = -1;
+
+        protected ResultSetQueryResult(QueryMaker queryMaker, String query,
                 QueryFilter queryFilter, Session session, Mapper mapper,
                 Object... params) throws StorageException, SQLException {
             instanceNumber = mapper.instanceNumber;
@@ -2126,6 +2130,7 @@ public class Mapper {
                 }
             }
             rs = ps.executeQuery();
+            // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
         }
 
         // for debug
@@ -2150,6 +2155,7 @@ public class Mapper {
                 } catch (SQLException e) {
                     log.error("Error closing statement: " + e.getMessage(), e);
                 } finally {
+                    pos = -1;
                     rs = null;
                     ps = null;
                     q = null;
@@ -2157,23 +2163,58 @@ public class Mapper {
             }
         }
 
-        public void skipTo(long skipCount) {
-            if (rs == null || skipCount < 0) {
+        @Override
+        protected void finalize() {
+            close();
+            log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
+        }
+
+        public long size() {
+            if (size != -1) {
+                return size;
+            }
+            try {
+                // save cursor pos
+                int old = rs.isBeforeFirst() ? -1 : rs.getRow();
+                // find size
+                rs.last();
+                size = rs.getRow();
+                // set back cursor
+                if (old == -1) {
+                    rs.beforeFirst();
+                } else {
+                    rs.absolute(old);
+                }
+                return size;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public long pos() {
+            return pos;
+        }
+
+        public void skipTo(long pos) {
+            if (rs == null || pos < 0) {
+                this.pos = -1;
                 return;
             }
             try {
-                boolean available = rs.absolute((int) skipCount + 1);
+                boolean available = rs.absolute((int) pos + 1);
                 if (available) {
                     next = fetchCurrent();
                     eof = false;
+                    this.pos = pos;
                 } else {
+                    // after last row
                     next = null;
                     eof = true;
-                    // don't close yet though TODO XXX
+                    this.pos = -1; // XXX
                 }
             } catch (SQLException e) {
-                log.error("Error skipping to: " + skipCount + ": "
-                        + e.getMessage(), e);
+                log.error("Error skipping to: " + pos + ": " + e.getMessage(),
+                        e);
             }
         }
 
@@ -2190,7 +2231,6 @@ public class Mapper {
                 if (isLogEnabled()) {
                     log("  -> END");
                 }
-                close();
                 return null;
             }
             return fetchCurrent();
@@ -2222,10 +2262,12 @@ public class Mapper {
 
         public Map<String, Serializable> next() {
             if (!hasNext()) {
+                pos = -1;
                 throw new NoSuchElementException();
             }
             Map<String, Serializable> n = next;
             next = null;
+            pos++;
             return n;
         }
 
