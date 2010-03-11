@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -830,11 +831,7 @@ public class NuxeoConnection implements Connection, SPI {
             }
         }
         page.setHasMoreItems(it.hasNext());
-        if (iterable instanceof ListQueryResult) {
-            page.setNumItems(((ListQueryResult) iterable).size);
-        } else {
-            page.setNumItems(-1);
-        }
+        page.setNumItems((int) iterable.size());
         return page;
     }
 
@@ -956,30 +953,54 @@ public class NuxeoConnection implements Connection, SPI {
     /**
      * IterableQueryResult backed by a simple list.
      */
-    public static class ListQueryResult implements IterableQueryResult {
-        public final Iterator<Map<String, Serializable>> it;
+    public static class ListQueryResult implements IterableQueryResult,
+            Iterator<Map<String, Serializable>> {
 
-        public final int size;
+        public final List<Map<String, Serializable>> list;
+
+        public int pos;
 
         public ListQueryResult(List<Map<String, Serializable>> list) {
-            it = list.iterator();
-            size = list.size();
+            this.list = list;
+            pos = 0;
         }
 
         public Iterator<Map<String, Serializable>> iterator() {
-            return it;
+            return this;
         }
 
-        public void skipTo(long skipCount) {
-            for (int i = 0; i < skipCount; i++) {
-                if (!it.hasNext()) {
-                    break;
-                }
-                it.next();
+        public long pos() {
+            return pos;
+        }
+
+        public long size() {
+            return list.size();
+        }
+
+        public void skipTo(long pos) {
+            if (pos < 0 || pos > list.size()) {
+                throw new NoSuchElementException();
             }
+            this.pos = (int) pos;
         }
 
         public void close() {
+        }
+
+        public boolean hasNext() {
+            return pos < list.size();
+        }
+
+        public Map<String, Serializable> next() {
+            try {
+                return list.get((int) pos++);
+            } catch (IndexOutOfBoundsException e) {
+                throw new NoSuchElementException();
+            }
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 
