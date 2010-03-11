@@ -22,7 +22,6 @@ package org.nuxeo.theme.webengine.fm.extensions;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,6 +67,7 @@ public class NXThemesResourcesDirective implements TemplateDirectiveModel {
         attributes.put("basepath", context.getBasePath());
         attributes.put("contextPath", VirtualHostHelper.getContextPath(request));
 
+        // why not use Utils.isWebEngineVirtualHosting(request) here?
         Boolean virtualHosting = org.nuxeo.theme.html.Utils.isVirtualHosting(request);
         writer.write(Resources.render(attributes, virtualHosting));
     }
