@@ -129,7 +129,14 @@ public final class Resources extends HttpServlet implements Serializable {
                 writeResource(resource, out);
                 source = out.toString();
                 if (resourceName.endsWith(".js") && resource.isShrinkable()) {
-                    source = JSUtils.compressSource(source);
+                    String compressed = JSUtils.compressSource(source);
+                    if (compressed == null) {
+                        log.warn("failed to compress javascript for: " + resourceName);
+                        source += "\n";
+                    } else {
+                        source = compressed;
+                    }
+
                 } else if (resourceName.endsWith(".css")) {
                     source = source.replaceAll("\\$\\{basePath\\}",
                             Matcher.quoteReplacement(basePath));
