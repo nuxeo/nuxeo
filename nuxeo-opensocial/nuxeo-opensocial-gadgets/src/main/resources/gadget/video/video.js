@@ -29,7 +29,7 @@ function launchVideoWidget() {
 
 
   jQuery('#valid').click(function(){
-    prefs.set("vidTitle", gadgets.util.escapeString(jQuery("#title-field").val()));
+    prefs.set("vidTitle", gadgets.util.escapeString(jQuery("#title-field").val()),"tmp", ["",Math.random()].join(""));
     jQuery('#formUpload').ajaxSubmit();
   });
 };
@@ -63,11 +63,11 @@ function setVideo(balise){
     jQuery("#baliseVideo").text(balise);
     var dim = gadgets.window.getViewportDimensions();
     var embed = jQuery("embed");
-    if(embed.length == 0) embed = jQuery("object");	
+    if(embed.length == 0) embed = jQuery("object");
     var h = (dim.width * embed.height())/jQuery("object").width();
     embed.width(dim.width);
     if(h!=0)
-    	embed.height(h);
+      embed.height(h);
     embed.attr("wmode","transparent");
     embed.attr("type","application/x-shockwave-flash");
   } else {
@@ -75,6 +75,6 @@ function setVideo(balise){
     jQuery("#baliseVideo").text("");
   }
   setTimeout(function(){
-  	gadgets.window.adjustHeight();
+    gadgets.window.adjustHeight();
   }, 150);
 };

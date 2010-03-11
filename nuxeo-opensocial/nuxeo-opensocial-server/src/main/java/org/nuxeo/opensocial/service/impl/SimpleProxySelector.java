@@ -33,14 +33,18 @@ public class SimpleProxySelector extends ProxySelector {
 
     List<String> excludedHosts = new ArrayList<String>();
 
+    @SuppressWarnings("unchecked")
     public SimpleProxySelector() {
         String excludedHostsProperty = Framework.getProperty(SHINDIG_PROXY_EXCLUDE);
-        String[] hosts = excludedHostsProperty.split(",");
-        if (hosts.length > 0) {
-            excludedHosts.addAll(Arrays.asList(hosts));
+        if(excludedHostsProperty != null) {
+            String[] hosts = excludedHostsProperty.split(",");
+            if (hosts.length > 0) {
+                excludedHosts.addAll(Arrays.asList(hosts));
+            }
         }
         excludedHosts.add("localhost");
         excludedHosts.add("127.0.0.1");
+
     }
 
     @Override
