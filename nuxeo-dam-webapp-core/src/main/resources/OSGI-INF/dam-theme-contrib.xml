@@ -79,7 +79,7 @@
     point="resources">
 
     <resource name="video-controller.js">
-      <path>scripts/video-controller.js</path>   
+      <path>scripts/video-controller.js</path>
     </resource>
 
     <resource name="jquery.js">
