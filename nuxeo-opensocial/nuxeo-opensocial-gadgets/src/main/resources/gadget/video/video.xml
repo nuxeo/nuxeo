@@ -12,6 +12,7 @@
      <Require feature="form" />
   </ModulePrefs>
   <UserPref name="vidTitle" datatype="hidden"/>
+   <UserPref name="tmp" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
       <style type='text/css'>
