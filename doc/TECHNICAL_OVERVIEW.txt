@@ -95,6 +95,11 @@ The project layout is as follows:
   core document schemas definitions and other contributions to services
   to be deployed on the stateful machine in multi machine setup
 
+- nuxeo-dam-webapp-common
+
+  Common contributions and web resources needed by DAM and Nuxeo DM (when running
+  Nuxeo DAM and Nuxeo DM on the same repository)
+
 - nuxeo-dam-webapp-core
 
   DAM specific seam components
@@ -487,3 +492,30 @@ corporate users + we need to deal with authorized access to the stream so
 configure icecast2 to ping nuxeo to check security on video blobs.
 
 
+Nuxeo DM and Nuxeo DAM on the same repository
+=============================================
+
+Deployment
+----------
+
+* To deploy DM and DAM on the same repository, the clustering needs to be enabled on the 2 servers:
+  - the documentation to enable the clustering can be found here: http://www.nuxeo.org/xwiki/bin/view/FAQ/NuxeoClustering
+
+*The jars nuxeo-dam-core, nuxeo-dam-webapp-common, nuxeo-platform-audio-core and nuxeo-platform-video-core need to be deployed on Nuxeo DM.
+
+Features
+--------
+
+In the Default Domain, an Assets Library folder is available where the assets visible in Nuxeo DAM will be stored.
+The folders structure is the following:
+Assets Library
+ `- Import Folder
+    |- Import Folder
+    `- Import Set
+       |- Picture file
+       |- Video file
+       `- Folder
+          |- Audio file
+          `- Office File
+
+All the specifi DAM metadata are available on the assets visible in Nuxeo DM (and can be modified).
