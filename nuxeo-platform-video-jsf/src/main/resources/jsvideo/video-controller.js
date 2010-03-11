@@ -23,12 +23,12 @@ function unhidePlayerAndPlay(videoPreviewId, videoPlayerId) {
 	// display the Quicktime Player
 	// video is set in autoplay="true" and the player will only
 	// start when display is not none
-	var video = jQuery(document.getElementById(videoPlayerId);
+	var video = jQuery(document.getElementById(videoPlayerId));
 	video.attr("style", "display: block");
 
 	// return false to make the click on the thumbnail avoid
 	// triggering a redirect
-    return false;
+	return false;
 }
 
 function VideoController(id) {
@@ -36,7 +36,7 @@ function VideoController(id) {
 	// javascript controls for some reason, hence using eval
 	this._movie = eval('document.' + id);
 	this._listenersRegistered = false;
-	
+
 	this._startTime = 0;
 	this._endTime = this._movie.GetDuration();
 
@@ -65,13 +65,13 @@ function VideoController(id) {
 			this._registerListeners();
 			this._listenersRegistered = true;
 		}
-		
+
 		this._startTime = this._millisecondToTimeUnit(from);
 		this._endTime = this._millisecondToTimeUnit(to);
 		this._movie.SetTime(this._startTime);
 		this._movie.SetStartTime(this._startTime);
 		this._movie.SetEndTime(this._endTime);
-		
+
 		enableEndListener = enableEndListener || false;
 		var controller = this;
 		if (enableEndListener) {
@@ -80,7 +80,7 @@ function VideoController(id) {
 			}, 10);
 		}
 	}
-	
+
 	this._registerListeners = function() {
 		var controller = this;
         this._addListener("qt_ended", function() { controller._onEnded() });
@@ -99,7 +99,7 @@ function VideoController(id) {
 		this._addListener("qt_pause", function() { controller._onPause() });
 		this._addListener("qt_play", function() { controller._onPlay() });
 	}
-	
+
 	this._isSelectionPlayEnded = function() {
 		time = this._movie.GetTime();
 		if (time >= this._endTime) {
@@ -107,7 +107,7 @@ function VideoController(id) {
 			this.stop();
 		}
 	}
-	
+
 	this._addListener = function(event, handler) {
 	    if (document.addEventListener) {
        	    this._movie.addEventListener(event, handler, false);
@@ -115,52 +115,52 @@ function VideoController(id) {
             this._movie.attachEvent('on' + event, handler);
        }
 	}
-	
+
 	this._onEnded = function() {
 		this.clearSelection();
 	}
-	
+
 	this._onDurationChange = function() {
 		this._movie.SetStartTime(this._startTime);
 		this._movie.SetEndTime(this._endTime);
 	}
-	
+
 	this._onLoad = function() {
 	}
-	
+
 	this._onError = function() {
 	}
-	
+
 	this._onProgress = function() {
 	}
-	
+
 	this._onWaiting = function() {
 	}
-	
+
 	this._onStalled = function() {
 	}
-	
+
 	this._onBegin = function() {
 	}
-	
+
 	this._onLoadedMetadata = function() {
 	}
 
 	this._onLoadedFirstFrame = function() {
 	}
-	
+
 	this._onCanPlay = function() {
 	}
-	
+
 	this._onCanPlayThrough = function() {
 	}
-	
+
 	this._onPause = function() {
 	}
-	
+
 	this._onPlay = function() {
 	}
-	
+
 	this._onTimeChanged = function() {
 		time = this._movie.GetTime();
 		if (time < this._startTime || time > this._endTime) {
