@@ -16,9 +16,11 @@
       <!--this is the URL that you want shindig to expose to other service providers
           where it can call us back.  if you have nuxeo running somewhere other than
           /nuxeo, you should set this to something like /<myPrefix>/opensocial/gadgets/oauthcallback -->
-      <!--most people can just put the hostname that is visible to outside providers in the right
-          place below and then keep the same path part -->
-      <oauthCallbackUrl>http://192.168.2.203/nuxeo/opensocial/gadgets/oauthcallback/</oauthCallbackUrl>
+      <!--most people can just put the hostname+port that is visible to outside providers in the right
+          place below and then keep the same path part ... some providers (like Atlassian)
+          allow you to supply this on their config panel as well but it appears that
+          the value here overrides the value there... this value must NOT end in slash!-->
+      <oauthCallbackUrl>http://192.168.2.203:8080/nuxeo/opensocial/gadgets/oauthcallback</oauthCallbackUrl>
 
       <!--very few folks need to use this, it's only needed if you want to use
           different servers than the "all in one shindig + nuxeo" configuration -->
@@ -117,8 +119,34 @@ rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
       is only needed if you want to use a special, different key for this service provider -->
       <consumerSecret></consumerSecret>
     </oauthservice>
+    <oauthservice>
+      <gadgetUrl>http://marge:7070/rest/gadgets/1.0/g/com.atlassian.streams.confluence:activitystream-gadget/gadgets/conf-activitystream-gadget.xml</gadgetUrl>
+      <serviceName></serviceName>
+      <consumerKey>nuxeo-opensocial</consumerKey>
+      <consumerSecret></consumerSecret>
+    </oauthservice>
+    <oauthservice>
+      <gadgetUrl>http://marge:7070/rest/gadgets/1.0/g/com.atlassian.confluence.plugins.gadgets:gadget-search/gadgets/gadget-search.xml
+      </gadgetUrl>
+      <serviceName></serviceName>
+      <consumerKey>nuxeo-opensocial</consumerKey>
+      <consumerSecret></consumerSecret>
+    </oauthservice>
+    <oauthservice>
+      <gadgetUrl>http://atlas.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:assigned-to-me-gadget/gadgets/assigned-to-me-gadget.xml</gadgetUrl>
+      <serviceName></serviceName>
+      <consumerKey>nuxeo-opensocial</consumerKey>
+      <consumerSecret></consumerSecret>
+    </oauthservice>
+    <oauthservice>
+      <gadgetUrl>http://atlas.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:road-map-gadget/gadgets/roadmap-gadget.xml</gadgetUrl>
+      <serviceName></serviceName>
+      <consumerKey>nuxeo-opensocial</consumerKey>
+      <consumerSecret></consumerSecret>
+    </oauthservice>
   </oauthservices>
-
+  
+  
     <!--
       This a list of nuxeo trusted hosts. Such a host will be passed the
       browsers jsession id to avoid the need to constantly re-authenticate to

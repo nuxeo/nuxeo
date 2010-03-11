@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.opensocial.container.client.bean.Container;
 import org.nuxeo.opensocial.container.client.bean.ContainerServiceException;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
+import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
 import org.nuxeo.opensocial.container.client.service.api.ContainerService;
 import org.nuxeo.opensocial.container.component.api.FactoryManager;
 import org.nuxeo.opensocial.container.factory.api.GadgetManager;
@@ -82,6 +84,14 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
                 updatePrefs = getParameters(form);
                 if (updatePrefs.containsKey("title"))
                     gadget.setTitle(updatePrefs.get("title"));
+            }
+            List<PreferencesBean> userPrefs = gadget.getUserPrefs();
+            for (PreferencesBean bean : userPrefs) {
+                if (!updatePrefs.containsKey(bean.getName())) {
+                    if (bean.getDataType().equals("BOOL")) {
+                        updatePrefs.put(bean.getName(), "false");
+                    }
+                }
             }
             return Framework.getService(FactoryManager.class).getGadgetFactory().savePreferences(
                     gadget, updatePrefs, gwtParams);
@@ -198,6 +208,10 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
                 key = decode(st.nextToken());
             while (st.hasMoreTokens()) {
                 value += decode(st.nextToken());
+            }
+            // special trick for boolean values being encoded wrong
+            if (value.equals("on")) {
+                value = "true";
             }
             map.put(key, value);
         }

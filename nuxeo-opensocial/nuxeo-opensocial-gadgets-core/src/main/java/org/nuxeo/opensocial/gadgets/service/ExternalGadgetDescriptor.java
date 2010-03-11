@@ -11,8 +11,6 @@ public class ExternalGadgetDescriptor implements GadgetDeclaration {
 
     protected String category;
 
-    protected String directory;
-
     protected boolean disabled;
 
     protected URL gadgetDefinition;
@@ -21,10 +19,9 @@ public class ExternalGadgetDescriptor implements GadgetDeclaration {
 
     protected String name;
 
-    public ExternalGadgetDescriptor(String category, String directory,
-            boolean disabled, URL gadgetDefinition, String iconURL, String name) {
+    public ExternalGadgetDescriptor(String category, boolean disabled,
+            URL gadgetDefinition, String iconURL, String name) {
         this.category = category;
-        this.directory = directory;
         this.disabled = disabled;
         this.gadgetDefinition = gadgetDefinition;
         this.iconURL = iconURL;
@@ -33,10 +30,6 @@ public class ExternalGadgetDescriptor implements GadgetDeclaration {
 
     public String getCategory() {
         return category;
-    }
-
-    public String getDirectory() {
-        return directory;
     }
 
     public boolean getDisabled() {

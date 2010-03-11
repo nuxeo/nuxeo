@@ -33,18 +33,19 @@ public class SimpleProxySelector extends ProxySelector {
 
     List<String> excludedHosts = new ArrayList<String>();
 
-    @SuppressWarnings("unchecked")
     public SimpleProxySelector() {
         String excludedHostsProperty = Framework.getProperty(SHINDIG_PROXY_EXCLUDE);
-        if(excludedHostsProperty != null) {
-            String[] hosts = excludedHostsProperty.split(",");
-            if (hosts.length > 0) {
-                excludedHosts.addAll(Arrays.asList(hosts));
-            }
+        String[] hosts;
+        if (excludedHostsProperty == null) {
+            hosts = new String[0];
+        } else {
+            hosts = excludedHostsProperty.split(",");
+        }
+        if (hosts.length > 0) {
+            excludedHosts.addAll(Arrays.asList(hosts));
         }
         excludedHosts.add("localhost");
         excludedHosts.add("127.0.0.1");
-
     }
 
     @Override
@@ -59,8 +60,8 @@ public class SimpleProxySelector extends ProxySelector {
 
         boolean proxy = true;
 
-        for(String host : excludedHosts) {
-            if(uri.getHost().endsWith(host)) {
+        for (String host : excludedHosts) {
+            if (uri.getHost().endsWith(host)) {
                 proxy = false;
             }
         }
@@ -110,8 +111,7 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static boolean isProxySet() {
         return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
-                        .equals("true");
+                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET).equals("true");
     }
 
 }

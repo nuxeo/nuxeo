@@ -28,8 +28,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -46,10 +51,24 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     private static final String GADGET_XP = "gadget";
 
-    private final Map<String, GadgetDeclaration> gadgets = new HashMap<String, GadgetDeclaration>();
+    private static final HashMap<String, GadgetDeclaration> internalGadgets = new HashMap<String, GadgetDeclaration>();
+
+    private static final String GADGET_DIRECTORY = "external gadget list";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(GadgetServiceImpl.class);
+
+    private static final String GADGET_DIR_SCHEMA = "externalgadget";
+
+    private static final String EXTERNAL_PROP_NAME = "label";
+
+    private static final String EXTERNAL_PROP_CATEGORY = "category";
+
+    private static final String EXTERNAL_PROP_ENABLED = "enabled";
+
+    private static final String EXTERNAL_PROP_URL = "url";
+
+    private static final String EXTERNAL_PROP_ICON_URL = "iconUrl";
 
     @Override
     public void registerContribution(Object contribution,
@@ -79,24 +98,24 @@ public class GadgetServiceImpl extends DefaultComponent implements
      * This is public primarily for testing. this is not exposed by the api.
      */
     public void registerNewGadget(GadgetDeclaration gadget) {
-
-        if (gadgets.containsKey(gadget.getName())) {
-            gadgets.remove(gadget.getName());
+        if (internalGadgets.containsKey(gadget.getName())) {
+            internalGadgets.remove(gadget.getName());
         }
         if (!gadget.getDisabled()) {
-            gadgets.put(gadget.getName(), gadget);
+            internalGadgets.put(gadget.getName(), gadget);
         }
     }
 
     private void unregisterNewGadget(GadgetDeclaration gadget,
             ComponentInstance contributor) {
-        if (gadgets.containsKey(gadget.getName())) {
-            gadgets.remove(gadget.getName());
+        if (internalGadgets.containsKey(gadget.getName())) {
+            internalGadgets.remove(gadget.getName());
         }
 
     }
 
     public GadgetDeclaration getGadget(String name) {
+        Map<String, GadgetDeclaration> gadgets = getInternalAndExternalGadgets();
         if (gadgets.containsKey(name))
             return gadgets.get(name);
         return null;
@@ -109,6 +128,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
     }
 
     public List<GadgetDeclaration> getGadgetList() {
+        Map<String, GadgetDeclaration> gadgets = getInternalAndExternalGadgets();
         List<GadgetDeclaration> gadgetList = new ArrayList<GadgetDeclaration>();
         for (GadgetDeclaration gadget : gadgets.values()) {
             gadgetList.add(gadget);
@@ -121,6 +141,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
     }
 
     public HashMap<String, ArrayList<String>> getGadgetNameByCategory() {
+        Map<String, GadgetDeclaration> gadgets = getInternalAndExternalGadgets();
         HashMap<String, ArrayList<String>> listByCategories = new HashMap<String, ArrayList<String>>();
         for (GadgetDeclaration gadget : gadgets.values()) {
 
@@ -151,6 +172,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
     }
 
     public List<String> getGadgetCategory() {
+        Map<String, GadgetDeclaration> gadgets = getInternalAndExternalGadgets();
         List<String> categories = new ArrayList<String>();
         for (GadgetDeclaration gadget : gadgets.values()) {
             if (!categories.contains(gadget.getCategory()))
@@ -160,9 +182,47 @@ public class GadgetServiceImpl extends DefaultComponent implements
     }
 
     public GadgetServiceImpl() {
+
     }
 
     public String getIconUrl(String gadgetName) {
         return getGadget(gadgetName).getIconUrl();
+    }
+
+    protected Map<String, GadgetDeclaration> getInternalAndExternalGadgets() {
+        HashMap<String, GadgetDeclaration> result = new HashMap<String, GadgetDeclaration>();
+        for (String key : internalGadgets.keySet()) {
+            result.put(key, internalGadgets.get(key));
+        }
+        try {
+            DirectoryService dirService = Framework.getService(DirectoryService.class);
+            Directory dir = dirService.getDirectory(GADGET_DIRECTORY);
+            Session session = dir.getSession();
+            for (DocumentModel model : session.getEntries()) {
+                String name = (String) model.getProperty(GADGET_DIR_SCHEMA,
+                        EXTERNAL_PROP_NAME);
+                String category = (String) model.getProperty(GADGET_DIR_SCHEMA,
+                        EXTERNAL_PROP_CATEGORY);
+                long enabled = (Long) model.getProperty(GADGET_DIR_SCHEMA,
+                        EXTERNAL_PROP_ENABLED);
+                boolean disabled = enabled != 0 ? false : true;
+
+                String gadgetDefinition = (String) model.getProperty(
+                        GADGET_DIR_SCHEMA, EXTERNAL_PROP_URL);
+                String iconURL = (String) model.getProperty(GADGET_DIR_SCHEMA,
+                        EXTERNAL_PROP_ICON_URL);
+                ExternalGadgetDescriptor desc = new ExternalGadgetDescriptor(
+                        category, disabled, new URL(gadgetDefinition), iconURL,
+                        name);
+                if (!desc.getDisabled()) {
+                    result.put(desc.getName(), desc);
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Unable to read external gadget directory!", e);
+
+        }
+        return result;
     }
 }
