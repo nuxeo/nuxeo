@@ -19,8 +19,18 @@
     <EnumValue value="16px" display_value="16" />
     <EnumValue value="18px" display_value="18" />
   </UserPref>
-  <UserPref name="pickr-txtColor" display_name="Couleur du texte" default_value="#000000" datatype="hidden">
+    <UserPref name="COLOR_txt" display_name="Couleur du texte" default_value="none" value="none" datatype="enum">
+    <EnumValue display_value="red" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
   </UserPref>
+
   <Content type="html">
 
   <![CDATA[
@@ -28,7 +38,7 @@
   #txtareapostit {
     width: 90%;
     height:220px;
-    color: red;
+    color: black;
     border: 0px solid white;
     /*padding-top: 20px;
     padding-left: 20px;
@@ -115,7 +125,7 @@
 
   function setText(text){
       var prefs  = new _IG_Prefs(__MODULE_ID__);
-      var tcolor = prefs.getString("pickr-txtColor");
+      var tcolor = prefs.getString("COLOR_txt");
       var tsize = prefs.getString("textSize");
       var tfont = prefs.getString("textFont");
 
