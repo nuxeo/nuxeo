@@ -14,6 +14,12 @@
             <index name="default"> 
               <!-- all props implied -->
             </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
           </fulltext> 
         </indexing>
       </repository>

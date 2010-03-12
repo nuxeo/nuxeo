@@ -14,6 +14,12 @@
             <index name="default">
               <!-- all props implied -->
             </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
           </fulltext>
           <!-- for PostgreSQL (Text Search Configuration):
                http://www.postgresql.org/docs/8.3/static/textsearch-configuration.html
