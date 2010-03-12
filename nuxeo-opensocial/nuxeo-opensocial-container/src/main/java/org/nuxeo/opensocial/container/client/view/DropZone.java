@@ -44,9 +44,9 @@ import com.gwtext.client.widgets.portal.PortalDropZone;
 /**
  * DropZone serve for catch drag and drop event and call container service for
  * save
- *
+ * 
  * @author Guillaume Cusnieux
- *
+ * 
  */
 public class DropZone extends PortalDropZone {
 
@@ -84,7 +84,6 @@ public class DropZone extends PortalDropZone {
         startDrag : function(x,y){
           var g = this.proxy.getGhost();
           var h = g.getWidth();
-
           var X = x - 70;
           g.setX(X);
           g.setWidth(140);
@@ -113,6 +112,7 @@ public class DropZone extends PortalDropZone {
           this.panel.saveState();
           $wnd.Ext.select("div.x-column").removeClass("x-column-possible");
           $wnd.Ext.select("div.x-tool").setStyle("display","block");
+          @org.nuxeo.opensocial.container.client.view.DropZone::endDragDrop(Ljava/lang/String;)(this.id);
         }
       });
 
@@ -162,6 +162,22 @@ public class DropZone extends PortalDropZone {
 
       });
     }-*/;
+
+    /**
+     * This method is called by the code JSNI in overrideDragDrop, overriding
+     * the method of endDrag PortalDropZone not working
+     * 
+     * @param id
+     */
+    public static void endDragDrop(String id) {
+        GadgetPortlet gp = portal.getGadgetPortlet(id);
+        if (gp.getGadgetBean()
+                .isCollapsed()) {
+            GadgetPortlet.collapse(id, "");
+            gp.addListener(new PortletListener(gp));
+        }
+
+    };
 
     Timer t;
 
@@ -225,20 +241,25 @@ public class DropZone extends PortalDropZone {
 
         for (pos = 0; pos < items.length; pos++) {
             p = items[pos];
-            int height = p.getEl().getHeight();
-            if (height != 0 && (p.getEl().getY() + (height / 2)) > xy[1]) {
+            int height = p.getEl()
+                    .getHeight();
+            if (height != 0 && (p.getEl()
+                    .getY() + (height / 2)) > xy[1]) {
                 match = true;
                 break;
             }
         }
 
-        proxy.getProxy().setWidth("auto", false);
+        proxy.getProxy()
+                .setWidth("auto", false);
 
         if (p != null) {
-            proxy.moveProxy(p.getEl().getParentNode(),
-                    (match ? p.getEl().getDOM() : null));
+            proxy.moveProxy(p.getEl()
+                    .getParentNode(), (match ? p.getEl()
+                    .getDOM() : null));
         } else {
-            proxy.moveProxy(lastPosC.getEl().getDOM(), null);
+            proxy.moveProxy(lastPosC.getEl()
+                    .getDOM(), null);
         }
     }
 
@@ -258,13 +279,14 @@ public class DropZone extends PortalDropZone {
     @Override
     public boolean notifyDrop(final DragSource source, EventObject e,
             DragData data) {
-        final GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
+        GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
         gp.reloadRenderUrl();
         final GadgetPosition dropPosition = portal.getDropPosition();
-        final GadgetBean bean = gp.getGadgetBean();
+        GadgetBean bean = gp.getGadgetBean();
         boolean doMove = false;
         if (dropPosition != null) {
-            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition().getPlaceID());
+            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
+                    .getPlaceID());
             PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
             int maxGadgets = portal.getMaxGadget(dropPosition.getPlaceID());
             doMove = (maxGadgets == -1
@@ -276,31 +298,23 @@ public class DropZone extends PortalDropZone {
 
         grid = null;
 
-        PanelProxy proxy = new PanelProxy(source.getProxy().getJsObj());
+        PanelProxy proxy = new PanelProxy(source.getProxy()
+                .getJsObj());
 
-        proxy.getProxy().remove();
+        proxy.getProxy()
+                .remove();
 
         if (lastPosC != null && doMove) {
             if (dropPosition != null) {
                 lastPosC.remove(gp.getId());
-                lastPosC.insert(bean.getGadgetPosition().getPosition(), gp);
+                lastPosC.insert(bean.getGadgetPosition()
+                        .getPosition(), gp);
             }
             lastPosC.doLayout();
             lastPosC = null;
         }
         JsLibrary.hideGwtContainerMask();
         gp.renderDefaultPreferences();
-        Timer t = new Timer() {
-
-            @Override
-            public void run() {
-                gp.removeStyle();
-            }
-
-        };
-
-        t.schedule(500);
-
         return true;
     }
 
