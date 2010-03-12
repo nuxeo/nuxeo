@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.bean.PreferencesBean;
+import org.nuxeo.opensocial.container.client.view.InputFactory;
 
 /**
  * @author Guillaume Cusnieux
@@ -36,34 +39,27 @@ class GadgetAdapter implements Gadget {
 
     private boolean collapsed;
 
+    private GadgetBean bean;
+
     public GadgetAdapter(GadgetBean bean) throws ClientException {
+        this(bean, null);
+    }
+
+    public GadgetAdapter(GadgetBean bean, Map<String, String> updatePrefs)
+            throws ClientException {
+        this.bean = bean;
         this.setHeight(bean.getHeight());
         this.setHtmlContent(bean.getHtmlContent());
         this.setViewer(bean.getViewer());
         this.setTitle(bean.getTitle());
-        this.setPreferences(createPreferences(bean));
-        this.setPlaceId(bean.getPosition().getPlaceID());
-        this.setPosition(bean.getPosition().getPosition());
+        this.setPreferences(updatePrefs);
+        this.setPlaceId(bean.getPosition()
+                .getPlaceID());
+        this.setPosition(bean.getPosition()
+                .getPosition());
         this.setName(bean.getName());
         this.setId(bean.getRef());
         this.setCollapsed(bean.isCollapsed());
-    }
-
-    private Map<String, String> createPreferences(GadgetBean bean) {
-        Map<String, String> prefs = new HashMap<String, String>();
-        return buildPreferences(buildPreferences(prefs, bean.getUserPrefs()),
-                bean.getDefaultPrefs());
-
-    }
-
-    private Map<String, String> buildPreferences(Map<String, String> prefs,
-            List<PreferencesBean> uPrefs) {
-        if (uPrefs != null) {
-            for (PreferencesBean p : uPrefs) {
-                prefs.put(p.getName(), p.getValue());
-            }
-        }
-        return prefs;
     }
 
     public int getHeigth() {
@@ -185,11 +181,6 @@ class GadgetAdapter implements Gadget {
         this.position = position;
     }
 
-    public void setPreferences(Map<String, String> prefs)
-            throws ClientException {
-        this.preferences = prefs;
-    }
-
     public void setTitle(String title) throws ClientException {
         this.title = title;
     }
@@ -204,6 +195,49 @@ class GadgetAdapter implements Gadget {
 
     public void save() throws ClientException {
 
+    }
+
+    public void setPreferences(Map<String, String> prefs)
+            throws ClientException {
+        this.preferences = createPreferences(bean, prefs);
+    }
+
+    private Map<String, String> createPreferences(GadgetBean bean,
+            Map<String, String> prefs) {
+        if (prefs != null)
+            _updatePreferences(bean.getUserPrefs(), _updatePreferences(
+                    bean.getDefaultPrefs(), prefs));
+
+        return buildPreferences(buildPreferences(new HashMap<String, String>(),
+                bean.getUserPrefs()), bean.getDefaultPrefs());
+
+    }
+
+    private Map<String, String> _updatePreferences(List<PreferencesBean> pBean,
+            Map<String, String> updatePrefs) {
+        for (PreferencesBean p : pBean) {
+            if (updatePrefs.containsKey(p.getName())) {
+                if (InputFactory.TYPES.isBool(p.getDataType())) {
+                    p.setValue(Boolean.TRUE.toString());
+                } else {
+                    p.setValue(updatePrefs.get(p.getName()));
+                }
+
+            } else if (InputFactory.TYPES.isBool(p.getDataType())) {
+                p.setValue(Boolean.FALSE.toString());
+            }
+        }
+        return updatePrefs;
+    }
+
+    private Map<String, String> buildPreferences(Map<String, String> prefs,
+            List<PreferencesBean> uPrefs) {
+        if (uPrefs != null) {
+            for (PreferencesBean p : uPrefs) {
+                prefs.put(p.getName(), p.getValue());
+            }
+        }
+        return prefs;
     }
 
 }

@@ -44,8 +44,10 @@ public class GadgetManagerImpl implements GadgetManager {
     /**
      * Remove gadget to container
      * 
-     * @param bean : Gadget to delete
-     * @param gwtParams : container paramters
+     * @param bean
+     *            : Gadget to delete
+     * @param gwtParams
+     *            : container paramters
      */
     public void removeGadget(GadgetBean bean, Map<String, String> gwtParams)
             throws ClientException {
@@ -93,9 +95,7 @@ public class GadgetManagerImpl implements GadgetManager {
         try {
             Space space = getCurrentSpace(gwtParams);
             String serverBase = getServerBase(gwtParams);
-            Gadget gadget = GadgetFactory.getGadget(bean);
-            if (updatePrefs != null)
-                gadget.setPreferences(updatePrefs);
+            Gadget gadget = GadgetFactory.getGadget(bean, updatePrefs);
             space.save(gadget);
             return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
                     ContainerManagerImpl.getPermissions(space),

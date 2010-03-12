@@ -18,6 +18,7 @@
     <EnumValue display_value="white" value="FFFFFF"/>
     <EnumValue display_value="none" value="none"/>
   </UserPref>
+   <UserPref name="testBool" display_name="boolean test"  default_value="true" datatype="bool"/>
   <UserPref name="bookmarks" default_value="" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
@@ -173,6 +174,7 @@
           background-image:url(bookmark_add.jpg);
           background-repeat:no-repeat;
           padding-left:20px;
+          font-weight:bold;
           display:inline-block;
           height:16px;
           text-decoration:none;
