@@ -239,6 +239,11 @@
       <artifact:resolveFile key="aopalliance:aopalliance" />
       <artifact:resolveFile key="org.apache.sanselan:sanselan" />
 
+      <artifact:resolveFile key="org.owasp:antisamy" />
+      <artifact:resolveFile key="batik:batik-css" />
+      <artifact:resolveFile key="batik:batik-ext" />
+      <artifact:resolveFile key="batik:batik-gui-util" />
+      <artifact:resolveFile key="batik:batik-util" />
     </copy>
   </target>
 
