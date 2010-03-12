@@ -54,11 +54,11 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -238,9 +238,8 @@ public class FileManageActionsBean extends InputController implements
             createdDoc = getFileManagerService().createDocumentFromBlob(
                     documentManager, blob, path, true, fullName);
         } catch (Throwable t) {
-            // Unwrap the Exception to get pertinent error message.
-            if (t.getMessage().contains(
-                    FileManagerPermissionException.class.getName())) {
+            Throwable unwrappedError = ExceptionHelper.unwrapException(t);
+            if (ExceptionHelper.isSecurityError(unwrappedError)) {
                 // security check failed
                 log.debug("No permissions creating " + fullName);
                 return getErrorMessage(SECURITY_ERROR, fullName,
@@ -295,9 +294,17 @@ public class FileManageActionsBean extends InputController implements
             try {
                 createdDoc = getFileManagerService().createFolder(
                         documentManager, fullName, path);
-            } catch (FileManagerPermissionException e) {
-                log.debug("No permissions creating folder " + fullName);
-                return getErrorMessage(TRANSF_ERROR, fullName);
+            } catch (Throwable t) {
+                Throwable unwrappedError = ExceptionHelper.unwrapException(t);
+                if (ExceptionHelper.isSecurityError(unwrappedError)) {
+                    // security check failed
+                    log.debug("No permissions creating folder " + fullName);
+                    return getErrorMessage(SECURITY_ERROR, fullName,
+                            "Error.Insuffisant.Rights");
+                } else {
+                    log.error("Couldn't create the folder " + fullName);
+                    return getErrorMessage(TRANSF_ERROR, fullName);
+                }
             }
 
             if (createdDoc == null) {
