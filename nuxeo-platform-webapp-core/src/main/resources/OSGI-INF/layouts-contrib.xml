@@ -284,7 +284,7 @@
           <widget>note</widget>
         </row>
       </rows>
-      <widget name="note" type="htmltext">
+<!--      <widget name="note" type="htmltext">
         <labels>
           <label mode="any">note</label>
         </labels>
@@ -297,7 +297,23 @@
             #{noteActions.translateImageLinks(value.note.note)}
           </property>
         </properties>
+      </widget>-->
+      <widget name="note" type="richtext_with_mimetype">
+        <labels>
+          <label mode="any">note</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>note:note</field>
+          <field>note:mime_type</field>
+        </fields>
+        <properties mode="view">
+          <property name="translatedHtml">
+            #{noteActions.translateImageLinks(field_0)}
+          </property>
+        </properties>
       </widget>
+
     </layout>
 
     <layout name="files">
