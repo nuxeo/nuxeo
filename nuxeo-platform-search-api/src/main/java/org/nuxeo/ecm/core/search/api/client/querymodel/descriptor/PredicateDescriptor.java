@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 
 @XObject(value = "predicate")
@@ -202,15 +203,16 @@ public class PredicateDescriptor {
             }
         } else if (operator.equals("EMPTY") || operator.equals("ISEMPTY")) {
             return parameter + " = ''";
-        } else if (operator.equals("FULLTEXT ALL")
-                || operator.equals("FULLTEXT NONE")
-                || operator.equals("FULLTEXT ONE OF")) {
+        } else if (operator.equals("FULLTEXT ALL") // BBB
+                || operator.equals("FULLTEXT")) {
             String value = values[0].getPlainStringValue(model);
             if (value == null) {
                 // value not provided: ignore predicate
                 return "";
             }
-            return parameter + ' ' + serializeFullText(escaper.escape(value));
+            String lhs = parameter.equals(NXQL.ECM_FULLTEXT) ? parameter
+                    : NXQL.ECM_FULLTEXT + '.' + parameter;
+            return lhs + ' ' + serializeFullText(escaper.escape(value));
         } else {
             throw new ClientException("Unsupported operator: " + operator);
         }
@@ -226,31 +228,18 @@ public class PredicateDescriptor {
      * @return the serialized statement
      */
     protected String serializeFullText(String value) {
-        // TODO Lucene Query Parser is the only supportedtokens one
+        // TODO Lucene Query Parser is the only supported one
         // TODO apply escapes
-        String tokPrefix = null;
-        String opPrefix = null;
-        if ("FULLTEXT ALL".equals(operator)) {
-            tokPrefix = "+";
-            opPrefix = "LIKE";
-        } else if ("FULLTEXT NONE".equals(operator)) {
-            tokPrefix = "";
-            opPrefix = "NOT LIKE";
-        } else if ("FULLTEXT ONE OF".equals(operator)) {
-            tokPrefix = "";
-            opPrefix = "LIKE";
-        }
-
         String res = "";
         String[] tokens = value.split(" ");
         for (int i = 0; i < tokens.length; i++) {
             if (i != 0) {
                 res += " ";
             }
-            res += tokPrefix + tokens[i];
+            res += "+" + tokens[i];
         }
         // TODO move back to SQLQueryParser at org.nuxeo.ecm.core v 1.4
-        return opPrefix + ' ' + QueryModelDescriptor.prepareStringLiteral(res);
+        return "= " + QueryModelDescriptor.prepareStringLiteral(res);
     }
 
     protected String serializeUnary(String operator, String rvalue) {
