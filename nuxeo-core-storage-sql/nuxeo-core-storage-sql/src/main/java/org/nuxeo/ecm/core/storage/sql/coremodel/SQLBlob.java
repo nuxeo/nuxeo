@@ -77,6 +77,10 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
         return this;
     }
 
+    public Binary getBinary() {
+        return binary;
+    }
+
     /**
      * Replace this object with a {@link StreamingBlob} when serialized.
      * The StreamingBlob object can be sent to remote machines through nuxeo streaming mechanism.
