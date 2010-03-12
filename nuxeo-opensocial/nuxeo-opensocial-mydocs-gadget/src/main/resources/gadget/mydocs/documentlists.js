@@ -37,7 +37,7 @@ function getBaseUrl() {
 function nextPage() {
   if (currentPage < maxPage - 1) {
     currentPage += 1;
-  	refresh();
+    refresh();
   }
 }
 
@@ -87,13 +87,13 @@ function handleJSONResponse(obj) {
   if (jsonObject == null) {
     if (errors > 0) {
       displayNoWorkspaceFound();
-    } else { 
+    } else {
       errors++;
       getDocumentLists();
     }
     return;
-  } else { 
-  	errors = 0;
+  } else {
+    errors = 0;
   }
   displayDocumentList(jsonObject);
 }
@@ -140,9 +140,9 @@ function displayDocumentList(jsonObject) {
   var pageInfo = jsonObject.summary;
   maxPage = pageInfo.pages;
   if(maxPage < currentPage+1){
-  	currentPage--;
-  	refresh();
-  	return;
+    currentPage--;
+    refresh();
+    return;
   }
   var htmlContent = tableStart(jsonObject);
   var document = jsonObject.document;
@@ -155,7 +155,7 @@ function displayDocumentList(jsonObject) {
     deleteDoc(jQuery(this));
     return false;
   });
-  
+
   currentPage = pageInfo.pageNumber;
   jQuery("#nxDocumentListPage").text([pageInfo.pageNumber + 1,"/",pageInfo.pages].join(""));
   gadgets.window.adjustHeight();
@@ -199,7 +199,7 @@ function mkRow(document, i) {
   if (document.folderish == 1) {
     htmlRow += "<td><a href=\"#\" title=\"" + document.title
         + "\" onclick=\"followPath('" + document.name
-        + "');return false;\" />";
+        + "');return false;\">";
     htmlRow += document.title + "</a></td>";
   } else if (document.type == "File"){
     var DLUrl = getDLUrl(document.name);
@@ -253,7 +253,7 @@ function deleteDoc(obj) {
 
 jQuery(document).ready(function(){
   jQuery('#formUpload').submit(function(){
-    jQuery(this).ajaxSubmit({ 
+    jQuery(this).ajaxSubmit({
         beforeSubmit: control,
         success:function(){
           refresh();

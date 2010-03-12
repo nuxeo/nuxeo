@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,7 +25,7 @@ public class MyDocsRoot extends ModuleRoot {
         return Response.serverError();
     }
 
-    @Path("{gadgetid}")
+    @Path("/{gadgetid}")
     public Object getParentWorkspace(@PathParam("gadgetid") String gadgetId) {
         CoreSession session = ctx.getCoreSession();
         try {
@@ -50,10 +49,6 @@ public class MyDocsRoot extends ModuleRoot {
 
     }
 
-    @POST
-    @Path("{gadgetid}")
-    public Object doPost(@PathParam("gadgetid") String gadgetId) {
-        return ((JSONDocument) getParentWorkspace(gadgetId)).addDocument();
-    }
+
 
 }
