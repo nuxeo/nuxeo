@@ -20,14 +20,42 @@
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
 import java.net.SocketException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.ServletException;
 
 import org.jboss.remoting.transport.coyote.ClientAbortException;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 public class ExceptionHelper {
 
     private ExceptionHelper() {
     }
+
+    public static Throwable unwrapException(Throwable t) {
+        Throwable cause = null;
+
+        if (t instanceof ServletException) {
+            cause = ((ServletException) t).getRootCause();
+        } else if (t instanceof ClientException) {
+            cause = t.getCause();
+        } else if (t instanceof Exception) {
+            cause = t.getCause();
+        }
+
+        if (cause == null) {
+            return t;
+        } else {
+            return unwrapException(cause);
+        }
+    }
+
+    public static List<String> possibleSecurityErrorMessages = Arrays.asList(
+            "java.lang.SecurityException",
+            DocumentSecurityException.class.getName(),
+            SecurityException.class.getName());
 
     public static Boolean isSecurityError(Throwable t) {
         if (t instanceof DocumentSecurityException) {
@@ -36,9 +64,13 @@ public class ExceptionHelper {
             return true;
         } else if (t.getCause() instanceof SecurityException) {
             return true;
-        } else if (t.getMessage() != null
-                && t.getMessage().contains("java.lang.SecurityException")) {
-            return true;
+        } else if (t.getMessage() != null) {
+            String message = t.getMessage();
+            for (String errorMessage : possibleSecurityErrorMessages) {
+                if (message.contains(errorMessage)) {
+                    return true;
+                }
+            }
         }
 
         return false;

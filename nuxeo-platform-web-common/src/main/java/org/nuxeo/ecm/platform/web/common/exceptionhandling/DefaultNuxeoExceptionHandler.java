@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -164,22 +163,12 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 messageKey, null, locale);
     }
 
+    /**
+     * @deprecated use {@link ExceptionHelper#unwrapException(Throwable)}
+     */
+    @Deprecated
     public static Throwable unwrapException(Throwable t) {
-        Throwable cause = null;
-
-        if (t instanceof ServletException) {
-            cause = ((ServletException) t).getRootCause();
-        } else if (t instanceof ClientException) {
-            cause = t.getCause();
-        } else if (t instanceof Exception) {
-            cause = t.getCause();
-        }
-
-        if (cause == null) {
-            return t;
-        } else {
-            return unwrapException(cause);
-        }
+        return ExceptionHelper.unwrapException(t);
     }
 
 }

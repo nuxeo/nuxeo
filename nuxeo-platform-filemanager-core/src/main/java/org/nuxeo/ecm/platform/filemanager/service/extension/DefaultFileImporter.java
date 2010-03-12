@@ -30,9 +30,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -68,7 +68,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
                 SecurityConstants.READ_PROPERTIES)
                 || !documentManager.hasPermission(containerRef,
                         SecurityConstants.ADD_CHILDREN)) {
-            throw new FileManagerPermissionException();
+            throw new DocumentSecurityException(
+                    "Not enough rights to create folder");
         }
         DocumentModel container = documentManager.getDocument(containerRef);
 

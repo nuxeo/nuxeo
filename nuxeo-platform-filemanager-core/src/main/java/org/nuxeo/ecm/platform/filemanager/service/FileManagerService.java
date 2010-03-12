@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -46,7 +47,6 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProvider;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
@@ -199,7 +199,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                     SecurityConstants.READ_PROPERTIES)
                     || !documentManager.hasPermission(containerRef,
                             SecurityConstants.ADD_CHILDREN)) {
-                throw new FileManagerPermissionException();
+                throw new DocumentSecurityException(
+                        "Not enough rights to create folder");
             }
 
             // check allowed sub types
@@ -244,8 +245,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         Collections.sort(importers);
         for (FileImporter importer : importers) {
             if (importer.isEnabled() && importer.matches(input.getMimeType())) {
-                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName, getTypeService());
-                if (doc!=null) {
+                DocumentModel doc = importer.create(documentManager, input,
+                        path, overwrite, fullName, getTypeService());
+                if (doc != null) {
                     return doc;
                 }
             }

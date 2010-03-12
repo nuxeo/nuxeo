@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.platform.filemanager.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
  * Marker exception to be raised by a FileManagerService importer plugin to tell
@@ -26,7 +27,10 @@ import org.nuxeo.ecm.core.api.ClientException;
  * not strictly required.
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
+ * @deprecated use the standard security exception {@link SecurityException} or
+ *             {@link DocumentSecurityException}
  */
+@Deprecated
 public class FileManagerPermissionException extends ClientException {
 
     private static final long serialVersionUID = 376060003175460864L;
