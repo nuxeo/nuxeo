@@ -219,8 +219,10 @@ public class GadgetPortlet extends Portlet {
 
     private void updateFrameHeightIfContentTypeIsUrl() {
         GadgetView v = this.gadget.getView(view);
-        if (v != null && "URL".equals(v.getContentType()))
+        if (v != null && "URL".equals(v.getContentType()
+                .toUpperCase())) {
             this.setHeight(1000);
+        }
     }
 
     static native void collapse(String id, String className)
