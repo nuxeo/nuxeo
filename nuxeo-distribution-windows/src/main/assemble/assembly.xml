@@ -41,7 +41,7 @@
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <copy todir="${installer.path}" overwrite="true">
-      <fileset dir="src/main/resources" />
+      <fileset dir="src/main/resources/win32Installer" />
     </copy>
     <antcall target="prepare" />
     <echo message="Running ISTOOL with wine..." />
@@ -68,7 +68,7 @@
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <copy todir="${installer.path}" overwrite="true">
-      <fileset dir="src/main/resources" />
+      <fileset dir="src/main/resources/win32Installer" />
     </copy>
     <antcall target="prepare" />
     <echo message="Running ISTOOL with wine..." />
@@ -92,7 +92,7 @@
     <mkdir dir="${installer.path}" />
     <echo message="Update win32installer sources" />
     <copy todir="${installer.path}" overwrite="true">
-      <fileset dir="src/main/resources" />
+      <fileset dir="src/main/resources/win32Installer" />
     </copy>
     <antcall target="prepare" />
     <echo message="Running ISTOOL with wine..." />
@@ -116,11 +116,10 @@
                             classifier="${distribution}" />
     </unzip>
     <unzip dest="${project.build.directory}/nuxeo-shell">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-shell:${nuxeo.distribution.version}:zip"
-                            classifier="${distribution}" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-shell:${nuxeo.distribution.version}:zip"  />
     </unzip>
     <delete dir="${installer.path}/jboss/NuxeoServer" />
-    <move file="${project.build.directory}/nuxeo-jboss/nuxeo-distribution-jboss-*"
+    <move file="${project.build.directory}/nuxeo-jboss/nuxeo-dm-jboss"
           tofile="${installer.path}/jboss/NuxeoServer" />
     <delete dir="${installer.path}/nxshell/NuxeoShell/" />
     <move file="${project.build.directory}/nuxeo-shell/nxshell"
@@ -129,14 +128,14 @@
   <target name="retrieve">
     <move todir="${project.build.directory}">
       <fileset dir="${installer.path}/script/Output/">
-        <include name="*" />
+        <include name="*.exe" />
       </fileset>
     </move>
-    <artifact:attach file="${outdir}/nuxeo-dm-5.3.0-GA-setup.exe"
+    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.0-GA-setup.exe"
                      classifier="${distribution}"
                      type="exe"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
-    <artifact:attach file="${outdir}/nuxeo-dm-5.3.0-GA_64-setup.exe"
+    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.0-GA_64-setup.exe"
                      classifier="${distribution}_64"
                      type="exe"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
