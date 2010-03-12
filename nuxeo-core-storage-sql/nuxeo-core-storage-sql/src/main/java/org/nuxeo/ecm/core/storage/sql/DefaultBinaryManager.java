@@ -104,6 +104,10 @@ public class DefaultBinaryManager implements BinaryManager {
         descriptor = getDescriptor(new File(base, CONFIG_FILE));
     }
 
+    public File getStorageDir() {
+        return storageDir;
+    }
+
     /**
      * Gets existing descriptor or creates a default one.
      */
