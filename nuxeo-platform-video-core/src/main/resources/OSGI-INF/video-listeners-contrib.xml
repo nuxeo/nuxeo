@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.video.core.listeners">
+
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="videoStoryBoardListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.video.listener.VideoStoryBoardListener"
+      priority="10">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="videoPreviewListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.video.listener.VideoPreviewListener" priority="20">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>

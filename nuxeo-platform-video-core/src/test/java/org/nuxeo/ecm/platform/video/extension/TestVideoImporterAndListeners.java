@@ -19,7 +19,7 @@ import org.nuxeo.runtime.api.Framework;
 /*
  * Tests that the VideoImporter class works by importing a sample video
  */
-public class TestVideoImporter extends SQLRepositoryTestCase {
+public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     protected static final String VIDEO_TYPE = "Video";
 
@@ -155,9 +155,18 @@ public class TestVideoImporter extends SQLRepositoryTestCase {
         assertEquals(1373L, docModel.getPropertyValue("picture:views/1/content/length"));
 
         // TODO: add picture metadata extraction where if
-        // they make sense for videos (ie. extract these from the metadata already included in the video
-        // and use them to set the appropriate schema properties)
+        // they make sense for videos (ie. extract these from the
+        // metadata already included in the video  and use them to
+        // set the appropriate schema properties)
         assertNull("", docModel.getPropertyValue("picture:credit"));
+
+        // check that the update with a null video removes the previews and
+        // storyboard
+        docModel.setPropertyValue("file:content", null);
+        docModel = session.saveDocument(docModel);
+
+        assertTrue(docModel.getProperty("vid:storyboard").getValue(List.class).isEmpty());
+        assertTrue(docModel.getProperty("picture:views").getValue(List.class).isEmpty());
 
     }
 

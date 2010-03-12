@@ -11,6 +11,8 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
+      <facet name="HasStoryBoard" />
+      <facet name="HasVideoPreview" />
     </doctype>
   </extension>
 </component>

@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.video.core;singleton=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/video-schemas-contrib.xml,
  OSGI-INF/core-types-contrib.xml,
- OSGI-INF/filemanager-importer-contrib.xml 
+ OSGI-INF/filemanager-importer-contrib.xml,
+ OSGI-INF/video-listeners-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
