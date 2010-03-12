@@ -9,7 +9,7 @@
       any of the matching mime types.
     </documentation>
     <plugin name="VideoImporter"
-            class="org.nuxeo.ecm.platform.video.extension.VideoImporter"
+            class="org.nuxeo.ecm.platform.video.importer.VideoImporter"
             order="10">
       <filter>video/.*</filter>
     </plugin>

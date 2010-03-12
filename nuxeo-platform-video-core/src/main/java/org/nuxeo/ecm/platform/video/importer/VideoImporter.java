@@ -15,7 +15,7 @@
  *     Peter Di Lorenzo
  */
 
-package org.nuxeo.ecm.platform.video.extension;
+package org.nuxeo.ecm.platform.video.importer;
 
 import java.io.IOException;
 import java.io.Serializable;
