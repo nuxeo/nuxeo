@@ -41,7 +41,8 @@ public class GadgetFactory {
     }
 
     private static String getTitle(Gadget gadget) throws ClientException {
-        if (gadget.getTitle() != null && !gadget.getTitle().equals(""))
+        if (gadget.getTitle() != null && !gadget.getTitle()
+                .equals(""))
             return _getTitleWithoutKey(gadget.getTitle());
         else
             return "";
@@ -56,11 +57,12 @@ public class GadgetFactory {
     private static Map<String, GadgetView> createGadgetViews(Gadget gadget) {
         Map<String, GadgetView> gv = new HashMap<String, GadgetView>();
         try {
-            Map<String, View> views = GadgetsUtils.getGadgetSpec(gadget).getViews();
+            Map<String, View> views = GadgetsUtils.getGadgetSpec(gadget)
+                    .getViews();
             for (String v : views.keySet()) {
                 View view = views.get(v);
-                gv.put(v, new GadgetView(view.getName(),
-                        view.getType().toString()));
+                gv.put(v, new GadgetView(view.getName(), view.getType()
+                        .toString()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +71,12 @@ public class GadgetFactory {
     }
 
     public static Gadget getGadget(GadgetBean bean) throws ClientException {
-        return new GadgetAdapter(bean);
+        return getGadget(bean, null);
+    }
+
+    public static Gadget getGadget(GadgetBean bean,
+            Map<String, String> updatePrefs) throws ClientException {
+        return new GadgetAdapter(bean, updatePrefs);
     }
 
 }

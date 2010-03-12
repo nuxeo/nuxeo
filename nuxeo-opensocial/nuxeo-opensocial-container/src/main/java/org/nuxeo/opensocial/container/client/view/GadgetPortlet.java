@@ -77,15 +77,18 @@ public class GadgetPortlet extends Portlet {
         COLOR_header, COLOR_font, COLOR_border;
 
         public static boolean isHeader(String name) {
-            return COLOR_header.name().equals(name);
+            return COLOR_header.name()
+                    .equals(name);
         }
 
         public static boolean isFont(String name) {
-            return COLOR_font.name().equals(name);
+            return COLOR_font.name()
+                    .equals(name);
         }
 
         public static boolean isBorder(String name) {
-            return COLOR_border.name().equals(name);
+            return COLOR_border.name()
+                    .equals(name);
         }
 
     }
@@ -172,7 +175,7 @@ public class GadgetPortlet extends Portlet {
        return url.replace(reg,"view="+view+"&");
     }-*/;
 
-    private String getIframeId() {
+    String getIframeId() {
         return PREFIX_FRAME_ID + view + "-" + this.gadget.getRef();
     }
 

@@ -92,7 +92,8 @@ public class InputFactory {
             this.setLabel(bean.getDisplayName());
             this.setName(bean.getName());
             this.setWidth(PREF_WIDTH_FIELD);
-            if (bean.getName().equals("title")) {
+            if (bean.getName()
+                    .equals("title")) {
                 this.setValue(gp.getTitle());
                 ListenerConfig config = new ListenerConfig();
                 config.setDelay(200);
@@ -251,34 +252,40 @@ public class InputFactory {
         }
     }
 
-    private static enum TYPES {
+    public static enum TYPES {
         STRING, HIDDEN, BOOL, ENUM, LIST, COLOR_, NXID_;
 
         public static boolean isString(String type) {
-            return STRING.name().equals(type);
+            return STRING.name()
+                    .equals(type);
         }
 
         public static boolean isNxId(String dataType, String name) {
-            return isString(dataType)
-                    && name.substring(0, NXID_.name().length()).equals(
-                            NXID_.name());
+            return isString(dataType) && name.substring(0, NXID_.name()
+                    .length())
+                    .equals(NXID_.name());
         }
 
         public static boolean isHidden(String type) {
-            return HIDDEN.name().equals(type);
+            return HIDDEN.name()
+                    .equals(type);
         }
 
         public static boolean isCombo(String type) {
-            return LIST.name().equals(type) || ENUM.name().equals(type);
+            return LIST.name()
+                    .equals(type) || ENUM.name()
+                    .equals(type);
         }
 
         public static boolean isBool(String type) {
-            return BOOL.name().equals(type);
+            return BOOL.name()
+                    .equals(type);
         }
 
         private static boolean isDefaultColor(String type, String name) {
-            return name.substring(0, COLOR_.name().length()).equals(
-                    COLOR_.name());
+            return name.substring(0, COLOR_.name()
+                    .length())
+                    .equals(COLOR_.name());
         }
 
         public static boolean isColor(String type, String name) {
@@ -293,7 +300,8 @@ public class InputFactory {
 
     private String getPrefValue(PreferencesBean bean) {
         String value = bean.getValue();
-        if (bean.getDefaultValue().equals("none"))
+        if (bean.getDefaultValue()
+                .equals("none"))
             return "";
         if (value == null)
             value = bean.getDefaultValue();
