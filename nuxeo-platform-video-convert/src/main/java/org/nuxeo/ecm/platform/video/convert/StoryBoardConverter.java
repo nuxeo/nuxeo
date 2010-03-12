@@ -32,6 +32,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -121,7 +122,13 @@ public class StoryBoardConverter extends BaseVideoConverter implements
                     FFMPEG_STORYBOARD_COMMAND, params);
 
             if (!result.isSuccessful()) {
-                throw result.getError();
+                Exception error = result.getError();
+                if (error != null) {
+                    throw error;
+                } else {
+                    throw new ConversionException(StringUtils.join(
+                            result.getOutput(), " "));
+                }
             }
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
             properties.put("duration", extractDuration(result.getOutput()));
@@ -145,8 +152,8 @@ public class StoryBoardConverter extends BaseVideoConverter implements
 
     @SuppressWarnings("unchecked")
     protected BlobHolder collectBlobs(File outFolder,
-            Map<String, Serializable> properties, String filename) throws IOException,
-            FileNotFoundException {
+            Map<String, Serializable> properties, String filename)
+            throws IOException, FileNotFoundException {
 
         List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(outFolder,
                 new String[] { "jpeg" }, false));
@@ -164,7 +171,8 @@ public class StoryBoardConverter extends BaseVideoConverter implements
             // TODO: 10s is a match for the default rate of 0.1 fps: need to
             // make it dynamic
             int timecode = i * 10;
-            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg", timecode));
+            keptBlob.setFilename(String.format("%05d.000-seconds.jpeg",
+                    timecode));
             blobs.add(keptBlob);
             timecodes.add(Double.valueOf(timecode));
             comments.add(String.format("%s %d", filename, i + 1));

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.video;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +25,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -48,6 +52,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author ogrisel
  */
 public class VideoHelper {
+
+    public static final Log log = LogFactory.getLog(VideoHelper.class);
+
+    public static final String MISSING_PREVIEW_PICTURE = "preview/missing-video-preview.jpeg";
 
     // TODO: make this configurable somehow though an extension point. The
     // imaging package need a similar refactoring, try to make both consistent
@@ -71,7 +79,7 @@ public class VideoHelper {
      */
     @SuppressWarnings("unchecked")
     public static void updateStoryboard(DocumentModel docModel, Blob video)
-            throws ConversionException, PropertyException, ClientException {
+            throws PropertyException, ClientException {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
             docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, null);
@@ -83,8 +91,12 @@ public class VideoHelper {
             result = Framework.getService(ConversionService.class).convert(
                     Constants.STORYBOARD_CONVERTER,
                     new SimpleBlobHolder(video), null);
+        } catch (ConversionException e) {
+            // this can happen and is recoverable by using a dummy preview
+            log.warn(e.getMessage());
+            return;
         } catch (Exception e) {
-            throw new ConversionException(e.getMessage(), e);
+            throw ClientException.wrap(e);
         }
         List<Blob> blobs = result.getBlobs();
         List<String> comments = (List<String>) result.getProperty("comments");
@@ -109,7 +121,7 @@ public class VideoHelper {
      */
     public static void updatePreviews(DocumentModel docModel, Blob video,
             Double position, List<Map<String, Object>> templates)
-            throws ConversionException, ClientException, IOException {
+            throws ClientException, IOException {
 
         if (video == null) {
             docModel.setPropertyValue("picture:views", null);
@@ -118,24 +130,42 @@ public class VideoHelper {
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put(Constants.POSITION_PARAMETER, position);
-        BlobHolder result;
+        BlobHolder result = null;
         try {
             result = Framework.getService(ConversionService.class).convert(
                     Constants.SCREENSHOT_CONVERTER,
                     new SimpleBlobHolder(video), parameters);
+        } catch (ConversionException e) {
+            // this can happen and is recoverable by using a dummy preview
+            log.warn(e.getMessage());
         } catch (Exception e) {
-            throw new ConversionException(e.getMessage(), e);
+            ClientException.wrap(e);
         }
 
         // compute the thumbnail preview
-        if (result != null && result.getBlob() != null) {
+        if (result != null && result.getBlob() != null
+                && result.getBlob().getLength() > 0) {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-            picture.createPicture(result.getBlob(),
-                    result.getBlob().getFilename(), docModel.getTitle(),
-                    new ArrayList<Map<String, Object>>(templates));
-        } else {
-            // TODO: put a set of default thumbnails here to tell the user that
-            // the preview is not available for this document
+            try {
+                picture.createPicture(result.getBlob(),
+                        result.getBlob().getFilename(), docModel.getTitle(),
+                        new ArrayList<Map<String, Object>>(templates));
+            } catch (Exception e) {
+                log.warn("failed to video compute previews for "
+                        + docModel.getTitle() + ": " + e.getMessage());
+            }
+        }
+
+        // put a black screen if the video or its screen-shot is unreadable
+        if (docModel.getProperty("picture:views").getValue(List.class).isEmpty()) {
+            InputStream is = VideoHelper.class.getResourceAsStream("/"
+                    + MISSING_PREVIEW_PICTURE);
+            Blob blob = StreamingBlob.createFromStream(is, "image/jpeg").persist();
+            blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
+            PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
+            picture.createPicture(blob, blob.getFilename(),
+                    docModel.getTitle(), new ArrayList<Map<String, Object>>(
+                            templates));
         }
     }
 
@@ -145,7 +175,7 @@ public class VideoHelper {
      * black screen fade in video.
      */
     public static void updatePreviews(DocumentModel docModel, Blob video)
-            throws ConversionException, ClientException, IOException {
+            throws ClientException, IOException {
 
         Double duration = (Double) docModel.getPropertyValue(VideoConstants.DURATION_PROPERTY);
         Double position = 0.0;
