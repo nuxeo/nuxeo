@@ -21,14 +21,14 @@
     <internalGadget name="bbcnews">
       <mountPoint>/bbcnews</mountPoint>
       <entryPoint>bbcnews.xml</entryPoint>
-      <category>Information</category>
+      <category>gadget.category.information</category>
       <icon>bbc.png</icon>
     </internalGadget>
 
     <internalGadget name="hello">
       <mountPoint>/hello</mountPoint>
       <entryPoint>hello.xml</entryPoint>
-      <category>Information</category>
+      <category>gadget.category.information</category>
       <icon>hello.png</icon>
     </internalGadget>
 
