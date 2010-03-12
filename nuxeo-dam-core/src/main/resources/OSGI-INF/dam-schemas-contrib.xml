@@ -70,6 +70,8 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Downloadable" />
+      <facet name="HasStoryBoard" />
+      <facet name="HasVideoPreview" />
     </doctype>
 
     <doctype name="Audio" extends="Document">
