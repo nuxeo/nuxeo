@@ -114,7 +114,13 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.startElement("textarea", editorComp);
         writer.writeAttribute("id", clientId, null);
         writer.writeAttribute("name", clientId, null);
-        writer.writeAttribute("class", editorSelector, null);
+        if (editorComp.getDisableHtmlInit()) {
+            writer.writeAttribute("class", editorSelector+",disableMCEInit", null);
+        } else {
+            writer.writeAttribute("class", editorSelector, null);
+        }
+        writer.writeAttribute("rows", editorComp.getRows(), null);
+        writer.writeAttribute("cols", editorComp.getCols(), null);
         Object currentValue = getCurrentValue(editorComp);
         if (currentValue != null) {
             writer.writeText(currentValue, null);

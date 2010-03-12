@@ -49,7 +49,63 @@ public class UIHtmlEditor extends UIInput {
 
     private String height;
 
+    private String cols;
+
+    private String rows;
+
     private String editorSelector;
+
+    private Boolean disableHtmlInit=false;
+
+    public Boolean getDisableHtmlInit() {
+        return disableHtmlInit;
+    }
+
+    public void setDisableHtmlInit(Boolean disableHtmlInit) {
+        this.disableHtmlInit = disableHtmlInit;
+    }
+
+    public String getCols() {
+         if (cols != null) {
+                return cols;
+            }
+            ValueExpression ve = getValueExpression("cols");
+            if (ve != null) {
+                try {
+                    return (String) ve.getValue(getFacesContext().getELContext());
+                } catch (ELException e) {
+                    throw new FacesException(e);
+                }
+            } else {
+                // default value
+                return "100";
+            }
+    }
+
+    public void setCols(String cols) {
+        this.cols = cols;
+    }
+
+    public String getRows() {
+         if (rows != null) {
+                return rows;
+            }
+            ValueExpression ve = getValueExpression("rows");
+            if (ve != null) {
+                try {
+                    return (String) ve.getValue(getFacesContext().getELContext());
+                } catch (ELException e) {
+                    throw new FacesException(e);
+                }
+            } else {
+                // default value
+                return "25";
+            }
+    }
+
+    public void setRows(String rows) {
+        this.rows = rows;
+    }
 
     public UIHtmlEditor() {
         setRendererType(COMPONENT_TYPE);
@@ -124,7 +180,7 @@ public class UIHtmlEditor extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), width, height, editorSelector };
+        return new Object[] { super.saveState(context), width, height, editorSelector, cols, rows, disableHtmlInit };
     }
 
     @Override
@@ -134,6 +190,9 @@ public class UIHtmlEditor extends UIInput {
         width = (String) values[1];
         height = (String) values[2];
         editorSelector = (String) values[3];
+        cols = (String) values[4];
+        rows = (String) values[5];
+        disableHtmlInit = (Boolean) values[6];
     }
 
 }

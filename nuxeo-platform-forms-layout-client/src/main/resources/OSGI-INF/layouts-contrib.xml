@@ -216,6 +216,19 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="richtext_with_mimetype">
+      <documentation>
+        This widget displays an html text editor or a textarea in create or edit mode, depending on the mimetype defined.
+
+        Widgets using this type can provide properties accepted on a
+        &lt;nxu:editor /&gt; tag in create or edit mode.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/richtext_with_mimetype_widget_template.xhtml</property>
+    </widgetType>
+
   </extension>
 
 </component>

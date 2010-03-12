@@ -88,8 +88,8 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
         this.addComponent("metaOutputLink", "javax.faces.HtmlOutputLink",
                 "javax.faces.Link", MetaValueHolderTagHandler.class);
 
-        this.addHtmlComponent("outputText", "javax.faces.HtmlOutputText",
-                "javax.faces.Text");
+        this.addComponent("outputText", "javax.faces.HtmlOutputText",
+                "javax.faces.Text", MetaValueHolderTagHandler.class);
 
         this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid",
                 "javax.faces.Grid");
