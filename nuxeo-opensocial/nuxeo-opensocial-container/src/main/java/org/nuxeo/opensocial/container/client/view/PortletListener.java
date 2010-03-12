@@ -52,15 +52,15 @@ public class PortletListener extends PanelListenerAdapter {
     private void saveCollapsed(boolean collapsed) {
         GadgetBean gadget = portlet.getGadgetBean();
         gadget.setCollapsed(collapsed);
-        ContainerEntryPoint.getService().saveGadget(gadget,
-                ContainerEntryPoint.getGwtParams(),
-                new AsyncCallback<GadgetBean>() {
+        ContainerEntryPoint.getService()
+                .saveGadget(gadget, ContainerEntryPoint.getGwtParams(),
+                        new AsyncCallback<GadgetBean>() {
 
-                    public void onFailure(Throwable arg0) {
-                    }
+                            public void onFailure(Throwable arg0) {
+                            }
 
-                    public void onSuccess(GadgetBean arg0) {
-                    }
-                });
+                            public void onSuccess(GadgetBean arg0) {
+                            }
+                        });
     }
 }

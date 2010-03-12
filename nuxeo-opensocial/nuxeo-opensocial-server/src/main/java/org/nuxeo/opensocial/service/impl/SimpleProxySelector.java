@@ -11,6 +11,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -29,23 +31,24 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static final String SHINDIG_PROXY_EXCLUDE = "shindig.proxy.excludeHost";
 
+    private static final Log log = LogFactory.getLog(SimpleProxySelector.class);
+
     private Proxy proxySettings = null;
 
     List<String> excludedHosts = new ArrayList<String>();
 
+    @SuppressWarnings("unchecked")
     public SimpleProxySelector() {
         String excludedHostsProperty = Framework.getProperty(SHINDIG_PROXY_EXCLUDE);
-        String[] hosts;
-        if (excludedHostsProperty == null) {
-            hosts = new String[0];
-        } else {
-            hosts = excludedHostsProperty.split(",");
-        }
-        if (hosts.length > 0) {
-            excludedHosts.addAll(Arrays.asList(hosts));
+        if (excludedHostsProperty != null) {
+            String[] hosts = excludedHostsProperty.split(",");
+            if (hosts.length > 0) {
+                excludedHosts.addAll(Arrays.asList(hosts));
+            }
         }
         excludedHosts.add("localhost");
         excludedHosts.add("127.0.0.1");
+
     }
 
     @Override
@@ -61,7 +64,8 @@ public class SimpleProxySelector extends ProxySelector {
         boolean proxy = true;
 
         for (String host : excludedHosts) {
-            if (uri.getHost().endsWith(host)) {
+            if (uri.getHost()
+                    .endsWith(host)) {
                 proxy = false;
             }
         }
@@ -76,20 +80,24 @@ public class SimpleProxySelector extends ProxySelector {
     }
 
     private Proxy getProxySettings() {
-        if (isProxySet()) {
-            if (proxySettings == null) {
-                setAuthenticator();
-                proxySettings = new Proxy(
-                        Proxy.Type.HTTP,
-                        new InetSocketAddress(
-                                Framework.getProperty(SHINDIG_PROXY_PROXY_HOST),
-                                Integer.parseInt(Framework.getProperty(SHINDIG_PROXY_PROXY_PORT))));
+        try {
+            if (isProxySet()) {
+                if (proxySettings == null) {
+                    setAuthenticator();
+                    proxySettings = new Proxy(
+                            Proxy.Type.HTTP,
+                            new InetSocketAddress(
+                                    Framework.getProperty(SHINDIG_PROXY_PROXY_HOST),
+                                    Integer.parseInt(Framework.getProperty(SHINDIG_PROXY_PROXY_PORT))));
+                }
+                return proxySettings;
             }
 
-            return proxySettings;
-        } else {
+        } catch (Exception e) {
+            log.error("Unable to get Proxy settings ",e);
             return Proxy.NO_PROXY;
         }
+        return Proxy.NO_PROXY;
     }
 
     private static void setAuthenticator() {
@@ -111,7 +119,8 @@ public class SimpleProxySelector extends ProxySelector {
 
     private static boolean isProxySet() {
         return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET).equals("true");
+                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
+                        .equals("true");
     }
 
 }
