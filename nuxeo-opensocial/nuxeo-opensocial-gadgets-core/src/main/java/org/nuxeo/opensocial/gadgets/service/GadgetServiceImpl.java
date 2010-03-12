@@ -218,7 +218,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
                     }
                 }
             } finally {
-                if (session != null) {
+                if (session!=null) {
                     session.close();
                 }
             }
