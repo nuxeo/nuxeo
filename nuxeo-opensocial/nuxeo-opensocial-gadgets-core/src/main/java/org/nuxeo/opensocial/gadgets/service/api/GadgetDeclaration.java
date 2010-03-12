@@ -20,8 +20,6 @@ public interface GadgetDeclaration {
 
     boolean getDisabled();
 
-    String getDirectory();
-
     String getCategory();
 
     String getIconUrl();

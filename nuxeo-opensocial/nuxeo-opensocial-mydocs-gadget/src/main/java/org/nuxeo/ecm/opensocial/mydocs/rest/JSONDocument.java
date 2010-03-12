@@ -12,7 +12,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import net.sf.json.JSON;
@@ -45,7 +44,7 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "JSONDocument")
+@WebObject(type = "JSONDocument", superType ="Document")
 public class JSONDocument extends DocumentObject {
     private static final int PAGE_SIZE = 10;
 
@@ -53,7 +52,7 @@ public class JSONDocument extends DocumentObject {
             "yyyy-MM-dd HH:mm:ss");
 
     @GET
-    @Produces("text/html;charset=UTF-8")
+    @Override
     public Object doGet() {
         String currentPage = ctx.getRequest().getParameter("page");
 
@@ -107,7 +106,7 @@ public class JSONDocument extends DocumentObject {
     }
 
     @POST
-    public Object addDocument() {
+    public Response doPost() {
         FileManager fm;
         try {
             fm = Framework.getService(FileManager.class);
@@ -123,9 +122,9 @@ public class JSONDocument extends DocumentObject {
                     true, blob.getFilename());
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError();
+            return Response.serverError().build();
         }
-        return Response.ok();
+        return Response.ok().build();
 
     }
 
