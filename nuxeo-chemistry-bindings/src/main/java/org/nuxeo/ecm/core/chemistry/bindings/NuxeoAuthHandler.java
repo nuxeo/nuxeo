@@ -34,11 +34,16 @@ import org.nuxeo.runtime.api.Framework;
  * SOAP handler that extracts authentication information from the SOAP headers
  * and propagates it to Nuxeo for login.
  */
-public class NuxeoAuthHandler extends AuthHandler {
+public class NuxeoAuthHandler extends AuthHandler implements LoginProvider {
 
     private static final Log log = LogFactory.getLog(NuxeoAuthHandler.class);
 
     public static final String LOGIN_CONTEXT = "nuxeo.LoginContext";
+
+    /** Framework property redefining the login provider class. */
+    public static final String LOGIN_PROVIDER_PROP = LoginProvider.class.getName();
+
+    protected LoginProvider loginProvider;
 
     @Override
     protected boolean handleInboundMessage(SOAPMessageContext soapContext) {
@@ -49,14 +54,42 @@ public class NuxeoAuthHandler extends AuthHandler {
         CallContext callContext = CallContext.fromMessageContext(soapContext);
         String username = callContext.getUsername();
         String password = callContext.getPassword();
-        LoginContext loginContext = login(username, password);
-        // store in message context, for later logout
-        soapContext.put(LOGIN_CONTEXT, loginContext);
-        soapContext.setScope(LOGIN_CONTEXT, Scope.APPLICATION);
+        try {
+            LoginContext loginContext = getLoginProvider().login(username,
+                    password);
+            // store in message context, for later logout
+            soapContext.put(LOGIN_CONTEXT, loginContext);
+            soapContext.setScope(LOGIN_CONTEXT, Scope.APPLICATION);
+        } catch (LoginException e) {
+            throw new RuntimeException("Login failed for user '" + username
+                    + "'", e);
+        }
         return true;
     }
 
-    protected LoginContext login(String username, String password) {
+    protected LoginProvider getLoginProvider() {
+        if (loginProvider == null) {
+            loginProvider = this;
+            String className = Framework.getProperty(LOGIN_PROVIDER_PROP);
+            if (className != null) {
+                try {
+                    Object instance = Class.forName(className).newInstance();
+                    if (instance instanceof LoginProvider) {
+                        loginProvider = (LoginProvider) instance;
+                    } else {
+                        log.error(className + " is not an instance of "
+                                + LoginProvider.class.getName());
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+        }
+        return loginProvider;
+    }
+
+    // LoginProvider
+    public LoginContext login(String username, String password) {
         try {
             // check identity against UserManager
             if (!getUserManager().checkUsernamePassword(username, password)) {

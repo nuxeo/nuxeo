@@ -19,8 +19,6 @@
         </handler-chain>
       </handler-chains>
     </endpoint>
-  </extension>
-  <extension target="jaxws#ENDPOINT">
     <endpoint name="DiscoveryService"
         implementation="org.apache.chemistry.soap.server.DiscoveryServicePortImpl"
         url-pattern="/webservices/cmis/DiscoveryService">
