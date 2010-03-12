@@ -117,7 +117,7 @@
 
       <!--
         <whereClause>
-        
+
         <predicate parameter="ecm:parentId" operator="=">
         <field schema="browsing_filters" name="query_parentId" />
         </predicate>
@@ -137,7 +137,7 @@
 
       <!--
         <whereClause>
-        
+
         <predicate parameter="ecm:parentId" operator="=">
         <field schema="browsing_filters" name="query_parentId" />
         </predicate>
@@ -146,7 +146,7 @@
     </queryModel>
 
     <!-- This query model may be used to list children in the tree navigation
-      
+
       Note the "ecm:isProxy = 0" predicate optimization that is required to
       simplify greatly the request performed by the tree manager when
       browsing on folders with a lot of files when using the Visible SQL Storage.
@@ -177,20 +177,8 @@
       <max>10</max>
       <whereClause>
 
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT ALL">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="advanced_search" name="fulltext_all" />
-        </predicate>
-
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT NONE">
-          <field schema="advanced_search" name="fulltext_none" />
-        </predicate>
-
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT ONE OF">
-          <field schema="advanced_search" name="fulltext_one_of" />
-        </predicate>
-
-        <predicate parameter="ecm:fulltext" operator="=">
-          <field schema="advanced_search" name="fulltext_phrase" />
         </predicate>
 
         <predicate parameter="ecm:isCheckedInVersion" operator="=">
@@ -201,11 +189,11 @@
           <field schema="advanced_search" name="searchpath" />
         </predicate>
 
-        <predicate parameter="dc:title" operator="LIKE">
+        <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="advanced_search" name="title" />
         </predicate>
 
-        <predicate parameter="dc:description" operator="LIKE">
+        <predicate parameter="dc:description" operator="FULLTEXT">
           <field schema="advanced_search" name="description" />
         </predicate>
 
