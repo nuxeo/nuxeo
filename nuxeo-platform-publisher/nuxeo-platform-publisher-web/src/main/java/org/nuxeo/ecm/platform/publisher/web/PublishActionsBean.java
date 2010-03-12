@@ -288,6 +288,10 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public boolean canPublishTo(PublicationNode publicationNode)
             throws ClientException {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc==null || documentManager.getLock(doc.getRef())!=null) {
+            return false;
+        }
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
         return tree != null ? tree.canPublishTo(publicationNode) : false;
     }
@@ -419,8 +423,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 currentDocument, documentManager);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorRejectPublication(publishedDocument, publishingComment);
-        
-        
+
+
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null
                 && publishingComment.length() > 0 ? ComponentUtils.translate(

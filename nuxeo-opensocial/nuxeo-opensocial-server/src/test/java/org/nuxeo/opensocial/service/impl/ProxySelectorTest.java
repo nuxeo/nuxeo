@@ -1,5 +1,6 @@
 package org.nuxeo.opensocial.service.impl;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -25,8 +26,9 @@ public class ProxySelectorTest {
     private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
     private static final String SHINDIG_PROXY_EXCLUDE = "shindig.proxy.excludeHost";
 
+    private static final OSGiRuntimeService osgi = (OSGiRuntimeService) Framework.getRuntime();
+
     public ProxySelectorTest() {
-        OSGiRuntimeService osgi = (OSGiRuntimeService) Framework.getRuntime();
         osgi.setProperty(SHINDIG_PROXY_SET  , "true");
         osgi.setProperty(SHINDIG_PROXY_HOST  , "proxyhost.com");
         osgi.setProperty(SHINDIG_PROXY_PORT  , "8080");
@@ -43,5 +45,15 @@ public class ProxySelectorTest {
 
         Proxy proxy = proxySelector.select(new URI("http://google.fr/")).get(0);
         assertTrue(Proxy.NO_PROXY != proxy);
+    }
+
+    @Test
+    public void badConfReturnsNoProxy() throws Exception {
+        osgi.setProperty(SHINDIG_PROXY_PORT  , "notanint");
+        SimpleProxySelector proxySelector = new SimpleProxySelector();
+        Proxy noproxy = proxySelector.select(new URI("http://google.com/")).get(0);
+        assertEquals(Proxy.NO_PROXY, noproxy);
+
+
     }
 }
