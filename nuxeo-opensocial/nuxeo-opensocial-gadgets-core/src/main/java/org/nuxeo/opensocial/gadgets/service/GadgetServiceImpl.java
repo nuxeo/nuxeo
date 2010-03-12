@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -196,26 +195,31 @@ public class GadgetServiceImpl extends DefaultComponent implements
         }
         try {
             DirectoryService dirService = Framework.getService(DirectoryService.class);
-            Directory dir = dirService.getDirectory(GADGET_DIRECTORY);
-            Session session = dir.getSession();
-            for (DocumentModel model : session.getEntries()) {
-                String name = (String) model.getProperty(GADGET_DIR_SCHEMA,
-                        EXTERNAL_PROP_NAME);
-                String category = (String) model.getProperty(GADGET_DIR_SCHEMA,
-                        EXTERNAL_PROP_CATEGORY);
-                long enabled = (Long) model.getProperty(GADGET_DIR_SCHEMA,
-                        EXTERNAL_PROP_ENABLED);
-                boolean disabled = enabled != 0 ? false : true;
+            Session session = dirService.open(GADGET_DIRECTORY);
+            try {
+                for (DocumentModel model : session.getEntries()) {
+                    String name = (String) model.getProperty(GADGET_DIR_SCHEMA,
+                            EXTERNAL_PROP_NAME);
+                    String category = (String) model.getProperty(
+                            GADGET_DIR_SCHEMA, EXTERNAL_PROP_CATEGORY);
+                    long enabled = (Long) model.getProperty(GADGET_DIR_SCHEMA,
+                            EXTERNAL_PROP_ENABLED);
+                    boolean disabled = enabled != 0 ? false : true;
 
-                String gadgetDefinition = (String) model.getProperty(
-                        GADGET_DIR_SCHEMA, EXTERNAL_PROP_URL);
-                String iconURL = (String) model.getProperty(GADGET_DIR_SCHEMA,
-                        EXTERNAL_PROP_ICON_URL);
-                ExternalGadgetDescriptor desc = new ExternalGadgetDescriptor(
-                        category, disabled, new URL(gadgetDefinition), iconURL,
-                        name);
-                if (!desc.getDisabled()) {
-                    result.put(desc.getName(), desc);
+                    String gadgetDefinition = (String) model.getProperty(
+                            GADGET_DIR_SCHEMA, EXTERNAL_PROP_URL);
+                    String iconURL = (String) model.getProperty(
+                            GADGET_DIR_SCHEMA, EXTERNAL_PROP_ICON_URL);
+                    ExternalGadgetDescriptor desc = new ExternalGadgetDescriptor(
+                            category, disabled, new URL(gadgetDefinition),
+                            iconURL, name);
+                    if (!desc.getDisabled()) {
+                        result.put(desc.getName(), desc);
+                    }
+                }
+            } finally {
+                if (session != null) {
+                    session.close();
                 }
             }
 

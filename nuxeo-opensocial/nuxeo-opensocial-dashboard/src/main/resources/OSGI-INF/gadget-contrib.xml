@@ -4,13 +4,6 @@
   <extension target="org.nuxeo.opensocial.gadgets.service"
     point="gadget">
 
-<internalGadget name="mappy">
-      <mountPoint>/mappy</mountPoint>
-      <entryPoint>mappy.xml</entryPoint>
-      <category>gadget.category.utilities</category>
-      <icon>mappy_icon.png</icon>
-    </internalGadget>
-
     <internalGadget name="tasks">
       <mountPoint>/tasks</mountPoint>
       <entryPoint>tasks.xml</entryPoint>
