@@ -153,6 +153,11 @@ public class SecurityService extends DefaultComponent {
             return true;
         }
 
+        if (principal instanceof NuxeoPrincipal
+                && ((NuxeoPrincipal) principal).isAdministrator()) {
+            return true;
+        }
+        
         // get the security store
         SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
 

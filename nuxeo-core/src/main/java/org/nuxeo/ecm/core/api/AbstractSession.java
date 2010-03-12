@@ -1362,8 +1362,8 @@ public abstract class AbstractSession implements CoreSession,
                         && !(filter instanceof FacetFilter);
                 postFilter = postFilterPolicies || postFilterFilter;
                 String[] principals;
-                if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
-                    principals = null; // means: no security check needed
+				if (isAdministrator()) {
+					principals = null; // means: no security check needed
                 } else {
                     principals = SecurityService.getPrincipalsToCheck(principal);
                 }
@@ -2664,8 +2664,10 @@ public abstract class AbstractSession implements CoreSession,
         Principal principal = getPrincipal();
         // FIXME: this is inconsistent with NuxeoPrincipal#isAdministrator
         // method because it allows hardcoded Administrator user
-        if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
-            return true;
+        if (Framework.isTestModeSet()) {
+            if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
+                return true;
+            }
         }
         if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
             return true;
