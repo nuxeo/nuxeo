@@ -854,7 +854,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     }
 
     private void assertIdSet(DocumentModelList dml, String... ids) {
-        assertEquals(ids.length, dml.size());
         Collection<String> expected = new HashSet<String>(Arrays.asList(ids));
         Collection<String> actual = new HashSet<String>();
         for (DocumentModel d : dml) {
@@ -1286,6 +1285,19 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in descr
+
+        // field-based fulltext
+        // index exists
+        query = "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'hello'";
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+        // no index exists
+        query = "SELECT * FROM Document WHERE ecm:fulltext.dc:description = 'oyster'";
+        dml = session.query(query);
+        assertIdSet(dml, file2.getId());
+        query = "SELECT * FROM Document WHERE ecm:fulltext.dc:description = 'world OYSTER'";
+        dml = session.query(query);
+        assertIdSet(dml, file2.getId());
     }
 
     public void testFulltextBlob() throws Exception {

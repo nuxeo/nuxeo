@@ -315,6 +315,9 @@ public class Model {
         /** All index names. */
         public Set<String> indexNames = new LinkedHashSet<String>();
 
+        /** Indexes holding exactly one field. */
+        public Map<String, String> fieldToIndexName = new HashMap<String, String>();
+
         /** Map of index to analyzer (may be null). */
         public Map<String, String> indexAnalyzer = new HashMap<String, String>();
 
@@ -745,6 +748,10 @@ public class Model {
             }
             if (desc.excludeFields == null) {
                 desc.excludeFields = new HashSet<String>();
+            }
+            if (desc.fields.size() == 1 && desc.excludeFields.isEmpty()) {
+                fulltextInfo.fieldToIndexName.put(
+                        desc.fields.iterator().next(), name);
             }
 
             if (desc.fieldType != null) {

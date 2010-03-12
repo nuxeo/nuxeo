@@ -27,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FullTextUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -128,6 +131,8 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  * @author Florent Guillaume
  */
 public class NXQLQueryMaker implements QueryMaker {
+
+    private static final Log log = LogFactory.getLog(NXQLQueryMaker.class);
 
     protected static final String TABLE_HIER_ALIAS = "_H";
 
@@ -540,6 +545,40 @@ public class NXQLQueryMaker implements QueryMaker {
         return q;
     }
 
+    protected static boolean findFulltextIndexOrField(Model model,
+            String[] nameref) {
+        boolean useIndex;
+        String name = nameref[0];
+        if (name.equals(NXQL.ECM_FULLTEXT)) {
+            name = Model.FULLTEXT_DEFAULT_INDEX;
+            useIndex = true;
+        } else {
+            // ecm:fulltext_indexname
+            // ecm:fulltext.field
+            char sep = name.charAt(NXQL.ECM_FULLTEXT.length());
+            if (sep != '.' && sep != '_') {
+                throw new QueryMakerException("Unknown field: " + name);
+            }
+            useIndex = sep == '_';
+            name = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
+            if (useIndex) {
+                if (!model.fulltextInfo.indexNames.contains(name)) {
+                    throw new QueryMakerException("No such fulltext index: "
+                            + name);
+                }
+            } else {
+                // find if there's an index holding just that field
+                String index = model.fulltextInfo.fieldToIndexName.get(name);
+                if (index != null) {
+                    name = index;
+                    useIndex = true;
+                }
+            }
+        }
+        nameref[0] = name;
+        return useIndex;
+    }
+
     /**
      * Collects various info about the query AST, and rewrites the toplevel AND
      * {@link Predicate}s of the WHERE clause into a single
@@ -797,11 +836,20 @@ public class NXQLQueryMaker implements QueryMaker {
                     throw new QueryMakerException(
                             "Fulltext disabled by configuration");
                 }
-                if (dialect.isFulltextTableNeeded()) {
-                    // we only use this for its fragment name
-                    props.add(model.FULLTEXT_SIMPLETEXT_PROP);
+                String[] nameref = new String[] { name };
+                boolean useIndex = findFulltextIndexOrField(model, nameref);
+                if (useIndex) {
+                    if (dialect.isFulltextTableNeeded()) {
+                        // we only use this for its fragment name
+                        props.add(model.FULLTEXT_SIMPLETEXT_PROP);
+                    }
+                    return;
+                } else {
+                    // LIKE on a field, continue analysing with that field
+                    name = nameref[0];
+                    // fall through
                 }
-                return;
+                // fall through
             }
             if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
@@ -1254,16 +1302,9 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitExpressionFulltext(Expression node, String name) {
-            if (name.equals(NXQL.ECM_FULLTEXT)) {
-                name = Model.FULLTEXT_DEFAULT_INDEX;
-            } else {
-                // ecm:fulltext_indexname
-                name = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
-                if (!model.fulltextInfo.indexNames.contains(name)) {
-                    throw new QueryMakerException("No such fulltext index: "
-                            + name);
-                }
-            }
+            String[] nameref = new String[] { name };
+            boolean useIndex = findFulltextIndexOrField(model, nameref);
+            name = nameref[0];
             if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " requires = or LIKE operator");
@@ -1272,26 +1313,56 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " requires literal string as right argument");
             }
-            String fulltextQuery = ((StringLiteral) node.rvalue).value;
-            fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
-            Column mainColumn = dataHierTable.getColumn(model.MAIN_KEY);
-            String[] info = dialect.getFulltextMatch(name, fulltextQuery,
-                    mainColumn, model, database);
-            String joinExpr = info[0];
-            String joinParam = info[1];
-            String whereExpr = info[2];
-            String whereParam = info[3];
-            String joinAlias = getFtJoinAlias();
-            if (joinExpr != null) {
-                // specific join table (H2)
-                joins.add(String.format(joinExpr, joinAlias));
-                if (joinParam != null) {
-                    joinsParams.add(joinParam);
+            if (useIndex) {
+                // use actual fulltext query using a dedicated index
+                String fulltextQuery = ((StringLiteral) node.rvalue).value;
+                fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
+                Column mainColumn = dataHierTable.getColumn(model.MAIN_KEY);
+                String[] info = dialect.getFulltextMatch(name, fulltextQuery,
+                        mainColumn, model, database);
+                String joinExpr = info[0];
+                String joinParam = info[1];
+                String whereExpr = info[2];
+                String whereParam = info[3];
+                String joinAlias = getFtJoinAlias();
+                if (joinExpr != null) {
+                    // specific join table (H2)
+                    joins.add(String.format(joinExpr, joinAlias));
+                    if (joinParam != null) {
+                        joinsParams.add(joinParam);
+                    }
                 }
-            }
-            buf.append(String.format(whereExpr, joinAlias));
-            if (whereParam != null) {
-                whereParams.add(whereParam);
+                buf.append(String.format(whereExpr, joinAlias));
+                if (whereParam != null) {
+                    whereParams.add(whereParam);
+                }
+            } else {
+                // single field matched with ILIKE
+                log.warn("No fulltext index configured for field " + name
+                        + ", falling back on LIKE query");
+                String value = ((StringLiteral) node.rvalue).value;
+
+                // fulltext translation into pseudo-LIKE syntax
+                Set<String> words = FullTextUtils.parseFullText(value, false);
+                if (words.isEmpty()) {
+                    // only stop words or empty
+                    value = "DONTMATCHANYTHINGFOREMPTYQUERY";
+                } else {
+                    value = "%"
+                            + StringUtils.join(new ArrayList<String>(words),
+                                    "%") + "%";
+                }
+
+                if (dialect.supportsIlike()) {
+                    visitReference(name);
+                    buf.append(" ILIKE ");
+                    visitStringLiteral(value);
+                } else {
+                    buf.append("LOWER(");
+                    visitReference(name);
+                    buf.append(") LIKE ");
+                    visitStringLiteral(value);
+                }
             }
         }
 
@@ -1310,9 +1381,7 @@ public class NXQLQueryMaker implements QueryMaker {
             } else {
                 buf.append("UPPER(");
                 node.lvalue.accept(this);
-                buf.append(")");
-                buf.append(" LIKE ");
-                buf.append("UPPER(");
+                buf.append(") LIKE UPPER(");
                 node.rvalue.accept(this);
                 buf.append(")");
             }
@@ -1329,7 +1398,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
-            Column column = findColumn(node.name, allowArray, inOrderBy);
+            visitReference(node.name);
+        }
+
+        protected void visitReference(String name) {
+            Column column = findColumn(name, allowArray, inOrderBy);
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getJdbcType() == Types.CLOB) {
@@ -1361,8 +1434,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitStringLiteral(StringLiteral node) {
+            visitStringLiteral(node.value);
+        }
+
+        public void visitStringLiteral(String string) {
             buf.append('?');
-            whereParams.add(node.value);
+            whereParams.add(string);
         }
 
         @Override
