@@ -7,5 +7,8 @@ Bundle-Vendor: Leroy Merlin
 Provide-Package: org.nuxeo.opensocial.gadgets.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core, org.nuxeo.ecm.core.schema, 
  org.nuxeo.ecm.directory.api
-Nuxeo-Component: OSGI-INF/gadgets-service-framework.xml
+Nuxeo-Component: OSGI-INF/gadgets-service-framework.xml,
+ OSGI-INF/directory-contrib.xml,
+ OSGI-INF/directory-ui-contrib.xml,
+ OSGI-INF/schema-contrib.xml
 
