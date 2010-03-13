@@ -159,6 +159,22 @@ function displayDocumentList(jsonObject) {
   currentPage = pageInfo.pageNumber;
   jQuery("#nxDocumentListPage").text([pageInfo.pageNumber + 1,"/",pageInfo.pages].join(""));
   gadgets.window.adjustHeight();
+  jQuery("#uploadBtn").click(function() {
+      jQuery('#formUpload').ajaxSubmit({
+        beforeSubmit: control,
+        success:function(){
+          refresh();
+        },
+        error: function(xhr,rs) {
+          alert(xhr.responseText);
+        },
+        url: getResourceUrl(),
+        resetForm: true,
+        clearForm: true,
+        type: 'POST'
+      });
+      return false;
+    });
 }
 
 function getDateForDisplay(datestr) {
@@ -252,22 +268,7 @@ function deleteDoc(obj) {
 }
 
 jQuery(document).ready(function(){
-  jQuery('#uploadBtn').click(function(){
-    jQuery('#formUpload').ajaxSubmit({
-        beforeSubmit: control,
-        success:function(){
-          refresh();
-        },
-        error: function(xhr,rs) {
-          alert(xhr.responseText);
-        },
-        url: getResourceUrl(),
-        resetForm: true,
-        clearForm: true,
-        type: 'POST'
-    });
-    return false;
-  });
+
 });
 
 function control(){

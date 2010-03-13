@@ -195,11 +195,11 @@ public class JSONDocument extends DocumentObject {
         DocumentViewCodecManager dvcm;
         try {
             dvcm = Framework.getService(DocumentViewCodecManager.class);
+            return dvcm.getUrlFromDocumentView(new DocumentViewImpl(doc), false,
+                    null);
         } catch (Exception e) {
             return null;
         }
-        return dvcm.getUrlFromDocumentView(new DocumentViewImpl(doc), false,
-                null);
     }
 
 }
