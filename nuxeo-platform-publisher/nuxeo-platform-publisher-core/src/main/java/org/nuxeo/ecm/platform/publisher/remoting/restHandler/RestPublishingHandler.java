@@ -24,6 +24,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -151,15 +152,17 @@ public class RestPublishingHandler extends DefaultObject {
     // void release(String sid);
     @POST
     @Path("release")
-    public void release(RemotePubParam param) {
+    public Response release(RemotePubParam param) {
         getPublisher().release((String) param.getParams().get(0));
+        return Response.ok().build();
     }
 
     // void release(String sid);
     @GET
     @Path("release/{sid}")
-    public void release(@PathParam("sid") String sid) {
+    public Response release(@PathParam("sid") String sid) {
         getPublisher().release(sid);
+        return Response.ok().build();
     }
 
     @GET
