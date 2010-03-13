@@ -56,7 +56,6 @@ gadgets.nuxeo.getFileActionUrl = function(id) {
   return this.getResourceUrl(id) + this.FILEACTION;
 }
 
-
 /**
  * Returns the current gadget's id
  */
@@ -64,10 +63,14 @@ gadgets.nuxeo.getGadgetId = function() {
   return window.name.split("-").slice(2).join("-");
 };
 
-
 gadgets.nuxeo.hasPermission = function(permissionName) {
   var tmp = gadgets.util.getUrlParameters().permission;
   var perms = tmp.substring(1, tmp.length-1).split(",");
+
+  if (perms.indexOf("Everything")>=0) {
+    return true;
+  }
+
   var b = false;
   jQuery.each(perms, function(i, p){
     if(jQuery.trim(p) == jQuery.trim(permissionName)) {

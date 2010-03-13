@@ -1,5 +1,7 @@
 package org.nuxeo.opensocial.dashboard;
 
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -80,6 +82,7 @@ public class Dashboard implements Serializable {
         return principal.isAnonymous();
     }
 
+    @Factory(value = "dashboardGadgetCategories", scope = EVENT)
     public List<String> getCategories() {
         ArrayList<String> result = new ArrayList<String>();
         try {
@@ -93,6 +96,7 @@ public class Dashboard implements Serializable {
         return result;
     }
 
+    @Factory(value = "dashboardGadgets", scope = EVENT)
     public List<Map<String, String>> getGadgets() {
         ArrayList<Map<String, String>> result = new ArrayList<Map<String, String>>();
 

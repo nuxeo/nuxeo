@@ -64,8 +64,7 @@ public class SimpleProxySelector extends ProxySelector {
         boolean proxy = true;
 
         for (String host : excludedHosts) {
-            if (uri.getHost()
-                    .endsWith(host)) {
+            if (uri.getHost().endsWith(host)) {
                 proxy = false;
             }
         }
@@ -94,7 +93,7 @@ public class SimpleProxySelector extends ProxySelector {
             }
 
         } catch (Exception e) {
-            log.error("Unable to get Proxy settings ",e);
+            log.error("Unable to get Proxy settings ", e);
             return Proxy.NO_PROXY;
         }
         return Proxy.NO_PROXY;
@@ -118,9 +117,7 @@ public class SimpleProxySelector extends ProxySelector {
     }
 
     private static boolean isProxySet() {
-        return Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null
-                && Framework.getProperty(SHINDIG_PROXY_PROXY_SET)
-                        .equals("true");
+        return ((Framework.getProperty(SHINDIG_PROXY_PROXY_SET) != null) && (Framework.getProperty(SHINDIG_PROXY_PROXY_SET).equals("true")));
     }
 
 }

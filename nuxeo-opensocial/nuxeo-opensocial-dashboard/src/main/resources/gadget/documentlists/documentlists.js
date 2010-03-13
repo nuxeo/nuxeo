@@ -109,8 +109,13 @@ function testGetDocumentLists() {
 
 function testHandleJSONResponse(req) {
    if (req.readyState == 4) {
-       var jsonObject = eval('(' + req.responseText + ')');
-       displayDocumentList(jsonObject);
+     if (req.status==200) {
+         var jsonObject = eval('(' + req.responseText + ')');
+         displayDocumentList(jsonObject);
+     } else {
+       alert("Received " + req.status + " from server");
+       alert(req.responseText);
+     }
    }
 }
 

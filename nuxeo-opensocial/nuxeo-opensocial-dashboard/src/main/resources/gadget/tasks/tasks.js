@@ -260,11 +260,16 @@ function getRestletUrl() {
 
 function testHandleJSONResponse(req) {
     if (req.readyState == 4) {
-        var jsonObject = eval('(' + req.responseText + ')');
-        var data = jsonObject;
-        displayTaskList(data);
+       if (req.status==200) {
+             var jsonObject = eval('(' + req.responseText + ')');
+             displayTaskList(jsonObject);
+         } else {
+           alert("Received " + req.status + " from server");
+           alert(req.responseText);
+         }
     }
 }
+
 function testGetTaskList() {
     var req = new XMLHttpRequest();
     req.open("GET", getRestletUrl(), true);
