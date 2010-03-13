@@ -106,6 +106,7 @@ public class JSONDocument extends DocumentObject {
     }
 
     @POST
+    @Override
     public Response doPost() {
         FileManager fm;
         try {

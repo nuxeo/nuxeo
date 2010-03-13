@@ -252,8 +252,8 @@ function deleteDoc(obj) {
 }
 
 jQuery(document).ready(function(){
-  jQuery('#formUpload').submit(function(){
-    jQuery(this).ajaxSubmit({
+  jQuery('#uploadBtn').click(function(){
+    jQuery('#formUpload').ajaxSubmit({
         beforeSubmit: control,
         success:function(){
           refresh();

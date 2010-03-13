@@ -44,8 +44,9 @@
          </div>
          <div id="addfile">
          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
-            <input type="file" name="file" id="uploadFile" size="20" /> <input  id="uploadBtn" type="submit" value="" />
+            <input type="file" name="file" id="uploadFile" size="20" />
         </form>
+         <input  id="uploadBtn" type="submit" value="" />
 
          </div>
     </div>
