@@ -143,7 +143,7 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
         for (DashBoardItem item : workItems) {
             String cat = item.getDirective();
             if (cat == null) {
-                cat = "None";
+                cat = "workflowDirectiveValidation"; // XXX NXP-4224
             }
             List<Map<String, String>> category = data.get(cat);
             if (category == null) {
