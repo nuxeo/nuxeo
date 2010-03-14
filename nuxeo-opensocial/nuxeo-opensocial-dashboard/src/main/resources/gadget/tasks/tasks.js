@@ -1,4 +1,5 @@
 var testMode = false;
+var errors=0;
 
 function requestTasks() {
 
@@ -185,11 +186,18 @@ function mkRow(dashBoardItem, i, directive) {
 }
 
 function response(obj) {
-    //var jsonObject = eval('(' + obj + ')');
-    //var data = jsonObject;
-    //alert("eval is "+eval(obj));
     var jsonObject = obj.data;
-    //alert("howdy"+jsonObject);
+    if (jsonObject==null) {
+        if (errors==0) {
+            errors=1;
+            requestTasks();
+        } else {
+            alert("Error, no result from server : " + obj.errors);
+        }
+        return;
+    } else {
+        errors=0;
+    }
 
     displayTaskList(jsonObject);
 };
