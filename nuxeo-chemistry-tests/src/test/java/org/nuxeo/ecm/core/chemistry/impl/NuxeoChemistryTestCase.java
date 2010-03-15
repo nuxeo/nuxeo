@@ -73,11 +73,15 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
 
     public static final String ROOT_FOLDER_NAME = ""; // from NuxeoProperty
 
+    public static final String DELETE_TRANSITION = "delete";
+
     protected Repository repository;
 
     protected Connection conn;
 
     protected SPI spi;
+
+    protected static String file5id;
 
     /**
      * Must be implemented by concrete testing classes.
@@ -216,7 +220,17 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
         file4 = session.createDocument(file4);
 
+        // create deleted file
+        DocumentModel file5 = new DocumentModelImpl("/testfolder1",
+                "testfile5", "File");
+        file5.setPropertyValue("dc:title", "title5");
+        file5 = session.createDocument(file5);
+        file5.followTransition(DELETE_TRANSITION);
+        session.saveDocument(file5);
+
         session.save();
+
+        file5id = file5.getId();
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
@@ -264,6 +278,39 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         cs = new SimpleContentStream("foo".getBytes(), "text/html", "foo.html");
         file.setContentStream(cs);
         file.save();
+    }
+
+    public void testDeletedInTrash() throws Exception {
+        Folder folder = conn.getFolder("/testfolder1");
+
+        ObjectEntry ent = spi.getObjectByPath("/testfolder1/testfile5", null);
+        assertNull("file 5 should be in trash", ent);
+        CMISObject ob = conn.getObject(spi.newObjectId(file5id));
+        assertNull("file 5 should be in trash", ob);
+
+        for (CMISObject child : folder.getChildren()) {
+            if (child.getName().equals("testfile5")) {
+                fail("file 5 should be in trash");
+            }
+        }
+        for (ObjectEntry child : spi.getChildren(folder, null, null, null)) {
+            if (child.getValue(Property.NAME).equals("testfile5")) {
+                fail("file 5 should be in trash");
+            }
+        }
+
+        String query = "SELECT cmis:objectId FROM cmis:document WHERE dc:title = 'title5'";
+        ListPage<ObjectEntry> col = spi.query(query, false, null, null);
+        assertTrue("file 5 should be in trash", col.isEmpty());
+
+        // test trashed child doesn't block folder delete
+        spi.deleteObject(spi.getObjectByPath("/testfolder1/testfile1", null),
+                true);
+        spi.deleteObject(spi.getObjectByPath("/testfolder1/testfile2", null),
+                true);
+        spi.deleteObject(spi.getObjectByPath("/testfolder1/testfile3", null),
+                true);
+        spi.deleteObject(folder, true);
     }
 
     public void testTrees() throws Exception {
@@ -566,8 +613,8 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         res = conn.query("SELECT * FROM MyDocType WHERE my:boolean = true",
                 false);
         assertEquals(1, res.size());
-        res = conn.query(
-                "SELECT * FROM MyDocType WHERE my:boolean <> FALSE", false);
+        res = conn.query("SELECT * FROM MyDocType WHERE my:boolean <> FALSE",
+                false);
         assertEquals(1, res.size());
 
         // datetime

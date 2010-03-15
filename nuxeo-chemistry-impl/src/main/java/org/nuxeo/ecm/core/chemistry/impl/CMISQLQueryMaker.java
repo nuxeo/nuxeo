@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -115,7 +118,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     public Map<String, Column> columns = new HashMap<String, Column>();
 
     /** qualifier to set of columns full quoted names, used to identify joins */
-    public Map<String, Set<String>> columnsPerQual = new HashMap<String, Set<String>>();
+    public Map<String, Set<String>> columnsPerQual = new LinkedHashMap<String, Set<String>>();
 
     /** joins added by fulltext match */
     public final List<String> fulltextJoins = new LinkedList<String>();
@@ -197,6 +200,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                     + StringUtils.join(errorMessages, ", ") + ")");
         }
 
+        // whether to ignore hidden and trashed documents
+        boolean skipHidden = true; // let system user see them?
+
         /** The columns we'll return. */
         List<SelectedColumn> columnsWhat = new ArrayList<SelectedColumn>();
 
@@ -253,6 +259,13 @@ public class CMISQLQueryMaker implements QueryMaker {
                 if (!fqns.contains(fqn)) {
                     columnsWhat.add(sc);
                 }
+            }
+            if (skipHidden) {
+                // add lifecycle state column
+                Table table = getTable(
+                        database.getTable(model.MISC_TABLE_NAME), qual);
+                Column col = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
+                recordCol(col, qual);
             }
         }
 
@@ -387,9 +400,12 @@ public class CMISQLQueryMaker implements QueryMaker {
             List<String> types = new ArrayList<String>();
             List<String> qms = new ArrayList<String>();
             for (String type : subTypes) {
-                if (skipFolderish
-                        && model.getDocumentTypeFacets(type).contains(
-                                FacetNames.FOLDERISH)) {
+                Set<String> facets = model.getDocumentTypeFacets(type);
+                if (skipFolderish && facets.contains(FacetNames.FOLDERISH)) {
+                    continue;
+                }
+                if (skipHidden
+                        && facets.contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
                     continue;
                 }
                 if (type.equals(model.ROOT_TYPE)) {
@@ -408,6 +424,17 @@ public class CMISQLQueryMaker implements QueryMaker {
                     StringUtils.join(qms, ", ")));
             for (String type : types) {
                 whereParams.add(type);
+            }
+
+            // lifecycle not deleted filter
+
+            if (skipHidden) {
+                Table misc = getTable(database.getTable(model.MISC_TABLE_NAME),
+                        qual);
+                Column lscol = misc.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
+                whereClauses.add(String.format("%s <> ?",
+                        lscol.getFullQuotedName()));
+                whereParams.add(LifeCycleConstants.DELETED_STATE);
             }
 
             // security check
@@ -649,7 +676,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         SelectedColumn sc = findColumn(c, qual, false);
         Column col = sc.column;
         if (col != null) {
-            recordCol(c, qual, col);
+            recordCol(col, qual);
         }
         return sc;
     }
@@ -661,16 +688,16 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (col == null) {
             throw new QueryMakerException("Column " + c + " is not queryable");
         }
-        recordCol(c, qual, col);
+        recordCol(col, qual);
         return col.getFullQuotedName();
     }
 
-    protected void recordCol(String c, String qual, Column col) {
+    protected void recordCol(Column col, String qual) {
         String fqn = col.getFullQuotedName();
         columns.put(fqn, col);
         Set<String> cpq = columnsPerQual.get(qual);
         if (cpq == null) {
-            columnsPerQual.put(qual, cpq = new HashSet<String>());
+            columnsPerQual.put(qual, cpq = new LinkedHashSet<String>());
         }
         cpq.add(fqn);
     }

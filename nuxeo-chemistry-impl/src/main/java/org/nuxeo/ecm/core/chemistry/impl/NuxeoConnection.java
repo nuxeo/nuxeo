@@ -112,6 +112,9 @@ public class NuxeoConnection implements Connection, SPI {
     /** map of Nuxeo and CMIS prop names to NXQL names */
     protected final Map<String, String> queryPropNames;
 
+    /** hide HiddenInNavigation and deleted objects */
+    protected final Filter documentFilter;
+
     /**
      * Creates a Chemistry connection given a Chemistry repository and
      * connection parameters.
@@ -176,6 +179,12 @@ public class NuxeoConnection implements Connection, SPI {
         }
         // actual NXQL mapping for some CMIS system props
         queryPropNames.putAll(NuxeoProperty.propertyNameToNXQL);
+
+        Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION,
+                false);
+        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE,
+                false);
+        documentFilter = new CompoundFilter(facetFilter, lcFilter);
     }
 
     protected static CoreSession createSession(String repositoryId,
@@ -333,10 +342,13 @@ public class NuxeoConnection implements Connection, SPI {
                 throw new ObjectNotFoundException(id);
             }
             DocumentModel doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                throw new ObjectNotFoundException(id);
+            }
             if (!doc.isFolder()) {
                 throw new IllegalArgumentException("Not a folder: " + id);
             }
-            docs = session.getChildren(docRef, null, getChildrenFilter(), null);
+            docs = session.getChildren(docRef, null, getDocumentFilter(), null);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -347,13 +359,12 @@ public class NuxeoConnection implements Connection, SPI {
         return SimpleListPage.fromPaging(all, paging);
     }
 
-    // hide HiddenInNavigation and deleted objects from children listing
-    protected Filter getChildrenFilter() {
-        Filter facetFilter = new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION,
-                false);
-        Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE,
-                false);
-        return new CompoundFilter(facetFilter, lcFilter);
+    protected Filter getDocumentFilter() {
+        return documentFilter;
+    }
+
+    protected boolean isFilteredOut(DocumentModel doc) throws ClientException {
+        return !documentFilter.accept(doc);
     }
 
     public ObjectEntry getFolderParent(ObjectId folder, String filter) {
@@ -393,6 +404,7 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
+    // returns null if not found
     protected NuxeoObjectEntry getObjectEntry(ObjectId object) {
         if (object instanceof NuxeoObjectEntry) {
             return (NuxeoObjectEntry) object;
@@ -402,7 +414,11 @@ public class NuxeoConnection implements Connection, SPI {
             if (!session.exists(docRef)) {
                 return null;
             }
-            return new NuxeoObjectEntry(session.getDocument(docRef), this);
+            DocumentModel doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                return null;
+            }
+            return new NuxeoObjectEntry(doc, this);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e);
         }
@@ -501,7 +517,11 @@ public class NuxeoConnection implements Connection, SPI {
     }
 
     public Set<QName> getAllowableActions(ObjectId object) {
-        return getObjectEntry(object).getAllowableActions();
+        ObjectEntry entry = getObjectEntry(object);
+        if (entry == null) {
+            throw new ObjectNotFoundException(object.getId());
+        }
+        return entry.getAllowableActions();
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {
@@ -516,7 +536,11 @@ public class NuxeoConnection implements Connection, SPI {
             if (!session.exists(docRef)) {
                 return null;
             }
-            return new NuxeoObjectEntry(session.getDocument(docRef), this);
+            DocumentModel doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                return null;
+            }
+            return new NuxeoObjectEntry(doc, this);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -528,7 +552,11 @@ public class NuxeoConnection implements Connection, SPI {
             if (!session.exists(docRef)) {
                 return null;
             }
-            return new NuxeoFolder(session.getDocument(docRef), this);
+            DocumentModel doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                return null;
+            }
+            return new NuxeoFolder(doc, this);
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -542,6 +570,9 @@ public class NuxeoConnection implements Connection, SPI {
                 return null;
             }
             doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                return null;
+            }
         } catch (ClientException e) {
             throw new RuntimeException(e); // TODO
         }
@@ -585,6 +616,9 @@ public class NuxeoConnection implements Connection, SPI {
                 throw new ObjectNotFoundException(objectId);
             }
             doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                throw new ObjectNotFoundException(objectId);
+            }
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -602,6 +636,9 @@ public class NuxeoConnection implements Connection, SPI {
                 throw new ObjectNotFoundException(documentId);
             }
             doc = session.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                throw new ObjectNotFoundException(documentId);
+            }
             NuxeoProperty.setContentStream(doc, contentStream, overwrite);
             session.saveDocument(doc);
             session.save();
@@ -641,6 +678,9 @@ public class NuxeoConnection implements Connection, SPI {
             boolean creation) {
         // TODO changeToken
         NuxeoObjectEntry entry = getObjectEntry(object);
+        if (entry == null) {
+            throw new ObjectNotFoundException(object.getId());
+        }
         for (Entry<String, Serializable> en : properties.entrySet()) {
             String key = en.getKey();
             Type type = getRepository().getType(entry.getTypeId());
@@ -722,10 +762,13 @@ public class NuxeoConnection implements Connection, SPI {
                 throw new ObjectNotFoundException(objectId);
             }
             NuxeoObjectEntry entry = getObjectEntry(object);
+            if (entry == null) {
+                throw new ObjectNotFoundException(objectId);
+            }
             if (entry.getBaseType() == BaseType.FOLDER) {
                 // check that there are no children left
                 DocumentModelList docs = session.getChildren(docRef, null,
-                        getChildrenFilter(), null);
+                        getDocumentFilter(), null);
                 if (docs.size() > 0) {
                     throw new ConstraintViolationException(
                             "Cannot delete non-empty folder: " + objectId);
@@ -753,6 +796,9 @@ public class NuxeoConnection implements Connection, SPI {
                 throw new ObjectNotFoundException(folderId);
             }
             NuxeoObjectEntry entry = getObjectEntry(folder);
+            if (entry == null) {
+                throw new ObjectNotFoundException(folderId);
+            }
             if (entry.getBaseType() != BaseType.FOLDER) {
                 throw new IllegalArgumentException("Not a folder: " + folderId);
             }
@@ -851,6 +897,7 @@ public class NuxeoConnection implements Connection, SPI {
             DocumentModel doc;
             try {
                 doc = session.getDocument(new IdRef(id));
+                // already filtered out in query
             } catch (ClientException e) {
                 log.error("Cannot fetch document: " + id, e);
                 continue;

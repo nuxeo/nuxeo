@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.CMISRuntimeException;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectId;
@@ -71,9 +72,10 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
     public List<CMISObject> getChildren() {
         DocumentModelList docs;
         try {
-            docs = connection.session.getChildren(doc.getRef());
+            docs = connection.session.getChildren(doc.getRef(), null,
+                    connection.getDocumentFilter(), null);
         } catch (ClientException e) {
-            throw new RuntimeException(e.toString(), e); // TODO
+            throw new CMISRuntimeException(e);
         }
         if (docs == null) {
             throw new IllegalArgumentException(doc.getId());
