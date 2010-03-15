@@ -1362,8 +1362,8 @@ public abstract class AbstractSession implements CoreSession,
                         && !(filter instanceof FacetFilter);
                 postFilter = postFilterPolicies || postFilterFilter;
                 String[] principals;
-				if (isAdministrator()) {
-					principals = null; // means: no security check needed
+                if (isAdministrator()) {
+                    principals = null; // means: no security check needed
                 } else {
                     principals = SecurityService.getPrincipalsToCheck(principal);
                 }
@@ -1438,7 +1438,7 @@ public abstract class AbstractSession implements CoreSession,
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
             String[] principals;
-            if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
+            if (isAdministrator()) {
                 principals = null; // means: no security check needed
             } else {
                 principals = SecurityService.getPrincipalsToCheck(principal);
