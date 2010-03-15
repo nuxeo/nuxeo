@@ -1,9 +1,7 @@
 package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,18 +21,11 @@ public class DocGadgetImpl extends AbstractGadget {
 
     private static final String GADGET_CATEGORY = "gadget:category";
 
-    private static final String GADGET_PLACEID = "gadget:placeID";// html
+    private static final String GADGET_PLACEID = "gadget:placeID";
 
-    // division
-    // id
-    private static final String GADGET_POSITION = "gadget:position";// position
+    private static final String GADGET_POSITION = "gadget:position";
 
-    // in the
-    // div
-    private static final String GADGET_COLLAPSED = "gadget:collapsed";// is the
-
-    // gadget
-    // collapsed
+    private static final String GADGET_COLLAPSED = "gadget:collapsed";
 
     private static final String GADGET_HEIGHT = "gadget:height";
 
@@ -52,7 +43,6 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public DocGadgetImpl(DocumentModel doc) {
         this.doc = doc;
-
     }
 
     public DocumentModel getDocument() {
@@ -105,7 +95,6 @@ public class DocGadgetImpl extends AbstractGadget {
         // shindig.signing.viewer-access-tokens-enabled=true
         // but this is unsafe in the case where you can have people
         // that can see other users dashboards
-
         return owner == null ? "unknown" : owner;
     }
 
@@ -117,34 +106,22 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public String getPlaceId() throws ClientException {
         String result = (String) doc.getPropertyValue(GADGET_PLACEID);
-        if (result == null) {
-            return "";
-        } else {
-            return result;
-        }
+        return (result == null) ? "" : result;
     }
 
     public int getPosition() throws ClientException {
         Long result = (Long) doc.getPropertyValue(GADGET_POSITION);
-        if (result == null) {
-            return 0;
-        } else {
-            return result.intValue();
-        }
+        return (result == null) ? 0 : result.intValue();
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getPreferences() throws ClientException {
         ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) doc.getPropertyValue(GADGET_PREFERENCES);
-
         if (list == null)
             return null;
-
         HashMap ret = new HashMap<String, String>();
         for (Map<String, String> map : list) {
-            String key = map.get("name");
-            String value = map.get("value");
-            ret.put(key, value);
+            ret.put(map.get("name"), map.get("value"));
         }
         return ret;
 
@@ -156,15 +133,12 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public boolean isCollapsed() throws ClientException {
         Boolean result = (Boolean) doc.getPropertyValue(GADGET_COLLAPSED);
-        if (result == null) {
-            return false;
-        } else {
-            return result;
-        }
+        return (result == null) ? false : result.booleanValue();
     }
 
     public boolean isEqualTo(Gadget gadget) {
-        return gadget.getId().equals(getId());
+        return gadget.getId()
+                .equals(getId());
     }
 
     public void setCategory(String category) throws ClientException {
@@ -211,7 +185,6 @@ public class DocGadgetImpl extends AbstractGadget {
             listPrefs.add(keyValue);
         }
         doc.setPropertyValue(GADGET_PREFERENCES, listPrefs);
-
     }
 
     public void setTitle(String title) throws ClientException {
@@ -221,17 +194,11 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public int getHeight() throws ClientException {
         Long result = (Long) doc.getPropertyValue(GADGET_HEIGHT);
-        if (result == null) {
-            return 0;
-
-        } else {
-            return result.intValue();
-        }
+        return (result == null) ? 0 : result.intValue();
     }
 
     public void setHeight(int height) throws ClientException {
         doc.setPropertyValue(GADGET_HEIGHT, height);
-
     }
 
     public void copyFrom(Gadget gadget) throws ClientException {
@@ -241,31 +208,18 @@ public class DocGadgetImpl extends AbstractGadget {
         this.setPosition(gadget.getPosition());
         this.setHeight(gadget.getHeight());
         this.setCollapsed(gadget.isCollapsed());
-
-        // Preferences must be URL decoded....
-        // TODO: should be changed
-        Map<String, String> preferences = gadget.getPreferences();
-        for (String key : preferences.keySet()) {
-            String value = preferences.get(key);
-            if (value != null) {
-                try {
-                    value = URLDecoder.decode(value, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    LOGGER.error("Unable to decode pref value : " + value);
-                }
-            }
-        }
-
-        this.setPreferences(preferences);
-
+        this.setPreferences(gadget.getPreferences());
     }
 
     public String getViewer() throws ClientException {
-        return doc.getCoreSession().getPrincipal().getName();
+        return doc.getCoreSession()
+                .getPrincipal()
+                .getName();
     }
 
     public boolean hasPermission(String permissioName) throws ClientException {
-        return doc.getCoreSession().hasPermission(doc.getRef(), permissioName);
+        return doc.getCoreSession()
+                .hasPermission(doc.getRef(), permissioName);
     }
 
     public void save() throws ClientException {
