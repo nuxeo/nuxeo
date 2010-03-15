@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -13,6 +15,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -20,6 +24,8 @@ import org.nuxeo.runtime.api.Framework;
  * Tests that the VideoImporter class works by importing a sample video
  */
 public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
+
+    public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
 
     protected static final String VIDEO_TYPE = "Video";
 
@@ -68,10 +74,11 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         DocumentType videoType = session.getDocumentType(VIDEO_TYPE);
         assertNotNull("Does our type exist?", videoType);
 
-        //TODO: check get/set properties on common properties of videos
+        // TODO: check get/set properties on common properties of videos
 
         // Create a new DocumentModel of our type in memory
-        DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
+        DocumentModel docModel = session.createDocumentModel("/", "doc",
+                VIDEO_TYPE);
         assertNotNull(docModel);
 
         assertNull(docModel.getPropertyValue("common:icon"));
@@ -89,11 +96,14 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/video.png", docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/video.png",
+                docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
-        assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
+        assertEquals("testUser",
+                docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("133.0", docModelResult.getPropertyValue("vid:duration").toString());
+        assertEquals("133.0",
+                docModelResult.getPropertyValue("vid:duration").toString());
 
     }
 
@@ -126,37 +136,49 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNotNull(docModel.getProperty("file:content"));
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
-        // check that we don't get PropertyExceptions when accessing the video
-        // and picture schemas
+        CommandAvailability ca = Framework.getService(
+                CommandLineExecutorService.class).getCommandAvailability(
+                "ffmpeg-storyboard");
+        if (!ca.isAvailable()) {
+            log.warn("ffmpeg is not avalaible, skipping the end of the test");
+            return;
+        }
 
         // the test video is very short:
         assertEquals(0.0, docModel.getPropertyValue("vid:duration"));
-        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        List<Map<String, Serializable>> storyboard = docModel.getProperty(
+                "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(2, storyboard.size());
         assertEquals(0.0, storyboard.get(0).get("timecode"));
         assertEquals("Test file.mov 1", storyboard.get(0).get("comment"));
         Blob thumb0 = (Blob) storyboard.get(0).get("content");
         assertEquals("00000.000-seconds.jpeg", thumb0.getFilename());
-        // is this an artifact of the very short video and ffmpeg or is this a bug?
+        // is this an artifact of the very short video and ffmpeg or is this a
+        // bug?
         assertEquals(10.0, storyboard.get(1).get("timecode"));
         assertEquals("Test file.mov 2", storyboard.get(1).get("comment"));
         Blob thumb1 = (Blob) storyboard.get(1).get("content");
         assertEquals("00010.000-seconds.jpeg", thumb1.getFilename());
 
         // check that the thumbnails where extracted
-        assertEquals("Thumbnail", docModel.getPropertyValue("picture:views/0/title"));
+        assertEquals("Thumbnail",
+                docModel.getPropertyValue("picture:views/0/title"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/0/height"));
-        assertEquals(1373L, docModel.getPropertyValue("picture:views/0/content/length"));
+        assertEquals(1373L,
+                docModel.getPropertyValue("picture:views/0/content/length"));
 
-        // the original video is also 100 pixels high hence the player preview has the same size
-        assertEquals("StaticPlayerView", docModel.getPropertyValue("picture:views/1/title"));
+        // the original video is also 100 pixels high hence the player preview
+        // has the same size
+        assertEquals("StaticPlayerView",
+                docModel.getPropertyValue("picture:views/1/title"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/1/height"));
-        assertEquals(1373L, docModel.getPropertyValue("picture:views/1/content/length"));
+        assertEquals(1373L,
+                docModel.getPropertyValue("picture:views/1/content/length"));
 
         // TODO: add picture metadata extraction where if
         // they make sense for videos (ie. extract these from the
-        // metadata already included in the video  and use them to
+        // metadata already included in the video and use them to
         // set the appropriate schema properties)
         assertNull("", docModel.getPropertyValue("picture:credit"));
 
