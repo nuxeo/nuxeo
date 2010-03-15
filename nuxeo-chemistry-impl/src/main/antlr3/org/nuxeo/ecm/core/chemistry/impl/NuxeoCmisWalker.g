@@ -398,7 +398,11 @@ func_name:
 literal returns [Serializable value]:
       NUM_LIT
         {
-            $value = Long.valueOf($NUM_LIT.text);
+            try {
+                $value = Long.valueOf($NUM_LIT.text);
+            } catch (NumberFormatException e) {
+                $value = Double.valueOf($NUM_LIT.text);
+            }
         }
     | STRING_LIT
         {

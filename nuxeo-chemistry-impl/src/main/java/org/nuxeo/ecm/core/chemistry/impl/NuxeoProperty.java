@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +78,11 @@ public class NuxeoProperty extends NuxeoPropertyBase {
 
     public Serializable getValue() {
         try {
-            return docHolder.getDocumentModel().getPropertyValue(name);
+            Serializable value = docHolder.getDocumentModel().getPropertyValue(name);
+            if (value instanceof Double) {
+                value = BigDecimal.valueOf(((Double) value).doubleValue());
+            }
+            return value;
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
@@ -89,6 +94,9 @@ public class NuxeoProperty extends NuxeoPropertyBase {
             if (readOnly) {
                 super.setValue(value);
             } else {
+                if (value instanceof BigDecimal) {
+                    value = Double.valueOf(((BigDecimal) value).doubleValue());
+                }
                 docHolder.getDocumentModel().setPropertyValue(name, value);
             }
         } catch (ClientException e) {

@@ -878,6 +878,7 @@ public class NuxeoConnection implements Connection, SPI {
         }
         page.setHasMoreItems(it.hasNext());
         page.setNumItems((int) iterable.size());
+        iterable.close();
         return page;
     }
 
@@ -904,6 +905,7 @@ public class NuxeoConnection implements Connection, SPI {
             }
             results.add(NuxeoObject.construct(doc, this));
         }
+        iterable.close();
         return results;
     }
 
@@ -994,6 +996,8 @@ public class NuxeoConnection implements Connection, SPI {
             }
             list.add(map);
         }
+        // we're replacing the iterable, close the old one
+        iterable.close();
         return new ListQueryResult(list);
     }
 

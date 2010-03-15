@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -553,6 +554,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         mydoc.setPropertyValue("dc:title", "My Doc");
         mydoc.setPropertyValue("my:boolean", Boolean.TRUE);
         mydoc.setPropertyValue("my:date", Calendar.getInstance());
+        mydoc.setPropertyValue("my:double", Double.valueOf(123.456));
         mydoc = session.createDocument(mydoc);
         session.save();
 
@@ -614,6 +616,14 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 false);
         assertEquals(1, res.size());
         res = conn.query("SELECT * FROM MyDocType WHERE my:boolean <> FALSE",
+                false);
+        assertEquals(1, res.size());
+
+        // decimal
+        res = conn.query("SELECT * FROM MyDocType WHERE my:double = 123.456",
+                false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM MyDocType WHERE my:double <> 123",
                 false);
         assertEquals(1, res.size());
 

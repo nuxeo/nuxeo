@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
@@ -205,6 +206,8 @@ public class NuxeoType implements Type {
             return PropertyType.DATETIME;
         } else if (primitive == LongType.INSTANCE) {
             return PropertyType.INTEGER;
+        } else if (primitive == DoubleType.INSTANCE) {
+            return PropertyType.DECIMAL;
         }
         return PropertyType.STRING;
     }

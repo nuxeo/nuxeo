@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -572,6 +573,9 @@ public class CMISQLQueryMaker implements QueryMaker {
             for (Column column : columns) {
                 String key = keys.get(i - 1);
                 Serializable value = column.getFromResultSet(rs, i++);
+                if (value instanceof Double) {
+                    value = BigDecimal.valueOf(((Double) value).doubleValue());
+                }
                 map.put(key, value);
             }
 
