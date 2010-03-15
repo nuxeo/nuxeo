@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.edit.lock;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -62,6 +65,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
  */
 @Name("lockActions")
 @Scope(ScopeType.EVENT)
+@Install(precedence = FRAMEWORK)
 public class LockActionsBean implements LockActions {
     // XXX: OG: How a remote calls could possibly work without the seam injected
     // components??
@@ -313,7 +317,7 @@ public class LockActionsBean implements LockActions {
         return lockDetails;
     }
 
-    private String getDocumentLockKey() {
+    protected String getDocumentLockKey() {
         StringBuilder result = new StringBuilder();
         result.append(documentManager.getPrincipal().getName()).append(':').append(
                 DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
