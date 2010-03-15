@@ -10,5 +10,6 @@ Nuxeo-Component: OSGI-INF/VersioningService.xml,
  OSGI-INF/VersioningModifierService.xml,
  OSGI-INF/VersioningContribs.xml,
  OSGI-INF/VersioningRuleContribs.xml,
- OSGI-INF/VersionManager-platform-contrib.xml
+ OSGI-INF/VersionManager-platform-contrib.xml,
+ OSGI-INF/versioning-initial-version-number-contrib.xml
 Eclipse-LazyStart: false

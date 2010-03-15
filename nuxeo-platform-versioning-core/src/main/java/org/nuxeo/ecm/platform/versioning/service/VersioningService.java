@@ -53,18 +53,30 @@ public class VersioningService extends DefaultComponent implements
         VersioningManager {
 
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.service.VersioningService";
+
     public static final String VERSIONING_EXTENSION_POINT_RULES = "rules";
+
     public static final String VERSIONING_EXTENSION_POINT_PROPERTIES = "properties";
+
+    public static final String INITIAL_VERSION_NUMBER_EXTENSION_POINT_PROPERTIES = "initialVersionNumber";
 
     private static final Log log = LogFactory.getLog(VersioningService.class);
 
     private final Map<String, EditBasedRuleDescriptor> editRuleDescriptors = new LinkedHashMap<String, EditBasedRuleDescriptor>();
+
     private final Map<String, AutoBasedRuleDescriptor> autoRuleDescriptors = new LinkedHashMap<String, AutoBasedRuleDescriptor>();
+
     private final Map<String, VersioningPropertiesDescriptor> propertiesDescriptors = new HashMap<String, VersioningPropertiesDescriptor>();
+
     private final Map<String, CreateSnapshotDescriptor> snapshotDescriptors = new HashMap<String, CreateSnapshotDescriptor>();
 
     private String minorVersionProperty;
+
     private String majorVersionProperty;
+
+    protected Long defaultMinorVersion;
+
+    protected Long defaultMajorVersion;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -146,6 +158,23 @@ public class VersioningService extends DefaultComponent implements
                     propertiesDescriptors.put(docType, descriptor);
                 }
             }
+        } else if (INITIAL_VERSION_NUMBER_EXTENSION_POINT_PROPERTIES.equals(extensionPoint)) {
+            InitialVersionNumberDescriptor descriptor = (InitialVersionNumberDescriptor) contribution;
+            try {
+                defaultMinorVersion = Long.parseLong(descriptor.getMinorVersion());
+            } catch (NumberFormatException e) {
+                defaultMinorVersion = 0L;
+                log.info("Default minor version number is not well formed : "
+                        + descriptor.getMinorVersion() + ", set value is 0");
+            }
+            try {
+                defaultMajorVersion = Long.parseLong(descriptor.getMajorVersion());
+            } catch (NumberFormatException e) {
+                defaultMajorVersion = 0L;
+                log.info("Default major version number is not well formed : "
+                        + descriptor.getMajorVersion() + ", set value is 0");
+            }
+
         }
     }
 
@@ -176,7 +205,8 @@ public class VersioningService extends DefaultComponent implements
         CoreSession coreSession = CoreInstance.getInstance().getSession(
                 document.getSessionId());
         if (coreSession == null) {
-            throw new ClientException("cannot get core session for doc: " + document);
+            throw new ClientException("cannot get core session for doc: "
+                    + document);
         }
         String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
 
@@ -477,7 +507,8 @@ public class VersioningService extends DefaultComponent implements
         return document;
     }
 
-    public String getVersionLabel(DocumentModel document) throws ClientException {
+    public String getVersionLabel(DocumentModel document)
+            throws ClientException {
         String documentType = document.getType();
         String majorPropName = getMajorVersionPropertyName(documentType);
         String minorPropName = getMinorVersionPropertyName(documentType);
@@ -544,7 +575,8 @@ public class VersioningService extends DefaultComponent implements
         CoreSession coreSession = CoreInstance.getInstance().getSession(
                 document.getSessionId());
         if (coreSession == null) {
-            throw new ClientException("cannot get core session for doc: " + document);
+            throw new ClientException("cannot get core session for doc: "
+                    + document);
         }
         String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
         if (lifecycleState == null) {
@@ -558,6 +590,14 @@ public class VersioningService extends DefaultComponent implements
             }
         }
         return SnapshotOptions.UNDEFINED;
+    }
+
+    public Long getDefaultMinorVersion() {
+        return defaultMinorVersion;
+    }
+
+    public Long getDefaultMajorVersion() {
+        return defaultMajorVersion;
     }
 
 }

@@ -23,7 +23,7 @@
 
   <implementation
     class="org.nuxeo.ecm.platform.versioning.service.VersioningService" />
-    
+
   <service>
     <provide interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
   </service>
@@ -46,7 +46,7 @@
         </versioningRuleEdit>
 
       </code>
-      
+
       The &lt;versioningRuleAuto&gt; is applied in the following situations:
       <li>
         When a document is being restored - so the version will be automatically
@@ -87,6 +87,25 @@
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.versioning.service.VersioningPropertiesDescriptor" />
+  </extension-point>
+
+  <extension-point name="initialVersionNumber">
+    <documentation>
+      This extension point allows to define the version number that the versioning set
+      for a new document.
+
+      <code>
+
+        <initialVersionNumber>
+          <majorVersion>1</majorVersion>
+          <minorVersion>0</minorVersion>
+        </initialVersionNumber>
+
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.InitialVersionNumberDescriptor" />
   </extension-point>
 
 </component>

@@ -84,21 +84,11 @@ public class DocVersioningEventListener implements EventListener {
 
         VersionChangeRequest req;
 
-        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED) && !doc.isVersion()
-                && !doc.isProxy()) {
+        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)
+                && !doc.isVersion() && !doc.isProxy()) {
             // set version to 1.0
-            try {
-                doc.setProperty(
-                        DocumentModelUtils.getSchemaName(majorPropName),
-                        DocumentModelUtils.getFieldName(majorPropName),
-                        Long.valueOf(1));
-                doc.setProperty(
-                        DocumentModelUtils.getSchemaName(minorPropName),
-                        DocumentModelUtils.getFieldName(minorPropName),
-                        Long.valueOf(0));
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
-            }
+            setInitialVersionNumber(doc, versioningService, majorPropName,
+                    minorPropName);
             return;
         } else if (eventId.equals(DocumentEventTypes.DOCUMENT_CHECKEDOUT)) {
             req = getVersionChangeRequest(doc, options);
@@ -144,6 +134,30 @@ public class DocVersioningEventListener implements EventListener {
             versioningService.incrementVersions(req);
         } catch (ClientException e) {
             log.error("Error incrementing versions for: " + doc, e);
+        }
+    }
+
+    /**
+     * Method called when the document is in creation state to set the first
+     * version Number
+     *
+     * @param doc
+     * @param versioningService
+     * @param majorPropName
+     * @param minorPropName
+     */
+    protected void setInitialVersionNumber(DocumentModel doc,
+            VersioningService versioningService, String majorPropName,
+            String minorPropName) {
+        try {
+            doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
+                    DocumentModelUtils.getFieldName(majorPropName),
+                    versioningService.getDefaultMajorVersion());
+            doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
+                    DocumentModelUtils.getFieldName(minorPropName),
+                    versioningService.getDefaultMinorVersion());
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 
