@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.video.storyboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.seam.ScopeType;
@@ -27,12 +28,21 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 
+/**
+ * Backing bean for the Storyboard view of an document with the video storyboard
+ * facet.
+ *
+ * @author ogrisel
+ */
 @Name("storyboardActions")
 @Scope(ScopeType.EVENT)
 public class StoryboardActions {
 
     public List<StoryboardItem> getItems(DocumentModel doc)
             throws PropertyException, ClientException {
+        if (!doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
+            return Collections.emptyList();
+        }
         int size = doc.getProperty(VideoConstants.STORYBOARD_PROPERTY).getValue(
                 List.class).size();
         List<StoryboardItem> items = new ArrayList<StoryboardItem>(size);
@@ -42,4 +52,5 @@ public class StoryboardActions {
         }
         return items;
     }
+
 }
