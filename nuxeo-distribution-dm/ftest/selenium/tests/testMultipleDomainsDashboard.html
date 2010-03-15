@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
 <title>testMultipleDomainsDashboard</title>
 </head>
 <body>
@@ -24,12 +24,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>Administrator</td>
+	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>Administrator</td>
+	<td>jdoe1</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -98,7 +98,27 @@
 </tr>
 <tr>
 	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
 	<td>nxpath/default@view_domains</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
 	<td></td>
 </tr>
 <tr>
@@ -157,6 +177,46 @@
 	<td></td>
 </tr>
 <tr>
+	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>nxpath/default@view_domains</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Default domain</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=New domain</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Dashboard</td>
 	<td></td>
@@ -167,8 +227,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=My workspaces</td>
+	<td>select</td>
+	<td>selectDashboardDomain:selectDashboardDomainMenu</td>
+	<td>label=New domain</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>selectDashboardDomain:dashboardDomainSubmitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=jdoe</td>
 	<td></td>
 </tr>
 <tr>
@@ -184,11 +254,6 @@
 <tr>
 	<td>verifyElementPresent</td>
 	<td>link=test workspace in new domain</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=My documents</td>
 	<td></td>
 </tr>
 <tr>
@@ -223,7 +288,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>link=My workspaces</td>
+	<td>link=jdoe</td>
 	<td></td>
 </tr>
 <tr>
@@ -263,7 +328,27 @@
 </tr>
 <tr>
 	<td>open</td>
+	<td>logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
 	<td>nxpath/default@view_domains</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
 	<td></td>
 </tr>
 <tr>
