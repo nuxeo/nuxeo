@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jbpm.graph.exe.ProcessInstance;
@@ -41,9 +42,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author arussel
  *
  */
-// renamed in META-INF/components.xml for easier configuration
-@Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
+@Name("jbpmHelper")
 @Scope(ScopeType.STATELESS)
+@Install(precedence = Install.FRAMEWORK)
 public class JbpmHelper {
 
     private JbpmService jbpmService;
