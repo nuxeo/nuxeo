@@ -66,7 +66,7 @@ public class StoryBoardConverter extends BaseVideoConverter implements
 
     public static final String THUMBNAIL_NUMBER_PARAM = "thumbnail_number";
 
-    protected int numberOfThumbnails = 8;
+    protected int numberOfThumbnails = 9;
 
     protected Map<String, String> commonParams = new HashMap<String, String>();
 

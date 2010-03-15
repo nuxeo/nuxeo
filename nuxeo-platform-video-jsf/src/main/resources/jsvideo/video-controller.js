@@ -15,7 +15,7 @@
  *     Quentin Lamerand <qlamerand@nuxeo.com>
  */
 
-function unhidePlayerAndPlay(videoPreviewId, videoPlayerId) {
+function unhidePlayerAndPlay(videoPreviewId, videoPlayerId, timecode) {
 	// hide the static jpeg preview
 	var preview = jQuery(document.getElementById(videoPreviewId));
 	preview.attr("style", "display: none");
@@ -26,8 +26,21 @@ function unhidePlayerAndPlay(videoPreviewId, videoPlayerId) {
 	var video = jQuery(document.getElementById(videoPlayerId));
 	video.attr("style", "display: block");
 
-	// return false to make the click on the thumbnail avoid
-	// triggering a redirect
+	if (timecode != null) {
+		timecode = parseInt(timecode);
+		
+		try {
+			var player = VideoController(videoPlayerId);
+			player.setTime(timecode);
+			player.play();
+		} catch (e) {
+			// ignore JS errors when seeking in the player to always
+			// return false to make the click on the thumbnail avoid
+			// triggering a redirect
+			
+			// error can happen if the VideoController is no fully loaded
+		}
+	}
 	return false;
 }
 
@@ -189,4 +202,5 @@ function VideoController(id) {
 		return this._timeUnitToMillisecond(this._movie.GetDuration());
 	}
 
+	return this;
 }

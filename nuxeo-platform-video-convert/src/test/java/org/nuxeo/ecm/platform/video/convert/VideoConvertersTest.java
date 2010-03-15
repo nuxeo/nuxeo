@@ -88,10 +88,10 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER,
                 ELEPHANTS_DREAM, null);
         List<Blob> blobs = result.getBlobs();
-        assertEquals(8, blobs.size());
+        assertEquals(9, blobs.size());
         assertEquals("00000.000-seconds.jpeg", blobs.get(0).getFilename());
-        assertEquals("00080.000-seconds.jpeg", blobs.get(1).getFilename());
-        assertEquals("00560.000-seconds.jpeg", blobs.get(7).getFilename());
+        assertEquals("00070.000-seconds.jpeg", blobs.get(1).getFilename());
+        assertEquals("00560.000-seconds.jpeg", blobs.get(8).getFilename());
         assertEquals(653.53, result.getProperty("duration"));
     }
 

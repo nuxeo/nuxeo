@@ -7,5 +7,11 @@
      xmlns:nxh="http://nuxeo.org/nxweb/html"
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
-
+     
+  <ui:repeat var="item" value="#{storyboardActions.getItems(videoDocument)}">
+    <a id="videoPlayerObjectStaticPreview" href="#play"
+      onclick="return unhidePlayerAndPlay('videoPlayerObjectStaticPreview', 'videoPlayerObject', '#{item.timecode}');">
+      <nxh:graphicImage url="#{item.url}" />
+    </a>
+  </ui:repeat>
 </div>
