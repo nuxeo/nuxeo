@@ -123,6 +123,7 @@
     <td style="width:70%">
     <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
       <input type="file" name="file" id="file" size="20" />
+      <input type="hidden" name="resize_width" value="default" />
     </form>
   </td>
   </tr>

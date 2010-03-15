@@ -90,14 +90,17 @@ public class GadgetDocument extends DocumentObject {
             } else {
                 if (!"".equals(blob.getFilename())) {
                     try {
-                        int resizeWidth = DEFAULT_SIZE_WIDTH;
-                        try {
-                            resizeWidth = Integer.parseInt(form.getString("resize_width"));
-                        } catch (NumberFormatException e) {
-                            log.info("No width for resize picture, use default size");
-                        }
 
-                        blob = getResizedBlobl(blob, resizeWidth);
+                        String resize = form.getString("resize_width");
+                        if (resize != null) {
+                            int resizeWidth = DEFAULT_SIZE_WIDTH;
+                            try {
+                                resizeWidth = Integer.parseInt(resize);
+                            } catch (NumberFormatException e) {
+                                log.info("No width for resize picture, use default size");
+                            }
+                            blob = getResizedBlobl(blob, resizeWidth);
+                        }
 
                         Property p = doc.getProperty(xpath);
                         p.getParent()

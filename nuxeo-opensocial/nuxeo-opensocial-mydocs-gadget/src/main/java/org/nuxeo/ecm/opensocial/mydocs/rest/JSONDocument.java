@@ -58,11 +58,11 @@ public class JSONDocument extends DocumentObject {
         String currentPage = ctx.getRequest()
                 .getParameter("page");
 
-        Integer index;
+        Integer index = 0;
         try {
-            index = Integer.valueOf(currentPage);
+            int _ind = Integer.valueOf(currentPage);
+            index = (_ind < 0) ? index : _ind;
         } catch (Exception e) {
-            index = 0;
         }
 
         Map<String, Object> all = new HashMap<String, Object>();

@@ -172,6 +172,7 @@
               </td>
               <td>
                 <input type="file" name="file" id="file" size="12" />
+                <input type="hidden" name="resize_width" value="default" />
               </td>
 
             </tr>
