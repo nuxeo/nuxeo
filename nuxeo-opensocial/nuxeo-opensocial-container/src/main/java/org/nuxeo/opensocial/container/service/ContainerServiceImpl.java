@@ -59,8 +59,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public Container getContainer(Map<String, String> gwtParams)
             throws ContainerServiceException {
         try {
-            return Framework.getService(FactoryManager.class).getContainerFactory().createContainer(
-                    gwtParams);
+            return Framework.getService(FactoryManager.class)
+                    .getContainerFactory()
+                    .createContainer(gwtParams);
         } catch (Exception e) {
             log.error("Get container error " + e, e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -71,7 +72,8 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
      * Save preferences of gadget with form parameter
      * 
      * @param gadget
-     * @param form : new preferences
+     * @param form
+     *            : new preferences
      * @param gwtParams
      * @return GadgetBean
      * @throws ContainerServiceException
@@ -79,7 +81,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public GadgetBean saveGadgetPreferences(GadgetBean gadget, String form,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
-            Map<String, String> updatePrefs = null;
+            Map<String, String> updatePrefs = new HashMap<String, String>();
             if (form != null) {
                 updatePrefs = getParameters(form);
                 if (updatePrefs.containsKey("title"))
@@ -88,13 +90,15 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
             List<PreferencesBean> userPrefs = gadget.getUserPrefs();
             for (PreferencesBean bean : userPrefs) {
                 if (!updatePrefs.containsKey(bean.getName())) {
-                    if (bean.getDataType().equals("BOOL")) {
+                    if (bean.getDataType()
+                            .equals("BOOL")) {
                         updatePrefs.put(bean.getName(), "false");
                     }
                 }
             }
-            return Framework.getService(FactoryManager.class).getGadgetFactory().savePreferences(
-                    gadget, updatePrefs, gwtParams);
+            return Framework.getService(FactoryManager.class)
+                    .getGadgetFactory()
+                    .savePreferences(gadget, updatePrefs, gwtParams);
         } catch (Exception e) {
             log.error("saveGadgetPreferences " + e, e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -112,7 +116,8 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
 
-            GadgetManager factory = Framework.getService(FactoryManager.class).getGadgetFactory();
+            GadgetManager factory = Framework.getService(FactoryManager.class)
+                    .getGadgetFactory();
             for (GadgetBean gadget : beans) {
                 factory.saveGadget(gadget, gwtParams);
             }
@@ -134,8 +139,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public GadgetBean removeGadget(GadgetBean gadget,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
-            Framework.getService(FactoryManager.class).getGadgetFactory().removeGadget(
-                    gadget, gwtParams);
+            Framework.getService(FactoryManager.class)
+                    .getGadgetFactory()
+                    .removeGadget(gadget, gwtParams);
         } catch (Exception e) {
             log.error(e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -153,7 +159,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public Map<String, ArrayList<String>> getGadgetList(
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
-            return Framework.getService(FactoryManager.class).getContainerFactory().getGadgetList();
+            return Framework.getService(FactoryManager.class)
+                    .getContainerFactory()
+                    .getGadgetList();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -171,8 +179,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public GadgetBean addGadget(String gadgetName, Map<String, String> gwtParams)
             throws ContainerServiceException {
         try {
-            return Framework.getService(FactoryManager.class).getContainerFactory().addGadget(
-                    gadgetName, gwtParams);
+            return Framework.getService(FactoryManager.class)
+                    .getContainerFactory()
+                    .addGadget(gadgetName, gwtParams);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -195,7 +204,8 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     /**
      * Get a map of preferences
      * 
-     * @param form : html form result (&name=result&...)
+     * @param form
+     *            : html form result (&name=result&...)
      * @return Map of parameters key : name, value : result
      */
     private Map<String, String> getParameters(String form) {
@@ -229,8 +239,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public Container saveLayout(Map<String, String> gwtParams, String layout)
             throws ContainerServiceException {
         try {
-            return Framework.getService(FactoryManager.class).getContainerFactory().saveLayout(
-                    gwtParams, layout);
+            return Framework.getService(FactoryManager.class)
+                    .getContainerFactory()
+                    .saveLayout(gwtParams, layout);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ContainerServiceException(e.getMessage(), e);
@@ -240,8 +251,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     public GadgetBean saveGadget(GadgetBean gadget,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
-            return Framework.getService(FactoryManager.class).getGadgetFactory().saveGadget(
-                    gadget, gwtParams);
+            return Framework.getService(FactoryManager.class)
+                    .getGadgetFactory()
+                    .saveGadget(gadget, gwtParams);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
             throw new ContainerServiceException(e.getMessage(), e);
