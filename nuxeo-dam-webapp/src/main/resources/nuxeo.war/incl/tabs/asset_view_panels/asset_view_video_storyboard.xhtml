@@ -1,0 +1,28 @@
+<div class="togglePanel"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+     
+  <a4j:outputPanel id="storyboardPanel">
+    <div class="togglePanelTitleBox">
+      <h3>
+       <a href="#nogo" class="unfolded" onclick="return togglePanel(this)">
+         <h:outputText value="#{messages['label.header.info.storyboard']}"/>
+       </a>
+      </h3>
+      <div class="dataBlockActions"></div>
+      <div style="clear:both;"></div>
+    </div>
+    <div class="togglePanelBody" style="max-height: 400px; overflow-y: scroll; text-align: center">
+      <ui:include src="/incl/video/storyboard.xhtml">
+        <ui:param name="videoDocument" value="#{documentActions.currentSelection}" />
+      </ui:include>
+    </div>
+  </a4j:outputPanel>
+</div>

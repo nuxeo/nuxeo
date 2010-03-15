@@ -59,6 +59,7 @@
 
     <doctype name="Video" extends="Document">
       <schema name="video"/>
+      <schema name="picture"/>
       <schema name="dam_common"/>
       <schema name="ip_rights"/>
       <schema name="common"/>
@@ -69,6 +70,8 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Downloadable" />
+      <facet name="HasStoryBoard" />
+      <facet name="HasVideoPreview" />
     </doctype>
 
     <doctype name="Audio" extends="Document">

@@ -11,7 +11,7 @@
 
     <h:outputText
       value="#{field_0}"
-      rendered="#{layoutValue.hasSchema('picture') and !empty layoutValue.picture.views}"/>
+      rendered="#{layoutValue.hasSchema('picture') and !layoutValue.hasSchema('file') and !empty layoutValue.picture.views}"/>
     <h:outputText
       value="#{field_1}"
       rendered="#{layoutValue.hasSchema('file')}"/>
@@ -21,7 +21,7 @@
 
     <h:inputText
       value="#{field_0}"
-      rendered="#{layoutValue.hasSchema('picture') and !empty layoutValue.picture.views}"/>
+      rendered="#{layoutValue.hasSchema('picture') and !layoutValue.hasSchema('file') and !empty layoutValue.picture.views}"/>
     <h:inputText
       value="#{field_1}"
       rendered="#{layoutValue.hasSchema('file')}"/>    

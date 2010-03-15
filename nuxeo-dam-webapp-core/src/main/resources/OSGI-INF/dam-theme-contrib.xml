@@ -38,16 +38,15 @@
 
     <view name="dam filtered search results" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/filtered_search_results.xhtml
-      </template>
+      <template>incl/filtered_search_results.xhtml</template>
       <resource>dam.css</resource>
     </view>
 
     <view name="dam selection view" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/selection_view.xhtml
-      </template>
+      <template>incl/selection_view.xhtml</template>
       <resource>dam.css</resource>
+      <resource>video-controller.js</resource>
     </view>
 
     <view name="dam includes" template-engine="jsf-facelets">
@@ -77,6 +76,10 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
 
+    <resource name="video-controller.js">
+      <path>jsvideo/video-controller.js</path>
+    </resource>
+
     <resource name="jquery.js">
       <path>scripts/jquery.js</path>
     </resource>
@@ -101,8 +104,7 @@
       <path>jscalendar/calendar-setup.js</path>
     </resource>
     <resource name="calendar-en.js">
-      <path>jscalendar/lang/calendar-en.js
-      </path>
+      <path>jscalendar/lang/calendar-en.js</path>
     </resource>
     <resource name="calendar.css">
       <path>css/calendar.css</path>

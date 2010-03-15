@@ -10,7 +10,7 @@
   class="deliveryBlock">
 
   <a4j:form>
-    <c:if test="#{documentActions.currentSelection.hasSchema('picture')}">
+    <c:if test="#{!documentActions.currentSelection.hasSchema('file') and documentActions.currentSelection.hasSchema('picture')}">
     <fieldset>
       <legend><h:outputText value="#{messages['label.delivery.intro.url']}" /></legend>
       <h:panelGrid styleClass="dataInput" columns="2" columnClasses="labelColumn, fieldColumn">
