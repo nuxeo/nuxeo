@@ -537,7 +537,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
     public void testQuery() throws Exception {
         String query;
         Collection<CMISObject> res;
-        Collection<ObjectEntry> col;
+        List<ObjectEntry> col;
         ObjectEntry ob;
         Iterator<ObjectEntry> it;
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
@@ -626,6 +626,11 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         res = conn.query("SELECT * FROM MyDocType WHERE my:double <> 123",
                 false);
         assertEquals(1, res.size());
+        col = spi.query("SELECT * FROM MyDocType", false, null, null);
+        assertEquals(1, col.size());
+        assertEquals(BigDecimal.valueOf(123.456), col.get(0).getValue(
+                "my:double"));
+        assertTrue(col.get(0).getValue("my:double") instanceof BigDecimal);
 
         // datetime
         res = conn.query(
