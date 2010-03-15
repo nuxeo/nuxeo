@@ -23,8 +23,4 @@
     </xs:sequence>
   </xs:complexType>
   
-  
-  
-  <xs:element name="streamable" type="nxs:content"/>
-
 </xs:schema>
