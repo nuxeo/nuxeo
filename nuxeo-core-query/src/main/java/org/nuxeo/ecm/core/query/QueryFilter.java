@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.query;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -36,9 +37,11 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  */
 public class QueryFilter {
 
-    public static final QueryFilter EMPTY = new QueryFilter(null,
+    public static final QueryFilter EMPTY = new QueryFilter(null, null,
             new String[0], null,
             Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+
+    protected final Principal principal;
 
     protected final String[] principals;
 
@@ -52,10 +55,11 @@ public class QueryFilter {
 
     protected final long offset;
 
-    public QueryFilter(String[] principals, String[] permissions,
-            FacetFilter facetFilter,
+    public QueryFilter(Principal principal, String[] principals,
+            String[] permissions, FacetFilter facetFilter,
             Collection<SQLQuery.Transformer> queryTransformers, long limit,
             long offset) {
+        this.principal = principal;
         this.principals = principals;
         this.permissions = permissions;
         this.facetFilter = facetFilter;
@@ -66,11 +70,16 @@ public class QueryFilter {
 
     public static QueryFilter withoutLimitOffset(QueryFilter other) {
         return new QueryFilter( //
+                other.principal, //
                 other.principals, //
                 other.permissions, //
                 other.facetFilter, //
                 other.queryTransformers, //
                 0, 0);
+    }
+
+    public Principal getPrincipal() {
+        return principal;
     }
 
     public String[] getPrincipals() {

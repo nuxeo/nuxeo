@@ -16,13 +16,15 @@
  */
 package org.nuxeo.ecm.core.query.test;
 
+import java.security.Principal;
+
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 
 /**
  * Dummy security policy denying all access to File objects with a query
@@ -45,7 +47,7 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
         public static final Predicate NO_FILE = new Predicate(new Reference(
                 "ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
 
-        public SQLQuery transform(SQLQuery query) {
+        public SQLQuery transform(Principal principal, SQLQuery query) {
             WhereClause where = query.where;
             Predicate predicate;
             if (where == null || where.predicate == null) {

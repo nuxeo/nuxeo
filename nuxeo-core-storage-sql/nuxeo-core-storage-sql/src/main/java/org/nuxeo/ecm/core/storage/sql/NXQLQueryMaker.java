@@ -197,7 +197,7 @@ public class NXQLQueryMaker implements QueryMaker {
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
-            sqlQuery = transformer.transform(sqlQuery);
+            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
         }
 
         /*

@@ -1368,7 +1368,7 @@ public abstract class AbstractSession implements CoreSession,
                     principals = SecurityService.getPrincipalsToCheck(principal);
                 }
                 String[] permissions = securityService.getPermissionsToCheck(permission);
-                QueryFilter queryFilter = new QueryFilter(principals,
+                QueryFilter queryFilter = new QueryFilter(principal, principals,
                         permissions,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
@@ -1445,7 +1445,7 @@ public abstract class AbstractSession implements CoreSession,
             }
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
-            QueryFilter queryFilter = new QueryFilter(principals, permissions,
+            QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
                     null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
             return getSession().queryAndFetch(query, queryType, queryFilter,
                     params);

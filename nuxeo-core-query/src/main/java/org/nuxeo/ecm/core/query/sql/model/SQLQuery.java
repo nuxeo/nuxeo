@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.security.Principal;
+
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -244,12 +246,12 @@ public class SQLQuery implements ASTNode {
      */
     public interface Transformer {
         Transformer IDENTITY = new Transformer() {
-            public SQLQuery transform(SQLQuery query) {
+            public SQLQuery transform(Principal principal, SQLQuery query) {
                 return query;
             }
         };
 
-        SQLQuery transform(SQLQuery query);
+        SQLQuery transform(Principal principal, SQLQuery query);
     }
 
 }
