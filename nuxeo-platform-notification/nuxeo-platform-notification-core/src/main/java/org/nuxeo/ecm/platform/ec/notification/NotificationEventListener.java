@@ -266,7 +266,7 @@ public class NotificationEventListener implements PostCommitEventListener {
 
         // Transferring all data from event to email
         for (String key : eventInfo.keySet()) {
-            mail.put(key, eventInfo.get(key));
+            mail.put(key, eventInfo.get(key) == null ? "" : eventInfo.get(key));
             log.debug("Mail prop: " + key);
         }
 
