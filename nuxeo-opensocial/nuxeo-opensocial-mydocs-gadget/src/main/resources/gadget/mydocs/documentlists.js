@@ -14,8 +14,7 @@ function getUserLang() {
 }
 
 function getResourceUrl() {
-  var regEx = new RegExp(",", "g");
-  return [getNuxeoClientSideUrl(),"site/myDocsRestAPI/",gadgetId,"/",path.join().replace(regEx, "/")].join("");
+  return [getNuxeoClientSideUrl(),"site/myDocsRestAPI/",gadgetId,"/",path.join("/"),((path.length > 0) ? "/" : "")].join("");
 }
 
 function getRestletUrl() {
@@ -190,7 +189,7 @@ function getDateForDisplay(datestr) {
 }
 
 function upFolder() {
-  path.shift();
+  path.pop();
   refresh();
 }
 

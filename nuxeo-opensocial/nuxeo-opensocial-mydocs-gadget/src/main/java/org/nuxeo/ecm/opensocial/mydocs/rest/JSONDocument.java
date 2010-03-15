@@ -12,6 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.sf.json.JSON;
@@ -44,7 +45,7 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "JSONDocument", superType ="Document")
+@WebObject(type = "JSONDocument", superType = "Document")
 public class JSONDocument extends DocumentObject {
     private static final int PAGE_SIZE = 10;
 
@@ -54,7 +55,8 @@ public class JSONDocument extends DocumentObject {
     @GET
     @Override
     public Object doGet() {
-        String currentPage = ctx.getRequest().getParameter("page");
+        String currentPage = ctx.getRequest()
+                .getParameter("page");
 
         Integer index;
         try {
@@ -80,7 +82,8 @@ public class JSONDocument extends DocumentObject {
 
             summary.put("pages", provider.getNumberOfPages());
             summary.put("pageNumber", index);
-            summary.put("id", getDocument().getRef().toString());
+            summary.put("id", getDocument().getRef()
+                    .toString());
 
             all.put("summary", summary);
 
@@ -123,9 +126,11 @@ public class JSONDocument extends DocumentObject {
                     true, blob.getFilename());
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.serverError().build();
+            return Response.serverError()
+                    .build();
         }
-        return Response.ok().build();
+        return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)
+                .build();
 
     }
 
@@ -157,8 +162,11 @@ public class JSONDocument extends DocumentObject {
 
     public DocumentObject newDocument(String path) {
         try {
-            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
-            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+            PathRef pathRef = new PathRef(doc.getPath()
+                    .append(path)
+                    .toString());
+            DocumentModel doc = ctx.getCoreSession()
+                    .getDocument(pathRef);
             return (DocumentObject) newObject("JSONDocument", doc);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -195,8 +203,8 @@ public class JSONDocument extends DocumentObject {
         DocumentViewCodecManager dvcm;
         try {
             dvcm = Framework.getService(DocumentViewCodecManager.class);
-            return dvcm.getUrlFromDocumentView(new DocumentViewImpl(doc), false,
-                    null);
+            return dvcm.getUrlFromDocumentView(new DocumentViewImpl(doc),
+                    false, null);
         } catch (Exception e) {
             return null;
         }
