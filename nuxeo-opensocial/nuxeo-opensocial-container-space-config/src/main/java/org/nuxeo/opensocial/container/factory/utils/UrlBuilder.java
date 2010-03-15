@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * URlBuilder is builder of gadget url; Util for render of gadget into Shinding
  * opensocial server
- * 
+ *
  */
 public class UrlBuilder {
 
@@ -74,6 +74,8 @@ public class UrlBuilder {
 
     private static final String PARENT_KEY = "parent";
 
+    private static final boolean SHINDIG_DEBUG = ("true".equals(Framework.getProperty("shindig.gadget.debug")));
+
     private static int containerId = 0;
 
     public static String buildShindigUrl(Gadget gadget, String serverBase,
@@ -107,7 +109,11 @@ public class UrlBuilder {
         sb.append("up_" + gadget.getHeight() + "&");
 
         // turn on debugging for the JS (avoid compression)
-        sb.append("debug=1" + "&");
+        if(SHINDIG_DEBUG) {
+            sb.append("debug=1" + "&");
+        } else {
+            sb.append("debug=0" + "&");
+        }
 
         // st=qdlfjqsmfkjqf&
         try {
@@ -127,7 +133,7 @@ public class UrlBuilder {
     /**
      * Get Gadget Definition with GadgetService Gadget Definition is google xml
      * gadget
-     * 
+     *
      * @param name
      * @return
      * @throws Exception
@@ -146,7 +152,7 @@ public class UrlBuilder {
     /**
      * Build a url format parameters with preferences of gadget Util for render
      * gadget into Shinding opensocial server
-     * 
+     *
      * @param prefs
      * @return String &up_key=value&up..
      */
