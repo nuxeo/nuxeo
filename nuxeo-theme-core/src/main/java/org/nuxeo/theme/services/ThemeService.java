@@ -341,6 +341,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
         for (Object contrib : contribs) {
             ThemeDescriptor themeDescriptor = (ThemeDescriptor) contrib;
+            themeDescriptor.setContext(extension.getContext()); 
             themeDescriptor.setConfigured(true);
 
             String src = themeDescriptor.getSrc();

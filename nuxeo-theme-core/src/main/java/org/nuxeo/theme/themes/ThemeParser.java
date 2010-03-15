@@ -91,8 +91,7 @@ public class ThemeParser {
                 try {
                     url = new URL(src);
                 } catch (MalformedURLException e) {
-                    url = Thread.currentThread().getContextClassLoader().getResource(
-                            src);
+                    url = themeDescriptor.getContext().getResource(src);
                 }
                 if (url == null) {
                     throw new ThemeIOException("Incorrect theme URL: " + src);

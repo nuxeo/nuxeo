@@ -21,12 +21,15 @@ import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
 @XObject("theme")
 public class ThemeDescriptor implements Type {
 
+    protected RuntimeContext ctx; 
+    
     private boolean configured = false;
 
     private boolean customized = false;
@@ -46,6 +49,15 @@ public class ThemeDescriptor implements Type {
     @XNode("src")
     public String src = "";
 
+    
+    public void setContext(RuntimeContext ctx) {
+        this.ctx = ctx;
+    }
+    
+    public RuntimeContext getContext() {
+        return ctx;
+    }
+    
     public TypeFamily getTypeFamily() {
         return TypeFamily.THEME;
     }
