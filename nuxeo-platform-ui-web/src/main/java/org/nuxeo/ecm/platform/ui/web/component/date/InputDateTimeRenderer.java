@@ -137,7 +137,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         // deutsh and arabic locals
 
         // days
-        jsFormat = jsFormat.replace("dd", "%b");
+        jsFormat = jsFormat.replace("dd", "%d");
         if (!jsFormat.contains("%d")) {
             jsFormat = jsFormat.replace("d", "%e");
         }
