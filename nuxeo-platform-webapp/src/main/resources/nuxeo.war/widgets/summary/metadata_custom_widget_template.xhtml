@@ -8,7 +8,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<c:if test="#{!empty currentDocumentType.layouts['view'].layouts}">
+<nxu:set var="hasSpecificFields" value="#{!empty currentDocumentType.getLayouts('view', 'any')}">
+<c:if test="${hasSpecificFields}">
   <h3 class="summaryTitle">
     <h:outputText value="#{messages['action.view.metadata.specific']}" />
   </h3>
@@ -17,5 +18,6 @@
     <nxl:documentLayout value="#{currentDocument}" mode="view" />
   </div>
 </c:if>
+</nxu:set>
 
 </div>
