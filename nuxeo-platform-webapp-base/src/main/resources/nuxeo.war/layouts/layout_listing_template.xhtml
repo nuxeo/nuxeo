@@ -9,7 +9,7 @@
 
 <c:if test="false">
   Layout template applying to an item instance of SelectDataModel named "documents"
-  
+
   Other needed parameters are:
   - provider: instance of a ResultProvider to handle sort
   - layoutListingStatus: iteration status, used to print table header
@@ -39,6 +39,9 @@
                     id="#{layoutColumn.widgets[0].name}_header_sort">
                     <f:param name="providerName" value="#{provider.name}" />
                     <f:param name="sortColumn" value="#{layoutColumn.properties.sortPropertyName}" />
+                    <c:if test="#{!empty layoutColumn.properties.defaultSortAscending}" >
+                      <f:param name="defaultSortAscending" value="#{layoutColumn.properties.defaultSortAscending}" />
+                    </c:if>
                     <h:outputText value="#{layoutColumn.widgets[0].label}"
                       rendered="#{!layoutColumn.widgets[0].translated}" />
                     <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"

@@ -42,12 +42,15 @@ public class SortActionsBean implements SortActions, Serializable {
     private static final long serialVersionUID = 6824092797019313562L;
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
+    @RequestParameter("defaultSortAscending")
+    protected Boolean defaultSortAscending = true;
+
     @RequestParameter("sortColumn")
     protected String newSortColumn = "dc:title";
 
     @In(required = false, create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
-    
+
     @RequestParameter("invalidateSeamVariables")
     protected String invalidateSeamVariables;
 
@@ -62,6 +65,13 @@ public class SortActionsBean implements SortActions, Serializable {
     @Deprecated
     public void destroy() {
         log.debug("Destroy...");
+    }
+
+    protected boolean getDefaultSortOrder(String column) {
+        if (defaultSortAscending!=null) {
+            return defaultSortAscending;
+        }
+        return true;
     }
 
     public String repeatSearch() throws ClientException {
@@ -79,11 +89,11 @@ public class SortActionsBean implements SortActions, Serializable {
                 Contexts.removeFromAllContexts(variable);
             }
         }
-        
+
         SortInfo sortInfo = resultsProvidersCache.get(providerName).getSortInfo();
 
         if (sortInfo == null) {
-            sortInfo = new SortInfo(newSortColumn, true);
+            sortInfo = new SortInfo(newSortColumn, getDefaultSortOrder(newSortColumn));
         } else {
             // toggle newOrderDirection
             String sortColumn = sortInfo.getSortColumn();
@@ -92,7 +102,7 @@ public class SortActionsBean implements SortActions, Serializable {
                 sortAscending = !sortAscending;
             } else {
                 sortColumn = newSortColumn;
-                sortAscending = true;
+                sortAscending = getDefaultSortOrder(newSortColumn);
             }
             sortInfo = new SortInfo(sortColumn, sortAscending);
         }

@@ -66,6 +66,10 @@
           will not be displayed. Defaults to null.
         </li>
         <li>
+          defaultSortAscending: define the initial sort order of the column (true : ascending, false : descending)
+          Defaults to null (will be interpreted as ascending=true).
+        </li>
+        <li>
           columnStyleClass: name of the style class that will be used for the
           given column. Defaults to null.
         </li>
@@ -551,6 +555,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
           </properties>
           <widget>listing_modification_date</widget>
         </column>
@@ -628,6 +633,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
           </properties>
           <widget>listing_modification_date</widget>
         </column>
