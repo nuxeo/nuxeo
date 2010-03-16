@@ -277,11 +277,10 @@ public class DropZone extends PortalDropZone {
     }
 
     @Override
-    public boolean notifyDrop(final DragSource source, EventObject e,
-            DragData data) {
+    public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
         GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
         gp.reloadRenderUrl();
-        final GadgetPosition dropPosition = portal.getDropPosition();
+        final GadgetPosition dropPosition = portal.getDropPosition(source.getId());
         GadgetBean bean = gp.getGadgetBean();
         boolean doMove = false;
         if (dropPosition != null) {
@@ -291,6 +290,7 @@ public class DropZone extends PortalDropZone {
             int maxGadgets = portal.getMaxGadget(dropPosition.getPlaceID());
             doMove = (maxGadgets == -1
                     || dropCol.getComponents().length < maxGadgets || dragCol.equals(dropCol));
+
             if (doMove) {
                 saveDropZone(bean, dropPosition, dragCol, dropCol);
             }
@@ -307,8 +307,7 @@ public class DropZone extends PortalDropZone {
         if (lastPosC != null && doMove) {
             if (dropPosition != null) {
                 lastPosC.remove(gp.getId());
-                lastPosC.insert(bean.getGadgetPosition()
-                        .getPosition(), gp);
+                lastPosC.insert(dropPosition.getPosition(), gp);
             }
             lastPosC.doLayout();
             lastPosC = null;

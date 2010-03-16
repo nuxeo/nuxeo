@@ -41,7 +41,7 @@ import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
 /**
- *
+ * 
  * @author Guillaume Cusnieux
  */
 public class ContainerPortal extends Portal {
@@ -122,7 +122,8 @@ public class ContainerPortal extends Portal {
         if (pos.getPlaceID() != null)
             col = columns.get(pos.getPlaceID());
         if (col == null) {
-            bean.getGadgetPosition().setPlaceId(getColumnId(0));
+            bean.getGadgetPosition()
+                    .setPlaceId(getColumnId(0));
             lostGadgets.add(bean);
             return null;
         } else {
@@ -145,13 +146,20 @@ public class ContainerPortal extends Portal {
         });
     }
 
-    public GadgetPosition getDropPosition() {
+    public GadgetPosition getDropPosition(String dragID) {
+        int position = 0;
         for (PortalColumn col : columns.values()) {
-            NodeList<Node> childs = col.getElement().getChildNodes();
+            NodeList<Node> childs = col.getElement()
+                    .getChildNodes();
             for (int i = 0; i < childs.getLength(); i++) {
                 Element elem = Element.as(childs.getItem(i));
                 if (SPACER_CLASS.equals(elem.getClassName())) {
-                    return new GadgetPosition(col.getElement().getId(), i);
+                    return new GadgetPosition(col.getElement()
+                            .getId(), position);
+                }
+                if (!elem.getId()
+                        .equals(dragID)) {
+                    position++;
                 }
             }
         }
@@ -159,15 +167,11 @@ public class ContainerPortal extends Portal {
     }
 
     public PortalColumn getPortalColumn(String id) {
-        if (columns.containsKey(id))
-            return columns.get(id);
-        return null;
+        return columns.containsKey(id) ? columns.get(id) : null;
     }
 
     public GadgetPortlet getGadgetPortlet(String id) {
-        if (portlets.containsKey(id))
-            return portlets.get(id);
-        return null;
+        return portlets.containsKey(id) ? portlets.get(id) : null;
     }
 
     public GadgetPortlet getGadgetPortletByRef(String ref) {
@@ -236,7 +240,8 @@ public class ContainerPortal extends Portal {
     }
 
     public void removeGadgetPortlet(String id) {
-        GadgetBean gadget = portlets.get(id).getGadgetBean();
+        GadgetBean gadget = portlets.get(id)
+                .getGadgetBean();
         portlets.remove(id);
         GadgetPosition pos = gadget.getGadgetPosition();
         PortalColumn col = columns.get(pos.getPlaceID());
@@ -258,11 +263,13 @@ public class ContainerPortal extends Portal {
 
     public GadgetPortlet addGadget(GadgetBean bean) {
         bean.setPosition(new GadgetPosition(getColumnId(0), columns.get(
-                getColumnId(0)).getItems().length));
+                getColumnId(0))
+                .getItems().length));
         bean.setHeight(-1);
         GadgetPortlet g = addGadget(bean, null);
         g.setVisible(true);
-        columns.get(getColumnId(0)).doLayout();
+        columns.get(getColumnId(0))
+                .doLayout();
         return g;
     }
 
@@ -302,7 +309,9 @@ public class ContainerPortal extends Portal {
             String colToDelete = getColumnId(i - 1);
             for (GadgetPortlet portlet : portlets.values()) {
                 GadgetBean b = portlet.getGadgetBean();
-                if (b.getGadgetPosition().getPlaceID().equals(colToDelete)) {
+                if (b.getGadgetPosition()
+                        .getPlaceID()
+                        .equals(colToDelete)) {
                     replaceGadgetInDefaultPosition(portlet);
                 }
             }
@@ -320,18 +329,14 @@ public class ContainerPortal extends Portal {
     }
 
     public GadgetPortlet getGadgetPortletByFrameId(String frameId) {
-        if (maximizedCol.isHidden())
-            return getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId));
-        else
-            return maximizedPortlet;
-
+        return maximizedCol.isHidden() ? getGadgetPortlet(GadgetPortlet.getIdWithIframeId(frameId))
+                : maximizedPortlet;
     }
 
     public void showPortlets() {
         for (GadgetPortlet p : portlets.values()) {
             p.setVisible(true);
         }
-
     }
 
     public int getColumnIndex(String colId) {
@@ -340,10 +345,7 @@ public class ContainerPortal extends Portal {
 
     public int getMaxGadget(String colId) {
         int[] maxGadgets = container.getMaxGadgets();
-        if (maxGadgets == null) {
-            return -1;
-        }
-        return maxGadgets[getColumnIndex(colId)];
+        return maxGadgets == null ? -1 : maxGadgets[getColumnIndex(colId)];
     }
 
 }
