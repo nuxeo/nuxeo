@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Bogdan Stefanescu
  */
-public interface DocumentRefList extends List<DocumentModel>, Serializable {
+public interface DocumentRefList extends List<DocumentRef>, Serializable {
 
     /**
      * Returns the total size of the bigger list this is a part of.
