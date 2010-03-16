@@ -38,6 +38,10 @@ public class DocumentModelListImpl extends ArrayList<DocumentModel> implements
     public DocumentModelListImpl() {
     }
 
+    public DocumentModelListImpl(int size) {
+        super(size);
+    }
+
     public DocumentModelListImpl(List<DocumentModel> list) {
         super(list);
     }

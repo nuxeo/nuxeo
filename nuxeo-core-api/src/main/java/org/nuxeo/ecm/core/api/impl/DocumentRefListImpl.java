@@ -37,6 +37,10 @@ public class DocumentRefListImpl extends ArrayList<DocumentRef> implements
     public DocumentRefListImpl() {
     }
 
+    public DocumentRefListImpl(int size) {
+        super(size);
+    }
+
     public DocumentRefListImpl(List<DocumentRef> list) {
         super(list);
     }
