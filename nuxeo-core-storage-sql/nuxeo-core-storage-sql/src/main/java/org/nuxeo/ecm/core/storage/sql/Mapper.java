@@ -454,6 +454,10 @@ public class Mapper {
                     String sql = table.getAddColumnSql(column);
                     log(sql);
                     st.execute(sql);
+                    for (String s : table.getPostAddSqls(column)) {
+                        log(s);
+                        st.execute(s);
+                    }
                 } else {
                     int expected = column.getJdbcType();
                     int actual = type.intValue();

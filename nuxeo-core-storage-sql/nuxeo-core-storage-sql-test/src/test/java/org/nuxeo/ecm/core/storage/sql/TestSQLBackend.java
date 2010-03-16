@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,8 +40,11 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -1380,6 +1384,54 @@ public class TestSQLBackend extends SQLBackendTestCase {
             }
             // ok
         }
+    }
+
+    public void testFulltextUpgrade() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSingleProperty("tst:title", "hello world");
+        session.save();
+        repository.close();
+
+        // reopen repository on same database,
+        // with custom indexing config
+        RepositoryDescriptor descriptor = newDescriptor(-1, false);
+        List<FulltextIndexDescriptor> ftis = new LinkedList<FulltextIndexDescriptor>();
+        descriptor.fulltextIndexes = ftis;
+        FulltextIndexDescriptor fti = new FulltextIndexDescriptor(); // default
+        ftis.add(fti);
+        fti = new FulltextIndexDescriptor();
+        fti.name = "title";
+        fti.fields = Collections.singleton("tst:title");
+        ftis.add(fti);
+        repository = new RepositoryImpl(descriptor,
+                Framework.getService(SchemaManager.class));
+
+        // check new values can be written
+        session = repository.getConnection();
+        root = session.getRootNode();
+        node = session.getChildNode(root, "foo", false);
+        assertNotNull(node);
+        node.setSingleProperty("tst:title", "bar");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        // check fulltext search works
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"bar\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            System.out.println("Skipping multi-fulltext test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = \"bar\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
     }
 
 }

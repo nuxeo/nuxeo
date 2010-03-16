@@ -99,7 +99,8 @@ public class TableAlias implements Table {
         return result;
     }
 
-    public Column addColumn(String name, ColumnType type, String key, Model model) {
+    public Column addColumn(String name, ColumnType type, String key,
+            Model model) {
         throw new UnsupportedOperationException();
     }
 
@@ -124,6 +125,10 @@ public class TableAlias implements Table {
     }
 
     public List<String> getPostCreateSqls() {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getPostAddSqls(Column column) {
         throw new UnsupportedOperationException();
     }
 

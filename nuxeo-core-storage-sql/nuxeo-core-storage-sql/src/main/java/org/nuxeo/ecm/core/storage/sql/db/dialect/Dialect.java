@@ -316,7 +316,7 @@ public abstract class Dialect {
     }
 
     public String getAddPrimaryKeyConstraintString(String constraintName) {
-        return " ADD CONSTRAINT" + constraintName + " PRIMARY KEY ";
+        return String.format(" ADD CONSTRAINT %s PRIMARY KEY ", constraintName);
     }
 
     public String getAddForeignKeyConstraintString(String constraintName,

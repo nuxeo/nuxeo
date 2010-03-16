@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -122,7 +123,7 @@ public class TableImpl implements Table {
     }
 
     public void addFulltextIndex(String indexName, String... columnNames) {
-        indexedColumns.add(columnNames);
+        addIndex(columnNames);
         fulltextIndexedColumns.put(columnNames, indexName);
     }
 
@@ -196,60 +197,83 @@ public class TableImpl implements Table {
         // check
     }
 
-    /**
-     * Computes the SQL statement to finish creating the table, usually some
-     * ALTER TABLE statements to add constraints.
-     *
-     * @return the SQL strings
-     */
     public List<String> getPostCreateSqls() {
         List<String> sqls = new LinkedList<String>();
-        Model model = null;
         for (Column column : columns.values()) {
-            model = column.getModel();
-            if (column.isPrimary()) {
-                StringBuilder buf = new StringBuilder();
-                String constraintName = dialect.openQuote()
-                        + name
-                        + (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk")
-                        + dialect.closeQuote();
-                buf.append("ALTER TABLE ");
-                buf.append(getQuotedName());
-                buf.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
-                buf.append('(');
-                buf.append(column.getQuotedName());
-                buf.append(')');
-                sqls.add(buf.toString());
-            }
-            Table ft = column.getForeignTable();
-            if (ft != null) {
-                Column fc = ft.getColumn(column.getForeignKey());
-                String constraintName = dialect.openQuote()
-                        + dialect.getForeignKeyConstraintName(name,
-                                column.getPhysicalName(), ft.getName())
-                        + dialect.closeQuote();
-                StringBuilder buf = new StringBuilder();
-                buf.append("ALTER TABLE ");
-                buf.append(getQuotedName());
-                buf.append(dialect.getAddForeignKeyConstraintString(
-                        constraintName,
-                        new String[] { column.getQuotedName() },
-                        ft.getQuotedName(),
-                        new String[] { fc.getQuotedName() }, true));
-                if (dialect.supportsCircularCascadeDeleteConstraints()
-                        || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
-                    // MS SQL Server can't have circular ON DELETE CASCADE.
-                    // Use a trigger INSTEAD OF DELETE to cascade deletes
-                    // recursively for:
-                    // - hierarchy.parentid
-                    // - versions.versionableid
-                    // - proxies.versionableid
-                    buf.append(" ON DELETE CASCADE");
-                }
-                sqls.add(buf.toString());
-            }
+            postAddColumn(column, sqls);
         }
+        return sqls;
+    }
+
+    public List<String> getPostAddSqls(Column column) {
+        List<String> sqls = new LinkedList<String>();
+        postAddColumn(column, sqls);
+        return sqls;
+    }
+
+    protected void postAddColumn(Column column, List<String> sqls) {
+        if (column.isPrimary()) {
+            StringBuilder buf = new StringBuilder();
+            String constraintName = dialect.openQuote() + name
+                    + (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk")
+                    + dialect.closeQuote();
+            buf.append("ALTER TABLE ");
+            buf.append(getQuotedName());
+            buf.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
+            buf.append('(');
+            buf.append(column.getQuotedName());
+            buf.append(')');
+            sqls.add(buf.toString());
+        }
+        Table ft = column.getForeignTable();
+        if (ft != null) {
+            Column fc = ft.getColumn(column.getForeignKey());
+            String constraintName = dialect.openQuote()
+                    + dialect.getForeignKeyConstraintName(name,
+                            column.getPhysicalName(), ft.getName())
+                    + dialect.closeQuote();
+            StringBuilder buf = new StringBuilder();
+            buf.append("ALTER TABLE ");
+            buf.append(getQuotedName());
+            buf.append(dialect.getAddForeignKeyConstraintString(constraintName,
+                    new String[] { column.getQuotedName() },
+                    ft.getQuotedName(), new String[] { fc.getQuotedName() },
+                    true));
+            if (dialect.supportsCircularCascadeDeleteConstraints()
+                    || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
+                // MS SQL Server can't have circular ON DELETE CASCADE.
+                // Use a trigger INSTEAD OF DELETE to cascade deletes
+                // recursively for:
+                // - hierarchy.parentid
+                // - versions.versionableid
+                // - proxies.versionableid
+                buf.append(" ON DELETE CASCADE");
+            }
+            sqls.add(buf.toString());
+        }
+        // add indexes for this column
+        String columnName = column.getKey();
+        INDEXES: //
         for (String[] columnNames : indexedColumns) {
+            List<String> names = new ArrayList<String>(
+                    Arrays.asList(columnNames));
+            // check that column is part of this index
+            if (!names.contains(columnName)) {
+                continue;
+            }
+            // check that column is the last one mentioned
+            for (Column c : getColumns()) {
+                String key = c.getKey();
+                names.remove(key);
+                if (names.isEmpty()) {
+                    // last one?
+                    if (!columnName.equals(key)) {
+                        continue INDEXES;
+                    }
+                    break;
+                }
+            }
+            // add this index now, as all columns have been created
             List<Column> cols = new ArrayList<Column>(columnNames.length);
             List<String> qcols = new ArrayList<String>(columnNames.length);
             List<String> pcols = new ArrayList<String>(columnNames.length);
@@ -265,14 +289,13 @@ public class TableImpl implements Table {
             String indexName = fulltextIndexedColumns.get(columnNames);
             if (indexName != null) {
                 createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
-                        quotedIndexName, this, cols, model);
+                        quotedIndexName, this, cols, column.getModel());
             } else {
                 createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
                         getQuotedName(), qcols);
             }
             sqls.add(createIndexSql);
         }
-        return sqls;
     }
 
     /**
