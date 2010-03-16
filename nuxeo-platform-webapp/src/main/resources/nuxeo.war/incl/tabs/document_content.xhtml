@@ -9,8 +9,6 @@
 
     <ui:include src="/incl/document_actions.xhtml" />
 
-    <ui:include src="/incl/document_listing_layout_selector.xhtml" />
-
     <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}"
       cache="true">
     <nxu:set var="layoutName" value="#{currentListingLayoutName}"
