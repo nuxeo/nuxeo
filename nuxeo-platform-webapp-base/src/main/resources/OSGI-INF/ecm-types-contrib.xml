@@ -245,6 +245,9 @@
         <layout>heading</layout>
         <layout>note</layout>
       </layouts>
+      <layouts mode="summary">
+      <layout>note_summary_layout</layout>
+      </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>note</layout>

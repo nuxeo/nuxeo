@@ -7,20 +7,15 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
-
-  <table class="summaryTableLayout" width="100%">
-    <tbody>
       <nxl:layoutRow>
-        <tr>
+      	<!-- <c:if test="#{layoutRow.properties.addClearBothDivBefore}">
+      	  <div style="clear:both;" />
+        </c:if>-->
+        <div class="summary_div_#{layoutRowIndex}">
           <nxl:layoutRowWidget>
-            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, layout.columns, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}" />
-            </td>
           </nxl:layoutRowWidget>
-        </tr>
+        </div>
       </nxl:layoutRow>
-
-    </tbody>
-  </table>
 
 </f:subview>
