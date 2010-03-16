@@ -19,7 +19,7 @@ REM during the build with ant filter.
 REM
 set SVCNAME=NuxeoEP
 set SVCDISP=NuxeoEP
-set SVCDESC=Nuxeo 5.3.0-GA / JBoss Application Server 4.2.3 GA / Platform: Windows 64
+set SVCDESC=Nuxeo 5.3.1 / JBoss Application Server 4.2.3 GA / Platform: Windows 64
 set NOPAUSE=Y
 
 REM Suppress killing service on logoff event

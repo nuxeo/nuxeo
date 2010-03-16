@@ -131,11 +131,11 @@
         <include name="*.exe" />
       </fileset>
     </move>
-    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.0-GA-setup.exe"
+    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.1-setup.exe"
                      classifier="${distribution}"
                      type="exe"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
-    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.0-GA_64-setup.exe"
+    <artifact:attach file="${project.build.directory}/nuxeo-dm-5.3.1-setup.exe"
                      classifier="${distribution}_64"
                      type="exe"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
