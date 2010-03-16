@@ -27,7 +27,10 @@ import java.util.Collection;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.richfaces.model.UploadItem;
 
 /**
@@ -78,6 +81,17 @@ public class UploadItemHolder implements Serializable {
 
     public void setFileUpload(InputStream fileUpload) {
         this.fileUpload = fileUpload;
+    }
+
+
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
+    public void reset() {
+        uploadedFiles = new ArrayList<UploadItem>();
+        fileUpload=null;
+        fileName=null;
+        tempFile=null;
     }
 
 }
