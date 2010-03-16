@@ -66,6 +66,7 @@
   <!-- only if platform profile enabled -->
   <artifactSet id="platform-bundles" profile="platform">
     <artifacts>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-api" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-types-core" />
 
