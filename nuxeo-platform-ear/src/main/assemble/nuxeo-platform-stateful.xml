@@ -76,7 +76,6 @@
       <artifact name="nuxeo-runtime-jboss-extensions" />
       <artifact name="nuxeo-generic-wss-handler" />
 
-      <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
@@ -99,7 +98,6 @@
   <artifactSet id="nuxeo-platform-unpacked">
     <import>**</import>
     <includes>
-      <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
     </includes>
   </artifactSet>

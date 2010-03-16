@@ -131,7 +131,6 @@
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-webapp" />
           <artifact artifactId="nuxeo-platform-webapp-core" />
-          <artifact artifactId="nuxeo-platform-audit-facade" />
           <artifact artifactId="nuxeo-platform-placeful-facade" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
@@ -141,10 +140,7 @@
         </excludes>
       </artifact:set>
     </copy>
-    <unzip
-      dest="${nuxeo.ear}/system/nuxeo-platform-audit-facade-${nuxeo.features.version}.jar">
-      <artifact:file artifactId="nuxeo-platform-audit-facade" />
-    </unzip>
+
     <unzip
       dest="${nuxeo.ear}/system/nuxeo-platform-placeful-facade-${nuxeo.services.version}.jar">
       <artifact:file artifactId="nuxeo-platform-placeful-facade" />

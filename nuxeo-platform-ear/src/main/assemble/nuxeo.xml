@@ -108,7 +108,6 @@
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
-      <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
@@ -131,7 +130,6 @@
   <artifactSet id="nuxeo-platform-unpacked">
     <import>**</import>
     <includes>
-      <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
     </includes>
   </artifactSet>
@@ -181,13 +179,13 @@
       <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
       <artifact group="org.apache.directory.shared" name="shared-ldap" />
       <artifact group="com.sun.facelets" name="jsf-facelets" />
-<!--       Nuxeo-WebEngine fixed libs -->
+      <!-- Nuxeo-WebEngine fixed libs -->
       <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact group="com.sun.jersey" name="jersey-core" version="1.1.5" />
       <artifact group="com.sun.jersey" name="jersey-server" version="1.1.5" />
       <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
       <artifact group="javax.script" name="script-api" />
-<!--       JOD / OOo libs and other converters deps-->
+      <!-- JOD / OOo libs and other converters deps-->
       <artifact group="com.artofsolving" name="jodconverter" />
       <artifact group="org.openoffice" name="ridl" />
       <artifact group="org.openoffice" name="juh" />
@@ -220,10 +218,10 @@
       <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
-      <artifact group="backport-util-concurrent" name="backport-util-concurrent"/>
+      <artifact group="backport-util-concurrent" name="backport-util-concurrent" />
       <!-- Remote publication lib -->
       <artifact group="org.apache.httpcomponents" name="httpclient" />
-      
+
       <artifact group="org.owasp" name="antisamy" />
       <artifact group="batik" name="batik-css" />
       <artifact group="batik" name="batik-ext" />
