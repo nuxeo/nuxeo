@@ -4,8 +4,6 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <br/>
-
 <div class="lockFile_block" id='lock_unlock_button'>
   <c:if test="#{!empty currentDocumentLockDetails}">
     <h:outputText value="#{messages['label.summary.locked.intro']} "/>
@@ -32,12 +30,12 @@
   </c:if>
 </div>
 
+ <div class="restoreFile_block">
    <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
-        <h3>
           <h:outputText value="#{messages['label.summary.restoreDeletedDocument']}" />
-        </h3>
-        <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}"
-          styleClass="button" action="#{deleteActions.restoreCurrentDocument}" />
+          <h:outputText value=" | " />
+        <h:commandLink value="#{messages['command.undeleteDocs']}"
+           action="#{deleteActions.restoreCurrentDocument}" />
       </c:if>
-
+ </div>
 </div>

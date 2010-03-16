@@ -622,6 +622,7 @@
       </selector>
       <selector path=".listingLayoutSelector">
         <float>right</float>
+        <margin>11px 0 10px</margin>
       </selector>
       <!-- rich faces tree -->
       <selector path=".dr-tree-h-ic-div">
@@ -826,7 +827,6 @@
       </selector>
       <selector path=".commentQuote">
         <font preset="default (Galaxy fonts)" />
-        <width>99%</width>
         <margin>5px 0 5px 0</margin>
       </selector>
       <selector path=".warningFeedback">
@@ -1001,9 +1001,6 @@
       <selector path=".smallButtonsGadget">
         <margin>0 0 5px 100px</margin>
       </selector>
-      <!-- <selector path=".relationCreateLabelColumn, .labelColumn, .workflowLabelColumn">
-        <text-align>right</text-align>
-      </selector> -->
       <selector path=".workflowLabelColumn">
         <width>120px</width>
       </selector>
@@ -1155,14 +1152,11 @@
         <color preset="gray.dark (Galaxy colors)" />
         <font preset="title3 (Galaxy fonts)"/>
         <margin>0px 0px 10px 0px</margin>
-        <padding>25px 0px 3px 0px</padding>
+        <padding>17px 0px 3px 0px</padding>
       </selector>
       <selector path=".description_block">
-        <width>65%</width>
-        <float>left</float>
       </selector>
       <selector path=".description_block h3.summaryTitle">
-        <padding-top>15px</padding-top>
       </selector>
       <selector path=".dublincore_block table.floatingLeftTable">
         <margin-right>100px</margin-right>
@@ -1178,29 +1172,28 @@
       <selector path=".rank_block, .publication_block, .attachments">
         <margin-top>15px</margin-top>
       </selector>
-      <selector path=".content_block">
-        <width>45%</width>
-        <padding>0px 30px 0px 0px</padding>
-        <float>left</float>
-      </selector>
       <selector path=".content_block td">
         <vertical-align>top</vertical-align>
-        <padding>0px 0px 20px 0px</padding>
+        <padding>0px 0px 10px 0px</padding>
+      </selector>
+      <selector path=".content_block .labelColumn">
+        <width>100px</width>
+      </selector>
+      <selector path=".content_block .fieldColumn div">
+        <padding>0px 0px 2px</padding>
       </selector>
       <selector path=".content_block img">
         <padding>0px 5px</padding>
       </selector>
-      <selector path=".relation_block">
-        <width>50%</width>
-        <float>left</float>
+      <selector path=".note_content_block">
+        <padding>15px</padding>
+        <border>1px solid #D7D7D7</border>
+        <margin-top>20px</margin-top>
       </selector>
-      <selector path=".lockFile_block">
-        <border preset="black (Galaxy borders)" />
-        <background-color preset="white (Galaxy backgrounds)"/>
-        <width>30%</width>
-        <margin>15px 0 10px 0px</margin>
-        <padding>10px</padding>
-        <float>right</float>
+      <selector path=".relation_block">
+      </selector>
+      <selector path=".lockFile_block, .restoreFile_block">
+        <padding>0px 0px 10px</padding>
       </selector>
       <selector path=".summary_locked">
         <color preset="red (Galaxy colors)" />
@@ -1213,11 +1206,55 @@
       <selector path=".lockDetail, .DetailList">
         <padding-top>5px</padding-top>
       </selector>
+      <selector path=".lcAndVersion">
+        <border>1px solid #dedede</border>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".actions_block">
+        <border>1px solid #DEDEDE</border>
+        <padding>10px 7px 3px</padding>
+        <margin>10px 0</margin>
+      </selector>
       <selector path=".comments_block .commentBlock">
         <border>none</border>
       </selector>
       <selector path=".comments_block .commentQuote">
         <margin>5px 0 5px 24px</margin>
+      </selector>
+      <selector path=".metadata_block .dataInput td">
+        <padding>3px</padding>
+      </selector>
+      <selector path=".layoutViewMode">
+        <margin>0px</margin>
+        <padding>0px</padding>
+      </selector>
+      <selector path=".layoutViewMode li">
+        <display>inline</display>
+      </selector>
+      <selector path=".layoutViewMode a img">
+        <border>1px solid #fff</border>
+      </selector>
+      <selector path=".layoutViewMode a:hover img, .layoutViewMode li.selected img">
+        <border>1px solid #aaa</border>
+      </selector>
+      <selector path=".summary_div_0">
+        <float>left</float>
+        <width>62%</width>
+      </selector>
+      <selector path=".summary_div_1">
+        <float>right</float>
+        <width>33%</width>
+        <padding>10px 0</padding>
+      </selector>
+      <selector path=".summary_div_1 h3.summaryTitle">
+        <color>#848484</color>
+        <font-size>12px</font-size>
+      </selector>
+      <selector path=".summary_div_2">
+        <clear>both</clear>
+      </selector>
+      <selector path=".bigIcon">
+        <width>50px</width>
       </selector>
     </style>
     <style name="common style 2">
