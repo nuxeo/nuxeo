@@ -24,6 +24,7 @@ import org.nuxeo.opensocial.container.client.JsLibrary;
 import org.nuxeo.opensocial.container.client.bean.GadgetBean;
 import org.nuxeo.opensocial.container.client.bean.GadgetPosition;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
@@ -79,13 +80,10 @@ public class DropZone extends PortalDropZone {
     private static native void overrideDragDrop(int defaultX, int defaultY,
             String className)
     /*-{
-      var _W;
       $wnd.Ext.override($wnd.Ext.Panel.DD, {
         startDrag : function(x,y){
           var g = this.proxy.getGhost();
-          var h = g.getWidth();
-          var X = x - 70;
-          g.setX(X);
+          g.setX(x - 70);
           g.setWidth(140);
 
           if(g.getHeight() > 50)
@@ -103,7 +101,6 @@ public class DropZone extends PortalDropZone {
           fly.setLeftTop(X, Y);
           this.cachePosition(X, Y);
           this.autoScroll(X, Y, el.offsetHeight, el.offsetWidth);
-          _W = this.proxy.proxy.getWidth();
           return this.getTargetCoord(X, Y);
         },
 
@@ -121,13 +118,10 @@ public class DropZone extends PortalDropZone {
           if(this.ghost) {
             var el = this.panel.el;
             el.dom.style.display = '';
-            el.setWidth(this.ghost.getWidth());
-            var w = el.getWidth();
             if(this.proxy) {
               this.proxy.remove();
               delete this.proxy;
             }
-            el.setWidth(_W,true);
             this.ghost.remove();
             delete this.ghost;
           }
@@ -169,29 +163,32 @@ public class DropZone extends PortalDropZone {
      * 
      * @param id
      */
-    public static void endDragDrop(String id) {
+    public static void endDragDrop(final String id) {
         GadgetPortlet gp = portal.getGadgetPortlet(id);
         if (gp.getGadgetBean()
                 .isCollapsed()) {
             GadgetPortlet.collapse(id, "");
             gp.addListener(new PortletListener(gp));
         }
-
+        JsLibrary.hideGwtContainerMask();
     };
 
     Timer t;
 
     @Override
-    public String notifyOver(final DragSource source, final EventObject e,
+    public String notifyOver(DragSource source, final EventObject e,
             DragData data) {
 
         if (t != null)
             t.cancel();
 
+        final JavaScriptObject jsObj = source.getProxy()
+                .getJsObj();
+
         t = new Timer() {
             @Override
             public void run() {
-                _notifyEnter(source, e);
+                _notifyEnter(new PanelProxy(jsObj), e);
             }
         };
 
@@ -200,10 +197,8 @@ public class DropZone extends PortalDropZone {
         return "x-dd-drop-ok";
     }
 
-    private void _notifyEnter(final DragSource source, final EventObject e) {
+    private void _notifyEnter(PanelProxy proxy, final EventObject e) {
         int[] xy = e.getXY();
-        PanelProxy proxy = new PanelProxy(source.getProxy()
-                .getJsObj());
 
         if (grid == null) {
             grid = getGrid();
@@ -277,10 +272,10 @@ public class DropZone extends PortalDropZone {
     }
 
     @Override
-    public boolean notifyDrop(DragSource source, EventObject e, DragData data) {
+    public boolean notifyDrop(final DragSource source, EventObject e,
+            DragData data) {
         GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
-        gp.reloadRenderUrl();
-        final GadgetPosition dropPosition = portal.getDropPosition(source.getId());
+        GadgetPosition dropPosition = portal.getDropPosition(source.getId());
         GadgetBean bean = gp.getGadgetBean();
         boolean doMove = false;
         if (dropPosition != null) {
@@ -312,8 +307,10 @@ public class DropZone extends PortalDropZone {
             lastPosC.doLayout();
             lastPosC = null;
         }
-        JsLibrary.hideGwtContainerMask();
+
         gp.renderDefaultPreferences();
+        // -1 for auto size
+        gp.setWidth(-1);
         return true;
     }
 

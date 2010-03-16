@@ -33,6 +33,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.gwtext.client.dd.DropTargetConfig;
 import com.gwtext.client.widgets.BoxComponent;
+import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.MessageBoxConfig;
 import com.gwtext.client.widgets.Panel;
@@ -147,10 +148,10 @@ public class ContainerPortal extends Portal {
     }
 
     public GadgetPosition getDropPosition(String dragID) {
-        int position = 0;
         for (PortalColumn col : columns.values()) {
             NodeList<Node> childs = col.getElement()
                     .getChildNodes();
+            int position = 0;
             for (int i = 0; i < childs.getLength(); i++) {
                 Element elem = Element.as(childs.getItem(i));
                 if (SPACER_CLASS.equals(elem.getClassName())) {
