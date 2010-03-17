@@ -127,26 +127,19 @@ H2 {
   <body>
   <div class="header"><img src="img/cmis_logo.png"></div>
     <div class="welcome">
-               <p>
-                 Welcome to the Nuxeo CMIS demo site
-               </p>
                <p class="welcomeText">
-                 You are welcome to test this Nuxeo instance using the <em>Administrator</em>
-                 login and password. You may create additional users.
+                 Welcome to your Nuxeo CMIS server.
                </p>
                <p class="welcomeText">
                  Connect with CMIS using the URL
-                 <a href="http://cmis.demo.nuxeo.org/nuxeo/site/cmis/repository">http://cmis.demo.nuxeo.org/nuxeo/site/cmis/repository</a>
+                 <a href="site/cmis/repository"><%=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()%>/site/cmis/repository</a>
                  for the AtomPub service document.
                </p>
                <p class="welcomeText">
                  You'll find more information about Nuxeo and CMIS on the
-                 <a href="http://doc.nuxeo.org/xwiki/bin/view/Main/CMIS">Nuxeo CMIS wiki</a>.
+                 <a href="http://doc.nuxeo.org/xwiki/bin/view/Main/CMIS">Nuxeo CMIS Wiki</a>.<br/>
                  You can also discuss your Nuxeo and CMIS experience on the
                  <a href="http://discussions.nuxeo.org/discussions/forum.jspa?forumID=12">Nuxeo CMIS forum</a>.
-               </p>
-               <p class="welcomeText">
-                 This site will be reset periodically, please don't use it to store important information.
                </p>
     </div>
     <div class="footer">Copyright &copy; 2010 Nuxeo and its respective authors.</div>

@@ -17,8 +17,6 @@
 
     <property name="war" value="/nuxeo.war" />
 
-    <delete path="${war}" />
-
     <!-- create here the tree directory structure if needed -->
     <mkdir path="${war}" />
     <mkdir path="${war}/WEB-INF" />
