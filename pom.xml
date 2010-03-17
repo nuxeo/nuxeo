@@ -1521,6 +1521,22 @@
         <artifactId>batik-util</artifactId>
         <version>1.6-1</version>
       </dependency>
+
+      <dependency>
+        <groupId>net.oauth.core</groupId>
+        <artifactId>oauth-consumer</artifactId>
+        <version>20090531</version>
+      </dependency>
+      <dependency>
+        <groupId>net.oauth.core</groupId>
+        <artifactId>oauth-httpclient3</artifactId>
+        <version>20090531</version>
+      </dependency>
+      <dependency>
+        <groupId>net.oauth.core</groupId>
+        <artifactId>oauth-provider</artifactId>
+        <version>20090531</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
