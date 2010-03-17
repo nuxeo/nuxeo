@@ -244,6 +244,10 @@
       <artifact:resolveFile key="batik:batik-ext" />
       <artifact:resolveFile key="batik:batik-gui-util" />
       <artifact:resolveFile key="batik:batik-util" />
+      
+      <artifact:resolveFile key="net.oauth.core:oauth-consumer" />
+      <artifact:resolveFile key="net.oauth.core:oauth-httpclient3" />
+      <artifact:resolveFile key="net.oauth.core:oauth-provider" />
     </copy>
   </target>
 
