@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.TestPropertyModel;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -171,7 +170,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * you can also use this feature to store temporary context data that will not
  * be sent over the network.
  *
- * @see TestPropertyModel for usage of property API
+ * @see <code>TestPropertyModel</code> for usage of property API
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
