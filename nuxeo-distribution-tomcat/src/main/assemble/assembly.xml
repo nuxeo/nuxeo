@@ -107,7 +107,7 @@
   
   <target name="set-cmis">
     <!-- Custom resources -->
-    <copy todir="${tomcat}" overwrite="true">
+    <copy todir="${tomcat}" overwrite="true" failonerror="true" >
       <fileset dir="src/main/resources-cmis" />
     </copy>
     
@@ -129,10 +129,8 @@
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-tag*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-userworkspace*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-virtualnavigation*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-runtime-management*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-spaces*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-theme-jsf*" />
-      <fileset dir="${nxserver}/bundles" includes="nuxeo-theme-html*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-theme-*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-webengine-blogs*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-${maven.project.version}*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-actions-core*" />
@@ -147,7 +145,14 @@
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-url*" excludes="nuxeo-platform-url-api*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-webapp*" />
       <fileset dir="${nxserver}/bundles" includes="nuxeo-webengine-*" excludes="nuxeo-webengine-core*,nuxeo-webengine-base*,nuxeo-webengine-admin*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-directory-web-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-relations-web-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-default-config-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-io-client-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-platform-lang-*" />
+      <fileset dir="${nxserver}/bundles" includes="nuxeo-webengine-*" excludes="nuxeo-webengine-core*,nuxeo-webengine-base*" />
       <fileset dir="${nxserver}/config" includes="commentService-config-bundle.xml" />
+      <fileset dir="${nxserver}/config" includes="notification-config.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="faces-config.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="pages.xml" />
       <fileset dir="${nxserver}/OSGI-INF/templates" includes="components.xml" />
@@ -187,6 +192,10 @@
     <!-- Extract Tomcat -->
     <unzip dest="${stagedir}">
       <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.20:zip" />
+      <patternset>
+        <exclude name="**/webapps/examples/**" />
+        <exclude name="**/webapps/docs/**" />
+      </patternset>
     </unzip>
     <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
     <!-- patch catalina.sh to add custom JAVA properties -->
