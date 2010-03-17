@@ -43,13 +43,11 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Injector;
 
 public class OpenSocialServiceImpl extends DefaultComponent implements
-        OpenSocialService, FrameworkListener {
+        OpenSocialService {
 
     private static final Log log = LogFactory.getLog(OpenSocialServiceImpl.class);
 
@@ -58,8 +56,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     public static final ComponentName NAME = new ComponentName(ID);
 
     private static final Log LOG = LogFactory.getLog(OpenSocialService.class);
-
-    // private static final String XP_CRYPTO = "cryptoConfig";
 
     private static final String XP_OPENSOCIAL = "openSocialConfig";
 
@@ -73,19 +69,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     protected File oauthPrivateKeyFile;
 
-    protected FrameworkListener frameworkListener = null;
-
-    protected boolean readyWithContribution = false;
-
     protected String signingStateKeyBytes;
-
-    public boolean setFrameworkListener(FrameworkListener frameworkListener) {
-        if (readyWithContribution) {
-            return false;
-        }
-        this.frameworkListener = frameworkListener;
-        return true;
-    }
 
     public Injector getInjector() {
         return injector;
@@ -105,8 +89,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         // }
         if (XP_OPENSOCIAL.equals(extensionPoint)) {
             os = (OpenSocialDescriptor) contribution;
-            setupOpenSocial();
-            readyWithContribution = true;
         }
     }
 
@@ -137,14 +119,11 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) {
+    public void activate(ComponentContext context) throws Exception {
         LOG.info("Activate component OpenSocial service");
         if (injector == null) {
             injector = GuiceContextListener.guiceInjector;
         }
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                this);
-
     }
 
     @Override
@@ -171,7 +150,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return new SimpleProxySelector();
     }
 
-    protected void setupOpenSocial() throws Exception {
+    public void setupOpenSocial() throws Exception {
         // state key
         if (StringUtils.isBlank(os.getSigningKey())) {
             byte[] b64 = Base64.encodeBase64(Crypto.getRandomBytes(BasicBlobCrypter.MASTER_KEY_MIN_LEN));
@@ -253,12 +232,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     public String getOAuthPrivateKeyName() {
         return os.getExternalPrivateKeyName();
-    }
-
-    public void frameworkEvent(FrameworkEvent event) {
-        if (frameworkListener != null) {
-            frameworkListener.frameworkEvent(event);
-        }
     }
 
     public String[] getTrustedHosts() {
