@@ -78,6 +78,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -389,6 +390,9 @@ public class NuxeoConnection implements Connection, SPI {
             }
             DocumentModel parent = session.getParentDocument(docRef);
             return new NuxeoObjectEntry(parent, this);
+        } catch (DocumentSecurityException e) {
+            // cannot access parent TODO is this really the best we can do?
+            return null;
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }
