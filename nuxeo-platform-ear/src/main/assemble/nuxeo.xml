@@ -108,7 +108,6 @@
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
-      <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
       <artifact name="nuxeo-platform-ear" />
@@ -120,19 +119,6 @@
     <outputFile>system</outputFile>
     <file>nuxeo-platform-ear-${project.version}.pom</file>
   </assemble>
-
-  <assemble>
-    <outputFile>system</outputFile>
-    <unpack>true</unpack>
-    <unpackInNewDirectory>true</unpackInNewDirectory>
-    <set>nuxeo-platform-unpacked</set>
-  </assemble>
-  <artifactSet id="nuxeo-platform-unpacked">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-placeful-facade" />
-    </includes>
-  </artifactSet>
 
   <!-- third party libraries embedded in the ear -->
   <assemble>

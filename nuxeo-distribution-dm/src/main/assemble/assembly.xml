@@ -131,7 +131,6 @@
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-platform-webapp" />
           <artifact artifactId="nuxeo-platform-webapp-core" />
-          <artifact artifactId="nuxeo-platform-placeful-facade" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
           <!-- exclude JCR storage -->
@@ -140,11 +139,6 @@
         </excludes>
       </artifact:set>
     </copy>
-
-    <unzip
-      dest="${nuxeo.ear}/system/nuxeo-platform-placeful-facade-${nuxeo.services.version}.jar">
-      <artifact:file artifactId="nuxeo-platform-placeful-facade" />
-    </unzip>
 
     <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
