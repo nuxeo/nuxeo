@@ -187,6 +187,7 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
     gadget.setPlaceId(placeId);
     gadget.setPosition(position);
     gadget.setPreferences(new HashMap<String, String>());
+    gadget.setTitle(title);
     parent.save(gadget);
 
     log.debug("created a gadget: " + name + "," + gadget.getPlaceId());

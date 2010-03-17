@@ -90,8 +90,8 @@ public class SyndicationActionsBean implements SyndicationActions {
     protected static final String DOCREF_KEY = "docRef";
 
     /**
-     * Feed type, see ROME documentation. Usually {@code rss_2.0} or
-     * {@code atom_0.3}.
+     * Feed type, see ROME documentation. Usually {@code rss_2.0} or {@code
+     * atom_0.3}.
      */
     @RequestParameter
     protected String feedType;
@@ -105,6 +105,16 @@ public class SyndicationActionsBean implements SyndicationActions {
     protected String searchQuery;
 
     protected static final String SEARCHQUERY_KEY = "searchQuery";
+
+    /**
+     * The repository name.
+     */
+    @RequestParameter
+    protected String repositoryId;
+
+    protected static final String REPOSITORYID_KEY = "repositoryId";
+
+    protected static final String DEFAULT_REPOSITORY = "default";
 
     protected static final String DOCUMENT_SYNDICATION_PATH = "getSyndicationDocument.faces";
 
@@ -208,6 +218,14 @@ public class SyndicationActionsBean implements SyndicationActions {
             feedType = DEFAULT_TYPE;
         }
 
+        if (repositoryId == null || "".equals(repositoryId)) {
+            repositoryId = DEFAULT_REPOSITORY;
+        }
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                repositoryId));
+
         /*
          * Perform the search
          */
@@ -229,7 +247,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         feed.setTitle("Search results");
         feed.setDescription("Query: " + searchQuery);
         feed.setLink(getFeedUrl(SEARCH_SYNDICATION_PATH, SEARCHQUERY_KEY,
-                searchQuery, feedType));
+                searchQuery, REPOSITORYID_KEY, getRepositoryId(), feedType));
 
         /*
          * Feed entries
@@ -249,7 +267,7 @@ public class SyndicationActionsBean implements SyndicationActions {
      */
     protected static List<FeedItem> getFeedItems(List<DocumentModel> docs)
             throws ClientException {
-        return FeedItemAdapter.toFeedItemList(docs,null);
+        return FeedItemAdapter.toFeedItemList(docs, null);
     }
 
     protected static String urlencode(String string) {
@@ -263,19 +281,30 @@ public class SyndicationActionsBean implements SyndicationActions {
 
     protected static String getFeedUrl(String path, String key, String value,
             String feedType) {
+        return getFeedUrl(path, key, value, null, null, feedType);
+    }
+
+    protected static String getFeedUrl(String path, String key1, String value1,
+            String key2, String value2, String feedType) {
         StringBuilder url = new StringBuilder();
         url.append(BaseURL.getBaseURL());
         url.append(path);
         url.append('?');
-        url.append(key);
+        url.append(key1);
         url.append('=');
-        url.append(urlencode(value));
+        url.append(urlencode(value1));
+        if (key2 != null) {
+            url.append('&');
+            url.append(key2);
+            url.append('=');
+            url.append(urlencode(value2));
+        }
         url.append('&');
         url.append(FEEDTYPE_KEY);
         url.append('=');
         if (feedType != null) {
             url.append(urlencode(feedType));
-        }
+        } // else UI will append the type by itself
         return url.toString();
     }
 
@@ -296,6 +325,16 @@ public class SyndicationActionsBean implements SyndicationActions {
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         context.responseComplete();
+    }
+
+    protected static String getRepositoryId() {
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        if (navigationContext == null) {
+            return DEFAULT_REPOSITORY;
+        }
+        RepositoryLocation sl = navigationContext.getCurrentServerLocation();
+        return sl == null ? DEFAULT_REPOSITORY : sl.getName();
     }
 
     /**
@@ -371,7 +410,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         }
         searchQuery = searchQuery.replace('\n', ' ').replaceAll(" +", " ");
         return getFeedUrl(SEARCH_SYNDICATION_PATH, SEARCHQUERY_KEY,
-                searchQuery, feedType);
+                searchQuery, REPOSITORYID_KEY, getRepositoryId(), feedType);
     }
 
     /**
