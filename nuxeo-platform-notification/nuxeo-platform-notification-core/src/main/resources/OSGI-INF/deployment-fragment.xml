@@ -8,8 +8,10 @@
     </module>
   </extension>
 
+  <!-- NXP-4897 - avoid unzip nuxeo-platform-placeful-facade
   <extension target="persistence#CLASS">
     <class>org.nuxeo.ecm.platform.ec.notification.UserSubscription</class>
   </extension>
+  -->
 
 </fragment>
