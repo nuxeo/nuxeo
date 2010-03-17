@@ -11,7 +11,7 @@
 AppName={#MyAppName}
 AppVerName={#MyAppVerName}
 AppPublisher={#MyAppPublisher}
-AppCopyright=Copyright � 2000-2010 Nuxeo. Tous droits r�serv�s.
+AppCopyright=Copyright © 2000-2010 Nuxeo. Tous droits réservés.
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
