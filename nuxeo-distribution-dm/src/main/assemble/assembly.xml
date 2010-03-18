@@ -264,6 +264,7 @@
         <include name="postgresql-*" />
         <include name="quartz-all-*" />
         <include name="servlet-api-*" />
+        <include name="slf4j-api-1.5.3*" />
         <include name="stax-api-*" />
         <include name="webservices-api-*" />
         <include name="wstx-asl-*" />
@@ -282,6 +283,7 @@
       <artifact:resolveFile key="jboss:jgroups" />
       <artifact:resolveFile key="bouncycastle:bcmail-jdk14" />
       <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
+      <artifact:resolveFile key="org.slf4j:slf4j-api" />
       <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
       <artifact:resolveFile
         key="org.apache.directory.server:apacheds-protocol-shared" />
