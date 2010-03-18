@@ -30,14 +30,14 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <distribution>nuxeo-dm</distribution>
+        <distribution>nuxeo-dm-cmis</distribution>
       </properties>
       <dependencies>
         <dependency>
           <groupId>org.nuxeo.ecm.distribution</groupId>
           <artifactId>nuxeo-distribution-jboss</artifactId>
           <type>zip</type>
-          <classifier>nuxeo-dm</classifier>
+          <classifier>nuxeo-dm-cmis</classifier>
         </dependency>
       </dependencies>
     </profile>
