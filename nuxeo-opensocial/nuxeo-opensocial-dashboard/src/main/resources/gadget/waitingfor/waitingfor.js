@@ -110,7 +110,7 @@ function displayTaskList(data) {
 
   htmlContent += tableEnd();
 
-  document.getElementById("nxDocumentListData").innerHTML = htmlContent;
+  document.getElementById("nxDocumentListData").innerHTML = htmlContent + "<br/>";
   // page info
   // alert("page info " + data.summary.pageNumber)
   var pageInfoLabel = data.summary.pageNumber + 1;
@@ -118,6 +118,9 @@ function displayTaskList(data) {
   maxPage = data.summary.pages;
   pageInfoLabel += maxPage + 1;
   document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+
+  gadgets.window.adjustHeight();
+
 }
 
 function getDateForDisplay(datestr) {

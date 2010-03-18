@@ -175,7 +175,7 @@ function displayDocumentList(jsonObject) {
         htmlContent+=mkRow(data[i], i);
     }
     htmlContent += tableEnd();
-    _gel("nxDocumentListData").innerHTML = htmlContent;
+    _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
 
     // page info
     var pageInfo = jsonObject.summary;
@@ -184,6 +184,8 @@ function displayDocumentList(jsonObject) {
     pageInfoLabel+= pageInfo.pages;
     maxPage = pageInfo.pages;
     _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
+
+    gadgets.window.adjustHeight();
 }
 
 function getDateForDisplay(datestr) {

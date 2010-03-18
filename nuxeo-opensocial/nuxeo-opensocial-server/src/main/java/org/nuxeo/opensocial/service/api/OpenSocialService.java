@@ -23,7 +23,6 @@ import java.net.ProxySelector;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
-import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Injector;
 
@@ -110,20 +109,16 @@ public interface OpenSocialService {
     String getOAuthCallbackUrl();
 
     /**
-     * Used for delaying the injection process until we are sure that the
-     * opensocial is fully loaded.
-     * 
-     * @param frameworkListener
-     * @return true if this is actually delaying the call of the listener if
-     *         false then this method does nothing because we are already
-     *         initialized and so this method has no point.
-     */
-    boolean setFrameworkListener(FrameworkListener frameworkListener);
-
-    /**
      * Return a list of hosts to whom we *should* pass the users current
      * JSESSIONID.
      */
     String[] getTrustedHosts();
+
+    /**
+     * We have had to make this public because it must be called at exactly the
+     * right time the initialization sequence. This should be called BEFORE
+     * guice initialization of shindig happens.
+     */
+    void setupOpenSocial() throws Exception;
 
 }

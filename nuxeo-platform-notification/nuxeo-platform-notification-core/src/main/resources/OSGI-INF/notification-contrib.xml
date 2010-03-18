@@ -29,6 +29,12 @@
       <event name="documentPublished"/>
     </notification>
 
+    <notification name="PublicationOnClient" channel="email" enabled="true" availableIn="Section"
+      autoSubscribed="false" template="publish" subject="Document published" label="label.nuxeo.notifications.publication">
+      <event name="documentPublicationApproved"/>
+      <event name="documentPublished"/>
+    </notification>
+
     <notification name="Workflow Change" channel="email" enabled="true" availableIn="Workspace"
       autoSubscribed="false" template="workflow" subject="Workflow event" label="label.nuxeo.notifications.workflow">
       <event name="workflowNewProcessStarted"/>

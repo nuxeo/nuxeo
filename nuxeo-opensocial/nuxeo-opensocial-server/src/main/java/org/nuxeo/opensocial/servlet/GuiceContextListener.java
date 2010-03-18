@@ -33,8 +33,6 @@ import org.apache.shindig.gadgets.oauth.OAuthRequest;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.oauth.NuxeoOAuthRequest;
 import org.nuxeo.runtime.api.Framework;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -46,6 +44,15 @@ import com.google.inject.Stage;
 import com.google.inject.tools.jmx.Manager;
 import com.google.inject.util.Modules;
 
+/**
+ * Although this object says its a ServletContextListener, in fact it is not do
+ * to order of initialization issues. This object uses Guice and we want to be
+ * sure all the nuxeo initialization is finished prior to Guice being
+ * initialized since the user might want to configure it.
+ * 
+ * @See org.nuxeo.opensocial.servlet.ContextListenerDelayer
+ * 
+ */
 public class GuiceContextListener implements ServletContextListener {
     public static final String INJECTOR_ATTRIBUTE = "guice-injector";
 
@@ -68,17 +75,7 @@ public class GuiceContextListener implements ServletContextListener {
         modules = getModuleList(context.getInitParameter(MODULES_ATTRIBUTE));
         log.info("GuiceContextListener getModuleList");
         try {
-            if (!Framework.getService(OpenSocialService.class).setFrameworkListener(
-                    new FrameworkListener() {
-
-                        public void frameworkEvent(FrameworkEvent event) {
-                            runInjection();
-                        }
-                    })) {
-                // we run it now if the code informed us that we are already
-                // initialized...
-                runInjection();
-            }
+            runInjection();
         } catch (Exception e) {
             throw new RuntimeException("Cannot find opensocial service for "
                     + "initialization!", e);

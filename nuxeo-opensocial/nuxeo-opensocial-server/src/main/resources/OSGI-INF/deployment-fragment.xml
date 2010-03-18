@@ -36,7 +36,9 @@
   <extension target="web#AUTH-FILTER">
     <filter>
       <filter-name>authFilter</filter-name>
-      <filter-class>org.apache.shindig.auth.AuthenticationServletFilter
+      <!-- this is a wrapper that holds off running the shindig 
+      authentication filter until the framework is fully initialized -->
+      <filter-class>org.nuxeo.opensocial.servlet.AuthenticationFilterDelayer
       </filter-class>
     </filter>
   </extension>
@@ -44,7 +46,9 @@
   <extension target="web#LISTENER">
     <listener>
       <listener-class>
-        org.nuxeo.opensocial.servlet.GuiceContextListener
+        <!-- this is a wrapper that holds off running GuiceContextListener
+        (the real listener) until Nuxeo is fully initialized -->
+        org.nuxeo.opensocial.servlet.ContextListenerDelayer
       </listener-class>
     </listener>
   </extension>
