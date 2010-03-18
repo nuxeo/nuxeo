@@ -161,32 +161,18 @@
   </target>
 
   <target name="jboss-third-party-libraries">
-    <!-- Remove third-parties provided by JBoss 
+    <!--
     <delete>
-      <fileset dir="${lib.dir}">
+      <fileset dir="${lib.dir}"> -->
+        <!-- Remove third-parties provided by JBoss -->
+        <!-- Remove duplicated third-parties -->
+    <!--
       </fileset>
-    </delete>
-    -->
-    <!-- Add libraries required under JBoss (not present in the dependency tree) -->
+    </delete> -->
+    <!-- Add libraries required under JBoss (not present in the dependency tree)
     <copy todir="${lib.dir}" overwrite="true">
-      <artifact:resolveFile key="org.jboss.el:jboss-el" />
-      <artifact:resolveFile key="jboss:jboss-cache-jdk50" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-remoting" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
-      <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
-      <artifact:resolveFile key="jboss:jgroups" />
-      <artifact:resolveFile key="bouncycastle:bcmail-jdk14" />
-      <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
-      <artifact:resolveFile key="org.slf4j:slf4j-api" />
-      <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
-      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
-      <artifact:resolveFile key="org.openoffice:jurt" />
-      <artifact:resolveFile key="org.fontbox:fontbox" />
-      <artifact:resolveFile key="org.jempbox:jempbox" />
-      <artifact:resolveFile key="org.apache.poi:ooxml-schemas" />
-      <artifact:resolveFile key="org.apache.httpcomponents:httpcore" />
-      <artifact:resolveFile key="com.google.collections:google-collections" />
     </copy>
+    -->
   </target>
 
   <target name="cmis-third-party-libraries">
