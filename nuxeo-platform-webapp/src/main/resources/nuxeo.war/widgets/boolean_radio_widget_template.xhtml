@@ -6,19 +6,19 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
-  <f:subview rendered="#{widget.mode == 'edit' }">
+  <c:if test="#{widget.mode == 'edit' }">
     <h:selectOneRadio value="#{field}" id="#{widget.id}_checkbox">
       <f:selectItem itemValue="#{true}" itemLabel="#{messages['label.yes']}" />
       <f:selectItem itemValue="#{false}" itemLabel="#{messages['label.no']}" />
     </h:selectOneRadio>
     <h:message styleClass="errorMessage" for="#{widget.id}_checkbox"
       id="#{widget.id}_message" />
-  </f:subview>
+  </c:if>
 
-  <f:subview rendered="#{widget.mode == 'view' }">
+  <c:if test="#{widget.mode == 'view' }">
     <h:outputText rendered="#{field}" value="#{messages['label.yes']}" />
     <h:outputText rendered="#{! field}"
       value="#{messages['label.no']}" />
-  </f:subview>
+  </c:if>
 
 </f:subview>
