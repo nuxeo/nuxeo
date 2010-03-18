@@ -25,7 +25,11 @@
       gadgets.util.registerOnLoadHandler(function() {
         gadgetId = gadgets.nuxeo.getGadgetId();
         getDocumentLists();
-        jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
+        if(perm){
+          jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
+        } else {
+        	jQuery(".perm").remove();
+        }
       });
 
     </script>
@@ -35,14 +39,14 @@
         <div id="nxDocumentListData">
           <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
         </div>
-        <div align="center">
+        <div align="center" id="pager">
             <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
             <img type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
             <span class="currentPageStatus" id="nxDocumentListPage"></span>
             <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
             <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
          </div>
-         <div id="addfile">
+         <div id="addfile" class="perm">
          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
             <input type="file" name="file" id="uploadFile" size="20" />
             <input  id="uploadBtn" type="submit" value="" />

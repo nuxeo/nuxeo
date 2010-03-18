@@ -4,6 +4,7 @@ var currentPage=0;
 var maxPage = 0;
 var errors = 0;
 var prefs;
+var perm = gadgets.nuxeo.isEditable();
 
 function getNuxeoClientSideUrl() {
   return top.nxBaseUrl;
@@ -74,7 +75,6 @@ function makeRequest(url, callback, method) {
     headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
     params[gadgets.io.RequestParameters.HEADERS] = headers;
     gadgets.io.makeRequest(url, callback, params);
-
 }
 
 function getDocumentLists() {
@@ -98,6 +98,7 @@ function handleJSONResponse(obj) {
 }
 
 function displayNoWorkspaceFound() {
+  jQuery("#pager").remove();
   var html = prefs.getMsg("displayNoWorkspaceFound");
   _gel("nxDocumentListData").innerHTML = html;
   gadgets.window.adjustHeight();
@@ -150,19 +151,22 @@ function displayDocumentList(jsonObject) {
   }
   htmlContent += tableEnd();
   jQuery("#nxDocumentListData").html(htmlContent);
-  jQuery(".deleteaction").click(function() {
-    deleteDoc(jQuery(this));
-    return false;
-  });
-
   currentPage = pageInfo.pageNumber;
   jQuery("#nxDocumentListPage").text([pageInfo.pageNumber + 1,"/",pageInfo.pages].join(""));
   gadgets.window.adjustHeight();
+
+  if(perm){
+    jQuery(".deleteaction").click(function() {
+      deleteDoc(jQuery(this));
+      return false;
+    });
+
   jQuery("#uploadBtn").click(function() {
       jQuery('#formUpload').ajaxSubmit({
         beforeSubmit: control,
         success:function(){
-          refresh();
+          //refresh();
+          gadgets.nuxeo.refreshGadget();
         },
         error: function(xhr,rs) {
           alert(xhr.responseText);
@@ -174,6 +178,7 @@ function displayDocumentList(jsonObject) {
       });
       return false;
     });
+  }
 }
 
 function getDateForDisplay(datestr) {
@@ -235,8 +240,10 @@ function mkRow(document, i) {
   htmlRow += getDateForDisplay(document.modified);
   htmlRow += "</td>";
   htmlRow += "<td class=\"iconColumn\">";
-  htmlRow += "<a class=\"deleteaction\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\">";
-  htmlRow += "<img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
+  if(perm) {
+    htmlRow += "<a class=\"deleteaction perm\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\">";
+    htmlRow += "<img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
+  }
   htmlRow +="</td>";
   htmlRow += "</tr>";
   return htmlRow;
