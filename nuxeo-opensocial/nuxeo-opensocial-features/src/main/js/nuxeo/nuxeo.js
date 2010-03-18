@@ -89,5 +89,9 @@ gadgets.nuxeo.getNXIDPreference = function(name, id) {
   return {"NXID": id, "NXNAME":name};
 };
 
+gadgets.nuxeo.refreshGadget = function(){
+  gadgets.rpc.call("", "refresh", null, "");
+};
+
 
 

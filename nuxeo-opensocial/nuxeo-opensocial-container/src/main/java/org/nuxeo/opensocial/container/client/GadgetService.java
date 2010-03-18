@@ -45,6 +45,7 @@ public class GadgetService {
     /*-{
       var rpc = $wnd.gadgets.rpc;
       rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(I));
+      rpc.register('refresh', @org.nuxeo.opensocial.container.client.GadgetService::refreshGadget());
       rpc.register('set_pref', @org.nuxeo.opensocial.container.client.GadgetService::setPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
       rpc.register('set_title', @org.nuxeo.opensocial.container.client.GadgetService::setTitle(Ljava/lang/String;));
       rpc.register('show_fancybox', @org.nuxeo.opensocial.container.client.GadgetService::showFancyBox(Lcom/google/gwt/core/client/JsArray;I));
@@ -87,18 +88,19 @@ public class GadgetService {
 
                 @Override
                 public void run() {
-                    ContainerEntryPoint.getService().saveGadgetsCollection(
-                            new ArrayList<GadgetBean>(beans.values()),
-                            ContainerEntryPoint.getGwtParams(),
-                            new AsyncCallback<Boolean>() {
+                    ContainerEntryPoint.getService()
+                            .saveGadgetsCollection(
+                                    new ArrayList<GadgetBean>(beans.values()),
+                                    ContainerEntryPoint.getGwtParams(),
+                                    new AsyncCallback<Boolean>() {
 
-                                public void onFailure(Throwable arg0) {
-                                }
+                                        public void onFailure(Throwable arg0) {
+                                        }
 
-                                public void onSuccess(Boolean arg0) {
-                                    beans.clear();
-                                }
-                            });
+                                        public void onSuccess(Boolean arg0) {
+                                            beans.clear();
+                                        }
+                                    });
                 }
             };
             saveAllGadgets.schedule(4000);
@@ -124,16 +126,20 @@ public class GadgetService {
     }-*/;
 
     public static void saveUserPref(String frameId) {
-        GadgetBean bean = ContainerEntryPoint.getContainerPortal().getGadgetPortletByFrameId(
-                frameId).getGadgetBean();
-        ContainerEntryPoint.getService().saveGadgetPreferences(bean, null,
-                ContainerEntryPoint.getGwtParams(),
-                new SavePreferenceAsyncCallback<GadgetBean>(bean));
+        GadgetBean bean = ContainerEntryPoint.getContainerPortal()
+                .getGadgetPortletByFrameId(frameId)
+                .getGadgetBean();
+        ContainerEntryPoint.getService()
+                .saveGadgetPreferences(bean, null,
+                        ContainerEntryPoint.getGwtParams(),
+                        new SavePreferenceAsyncCallback<GadgetBean>(bean));
     };
 
     public static void setUserPref(String frameId, String key, String value) {
-        ContainerEntryPoint.getContainerPortal().getGadgetPortletByFrameId(
-                frameId).getGadgetBean().setPref(key, value);
+        ContainerEntryPoint.getContainerPortal()
+                .getGadgetPortletByFrameId(frameId)
+                .getGadgetBean()
+                .setPref(key, value);
     };
 
     /**
@@ -148,8 +154,8 @@ public class GadgetService {
 
     public static void setTitleToGadget(String frameId, String title) {
         if (title != null) {
-            GadgetPortlet p = ContainerEntryPoint.getContainerPortal().getGadgetPortletByFrameId(
-                    frameId);
+            GadgetPortlet p = ContainerEntryPoint.getContainerPortal()
+                    .getGadgetPortletByFrameId(frameId);
             p.setTitle(title);
         }
     };
@@ -190,7 +196,7 @@ public class GadgetService {
      */
     public static native void setRelayRpc(String iframeId, String serverBase)
     /*-{
-      $wnd.gadgets.rpc.setRelayUrl(iframeId, serverBase + "files/container/rpc_relay.html");
+      $wnd.gadgets.rpc.setRelayUrl(iframeId, [serverBase,"files/container/rpc_relay.html"].join(""));
     }-*/;
 
     /**
@@ -206,7 +212,20 @@ public class GadgetService {
 
     public static String getSpaceId() {
         ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
-        return portal.getContainer().getSpaceId();
+        return portal.getContainer()
+                .getSpaceId();
     }
+
+    public static native void refreshGadget()
+    /*-{
+      @org.nuxeo.opensocial.container.client.GadgetService::_refreshGadget(Ljava/lang/String;)(this.f);
+    }-*/;
+
+    public static void _refreshGadget(String frameId) {
+        GadgetPortlet gp = ContainerEntryPoint.getContainerPortal()
+                .getGadgetPortletByFrameId(frameId);
+        gp.doLayoutFrame();
+
+    };
 
 }
