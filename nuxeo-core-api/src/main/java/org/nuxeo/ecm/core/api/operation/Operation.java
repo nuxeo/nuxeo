@@ -22,9 +22,14 @@ package org.nuxeo.ecm.core.api.operation;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -93,6 +98,7 @@ public abstract class Operation<T> implements Serializable {
     protected transient Operation<?> parent;
     protected transient CoreSession session;
 
+    protected long lastModified;
 
     protected Operation(String name, int flags) {
         this.name = name;
@@ -169,21 +175,21 @@ public abstract class Operation<T> implements Serializable {
         return name;
     }
 
-//    /**
-//     * TODO impl this?
-//     * @param args
-//     */
-//    public void setArguments(Object ... args) {
-//
-//    }
-//
-//    /**
-//     * TODO impl this?
-//     * @return command arguments.
-//     */
-//    public Object[] getArguments() {
-//        return null;
-//    }
+    //    /**
+    //     * TODO impl this?
+    //     * @param args
+    //     */
+    //    public void setArguments(Object ... args) {
+    //
+    //    }
+    //
+    //    /**
+    //     * TODO impl this?
+    //     * @return command arguments.
+    //     */
+    //    public Object[] getArguments() {
+    //        return null;
+    //    }
 
     public final Operation<?> getParent() {
         return parent;
@@ -235,15 +241,21 @@ public abstract class Operation<T> implements Serializable {
         return true;
     }
 
+    protected long startedTime;
+
     private void start() {
         setFlags(RUNNING);
         parent = operation.get();
         operation.set(this);
+        startedTime = Calendar.getInstance().getTimeInMillis();
     }
+
+    protected long endedTime;
 
     private void end() {
         operation.set(parent);
         setFlags(TERMINATED);
+        endedTime = Calendar.getInstance().getTimeInMillis();
     }
 
     public List<Operation<?>> getCommandStack() {
@@ -256,7 +268,7 @@ public abstract class Operation<T> implements Serializable {
         if (parent != null) {
             fillCommandStack(cmds);
         }
-      cmds.add(this);
+        cmds.add(this);
     }
 
     public void printCommandStack(PrintStream out) {
@@ -376,6 +388,26 @@ public abstract class Operation<T> implements Serializable {
                 }
             }
         }
+    }
+
+    public void setLastModified(long lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public void checkLastModified(DocumentModel doc) {
+        long docLastModified;
+        try {
+            docLastModified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
+        } catch (Exception e) {
+            throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
+        }
+        if (lastModified<docLastModified){
+            return;
+        }
+        if (startedTime < docLastModified) {
+            return;
+        }
+        throw new ConcurrentModificationException("to do");
     }
 
 }
