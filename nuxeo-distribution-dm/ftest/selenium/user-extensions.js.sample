@@ -105,3 +105,57 @@ Selenium.prototype.doWaitForJSQueries = function(timeout) {
   }, timeout);
 }
 
+/**
+ * Function that waits for opensocial gadgets to be loaded.
+ * Assumes frame name starts with "gadget" and will display a div with id
+ * "nxDocumentList".
+ * Accepts a mandatory element id with content to check, and timeout.
+ */
+Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementId, timeout) {
+  var framesLoadedPredicate = function () {
+    var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+    }
+    var foundOneGadgetFrame = false;
+    if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+      for (var i = 0; i < testWindow.frames.length; i++) {
+        LOG.debug("Selected frame: " + testWindow.frames[i].name);
+        if (testWindow.frames[i].name && testWindow.frames[i].name.match("^gadget")=="gadget") {
+          foundOneGadgetFrame = true;
+          selenium.browserbot.selectFrame("index="+i);
+          var testFrame = selenium.browserbot.getCurrentWindow();
+          if (testFrame.wrappedJSObject) {
+            testFrame = testFrame.wrappedJSObject;
+          }
+          // wait for frame to be loaded
+          var loaded = false;
+          if (testFrame.document.getElementById(mandatoryElementId)) {
+            var content = this.getText(testFrame.document.getElementById(mandatoryElementId));
+            if (content) {
+              loaded = true;
+            }
+          }
+          if (!loaded) {
+            // go back to original window
+            selenium.browserbot.selectWindow();
+            return false;
+          }
+          LOG.info("Loaded frame: " + testWindow.frames[i].name);
+          // go back to original window to iterate over frames
+          selenium.browserbot.selectWindow();
+        }
+      }
+      if (!foundOneGadgetFrame) {
+        LOG.debug("no gadget frames present yet");
+        return false;
+      }
+    } else {
+      LOG.debug("no frames present yet");
+      return false;
+    }
+    return true;
+  };
+
+  return Selenium.decorateFunctionWithTimeout(framesLoadedPredicate, timeout);
+}

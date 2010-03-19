@@ -78,17 +78,13 @@ Structure of Nuxeo test suites
 ------------------------------
 
 The Nuxeo test suites are located in subdirectory tests/ and named
-tests.html, suite1.html and suite2.html.
+suite1.html, suite2.html and suite-dm.html
 
-tests.html has been cut in two for automated testing: THINK OF UPDATING ALL
-FILES WHEN ADDING/REMOVING tests.
+suite-dm holds tests specific to dm distribution, while suite1 and suite2
+suit bothe ep and dm distributions.
 
-Some new suites have been defined for the 5.2 branch as interface has
-changed: tests-5.2.html, suite1-5.2.html, suite2-5.2.html. These suites may
-reference tests common to both suites, as well as specific tests for
-interfaces that have changed. Tests will usually follow the same naming
-convention (for instance, manageRightsUsersByAdmin.html on 5.1 and
-manageRightsUsersByAdmin-5.2.html on 5.2).
+Some other suites have been defined for specific features
+(suite-webengine.html, for instance).
 
 Note that the tests are currently not very "unit": some tests will require
 previous tests to be run to succeed.
