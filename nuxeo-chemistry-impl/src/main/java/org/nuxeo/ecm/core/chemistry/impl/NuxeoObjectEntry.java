@@ -46,13 +46,19 @@ public class NuxeoObjectEntry implements ObjectEntry, DocumentModelHolder {
     private final boolean canWrite;
 
     protected NuxeoObjectEntry(DocumentModel doc, NuxeoConnection connection) {
+        this(doc, connection, false);
+    }
+
+    protected NuxeoObjectEntry(DocumentModel doc, NuxeoConnection connection,
+            boolean creation) {
         this.doc = doc;
         type = connection.repository.getType(NuxeoType.mappedId(doc.getType()));
         // connection is not stored as the ObjectEntry must be stateless
         boolean canWrite;
         try {
-            canWrite = connection.session.hasPermission(doc.getRef(),
-                    SecurityConstants.WRITE);
+            canWrite = creation
+                    || connection.session.hasPermission(doc.getRef(),
+                            SecurityConstants.WRITE);
         } catch (ClientException e) {
             canWrite = false;
         }
