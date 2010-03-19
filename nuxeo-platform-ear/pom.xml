@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -656,11 +657,11 @@
       <!-- build zip artifacts with resources -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-<!--        <version>2.1</version>-->
+        <!--        <version>2.1</version>-->
         <configuration>
-<!--          <archiverConfig>-->
-<!--            <duplicateBehavior>preserve</duplicateBehavior>-->
-<!--          </archiverConfig>-->
+          <!--          <archiverConfig>-->
+          <!--            <duplicateBehavior>preserve</duplicateBehavior>-->
+          <!--          </archiverConfig>-->
           <descriptors>
             <descriptor>src/main/assemble/resources/common.xml</descriptor>
             <descriptor>
@@ -671,12 +672,16 @@
             </descriptor>
             <descriptor>src/main/assemble/resources/mono.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-derby.xml</descriptor>
-            <descriptor>src/main/assemble/resources/db-postgresql.xml</descriptor>
+            <descriptor>
+              src/main/assemble/resources/db-postgresql.xml
+            </descriptor>
             <descriptor>src/main/assemble/resources/db-mysql.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-oracle.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-h2.xml</descriptor>
             <descriptor>src/main/assemble/resources/jcr_storage.xml</descriptor>
-            <descriptor>src/main/assemble/resources/jcr_postgresql.xml</descriptor>
+            <descriptor>
+              src/main/assemble/resources/jcr_postgresql.xml
+            </descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -830,7 +835,9 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
   </scm>
 
