@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,7 +52,7 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
  * <p>
  * This class is not thread-safe, it should be tied to a single session and the
  * session itself should not be used concurrently.
- *
+ * 
  * @author Florent Guillaume
  */
 public class Context {
@@ -182,7 +183,7 @@ public class Context {
 
     /**
      * Creates a new row in the context.
-     *
+     * 
      * @param id the id
      * @param map the fragments map, or {@code null}
      * @return the created row
@@ -190,7 +191,7 @@ public class Context {
      */
     // FIXME: do we want to throw StorageException or IllegalStateException ?
     public SimpleFragment create(Serializable id, Map<String, Serializable> map)
-            throws StorageException {
+    throws StorageException {
         if (pristine.containsKey(id) || modified.containsKey(id)) {
             throw new IllegalStateException("Row already registered: " + id);
         }
@@ -202,16 +203,16 @@ public class Context {
      * <p>
      * If it's not in the context, fetch it from the mapper. If it's not in the
      * database, returns {@code null} or an absent fragment.
-     *
+     * 
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
-     *            was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
     public Fragment get(Serializable id, boolean allowAbsent)
-            throws StorageException {
+    throws StorageException {
         Fragment fragment = getIfPresent(id);
         if (fragment == null) {
             return getFromMapper(id, allowAbsent);
@@ -227,16 +228,16 @@ public class Context {
      * <p>
      * If it's not in the context, fetch it from the mapper. If it's not in the
      * database, returns {@code null} or an absent fragment.
-     *
+     * 
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
-     *            was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
     public List<Fragment> getMulti(List<Serializable> ids, boolean allowAbsent)
-            throws StorageException {
+    throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
@@ -284,7 +285,7 @@ public class Context {
      * Gets a fragment from the mapper.
      */
     protected Fragment getFromMapper(Serializable id, boolean allowAbsent)
-            throws StorageException {
+    throws StorageException {
         if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
@@ -394,7 +395,7 @@ public class Context {
 
     /**
      * Removes a row from the context.
-     *
+     * 
      * @param fragment
      * @throws StorageException
      */
@@ -404,7 +405,7 @@ public class Context {
 
     /**
      * Removes a fragment from the database.
-     *
+     * 
      * @param id the fragment id
      * @throws StorageException
      */
@@ -422,7 +423,7 @@ public class Context {
 
     /**
      * Allows for remapping a row upon save.
-     *
+     * 
      * @param fragment the fragment
      * @param idMap the map of old to new ids
      */
@@ -436,7 +437,7 @@ public class Context {
     /**
      * Finds the documents having dirty text or dirty binaries that have to be
      * reindexed as fulltext.
-     *
+     * 
      * @param dirtyStrings set of ids, updated by this method
      * @param dirtyBinaries set of ids, updated by this method
      * @throws StorageException
@@ -482,13 +483,13 @@ public class Context {
     /**
      * Saves all the created, modified or deleted rows, except for the created
      * main rows which have already been done.
-     *
+     * 
      * @param idMap the map of temporary ids to final ids to use in translating
      *            secondary created rows
      * @throws StorageException
      */
     public void save(Map<Serializable, Serializable> idMap)
-            throws StorageException {
+    throws StorageException {
         for (Fragment fragment : modified.values()) {
             Serializable id = fragment.getId();
             switch (fragment.getState()) {
@@ -547,7 +548,7 @@ public class Context {
 
     /**
      * Called by the mapper when a fragment has been updated in the database.
-     *
+     * 
      * @param id the id
      * @param wasModified {@code true} for a modification, {@code false} for a
      *            deletion
@@ -599,6 +600,28 @@ public class Context {
                 }
             }
             deletedInvalidations.clear();
+        }
+    }
+
+    /**
+     * Checks all invalidations accumulated. Called post-transaction.
+     */
+    protected void checkReceivedInvalidations() {
+        synchronized (modifiedInvalidations) {
+            for (Serializable id : modifiedInvalidations) {
+                if (modifiedInTransaction.contains(id)) {
+                    throw new ConcurrentModificationException(
+                    "Updating a concurrently modified value");
+                }
+            }
+        }
+        synchronized (deletedInvalidations) {
+            for (Serializable id : deletedInvalidations) {
+                if (modifiedInTransaction.contains(id)) {
+                    throw new ConcurrentModificationException(
+                    "Updating a concurrently modified value");
+                }
+            }
         }
     }
 
