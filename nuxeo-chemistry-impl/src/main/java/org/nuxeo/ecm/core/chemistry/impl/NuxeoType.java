@@ -116,7 +116,7 @@ public class NuxeoType implements Type {
                 org.nuxeo.ecm.core.schema.types.Type fieldType = field.getType();
                 if (fieldType.isComplexType()) {
                     // complex type
-                    log.info("Chemistry: ignoring complex type: "
+                    log.debug("Chemistry: ignoring complex type: "
                             + schema.getName() + '/' + field.getName());
                     continue;
                 } else {
@@ -124,7 +124,7 @@ public class NuxeoType implements Type {
                         org.nuxeo.ecm.core.schema.types.Type listFieldType = ((ListType) fieldType).getFieldType();
                         if (!listFieldType.isSimpleType()) {
                             // complex list
-                            log.info("Chemistry: ignoring complex list: "
+                            log.debug("Chemistry: ignoring complex list: "
                                     + schema.getName() + '/' + field.getName());
                             continue;
                         } else {

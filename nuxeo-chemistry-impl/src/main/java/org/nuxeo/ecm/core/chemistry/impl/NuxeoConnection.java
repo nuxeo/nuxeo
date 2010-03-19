@@ -500,7 +500,7 @@ public class NuxeoConnection implements Connection, SPI {
             ObjectId folder, BaseType baseType, ContentStream contentStream) {
         String typeId = (String) properties.get(Property.TYPE_ID);
         DocumentModel doc = createDoc(typeId, folder, baseType);
-        ObjectEntry entry = new NuxeoObjectEntry(doc, this);
+        ObjectEntry entry = new NuxeoObjectEntry(doc, this, true);
         updateProperties(entry, null, properties, true);
         try {
             if (contentStream != null) {
@@ -526,6 +526,10 @@ public class NuxeoConnection implements Connection, SPI {
             throw new ObjectNotFoundException(object.getId());
         }
         return entry.getAllowableActions();
+    }
+
+    public ObjectEntry getObject(ObjectId objectId, Inclusion inclusion) {
+        return getProperties(objectId, inclusion);
     }
 
     public ObjectEntry getProperties(ObjectId object, Inclusion inclusion) {

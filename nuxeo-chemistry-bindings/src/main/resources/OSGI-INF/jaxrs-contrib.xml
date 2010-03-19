@@ -3,6 +3,14 @@
 
   <!-- CMISApplication registered through MANIFEST.MF -->
 
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="cmis-jaxrs" transactional="true">
+      <pattern>/nuxeo/site/cmis/.*</pattern>
+    </filterConfig>
+  </extension>
+
   <!-- make sure no redirect for authentication happens -->
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
