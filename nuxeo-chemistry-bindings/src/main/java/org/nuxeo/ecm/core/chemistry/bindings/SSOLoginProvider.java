@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.core.chemistry.bindings;
 
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 
 /**
  * Login provider that does not check the password and just logs in the provided
@@ -29,7 +31,12 @@ public class SSOLoginProvider implements LoginProvider {
 
     public LoginContext login(String username, String password)
             throws LoginException {
-        return Framework.login(username, password); // (password is unused)
+        UserIdentificationInfo userIdent = new UserIdentificationInfo(username, "");
+        userIdent.setLoginPluginName("Trusting_LM");
+        CallbackHandler handler = new UserIdentificationInfoCallbackHandler(userIdent);
+        LoginContext loginContext = new LoginContext("nuxeo-ecm-web", handler);
+        loginContext.login();
+        return loginContext;
     }
 
 }
