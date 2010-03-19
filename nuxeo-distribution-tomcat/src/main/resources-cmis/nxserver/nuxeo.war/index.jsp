@@ -132,7 +132,7 @@ H2 {
                </p>
                <p class="welcomeText">
                  Connect with CMIS using the URL
-                 <a href="site/cmis/repository"><%=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()%>/site/cmis/repository</a>
+                 <a href="site/cmis/repository"><%=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()%>/nuxeo/site/cmis/repository</a>
                  for the AtomPub service document.
                </p>
                <p class="welcomeText">
