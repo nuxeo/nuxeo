@@ -84,9 +84,7 @@
 
           <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
             <ui:include src="/incl/video/video_player.xhtml">
-              <ui:param name="videoDocument" value="#{documentActions.currentSelection}" />
-              <ui:param name="videoPropertyPath" value="#{'file:content'}" />
-              <ui:param name="videoFilename" value="#{documentActions.currentSelection.file.filename}" />
+              <ui:param name="videoDoc" value="#{documentActions.currentSelection}" />
             </ui:include>
           </c:if>
           <c:if test="#{documentActions.currentSelection.hasSchema('audio')}">
