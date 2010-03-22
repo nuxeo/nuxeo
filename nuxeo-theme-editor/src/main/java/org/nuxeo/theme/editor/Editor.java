@@ -929,11 +929,15 @@ public class Editor {
 
     // UndoBuffer
     public static void saveToUndoBuffer(final String themeName,
-            final String message) {
+            final String message) throws ThemeException {
         ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(themeName);
         ThemeSerializer serializer = new ThemeSerializer();
-        String xmlSource = serializer.serializeToXml(themeDef.getSrc(), 0);
-
+        String xmlSource;
+        try {
+            xmlSource = serializer.serializeToXml(themeDef.getSrc(), 0);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not save theme into the under buffer", e);
+        }
         UndoBuffer undoBuffer = SessionManager.getUndoBuffer(themeName);
         if (undoBuffer == null) {
             undoBuffer = new UndoBuffer();

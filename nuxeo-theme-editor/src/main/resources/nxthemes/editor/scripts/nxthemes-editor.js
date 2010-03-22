@@ -200,7 +200,7 @@ NXThemesEditor.setSize = function(info) {
     var width = null;
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "width") {
@@ -231,14 +231,27 @@ NXThemesEditor.updateElementProperties = function(info) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
-          id = value;
+            id = value;
         } else {
+			if (name.match(":lines$") == ":lines") {
+				name = name.replace(/:lines$/, '');
+				var lines = value.split(/\r|\n|\r\n/);
+				value = "";
+				var len = lines.length;
+				for (i=0; i<len; i++) {
+					var line = lines[i];
+					value += '"' + line.replace(/"/g, '""') + '"';
+				    if (i < len - 1) {
+						value += ',';
+					}
+				}
+			}
             if (i.type == 'checkbox') {
                 value = value == 'on' ? "true" : "false";
             }
-        	propertyMap.set(i.name, value);
+        	propertyMap.set(name, value);
         }
     });
     var url = nxthemesBasePath + "/nxthemes-editor/update_element_properties"; 
@@ -266,7 +279,7 @@ NXThemesEditor.updateElementWidget = function(info) {
     var viewName = "";
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "viewName") {
@@ -301,7 +314,7 @@ NXThemesEditor.updateElementDescription = function(info) {
     var description = "";
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "description") {
@@ -337,7 +350,7 @@ NXThemesEditor.updateElementStyle = function() {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "path") {
@@ -528,7 +541,7 @@ NXThemesEditor.updateElementPadding = function(info) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         propertyMap.set(i.name, value);
     });    
     var url = nxthemesBasePath + "/nxthemes-editor/update_element_layout"; 
@@ -1871,7 +1884,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
     var themeName, styleUid, viewName;
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "style_uid") {
         	styleUid = value;
         } else if (name == "view_name") {
@@ -1921,7 +1934,7 @@ NXThemesStyleManager.updateNamedStyleCSS = function(form) {
 	var css_source = '';
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "style_uid") {
           style_uid = value;
         } else if (name == "css_source") {
@@ -1953,7 +1966,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name.startsWith('style_')) {
             propertyMap.set(name.substr(6), value);
         }
