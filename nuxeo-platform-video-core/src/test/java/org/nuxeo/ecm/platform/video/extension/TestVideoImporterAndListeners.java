@@ -209,8 +209,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 docModel.getPropertyValue("picture:views/0/title"));
         assertEquals(62L, docModel.getPropertyValue("picture:views/0/height"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/0/width"));
-        assertEquals(2213L,
-                docModel.getPropertyValue("picture:views/0/content/length"));
+        assertTrue((Long) docModel.getPropertyValue("picture:views/0/content/length") > 1000);
 
         // the original video is also 100 pixels high hence the player preview
         // has the same size
@@ -218,8 +217,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 docModel.getPropertyValue("picture:views/1/title"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/1/height"));
         assertEquals(160L, docModel.getPropertyValue("picture:views/1/width"));
-        assertEquals(1915L,
-                docModel.getPropertyValue("picture:views/1/content/length"));
+        assertTrue((Long) docModel.getPropertyValue("picture:views/1/content/length") > 1000);
 
         // TODO: add picture metadata extraction where if
         // they make sense for videos (ie. extract these from the
