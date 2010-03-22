@@ -171,6 +171,8 @@ public class DropZone extends PortalDropZone {
             gp.addListener(new PortletListener(gp));
         }
         JsLibrary.hideGwtContainerMask();
+        // -1 for auto size
+        gp.setWidth(-1);
     };
 
     Timer t;
