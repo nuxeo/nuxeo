@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2002-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2002-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
@@ -39,9 +39,6 @@ import org.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
 import org.pdfbox.pdmodel.encryption.PDStandardEncryption;
 import org.pdfbox.util.PDFTextStripper;
 
-/**
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- */
 public class PDF2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PDF2TextConverter.class);
@@ -72,12 +69,13 @@ public class PDF2TextConverter implements Converter {
                 isReadable = stdEncryption.canExtractContent();
             }
             if (isReadable) {
+                String text = textStripper.getText(document);
+                text = text.replace("\u00a0", " ");
                 f = File.createTempFile("pdfboplugin", ".txt");
                 fas = new FileOutputStream(f);
-                byte[] bytes = textStripper.getText(document).getBytes();
-                fas.write(bytes);
+                fas.write(text.getBytes("UTF-8"));
                 return new SimpleCachableBlobHolder(new FileBlob(
-                        new FileInputStream(f)));
+                        new FileInputStream(f), "text/plain", "UTF-8"));
             } else {
                 return new SimpleCachableBlobHolder(new StringBlob(""));
             }
