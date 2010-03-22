@@ -116,7 +116,7 @@ public class MediaStreamingServiceImpl extends DefaultComponent implements
 
         StringBuffer url = new StringBuffer(getStreamingServerBaseURL());
         url.append(absolutePath.substring(getBlobStorageDirRootPath(
-                repositoryName).length()));
+                repositoryName).length()).replace("\\", "/"));
 
         return url.toString();
 
