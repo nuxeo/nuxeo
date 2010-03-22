@@ -121,11 +121,11 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** qualifier to set of columns full quoted names, used to identify joins */
     public Map<String, Set<String>> columnsPerQual = new LinkedHashMap<String, Set<String>>();
 
-    /** joins added by fulltext match */
-    public final List<String> fulltextJoins = new LinkedList<String>();
+    /** left joins added by fulltext match */
+    public final List<String> leftJoins = new LinkedList<String>();
 
-    /** joins params added by fulltext match */
-    public final List<String> fulltextJoinsParams = new LinkedList<String>();
+    /** left joins params added by fulltext match */
+    public final List<String> leftJoinsParams = new LinkedList<String>();
 
     public List<String> errorMessages = new LinkedList<String>();
 
@@ -276,7 +276,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             String qual = entry.getKey();
             Map<String, Table> tables = tablesPerQual.get(qual);
             if (tables == null) {
-                tablesPerQual.put(qual, tables = new HashMap<String, Table>());
+                tablesPerQual.put(qual,
+                        tables = new LinkedHashMap<String, Table>());
             }
             for (String fqn : entry.getValue()) {
                 Column col = columns.get(fqn);
@@ -284,7 +285,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
         }
         // per qualifier, include hier in fragments
-        Map<String, List<Table>> qualTables = new HashMap<String, List<Table>>();
+        Map<String, List<Table>> qualTables = new LinkedHashMap<String, List<Table>>();
         for (Entry<String, Map<String, Table>> entry : tablesPerQual.entrySet()) {
             String qual = entry.getKey();
             Map<String, Table> tableMap = entry.getValue();
@@ -324,9 +325,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 from.append(" JOIN ");
                 // find which table in on1/on2 refers to current qualifier
-                Set<String> tables = columnsPerQual.get(qual);
+                Set<String> fqns = columnsPerQual.get(qual);
                 for (String fqn : Arrays.asList(j.on1, j.on2)) {
-                    if (!tables.contains(fqn)) {
+                    if (!fqns.contains(fqn)) {
                         continue;
                     }
                     Column col = columns.get(fqn);
@@ -487,12 +488,12 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Joins for the external fulltext matches (H2).
          */
 
-        for (int ftj = 0; ftj < fulltextJoins.size(); ftj++) {
+        for (String join : leftJoins) {
             // LEFT JOIN because we want a row even if there's no match
             // so that the WHERE clause can test and provide a boolean
-            from.append(" LEFT JOIN " + fulltextJoins.get(ftj));
-            fromParams.add(fulltextJoinsParams.get(ftj));
+            from.append(" LEFT JOIN " + join);
         }
+        fromParams.addAll(leftJoinsParams);
 
         /*
          * Where clause.
@@ -699,11 +700,11 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected void recordCol(Column col, String qual) {
         String fqn = col.getFullQuotedName();
         columns.put(fqn, col);
-        Set<String> cpq = columnsPerQual.get(qual);
-        if (cpq == null) {
-            columnsPerQual.put(qual, cpq = new LinkedHashSet<String>());
+        Set<String> fqns = columnsPerQual.get(qual);
+        if (fqns == null) {
+            columnsPerQual.put(qual, fqns = new LinkedHashSet<String>());
         }
-        cpq.add(fqn);
+        fqns.add(fqn);
     }
 
     // finds a multi-valued column, assumed to not be a cmis: one
@@ -847,16 +848,24 @@ public class CMISQLQueryMaker implements QueryMaker {
         String whereParam = info[3];
         String joinAlias = getFtJoinAlias(++ftJoinNumber);
         if (joinExpr != null) {
-            // specific join table (H2)
-            fulltextJoins.add(String.format(joinExpr, joinAlias));
+            // specific join expression H2)
+            leftJoins.add(String.format(joinExpr, joinAlias));
             if (joinParam != null) {
-                fulltextJoinsParams.add(joinParam);
+                leftJoinsParams.add(joinParam);
             }
-            // XXX compat with older Nuxeo, now presetn in DialectH2
-            if (whereExpr == null) {
-                whereExpr = "%s.KEY IS NOT NULL";
-                whereParam = null;
+        } else {
+            // generic join with fulltext table
+            if (qual != null) {
+                // the problem is that dialect.getFulltextMatch is not designed
+                // to work on aliased columns
+                throw new RuntimeException(
+                        "Qualifier not supported for CONTAINS");
             }
+            Table table = getTable(
+                    database.getTable(model.FULLTEXT_TABLE_NAME), qual);
+            Column col = table.getColumn(model.MAIN_KEY);
+            leftJoins.add(String.format("%s ON %s = %s", table.getQuotedName(),
+                    col.getFullQuotedName(), mainCol.getFullQuotedName()));
         }
         String sql = String.format(whereExpr, joinAlias);
         if (whereParam != null) {
