@@ -180,8 +180,6 @@
 
 
   function setRows(contenu) {
-    if (_gel("txtareapostit").value.length > 1100)
-      _gel("txtareapostit").value = _gel("txtareapostit").value.substring(0,1100);
     var zoneText=_gel("txtareapostit");
     var colonnes = zoneText.cols;
     if(contenu==null)
@@ -200,8 +198,8 @@
       }
     }
     zoneText.setAttribute("rows",e);
-    if ((e*14) > 220)
-      zoneText.style.height=e*14+"px";
+    if ((e*15) > 220)
+      zoneText.style.height=e*15+"px";
     else
        zoneText.style.height="220px";
 
