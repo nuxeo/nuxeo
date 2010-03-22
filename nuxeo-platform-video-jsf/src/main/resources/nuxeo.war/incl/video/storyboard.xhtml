@@ -9,8 +9,8 @@
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <ui:repeat var="item" value="#{storyboardActions.getItems(videoDocument)}">
-    <a id="videoPlayerObjectStaticPreview" href="#play"
-      onclick="return unhidePlayerAndPlay('videoPlayerObjectStaticPreview', 'videoPlayerObject', '#{item.timecode}');">
+    <a href="#play"
+      onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject', '#{item.timecode}');">
       <nxh:graphicImage url="#{item.url}" />
     </a>
   </ui:repeat>

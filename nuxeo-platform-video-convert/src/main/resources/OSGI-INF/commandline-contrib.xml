@@ -4,6 +4,13 @@
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
+    <command name="ffmpeg-info" enabled="true">
+      <commandLine>ffmpeg</commandLine>
+      <parameterString> -i #{inFilePath}</parameterString>
+      <winParameterString> -i #{inFilePath}</winParameterString>
+      <installationDirective>You need to install ffmpeg</installationDirective>
+    </command>
+
     <command name="ffmpeg-storyboard" enabled="true">
       <commandLine>ffmpeg</commandLine>
       <parameterString> -y -i #{inFilePath} -f image2 -r #{rate} -s #{width}x#{height} -an #{outFolderPath}/video-thumb-%06d.jpeg</parameterString>

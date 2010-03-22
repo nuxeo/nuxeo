@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
@@ -73,7 +75,7 @@ public abstract class BaseVideoConverter {
 
     protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d\\d)");
 
-    protected Double extractDuration(List<String> output) {
+    protected Double extractDuration(List<String> output) throws ConversionException {
         for (String line : output) {
             Matcher matcher = DURATION_PATTERN.matcher(line);
             if (matcher.find()) {
@@ -83,7 +85,10 @@ public abstract class BaseVideoConverter {
                         + Double.parseDouble(matcher.group(3)) / 100;
             }
         }
-        return null;
+        // could not find the duration
+        throw new ConversionException(
+                "failed to extract the duration from output: "
+                        + StringUtils.join(output, " "));
     }
 
 }
