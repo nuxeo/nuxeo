@@ -34,6 +34,8 @@
     <module>nuxeo-platform-replication</module>
     <module>nuxeo-platform-seam-pdf</module>
     <module>nuxeo-platform-splitpane</module>
+    <module>nuxeo-platform-userdata</module>
+    <module>nuxeo-platform-userdata-core-contrib</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-webdav-server</module>
     <module>nuxeo-platform-xmlrpc-connector</module>
