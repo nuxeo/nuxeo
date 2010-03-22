@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-I20100322_1417</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -16,14 +16,14 @@
   <description>Nuxeo Features: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.3.2-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.3.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.2-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.common.version>1.6.2-I20100322_1417</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.2-I20100322_1417</nuxeo.runtime.version>
+    <nuxeo.core.version>1.6.2-I20100322_1417</nuxeo.core.version>
+    <nuxeo.theme.version>5.3.2-I20100322_1417</nuxeo.theme.version>
+    <nuxeo.features.version>5.3.2-I20100322_1417</nuxeo.features.version>
+    <nuxeo.webengine.version>5.3.2-I20100322_1417</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-I20100322_1417</nuxeo.services.version>
+    <nuxeo.jsf.version>5.3.2-I20100322_1417</nuxeo.jsf.version>
   </properties>
 
   <modules>
