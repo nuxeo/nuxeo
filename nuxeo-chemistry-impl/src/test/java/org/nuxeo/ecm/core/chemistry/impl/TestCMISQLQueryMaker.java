@@ -29,15 +29,27 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
 import org.nuxeo.ecm.core.storage.sql.QueryMaker.Query;
 
 public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
+    public static Set<String> doc_note_file = new HashSet<String>(
+            Arrays.asList("Document", "Note", "File"));
+
     public NuxeoRepository repo;
 
     public Connection conn;
+
+    private SQLInfo sqlInfo;
+
+    private Model model;
+
+    private Session modelSession;
 
     @Override
     public void setUp() throws Exception {
@@ -45,6 +57,11 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         openSession();
         repo = new NuxeoRepository(session.getRepositoryName());
         conn = repo.getConnection(null);
+        Captured captured = new Captured();
+        session.queryAndFetch("", CapturingQueryMaker.TYPE, captured);
+        sqlInfo = captured.sqlInfo;
+        model = captured.model;
+        modelSession = captured.session;
     }
 
     @Override
@@ -55,27 +72,16 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    public void testCMISQLQueryMaker() throws Exception {
-        Captured captured = new Captured();
-        session.queryAndFetch("", CapturingQueryMaker.TYPE, captured);
-        String query;
-        Query q;
-        String sql;
-        String expected;
-        List<Serializable> expectedP;
-        Set<String> doc_note_file = new HashSet<String>(Arrays.asList(
-                "Document", "Note", "File"));
-
-        // basic query
-
-        query = "SELECT cmis:ObjectId, dc:title" //
+    public void testBasic() throws Exception {
+        String query = "SELECT cmis:ObjectId, dc:title" //
                 + " FROM cmis:Document" //
                 + " WHERE dc:title = 123 OR dc:title = 'xyz'" //
                 + " ORDER BY dc:description DESC, cmis:parentid ASC";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", "");
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
                     + " FROM HIERARCHY"
@@ -97,22 +103,24 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         } else {
             return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList(Long.valueOf(123), "xyz");
+        List<Serializable> expectedP = Arrays.<Serializable> asList(
+                Long.valueOf(123), "xyz");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
         assertEquals(expectedP, q.selectParams.subList(4, 6));
+    }
 
-        // scalar IN
-
-        query = "SELECT cmis:ObjectId, dc:title" //
+    public void testScalarIN() throws Exception {
+        String query = "SELECT cmis:ObjectId, dc:title" //
                 + " FROM cmis:document" //
                 + " WHERE dc:title IN ('xyz', 'abc')";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
                     + " FROM HIERARCHY"
@@ -129,23 +137,27 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
                     + "   AND ((dublincore.title IN (?, ?)))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList("xyz", "abc");
+        List<Serializable> expectedP = Arrays.<Serializable> asList("xyz",
+                "abc");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
         assertEquals(expectedP, q.selectParams.subList(4, 6));
+    }
 
-        // query with ANY quantifier
-
-        query = "SELECT cmis:objectId" //
+    public void testANY() throws Exception {
+        String query = "SELECT cmis:objectId" //
                 + " FROM cmis:document" //
                 + " WHERE 'bob' = ANY dc:contributors";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE" //
                     + " FROM HIERARCHY"
@@ -166,25 +178,28 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "     WHERE hierarchy.id = _nxm1_dc_contributors.id" //
                     + "       AND _nxm1_dc_contributors.item = ?" //
                     + "))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList("bob");
+        List<Serializable> expectedP = Arrays.<Serializable> asList("bob");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
         assertEquals(expectedP, q.selectParams.subList(4, 5));
+    }
 
-        // join query
-
+    public void testJOIN() throws Exception {
         // join on non-hierarchy table to test query generation and types
-        query = "SELECT A.cmis:ObjectId, B.dc:title" //
+        String query = "SELECT A.cmis:ObjectId, B.dc:title" //
                 + " FROM cmis:Document A" //
                 + " JOIN cmis:Document B ON A.cmis:ObjectId = B.dc:title" //
                 + " WHERE A.dc:title = '123' OR B.dc:title = 'xyz'";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
                     + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID, _B_HIERARCHY.PRIMARYTYPE"
@@ -213,8 +228,11 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND _B_hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND _B_misc.lifecyclestate <> ?"
                     + "   AND ((_A_dublincore.title = ?) OR (_B_dublincore.title = ?))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList("123", "xyz");
+        List<Serializable> expectedP = Arrays.<Serializable> asList("123",
+                "xyz");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
@@ -223,17 +241,18 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 q.selectParams.subList(4, 7)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(7));
         assertEquals(expectedP, q.selectParams.subList(8, 10));
+    }
 
-        // join query with ANY quantifier
-
-        query = "SELECT A.cmis:objectId, B.dc:title" //
+    public void testJOIN_ANY() throws Exception {
+        String query = "SELECT A.cmis:objectId, B.dc:title" //
                 + " FROM cmis:document A" //
                 + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.dc:title = '123' OR 'bob' = ANY B.dc:contributors";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
                     + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID,"
@@ -271,8 +290,11 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "       WHERE _B_hierarchy.id = _nxm1_dc_contributors.id" //
                     + "         AND _nxm1_dc_contributors.item = ?" //
                     + "))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList("123", "bob");
+        List<Serializable> expectedP = Arrays.<Serializable> asList("123",
+                "bob");
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
@@ -281,14 +303,15 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 q.selectParams.subList(4, 7)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(7));
         assertEquals(expectedP, q.selectParams.subList(8, 10));
+    }
 
-        // SELECT *
-
-        query = "SELECT * FROM cmis:document WHERE dc:title = 123";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, conn);
+    public void testSELECT_STAR() throws Exception {
+        String query = "SELECT * FROM cmis:document WHERE dc:title = 123";
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, conn);
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE, HIERARCHY.NAME,"
                     + "   DUBLINCORE.CREATOR, DUBLINCORE.CREATED, DUBLINCORE.MODIFIED"
@@ -307,22 +330,25 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
                     + "   AND ((dublincore.title = ?))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList(Long.valueOf(123));
+        List<Serializable> expectedP = Arrays.<Serializable> asList(Long.valueOf(123));
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
                 q.selectParams.subList(0, 3)));
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
         assertEquals(expectedP, q.selectParams.subList(4, 5));
+    }
 
-        // boolean / datetime
-
-        query = "SELECT cmis:objectId FROM cmis:document "
+    public void testBooleanDateTime() throws Exception {
+        String query = "SELECT cmis:objectId FROM cmis:document "
                 + "WHERE dc:title = true or dc:title = TIMESTAMP '2010-01-01T00:00:00.123Z'";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, conn);
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
                     + " FROM HIERARCHY"
@@ -339,8 +365,11 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
                     + "   AND ((dublincore.title = ?) OR (dublincore.title = ?))";
+        } else {
+            return; // TODO other databases
         }
-        expectedP = Arrays.<Serializable> asList(Boolean.TRUE,
+        List<Serializable> expectedP = Arrays.<Serializable> asList(
+                Boolean.TRUE,
                 GregorianCalendar.fromAtomPub("2010-01-01T00:00:00.123Z"));
         assertEquals(expected.replaceAll(" +", " "), sql);
         assertEquals(doc_note_file, new HashSet<Serializable>(
@@ -349,23 +378,13 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(expectedP, q.selectParams.subList(4, 6));
     }
 
-    public void testCMISQLQueryMakerFulltext() throws Exception {
-        Captured captured = new Captured();
-        session.queryAndFetch("", CapturingQueryMaker.TYPE, captured);
-        String query;
-        Query q;
-        String sql;
-        String expected;
-        Set<String> doc_note_file = new HashSet<String>(Arrays.asList(
-                "Document", "Note", "File"));
-
-        // basic query
-
-        query = "SELECT cmis:objectId FROM cmis:document WHERE CONTAINS('foo')";
-        q = new CMISQLQueryMaker().buildQuery(captured.sqlInfo, captured.model,
-                captured.session, query, null, new Object[] { null });
+    public void testFulltext() throws Exception {
+        String query = "SELECT cmis:objectId FROM cmis:document WHERE CONTAINS('foo')";
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
         assertNotNull(q);
-        sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
                     + " FROM HIERARCHY"
