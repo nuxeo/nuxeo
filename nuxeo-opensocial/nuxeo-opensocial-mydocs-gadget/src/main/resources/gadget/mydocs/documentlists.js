@@ -269,7 +269,7 @@ function readCookie(name) {
 
 function deleteDoc(obj) {
   if(confirm(prefs.getMsg("confirmDelete")))
-    makeRequest(obj.attr('href'), function() { refresh();}, gadgets.io.MethodType.DELETE);
+    makeRequest(obj.attr('href'), function() {  gadgets.nuxeo.refreshGadget();}, gadgets.io.MethodType.DELETE);
   return false;
 }
 
