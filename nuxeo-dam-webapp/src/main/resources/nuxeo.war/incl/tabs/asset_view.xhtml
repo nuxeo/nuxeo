@@ -171,7 +171,7 @@
             <h:panelGroup>
               <h:outputText id="imgSize"
                       value="#{nxu:printFormatedFileSize(documentActions.currentSelection.picture.views[1].content.length, 'JEDEC', true)}"
-                      rendered="#{documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}"/>
+                      rendered="#{!documentActions.currentSelection.hasSchema('file') and documentActions.currentSelection.hasSchema('picture') and !empty documentActions.currentSelection.picture.views}"/>
               <h:outputText
                       value="#{nxu:printFormatedFileSize(documentActions.currentSelection.file.content.length, 'JEDEC', true)}"
                       rendered="#{documentActions.currentSelection.hasSchema('file')}"/>

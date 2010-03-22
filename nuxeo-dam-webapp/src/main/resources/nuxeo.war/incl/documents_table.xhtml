@@ -133,7 +133,7 @@
           <h:outputText value="#{messages['label.content.header.size']}" />
         </h:panelGroup>
       </f:facet>
-      <h:outputText value="#{nxu:printFormatedFileSize(row.data.picture.views[1].content.length, 'JEDEC', true)}" rendered="#{row.data.hasSchema('picture') and !empty row.data.picture.views}" />
+      <h:outputText value="#{nxu:printFormatedFileSize(row.data.picture.views[1].content.length, 'JEDEC', true)}" rendered="#{!row.data.hasSchema('file') and row.data.hasSchema('picture') and !empty row.data.picture.views}" />
       <h:outputText value="#{nxu:printFormatedFileSize(row.data.file.content.length, 'JEDEC', true)}" rendered="#{row.data.hasSchema('file')}" />
     </nxu:column>
   </nxu:dataTable>
