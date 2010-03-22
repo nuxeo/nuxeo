@@ -16,20 +16,26 @@
   </scm>
 
   <modules>
+    <module>nuxeo-chemistry</module>
+    <module>nuxeo-correspondence-marianne</module>
+    <module>nuxeo-http-client</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-audit-web-access</module>
+    <module>nuxeo-platform-categorization</module>
     <module>nuxeo-platform-categorization-language</module>
     <module>nuxeo-platform-categorization-coverage</module>
     <module>nuxeo-platform-categorization-subjects</module>
-    <module>nuxeo-platform-categorization</module>
-    <!-- <module>nuxeo-platform-error-web</module> -->
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-flex</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
+    <module>nuxeo-platform-mail-dispatcher</module>
     <module>nuxeo-platform-replication</module>
-    <!-- <module>nuxeo-platform-sync</module> -->
-    <!-- <module>nuxeo-platform-userdata-core-contrib</module> -->
-    <!-- <module>nuxeo-platform-userdata</module> -->
+    <module>nuxeo-samples</module>
+    <module>nuxeo-platform-seam-pdf</module>
     <module>nuxeo-platform-video</module>
+    <module>nuxeo-platform-webdav-server</module>
+    <module>nuxeo-platform-xmlrpc-connector</module>
  </modules>
 
 </project>
