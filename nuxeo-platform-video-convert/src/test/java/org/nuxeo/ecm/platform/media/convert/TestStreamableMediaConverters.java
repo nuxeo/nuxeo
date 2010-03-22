@@ -21,12 +21,10 @@ package org.nuxeo.ecm.platform.media.convert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -40,7 +38,6 @@ public class TestStreamableMediaConverters extends NXRuntimeTestCase {
 
     public static final Log log = LogFactory.getLog(TestStreamableMediaConverters.class);
 
-    // http://www.elephantsdream.org/
     public static final String TEST_FILE_OGV = "DELTA.ogv";
 
     public static final String TEST_FILE_3GP = "DELTA.3gp";
