@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.properties;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -24,13 +25,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.themes.ThemeIOException;
 
 public class FieldIO {
-
-    private static final Log log = LogFactory.getLog(FieldIO.class);
 
     public static FieldInfo getFieldInfo(Class<?> c, String name) {
         try {
@@ -63,9 +61,8 @@ public class FieldIO {
             } catch (SecurityException e) {
                 throw new ThemeIOException(e);
             } catch (NoSuchFieldException e) {
-                log.warn("Failed to set field '" + name + "' on "
-                        + c.getCanonicalName());
-                continue;
+                throw new ThemeIOException("Failed to set field '" + name
+                        + "' on " + c.getCanonicalName());
             }
 
             Class<?> fieldType = field.getType();
@@ -104,7 +101,8 @@ public class FieldIO {
                         field.set(object, Integer.valueOf(value));
                     }
                 } catch (NumberFormatException e) {
-                    log.warn("Failed to parse integer value: '" + value + "'");
+                    throw new ThemeIOException(
+                            "Failed to parse integer value: '" + value + "'");
                 } catch (IllegalArgumentException e) {
                     throw new ThemeIOException(e);
                 } catch (IllegalAccessException e) {
@@ -121,14 +119,18 @@ public class FieldIO {
                     Type[] actualTypes = ((ParameterizedType) fieldGenericType).getActualTypeArguments();
 
                     if (actualTypes.length > 1) {
-                        log.warn("Only one-dimension arrays are supported.");
-                        continue;
+                        throw new ThemeIOException(
+                                "Only one-dimension arrays are supported.");
                     }
 
                     // Collection<String>
                     if (actualTypes[0].equals(String.class)) {
                         List<String> list = new ArrayList<String>();
-                        list.addAll(Arrays.asList(value.split(",")));
+                        try {
+                            list = Utils.csvToList(value);
+                        } catch (IOException e) {
+                            throw new ThemeIOException(e);
+                        }
                         try {
                             field.set(object, list);
                         } catch (IllegalArgumentException e) {
@@ -136,17 +138,18 @@ public class FieldIO {
                         } catch (IllegalAccessException e) {
                             throw new ThemeIOException(e);
                         }
-                        continue;
                     }
                 }
             } else {
-                log.warn("Field type '" + name + "' of " + c.getCanonicalName()
-                        + " is not supported: " + fieldType.getCanonicalName());
+                throw new ThemeIOException("Cannot update field type '" + name
+                        + "' of " + c.getCanonicalName() + " because "
+                        + fieldType.getCanonicalName() + " is not supported.");
             }
         }
 
     }
 
+    @SuppressWarnings("unchecked")
     public static Properties dumpFieldsToProperties(Object object)
             throws ThemeIOException {
 
@@ -155,6 +158,7 @@ public class FieldIO {
         Class<?> c = object.getClass();
         for (Field field : c.getDeclaredFields()) {
             Class<?> fieldType = field.getType();
+            Type fieldGenericType = field.getGenericType();
             String fieldName = field.getName();
 
             FieldInfo fieldInfo = getFieldInfo(c, fieldName);
@@ -162,35 +166,67 @@ public class FieldIO {
                 continue;
             }
 
-            String value;
             String property = "";
+            Object value;
             try {
-                Object v = field.get(object);
-                value = v == null ? "" : v.toString();
+                value = field.get(object);
             } catch (IllegalAccessException e) {
                 throw new ThemeIOException(e);
             } catch (IllegalArgumentException e) {
                 throw new ThemeIOException(e);
             }
+
             // boolean fields
             if (fieldType.equals(boolean.class)
                     || fieldType.equals(Boolean.class)) {
-                property = Boolean.parseBoolean(value.toString()) ? "true"
-                        : "false";
+                if (value == null) {
+                    property = "false";
+                } else {
+                    property = Boolean.parseBoolean(value.toString()) ? "true"
+                            : "false";
+                }
             }
             // string fields
             else if (fieldType.equals(String.class)) {
-                property = value;
+                property = value == null ? "" : value.toString();
             }
             // integer fields
             else if (fieldType.equals(int.class)
                     || fieldType.equals(Integer.class)) {
-                property = value;
+                property = value == null ? "" : value.toString();
+            }
+            // generics
+            else if (fieldGenericType instanceof ParameterizedType) {
+                if (fieldType.equals(ArrayList.class)
+                        || fieldType.equals(List.class)
+                        || fieldType.equals(Collection.class)) {
+
+                    Type[] actualTypes = ((ParameterizedType) fieldGenericType).getActualTypeArguments();
+
+                    if (actualTypes.length > 1) {
+                        throw new ThemeIOException(
+                                "Only one-dimension arrays are supported.");
+                    }
+
+                    // Collection<String>
+                    if (actualTypes[0].equals(String.class)) {
+                        if (value == null) {
+                            property = "";
+                        } else {
+                            property = Utils.listToCsv((List<String>) (value));
+                        }
+                    } else {
+                        throw new ThemeIOException(
+                                "Only list of strings are supported.");
+                    }
+
+                }
             } else {
-                log.warn("Field type '" + fieldName + "' of "
-                        + c.getCanonicalName() + " is not supported: "
-                        + fieldType.getCanonicalName());
-                continue;
+                throw new ThemeIOException(
+                        "Cannot extract property from field type '" + fieldName
+                                + "' of " + c.getCanonicalName() + " because "
+                                + fieldType.getCanonicalName()
+                                + " is not supported.");
             }
 
             properties.setProperty(fieldName, property);
@@ -198,5 +234,4 @@ public class FieldIO {
         }
         return properties;
     }
-
 }

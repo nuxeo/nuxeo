@@ -14,7 +14,9 @@
 
 package org.nuxeo.theme.test.themes;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -35,6 +37,7 @@ import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
+import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
 
@@ -60,7 +63,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testSerializeTheme() throws ThemeException, NodeException {
+    public void testSerializeTheme() throws ThemeException, NodeException, ThemeIOException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("default");
         PageElement page = (PageElement) ElementFactory.create("page");
@@ -71,6 +74,11 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         DummyFragment fragment1 = (DummyFragment) FragmentFactory.create("dummy fragment");
         fragment1.setField1("value 1");
         fragment1.setField2("value 2");
+        List<String> list = new ArrayList<String>();
+        list.add("a");
+        list.add("b");
+        list.add("one, two, three");
+        fragment1.setField3(list);
         fragment1.setDescription("A dummy fragment");
         PerspectiveType perspective1 = new PerspectiveType("view", "View mode");
         PerspectiveType perspective2 = new PerspectiveType("edit", "Edit mode");

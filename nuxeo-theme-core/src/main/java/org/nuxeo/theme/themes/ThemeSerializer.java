@@ -30,6 +30,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
@@ -45,9 +47,6 @@ import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.uids.Identifiable;
 import org.w3c.dom.Document;
-
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 
 public class ThemeSerializer {
 
@@ -329,14 +328,14 @@ public class ThemeSerializer {
         domParent.appendChild(domElement);
     }
 
-    public String serializeToXml(final String src) {
+    public String serializeToXml(final String src) throws ThemeIOException {
         return serializeToXml(src, 0);
     }
 
-    public String serializeToXml(final String src, final int indent) {
-        String xml = null;
+    public String serializeToXml(final String src, final int indent)
+            throws ThemeIOException {
+        // serialize the theme into a document
         try {
-            // serialize the theme into a document
             serialize(src);
             // convert the document to XML
             StringWriter sw = new StringWriter();
@@ -346,11 +345,11 @@ public class ThemeSerializer {
             Writer output = new BufferedWriter(sw);
             XMLSerializer serializer = new XMLSerializer(output, format);
             serializer.serialize(doc);
-            xml = sw.toString();
+            return sw.toString();
         } catch (Exception e) {
-            log.error(e);
+            throw new ThemeIOException(e);
         }
-        return xml;
+
     }
 
 }

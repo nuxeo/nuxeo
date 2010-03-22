@@ -18,14 +18,17 @@
   </layout>
   <properties element="page[1]/section[1]/cell[1]/fragment[1]">
     <field1>value 1</field1>
+    <field3>a,b,"one, two, three"</field3>
     <field2>value 2</field2>
   </properties>
   <properties element="page[1]/section[1]/cell[2]/fragment[1]">
     <field1>value 3</field1>
+    <field3>a,b,"one, ""two"", three"</field3>
     <field2>value 4</field2>
   </properties>
   <properties element="page[1]/section[1]/cell[2]/fragment[2]">
     <field1/>
+    <field3/>
     <field2/>
   </properties>
   <presets>

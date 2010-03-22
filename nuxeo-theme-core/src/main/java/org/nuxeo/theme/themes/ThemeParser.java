@@ -512,7 +512,10 @@ public class ThemeParser {
             throw new ThemeIOException(
                     "Could not find the element associated to: " + elementXPath);
         }
-        element.setUserData("properties", getPropertiesFromNode(node), null);
+        Properties properties = getPropertiesFromNode(node);
+        if (properties != null) {
+            element.setUserData("properties", properties, null);
+        }
     }
 
     private static Properties getPropertiesFromNode(Node node) {
@@ -526,7 +529,8 @@ public class ThemeParser {
                     textContent = String.format("\"%s\"", presetName);
                 }
             }
-            properties.setProperty(n.getNodeName(), Framework.expandVars(textContent));
+            properties.setProperty(n.getNodeName(),
+                    Framework.expandVars(textContent));
         }
         return properties;
     }

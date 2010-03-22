@@ -21,11 +21,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public final class Utils {
 
@@ -33,6 +41,22 @@ public final class Utils {
 
     private Utils() {
         // This class is not supposed to be instantiated.
+    }
+
+    public static String listToCsv(List<String> list) {
+        StringWriter sw = new StringWriter();
+        CSVWriter writer = new CSVWriter(sw, ',');
+        writer.writeNext(list.toArray(new String[0]));
+        return sw.toString();
+    }
+
+    public static List<String> csvToList(String str) throws IOException {
+        if ("".equals(str) || str == null) {
+            return new ArrayList<String>();
+        }
+        StringReader sr = new StringReader(str);
+        CSVReader reader = new CSVReader(sr, ',');
+        return Arrays.asList(reader.readNext());
     }
 
     public static boolean contains(final String[] array, final String value) {
