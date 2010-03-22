@@ -27,7 +27,7 @@
   </a>
 
   <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B'
-    width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
+    width="400" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
     id="videoPlayerObject" style="display: none">
     <param name="src" value="#{videoActions.getURLForPlayer(videoDoc)}"/>
     <param name="autoplay" value="true"/>
@@ -35,7 +35,7 @@
     <param name="scale" value="aspect"/>
     <embed src="#{videoActions.getURLForPlayer(videoDoc)}"
      name="videoPlayerObject" EnableJavaScript="true"
-     width="400" height="350" autoplay="true"
+     width="400" autoplay="true"
      bgcolor="#6F6F6F"
      pluginspage="http://www.apple.com/quicktime/download/" />
   </object>
