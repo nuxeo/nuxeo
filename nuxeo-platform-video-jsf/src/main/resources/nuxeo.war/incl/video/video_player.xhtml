@@ -7,26 +7,38 @@
      xmlns:nxh="http://nuxeo.org/nxweb/html"
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
-  
-  <a id="videoPlayerObjectStaticPreview" href="#play"
-   onclick="return unhidePlayerAndPlay('videoPlayerObjectStaticPreview', 'videoPlayerObject', null);">
-    <nxh:graphicImage 
-      url="#{nxd:fileUrl('downloadPicture', videoDocument, 'StaticPlayerView:content', videoDocument.dublincore.modified)}?conversationId=#{conversation.id}"
+
+  <f:subview rendered="#{videoActions.isPreviewReady(videoDoc)}">
+    <h1><h:outputText value="#{messages['Stream Version']}"/></h1><br/>
+  </f:subview>
+  <f:subview rendered="#{!videoActions.isPreviewReady(videoDoc)}">
+    <h1><h:outputText value="#{messages['Original Version']}"/></h1><br/>
+    <h:outputText rendered="#{videoActions.isDocumentStreamable(videoDoc)}"
+       value="#{messages['Streaming Preview processing in Progress, please wait']}"/>
+
+  </f:subview>
+
+
+  <a id="videoPlayerStaticPreview" href="#play"
+   onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject');">
+    <nxh:graphicImage
+      url="#{videoActions.getURLForStaticPreview(videoDoc)}?conversationId=#{conversation.id}"
       style="max-width: 400px;" />
   </a>
 
   <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B'
     width="400" height="350" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
     id="videoPlayerObject" style="display: none">
-    <param name="src" value="#{nxd:bigFileUrl(videoDocument, videoPropertyPath, videoFilename)}"/>
+    <param name="src" value="#{videoActions.getURLForPlayer(videoDoc)}"/>
     <param name="autoplay" value="true"/>
     <param name="loop" value="false"/>
     <param name="scale" value="aspect"/>
-    <embed src="#{nxd:bigFileUrl(videoDocument, videoPropertyPath, videoFilename)}"
+    <embed src="#{videoActions.getURLForPlayer(videoDoc)}"
      name="videoPlayerObject" EnableJavaScript="true"
      width="400" height="350" autoplay="true"
      bgcolor="#6F6F6F"
      pluginspage="http://www.apple.com/quicktime/download/" />
   </object>
-  
+
+
 </div>

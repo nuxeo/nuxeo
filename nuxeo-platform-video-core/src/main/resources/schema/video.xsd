@@ -22,5 +22,5 @@
       <xs:element name="comment" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  
+
 </xs:schema>

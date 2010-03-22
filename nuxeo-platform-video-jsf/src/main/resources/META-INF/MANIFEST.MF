@@ -6,3 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Eclipse-LazyStart: true
+Nuxeo-Require: org.nuxeo.ecm.platform.video.core
+Require-Bundle: org.nuxeo.ecm.platform.video.core
+ 
+

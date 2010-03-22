@@ -28,6 +28,23 @@
       <destinationMimeType>image/jpeg</destinationMimeType>
     </converter>
 
+    <converter name="streamableMedia"
+     class="org.nuxeo.ecm.platform.media.convert.StreamableMediaConverter">
+      <sourceMimeType>video/mpeg</sourceMimeType>
+      <sourceMimeType>video/mp4</sourceMimeType>
+      <sourceMimeType>video/quicktime</sourceMimeType>
+      <sourceMimeType>video/x-ms-asf</sourceMimeType>
+      <sourceMimeType>video/x-msvideo</sourceMimeType>
+      <sourceMimeType>video/flv</sourceMimeType>
+      <destinationMimeType>video/mp4</destinationMimeType>
+    </converter>
+
+    <converter name="streamableMediaOgv"
+     class="org.nuxeo.ecm.platform.media.convert.OgvStreamableMediaConverter">
+      <sourceMimeType>video/ogg</sourceMimeType>
+      <destinationMimeType>video/mp4</destinationMimeType>
+    </converter>
+
   </extension>
 
 </component>

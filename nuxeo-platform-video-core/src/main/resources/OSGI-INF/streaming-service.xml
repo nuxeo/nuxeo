@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.nuxeo.ecm.platform.video.media.streaming.configuration">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.media.streaming.MediaStreamingServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.media.streaming.MediaStreamingService" />
+  </service>
+
+  <documentation>
+    Service used that knows if Streaming video integration activated and store base URL of Streaming server.
+  </documentation>
+
+  <extension-point name="video">
+    <documentation>
+      Example of activation of streaming server:
+
+      <code>
+        <extension target="org.nuxeo.nuxeo.ecm.platform.video.media.streaming.configuration" point="video">
+          <config activated="true" streamServerBaseURL="rtsp://localhost"/>
+        </extension>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.media.streaming.MediaStreamingActivationDescriptor"/>
+  </extension-point>
+
+</component>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.nuxeo.ecm.platform.video.media.streaming.listeners">
+
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="mediaStreamingUpdater" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.media.streaming.MediaStreamingUpdaterListener" priority="20">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>

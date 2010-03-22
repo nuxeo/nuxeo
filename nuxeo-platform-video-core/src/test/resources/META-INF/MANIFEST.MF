@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Video Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.video.core.test;singleton=true
