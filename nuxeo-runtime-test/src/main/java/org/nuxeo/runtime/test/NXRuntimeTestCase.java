@@ -36,6 +36,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.MockObjectTestCase;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
@@ -173,12 +174,13 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         long stamp = System.currentTimeMillis();
         counter ++;
         return Long.toHexString(stamp) + '-'
-                + System.identityHashCode(System.class) + '.' + counter;
+        + System.identityHashCode(System.class) + '.' + counter;
     }
 
     protected void initOsgiRuntime() throws Exception {
         try {
             if (!restart) {
+                Environment.setDefault(null);
                 workingDir = File.createTempFile("NXOSGITestFramework", generateId());
                 workingDir.delete();
             }
@@ -226,7 +228,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         if (!(classLoader instanceof URLClassLoader)) {
             log.warn("Unknow classloader type: "
                     + classLoader.getClass().getName() +
-                    "\nWon't be able to load OSGI bundles");
+            "\nWon't be able to load OSGI bundles");
             return;
         }
         urls = ((URLClassLoader) classLoader).getURLs();
@@ -368,24 +370,24 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
      */
     public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
-       if (b != null) {
-           OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
-           ctx.deploy(contrib);
-           return ctx;
-       } else {
-           throw new IllegalArgumentException("Bundle not deployed "+bundle);
-       }
+        if (b != null) {
+            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
+            ctx.deploy(contrib);
+            return ctx;
+        } else {
+            throw new IllegalArgumentException("Bundle not deployed "+bundle);
+        }
     }
 
     public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
-       if (b != null) {
-           OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
-           ctx.deploy(contrib);
-           return ctx;
-       } else {
-           throw new IllegalArgumentException("Bundle not deployed "+bundle);
-       }
+        if (b != null) {
+            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
+            ctx.deploy(contrib);
+            return ctx;
+        } else {
+            throw new IllegalArgumentException("Bundle not deployed "+bundle);
+        }
     }
 
     /**
