@@ -501,7 +501,7 @@ Deployment
 * To deploy DM and DAM on the same repository, the clustering needs to be enabled on the 2 servers:
   - the documentation to enable the clustering can be found here: http://www.nuxeo.org/xwiki/bin/view/FAQ/NuxeoClustering
 
-*The jars nuxeo-dam-core, nuxeo-dam-webapp-common, nuxeo-platform-audio-core and nuxeo-platform-video-core need to be deployed on Nuxeo DM.
+* The jars nuxeo-dam-core, nuxeo-dam-webapp-common, nuxeo-platform-audio-core and nuxeo-platform-video-* need to be deployed on Nuxeo DM.
 
 Features
 --------
@@ -518,4 +518,4 @@ Assets Library
           |- Audio file
           `- Office File
 
-All the specifi DAM metadata are available on the assets visible in Nuxeo DM (and can be modified).
+All the specific DAM metadata are available on the assets visible in Nuxeo DM (and can be modified).
