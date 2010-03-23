@@ -6,7 +6,7 @@
        <schema name="common" />
        <schema name="dublincore" />
        <schema name="file" />
-       <schema name="stream-media" />
+       <schema name="streamable_media" />
     </doctype>
   </extension>
 </component>

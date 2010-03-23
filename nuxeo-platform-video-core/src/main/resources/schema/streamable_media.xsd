@@ -5,5 +5,6 @@
 
   <xs:include schemaLocation="core-types.xsd" />
   <xs:element name="streamable" type="nxs:content"/>
+  <xs:element name="duration" type="xs:float"/>
 
 </xs:schema>

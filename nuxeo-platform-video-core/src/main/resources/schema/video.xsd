@@ -3,7 +3,6 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://www.nuxeo.org/ecm/schemas/video">
 
-  <xs:element name="duration" type="xs:float"/>
   <xs:element name="storyboard" type="nxs:storyboarditems" />
 
   <xs:include schemaLocation="core-types.xsd" />

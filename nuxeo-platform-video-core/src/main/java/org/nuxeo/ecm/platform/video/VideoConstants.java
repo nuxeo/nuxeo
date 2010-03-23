@@ -22,7 +22,7 @@ public class VideoConstants {
 
     public static final String STORYBOARD_PROPERTY = "vid:storyboard";
 
-    public static final String DURATION_PROPERTY = "vid:duration";
+    public static final String DURATION_PROPERTY = "strm:duration";
 
     public static final String HAS_STORYBOARD_FACET = "HasStoryBoard";
 

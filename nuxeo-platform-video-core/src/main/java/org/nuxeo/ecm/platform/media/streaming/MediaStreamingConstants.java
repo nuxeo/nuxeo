@@ -19,8 +19,8 @@ package org.nuxeo.ecm.platform.media.streaming;
 
 public class MediaStreamingConstants {
 
-    public static final String STREAM_MEDIA_SCHEMA = "stream-media";
+    public static final String STREAM_MEDIA_SCHEMA = "streamable_media";
 
-    public static final String STREAM_MEDIA_FIELD = "str:streamable";
+    public static final String STREAM_MEDIA_FIELD = "strm:streamable";
 
 }

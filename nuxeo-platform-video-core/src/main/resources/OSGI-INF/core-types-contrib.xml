@@ -8,7 +8,7 @@
        <schema name="video" />
        <schema name="file" />
        <schema name="uid" />
-       <schema name="stream-media" />
+       <schema name="streamable_media" />
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
