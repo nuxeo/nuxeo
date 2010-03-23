@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -37,6 +39,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.operation.LockOperation;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
@@ -53,7 +56,9 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 @SuppressWarnings("unchecked")
 public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 implements DocumentModelCache {
-
+    
+    public static final Log log = LogFactory.getLog(CachingRepositoryInstanceHandler.class);
+    
     protected Principal principal;
     protected String sessionId;
     protected long lastModified;
@@ -506,6 +511,18 @@ implements DocumentModelCache {
         }
     }
 
+    
+    public void setLock(DocumentRef ref, String key) throws ClientException {
+        if (log.isTraceEnabled()) {
+            log.trace("reified lock(" + ref + "," + key + ") into an operation for concurrency detection");
+        }
+        session.run(new LockOperation(ref, key)); // play cache validation on locks
+    }
+    
+    public void save() {
+        log.warn("saved filtered, session is automacally saved server side");
+    }
+    
     @Override
     public synchronized Object invoke(Object proxy, Method method, Object[] args)
     throws Throwable {
