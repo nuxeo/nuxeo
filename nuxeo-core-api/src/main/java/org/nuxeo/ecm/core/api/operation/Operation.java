@@ -246,8 +246,13 @@ public abstract class Operation<T> implements Serializable {
     private void start() {
         setFlags(RUNNING);
         parent = operation.get();
+        if (parent != null) { // inherits client cache context from parent
+            lastModified = parent.lastModified;
+            startedTime = parent.startedTime;
+        } else {            
+            startedTime = Calendar.getInstance().getTimeInMillis();
+        }
         operation.set(this);
-        startedTime = Calendar.getInstance().getTimeInMillis();
     }
 
     protected long endedTime;
@@ -395,19 +400,23 @@ public abstract class Operation<T> implements Serializable {
     }
 
     public void checkLastModified(DocumentModel doc) {
+        if (lastModified == 0) {
+            return; // invoked on server, no cache
+        }
         long docLastModified;
         try {
             docLastModified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
         } catch (Exception e) {
             throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
         }
-        if (lastModified<docLastModified){
-            return;
+        if (lastModified >= docLastModified){
+            return; // client cache is freshest than doc
         }
-        if (startedTime < docLastModified) {
-            return;
+        if (startedTime <= docLastModified) {
+            return; // document is updated by this transaction
         }
-        throw new ConcurrentModificationException("to do");
+        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(lastModified), new Date(startedTime), new Date(docLastModified));  
+        throw new ConcurrentModificationException(message);
     }
 
 }

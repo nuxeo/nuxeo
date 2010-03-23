@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.api.repository.cache;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -105,11 +103,6 @@ implements DocumentModelCache {
     // --------------------------- Document Provider API --------------------------------
 
     protected DocumentModel putIfAbsent(String id, DocumentModel doc) {
-        try {
-            setLastModified(doc.getProperty("dc:modified").getValue(Date.class).getTime());
-        } catch (Exception e) {
-            throw new ClientRuntimeException("Cannot get dc:modified from " + doc, e);
-        }
         if (!cache.containsKey(id)) {
             return cache.put(id, doc);
         }
@@ -517,7 +510,7 @@ implements DocumentModelCache {
     public synchronized Object invoke(Object proxy, Method method, Object[] args)
     throws Throwable {
 
-        if (args[0] instanceof Operation) {
+        if (args != null && args[0] instanceof Operation) {
             Operation op = (Operation) args[0];
             op.setLastModified(lastModified);
         }
