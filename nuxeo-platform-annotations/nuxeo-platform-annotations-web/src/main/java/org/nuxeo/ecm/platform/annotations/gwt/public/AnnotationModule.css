@@ -230,7 +230,7 @@ background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll l
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
-margin:0 5px 0 0;
+margin:0 5px;
 }
 
 div .annotation-hide-show-button-down-hovering {
@@ -238,7 +238,7 @@ background:transparent url(../icons/annotation-icon-hide.png) no-repeat scroll l
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
-margin:0 5px 0 0;
+margin:0 5px;
 }
 
 div .annotation-hide-show-button-up {
@@ -246,7 +246,7 @@ background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll l
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
-margin:0 5px 0 0;
+margin:0 5px;
 }
 
 div .annotation-hide-show-button-up-hovering {
@@ -254,7 +254,7 @@ background:transparent url(../icons/annotation-icon-show.png) no-repeat scroll l
 border:medium none;
 color:#4A4A4A;
 cursor:pointer;
-margin:0 5px 0 0;
+margin:0 5px;
 }
 
 
