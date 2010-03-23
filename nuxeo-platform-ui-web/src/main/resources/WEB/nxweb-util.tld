@@ -50,6 +50,11 @@
       "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a> 
       for more information on those format.
       </li>
+      <li>printFormattedDuration(Object durationInSeconds, Map<String, String> messages): pretty print raw duration measured
+       in seconds as "1 hr 23 min" or "31 min 29 sec" or "3 sec" for instance
+      </li>
+      <li>printFormattedDuration(Object durationInSeconds): same as printFormattedDuration(Object durationInSeconds, null)
+      </li>
     </ul>
     ]]>
   </description>

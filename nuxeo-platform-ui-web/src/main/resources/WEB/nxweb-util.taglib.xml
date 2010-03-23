@@ -38,6 +38,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>printFormattedDuration</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String printFormattedDuration(java.lang.Object, java.util.Map)
+    </function-signature>
+  </function>
+  <function>
     <function-name>join</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

@@ -44,6 +44,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class Functions {
 
+    public static final String I18N_DURATION_PREFIX = "label.duration.unit.";
+
     public enum BytePrefix {
 
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
@@ -345,6 +347,79 @@ public final class Functions {
 
     public static Integer integerDivision(Integer x, Integer y) {
         return x / y;
+    }
+
+    /**
+     * Format the duration of a media in a string of two consecutive units to
+     * best express the duration of a media, e.g.:
+     * <ul>
+     * <li>1 hr 42 min</li>
+     * <li>2 min 25 sec</li>
+     * <li>10 sec</li>
+     * <li>0 sec</li>
+     * </ul>
+     *
+     * @param durationObj a Float, Double, Integer, Long or String instance
+     *            representing a duration in seconds
+     * @param i18nLabels a map to translate the days, hours, minutes and seconds
+     *            labels
+     * @return the formatted string
+     */
+    public static String printFormattedDuration(Object durationObj,
+            Map<String, String> i18nLabels) {
+
+        if (i18nLabels == null) {
+            i18nLabels = new HashMap<String, String>();
+        }
+        double duration = 0.0;
+        if (durationObj instanceof Float) {
+            duration = ((Float) durationObj).doubleValue();
+        } else if (durationObj instanceof Double) {
+            duration = ((Double) durationObj).doubleValue();
+        } else if (durationObj instanceof Integer) {
+            duration = ((Integer) durationObj).doubleValue();
+        } else if (durationObj instanceof Long) {
+            duration = ((Long) durationObj).doubleValue();
+        } else if (durationObj instanceof String) {
+            duration = Double.parseDouble((String) durationObj);
+        }
+
+        int days = (int) Math.floor(duration / (24 * 60 * 60));
+        int hours = (int) Math.floor(duration / (60 * 60)) - days * 24;
+        int minutes = (int) Math.floor(duration / 60) - days * 24 * 60 - hours
+                * 60;
+        int seconds = (int) Math.floor(duration) - days * 24 * 3600 - hours
+                * 3600 - minutes * 60;
+
+        int[] components = { days, hours, minutes, seconds };
+        String[] units = { "days", "hours", "minutes", "seconds" };
+        String[] defaultLabels = { "d", "hr", "min", "sec" };
+
+        String representation = null;
+        for (int i = 0; i < components.length; i++) {
+            if (components[i] != 0 || i == components.length - 1) {
+                String i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i]);
+                if (i18nLabel == null) {
+                    i18nLabel = defaultLabels[i];
+                }
+                representation = String.format("%d %s", components[i],
+                        i18nLabel);
+                if (i < components.length - 1) {
+                    i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i + 1]);
+                    if (i18nLabel == null) {
+                        i18nLabel = defaultLabels[i + 1];
+                    }
+                    representation += String.format(" %d %s",
+                            components[i + 1], i18nLabel);
+                }
+                break;
+            }
+        }
+        return representation;
+    }
+
+    public static String printFormattedDuration(Object durationObj) {
+        return printFormattedDuration(durationObj, null);
     }
 
 }

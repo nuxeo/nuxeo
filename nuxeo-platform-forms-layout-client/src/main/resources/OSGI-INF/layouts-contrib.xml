@@ -228,6 +228,18 @@
       </handler-class>
       <property name="template">/widgets/richtext_with_mimetype_widget_template.xhtml</property>
     </widgetType>
+    
+    <widgetType name="duration">
+      <documentation>
+        This widget displays a i18n formatted duration of a field holding a value measured
+        in seconds (can be Long, Double or String valued).
+        NB: only view mode is supported right now.
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/duration_widget_template.xhtml</property>
+    </widgetType>
 
   </extension>
 

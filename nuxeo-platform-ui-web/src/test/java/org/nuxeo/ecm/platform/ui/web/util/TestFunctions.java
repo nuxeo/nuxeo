@@ -16,9 +16,12 @@
  */
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 /**
  * @author arussel
@@ -26,10 +29,62 @@ import junit.framework.TestCase;
  */
 public class TestFunctions extends TestCase {
     public void testPrintFileSize() {
-        assertEquals("123 kB", Functions.printFormatedFileSize("123456", "SI", true));
-        assertEquals("1 MB", Functions.printFormatedFileSize("1000000", "SI", true));
-        assertEquals("1 megaB", Functions.printFormatedFileSize("1000000", "SI", false));
-        assertEquals("1 KiB", Functions.printFormatedFileSize("1024", "IEC", true));
-        assertEquals("1 kibiB", Functions.printFormatedFileSize("1024", "IEC", false));
+        assertEquals("123 kB", Functions.printFormatedFileSize("123456", "SI",
+                true));
+        assertEquals("1 MB", Functions.printFormatedFileSize("1000000", "SI",
+                true));
+        assertEquals("1 megaB", Functions.printFormatedFileSize("1000000",
+                "SI", false));
+        assertEquals("1 KiB", Functions.printFormatedFileSize("1024", "IEC",
+                true));
+        assertEquals("1 kibiB", Functions.printFormatedFileSize("1024", "IEC",
+                false));
+    }
+
+    public void testPrintDuration() {
+        assertEquals("3 d 2 hr", Functions.printFormattedDuration(266405));
+
+        assertEquals("1 hr 32 min", Functions.printFormattedDuration("5533"));
+        assertEquals("1 hr 32 min", Functions.printFormattedDuration(5533L));
+        assertEquals("1 hr 32 min", Functions.printFormattedDuration(5533.310));
+
+        assertEquals("3 min 13 sec", Functions.printFormattedDuration(193.4));
+        assertEquals("3 min 13 sec", Functions.printFormattedDuration(193));
+
+        assertEquals("13 sec", Functions.printFormattedDuration(13.4));
+
+        assertEquals("0 sec", Functions.printFormattedDuration(0.01));
+        assertEquals("0 sec", Functions.printFormattedDuration(0));
+        assertEquals("0 sec", Functions.printFormattedDuration(null));
+    }
+
+    public void testPrintDurationi18n() {
+        Map<String, String> messages = new HashMap<String, String>();
+        messages.put(Functions.I18N_DURATION_PREFIX + "days", "jours");
+        messages.put(Functions.I18N_DURATION_PREFIX + "hours", "heures");
+        messages.put(Functions.I18N_DURATION_PREFIX + "minutes", "minutes");
+        messages.put(Functions.I18N_DURATION_PREFIX + "seconds", "secondes");
+
+        assertEquals("3 jours 2 heures", Functions.printFormattedDuration(
+                266405, messages));
+
+        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
+                "5533", messages));
+        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
+                5533L, messages));
+        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
+                5533.310, messages));
+
+        assertEquals("3 minutes 13 secondes", Functions.printFormattedDuration(
+                193.4, messages));
+        assertEquals("3 minutes 13 secondes", Functions.printFormattedDuration(
+                193.4, messages));
+
+        assertEquals("0 secondes", Functions.printFormattedDuration(0.01,
+                messages));
+        assertEquals("0 secondes",
+                Functions.printFormattedDuration(0, messages));
+        assertEquals("0 secondes", Functions.printFormattedDuration(null,
+                messages));
     }
 }
