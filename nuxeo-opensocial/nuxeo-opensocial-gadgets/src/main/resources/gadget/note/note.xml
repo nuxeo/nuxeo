@@ -128,11 +128,11 @@
       var tcolor = prefs.getString("COLOR_txt");
       var tsize = prefs.getString("textSize");
       var tfont = prefs.getString("textFont");
-
-      _gel("txtareapostit").value = gadgets.util.unescapeString(text);
+	  text += "\n";
+     _gel("txtareapostit").value = gadgets.util.unescapeString(text);
      _gel("txtareapostit").style.color = tcolor;
-      _gel("txtareapostit").style.fontSize = tsize;
-      _gel("txtareapostit").style.fontFamily = tfont;
+     _gel("txtareapostit").style.fontSize = tsize;
+     _gel("txtareapostit").style.fontFamily = tfont;
 
     var perm = gadgets.nuxeo.isEditable();
 	
