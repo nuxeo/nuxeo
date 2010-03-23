@@ -59,7 +59,7 @@ public class InitPropertiesListener implements EventListener {
 
         protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc) throws ClientException {
             DocumentModel parent = session.getDocument(doc.getParentRef());
-            if (parent == null || "/".equals(parent.getPath())) {
+            if (parent == null || "/".equals(parent.getPathAsString())) {
                 return null;
             }
 
@@ -87,7 +87,7 @@ public class InitPropertiesListener implements EventListener {
                     && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
                 DocumentModel importSet = getImportSet(coreSession, doc);
-                if (importSet == null || "/".equals(importSet.getPath())) {
+                if (importSet == null || "/".equals(importSet.getPathAsString())) {
                     // there is no or no accessible importset parent, don't update
                     // the document.
                     return;
@@ -125,7 +125,7 @@ public class InitPropertiesListener implements EventListener {
             return doc;
         } else {
             DocumentModel parent = getFirstAccessibleParent(session, doc);
-            if (parent == null) {
+            if (parent == null || "/".equals(parent.getPathAsString())) {
                 return null;
             } else {
                 return getImportSet(session, parent);
