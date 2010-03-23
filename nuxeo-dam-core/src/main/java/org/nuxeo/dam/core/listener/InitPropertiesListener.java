@@ -59,7 +59,7 @@ public class InitPropertiesListener implements EventListener {
 
         protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc) throws ClientException {
             DocumentModel parent = session.getDocument(doc.getParentRef());
-            if (parent == null) {
+            if (parent == null || "/".equals(parent.getPath())) {
                 return null;
             }
 
