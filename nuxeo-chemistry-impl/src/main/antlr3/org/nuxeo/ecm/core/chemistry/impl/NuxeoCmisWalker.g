@@ -106,18 +106,21 @@ select_sublist returns [SelectedColumn selcol]:
       v=select_value_expression column_name?
         {
             $selcol = $v.selcol;
-            // TODO column_name
+            if ($column_name.start != null) {
+                String alias = $column_name.start.getText();
+                queryMaker.aliasColumn($selcol, alias);
+            }
         }
     | qualifier DOT STAR
         {
             $selcol = queryMaker.referToAllColumns($qualifier.qual);
         }
-//    | select_multi_valued_column_reference
+//    | select_multi_valued_column_reference TODO
     ;
 
 select_value_expression returns [SelectedColumn selcol]:
       c=select_column_reference { $selcol = $c.selcol; }
-//    | numeric_value_function
+//    | numeric_value_function TODO
     ;
 
 select_column_reference returns [SelectedColumn selcol]:
@@ -135,7 +138,7 @@ qualifier returns [String qual, List<Serializable> params]:
             $qual = $table_name.text;
             $params = new LinkedList<Serializable>();
         }
-//    | correlation_name
+//    | correlation_name TODO
     ;
 
 from_clause:
@@ -427,7 +430,7 @@ literal returns [Serializable value]:
 
 value_expression returns [String sql, List<Serializable> params]:
       c=column_reference { $sql = $c.sql; $params = $c.params; }
-//    | numeric_value_function
+//    | numeric_value_function TODO
     ;
 
 column_reference returns [String sql, List<Serializable> params]:
@@ -451,14 +454,24 @@ multi_valued_column_reference returns [Column col, String qual, String mqual]:
       }
     ;
 
+order_by_column_reference returns [String sql, List<Serializable> params]:
+    ^(COL qualifier? column_name)
+      {
+          String c = $column_name.start.getText();
+          String qual = $qualifier.qual;
+          $sql = queryMaker.referToColumnInOrderBy(c, qual);
+          $params = new LinkedList<Serializable>();
+      }
+    ;
+
 order_by_clause:
     ^(ORDER_BY sort_specification+)
     ;
 
 sort_specification:
-    column_reference ( o=ASC | o=DESC )
+    c=order_by_column_reference ( o=ASC | o=DESC )
       {
-          String col = $column_reference.sql;
+          String col = $c.sql;
           if ($o.type == DESC) {
               col += " DESC";
           }

@@ -121,6 +121,9 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** qualifier to set of columns full quoted names, used to identify joins */
     public Map<String, Set<String>> columnsPerQual = new LinkedHashMap<String, Set<String>>();
 
+    /** column aliases useable in ORDER BY */
+    public final Map<String, SelectedColumn> columnAliases = new HashMap<String, SelectedColumn>();
+
     /** left joins added by fulltext match */
     public final List<String> leftJoins = new LinkedList<String>();
 
@@ -697,6 +700,22 @@ public class CMISQLQueryMaker implements QueryMaker {
         return col.getFullQuotedName();
     }
 
+    // called from parser
+    public String referToColumnInOrderBy(String c, String qual) {
+        SelectedColumn sc;
+        if (qual == null && columnAliases.containsKey(c)) {
+            sc = columnAliases.get(c);
+        } else {
+            sc = findColumn(c, qual, false);
+        }
+        Column col = sc.column;
+        if (col == null) {
+            throw new QueryMakerException("Column " + c + " is not orderable");
+        }
+        recordCol(col, qual);
+        return col.getFullQuotedName();
+    }
+
     protected void recordCol(Column col, String qual) {
         String fqn = col.getFullQuotedName();
         columns.put(fqn, col);
@@ -705,6 +724,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             columnsPerQual.put(qual, fqns = new LinkedHashSet<String>());
         }
         fqns.add(fqn);
+    }
+
+    // called from parser
+    public void aliasColumn(SelectedColumn sc, String alias) {
+        columnAliases.put(alias, sc);
     }
 
     // finds a multi-valued column, assumed to not be a cmis: one

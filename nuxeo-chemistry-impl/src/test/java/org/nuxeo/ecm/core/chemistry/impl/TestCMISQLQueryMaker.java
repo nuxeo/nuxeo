@@ -378,6 +378,37 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(expectedP, q.selectParams.subList(4, 6));
     }
 
+    public void testAlias() throws Exception {
+        String query = "SELECT cmis:objectId ID, cmis:objectTypeId AS TYP"
+                + "  FROM cmis:document ORDER BY ID, TYP DESC";
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
+        assertNotNull(q);
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
+        if (database instanceof DatabaseH2) {
+            expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE "
+                    + " FROM HIERARCHY"
+                    + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
+                    + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                    + "   AND MISC.LIFECYCLESTATE <> ?"
+                    + " ORDER BY HIERARCHY.ID, HIERARCHY.PRIMARYTYPE DESC";
+        } else if (database instanceof DatabasePostgreSQL) {
+            expected = "SELECT hierarchy.id, hierarchy.primarytype "
+                    + " FROM hierarchy"
+                    + " LEFT JOIN misc ON misc.id = hierarchy.id"
+                    + " WHERE hierarchy.primarytype IN (?, ?, ?)"
+                    + "   AND misc.lifecyclestate <> ?"
+                    + " ORDER BY hierarchy.id, hierarchy.primarytype DESC";
+        } else {
+            return; // TODO other databases
+        }
+        assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(0, 3)));
+        assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
+    }
+
     public void testFulltext() throws Exception {
         String query = "SELECT cmis:objectId FROM cmis:document WHERE CONTAINS('foo')";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
