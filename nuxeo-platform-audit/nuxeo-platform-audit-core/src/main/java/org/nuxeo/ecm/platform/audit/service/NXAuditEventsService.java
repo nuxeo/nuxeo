@@ -49,6 +49,8 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
+import org.nuxeo.ecm.core.event.impl.ShallowEvent;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
@@ -215,6 +217,10 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doPutExtendedInfos(LogEntry entry,
             EventContext eventContext, DocumentModel source, Principal principal) {
+        if ( source instanceof ShallowDocumentModel) { // nothing to log ; it's a light doc
+            return;
+        }
+        
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
             expressionEvaluator.bindValue(context, "message", eventContext);
@@ -223,7 +229,12 @@ public class NXAuditEventsService extends DefaultComponent implements
             expressionEvaluator.bindValue(context, "source", source);
             // inject now the adapters
             for ( AdapterDescriptor ad : documentAdapters ){
-            	Object adapter = source.getAdapter(ad.getKlass());
+            	Object adapter = null;
+            	try {
+            	    adapter = source.getAdapter(ad.getKlass());
+            	} catch (Exception e) {
+            	    log.debug(String.format("can't get adapter for %s to log extinfo: %s", source.getPathAsString(), e.getMessage()));
+                }
 				if ( adapter != null ){
             		expressionEvaluator.bindValue(context, ad.getName(), adapter);
             	}
