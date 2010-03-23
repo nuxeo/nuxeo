@@ -15,7 +15,7 @@
   <description>Build package distributions of Nuxeo DAM applications</description>
 
   <properties>
-    <nuxeo.distribution.version>5.3.1-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.3.2-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <profiles>
