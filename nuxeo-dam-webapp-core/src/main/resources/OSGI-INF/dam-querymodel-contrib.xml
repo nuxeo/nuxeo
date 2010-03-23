@@ -38,7 +38,7 @@
         </predicate>
 
         <fixedPart>
-          ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish'
+          ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish' AND ecm:path STARTSWITH '/default-domain/import-root'
         </fixedPart>
 
       </whereClause>
