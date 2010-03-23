@@ -1,5 +1,5 @@
 var perm = gadgets.nuxeo.isEditable();
-var url = top.nxContextPath + "/site/gadgetDocumentAPI/getHtmlContent/";
+var url = [top.nxContextPath,"/site/gadgetDocumentAPI/getHtmlContent/"].join();
 
 function launchVideoWidget() {
    var idGadget = gadgets.nuxeo.getGadgetId();
@@ -66,10 +66,14 @@ function setVideo(balise){
     if(embed.length == 0) embed = jQuery("object");
     var h = (dim.width * embed.height())/jQuery("object").width();
     embed.width(dim.width);
-    if(h!=0)
-      embed.height(h);
+    if(h!=0) embed.height(h);
     embed.attr("wmode","transparent");
     embed.attr("type","application/x-shockwave-flash");
+    //Hack, if open popup in container
+    jQuery("#video").fadeOut("fast",function(){
+    	jQuery("#video").fadeIn();
+    });
+    
   } else {
     jQuery("#video").html("");
     jQuery("#baliseVideo").text("");
