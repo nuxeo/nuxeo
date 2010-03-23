@@ -5,14 +5,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-storage-sql-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-NXP-4914-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql</artifactId>
   <name>Nuxeo Core SQL Storage</name>
   <description>Nuxeo Core: SQL Storage.</description>
-  <version>1.6.2-NXP-4914-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
