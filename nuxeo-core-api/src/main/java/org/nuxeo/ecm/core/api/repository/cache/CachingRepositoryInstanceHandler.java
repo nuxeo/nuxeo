@@ -516,7 +516,9 @@ implements DocumentModelCache {
         if (log.isTraceEnabled()) {
             log.trace("reified lock(" + ref + "," + key + ") into an operation for concurrency detection");
         }
-        session.run(new LockOperation(ref, key)); // play cache validation on locks
+        Operation op = new LockOperation(ref, key);
+        op.setLastModified(this.lastModified); // play cache validation on locks
+        session.run(op); 
     }
     
     public void save() {
