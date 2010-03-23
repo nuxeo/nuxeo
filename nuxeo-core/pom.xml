@@ -11,6 +11,7 @@
 
   <artifactId>nuxeo-core</artifactId>
   <name>Nuxeo Core</name>
+  <version>1.6.2-NXP-4914-SNAPSHOT</version>
   <description>Nuxeo Core: The Core.</description>
 
   <dependencies>
