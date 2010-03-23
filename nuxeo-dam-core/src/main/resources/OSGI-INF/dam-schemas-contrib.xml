@@ -65,7 +65,7 @@
       <schema name="common"/>
       <schema name="file" />
       <schema name="uid"/>
-      <schema name="stream-media" />
+      <schema name="streamable_media" />
       <schema name="dublincore"/>
       <facet name="Versionable"/>
       <facet name="Publishable"/>
