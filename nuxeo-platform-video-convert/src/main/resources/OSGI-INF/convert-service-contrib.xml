@@ -39,12 +39,6 @@
       <destinationMimeType>video/mp4</destinationMimeType>
     </converter>
 
-    <converter name="streamableMediaOgv"
-     class="org.nuxeo.ecm.platform.media.convert.OgvStreamableMediaConverter">
-      <sourceMimeType>video/ogg</sourceMimeType>
-      <destinationMimeType>video/mp4</destinationMimeType>
-    </converter>
-
   </extension>
 
 </component>
