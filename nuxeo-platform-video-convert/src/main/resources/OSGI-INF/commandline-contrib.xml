@@ -7,46 +7,43 @@
     <command name="ffmpeg-info" enabled="true">
       <commandLine>ffmpeg</commandLine>
       <parameterString> -i #{inFilePath}</parameterString>
-      <winParameterString> -i #{inFilePath}</winParameterString>
-      <installationDirective>You need to install ffmpeg</installationDirective>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
     </command>
 
     <command name="ffmpeg-storyboard" enabled="true">
       <commandLine>ffmpeg</commandLine>
       <parameterString> -y -i #{inFilePath} -f image2 -r #{rate} -s #{width}x#{height} -an #{outFolderPath}/video-thumb-%06d.jpeg</parameterString>
-      <winParameterString> -y -i #{inFilePath} -f image2 -r #{rate} -s #{width}x#{height} -an #{outFolderPath}/video-thumb-%06d.jpeg</winParameterString>
-      <installationDirective>You need to install ffmpeg</installationDirective>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
     </command>
 
     <command name="ffmpeg-screenshot" enabled="true">
       <commandLine>ffmpeg</commandLine>
       <parameterString> -y -i #{inFilePath} -f image2 -ss #{position} #{outFilePath}</parameterString>
-      <winParameterString> -y -i #{inFilePath} -f image2 -ss #{position} #{outFilePath}</winParameterString>
-      <installationDirective>You need to install ffmpeg</installationDirective>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
     </command>
 
     <command name="ffmpeg-convert" enabled="true">
       <commandLine>ffmpeg2theora</commandLine>
       <parameterString> #{inFilePath} -o #{outFilePath}</parameterString>
-      <installationDirective>You need to install ffmpeg2theora</installationDirective>
+      <installationDirective>You need to install ffmpeg2theora from http://v2v.cc/~j/ffmpeg2theora (apt-get install ffmpeg2theora)</installationDirective>
     </command>
 
     <command name="handbrake-H264-AAC" enabled="true">
       <commandLine>HandBrakeCLI</commandLine>
       <parameterString> -i #{inFilePath} -o #{outFilePath} -e x264 -f mp4 -x preset=ultrafast:keyint=25</parameterString>
-      <installationDirective>You need to install HandBrake</installationDirective>
+      <installationDirective>You need to install HandBrake from http://handbrake.fr</installationDirective>
     </command>
 
     <command name="mp4box-hint" enabled="true">
-      <commandLine>mp4box</commandLine>
+      <commandLine>MP4Box</commandLine>
       <parameterString> -hint #{filePath}</parameterString>
-      <installationDirective>You need to install MP4Box</installationDirective>
+      <installationDirective>You need to install MP4Box from the http://gpac.sf.net project (apt-get install gpac)</installationDirective>
     </command>
 
     <command name="mp4creator-list" enabled="true">
       <commandLine>mp4creator</commandLine>
       <parameterString> -list #{filePath}</parameterString>
-      <installationDirective>You need to install mp4creator</installationDirective>
+      <installationDirective>You need to install mp4creator from the http://mpeg4ip.sf.net project (apt-get install mpeg4ip-server)</installationDirective>
     </command>
 
   </extension>

@@ -21,10 +21,12 @@ package org.nuxeo.ecm.platform.media.convert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -44,6 +46,8 @@ public class TestStreamableMediaConverters extends NXRuntimeTestCase {
 
     public static final String TEST_FILE_MP4 = "DELTA.mp4";
 
+    protected boolean skipTests = false;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -55,20 +59,15 @@ public class TestStreamableMediaConverters extends NXRuntimeTestCase {
 
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
-        CommandAvailability caPivot = cles.getCommandAvailability(ConverterConstants.FFMPEG_CONVERT);
         CommandAvailability caH264Aac = cles.getCommandAvailability(ConverterConstants.HANDBRAKE_CONVERT_MP4);
         CommandAvailability caHint = cles.getCommandAvailability(ConverterConstants.MP4BOX_HINT_MEDIA);
-        if (!caPivot.isAvailable()) {
-            log.warn(caPivot.getInstallMessage());
-            return;
-        }
         if (!caH264Aac.isAvailable()) {
             log.warn(caH264Aac.getInstallMessage());
-            return;
+            skipTests = true;
         }
         if (!caHint.isAvailable()) {
             log.warn(caHint.getInstallMessage());
-            return;
+            skipTests = true;
         }
 
     }
@@ -77,11 +76,13 @@ public class TestStreamableMediaConverters extends NXRuntimeTestCase {
         InputStream is = TestStreamableMediaConverters.class.getResourceAsStream("/"
                 + path);
         assertNotNull(String.format("Failed to load resource: " + path), is);
-        return new SimpleBlobHolder(
-                StreamingBlob.createFromStream(is, path).persist());
+        Blob blob = StreamingBlob.createFromStream(is, path).persist();
+        blob.setFilename(path);
+        return new SimpleBlobHolder(blob);
     }
 
-    protected BlobHolder applyConverter(String converter, String fileName) throws Exception {
+    protected BlobHolder applyConverter(String converter, String fileName)
+            throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName);
@@ -91,33 +92,39 @@ public class TestStreamableMediaConverters extends NXRuntimeTestCase {
         return result;
     }
 
-    public void testNothing() {
-        assertTrue(true);
+    public void testStreamableConverterFromOgv() throws Exception {
+        if (skipTests) {
+            return;
+        }
+        BlobHolder result = applyConverter(
+                ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
+                TEST_FILE_OGV);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        assertEquals("DELTA.ogv--streamable.mp4", blobs.get(0).getFilename());
     }
 
-//    public void testStreamableConverterOgv() throws Exception {
-//
-//        BlobHolder result = applyConverter(ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
-//                TEST_FILE_OGV);
-//        List<Blob> blobs = result.getBlobs();
-//        assertEquals(1, blobs.size());
-//        assertEquals("streamable-media.mp4", blobs.get(0).getFilename());
-//    }
-//
-//    public void testStreamableConverterMp4() throws Exception {
-//
-//        BlobHolder result = applyConverter(ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
-//                TEST_FILE_MP4);
-//        List<Blob> blobs = result.getBlobs();
-//        assertEquals(1, blobs.size());
-//        assertEquals("streamable-media.mp4", blobs.get(0).getFilename());
-//    }
-//    public void testStreamableConverter3gp() throws Exception {
-//
-//        BlobHolder result = applyConverter(ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
-//                TEST_FILE_3GP);
-//        List<Blob> blobs = result.getBlobs();
-//        assertEquals(1, blobs.size());
-//        assertEquals("streamable-media.mp4", blobs.get(0).getFilename());
-//    }
+    public void testStreamableConverterFromMp4() throws Exception {
+        if (skipTests) {
+            return;
+        }
+        BlobHolder result = applyConverter(
+                ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
+                TEST_FILE_MP4);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        assertEquals("DELTA.mp4--streamable.mp4", blobs.get(0).getFilename());
+    }
+
+    public void testStreamableConverterFrom3gp() throws Exception {
+        if (skipTests) {
+            return;
+        }
+        BlobHolder result = applyConverter(
+                ConverterConstants.STREAMABLE_MEDIA_CONVERTER_NAME,
+                TEST_FILE_3GP);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        assertEquals("DELTA.3gp--streamable.mp4", blobs.get(0).getFilename());
+    }
 }
