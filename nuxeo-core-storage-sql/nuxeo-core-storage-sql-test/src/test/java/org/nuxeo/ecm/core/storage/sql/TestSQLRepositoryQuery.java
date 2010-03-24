@@ -107,6 +107,16 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         it.next();
         assertEquals(2, res.pos());
         res.close();
+
+        // checking size when at end
+        res = session.queryAndFetch("SELECT * FROM File", "NXQL");
+        it = res.iterator();
+        it.next();
+        it.next();
+        it.next();
+        assertFalse(it.hasNext());
+        assertEquals(3, res.size());
+        res.close();
     }
 
     @Override

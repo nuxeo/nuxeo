@@ -2179,13 +2179,16 @@ public class Mapper {
             }
             try {
                 // save cursor pos
-                int old = rs.isBeforeFirst() ? -1 : rs.getRow();
+                int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2
+                        : rs.getRow();
                 // find size
                 rs.last();
                 size = rs.getRow();
                 // set back cursor
                 if (old == -1) {
                     rs.beforeFirst();
+                } else if (old == -2) {
+                    rs.afterLast();
                 } else {
                     rs.absolute(old);
                 }
