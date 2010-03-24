@@ -115,7 +115,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
                     lc.logout();
                 } catch (LoginException e) {
                     log.error("Error during Framework.logout", e);
-                    e.printStackTrace();
                 }
             }
         }
