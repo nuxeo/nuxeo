@@ -37,6 +37,7 @@ public class WebDriverFeature extends SimpleFeature {
     protected Configuration config;
     protected Class<? extends WebPage> home;
 
+    @Override
     public void initialize(FeaturesRunner runner)
             throws Exception {
         Class<?> classToTest = runner.getTargetTestClass();

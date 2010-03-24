@@ -44,7 +44,7 @@ public class Main {
         }
         if (args.length > 0) {
             Class<?> klass = Class.forName(args[0]);
-            Method main = klass.getMethod("main", new Class<?>[] {String[].class});
+            Method main = klass.getMethod("main", String[].class);
             String[] tmp = new String[args.length - 1];
             if (tmp.length > 0) {
                 System.arraycopy(args, 1, tmp, 0, tmp.length);

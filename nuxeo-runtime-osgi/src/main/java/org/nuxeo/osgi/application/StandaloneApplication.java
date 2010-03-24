@@ -34,13 +34,11 @@ import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
-import org.omg.IOP.ENCODING_CDR_ENCAPS;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StandaloneApplication extends OSGiAdapter {
 

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 
 /**
- * Helper class to get container related properties
+ * Helper class to get container related properties.
  *
  * @author Stephane Lacoin
  * @author bstefanescu
@@ -36,7 +36,7 @@ public enum J2EEContainerDescriptor {
 
     public static final Log log = LogFactory.getLog(J2EEContainerDescriptor.class);
 
-    protected static J2EEContainerDescriptor autodetect() {
+    static J2EEContainerDescriptor autodetect() {
         String hostName = Environment.getDefault().getHostApplicationName();
         if (hostName == null) {
             return null;
@@ -70,7 +70,7 @@ public enum J2EEContainerDescriptor {
         }
     }
 
-    protected static J2EEContainerDescriptor selected;
+    static J2EEContainerDescriptor selected;
 
     public static J2EEContainerDescriptor getSelected() {
         if (selected == null) {

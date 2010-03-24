@@ -36,13 +36,11 @@ import com.google.inject.Module;
 
 /**
  * A Test Case runner that can be extended through features and provide injection
- * though Guice
+ * though Guice.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
-
 
     protected static AnnotationScanner scanner = new AnnotationScanner();
 
@@ -57,7 +55,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return scanner;
     }
 
-
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
         try {
@@ -67,7 +64,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             throw new InitializationError(Collections.singletonList(t));
         }
     }
-
 
     public Class<?> getTargetTestClass() {
         return super.getTestClass().getJavaClass();
@@ -131,7 +127,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return features;
     }
 
-
     protected void initialize() throws Exception {
         for (RunnerFeature feature : features) {
             feature.initialize(this);
@@ -181,7 +176,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-
     /**
      * Gets the Guice injector.
      */
@@ -190,7 +184,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     public void resetInjector() {
-        this.injector = createInjector();
+        injector = createInjector();
     }
 
     protected Injector createInjector() {
@@ -202,7 +196,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         // build injector
         return Guice.createInjector(module);
     }
-
 
     @Override
     public void run(final RunNotifier notifier) {
@@ -225,7 +218,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-
     @Override
     public Object createTest() {
         // Return a Guice injected test class
@@ -246,10 +238,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected class InvokeMethod extends Statement {
         protected FrameworkMethod testMethod;
         protected Object target;
-        public InvokeMethod(FrameworkMethod testMethod, Object target) {
-            this.testMethod= testMethod;
+
+        protected InvokeMethod(FrameworkMethod testMethod, Object target) {
+            this.testMethod = testMethod;
             this.target= target;
         }
+
+        @Override
         public void evaluate() throws Throwable {
             beforeMethodRun(testMethod, target);
             try {
@@ -259,6 +254,5 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         }
     }
-
 
 }

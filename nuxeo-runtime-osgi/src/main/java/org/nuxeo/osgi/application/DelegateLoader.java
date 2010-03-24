@@ -41,7 +41,7 @@ public class DelegateLoader implements SharedClassLoader {
 
     public void addURL(URL url) {
         try {
-            addUrl.invoke(loader, new Object[] {url});
+            addUrl.invoke(loader, url);
         } catch (Throwable e) {
             throw new Error("Failed to add an URL to this loader: "+url, e);
         }

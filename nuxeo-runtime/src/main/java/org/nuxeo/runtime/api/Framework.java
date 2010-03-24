@@ -78,7 +78,7 @@ public final class Framework {
      * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee
      * ${nuxeo_data_dir} is usually ${nuxeo_home}/data
      */
-    protected static URLClassLoader resourceLoader = null;
+    protected static URLClassLoader resourceLoader;
 
     // Utility class.
     private Framework() { }

@@ -84,7 +84,7 @@ public class Resizer extends TimerTask {
     }
 
     /**
-     * Resize the pool
+     * Resize the pool.
      *
      * @param forced when force is true, scale down the pool.
      */
@@ -109,7 +109,7 @@ public class Resizer extends TimerTask {
     }
 
     /**
-     * Make sure that steady pool size is maintained after all idle-timed-out,
+     * Makes sure that steady pool size is maintained after all idle-timed-out,
      * invalid and scale-down resource removals.
      */
     private void ensureSteadyPool() {
@@ -127,7 +127,7 @@ public class Resizer extends TimerTask {
     }
 
     /**
-     * Scale down pool by a <code>size &lt;= pool-resize-quantity</code>
+     * Scales down pool by a <code>size &lt;= pool-resize-quantity</code>
      *
      * @param forced            scale-down only when forced
      * @param scaleDownQuantity no. of resources to remove
