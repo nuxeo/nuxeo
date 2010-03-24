@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * Helper class to factorize logic than can be either called from the UI or from
  * core event listener.
  *
- * If the need to evolve to make this furter configurable (not just using the
+ * If the need to evolve to make this further configurable (not just using the
  * existing converter / commandline extensions points), we might want to turn
  * this class into a full blown nuxeo service.
  *
