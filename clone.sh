@@ -1,17 +1,20 @@
-# This script will checkout the needed sources
+# This script will check out the needed sources from mercurial.
 
-hg clone -r 1.6 http://hg.nuxeo.org/nuxeo/nuxeo-common
-hg clone -r 1.6 http://hg.nuxeo.org/nuxeo/nuxeo-runtime
-hg clone -r 1.6 http://hg.nuxeo.org/nuxeo/nuxeo-core
+CV=1.6 # Core version
+PV=5.3 # Platform version
 
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-services
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-theme
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-webengine
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-jsf
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-gwt
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-features
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-dm
+hg clone -r $CV http://hg.nuxeo.org/nuxeo/nuxeo-common
+hg clone -r $CV http://hg.nuxeo.org/nuxeo/nuxeo-runtime
+hg clone -r $CV http://hg.nuxeo.org/nuxeo/nuxeo-core
 
-hg clone -r 5.3 http://hg.nuxeo.org/nuxeo/nuxeo-distribution
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-services
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-theme
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-webengine
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-jsf
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-gwt
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-features
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-dm
 
-hg clone -r 5.3 http://hg.nuxeo.org/addons ../nuxeo-addons
+hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-distribution
+
+hg clone -r $PV http://hg.nuxeo.org/addons ../nuxeo-addons
