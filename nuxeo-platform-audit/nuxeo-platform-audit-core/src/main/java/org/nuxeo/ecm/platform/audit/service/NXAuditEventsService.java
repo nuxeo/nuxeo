@@ -45,12 +45,11 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
-import org.nuxeo.ecm.core.event.impl.ShallowEvent;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
@@ -217,7 +216,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doPutExtendedInfos(LogEntry entry,
             EventContext eventContext, DocumentModel source, Principal principal) {
-        if ( source instanceof ShallowDocumentModel) { // nothing to log ; it's a light doc
+        if ( source instanceof DeletedDocumentModel) { // nothing to log ; it's a light doc
             return;
         }
         
