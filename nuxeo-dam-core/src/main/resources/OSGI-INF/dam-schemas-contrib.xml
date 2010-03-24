@@ -71,7 +71,7 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Downloadable" />
-      <facet name="HasStoryBoard" />
+      <facet name="HasStoryboard" />
       <facet name="HasVideoPreview" />
     </doctype>
 
