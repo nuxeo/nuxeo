@@ -5,8 +5,8 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="videoStoryBoardListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.platform.video.listener.VideoStoryBoardListener"
+    <listener name="videoStoryboardListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener"
       priority="10">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>

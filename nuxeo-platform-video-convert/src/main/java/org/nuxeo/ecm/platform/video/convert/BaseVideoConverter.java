@@ -63,7 +63,7 @@ public abstract class BaseVideoConverter {
             }
             if (file == null) {
                 // create temporary dfile
-                file = File.createTempFile("StoryBoardConverter-in-", "-"
+                file = File.createTempFile("StoryboardConverter-in-", "-"
                         + blob.getFilename());
                 blob.transferTo(file);
                 isTempFile = true;

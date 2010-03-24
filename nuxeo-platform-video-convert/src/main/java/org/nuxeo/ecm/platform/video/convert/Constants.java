@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.video.convert;
 
 public class Constants {
 
-    public static final String STORYBOARD_CONVERTER = "videoStoryBoard";
+    public static final String STORYBOARD_CONVERTER = "videoStoryboard";
 
     public static final String SCREENSHOT_CONVERTER = "videoScreenshot";
 

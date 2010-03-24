@@ -51,10 +51,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public class StoryBoardConverter extends BaseVideoConverter implements
+public class StoryboardConverter extends BaseVideoConverter implements
         Converter {
 
-    public static final Log log = LogFactory.getLog(StoryBoardConverter.class);
+    public static final Log log = LogFactory.getLog(StoryboardConverter.class);
 
     public static final String FFMPEG_INFO_COMMAND = "ffmpeg-info";
 
@@ -107,7 +107,7 @@ public class StoryBoardConverter extends BaseVideoConverter implements
             blob = blobHolder.getBlob();
             inputFile = new InputFile(blob);
 
-            outFolder = File.createTempFile("StoryBoardConverter-out-", "-tmp");
+            outFolder = File.createTempFile("StoryboardConverter-out-", "-tmp");
             outFolder.delete();
             outFolder.mkdir();
             Map<String, Serializable> properties = new HashMap<String, Serializable>();

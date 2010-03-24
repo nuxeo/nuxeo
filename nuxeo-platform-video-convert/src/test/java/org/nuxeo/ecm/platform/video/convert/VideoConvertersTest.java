@@ -78,7 +78,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         return result;
     }
 
-    public void testStoryBoardConverter() throws Exception {
+    public void testStoryboardConverter() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-storyboard");

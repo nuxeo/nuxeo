@@ -12,11 +12,11 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
- * Core event listener to compute / update the story board of a Video document
+ * Core event listener to compute / update the storyboard of a Video document
  *
  * @author ogrisel
  */
-public class VideoStoryBoardListener implements EventListener {
+public class VideoStoryboardListener implements EventListener {
 
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();

@@ -24,7 +24,7 @@ public class VideoConstants {
 
     public static final String DURATION_PROPERTY = "strm:duration";
 
-    public static final String HAS_STORYBOARD_FACET = "HasStoryBoard";
+    public static final String HAS_STORYBOARD_FACET = "HasStoryboard";
 
     public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
 
