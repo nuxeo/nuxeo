@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -131,7 +132,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                     newArg = session.getDocument(oldDoc.getRef());
                                 } else {
                                     // probably deleted doc
-                                    newArg = oldDoc;
+                                    newArg = new DeletedDocumentModel(oldDoc);
                                 }
                             } catch (ClientException e) {
                                 log.error("Can not refetch Doc with ref "
