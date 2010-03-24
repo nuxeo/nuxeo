@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.video.convert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,24 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         assertEquals("video-screenshot-00010.000.jpeg",
                 blobs.get(0).getFilename());
         assertEquals(653.53, result.getProperty("duration"));
+    }
+
+    public void extractDuration() throws Exception {
+        List<String> output = Arrays.asList(
+                "FFmpeg version r11872+debian_0.svn20080206-18+lenny1, Copyright (c) 2000-2008 Fabrice Bellard, et al.",
+                " Duration: 00:00:10.0, start: 0.000000, bitrate: 484 kb/s",
+                " some other output line");
+
+        Double duration = BaseVideoConverter.extractDuration(output);
+        assertEquals(10.0, duration);
+
+        output = Arrays.asList(
+                "FFmpeg version SVN-r19352-4:0.5+svn20090706-2ubuntu2, Copyright (c) 2000-2009 Fabrice Bellard, et al.",
+                " Duration: 00:00:10.04, start: 0.000000, bitrate: 484 kb/s",
+                " some other output line");
+
+        duration = BaseVideoConverter.extractDuration(output);
+        assertEquals(10.04, duration);
     }
 
 }

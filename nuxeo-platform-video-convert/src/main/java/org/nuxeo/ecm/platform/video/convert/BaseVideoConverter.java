@@ -73,9 +73,10 @@ public abstract class BaseVideoConverter {
 
     protected CommandLineExecutorService cleService;
 
-    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d\\d)");
+    protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)");
 
-    protected Double extractDuration(List<String> output) throws ConversionException {
+    protected static Double extractDuration(List<String> output)
+            throws ConversionException {
         for (String line : output) {
             Matcher matcher = DURATION_PATTERN.matcher(line);
             if (matcher.find()) {
