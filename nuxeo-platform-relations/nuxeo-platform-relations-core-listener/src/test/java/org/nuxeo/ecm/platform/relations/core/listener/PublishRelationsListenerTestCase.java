@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
     protected static final Resource conformsTo = new ResourceImpl(
-            "http://purl.org/dc/terms/ConformsTo");
+    "http://purl.org/dc/terms/ConformsTo");
 
     protected static final String COMMENTS_GRAPH_NAME = "documentComments";
 
@@ -60,7 +60,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.comment.api");
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployContrib("org.nuxeo.ecm.platform.comment",
-                "OSGI-INF/CommentService.xml");
+        "OSGI-INF/CommentService.xml");
         deployBundle("org.nuxeo.ecm.platform.relations.core.listener.tests");
         openSession();
 
@@ -109,7 +109,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
     }
 
     protected void addSomeRelations(Resource documentResource)
-            throws ClientException {
+    throws ClientException {
         Resource otherDocResource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
@@ -201,6 +201,70 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
                         publishedResource));
         assertNotNull(comments);
         assertEquals(2, comments.size());
+    }
+
+    public void testDeleteRelationsOnOriginalDoc() throws Exception {
+        DocumentModel docToDelete = createDocTestDoc("docToDelete");
+        // add some real document relations (like those from the Relations tab
+        // in DM between 2 resources :
+
+        Resource docToDeleteResource = relationManager.getResource(
+                RelationConstants.DOCUMENT_NAMESPACE, docToDelete, null);
+        Resource docResource2 = relationManager.getResource(
+                RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
+        addSomeRelations(docToDeleteResource);
+
+        //now check that the realations were added
+
+        List<Statement> statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
+        assertEquals(1, statementsOnDeleted.size());
+
+        // publish the document
+        DocumentModel publishedProxy = session.publishDocument(docToDelete,
+                section);
+        session.save();
+        Resource publishedResource = relationManager.getResource(
+                RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
+
+        // now delete the document and check that the realtions on the original
+        // doc are deleted
+        session.removeDocument(docToDelete.getRef());
+        session.save();
+
+        // check that relations are still there on the publihed doc after the
+        // doc was deleted
+        List<Statement> statementsOnPublishedResource = getRelations(publishedResource, null);
+        assertNotNull(statementsOnPublishedResource);
+        assertEquals(2, statementsOnPublishedResource.size());
+
+        // check that all relations  the deleted docs was part of are deleted
+
+        statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
+        assertEquals(0, statementsOnDeleted.size());
+
+    }
+
+    private DocumentModel createDocTestDoc(String title) throws ClientException {
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("dc:title", title);
+        doc.setPathInfo("/workspace/", "file-1");
+        doc = session.createDocument(doc1);
+        session.save();
+        return doc;
+    }
+
+    private List<Statement> getRelations(Resource resource1, Resource resource2)
+    throws ClientException {
+        List<Statement> statements = relationManager.getStatements(
+                RelationConstants.GRAPH_NAME, new StatementImpl(resource1, null,
+                        resource2));
+        if (statements != null) {
+            statements.addAll(relationManager.getStatements(
+                    RelationConstants.GRAPH_NAME, new StatementImpl(resource2, null,
+                            resource1)));
+        }
+        return statements;
+
     }
 
 }
