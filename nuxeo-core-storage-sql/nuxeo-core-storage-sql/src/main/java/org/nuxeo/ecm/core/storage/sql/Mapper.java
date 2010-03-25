@@ -2189,7 +2189,7 @@ public class Mapper {
                     rs.beforeFirst();
                 } else if (old == -2) {
                     rs.afterLast();
-                } else {
+                } else if (old != 0) {
                     rs.absolute(old);
                 }
                 return size;
