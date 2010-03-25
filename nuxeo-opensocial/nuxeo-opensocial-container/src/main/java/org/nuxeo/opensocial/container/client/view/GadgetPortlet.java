@@ -221,7 +221,7 @@ public class GadgetPortlet extends Portlet {
         GadgetView v = this.gadget.getView(view);
         if (v != null && "URL".equals(v.getContentType()
                 .toUpperCase())) {
-            this.setHeight(1000);
+            this.setHeight(600);
         }
     }
 
