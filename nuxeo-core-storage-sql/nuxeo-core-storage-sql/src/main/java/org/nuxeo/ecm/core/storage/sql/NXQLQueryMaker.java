@@ -67,6 +67,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Transformer of NXQL queries into underlying SQL queries to the actual
@@ -197,7 +198,8 @@ public class NXQLQueryMaker implements QueryMaker {
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
-            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
+            sqlQuery = transformer.transform(queryFilter.getPrincipal(),
+                    sqlQuery);
         }
 
         /*
@@ -327,9 +329,10 @@ public class NXQLQueryMaker implements QueryMaker {
             String dataHierId;
 
             List<String> joins = new LinkedList<String>();
-            List<Serializable> joinsParams = new LinkedList<Serializable>();
             LinkedList<String> leftJoins = new LinkedList<String>();
             List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
+            LinkedList<String> implicitJoins = new LinkedList<String>();
+            List<Serializable> implicitJoinsParams = new LinkedList<Serializable>();
             List<String> whereClauses = new LinkedList<String>();
             List<Serializable> whereParams = new LinkedList<Serializable>();
 
@@ -442,8 +445,10 @@ public class NXQLQueryMaker implements QueryMaker {
             if (info.wherePredicate != null) {
                 info.wherePredicate.accept(whereBuilder);
                 // JOINs added by fulltext queries
-                leftJoins.addAll(whereBuilder.joins);
-                leftJoinsParams.addAll(whereBuilder.joinsParams);
+                leftJoins.addAll(whereBuilder.leftJoins);
+                leftJoinsParams.addAll(whereBuilder.leftJoinsParams);
+                implicitJoins.addAll(whereBuilder.implicitJoins);
+                implicitJoinsParams.addAll(whereBuilder.implicitJoinsParams);
                 // WHERE clause
                 String where = whereBuilder.buf.toString();
                 if (where.length() != 0) {
@@ -510,10 +515,15 @@ public class NXQLQueryMaker implements QueryMaker {
             select = new Select(null);
             select.setWhat(selectWhat);
             leftJoins.addFirst(StringUtils.join(joins, " JOIN "));
-            select.setFrom(StringUtils.join(leftJoins, " LEFT JOIN "));
+            String from = StringUtils.join(leftJoins, " LEFT JOIN ");
+            if (!implicitJoins.isEmpty()) {
+                implicitJoins.addFirst(from);
+                from = StringUtils.join(implicitJoins, ", ");
+            }
+            select.setFrom(from);
             select.setWhere(StringUtils.join(whereClauses, " AND "));
-            selectParams.addAll(joinsParams);
             selectParams.addAll(leftJoinsParams);
+            selectParams.addAll(implicitJoinsParams);
             selectParams.addAll(whereParams);
 
             statements.add(select.getStatement());
@@ -839,10 +849,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 String[] nameref = new String[] { name };
                 boolean useIndex = findFulltextIndexOrField(model, nameref);
                 if (useIndex) {
-                    if (dialect.isFulltextTableNeeded()) {
-                        // we only use this for its fragment name
-                        props.add(model.FULLTEXT_SIMPLETEXT_PROP);
-                    }
+                    // all is done in fulltext match info
                     return;
                 } else {
                     // LIKE on a field, continue analysing with that field
@@ -939,9 +946,13 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
-        public final List<String> joins = new LinkedList<String>();
+        public final List<String> leftJoins = new LinkedList<String>();
 
-        public final List<String> joinsParams = new LinkedList<String>();
+        public final List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
+
+        public final List<String> implicitJoins = new LinkedList<String>();
+
+        public final List<Serializable> implicitJoinsParams = new LinkedList<Serializable>();
 
         public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
@@ -1317,24 +1328,26 @@ public class NXQLQueryMaker implements QueryMaker {
                 // use actual fulltext query using a dedicated index
                 String fulltextQuery = ((StringLiteral) node.rvalue).value;
                 fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
-                Column mainColumn = dataHierTable.getColumn(model.MAIN_KEY);
-                String[] info = dialect.getFulltextMatch(name, fulltextQuery,
-                        mainColumn, model, database);
-                String joinExpr = info[0];
-                String joinParam = info[1];
-                String whereExpr = info[2];
-                String whereParam = info[3];
-                String joinAlias = getFtJoinAlias();
-                if (joinExpr != null) {
-                    // specific join table (H2)
-                    joins.add(String.format(joinExpr, joinAlias));
-                    if (joinParam != null) {
-                        joinsParams.add(joinParam);
+                ftJoinNumber++;
+                Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+                FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
+                        fulltextQuery, name, ftJoinNumber, mainColumn, model,
+                        database);
+                if (info.leftJoin != null) {
+                    leftJoins.add(info.leftJoin);
+                    if (info.leftJoinParam != null) {
+                        leftJoinsParams.add(info.leftJoinParam);
                     }
                 }
-                buf.append(String.format(whereExpr, joinAlias));
-                if (whereParam != null) {
-                    whereParams.add(whereParam);
+                if (info.implicitJoin != null) {
+                    implicitJoins.add(info.implicitJoin);
+                    if (info.implicitJoinParam != null) {
+                        implicitJoinsParams.add(info.implicitJoinParam);
+                    }
+                }
+                buf.append(info.whereExpr);
+                if (info.whereExprParam != null) {
+                    whereParams.add(info.whereExprParam);
                 }
             } else {
                 // single field matched with ILIKE
@@ -1363,15 +1376,6 @@ public class NXQLQueryMaker implements QueryMaker {
                     buf.append(") LIKE ");
                     visitStringLiteral(value);
                 }
-            }
-        }
-
-        private String getFtJoinAlias() {
-            ftJoinNumber++;
-            if (ftJoinNumber == 1) {
-                return "_FT";
-            } else {
-                return "_FT" + ftJoinNumber;
             }
         }
 

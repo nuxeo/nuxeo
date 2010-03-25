@@ -241,16 +241,32 @@ public class DialectH2 extends Dialect {
         return res;
     }
 
+    // SELECT ..., 1 as nxscore
+    // FROM ... LEFT JOIN NXFT_SEARCH('default', ?) nxfttbl
+    // .................. ON hierarchy.id = nxfttbl.KEY
+    // WHERE ... AND nxfttbl.KEY IS NOT NULL
+    // ORDER BY nxscore DESC
     @Override
-    public String[] getFulltextMatch(String indexName, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
         String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getName(); // physical
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
-        String queryTable = String.format(
-                "NXFT_SEARCH('%s', ?) %%s ON %s = %%<s.KEY", fullIndexName,
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
+        String tableAlias = "_nxfttbl" + nthSuffix;
+        String scoreAlias = "_nxscore" + nthSuffix;
+        // String scoreAlias = "_nxscore" + nthSuffix;
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        info.leftJoin = String.format("NXFT_SEARCH('%s', ?) %s ON %s.KEY = %s",
+                fullIndexName, tableAlias, tableAlias,
                 mainColumn.getFullQuotedName());
-        String whereExpr = "%s.KEY IS NOT NULL";
-        return new String[] { queryTable, fulltextQuery, whereExpr, null };
+        info.leftJoinParam = fulltextQuery;
+        info.whereExpr = String.format("%s.KEY IS NOT NULL", tableAlias);
+        info.scoreExpr = String.format("1 AS %s", scoreAlias);
+        info.scoreAlias = scoreAlias;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null, model);
+        return info;
     }
 
     @Override
@@ -318,11 +334,6 @@ public class DialectH2 extends Dialect {
                 "EXISTS(SELECT 1 FROM DESCENDANTS WHERE ID = ? AND DESCENDANTID = %s)",
                 idColumnName);
         // return String.format("NX_IN_TREE(%s, ?)", idColumnName);
-    }
-
-    @Override
-    public boolean isFulltextTableNeeded() {
-        return false;
     }
 
     @Override

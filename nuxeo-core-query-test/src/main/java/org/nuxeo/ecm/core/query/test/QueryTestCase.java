@@ -1288,9 +1288,9 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         // field-based fulltext
         // index exists
-        query = "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'hello'";
+        query = "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'brave'";
         dml = session.query(query);
-        assertIdSet(dml, file1.getId());
+        assertIdSet(dml, file3.getId());
         // no index exists
         query = "SELECT * FROM Document WHERE ecm:fulltext.dc:description = 'oyster'";
         dml = session.query(query);
