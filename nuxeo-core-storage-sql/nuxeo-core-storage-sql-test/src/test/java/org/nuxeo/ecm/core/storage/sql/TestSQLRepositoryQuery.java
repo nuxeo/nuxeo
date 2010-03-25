@@ -119,7 +119,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         res.close();
 
         // size when query returns nothing
-        res = session.queryAndFetch("SELECT * FROM File WHERE 1 = 0", "NXQL");
+        res = session.queryAndFetch("SELECT * FROM File WHERE dc:title = 'zzz'", "NXQL");
         it = res.iterator();
         assertFalse(it.hasNext());
         assertEquals(0, res.size());
