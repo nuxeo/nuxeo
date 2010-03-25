@@ -84,7 +84,6 @@ public class JSONDocument extends DocumentObject {
             summary.put("pageNumber", index);
             summary.put("id", getDocument().getRef()
                     .toString());
-
             all.put("summary", summary);
 
             List<Object> docs = new ArrayList<Object>();
@@ -122,8 +121,11 @@ public class JSONDocument extends DocumentObject {
                 throw new IllegalArgumentException(
                         "Could not find any uploaded file");
             }
+
+            blob.persist();
             fm.createDocumentFromBlob(session, blob, doc.getPathAsString(),
                     true, blob.getFilename());
+
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()

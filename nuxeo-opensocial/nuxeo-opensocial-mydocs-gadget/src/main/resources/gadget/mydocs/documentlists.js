@@ -22,8 +22,8 @@ function getRestletUrl() {
   return [getResourceUrl(),"?page=",currentPage,"&ts=",new Date().getTime(),Math.random() * 11].join("");
 }
 
-function getDLUrl(name) {
-  return [getResourceUrl(), name, "/@file", "?ts=", new Date().getTime(), Math.random() * 11].join("");
+function getDLUrl(doc) {
+  return [getResourceUrl(), doc.name, "/@",doc.type.toLowerCase(), "?ts=", new Date().getTime(), Math.random() * 11].join("");
 }
 
 function getImageBaseUrl() {
@@ -165,7 +165,6 @@ function displayDocumentList(jsonObject) {
       jQuery('#formUpload').ajaxSubmit({
         beforeSubmit: control,
         success:function(){
-          //refresh();
           gadgets.nuxeo.refreshGadget();
         },
         error: function(xhr,rs) {
@@ -221,20 +220,14 @@ function mkRow(document, i) {
         + "\" onclick=\"followPath('" + document.name
         + "');return false;\">";
     htmlRow += document.title + "</a></td>";
-  } else if (document.type == "File"){
-    var DLUrl = getDLUrl(document.name);
-    htmlRow += "<td><a title=\"" + document.title
-        + "\" href=\"" + DLUrl + "\">";
-    htmlRow += document.title + "</a></td>";
+  } else if(document.type == "Picture"){
+    htmlRow += "<td><a title=\"" + document.title + "\" target='_blank' href=\"" + getDLUrl(document) + "\">";
+    htmlRow += document.title + "</a></td>"; 
   } else {
-    htmlRow +="<td>" + document.title + "</td>";
+  	htmlRow += "<td><a title=\"" + document.title + "\" href=\"" + getDLUrl(document) + "\">";
+    htmlRow += document.title + "</a></td>"; 
   }
 
-  /*
-   * if (document.folderish == 0) { var DLUrl = getDLUrl(document.name);
-   * htmlRow += "<a href=\"" + DLUrl + "\"><img
-   * src=\"/nuxeo/icons/download.png\" alt=\"Download\"></a>"; }
-   */
   htmlRow += "<td class=\"iconColumn\"/>";
   htmlRow += "<td>";
   htmlRow += getDateForDisplay(document.modified);
