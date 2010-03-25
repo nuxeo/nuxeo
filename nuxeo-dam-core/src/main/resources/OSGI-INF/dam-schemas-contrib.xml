@@ -40,6 +40,7 @@
       <facet name="Downloadable" />
       <facet name="Versionable" />
       <facet name="Commentable"/>
+      <facet name="Asset"/>
     </doctype>
 
     <doctype name="Picture" extends="Document">
@@ -55,6 +56,7 @@
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Commentable"/>
+      <facet name="Asset"/>
     </doctype>
 
     <doctype name="Video" extends="Document">
@@ -73,6 +75,7 @@
       <facet name="Downloadable" />
       <facet name="HasStoryboard" />
       <facet name="HasVideoPreview" />
+      <facet name="Asset" />
     </doctype>
 
     <doctype name="Audio" extends="Document">
@@ -87,6 +90,7 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Downloadable" />
+      <facet name="Asset" />
     </doctype>
 
     <doctype name="FilterQuery" extends="Document">
