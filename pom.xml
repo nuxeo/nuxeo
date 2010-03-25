@@ -1842,7 +1842,7 @@
               <exclude>**/NamingContext.java</exclude>
             </excludes>
             <rulesets>
-              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.3/pmd.xml</ruleset>
+              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.3.1/pmd.xml</ruleset>
             </rulesets>
           </configuration>
         </plugin>
