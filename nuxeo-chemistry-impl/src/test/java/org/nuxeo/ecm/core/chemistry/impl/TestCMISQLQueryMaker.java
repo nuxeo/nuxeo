@@ -409,6 +409,18 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
     }
 
+    public void testAliasMandatory() throws Exception {
+        String query = "SELECT cmis:objectId ID"
+                + "  FROM cmis:document ORDER BY cmis:objectId";
+        try {
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+                    query, null, new Object[] { null });
+            fail("should raise because of aliased colum used unaliased in ORDER BY");
+        } catch (CMISQLQueryMaker.QueryMakerException e) {
+            // ok
+        }
+    }
+
     public void testFulltext() throws Exception {
         String query = "SELECT cmis:objectId FROM cmis:document WHERE CONTAINS('foo')";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
@@ -420,10 +432,10 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
             expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
-                    + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _FT ON HIERARCHY.ID = _FT.KEY"
+                    + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _nxfttbl ON _nxfttbl.KEY = HIERARCHY.ID"
                     + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
                     + "   AND MISC.LIFECYCLESTATE <> ?"
-                    + "   AND (_FT.KEY IS NOT NULL)";
+                    + "   AND (_nxfttbl.KEY IS NOT NULL)";
             assertEquals("foo", q.selectParams.get(0));
             assertEquals(doc_note_file, new HashSet<Serializable>(
                     q.selectParams.subList(1, 4)));
@@ -437,6 +449,52 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
                     + "   AND (NX_CONTAINS(fulltext.fulltext, ?))";
+            assertEquals(doc_note_file, new HashSet<Serializable>(
+                    q.selectParams.subList(0, 3)));
+            assertEquals(LifeCycleConstants.DELETED_STATE,
+                    q.selectParams.get(3));
+            assertEquals("foo", q.selectParams.get(4));
+        } else {
+            return; // TODO other databases
+        }
+        assertEquals(expected.replaceAll(" +", " "), sql);
+    }
+
+    public void testFulltextScore() throws Exception {
+        String query = "SELECT cmis:objectId, SCORE() as SC"
+                + " FROM cmis:document WHERE CONTAINS('foo')" //
+                + " ORDER BY SC DESC";
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, new Object[] { null });
+        assertNotNull(q);
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
+        if (database instanceof DatabaseH2) {
+            expected = "SELECT HIERARCHY.ID, 1 AS _nxscore, HIERARCHY.PRIMARYTYPE"
+                    + " FROM HIERARCHY"
+                    + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
+                    + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _nxfttbl"
+                    + "   ON _nxfttbl.KEY = HIERARCHY.ID"
+                    + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                    + "   AND MISC.LIFECYCLESTATE <> ?"
+                    + "   AND (_nxfttbl.KEY IS NOT NULL)"
+                    + " ORDER BY _nxscore DESC";
+            assertEquals("foo", q.selectParams.get(0));
+            assertEquals(doc_note_file, new HashSet<Serializable>(
+                    q.selectParams.subList(1, 4)));
+            assertEquals(LifeCycleConstants.DELETED_STATE,
+                    q.selectParams.get(4));
+        } else if (database instanceof DatabasePostgreSQL) {
+            expected = "SELECT hierarchy.id,"
+                    + "   TS_RANK_CD(fulltext.fulltext, _nxquery, 32) AS _nxscore,"
+                    + "   hierarchy.primarytype" + " FROM hierarchy"
+                    + "   LEFT JOIN misc ON misc.id = hierarchy.id"
+                    + "   , TO_TSQUERY('french', ?) AS _nxquery"
+                    + " WHERE hierarchy.primarytype IN (?, ?, ?)"
+                    + "   AND misc.lifecyclestate <> ?"
+                    + "   AND ((_nxquery @@ fulltext.fulltext))"
+                    + " ORDER BY _nxscore DESC";
+            assertEquals(expected.replaceAll(" +", " "), sql);
             assertEquals(doc_note_file, new HashSet<Serializable>(
                     q.selectParams.subList(0, 3)));
             assertEquals(LifeCycleConstants.DELETED_STATE,

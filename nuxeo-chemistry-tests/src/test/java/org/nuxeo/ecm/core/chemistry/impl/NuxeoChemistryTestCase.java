@@ -63,8 +63,10 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -100,6 +102,12 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
             deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
         } else if (database instanceof DatabaseOracle) {
             String contrib = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
+        } else if (database instanceof DatabaseMySQL) {
+            String contrib = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
+        } else if (database instanceof DatabaseSQLServer) {
+            String contrib = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
         } else {
             super.deployRepositoryContrib();
@@ -788,6 +796,20 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM cmis:document WHERE NOT CONTAINS('testfile2_Title')",
                 false);
         assertEquals(3, res.size());
+    }
+
+    public void testQueryScore() throws Exception {
+        ListPage<ObjectEntry> res;
+        res = spi.query(
+                "SELECT SCORE() FROM cmis:document WHERE CONTAINS('note')",
+                false, null, null);
+        assertEquals(1, res.size());
+        // TODO test SEARCH_SCORE present in data set
+        res = spi.query(
+                "SELECT SCORE() AS relevance FROM cmis:document WHERE CONTAINS('note')"
+                        + " ORDER BY relevance DESC", false, null, null);
+        assertEquals(1, res.size());
+        // TODO test "relevance" present in data set
     }
 
     public void testQueryInTree() throws Exception {

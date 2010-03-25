@@ -120,7 +120,14 @@ select_sublist returns [SelectedColumn selcol]:
 
 select_value_expression returns [SelectedColumn selcol]:
       c=select_column_reference { $selcol = $c.selcol; }
-//    | numeric_value_function TODO
+    | v=numeric_value_function { $selcol = $v.selcol; }
+    ;
+
+numeric_value_function returns [SelectedColumn selcol]:
+    ^(FUNC SCORE)
+      {
+          $selcol = queryMaker.referToScoreInSelect();
+      }
     ;
 
 select_column_reference returns [SelectedColumn selcol]:
