@@ -62,6 +62,8 @@ function setTitle(title){
   }
 };
 
+var reg = new RegExp("^http://");
+
 function setLink(link){
   jQuery("#link-field").val(link);
 };
@@ -79,8 +81,9 @@ function _isSet(val){
 };
 
 function savePrefs(){
+  var link = jQuery("#link-field").val();
   prefs.set("picTitle",gadgets.util.escapeString(jQuery("#title-field").val()),
-  "link",gadgets.util.escapeString(jQuery("#link-field").val()),
+  "link",gadgets.util.escapeString(reg.test(link) ? link : ["http://",link].join("")),
   "legend",gadgets.util.escapeString(jQuery("#legend-field").val()));
 };
 
