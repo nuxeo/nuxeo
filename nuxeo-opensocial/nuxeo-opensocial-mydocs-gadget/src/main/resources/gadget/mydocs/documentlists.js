@@ -223,9 +223,11 @@ function mkRow(document, i) {
   } else if(document.type == "Picture"){
     htmlRow += "<td><a title=\"" + document.title + "\" target='_blank' href=\"" + getDLUrl(document) + "\">";
     htmlRow += document.title + "</a></td>"; 
-  } else {
+  } else if(document.type == "File"){
   	htmlRow += "<td><a title=\"" + document.title + "\" href=\"" + getDLUrl(document) + "\">";
     htmlRow += document.title + "</a></td>"; 
+  } else {
+  	 htmlRow +="<td>" + document.title + "</td>";
   }
 
   htmlRow += "<td class=\"iconColumn\"/>";
