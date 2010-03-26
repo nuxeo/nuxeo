@@ -69,7 +69,7 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     protected void doRegisterLocator(ServerLocatorDescriptor descriptor) {
-        MBeanServer server = descriptor.isExisting  ? doFindServer(descriptor.domainName)
+        MBeanServer server = descriptor.isExisting ? doFindServer(descriptor.domainName)
                 : doCreateServer(descriptor);
         servers.put(descriptor.domainName, server);
         if (descriptor.isDefault) {
@@ -92,7 +92,8 @@ public class ServerLocatorService extends DefaultComponent implements
 
     protected JMXServiceURL doFormatServerURL(ServerLocatorDescriptor descriptor) {
         try {
-            return new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:" + descriptor.rmiPort + "/" + descriptor.domainName
+            return new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"
+                    + descriptor.rmiPort + "/" + descriptor.domainName
                     + "/jmxrmi");
         } catch (MalformedURLException e) {
             throw new ManagementRuntimeException("Cannot format url for "
@@ -104,7 +105,8 @@ public class ServerLocatorService extends DefaultComponent implements
         return "mbeanServer-" + descriptor.domainName;
     }
 
-    protected MBeanServer doCreateServer(final ServerLocatorDescriptor descriptor) {
+    protected MBeanServer doCreateServer(
+            final ServerLocatorDescriptor descriptor) {
         MBeanServer server = MBeanServerFactory.createMBeanServer();
         JMXServiceURL url = doFormatServerURL(descriptor);
         final RMIConnectorServer connector;
@@ -112,7 +114,7 @@ public class ServerLocatorService extends DefaultComponent implements
             connector = new RMIConnectorServer(url, null, server);
         } catch (IOException e) {
             throw new ManagementRuntimeException("Cannot start connector for "
-                    + descriptor.domainName,e);
+                    + descriptor.domainName, e);
         }
         try {
             connector.start();
@@ -120,12 +122,16 @@ public class ServerLocatorService extends DefaultComponent implements
             try {
                 LocateRegistry.createRegistry(descriptor.rmiPort);
             } catch (Exception e2) {
-                throw new ManagementRuntimeException("Cannot start RMI connector for " + descriptor.domainName, e);
+                throw new ManagementRuntimeException(
+                        "Cannot start RMI connector for "
+                                + descriptor.domainName, e);
             }
             try {
                 connector.start();
             } catch (Exception e2) {
-                throw new ManagementRuntimeException("Cannot start RMI connector for " + descriptor.domainName, e2);
+                throw new ManagementRuntimeException(
+                        "Cannot start RMI connector for "
+                                + descriptor.domainName, e2);
             }
         }
         assert connector.isActive();
@@ -133,9 +139,9 @@ public class ServerLocatorService extends DefaultComponent implements
         return server;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("cast")
     protected MBeanServer doFindServer(String domainName) {
-        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
             String domain = server.getDefaultDomain();
             if (domain == null || !domain.equals(domainName)) {
                 continue;
@@ -152,12 +158,12 @@ public class ServerLocatorService extends DefaultComponent implements
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("cast")
     public MBeanServer lookupServer(ObjectName qualifiedName) {
         if (defaultServer.isRegistered(qualifiedName)) {
             return defaultServer;
         }
-        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
             if (server.isRegistered(qualifiedName)) {
                 return server;
             }
@@ -171,7 +177,7 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     public MBeanServer lookupServer(String domainName) {
-       return doFindServer(domainName);
+        return doFindServer(domainName);
     }
 
     public void registerLocator(String domain, boolean isDefault) {
