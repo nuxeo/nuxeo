@@ -841,6 +841,13 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 return;
             }
+            if (NXQL.ECM_LOCK.equals(name)) {
+                props.add(model.LOCK_PROP);
+                if (inOrderBy) {
+                    orderKeys.add(name);
+                }
+                return;
+            }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (model.getRepositoryDescriptor().fulltextDisabled) {
                     throw new QueryMakerException(
@@ -1063,6 +1070,10 @@ public class NXQLQueryMaker implements QueryMaker {
             if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
+            }
+            if (NXQL.ECM_LOCK.equals(name)) {
+                return database.getTable(model.LOCK_TABLE_NAME).getColumn(
+                        model.LOCK_KEY);
             }
             throw new QueryMakerException("Unknown field: " + name);
         }

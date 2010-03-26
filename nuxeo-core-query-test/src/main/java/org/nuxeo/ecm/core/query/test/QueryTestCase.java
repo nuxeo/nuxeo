@@ -1008,6 +1008,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "/testfolder1/testfile3"));
         DocumentModel file4 = session.getDocument(new PathRef(
                 "/testfolder2/testfolder3/testfile4"));
+        file1.setLock("Administrator:somedate");
+        session.save();
 
         /*
          * ecm:uuid
@@ -1082,6 +1084,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
         assertIdSet(dml, version.getId());
+
+        /*
+         * ecm:lock
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> ''");
+        assertIdSet(dml, file1.getId());
+        dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
+        assertEquals(9, dml.size());
 
         // ecm:fulltext tested below
     }
