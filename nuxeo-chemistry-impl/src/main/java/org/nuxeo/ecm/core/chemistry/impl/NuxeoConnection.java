@@ -860,11 +860,11 @@ public class NuxeoConnection implements Connection, SPI {
             for (Entry<String, Serializable> entry : next.entrySet()) {
                 String key = entry.getKey();
                 Serializable value = entry.getValue();
-                if (key.endsWith(Property.TYPE_ID)
-                        || key.endsWith(Property.TYPE_ID)) {
+                if (key.endsWith(Property.TYPE_ID)) {
+                    // mapper doesn't postprocess the cmis:objectTypeId
                     // do type replacement
                     value = NuxeoType.mappedId((String) value);
-                    if (key.endsWith(Property.TYPE_ID) && typeId == null) {
+                    if (typeId == null) {
                         typeId = (String) value;
                     }
                 }
@@ -895,7 +895,7 @@ public class NuxeoConnection implements Connection, SPI {
         IterableQueryResult iterable;
         try {
             iterable = session.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    this);
+                    this, Boolean.TRUE); // add system cols
         } catch (ClientException e) {
             throw new CMISRuntimeException(e.toString(), e);
         }

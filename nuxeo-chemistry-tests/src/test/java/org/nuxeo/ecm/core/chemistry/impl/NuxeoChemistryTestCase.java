@@ -196,7 +196,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         DocumentModel file2 = new DocumentModelImpl("/testfolder1",
                 "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
-        file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
+        file2.setPropertyValue("dc:description", "something");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
         file2.setPropertyValue("dc:contributors",
@@ -226,7 +226,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
                 "testfile4", "File");
         file4.setPropertyValue("dc:title", "testfile4_Title");
-        file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
+        file4.setPropertyValue("dc:description", "something");
         file4 = session.createDocument(file4);
 
         // create deleted file
@@ -678,28 +678,20 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
     }
 
     // computed properties, not directly fetchable from SQL
+    // also document and folder types are post-processed
     public void testQueryComputed() throws Exception {
-        String query;
-        Collection<ObjectEntry> col;
-
-        query = "SELECT cmis:objectId," //
+        String query = "SELECT cmis:objectId," //
+                + "     cmis:objectTypeId," //
                 + "     cmis:baseTypeId," //
                 + "     cmis:contentStreamLength" //
-                + " FROM cmis:document";
-        col = spi.query(query, false, null, null);
-        assertEquals(4, col.size());
-        boolean gotLength = false;
-        for (ObjectEntry entry : col) {
-            Integer l = (Integer) entry.getValue("cmis:contentStreamLength");
-            if (l != null) {
-                if (l.intValue() == 14 || l.intValue() == 17) {
-                    gotLength = true;
-                } else {
-                    fail(l.toString());
-                }
-            }
-        }
-        assertTrue(gotLength);
+                + " FROM cmis:document WHERE dc:title = 'testfile1_Title'";
+        Collection<ObjectEntry> col = spi.query(query, false, null, null);
+        assertEquals(1, col.size());
+        ObjectEntry entry = col.iterator().next();
+        assertEquals(Integer.valueOf(17),
+                entry.getValue(Property.CONTENT_STREAM_LENGTH));
+        assertEquals("File", entry.getValue(Property.TYPE_ID));
+        assertEquals("cmis:document", entry.getValue(Property.BASE_TYPE_ID));
     }
 
     public void testQueryStar() throws Exception {
@@ -854,6 +846,15 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
                 "SELECT * FROM cmis:document WHERE cmis:name = 'testfile4'",
                 false);
         assertEquals(1, res.size());
+    }
+
+    public void testQueryDistinct() throws Exception {
+        ListPage<ObjectEntry> res;
+        res = spi.query("SELECT dc:description FROM File", false, null, null);
+        assertEquals(3, res.size());
+        res = spi.query("SELECT DISTINCT dc:description FROM File", false,
+                null, null);
+        assertEquals(2, res.size()); // file2 and file4 have same descr
     }
 
     // TODO connect as different user with AtomPub

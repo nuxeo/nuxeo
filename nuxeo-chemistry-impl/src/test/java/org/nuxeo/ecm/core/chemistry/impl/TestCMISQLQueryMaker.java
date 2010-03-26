@@ -341,6 +341,57 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         assertEquals(expectedP, q.selectParams.subList(4, 5));
     }
 
+    public void testSELECT_DISTINCT() throws Exception {
+        String query = "SELECT DISTINCT dc:title FROM cmis:document";
+        Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
+                modelSession, query, null, conn);
+        assertNotNull(q);
+        String sql = q.selectInfo.sql.replace("\"", ""); // more readable
+        String expected;
+        if (database instanceof DatabaseH2) {
+            expected = "SELECT DISTINCT DUBLINCORE.TITLE" //
+                    + " FROM HIERARCHY"
+                    + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
+                    + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
+                    + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
+                    + "   AND MISC.LIFECYCLESTATE <> ?";
+        } else if (database instanceof DatabasePostgreSQL) {
+            expected = "SELECT DISTINCT dublincore.title" //
+                    + " FROM hierarchy"
+                    + " LEFT JOIN dublincore ON dublincore.id = hierarchy.id"
+                    + " LEFT JOIN misc ON misc.id = hierarchy.id"
+                    + " WHERE hierarchy.primarytype IN (?, ?, ?)"
+                    + "   AND misc.lifecyclestate <> ?";
+        } else {
+            return; // TODO other databases
+        }
+        assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(0, 3)));
+        assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(3));
+    }
+
+    public void testSELECT_DISTINCT_fail() throws Exception {
+        String query;
+        query = "SELECT DISTINCT dc:title, cmis:contentStreamLength FROM cmis:document";
+        try {
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+                    query, null, conn);
+            fail("Shouldn't be able to do DISTINCT on virtual column");
+        } catch (CMISQLQueryMaker.QueryMakerException e) {
+            // ok
+        }
+
+        query = "SELECT DISTINCT dc:title FROM cmis:document";
+        try {
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+                    query, null, conn, Boolean.TRUE); // add system cols
+            fail("Shouldn't be able to do DISTINCT with system columns added");
+        } catch (CMISQLQueryMaker.QueryMakerException e) {
+            // ok
+        }
+    }
+
     public void testBooleanDateTime() throws Exception {
         String query = "SELECT cmis:objectId FROM cmis:document "
                 + "WHERE dc:title = true or dc:title = TIMESTAMP '2010-01-01T00:00:00.123Z'";

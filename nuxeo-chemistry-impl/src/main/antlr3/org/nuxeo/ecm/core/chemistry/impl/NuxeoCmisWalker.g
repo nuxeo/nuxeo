@@ -64,6 +64,8 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
 @members {
     public CMISQLQueryMaker queryMaker;
 
+    public boolean select_distinct;
+
     public List<SelectedColumn> select_what = new LinkedList<SelectedColumn>();
 
     /** without kind or on */
@@ -88,7 +90,10 @@ query [CMISQLQueryMaker qm]
 @init {
     queryMaker = $qm;
 }:
-    ^(SELECT select_list from_clause where_clause order_by_clause?)
+    ^(SELECT DISTINCT? select_list from_clause where_clause order_by_clause?)
+      {
+          select_distinct = $DISTINCT != null;
+      }
     ;
 
 select_list

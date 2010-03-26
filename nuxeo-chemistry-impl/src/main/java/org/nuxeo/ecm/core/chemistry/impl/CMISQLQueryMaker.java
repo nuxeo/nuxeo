@@ -307,6 +307,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             String query, QueryFilter queryFilter, Object... params)
             throws StorageException {
         NuxeoConnection conn = (NuxeoConnection) params[0];
+        boolean addSystemColumns = params.length >= 2
+                && Boolean.TRUE.equals(params[1]);
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
@@ -343,6 +345,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             throw new StorageException("Cannot parse query: " + query + " ("
                     + StringUtils.join(errorMessages, ", ") + ")");
         }
+        boolean distinct = walker.select_distinct;
 
         // whether to ignore hidden and trashed documents
         boolean skipHidden = true; // let system user see them?
@@ -354,9 +357,13 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Interpret * in SELECT now that tables are known.
          */
 
+        VirtualColumn sampleVirtualColumn = null;
         for (SelectedColumn sc : walker.select_what) {
             if (!(sc instanceof StarColumn)) {
                 columnsWhat.add(sc);
+                if (sc instanceof VirtualColumn) {
+                    sampleVirtualColumn = (VirtualColumn) sc;
+                }
                 continue;
             }
             String qual = ((StarColumn) sc).qual;
@@ -380,7 +387,11 @@ public class CMISQLQueryMaker implements QueryMaker {
                         continue;
                     }
                     try {
-                        columnsWhat.add(referToColumnInSelect(pd.getId(), qual));
+                        NamedColumn nc = referToColumnInSelect(pd.getId(), qual);
+                        columnsWhat.add(nc);
+                        if (nc instanceof VirtualColumn) {
+                            sampleVirtualColumn = (VirtualColumn) nc;
+                        }
                     } catch (QueryMakerException e) {
                         // ignore, non-mappable column
                     }
@@ -392,17 +403,22 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Find info about fragments needed.
          */
 
-        // always add main id and type to all qualifiers
+        // add main id to all qualifiers if
+        // - we have no distinct (in which case more columns don't matter), or
+        // - we have virtual columns, or
+        // - system columns are requested
+        // check no added columns would bias the DISTINCT
+        List<DirectColumn> addedSystemColumns = new ArrayList<DirectColumn>(0);
         for (Entry<String, Set<String>> entry : columnsPerQual.entrySet()) {
             String qual = entry.getKey();
             Set<String> fqns = new HashSet<String>(entry.getValue());
-            for (String propertyId : Arrays.asList(Property.ID,
-                    Property.TYPE_ID)) {
+            // TODO do we need Property.TYPE_ID here?
+            for (String propertyId : Arrays.asList(Property.ID)) {
                 DirectColumn sc = (DirectColumn) referToColumnInSelect(
                         propertyId, qual);
                 String fqn = sc.column.getFullQuotedName();
                 if (!fqns.contains(fqn)) {
-                    columnsWhat.add(sc);
+                    addedSystemColumns.add(sc);
                 }
             }
             if (skipHidden) {
@@ -412,6 +428,24 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column col = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
                 recordCol(col, qual);
             }
+        }
+        if (distinct) {
+            if (!addedSystemColumns.isEmpty()) {
+                if (sampleVirtualColumn != null) {
+                    throw new QueryMakerException(
+                            "Cannot use DISTINCT with virtual column "
+                                    + getColumnName(sampleVirtualColumn));
+                }
+                if (addSystemColumns) {
+                    throw new QueryMakerException(
+                            "Cannot use DISTINCT without explicit "
+                                    + Property.ID);
+                }
+                // don't add system columns as it would prevent DISTINCT from
+                // working
+            }
+        } else {
+            columnsWhat.addAll(addedSystemColumns);
         }
 
         // per qualifier, find all tables (fragments)
@@ -658,6 +692,9 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         CMISQLMapMaker mapMaker = new CMISQLMapMaker(columnsWhat, conn);
         String what = StringUtils.join(mapMaker.selectWhat, ", ");
+        if (distinct) {
+            what = "DISTINCT " + what;
+        }
         List<Serializable> whatParams = mapMaker.selectWhatParams;
 
         /*
@@ -1044,16 +1081,6 @@ public class CMISQLQueryMaker implements QueryMaker {
             params.add(info.whereExprParam);
         }
         return sql;
-    }
-
-    private int ftJoinNumber;
-
-    private String getFtJoinAlias(int num) {
-        if (num == 1) {
-            return "_FT";
-        } else {
-            return "_FT" + num;
-        }
     }
 
     private boolean sameString(String s1, String s2) {
