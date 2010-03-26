@@ -53,6 +53,11 @@ set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding
     <copy todir="${tomcat}" overwrite="true">
       <fileset dir="src/main/resources" />
     </copy>
+    <delete>
+      <fileset dir="${nxserver}/config" includes="webbindings-config.xml" />
+      <fileset dir="${nxserver}/config" includes="jetty.xml" />
+      <fileset dir="${nxserver}/config" includes="default-web.xml" />
+    </delete>
 
     <!-- Cleanup and reorganize libraries -->
     <delete>
