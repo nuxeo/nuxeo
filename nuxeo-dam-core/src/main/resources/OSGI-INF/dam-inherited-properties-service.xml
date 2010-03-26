@@ -27,6 +27,14 @@
         <inheritedProperties schema="dublincore" allProperties="true" />
       </code>
 
+      You can override which properties need to be inherit for a given schema by
+      putting the right <require /> element and redefining the properties you want.
+
+      To disable the inheritance of properties for the 'dublincore' schema:
+      <code>
+        <inheritedProperties schema="dublincore" />
+      </code>
+
       @author Thomas Roger (troger@nuxeo.com)
     </documentation>
     <object

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -38,11 +40,13 @@ public class InheritedPropertiesServiceImpl extends DefaultComponent implements
 
     public static final String INHERITED_PROPERTIES_EP = "inheritedProperties";
 
-    protected List<InheritedPropertiesDescriptor> inheritedPropertiesDescriptors;
+    private static final Log log = LogFactory.getLog(InheritedPropertiesServiceImpl.class);
+
+    protected Map<String, InheritedPropertiesDescriptor> inheritedPropertiesDescriptors;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        inheritedPropertiesDescriptors = new ArrayList<InheritedPropertiesDescriptor>();
+        inheritedPropertiesDescriptors = new HashMap<String, InheritedPropertiesDescriptor>();
     }
 
     @Override
@@ -50,7 +54,11 @@ public class InheritedPropertiesServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (INHERITED_PROPERTIES_EP.equals(extensionPoint)) {
-            inheritedPropertiesDescriptors.add((InheritedPropertiesDescriptor) contribution);
+            InheritedPropertiesDescriptor descriptor = (InheritedPropertiesDescriptor) contribution;
+            if (inheritedPropertiesDescriptors.containsKey(descriptor.getSchema())) {
+                log.info("Already  registered schema: " + descriptor.getSchema() + ", overriding it.");
+            }
+            inheritedPropertiesDescriptors.put(descriptor.getSchema(), descriptor);
         }
     }
 
@@ -59,13 +67,14 @@ public class InheritedPropertiesServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (INHERITED_PROPERTIES_EP.equals(extensionPoint)) {
-            inheritedPropertiesDescriptors.remove(contribution);
+            InheritedPropertiesDescriptor descriptor = (InheritedPropertiesDescriptor) contribution;
+            inheritedPropertiesDescriptors.remove(descriptor.getSchema());
         }
     }
 
     public void inheritProperties(DocumentModel from, DocumentModel to)
             throws ClientException {
-        for (InheritedPropertiesDescriptor descriptor : inheritedPropertiesDescriptors) {
+        for (InheritedPropertiesDescriptor descriptor : inheritedPropertiesDescriptors.values()) {
             inheritProperties(descriptor, from, to);
         }
     }
