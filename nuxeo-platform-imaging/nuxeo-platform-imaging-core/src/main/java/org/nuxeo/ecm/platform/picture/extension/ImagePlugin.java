@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
@@ -76,10 +75,8 @@ public class ImagePlugin extends AbstractFileImporter {
 
             // Creating an unique identifier
             String docId = IdUtils.generateId(title);
-
-            DocumentModelImpl document = new DocumentModelImpl(path, docId,
-                    "Picture");
-            docModel = documentManager.createDocument(document);
+            DocumentModel doc = documentManager.createDocumentModel(path, docId, "Picture");
+            docModel = documentManager.createDocument(doc);
             try {
                 DocumentModel parent = documentManager.getDocument(docModel.getParentRef());
                 ArrayList<Map<String, Object>> pictureTemplates = null;
