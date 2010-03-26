@@ -6,10 +6,11 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
+  
 
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
-
+    <property name="stagedir" value="${outdir}/stage" />
     <property name="init.done" value="true" />
   </target>
 
