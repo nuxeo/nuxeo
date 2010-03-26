@@ -16,4 +16,6 @@ Nuxeo-component: OSGI-INF/dam-content-template-contrib.xml,
  OSGI-INF/dam-listeners-contrib.xml,
  OSGI-INF/dam-directories-contrib.xml,
  OSGI-INF/dam-watermark-service.xml,
- OSGI-INF/dam-watermark-contrib.xml
+ OSGI-INF/dam-watermark-contrib.xml,
+ OSGI-INF/dam-inherited-properties-service.xml,
+ OSGI-INF/dam-inherited-properties-contrib.xml

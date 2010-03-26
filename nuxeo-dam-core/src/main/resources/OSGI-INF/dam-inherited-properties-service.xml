@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.core.service.InheritedPropertiesService">
+
+  <implementation
+      class="org.nuxeo.dam.core.service.InheritedPropertiesServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.dam.core.service.InheritedPropertiesService"/>
+  </service>
+
+  <extension-point name="inheritedProperties">
+    <documentation>
+      Used to register which properties need to be inherited from one document
+      to another document.
+
+      A sample contribution could be:
+      <code>
+        <inheritedProperties schema="dublincore">
+          <property>dc:description</property>
+          <property>dc:coverage</property>
+          <property>dc:subjects</property>
+        </inheritedProperties>
+      </code>
+
+      You can inherit a whole schema:
+      <code>
+        <inheritedProperties schema="dublincore" allProperties="true" />
+      </code>
+
+      @author Thomas Roger (troger@nuxeo.com)
+    </documentation>
+    <object
+        class="org.nuxeo.dam.core.service.InheritedPropertiesDescriptor"/>
+  </extension-point>
+
+</component>

@@ -22,7 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.core.service.InheritedPropertiesService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 public class InitPropertiesListener implements EventListener {
 
@@ -72,8 +76,9 @@ public class InitPropertiesListener implements EventListener {
 
     }
 
-    protected static final List<String> DUBLINCORE_PROPERTIES = Arrays.asList(
-            "dc:description", "dc:coverage", "dc:subjects", "dc:expired");
+    private static final Log log = LogFactory.getLog(InitPropertiesListener.class);
+
+    protected InheritedPropertiesService inheritedPropertiesService;
 
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
@@ -83,7 +88,7 @@ public class InitPropertiesListener implements EventListener {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession coreSession = docCtx.getCoreSession();
 
-            if (doc.hasSchema(Constants.DAM_COMMON_SCHEMA)
+            if (doc.hasFacet(Constants.ASSET_FACET)
                     && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
                 DocumentModel importSet = getImportSet(coreSession, doc);
@@ -93,23 +98,10 @@ public class InitPropertiesListener implements EventListener {
                     return;
                 }
 
-                Map<String, Object> damMap = importSet.getDataModel(
-                        Constants.DAM_COMMON_SCHEMA).getMap();
-                doc.getDataModel((Constants.DAM_COMMON_SCHEMA)).setMap(damMap);
-
-                Map<String, Object> dublincoreMap = importSet.getDataModel(
-                        Constants.DUBLINCORE_SCHEMA).getMap();
-
-                Map<String, Object> importSetMap = new HashMap<String, Object>();
-                for (Map.Entry<String, Object> entry : dublincoreMap.entrySet()) {
-                    String key = entry.getKey();
-                    Object value = entry.getValue();
-                    if (DUBLINCORE_PROPERTIES.contains(key)) {
-                        importSetMap.put(key, value);
-                    }
+                InheritedPropertiesService service = getInheritedPropertiesService();
+                if (service != null) {
+                    service.inheritProperties(importSet, doc);
                 }
-                doc.getDataModel((Constants.DUBLINCORE_SCHEMA)).setMap(
-                        importSetMap);
             }
         }
     }
@@ -137,6 +129,17 @@ public class InitPropertiesListener implements EventListener {
         AccessibleParentFinder finder = new AccessibleParentFinder(session, doc);
         finder.runUnrestricted();
         return finder.parent;
+    }
+
+    protected InheritedPropertiesService getInheritedPropertiesService() {
+        if (inheritedPropertiesService == null) {
+            try {
+                inheritedPropertiesService = Framework.getService(InheritedPropertiesService.class);
+            } catch (Exception e) {
+                log.error("Unable to retrieve InheritedPropertiesService", e);
+            }
+        }
+        return inheritedPropertiesService;
     }
 
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.inherited.properties.contrib">
+
+  <extension target="org.nuxeo.dam.core.service.InheritedPropertiesService"
+    point="inheritedProperties">
+
+    <inheritedProperties schema="dam_common" allProperties="true" />
+
+    <inheritedProperties schema="dublincore">
+      <property>dc:description</property>
+      <property>dc:coverage</property>
+      <property>dc:subjects</property>
+      <property>dc:expired</property>
+      <property>dc:language</property>
+    </inheritedProperties>
+
+  </extension>
+
+</component>

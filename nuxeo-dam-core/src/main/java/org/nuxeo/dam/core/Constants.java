@@ -31,4 +31,5 @@ public interface Constants {
 
     String IMPORT_SET_TYPE = "ImportSet";
 
+    String ASSET_FACET = "Asset";
 }
