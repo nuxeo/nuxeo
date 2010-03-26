@@ -89,16 +89,23 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         String docid = (String) req.getAttributes().get("docid");
         String xpath = (String) req.getAttributes().get("fieldPath");
         xpath = xpath.replace("-", "/");
+        List<String> segments = req.getResourceRef().getSegments();
+        StringBuilder sb =  new StringBuilder();
+        for (int i = 6; i < segments.size(); i++) {
+            sb.append(segments.get(i));
+            sb.append("/");
+        }
+        String subPath = sb.substring(0, sb.length() - 1);
+
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
+            subPath = URLDecoder.decode(subPath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }
-        String subPath = (String) req.getAttributes().get("subPath");
+
         String blobPostProcessingParameter = getQueryParamValue(req, "blobPostProcessing", "false");
         boolean blobPostProcessing = Boolean.parseBoolean(blobPostProcessingParameter);
-        // String subPath = (String)
-        // req.getEntityAsForm().getFirst("subPath").getValue();
 
         if (repo == null || repo.equals("*")) {
             handleError(res, "you must specify a repository");
@@ -133,7 +140,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            if (subPath == null) {
+            if (subPath == null || subPath.isEmpty()) {
                 handlePreview(res, previewBlobs.get(0), "text/html");
                 return;
             } else {
