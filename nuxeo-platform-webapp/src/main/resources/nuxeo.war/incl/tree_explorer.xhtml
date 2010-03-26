@@ -12,11 +12,15 @@
 <c:if test="#{!empty treeActions.treeRoots}">
 
   <a4j:region renderRegionOnly="true">
+     <a4j:form ajaxSubmit="true">
+     <div style="float:right">
+         <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
+           <h:graphicImage value="/img/refresh.png" />
+         </a4j:commandLink>
+     </div>
     <dl>
       <dd class="menuForm">
-        <a4j:form ajaxSubmit="true">
           <h:panelGroup id="treeNav">
-
             <rich:tree
               adviseNodeOpened="#{treeActions.adviseNodeOpened}"
               changeExpandListener="#{treeActions.changeExpandListener}"
@@ -50,10 +54,9 @@
               </rich:recursiveTreeNodesAdaptor>
             </rich:tree>
           </h:panelGroup>
-        </a4j:form>
       </dd>
     </dl>
-
+   </a4j:form>
   </a4j:region>
 
 </c:if>
