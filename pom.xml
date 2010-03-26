@@ -95,6 +95,7 @@
     <profile>
       <id>all-distributions</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
@@ -1124,6 +1125,7 @@
         <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </repository>
@@ -1149,6 +1151,7 @@
         <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
