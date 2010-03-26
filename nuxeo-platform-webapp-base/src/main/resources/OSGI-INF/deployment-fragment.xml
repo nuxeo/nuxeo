@@ -13,6 +13,15 @@
     <page view-id="/view_many_users.xhtml">
       breadcrumb=command.manageMembers
     </page>
+
+    <!--  bind url for forced invalidation of nav tree -->
+    <page view-id="/invalidateTree.xhtml"
+      action="#{treeInvalidator.forceTreeRefresh}">
+    </page>
+    <page view-id="/invalidateConversationTree.xhtml"
+      action="#{treeActions.forceTreeRefresh}">
+    </page>
+
   </extension>
 
   <extension target="faces-config#NAVIGATION">

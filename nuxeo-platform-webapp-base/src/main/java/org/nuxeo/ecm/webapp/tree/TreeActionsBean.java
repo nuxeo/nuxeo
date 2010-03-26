@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.tree;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.Map;
 import javax.ejb.Remove;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,11 +82,20 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
     protected String currentDocumentPath;
 
+    @In(create = true)
+    protected TreeInvalidatorBean treeInvalidator;
+
     public List<DocumentTreeNode> getTreeRoots() throws ClientException {
-    	return getTreeRoots(false);
+        return getTreeRoots(false);
     }
-    
+
     protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
+
+        if (treeInvalidator.needsInvalidation()) {
+            reset();
+            treeInvalidator.invalidationDone();
+        }
+
         if (tree == null) {
             tree = new ArrayList<DocumentTreeNode>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -98,10 +109,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     // default on current doc
                     firstAccessibleParent = currentDocument;
                 } else {
-                	if (showRoot) {
-                		firstAccessibleParent = currentDocument;
-                		firstAccessibleParent.setPropertyValue("dc:title", "/");
-                	}
+                    if (showRoot) {
+                        firstAccessibleParent = currentDocument;
+                        firstAccessibleParent.setPropertyValue("dc:title", "/");
+                    }
                 }
             }
             if (firstAccessibleParent != null) {
@@ -210,4 +221,17 @@ public class TreeActionsBean implements TreeActions, Serializable {
         log.debug("Removing SEAM component...");
     }
 
+
+    public String forceTreeRefresh() throws IOException {
+
+        resetCurrentDocumentData();
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+        response.setContentType("application/xml; charset=UTF-8");
+        response.getWriter().write("<response>OK</response>");
+        context.responseComplete();
+
+        return null;
+    }
 }
