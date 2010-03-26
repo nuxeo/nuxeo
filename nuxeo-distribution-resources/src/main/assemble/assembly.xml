@@ -27,7 +27,7 @@
           description="Build resources package for ${distribution}"
           unless="no.alternate.build">
     <copy todir="${outdir}/${distribution}" overwrite="true">
-      <fileset dir="src/main/resources/jetty-base" />
+      <fileset dir="src/main/resources/${distribution}" />
     </copy>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
          basedir="${outdir}/${distribution}" />
