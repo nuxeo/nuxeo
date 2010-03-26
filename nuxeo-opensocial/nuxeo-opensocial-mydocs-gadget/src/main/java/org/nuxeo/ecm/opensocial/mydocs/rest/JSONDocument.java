@@ -20,6 +20,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,6 +54,8 @@ public class JSONDocument extends DocumentObject {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
 
+    private static final Log log = LogFactory.getLog(JSONDocument.class);
+
     @GET
     @Override
     public Object doGet() {
@@ -71,15 +75,15 @@ public class JSONDocument extends DocumentObject {
         try {
             summary.put("title", getDocument().getTitle());
         } catch (Exception e) {
-            e.printStackTrace();
+            summary.put("title", "No title");
         }
 
         CoreSession session = ctx.getCoreSession();
+
+        PagedDocumentsProvider provider;
         try {
-
-            PagedDocumentsProvider provider = getResProviderForDocChildren(
-                    getDocument().getRef(), session);
-
+            provider = getResProviderForDocChildren(getDocument().getRef(),
+                    session);
             summary.put("pages", provider.getNumberOfPages());
             summary.put("pageNumber", index);
             summary.put("id", getDocument().getRef()
@@ -89,22 +93,21 @@ public class JSONDocument extends DocumentObject {
             List<Object> docs = new ArrayList<Object>();
 
             for (DocumentModel child : provider.getPage(index)) {
-
                 // FIXME
                 if (!"Space".equals(child.getType())) {
-                    try {
-                        docs.add(getDocItem(child));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    docs.add(getDocItem(child));
                 }
             }
             all.put("document", docs);
+
+            return makeJSON(all);
         } catch (ClientException e) {
             e.printStackTrace();
         }
 
-        return makeJSON(all);
+        return Response.serverError()
+                .build();
+
     }
 
     @POST
@@ -136,24 +139,40 @@ public class JSONDocument extends DocumentObject {
 
     }
 
-    private Map<String, Object> getDocItem(DocumentModel doc) throws Exception {
+    private Map<String, Object> getDocItem(DocumentModel doc) {
         Map<String, Object> docItem = new HashMap<String, Object>();
         docItem.put("id", doc.getId());
         docItem.put("name", doc.getName());
         docItem.put("url", getDocumentURL(doc));
-        docItem.put("icon", doc.getPropertyValue("common:icon"));
-        docItem.put("title", doc.getTitle());
         docItem.put("type", doc.getType());
-        docItem.put("creator", doc.getPropertyValue("dublincore:creator"));
-        docItem.put(
-                "modified",
-                DATE_FORMAT.format(((GregorianCalendar) doc.getPropertyValue("dublincore:modified")).getTime()));
-        if (doc.hasFacet("Folderish")) {
-            docItem.put("folderish", "1");
-        } else {
-            docItem.put("folderish", "0");
+        try {
+            docItem.put("title", doc.getTitle());
+        } catch (ClientException e1) {
+            log.warn("No title for document " + doc.getName());
+            docItem.put("title", "No title");
+        }
+        try {
+            docItem.put("icon", doc.getPropertyValue("common:icon"));
+        } catch (Exception e) {
+            log.warn("No icon for document " + doc.getName());
+            docItem.put("icon", "No icon");
+        }
+        try {
+            docItem.put("creator", doc.getPropertyValue("dublincore:creator"));
+        } catch (Exception e) {
+            log.warn("No creator for document " + doc.getName());
+            docItem.put("creator", "No creator");
+        }
+        try {
+            docItem.put(
+                    "modified",
+                    DATE_FORMAT.format(((GregorianCalendar) doc.getPropertyValue("dublincore:modified")).getTime()));
+        } catch (Exception e) {
+            log.warn("No modified for document " + doc.getName());
+            docItem.put("modified", "No modified");
         }
 
+        docItem.put("folderish", doc.hasFacet("Folderish") ? "1" : "0");
         return docItem;
     }
 
