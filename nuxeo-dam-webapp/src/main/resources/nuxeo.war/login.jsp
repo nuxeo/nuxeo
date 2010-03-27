@@ -320,12 +320,13 @@ nxthemes css is not used in login.jsp */
 				    </div>
      		  </form>
         </td>
-        <td class="news_container" align="right" valign="center">
-        <iframe class="block_container" style="visibility:hidden"
-          onload="javascript:this.style.visibility='visible';"
-          src="http://www.nuxeo.com/layout/set/dam_newslist/"></iframe>
+       <td class="news_container" align="right" valign="center">
+        <% if (!request.getHeader("User-Agent").contains("Nuxeo-Selenium-Tester")) { %>
+          <iframe class="block_container" style="visibility:hidden"
+            onload="javascript:this.style.visibility='visible';"
+            src="http://www.nuxeo.com/layout/set/dam_newslist/"></iframe>
+        <% } %>
       </td>
-        </td>
       </tr>
       <tr class="footer">
         <td valign="bottom" style="padding-left:42px;">
