@@ -413,25 +413,6 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     return null;
   },
 
-  _getOrder: function(el) {
-    var order = 0;
-    var shiftablezones = this._shiftablezones;
-    if (!shiftablezones) {
-      return order;
-    }
-    while (el) {
-      el = el.previousSibling;
-      if (!el) {
-        return order;
-      }
-      if (el.nodeType == 1) {
-        if (shiftablezones.indexOf(el) >= 0) {
-          order += 1
-        }
-      }
-    }
-  },
-
   dragEvent: function(e) {
     if (NXThemes.alreadyDragging) return false;
     if (!Event.isLeftClick(e)) return false;
@@ -611,7 +592,9 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     Event.stopObserving(document, "mousemove", this.moveEvent);
     Event.stopObserving(document, "mouseup", this.dropEvent);
     var dragging = this.def.dragging;
-
+    var shifting = this.def.shifting;
+    var dropping = this.def.dropping;
+	
     if (!this.dragged) return;
 
     var moved = this.moved;
@@ -644,19 +627,27 @@ NXThemes.DragAndDropController.prototype = Object.extend(
       zoomback = false;
     }
 
-    var dropping = this.def.dropping;
     if (dropping && dragged) {
       var action_id = dropping.action;
       if (action_id) {
         var action_handler = NXThemes.getAction(action_id);
-        if (action_handler) action_handler({
-          source: dragged,
-          sourceContainer: this.sourceContainer,
-          target: this.droptarget || this.target,
-          order: this._getOrder(dragged),
-          controller: this
-        });
-
+        if (action_handler) {
+            order = 0;
+            var droptarget = this.droptarget;
+            if (droptarget) {
+                var shiftable = droptarget.select('.' + shifting.element);
+                if (shiftable) {
+                    order = shiftable.indexOf(dragged);
+                }
+            }
+            action_handler({
+                source: dragged,
+                sourceContainer: this.sourceContainer,
+                target: droptarget || this.target,
+                order: order,
+                controller: this
+            });
+        }
         var source = dragging.source;
         if (source) {
           dragged.style.height = null;
