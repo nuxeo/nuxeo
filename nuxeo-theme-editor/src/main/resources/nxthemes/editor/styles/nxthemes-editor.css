@@ -1411,7 +1411,7 @@ div.nxthemesDraggable:hover div.nxthemesFrameLeft {
   height: 100%;
   top: 0;
   left: 0;
-  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.png) repeat-y;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.gif) repeat-y;
 }
 
 div.nxthemesDraggable:hover div.nxthemesFrameTop {
@@ -1420,7 +1420,7 @@ div.nxthemesDraggable:hover div.nxthemesFrameTop {
   width: 100%;
   height: 1px;
   top: 0px;
-  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.png) repeat-x;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.gif) repeat-x;
 }
 
 div.nxthemesDraggable:hover div.nxthemesFrameBottom {
@@ -1429,7 +1429,7 @@ div.nxthemesDraggable:hover div.nxthemesFrameBottom {
   height: 1px;
   left: 0px;
   bottom: 0px;
-  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.png) repeat-x;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-h.gif) repeat-x;
 }
 
 div.nxthemesDraggable:hover div.nxthemesFrameRight {
@@ -1438,7 +1438,7 @@ div.nxthemesDraggable:hover div.nxthemesFrameRight {
   height: 100%;
   right: 0;
   bottom: 0;
-  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.png) repeat-y;
+  background: url(${basePath}/skin/nxthemes-editor/img/frame-v.gif) repeat-y;
 }
 
 ul.namedStyleSelector {

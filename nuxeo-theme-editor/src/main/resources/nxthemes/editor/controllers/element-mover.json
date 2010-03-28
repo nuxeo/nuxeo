@@ -2,13 +2,13 @@
    "type": "drag-and-drop",
    "dragging": {
      "element": "nxthemesDraggable",
-     "highlight": {
-       "color": "#fce94f"
-     },
      "feedback": {
-       "opacity": 0.25,
-       "clone": false
+       "opacity": 1,
+       "clone": true
      },
+     "source": {
+       "color": "#ff6"
+     },	 
      "cursor": "default"
    },
    "shifting": {

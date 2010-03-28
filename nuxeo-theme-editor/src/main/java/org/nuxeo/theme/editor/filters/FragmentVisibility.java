@@ -79,7 +79,8 @@ public class FragmentVisibility extends StandaloneFilter {
                 info.setMarkup(content.toString());
                 return info;
             } else if (!visible) {
-                return null;
+                info.setMarkup("<div></div>");
+                return info;
             }
 
         } else {
