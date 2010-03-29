@@ -642,15 +642,18 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
 
   setup: function() {
     this.render();
-    var clickEvent = this.clickEvent.bindAsEventListener(this);
+    this.clickEvent = this.clickEvent.bindAsEventListener(this);
 	this.mouseOverEvent = this.mouseOverEvent.bindAsEventListener(this);
-	this.mouseOutEvent = this.mouseOutEvent.bindAsEventListener(this);
-	this.menuClickEvent = this.menuClickEvent.bindAsEventListener(this);
-    this.menuMouseOutEvent = this.menuMouseOutEvent.bindAsEventListener(this);
-	this.escapeEvent = this.escapeEvent.bindAsEventListener(this);
-    Event.observe(this.widget, "click", clickEvent);
+	this.mouseOutEvent = this.mouseOutEvent.bindAsEventListener(this);		
+    Event.observe(this.widget, "click", this.clickEvent);
 	Event.observe(this.widget, "mouseover", this.mouseOverEvent);
 	Event.observe(this.widget, "mouseout", this.mouseOutEvent);
+	// drop-down menu
+	if (this.def.menu) {
+	    this.menuMouseOutEvent = this.menuMouseOutEvent.bindAsEventListener(this);
+	    this.menuClickEvent = this.menuClickEvent.bindAsEventListener(this);
+	    this.escapeEvent = this.escapeEvent.bindAsEventListener(this);
+	}
   },
 
   inspect: function() {
@@ -703,7 +706,9 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
   },
 
   mouseOutEvent: function(e) {
-	this.dehighlight();
+    if (!this.def.menu) {
+        this.dehighlight();
+    }
   },
 
   menuClickEvent: function(e) {
@@ -719,6 +724,7 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
       Event.stopObserving(menu, "mouseout", this.menuMouseOutEvent);
       Event.stopObserving(this.widget, "mouseout", this.menuMouseOutEvent);
       menu.hide();
+      this.dehighlight();
     }
   },
 

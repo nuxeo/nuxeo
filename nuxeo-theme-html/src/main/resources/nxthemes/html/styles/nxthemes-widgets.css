@@ -173,6 +173,14 @@
   padding-right: 20px;
 }
 
+.nxthemesButton.dropList.highlighted b {
+  background-position: 0 -100px;
+}
+
+.nxthemesButton.dropList.highlighted a {
+  background-position: 100% -100px;
+  padding-right: 20px;
+}
 
 /* Tabs */
 .nxthemesTabs ul {
