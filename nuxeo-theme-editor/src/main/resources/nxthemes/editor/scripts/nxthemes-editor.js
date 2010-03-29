@@ -171,7 +171,7 @@ NXThemesEditor.insertFragment = function(info) {
 
 NXThemesEditor.manageStyles = function() {
     NXThemes.getControllerById("editor perspectives").switchTo('style manager');
-    NXThemesStyleManager.setEditMode('named styles');
+    NXThemesStyleManager.setEditMode('named styles', 'named_styles');
 };
 
 NXThemesEditor.changeElementStyle = function(info) {
@@ -793,7 +793,7 @@ NXThemesEditor.backToCanvas = function() {
 
 NXThemesEditor.managePresets = function() {
     NXThemes.getControllerById("editor perspectives").switchTo('preset manager');
-    NXThemesPresetManager.setEditMode('theme presets');
+    NXThemesPresetManager.setEditMode('theme presets', 'theme_presets');
 };
 
 NXThemesEditor.addPreset = function(themeName, category, view_id) {
@@ -1191,7 +1191,7 @@ NXThemesPresetManager.refresh = function() {
     NXThemes.getViewById("preset manager").refresh();
 };
 
-NXThemesPresetManager.setEditMode = function(mode) {
+NXThemesPresetManager.setEditMode = function(mode, button) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_preset_manager_mode"; 
     new Ajax.Request(url, {
          method: 'post',
@@ -1200,6 +1200,7 @@ NXThemesPresetManager.setEditMode = function(mode) {
          },
          onSuccess: function(r) {
         	 NXThemesPresetManager.refresh();
+		 NXThemes.getControllerById("theme buttons").select(button);
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1912,7 +1913,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
     });     
 };
 
-NXThemesStyleManager.setEditMode = function(mode) {
+NXThemesStyleManager.setEditMode = function(mode, button) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_style_manager_mode"; 
     new Ajax.Request(url, {
          method: 'post',
@@ -1921,6 +1922,7 @@ NXThemesStyleManager.setEditMode = function(mode) {
          },
          onSuccess: function(req) {
         	 NXThemes.getViewById("style manager").refresh();
+		 NXThemes.getControllerById("theme buttons").select(button);
          },
          onFailure: function(r) {
              var text = r.responseText;

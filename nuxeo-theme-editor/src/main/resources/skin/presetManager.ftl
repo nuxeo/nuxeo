@@ -271,7 +271,7 @@ ${preset_info.preview}
 
 <#if preset_manager_mode = 'application presets'>
 
-<p class="nxthemesExplanation">List by palette.</p>
+<p class="nxthemesExplanation">Application presets are categorized in palettes. They cannot be modified.</p>
 
 <table style="width: 100%;" cellpadding="3" cellspacing="1">
   <tr>
