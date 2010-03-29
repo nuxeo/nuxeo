@@ -96,11 +96,6 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     // --------------------------- Document Provider API --------------------------------
-
-    
-    protected void rehydrate(String id) throws ClientException {
-        cacheDocument(session.getDocument(new IdRef(id))); 
-    }
     
     /**
      * The doc
@@ -146,10 +141,13 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
             return cache.get(((IdRef) ref).value);
         } // else assume a path
         String id = path2Ids.get(((PathRef) ref).value);
-        if (id != null) {
-            return cache.get(id);
+        if (id == null) {
+            return null;
         }
-        return null;
+        if (!cache.containsKey(id)) {
+           rehydrateCache(id);
+        }
+        return cache.get(id);
     }
 
     public synchronized void flushDocumentCache() {
