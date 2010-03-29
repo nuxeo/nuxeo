@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,14 +55,11 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     protected Principal principal;
     protected String sessionId;
 
-    // access to cache map should be synchronized
-    protected final Map<String, DocumentModel> cache = (Map<String,DocumentModel>)new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-    protected final Map<String, String> path2Ids = new ConcurrentHashMap<String, String>();
-
-    /** Children Cache: parentId -> list of child Ids  */
+    // access to maps should be synchronized
+    protected final Map<String, DocumentModel> cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+    protected final Map<String, String> path2Ids = new DualHashBidiMap();
     protected final Map<String, List<DocumentRef>> childrenCache = new HashMap<String, List<DocumentRef>>();
 
-    // TODO fix sync pb
 
 
     public CachingRepositoryInstanceHandler(Repository repository) {
@@ -101,6 +98,9 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     protected DocumentModel putIfAbsent(String id, DocumentModel doc) {
         if (!cache.containsKey(id)) {
+            // cleanup oldest entries before referencing new  version of document
+            childrenCache.remove(id);
+            ((DualHashBidiMap) path2Ids).removeValue(id);
             return cache.put(id, doc);
         }
         return cache.get(id);
@@ -301,7 +301,9 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
             return (String) docRef.reference();
         case DocumentRef.PATH:
             String path = (String)docRef.reference();
-            return path2Ids.get(path);
+            synchronized(CachingRepositoryInstanceHandler.this) {
+                return path2Ids.get(path);
+            }
         default:
             return null;
         }
