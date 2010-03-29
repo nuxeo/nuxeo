@@ -991,13 +991,12 @@ public class SQLInfo {
          */
         public SQLInfoSelect(String sql, List<Column> whatColumns,
                 List<Column> whereColumns, List<Column> opaqueColumns) {
-            this(sql, whatColumns, new ColumnMapMaker(whatColumns),
-                    whereColumns, opaqueColumns);
+            this(sql, whatColumns, null, whereColumns, opaqueColumns);
         }
 
         /**
          * Select where some column keys may be aliased, and some columns may be
-         * computed.
+         * computed. The {@link MapMaker} is used by the queryAndFetch() method.
          */
         public SQLInfoSelect(String sql, MapMaker mapMaker) {
             this(sql, null, mapMaker, null, null);
@@ -1025,14 +1024,24 @@ public class SQLInfo {
     }
 
     /**
-     * Builds the map from a result set given a {@link SQLInfoSelect} holding
-     * columns and column aliases.
+     * Builds the map from a result set given a list of columns and column keys.
      */
     public static class ColumnMapMaker implements MapMaker {
         public final List<Column> columns;
 
+        public final List<String> keys;
+
         public ColumnMapMaker(List<Column> columns) {
             this.columns = columns;
+            keys = new ArrayList<String>(columns.size());
+            for (Column column : columns) {
+                keys.add(column.getKey());
+            }
+        }
+
+        public ColumnMapMaker(List<Column> columns, List<String> keys) {
+            this.columns = columns;
+            this.keys = keys;
         }
 
         public Map<String, Serializable> makeMap(ResultSet rs)
@@ -1040,7 +1049,9 @@ public class SQLInfo {
             Map<String, Serializable> map = new HashMap<String, Serializable>();
             int i = 1;
             for (Column column : columns) {
-                map.put(column.getKey(), column.getFromResultSet(rs, i++));
+                String key = keys.get(i - 1);
+                Serializable value = column.getFromResultSet(rs, i++);
+                map.put(key, value);
             }
             return map;
         }
