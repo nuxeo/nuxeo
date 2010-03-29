@@ -83,7 +83,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", "");
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
+            expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
@@ -92,7 +92,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND ((DUBLINCORE.TITLE = ?) OR (DUBLINCORE.TITLE = ?))"
                     + " ORDER BY DUBLINCORE.DESCRIPTION DESC, HIERARCHY.PARENTID";
         } else if (database instanceof DatabasePostgreSQL) {
-            expected = "SELECT hierarchy.id, dublincore.title, hierarchy.primarytype"
+            expected = "SELECT hierarchy.id, dublincore.title"
                     + " FROM hierarchy"
                     + " LEFT JOIN dublincore ON dublincore.id = hierarchy.id"
                     + " LEFT JOIN misc ON misc.id = hierarchy.id"
@@ -122,7 +122,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE, HIERARCHY.PRIMARYTYPE"
+            expected = "SELECT HIERARCHY.ID, DUBLINCORE.TITLE"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
@@ -130,7 +130,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND MISC.LIFECYCLESTATE <> ?"
                     + "   AND ((DUBLINCORE.TITLE IN (?, ?)))";
         } else if (database instanceof DatabasePostgreSQL) {
-            expected = "SELECT hierarchy.id, dublincore.title, hierarchy.primarytype"
+            expected = "SELECT hierarchy.id, dublincore.title"
                     + " FROM hierarchy"
                     + " LEFT JOIN dublincore ON dublincore.id = hierarchy.id"
                     + " LEFT JOIN misc ON misc.id = hierarchy.id"
@@ -159,7 +159,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE" //
+            expected = "SELECT HIERARCHY.ID" //
                     + " FROM HIERARCHY"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
                     + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
@@ -169,7 +169,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "       AND _nxm1_DC_CONTRIBUTORS.ITEM = ?" //
                     + "))";
         } else if (database instanceof DatabasePostgreSQL) {
-            expected = "SELECT hierarchy.id, hierarchy.primarytype" //
+            expected = "SELECT hierarchy.id" //
                     + " FROM hierarchy"
                     + " LEFT JOIN misc ON misc.id = hierarchy.id"
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
@@ -202,7 +202,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
-                    + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID, _B_HIERARCHY.PRIMARYTYPE"
+                    + " _B_HIERARCHY.ID"
                     + " FROM HIERARCHY _A_HIERARCHY"
                     + " LEFT JOIN DUBLINCORE _A_DUBLINCORE ON _A_DUBLINCORE.ID = _A_HIERARCHY.ID"
                     + " LEFT JOIN MISC _A_MISC ON _A_MISC.ID = _A_HIERARCHY.ID"
@@ -216,7 +216,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND ((_A_DUBLINCORE.TITLE = ?) OR (_B_DUBLINCORE.TITLE = ?))";
         } else if (database instanceof DatabasePostgreSQL) {
             expected = "SELECT _A_hierarchy.id, _B_dublincore.title,"
-                    + " _A_hierarchy.primarytype, _B_hierarchy.id, _B_hierarchy.primarytype"
+                    + " _B_hierarchy.id"
                     + " FROM hierarchy _A_hierarchy"
                     + " LEFT JOIN dublincore _A_dublincore ON _A_dublincore.id = _A_hierarchy.id"
                     + " LEFT JOIN misc _A_misc ON _A_misc.id = _A_hierarchy.id"
@@ -255,8 +255,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String expected;
         if (database instanceof DatabaseH2) {
             expected = "SELECT _A_HIERARCHY.ID, _B_DUBLINCORE.TITLE,"
-                    + " _A_HIERARCHY.PRIMARYTYPE, _B_HIERARCHY.ID,"
-                    + " _B_HIERARCHY.PRIMARYTYPE"
+                    + " _B_HIERARCHY.ID"
                     + " FROM HIERARCHY _A_HIERARCHY"
                     + " LEFT JOIN DUBLINCORE _A_DUBLINCORE ON _A_DUBLINCORE.ID = _A_HIERARCHY.ID"
                     + " LEFT JOIN MISC _A_MISC ON _A_MISC.ID = _A_HIERARCHY.ID"
@@ -274,7 +273,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "))";
         } else if (database instanceof DatabasePostgreSQL) {
             expected = "SELECT _A_hierarchy.id, _B_dublincore.title,"
-                    + " _A_hierarchy.primarytype, _B_hierarchy.id, _B_hierarchy.primarytype"
+                    + " _B_hierarchy.id"
                     + " FROM hierarchy _A_hierarchy"
                     + " LEFT JOIN dublincore _A_dublincore ON _A_dublincore.id = _A_hierarchy.id"
                     + " LEFT JOIN misc _A_misc ON _A_misc.id = _A_hierarchy.id"
@@ -401,7 +400,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
+            expected = "SELECT HIERARCHY.ID"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN DUBLINCORE ON DUBLINCORE.ID = HIERARCHY.ID"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
@@ -409,7 +408,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND MISC.LIFECYCLESTATE <> ?"
                     + "   AND ((DUBLINCORE.TITLE = ?) OR (DUBLINCORE.TITLE = ?))";
         } else if (database instanceof DatabasePostgreSQL) {
-            expected = "SELECT hierarchy.id, hierarchy.primarytype"
+            expected = "SELECT hierarchy.id"
                     + " FROM hierarchy"
                     + " LEFT JOIN dublincore ON dublincore.id = hierarchy.id"
                     + " LEFT JOIN misc ON misc.id = hierarchy.id"
@@ -480,35 +479,31 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, HIERARCHY.PRIMARYTYPE"
+            expected = "SELECT HIERARCHY.ID"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
-                    + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _nxfttbl ON _nxfttbl.KEY = HIERARCHY.ID"
+                    + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _nxfttbl"
+                    + "   ON _nxfttbl.KEY = HIERARCHY.ID"
                     + " WHERE HIERARCHY.PRIMARYTYPE IN (?, ?, ?)"
                     + "   AND MISC.LIFECYCLESTATE <> ?"
                     + "   AND (_nxfttbl.KEY IS NOT NULL)";
-            assertEquals("foo", q.selectParams.get(0));
-            assertEquals(doc_note_file, new HashSet<Serializable>(
-                    q.selectParams.subList(1, 4)));
-            assertEquals(LifeCycleConstants.DELETED_STATE,
-                    q.selectParams.get(4));
         } else if (database instanceof DatabasePostgreSQL) {
-            expected = "SELECT hierarchy.id, hierarchy.primarytype"
+            expected = "SELECT hierarchy.id" //
                     + " FROM hierarchy"
                     + " LEFT JOIN misc ON misc.id = hierarchy.id"
-                    + " LEFT JOIN fulltext ON fulltext.id = hierarchy.id"
+                    + " LEFT JOIN fulltext ON fulltext.id = hierarchy.id,"
+                    + " TO_TSQUERY('french', ?) AS _nxquery"
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
-                    + "   AND (NX_CONTAINS(fulltext.fulltext, ?))";
-            assertEquals(doc_note_file, new HashSet<Serializable>(
-                    q.selectParams.subList(0, 3)));
-            assertEquals(LifeCycleConstants.DELETED_STATE,
-                    q.selectParams.get(3));
-            assertEquals("foo", q.selectParams.get(4));
+                    + "   AND ((_nxquery @@ fulltext.fulltext))";
         } else {
             return; // TODO other databases
         }
         assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals("foo", q.selectParams.get(0));
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(1, 4)));
+        assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(4));
     }
 
     public void testFulltextScore() throws Exception {
@@ -521,7 +516,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
         if (database instanceof DatabaseH2) {
-            expected = "SELECT HIERARCHY.ID, 1 AS _nxscore, HIERARCHY.PRIMARYTYPE"
+            expected = "SELECT HIERARCHY.ID, 1 AS _nxscore"
                     + " FROM HIERARCHY"
                     + " LEFT JOIN MISC ON MISC.ID = HIERARCHY.ID"
                     + " LEFT JOIN NXFT_SEARCH('PUBLIC_FULLTEXT_default', ?) _nxfttbl"
@@ -530,31 +525,25 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                     + "   AND MISC.LIFECYCLESTATE <> ?"
                     + "   AND (_nxfttbl.KEY IS NOT NULL)"
                     + " ORDER BY _nxscore DESC";
-            assertEquals("foo", q.selectParams.get(0));
-            assertEquals(doc_note_file, new HashSet<Serializable>(
-                    q.selectParams.subList(1, 4)));
-            assertEquals(LifeCycleConstants.DELETED_STATE,
-                    q.selectParams.get(4));
         } else if (database instanceof DatabasePostgreSQL) {
             expected = "SELECT hierarchy.id,"
-                    + "   TS_RANK_CD(fulltext.fulltext, _nxquery, 32) AS _nxscore,"
-                    + "   hierarchy.primarytype" + " FROM hierarchy"
+                    + "   TS_RANK_CD(fulltext.fulltext, _nxquery, 32) AS _nxscore"
+                    + "   FROM hierarchy"
                     + "   LEFT JOIN misc ON misc.id = hierarchy.id"
-                    + "   , TO_TSQUERY('french', ?) AS _nxquery"
+                    + "   LEFT JOIN fulltext ON fulltext.id = hierarchy.id,"
+                    + "   TO_TSQUERY('french', ?) AS _nxquery"
                     + " WHERE hierarchy.primarytype IN (?, ?, ?)"
                     + "   AND misc.lifecyclestate <> ?"
                     + "   AND ((_nxquery @@ fulltext.fulltext))"
                     + " ORDER BY _nxscore DESC";
-            assertEquals(expected.replaceAll(" +", " "), sql);
-            assertEquals(doc_note_file, new HashSet<Serializable>(
-                    q.selectParams.subList(0, 3)));
-            assertEquals(LifeCycleConstants.DELETED_STATE,
-                    q.selectParams.get(3));
-            assertEquals("foo", q.selectParams.get(4));
         } else {
             return; // TODO other databases
         }
         assertEquals(expected.replaceAll(" +", " "), sql);
+        assertEquals("foo", q.selectParams.get(0));
+        assertEquals(doc_note_file, new HashSet<Serializable>(
+                q.selectParams.subList(1, 4)));
+        assertEquals(LifeCycleConstants.DELETED_STATE, q.selectParams.get(4));
     }
 
 }
