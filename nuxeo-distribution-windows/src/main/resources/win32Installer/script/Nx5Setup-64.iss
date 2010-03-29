@@ -110,7 +110,7 @@ begin
 
         end
       RegWriteMultiStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Services\Tcpip\Parameters',
-       'ReservedPorts', '1098-1099' + #0 + + '8080-8080' + #0 + '3233-3233'+ #0 + '62474-62474'+ #0 + '3873-3873'+ #0 + '4444-4445'+ #0 + '8093-8093');
+       'ReservedPorts', '1098-1099' + #0 + + '8080-8080' + #0 + '62474-62474'+ #0 + '3873-3873'+ #0 + '4444-4445'+ #0 + '8093-8093');
       end
     else
       begin
