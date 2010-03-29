@@ -35,7 +35,7 @@
   <![CDATA[
   <style type='text/css'>
   #txtareapostit {
-    width: 90%;
+    width: 93%;
     height:220px;
     color: black;
     border: 0px solid white;
@@ -87,7 +87,7 @@
    margin:auto;
   }
   </style>
-  
+   <script type="text/javascript" language="javascript" src="jquery.elastic.js"></script>
   <script type="text/javascript">
   
     var prefs  = new _IG_Prefs(__MODULE_ID__);
@@ -97,6 +97,7 @@
     gadgets.util.registerOnLoadHandler(function () {
       var idGadget = gadgets.nuxeo.getGadgetId();
       jQuery("#formtxt").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+      
       var url = gadgets.nuxeo.getHtmlActionUrl(idGadget);
       jQuery.ajax({
         type : "GET",
@@ -107,66 +108,48 @@
       });
       jQuery("#txtareapostit").keyup(function(){
         clearTimeout(timeoutID);
+        
         timeoutID = setTimeout(function () {
      	  jQuery('#formtxt').ajaxSubmit();
    		}, 500);
-        setRows(jQuery("#txtareapostit").val()+"\n");
-        gadgets.window.adjustHeight();
+   		setTimeout(function(){
+     	   gadgets.window.adjustHeight();
+     	 },100);
         return true;
-        });
-      }
-    )
-
-   var NB_COLS_FOR_TEXTAREA = 37;
-   var NB_COLS_FOR_DIV = NB_COLS_FOR_TEXTAREA - 6;
-   
+      });
+    }
+  );
+  
    function setText(text){
      var style = ["color:",prefs.getString("COLOR_txt"),";font-size:",
-     prefs.getString("textSize"),";font-family:", prefs.getString("textFont")];
+     prefs.getString("textSize"),";font-family:", prefs.getString("textFont")+";"];
      
-	 jQuery("#txtareapostit").attr("cols",NB_COLS_FOR_TEXTAREA);
-	 
+    
+     var fontSize = parseInt(jQuery("#txtareapostit").css('font-size'),'10');
+     
+     if(parseInt(jQuery("#txtareapostit").css('line-height'),10) < parseInt(prefs.getString("textSize").split("px")[0],10)){
+     	style.push(["line-height:",prefs.getString("textSize"),";"].join(""))
+     }
+     jQuery("#txtareapostit").attr("style",style.join("")).show();
+      
      if(perm == false) {
-       var pos = jQuery("#txtareapostit").position();
-       style.push([";left:",pos.left,";top:",pos.top].join(""));
-       jQuery("#cacheText").width(jQuery("#txtareapostit").width())
-       .height(jQuery("#txtareapostit").height())
-       .attr("style",style.join(""))
-       .show();          
-       jQuery("#formtxt").remove();
-       jQuery("#txtareapostit").attr("disabled","disabled");
-       var c = 0;
-
-       var l= text.length;
-       for(var d = 0 ; d < l; d++) {
-         if(text.charAt(d) == "\n"){
-           text = text.replace("\n","<br/>");
-           l+=4;c=0;
-         } else if(++c == NB_COLS_FOR_DIV) {
-           c=0;d+=4;l+=5;
-           text = text.substr(0, d).concat("<br/>").concat(text.substr(d,text.length));	
-         }
-       }
-       jQuery("#cacheText").html(gadgets.util.unescapeString(text));
+     	 jQuery("#formtxt").remove();
+     	 var textareaContent = gadgets.util.unescapeString(text).replace(/&/g,'&amp;').replace(/  /g, '&nbsp;')
+     	 .replace(/<|>/g, '&gt;').replace(/\n/g, '<br />');
+         jQuery("#cacheText").width(jQuery("#txtareapostit").width())
+         .height(jQuery("#txtareapostit").height())
+         .attr("style",style.join("")).html(textareaContent + "&nbsp;")
+         .css("word-wrap","break-word")
+         .show();
+          gadgets.window.adjustHeight();
      } else {
-       jQuery("#txtareapostit").val(gadgets.util.unescapeString(text)).attr("style",style.join(""));
-       setRows(text);
+     	 jQuery("#txtareapostit").val(gadgets.util.unescapeString(text)).attr("style",style.join(""));
+     	 setTimeout(function(){
+     	   jQuery('#txtareapostit').elastic();
+     	   gadgets.window.adjustHeight();
+     	 },100);
      }
-     gadgets.window.adjustHeight();
    }
-
-   function setRows(contenu) {
-     contenu = contenu.replace(/\r\n?/,"\n");
-	 var e=2;var c=0;
-     for(var d = 0 ; d<contenu.length; d++) {
-       if(contenu.charAt(d) == "\n" || ++c == NB_COLS_FOR_TEXTAREA) {
-         ++e;c=0;
-       }
-     }
-    jQuery("#txtareapostit").attr("rows",e).height((e > 14) ? e*14 : 220);
-    return true;
-  }
-
   </script>
    <div id="frmpostit">
 
