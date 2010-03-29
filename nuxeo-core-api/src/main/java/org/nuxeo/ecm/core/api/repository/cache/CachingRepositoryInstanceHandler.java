@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -96,14 +97,9 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     // --------------------------- Document Provider API --------------------------------
 
-    protected DocumentModel putIfAbsent(String id, DocumentModel doc) {
-        if (!cache.containsKey(id)) {
-            // cleanup oldest entries before referencing new  version of document
-            childrenCache.remove(id);
-            ((DualHashBidiMap) path2Ids).removeValue(id);
-            return cache.put(id, doc);
-        }
-        return cache.get(id);
+    
+    protected void rehydrate(String id) throws ClientException {
+        cacheDocument(session.getDocument(new IdRef(id))); 
     }
     
     /**
@@ -115,14 +111,15 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     public synchronized DocumentModel cacheDocument(DocumentModel doc) {
         String id = doc.getId();
-        if (id != null) {
-            DocumentModel cachedDoc = putIfAbsent(id, doc);
-            if (cachedDoc == null) { // here we may end up with id and paths being unsync - but it is not a pb.
-                path2Ids.put(doc.getPathAsString(), id);
-                return doc;
-            }
-            return cachedDoc;
-        } // else doc is not yet stored in repository - avoid caching it
+        if (id == null) { // doc is not yet in repository, avoid caching it
+            return doc;
+        }
+        if (cache.containsKey(id)) { // doc is already in cache, return cached instance
+            return cache.get(id);
+        }
+        cache.put(id, doc); 
+        path2Ids.put(doc.getPathAsString(), id);
+        childrenCache.remove(id);
         return doc;
     }
 
@@ -133,7 +130,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
             if (doc != null) {
                 path2Ids.remove(doc.getPathAsString());
             }
-            return doc;
+            return doc; 
         }
         // else assume a path
         String path = ((PathRef) ref).value;
@@ -293,19 +290,33 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
 
-    /** Children Cache */
+    /** Children Cache 
+     * @throws ClientException */
 
     public String getDocumentId(DocumentRef docRef) {
+        String id = null;
         switch (docRef.type()) {
         case DocumentRef.ID:
-            return (String) docRef.reference();
+            id = (String) docRef.reference();
+            break;
         case DocumentRef.PATH:
             String path = (String)docRef.reference();
             synchronized(CachingRepositoryInstanceHandler.this) {
-                return path2Ids.get(path);
+                id = path2Ids.get(path);
             }
-        default:
-            return null;
+            break;
+        }
+        if (id != null && !cache.containsKey(id)) { // re-hydrate doc in cache
+            rehydrateCache(id);
+        }
+        return id;
+    }
+
+    protected void rehydrateCache(String id) {
+        try {
+            cacheDocument(session.getDocument(new IdRef(id)));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException("Cannot rehydrate cache for  " + id, e);
         }
     }
 
