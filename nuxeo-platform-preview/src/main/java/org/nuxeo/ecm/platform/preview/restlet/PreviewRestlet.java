@@ -140,7 +140,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            if (subPath == null || subPath.isEmpty()) {
+            if (subPath == null || "".equals(subPath)) {
                 handlePreview(res, previewBlobs.get(0), "text/html");
                 return;
             } else {
