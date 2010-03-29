@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.opensocial.mydocs.rest;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
@@ -49,10 +51,13 @@ import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "JSONDocument", superType = "Document")
 public class JSONDocument extends DocumentObject {
-    private static final int PAGE_SIZE = 10;
 
+    private static final int PAGE_SIZE = 10;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
+    private final static CompoundFilter FILTER = new CompoundFilter(
+            new FacetFilter(FacetNames.HIDDEN_IN_NAVIGATION, false),
+            new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false));
 
     private static final Log log = LogFactory.getLog(JSONDocument.class);
 
@@ -84,7 +89,8 @@ public class JSONDocument extends DocumentObject {
         try {
             provider = getResProviderForDocChildren(getDocument().getRef(),
                     session);
-            summary.put("pages", provider.getNumberOfPages());
+            summary.put("pages", fixedSQLExceptionWhenUpload(session,
+                    provider.getNumberOfPages()));
             summary.put("pageNumber", index);
             summary.put("id", getDocument().getRef()
                     .toString());
@@ -113,11 +119,18 @@ public class JSONDocument extends DocumentObject {
     @POST
     @Override
     public Response doPost() {
+        CoreSession session = ctx.getCoreSession();
+
         FileManager fm;
         try {
             fm = Framework.getService(FileManager.class);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            return Response.serverError()
+                    .build();
+        }
 
-            CoreSession session = ctx.getCoreSession();
+        try {
             FormData form = ctx.getForm();
             Blob blob = form.getFirstBlob();
             if (blob == null) {
@@ -128,15 +141,42 @@ public class JSONDocument extends DocumentObject {
             blob.persist();
             fm.createDocumentFromBlob(session, blob, doc.getPathAsString(),
                     true, blob.getFilename());
-
-        } catch (Exception e) {
+        } catch (IOException e) {
+            log.info("************** IOException ****************");
             e.printStackTrace();
-            return Response.serverError()
-                    .build();
+        } catch (Exception e) {
+            log.error("************** Exception ****************");
+            // TODO : Resolve this exception...
+            // org.nuxeo.ecm.core.storage.sql.Fragment.setPristine(Fragment.java:394)
+            // at org.nuxeo.ecm.core.storage.sql.Context.save(Context.java:523)
+            // org.nuxeo.ecm.core.storage.sql.PersistenceContext.save(PersistenceContext.java:322)
+            // org.nuxeo.ecm.core.storage.sql.SessionImpl.flush(SessionImpl.java:223)
+            // org.nuxeo.ecm.core.storage.sql.SessionImpl.save(SessionImpl.java:208)
+            // org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession.save(SQLSession.java:135)
+            // org.nuxeo.ecm.core.api.AbstractSession.save(AbstractSession.java:1692)
+            // org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter.create(DefaultFileImporter.java:99)
+            // org.nuxeo.ecm.platform.filemanager.service.FileManagerService.createDocumentFromBlob(FileManagerService.java:248)
+            // org.nuxeo.ecm.opensocial.mydocs.rest.JSONDocument.doPost(JSONDocument.java:156)
+            // Fixed in method fixedSQLExceptionWhenUpload
+            e.printStackTrace();
         }
+
         return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)
                 .build();
+    }
 
+    private int fixedSQLExceptionWhenUpload(CoreSession session, int nbPages)
+            throws ClientException {
+        if (nbPages < 1) {
+            // FIXME
+            log.warn("nbPages in PagedDocumentsProvider < 1");
+            DocumentModelList children = session.getChildren(
+                    getDocument().getRef(), null, SecurityConstants.READ,
+                    FILTER, null);
+            nbPages = (int) Math.ceil(children.size() / new Double(PAGE_SIZE));
+            log.warn("nbPages is " + nbPages);
+        }
+        return nbPages;
     }
 
     private Map<String, Object> getDocItem(DocumentModel doc) {
@@ -196,13 +236,9 @@ public class JSONDocument extends DocumentObject {
 
     private PagedDocumentsProvider getResProviderForDocChildren(
             DocumentRef docRef, CoreSession session) throws ClientException {
-        FacetFilter facetFilter = new FacetFilter(
-                FacetNames.HIDDEN_IN_NAVIGATION, false);
-        LifeCycleFilter lifeCycleFilter = new LifeCycleFilter(
-                LifeCycleConstants.DELETED_STATE, false);
-        CompoundFilter filter = new CompoundFilter(facetFilter, lifeCycleFilter);
+
         DocumentModelIterator resultDocsIt = session.getChildrenIterator(
-                docRef, null, SecurityConstants.READ, filter);
+                docRef, null, SecurityConstants.READ, FILTER);
 
         return new DocumentsPageProvider(resultDocsIt, PAGE_SIZE);
     }
