@@ -200,6 +200,8 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       this.area.oncontextmenu = new Function("return false");
     }
     this._displayed = false;
+	
+	this.submenuWidth = 200; 
 
     // custom CSS class
     var cssClass = this.def.widget.cssClass;
@@ -358,17 +360,25 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
             attributes: {src: nxthemesBasePath + icon, alt: '*'},
             parent: submenuitem
           });
-          if (!this.submenuLeft) {
-            this.submenuLeft = $(this.widget).getWidth() -2;
-          }
+		  
+          // Fit inside the view port
+	  var menuWidth = $(this.widget).getWidth();
+	  var submenuWidth = this.submenuWidth;
+	  var left = -submenuWidth;
+	  var page_w = window.innerWidth || document.body.clientWidth;
+	  if ((page_w - this.mouseX) > (menuWidth + submenuWidth)) {
+		  left = menuWidth -2;
+	  }
+
           var submenu = createNode({
             tag: 'div',
             classes: ['submenu'],
             style: {
               position: 'absolute',
-              left: this.submenuLeft + 'px',
+              left: left + 'px',
+              right: left + submenuWidth + 'px',
               display: 'none',
-              width: 'auto',
+              width: submenuWidth + 'px',
               margin: '-20px 0 0 0'
             },
             parent: submenuitem
