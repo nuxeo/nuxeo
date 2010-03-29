@@ -5,8 +5,7 @@
                   editor_deselector : "disableMCEInit",
                   mode : "textareas",
                   plugins : plugins,
-                  language : lang,
-                 }
+                  language : lang};
 
     for (key in toolbarOptions) {
         parameters[key] = toolbarOptions[key];
