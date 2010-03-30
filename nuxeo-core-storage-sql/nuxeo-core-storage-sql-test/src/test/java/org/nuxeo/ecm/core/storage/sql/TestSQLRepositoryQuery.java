@@ -23,8 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 
 /**
@@ -34,6 +37,8 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
     @Override
     public void deployRepository() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-repo-core-types-contrib-2.xml");
         DatabaseHelper.DATABASE.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
@@ -119,7 +124,8 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         res.close();
 
         // size when query returns nothing
-        res = session.queryAndFetch("SELECT * FROM File WHERE dc:title = 'zzz'", "NXQL");
+        res = session.queryAndFetch(
+                "SELECT * FROM File WHERE dc:title = 'zzz'", "NXQL");
         it = res.iterator();
         assertFalse(it.hasNext());
         assertEquals(0, res.size());
@@ -153,6 +159,106 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'Test%'");
         assertEquals(5, dml.size());
+    }
+
+    public void testSelectColumns() throws Exception {
+        String query;
+        IterableQueryResult res;
+        Iterator<Map<String, Serializable>> it;
+        Map<String, Serializable> map;
+
+        createDocs();
+
+        // check proper tables are joined even if not in FROM
+        query = "SELECT ecm:uuid, dc:title FROM File";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        map = res.iterator().next();
+        assertTrue(map.containsKey("dc:title"));
+        assertTrue(map.containsKey(NXQL.ECM_UUID));
+        res.close();
+
+        // check with no proxies (no subselect)
+        query = "SELECT ecm:uuid, dc:title FROM File where ecm:isProxy = 0";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        res.close();
+
+        // check content
+        query = "SELECT ecm:uuid, dc:title FROM File ORDER BY dc:title";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        it = res.iterator();
+        map = it.next();
+        assertEquals("testfile1_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile2_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile4_Title", map.get("dc:title"));
+        res.close();
+    }
+
+    public void testSelectColumnsSameName() throws Exception {
+        String query;
+        IterableQueryResult res;
+        Map<String, Serializable> map;
+
+        // two fields with same key
+        DocumentModel file = new DocumentModelImpl("/", "testfile", "File2");
+        file.setPropertyValue("dc:title", "title1");
+        file.setPropertyValue("tst2:title", "title2");
+        file = session.createDocument(file);
+        session.save();
+
+        query = "SELECT tst2:title, dc:title FROM File WHERE dc:title = 'title1' AND ecm:isProxy = 0";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals("title1", map.get("dc:title"));
+        assertEquals("title2", map.get("tst2:title"));
+        res.close();
+
+        // now with proxies, which needs a subselect and re-selects columns
+        query = "SELECT tst2:title, dc:title FROM File WHERE dc:title = 'title1' ORDER BY ecm:uuid";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals("title1", map.get("dc:title"));
+        assertEquals("title2", map.get("tst2:title"));
+        res.close();
+
+        // same without ORDER BY
+        query = "SELECT tst2:title, dc:title FROM File WHERE dc:title = 'title1'";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals("title1", map.get("dc:title"));
+        assertEquals("title2", map.get("tst2:title"));
+        res.close();
+    }
+
+    public void testSelectColumnsDistinct() throws Exception {
+        String query;
+        IterableQueryResult res;
+
+        createDocs();
+
+        query = "SELECT DISTINCT dc:title FROM File";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        res.close();
+
+        // some parents are identical
+        query = "SELECT DISTINCT ecm:parentId FROM File";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(2, res.size());
+        res.close();
+
+        // without column aliasing
+        query = "SELECT DISTINCT ecm:parentId FROM File WHERE ecm:isProxy = 0";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(2, res.size());
+        res.close();
     }
 
 }

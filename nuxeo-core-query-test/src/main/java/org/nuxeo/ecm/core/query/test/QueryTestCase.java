@@ -1088,7 +1088,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         /*
          * ecm:lock
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> ''");
+        // don't use a '' here for Oracle, for which '' IS NULL
+        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
         assertIdSet(dml, file1.getId());
         dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
         assertEquals(9, dml.size());

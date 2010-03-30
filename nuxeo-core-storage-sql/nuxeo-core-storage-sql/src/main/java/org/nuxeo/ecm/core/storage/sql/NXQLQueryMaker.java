@@ -55,11 +55,13 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
+import org.nuxeo.ecm.core.storage.sql.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -137,7 +139,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String TABLE_HIER_ALIAS = "_H";
 
-    protected static final String COL_ORDER_ALIAS_PREFIX = "_C";
+    protected static final String COL_ALIAS_PREFIX = "_C";
 
     protected static final String UNION_ALIAS = "_T";
 
@@ -312,6 +314,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
         Table hier = database.getTable(model.hierTableName);
 
+        List<Column> whatColumns = null;
+        List<String> whatKeys = null;
         boolean aliasColumns = docKinds.length > 1;
         Select select = null;
         String orderBy = null;
@@ -431,7 +435,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
             /*
              * Parse the WHERE clause from the original query, and deduce from
-             * it actual WHERE clauses and potential JOINs.
+             * it actual WHERE clauses and potential JOINs. Also checks what
+             * columns we SELECT.
              */
 
             WhereBuilder whereBuilder;
@@ -441,6 +446,14 @@ public class NXQLQueryMaker implements QueryMaker {
                         docKind == DocKind.PROXY, aliasColumns);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
+            }
+            sqlQuery.select.accept(whereBuilder);
+            if (whereBuilder.whatColumns.isEmpty()) {
+                whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
+                whatKeys = Collections.singletonList(model.MAIN_KEY);
+            } else {
+                whatColumns = whereBuilder.whatColumns;
+                whatKeys = whereBuilder.whatKeys;
             }
             if (info.wherePredicate != null) {
                 info.wherePredicate.accept(whereBuilder);
@@ -482,20 +495,33 @@ public class NXQLQueryMaker implements QueryMaker {
             }
 
             /*
-             * Columns on which to do ordering.
+             * Columns on which to select and do ordering.
              */
 
-            String selectWhat = hierId;
+            int nalias = 0;
+            List<String> whatNames = new LinkedList<String>();
+            for (Column col : whatColumns) {
+                String name = col.getFullQuotedName();
+                if (aliasColumns) {
+                    name += " AS " + dialect.openQuote() + COL_ALIAS_PREFIX
+                            + ++nalias + dialect.closeQuote();
+                }
+                whatNames.add(name);
+            }
             if (aliasColumns) {
                 // UNION, so we need all orderable columns, aliased
-                int n = 0;
+                whereBuilder.nalias = nalias; // used below in visitor accept()
                 for (String key : info.orderKeys) {
                     Column column = whereBuilder.findColumn(key, false, true);
                     String qname = column.getFullQuotedName();
-                    selectWhat += ", " + qname + " AS " + dialect.openQuote()
-                            + COL_ORDER_ALIAS_PREFIX + ++n
-                            + dialect.closeQuote();
+                    whatNames.add(qname + " AS " + dialect.openQuote()
+                            + COL_ALIAS_PREFIX + ++nalias
+                            + dialect.closeQuote());
                 }
+            }
+            String selectWhat = StringUtils.join(whatNames, ", ");
+            if (!aliasColumns && sqlQuery.getSelectClause().isDistinct()) {
+                selectWhat = "DISTINCT " + selectWhat;
             }
 
             /*
@@ -533,9 +559,20 @@ public class NXQLQueryMaker implements QueryMaker {
          * Create the whole select.
          */
 
-        if (statements.size() > 1) {
+        if (statements.size() > 1) { // equivalent to aliasColumns
             select = new Select(null);
-            select.setWhat(hier.getColumn(model.MAIN_KEY).getQuotedName());
+            // use aliases for column names
+            List<String> whatNames = new ArrayList<String>(whatColumns.size());
+            for (int nalias = 1; nalias <= whatColumns.size(); nalias++) {
+                String name = dialect.openQuote() + COL_ALIAS_PREFIX + nalias
+                        + dialect.closeQuote();
+                whatNames.add(name);
+            }
+            String selectWhat = StringUtils.join(whatNames, ", ");
+            if (sqlQuery.getSelectClause().isDistinct()) {
+                selectWhat = "DISTINCT " + selectWhat;
+            }
+            select.setWhat(selectWhat);
             // note that Derby has bizarre restrictions on parentheses placement
             // around UNION, see http://issues.apache.org/jira/browse/DERBY-2374
             String from = '(' + StringUtils.join(statements, " UNION ALL ") + ')';
@@ -547,10 +584,10 @@ public class NXQLQueryMaker implements QueryMaker {
         }
         select.setOrderBy(orderBy);
 
-        List<Column> whatColumns = Collections.singletonList(hier.getColumn(model.MAIN_KEY));
         Query q = new Query();
+        ColumnMapMaker mapMaker = new ColumnMapMaker(whatColumns, whatKeys);
         q.selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
-                null, null);
+                mapMaker, null, null);
         q.selectParams = selectParams;
         return q;
     }
@@ -607,6 +644,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public boolean needsVersionsTable;
 
+        protected boolean inSelect;
+
         protected boolean inOrderBy;
 
         protected final List<Operand> toplevelOperands = new LinkedList<Operand>();
@@ -633,6 +672,13 @@ public class NXQLQueryMaker implements QueryMaker {
         // TODO protected Boolean versionClause;
 
         protected MultiExpression wherePredicate;
+
+        @Override
+        public void visitSelectClause(SelectClause node) {
+            inSelect = true;
+            super.visitSelectClause(node);
+            inSelect = false;
+        }
 
         @Override
         public void visitFromClause(FromClause node) {
@@ -798,20 +844,23 @@ public class NXQLQueryMaker implements QueryMaker {
         public void visitReference(Reference node) {
             String name = node.name;
             if (NXQL.ECM_PATH.equals(name)) {
-                if (inOrderBy) {
-                    throw new QueryMakerException("Cannot order by: " + name);
+                if (inSelect || inOrderBy) {
+                    throw new QueryMakerException("Cannot select / order by: "
+                            + name);
                 }
                 return;
             }
             if (NXQL.ECM_ISPROXY.equals(name)) {
-                if (inOrderBy) {
-                    throw new QueryMakerException("Cannot order by: " + name);
+                if (inSelect || inOrderBy) {
+                    throw new QueryMakerException("Cannot select / order by: "
+                            + name);
                 }
                 return;
             }
             if (NXQL.ECM_ISVERSION.equals(name)) {
-                if (inOrderBy) {
-                    throw new QueryMakerException("Cannot order by: " + name);
+                if (inSelect || inOrderBy) {
+                    throw new QueryMakerException("Cannot select / order by: "
+                            + name);
                 }
                 needsVersionsTable = true;
                 return;
@@ -951,6 +1000,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public static final String PATH_SEP = "/";
 
+        public final List<Column> whatColumns = new LinkedList<Column>();
+
+        public final List<String> whatKeys = new LinkedList<String>();
+
         public final StringBuilder buf = new StringBuilder();
 
         public final List<String> leftJoins = new LinkedList<String>();
@@ -979,17 +1032,19 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private final String dataHierId;
 
-        private boolean isProxies;
+        private final boolean isProxies;
 
-        private boolean aliasColumns;
+        private final boolean aliasColumns;
 
         // internal fields
 
         private boolean allowArray;
 
+        private boolean inSelect;
+
         private boolean inOrderBy;
 
-        private int orderByCount;
+        private int nalias = 0;
 
         private int ftJoinNumber;
 
@@ -1082,6 +1137,13 @@ public class NXQLQueryMaker implements QueryMaker {
         public void visitQuery(SQLQuery node) {
             super.visitQuery(node);
             // intentionally does not set limit or offset in the query
+        }
+
+        @Override
+        public void visitSelectClause(SelectClause node) {
+            inSelect = true;
+            super.visitSelectClause(node);
+            inSelect = false;
         }
 
         @Override
@@ -1418,6 +1480,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected void visitReference(String name) {
             Column column = findColumn(name, allowArray, inOrderBy);
+            if (inSelect) {
+                whatColumns.add(column);
+                whatKeys.add(name);
+                return;
+            }
             String qname = column.getFullQuotedName();
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getJdbcType() == Types.CLOB) {
@@ -1477,7 +1544,6 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitOrderByList(OrderByList node) {
             inOrderBy = true;
-            orderByCount = 0;
             for (Iterator<OrderByExpr> it = node.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
@@ -1491,8 +1557,8 @@ public class NXQLQueryMaker implements QueryMaker {
         public void visitOrderByExpr(OrderByExpr node) {
             if (aliasColumns) {
                 buf.append(dialect.openQuote());
-                buf.append(COL_ORDER_ALIAS_PREFIX);
-                buf.append(++orderByCount);
+                buf.append(COL_ALIAS_PREFIX);
+                buf.append(++nalias);
                 buf.append(dialect.closeQuote());
             } else {
                 node.reference.accept(this);

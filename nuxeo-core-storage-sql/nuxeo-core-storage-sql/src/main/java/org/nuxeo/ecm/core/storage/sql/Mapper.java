@@ -2169,8 +2169,10 @@ public class Mapper {
 
         @Override
         protected void finalize() {
+            if (rs != null) {
+                log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
+            }
             close();
-            log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
         }
 
         public long size() {
