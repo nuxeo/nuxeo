@@ -236,8 +236,7 @@ public class SQLSession implements Session {
             if (name == null) {
                 name = source.getName();
             }
-            Node result = session.move(
-                    ((SQLDocument) source).getNode(),
+            Node result = session.move(((SQLDocument) source).getNode(),
                     ((SQLDocument) parent).getNode(), name);
             return newDocument(result);
         } catch (StorageException e) {
@@ -350,10 +349,8 @@ public class SQLSession implements Session {
         Collection<Node> proxyNodes;
         try {
 
-            proxyNodes = session.getProxies(
-                    ((SQLDocument) document).getNode(),
-                    parent == null ? null
-                            : ((SQLDocument) parent).getNode());
+            proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
+                    parent == null ? null : ((SQLDocument) parent).getNode());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

@@ -355,8 +355,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
-        return new SQLDocumentVersionIterator(
-                session.getVersions(getNode()));
+        return new SQLDocumentVersionIterator(session.getVersions(getNode()));
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
@@ -463,8 +462,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                         + " has no child: " + dest);
             }
         }
-        session.orderBefore(getNode(), srcDoc.getNode(),
-                destDoc == null ? null : destDoc.getNode());
+        session.orderBefore(getNode(), srcDoc.getNode(), destDoc == null ? null
+                : destDoc.getNode());
     }
 
     public void removeChild(String name) throws DocumentException {
