@@ -122,20 +122,21 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         if (ref.type() == DocumentRef.ID) {
             String id = ((IdRef) ref).value;
             DocumentModel doc = cache.remove(id);
-            if (doc != null) {
-                path2Ids.remove(doc.getPathAsString());
-            }
+            /* Doc maybe gone already, but remove id anyway for safety */
+            childrenCache.remove(id);
+            ((DualHashBidiMap)path2Ids).removeValue(id);
             return doc; 
         }
         // else assume a path
         String path = ((PathRef) ref).value;
         String id = path2Ids.remove(path);
         if (id != null) {
+            childrenCache.remove(id);
             return cache.remove(id);
         }
         return null;
     }
-
+    
     public synchronized DocumentModel getCachedDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             return cache.get(((IdRef) ref).value);
@@ -151,12 +152,9 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public synchronized void flushDocumentCache() {
-        // Race condition: try to clean until we succeed - this may not work from first time
-        // because we are not in a synchronized block
-        while (path2Ids.isEmpty() && cache.isEmpty()) {
-            path2Ids.clear();
-            cache.clear();
-        }
+        path2Ids.clear();
+        childrenCache.clear();
+        cache.clear();
     }
 
     public DocumentModel fetchDocument(DocumentRef ref) throws ClientException {
@@ -167,6 +165,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         }
         return cacheDocument(session.getDocument(ref));
     }
+    
 
     public synchronized DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
         DocumentModel doc = getCachedDocument(parent);
