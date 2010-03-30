@@ -47,7 +47,7 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     }
 
     @Override
-    protected NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() {
         return getTargetComponentInfo();
     }
 

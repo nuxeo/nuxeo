@@ -46,7 +46,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     }
 
     @Override
-    protected NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() {
         return getTargetExtensionInfo();
     }
 

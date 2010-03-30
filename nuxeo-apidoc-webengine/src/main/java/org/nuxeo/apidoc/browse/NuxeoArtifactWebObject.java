@@ -1,5 +1,4 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -49,11 +48,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     public static final String DIST_ID = "distId";
 
-    /**static {
-        WebEngine we = Framework.getLocalService(WebEngine.class);
-        we.getRegistry().addMessageBodyReader(new DocumentationItemReader());
-    }**/
-
     protected String nxArtifactId;
 
     @Override
@@ -70,7 +64,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return super.getView(viewId).arg(DIST_ID, getDistributionId()).arg("enableDocumentationView", true);
     }
 
-    protected abstract NuxeoArtifact getNxArtifact();
+    public abstract NuxeoArtifact getNxArtifact();
 
     protected abstract Object doGet() throws Exception;
 
@@ -99,7 +93,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         String path = getPath()+"/doc";
 //        //TODO encode path segments if needed
 //        try {
-//            StringBuilder buf = new StringBuilder(); 
+//            StringBuilder buf = new StringBuilder();
 //            org.nuxeo.common.utils.Path p = new org.nuxeo.common.utils.Path(path);
 //            for (int i=0,len=p.segmentCount(); i<len; i++) {
 //                buf.append("/").append(URLEncoder.encode(p.segment(i), "ISO-8859-1"));
@@ -110,8 +104,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 //        }
         return path;
     }
-    
-    @Deprecated 
+
+    @Deprecated
     protected String computeUrl(String suffix) throws Exception {
         String targetUrl = ctx.getUrlPath();
         targetUrl = URLDecoder.decode(targetUrl, "ISO-8859-1");
@@ -140,7 +134,18 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("docView", true);
+        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","docView");
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "aggView")
+    public Object doViewAggregated() throws Exception {
+        NuxeoArtifact nxItem = getNxArtifact();
+        AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
+
+
+        return getView("../aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView");
     }
 
     @GET
@@ -150,7 +155,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("docView", true);
+        return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
 
     @GET
@@ -161,7 +166,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
         DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("docView", true);
+        return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
 
 

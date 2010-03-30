@@ -8,12 +8,7 @@ import java.util.Map;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 public class AssociatedDocumensImpl implements AssociatedDocuments {
@@ -28,8 +23,6 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
         this.item = item;
         this.session = session;
     }
-
-
 
     public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception {
 
@@ -70,6 +63,68 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
     public List<String> getCategoryKeys() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategoryKeys();
+    }
+
+
+
+    public DocumentationItem getDescription(CoreSession session) throws Exception {
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
+        for (DocumentationItem docItem : docItems) {
+            String cat = docItem.getType();
+            if ("description".equals(cat)) {
+                return docItem;
+            }
+        }
+
+        return new DocumentationItem() {
+
+            public boolean isApproved() {
+                return false;
+            }
+
+            public String getUUID() {
+                return null;
+            }
+
+            public String getTypeLabel() {
+                return null;
+            }
+
+            public String getType() {
+                return null;
+            }
+
+            public String getTitle() {
+                return item.getId();
+            }
+
+            public String getTargetType() {
+                return item.getArtifactType();
+            }
+
+            public String getTarget() {
+                return item.getId();
+            }
+
+            public String getRenderingType() {
+                return "html";
+            }
+
+            public String getId() {
+                return null;
+            }
+
+            public String getContent() {
+                return "";
+            }
+
+            public List<String> getApplicableVersion() {
+                return null;
+            }
+        };
+
+
     }
 
 }

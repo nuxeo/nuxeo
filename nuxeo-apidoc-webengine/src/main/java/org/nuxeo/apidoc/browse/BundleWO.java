@@ -19,7 +19,9 @@
 
 package org.nuxeo.apidoc.browse;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -50,9 +52,17 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     @Override
-    protected NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() {
         return getTargetBundleInfo();
     }
 
+    public List<ComponentWO> getComponents() {
+        List<ComponentWO> result = new ArrayList<ComponentWO>();
+        BundleInfo bundle = getTargetBundleInfo();
+        for (ComponentInfo ci : bundle.getComponents()) {
+            result.add((ComponentWO)ctx.newObject("component", ci.getId()));
+        }
+        return result;
+    }
 
 }

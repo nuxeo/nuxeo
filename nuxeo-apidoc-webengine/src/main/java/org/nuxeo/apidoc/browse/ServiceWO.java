@@ -46,7 +46,7 @@ public class ServiceWO  extends NuxeoArtifactWebObject {
     }
 
     @Override
-    protected NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() {
         return getServiceInfo();
     }
 

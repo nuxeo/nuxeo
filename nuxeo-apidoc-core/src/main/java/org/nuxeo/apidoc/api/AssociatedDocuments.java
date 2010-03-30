@@ -36,4 +36,6 @@ public interface AssociatedDocuments {
 
     Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception;
 
+    DocumentationItem getDescription(CoreSession session) throws Exception;
+
 }

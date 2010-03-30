@@ -19,11 +19,14 @@
 
 package org.nuxeo.apidoc.browse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
@@ -53,8 +56,29 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     }
 
     @Override
-    protected NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() {
         return getTargetBundleGroup();
     }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "aggView")
+    public Object doViewAggregated() throws Exception {
+        NuxeoArtifact nxItem = getNxArtifact();
+        AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
+        BundleGroup group = getTargetBundleGroup();
+        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView").arg("group",group);
+    }
+
+    public List<BundleWO> getBundles() {
+        List<BundleWO> result = new ArrayList<BundleWO>();
+
+        BundleGroup group = getTargetBundleGroup();
+        for (String bid : group.getBundleIds()) {
+            result.add((BundleWO)ctx.newObject("bundle", bid));
+        }
+        return result;
+    }
+
 
 }

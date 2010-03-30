@@ -7,7 +7,6 @@
 <#if docItem.renderingType=='wiki'>
     <@wiki>${docItem.content}</@wiki>
 </#if>
-
 </td>
   <td>
     <table>

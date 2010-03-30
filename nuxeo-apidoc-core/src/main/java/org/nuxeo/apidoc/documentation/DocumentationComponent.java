@@ -15,8 +15,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -27,10 +34,63 @@ public class DocumentationComponent extends DefaultComponent implements
 
     public static final String DIRECTORY_NAME = "documentationTypes";
 
+    public static final String Root_PATH = "/";
+    public static final String Root_NAME = "nuxeo-api-doc";
+
+    public static final String Read_Grp = "Everyone";
+    public static final String Write_Grp = "members";
+
+    class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
+
+        protected DocumentRef rootRef;
+
+        public DocumentRef getRootRef() {
+            return rootRef;
+        }
+
+        public UnrestrictedRootCreator(CoreSession session) {
+            super(session);
+        }
+
+        @Override
+        public void run() throws ClientException {
+
+            DocumentModel root = session.createDocumentModel(Root_PATH,Root_NAME,"Folder");
+            root.setProperty("dublincore", "title", Root_NAME);
+            root = session.createDocument(root);
+
+            ACL acl = new ACLImpl();
+            acl.add(new ACE(Write_Grp,"Write",true));
+            acl.add(new ACE(Read_Grp,"Read",true));
+            ACP acp = root.getACP();
+            acp.addACL(acl);
+            session.setACP(root.getRef(), acp, true);
+
+            rootRef = root.getRef();
+            // flush caches
+            session.save();
+        }
+
+    }
+
     protected DocumentModel getDocumentationRoot(CoreSession session)
             throws ClientException {
-        return session.getRootDocument();
+
+        DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
+
+        if (session.exists(rootRef)) {
+            return session.getDocument(rootRef);
+        }
+
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session);
+
+        creator.runUnrestricted();
+
+        // flush caches
+        session.save();
+        return session.getDocument(creator.getRootRef());
     }
+
 
     public List<DocumentationItem> findDocumentItems(CoreSession session,
             NuxeoArtifact nxItem) throws ClientException {

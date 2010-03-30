@@ -52,20 +52,30 @@
      <#if enableDocumentationView>
             <table width="100% class="tabs" id="tabbox">
             <tr>
-            <td width="50%">
+
+            <td width="33%">
             <div class="tabs
-            <#if !docView>
+            <#if "docView"!=selectedTab && "aggView"!=selectedTab>
         tabselected
             </#if>
             ">
              <A href="${This.path}">Introspection view</A>
             </div> </td>
-            <td width="50%" >
+
+            <td width="33%" >
             <div class="tabs
-            <#if docView>
+            <#if "docView"==selectedTab>
             tabselected
             </#if>
             "> <A href="${This.path}/doc">Documentation view</A></div></td>
+
+            <td width="33%" >
+            <div class="tabs
+            <#if "aggView"==selectedTab>
+            tabselected
+            </#if>
+            "> <A href="${This.path}/aggView">Aggregated view</A></div></td>
+
             </tr>
             </table>
        </#if>
