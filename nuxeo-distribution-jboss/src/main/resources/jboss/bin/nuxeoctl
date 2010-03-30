@@ -6,6 +6,7 @@
 #
 #####
 
+
 # Helper functions
 
 warn() {
@@ -68,7 +69,7 @@ if [ "$cygwin" = "true" ]; then
 	[ -n "$JBOSS_HOME" ] && JBOSS_HOME=`cygpath --unix "$JBOSS_HOME"`
 	[ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
 	[ -n "$JETTY_HOME" ] && JETTY_HOME=`cygpath --unix "$JETTY_HOME"`
-	[ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$JBOSS_HOME"`
+	[ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$NUXEO_HOME"`
 fi
 
 
@@ -76,10 +77,9 @@ fi
 
 if [ "x$JAVA" = "x" ]; then
     if [ "x$JAVA_HOME" != "x" ]; then
-        JAVA="$JAVA_HOME/bin/java"
-    else
-        JAVA="java"
+        PATH="$JAVA_HOME/bin:$PATH"
     fi
+    JAVA="java"
 fi
 
 
@@ -95,15 +95,29 @@ if [ "x$NUXEO_HOME" = "x" ]; then
 fi
 
 
+# Setup LOG_DIR
+
+if [ "x$LOG_DIR" = "x" ]; then
+	LOG_DIR=$NUXEO_HOME
+fi
+LOG="$LOG_DIR/nuxeo.log"
+
+# Setup PID_DIR
+
+if [ "x$PID_DIR" = "x" ]; then
+	PID_DIR=$LOG_DIR
+fi
+PID="$PID_DIR/nuxeo.pid"
+
 # Where possible, increase the maximum number of file descriptors
 
 if [ "$cygwin" = "false" ]; then
 	MAX_FD_LIMIT=`ulimit -H -n`
 	if [ $? -eq 0 ]; then
-		ulimit -n $MAX_FD_LIMIT
-		if [ $? -ne 0 ]; then
-			warn "Could not set maximum file descriptior limit: $MAX_FD_LIMIT"
+		if [ "$darwin" = "true" ] && [ "MAX_FD_LIMIT" = "unlimited" ]; then
+			MAX_FD_LIMIT=`sysctl kern.maxfilesperproc`
 		fi
+		ulimit -n $MAX_FD_LIMIT
 	else
 		warn "Could not get system maximum file descriptor limit: $MAX_FD_LIMIT"
 	fi
@@ -190,7 +204,7 @@ if [ "$jboss" = "true" ]; then
 		NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
 		NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
 	fi
-	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main"
+	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Djboss.server.log.dir=$LOG_DIR -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main"
 
 #
 # TOMCAT
@@ -241,7 +255,101 @@ else
 	die "Oops, something went very wrong, I'm not supposed to be here !"
 fi
 
-echo "Using command: $CMD_START"
-echo
-$CMD_START
 
+checkalive() {
+	if [ ! -r $PID ]; then
+		return 1
+	fi
+	MYPID=`cat $PID`
+	JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+	if [ "x$JPS" = "x" ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+createdirs() {
+	if [ ! -d $LOG_DIR ]; then
+		mkdir -p $LOG_DIR
+	fi
+	if [ ! -d $PID_DIR ]; then
+		mkdir -p $PID_DIR
+	fi
+}
+
+case "$1" in
+	status)
+		if checkalive; then
+			echo "Nuxeo is running with pid `cat $PID`"
+		else
+			echo "Nuxeo is not running."
+		fi
+		;;
+	start)
+		if checkalive; then
+			die "Nuxeo is already running with pid `cat $PID`"
+		fi
+		createdirs
+		$CMD_START > $LOG 2>&1 &
+		NUXEO_PID=$!
+		echo $NUXEO_PID > $PID
+		;;
+	slowstart)
+		if checkalive; then
+			die "Nuxeo is already running with pid `cat $PID`"
+		fi
+		createdirs
+		$CMD_START > $LOG 2>&1 &
+		NUXEO_PID=$!
+		echo $NUXEO_PID > $PID
+
+		# Trap common signals and relay them to the jboss process
+		trap "kill -HUP  `cat $PID`" HUP
+		trap "kill -TERM `cat $PID`" INT
+		trap "kill -QUIT `cat $PID`" QUIT
+		trap "kill -PIPE `cat $PID`" PIPE
+		trap "kill -TERM `cat $PID`" TERM
+		# Wait for "Server started"
+		/bin/echo -n "Starting JBoss... "
+		echo "(pressing Ctrl+C will interrupt starting process)"
+		max_count=300
+		count=0
+		while [ $count -le $max_count ]; do
+			line=$(tail -n80 "$LOG" 2>&1 | grep "Started in")
+			if [ $? = 0 ]; then
+				echo "Server started."
+				echo $line
+				egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 "$LOG" | tail -n7
+				exit 0
+			fi
+			/bin/echo -n "."
+			count=`expr $count + 1`
+			sleep 1 || exit 1
+		done
+		# Startup took over 5 minutes
+		echo "Starting process is taking too long - giving up."
+		# Tell java to stop working
+		kill `cat $PID`
+		;;
+	console)
+		if checkalive; then
+			die "Nuxeo is already running with pid `cat $PID`"
+		fi
+		createdirs
+		$CMD_START
+		;;
+	stop)
+		if checkalive; then
+			kill `cat $PID`
+			rm $PID
+		else
+			echo "Nuxeo is not running."
+		fi
+		;;
+	*)
+		echo "Usage: nuxeoctl (start|stop|console|slowstart|status)"
+		;;
+esac
+
+		
