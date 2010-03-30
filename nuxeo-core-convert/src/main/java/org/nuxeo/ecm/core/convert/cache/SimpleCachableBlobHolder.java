@@ -25,6 +25,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 
 /**
  * Cachable implementation of the {@link SimpleBlobHolder}.
@@ -49,29 +50,44 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
         super(new FileBlob(new File(path)));
     }
 
+
     public void load(String path) {
         blobs = new ArrayList<Blob>();
         File base = new File(path);
-        if (base.isDirectory()) {
-            File[] files = base.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    for (File subFile : file.listFiles()) {
-                        Blob subBlob = new FileBlob(subFile);
-                        subBlob.setFilename(subFile.getName());
-                        blobs.add(subBlob);
-                    }
+        try {
+            if (base.isDirectory()) {
+                addDirectoryToList(base, "");
+            } else {
+                File file = new File(path);
+                Blob mainBlob = new FileBlob(file);
+                mainBlob.setFilename(file.getName());
+                blobs.add(mainBlob);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Blob loading from cache failed",
+                    e.getCause());
+        }
+    }
+
+    public void addDirectoryToList(File directory, String prefix)
+            throws ConversionException {
+        File[] directoryContent = directory.listFiles();
+        int beginIndex;
+        for (File file : directoryContent) {
+            if (file.isDirectory()) {
+                beginIndex = prefix.length();
+                prefix = prefix.concat(file.getName() + File.separatorChar);
+                addDirectoryToList(file, prefix);
+                prefix = prefix.substring(0, beginIndex);
+            } else {
+                Blob blob = new FileBlob(file);
+                blob.setFilename(prefix.concat(file.getName()));
+                if (file.getName().equalsIgnoreCase("index.html")) {
+                    blobs.add(0, blob);
                 } else {
-                    Blob mainBlob = new FileBlob(file);
-                    mainBlob.setFilename(file.getName());
-                    blobs.add(0, mainBlob);
+                    blobs.add(blob);
                 }
             }
-        } else {
-            File file = new File(path);
-            Blob mainBlob = new FileBlob(file);
-            mainBlob.setFilename(file.getName());
-            blobs.add(mainBlob);
         }
     }
 

@@ -252,33 +252,38 @@ public abstract class Dialect {
     public abstract String getDialectFulltextQuery(String query);
 
     /**
-     * Gets the information needed to do a a fulltext match, either with a
+     * Information needed to express fulltext search with scoring.
+     */
+    public static class FulltextMatchInfo {
+        public String leftJoin;
+
+        public String leftJoinParam;
+
+        public String implicitJoin;
+
+        public String implicitJoinParam;
+
+        public String whereExpr;
+
+        public String whereExprParam;
+
+        public String scoreExpr;
+
+        public String scoreExprParam;
+
+        public String scoreAlias;
+
+        public Column scoreCol;
+    }
+
+    /**
+     * Gets the SQL information needed to do a a fulltext match, either with a
      * direct expression in the WHERE clause, or using a join with an additional
      * table.
-     * <p>
-     * Returns a String array with:
-     * <ul>
-     * <li>the expression to join with, or {@code null}; this expression has one
-     * % parameters for the table alias,</li>
-     * <li>a potential query paramenter for it,</li>
-     * <li>the where expression to add to the WHERE clause (may be {@code null}
-     * if none is required when a join is enough); this expression has one %
-     * parameters for the table alias,</li>
-     * <li>a potential query paramenter for it.</li>
-     * </ul>
-     *
-     * @param indexName the fulltext index name to match
-     * @param fulltextQuery the query to do
-     * @param mainColumn the column with the main id, for joins
-     * @param model the model
-     * @param database the database
-     * @return a String array with the table join expression, the join param,
-     *         the where expression and the where parm
-     *
      */
-    public abstract String[] getFulltextMatch(String indexName,
-            String fulltextQuery, Column mainColumn, Model model,
-            Database database);
+    public abstract FulltextMatchInfo getFulltextScoredMatchInfo(
+            String fulltextQuery, String indexName, int nthMatch,
+            Column mainColumn, Model model, Database database);
 
     /**
      * Gets the type of a fulltext column has known by JDBC.
@@ -422,16 +427,6 @@ public abstract class Dialect {
      *         true if the document is under base id
      */
     public abstract String getInTreeSql(String idColumnName);
-
-    /**
-     * Checks if the fulltext table is needed in queries.
-     * <p>
-     * This won't be the case if {@link #getFulltextMatch} returns a join that
-     * already does the job.
-     */
-    public boolean isFulltextTableNeeded() {
-        return true;
-    }
 
     /**
      * Does the dialect support passing ARRAY values (to stored procedures

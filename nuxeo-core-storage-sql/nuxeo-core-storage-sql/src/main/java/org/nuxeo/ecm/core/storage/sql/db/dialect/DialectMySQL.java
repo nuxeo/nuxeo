@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * MySQL-specific dialect.
@@ -259,18 +260,46 @@ public class DialectMySQL extends Dialect {
         return res;
     }
 
+    // SELECT ..., (MATCH(`fulltext`.`simpletext`, `fulltext`.`binarytext`)
+    // .................. AGAINST (?) / 10) AS nxscore
+    // FROM ... LEFT JOIN `fulltext` ON ``fulltext`.`id` = `hierarchy`.`id`
+    // WHERE ... AND MATCH(`fulltext`.`simpletext`, `fulltext`.`binarytext`)
+    // ................... AGAINST (? IN BOOLEAN MODE)
+    // ORDER BY nxscore DESC
     @Override
-    public String[] getFulltextMatch(String indexName, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
-        String suffix = model.getFulltextIndexSuffix(indexName);
-        Column stColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_SIMPLETEXT_KEY + suffix);
-        Column btColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_BINARYTEXT_KEY + suffix);
-        String whereExpr = String.format(
-                "MATCH (%s, %s) AGAINST (? IN BOOLEAN MODE)",
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
+        String scoreAlias = "_nxscore" + nthSuffix;
+        String indexSuffix = model.getFulltextIndexSuffix(indexName);
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Column stColumn = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
+                + indexSuffix);
+        Column btColumn = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
+                + indexSuffix);
+        String match = String.format("MATCH (%s, %s)",
                 stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
-        return new String[] { null, null, whereExpr, fulltextQuery };
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        info.leftJoin = String.format(
+                "%s ON %s = %s", //
+                ft.getQuotedName(), ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName());
+        info.whereExpr = String.format("%s AGAINST (? IN BOOLEAN MODE)", match);
+        info.whereExprParam = fulltextQuery;
+        // Note: using the boolean query in non-boolean mode gives approximate
+        // results but it's the best we have as MySQL does not provide a score
+        // in boolean mode.
+        // Note: dividing by 10 is arbitrary, but MySQL cannot really
+        // normalize scores.
+        info.scoreExpr = String.format("(%s AGAINST (?) / 10) AS %s", match,
+                scoreAlias);
+        info.scoreExprParam = fulltextQuery;
+        info.scoreAlias = scoreAlias;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null, model);
+        return info;
     }
 
     @Override

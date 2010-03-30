@@ -2169,8 +2169,10 @@ public class Mapper {
 
         @Override
         protected void finalize() {
+            if (rs != null) {
+                log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
+            }
             close();
-            log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
         }
 
         public long size() {
@@ -2179,14 +2181,17 @@ public class Mapper {
             }
             try {
                 // save cursor pos
-                int old = rs.isBeforeFirst() ? -1 : rs.getRow();
+                int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2
+                        : rs.getRow();
                 // find size
                 rs.last();
                 size = rs.getRow();
                 // set back cursor
                 if (old == -1) {
                     rs.beforeFirst();
-                } else {
+                } else if (old == -2) {
+                    rs.afterLast();
+                } else if (old != 0) {
                     rs.absolute(old);
                 }
                 return size;

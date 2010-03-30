@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Derby-specific dialect.
@@ -204,9 +205,15 @@ public class DialectDerby extends Dialect {
         return query; // TODO
     }
 
+    // SELECT ..., 1 as nxscore
+    // FROM ... LEFT JOIN NXFT_SEARCH('default', ?) nxfttbl
+    // .................. ON hierarchy.id = nxfttbl.KEY
+    // WHERE ... AND nxfttbl.KEY IS NOT NULL
+    // ORDER BY nxscore DESC
     @Override
-    public String[] getFulltextMatch(String indexName, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
         // TODO multiple indexes
         Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
                 model.FULLTEXT_FULLTEXT_KEY);
@@ -217,8 +224,11 @@ public class DialectDerby extends Dialect {
                 qname = String.format(colFmt, qname, Integer.valueOf(255));
             }
         }
-        String whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
-        return new String[] { null, null, whereExpr, fulltextQuery };
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        info.whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
+        info.whereExprParam = fulltextQuery;
+        // TODO score
+        return info;
     }
 
     @Override

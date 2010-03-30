@@ -265,16 +265,39 @@ public class DialectPostgreSQL extends Dialect {
         return StringUtils.join(res, " & ");
     }
 
+    // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore
+    // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
+    // , TO_TSQUERY('french', ?) as nxquery
+    // WHERE ... AND fulltext @@ nxquery
+    // ORDER BY nxscore DESC
     @Override
-    public String[] getFulltextMatch(String indexName, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
-        // TODO multiple indexes
-        String suffix = model.getFulltextIndexSuffix(indexName);
-        Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_FULLTEXT_KEY + suffix);
-        String whereExpr = String.format("NX_CONTAINS(%s, ?)",
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
+        String indexSuffix = model.getFulltextIndexSuffix(indexName);
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
+                + indexSuffix);
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
+        String queryAlias = "_nxquery" + nthSuffix;
+        String scoreAlias = "_nxscore" + nthSuffix;
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        info.leftJoin = String.format(
+                "%s ON %s = %s", //
+                ft.getQuotedName(), ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName());
+        info.implicitJoin = String.format("TO_TSQUERY('%s', ?) AS %s",
+                fulltextAnalyzer, queryAlias);
+        info.implicitJoinParam = fulltextQuery;
+        info.whereExpr = String.format("(%s @@ %s)", queryAlias,
                 ftColumn.getFullQuotedName());
-        return new String[] { null, null, whereExpr, fulltextQuery };
+        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32) AS %s",
+                ftColumn.getFullQuotedName(), queryAlias, scoreAlias);
+        info.scoreAlias = scoreAlias;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null, model);
+        return info;
     }
 
     @Override
@@ -604,21 +627,6 @@ public class DialectPostgreSQL extends Dialect {
                                     + "RETURNS TSVECTOR " //
                                     + "AS $$" //
                                     + "  SELECT TO_TSVECTOR('%s', SUBSTR($1, 1, 250000)) " //
-                                    + "$$ " //
-                                    + "LANGUAGE sql " //
-                                    + "STABLE " //
-                            , fulltextAnalyzer)));
-
-            statements.add(new ConditionalStatement( //
-                    true, // early
-                    Boolean.FALSE, // no drop needed
-                    null, //
-                    null, //
-                    String.format(
-                            "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
-                                    + "RETURNS boolean " //
-                                    + "AS $$" //
-                                    + "  SELECT $1 @@ TO_TSQUERY('%s', $2) " //
                                     + "$$ " //
                                     + "LANGUAGE sql " //
                                     + "STABLE " //
@@ -1148,7 +1156,8 @@ public class DialectPostgreSQL extends Dialect {
                         + "  GET DIAGNOSTICS update_count = ROW_COUNT;\n" //
                         + "  RAISE DEBUG 'nx_update_read_acls mark % lines to update', update_count;\n" //
                         + "  DELETE FROM hierarchy_modified_acl WHERE NOT is_new;\n" //
-                        + "  IF (update_count > 0) THEN\n" // list of read_acls have changed
+                        + "  IF (update_count > 0) THEN\n" // list of read_acls
+                        // have changed
                         + "    reset_cache = true;" //
                         + "  END IF;\n" //
                         + "\n" //
@@ -1218,8 +1227,7 @@ public class DialectPostgreSQL extends Dialect {
                     "SELECT 1;"));
             // Vacuum the read acls table if needed
             log.info("Vacuuming read acls table...");
-            statements.add(new ConditionalStatement(
-                    false, // late
+            statements.add(new ConditionalStatement(false, // late
                     Boolean.FALSE, // perform a check
                     null, //
                     null, //

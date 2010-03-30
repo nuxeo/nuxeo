@@ -31,9 +31,9 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final String DEF_URL = "jdbc:oracle:thin:@localhost:1521:XE";
 
-    private static final String DEF_USER = "NUXEO";
+    private static final String DEF_USER = "nuxeo";
 
-    private static final String DEF_PASSWORD = "NUXEO";
+    private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
 

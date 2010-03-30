@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -284,13 +285,42 @@ public class DialectSQLServer extends Dialect {
         return res;
     }
 
+    // SELECT ..., FTTBL.RANK / 1000.0
+    // FROM ... LEFT JOIN [fulltext] ON [fulltext].[id] = [hierarchy].[id]
+    // ........ LEFT JOIN CONTAINSTABLE([fulltext], *, ?, LANGUAGE 'english')
+    // .................. AS FTTBL
+    // .................. ON [fulltext].[id] = FTTBL.[KEY]
+    // WHERE ... AND FTTBL.[KEY] IS NOT NULL
+    // ORDER BY FTTBL.RANK DESC
     @Override
-    public String[] getFulltextMatch(String name, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
-        String whereExpr = String.format(
-                "CONTAINS([fulltext].*, ?, LANGUAGE %s)",
-                getQuotedFulltextAnalyzer());
-        return new String[] { null, null, whereExpr, fulltextQuery };
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
+        // TODO multiple indexes
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
+        String tableAlias = "_nxfttbl" + nthSuffix;
+        String scoreAlias = "_nxscore" + nthSuffix;
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        // there are two left joins here
+        info.leftJoin = String.format(
+                "%s ON %s = %s" //
+                        + " LEFT JOIN "
+                        + "CONTAINSTABLE(%s, *, ?, LANGUAGE %s) AS %s" //
+                        + " ON %s = %s.[KEY]", //
+                ft.getQuotedName(), ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName(), //
+                ft.getQuotedName(), getQuotedFulltextAnalyzer(), tableAlias, //
+                ftMain.getFullQuotedName(), tableAlias);
+        info.leftJoinParam = fulltextQuery;
+        info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
+        info.scoreExpr = String.format("%s.RANK / 1000.0 AS %s", tableAlias,
+                scoreAlias);
+        info.scoreAlias = scoreAlias;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null, model);
+        return info;
     }
 
     protected String getQuotedFulltextAnalyzer() {

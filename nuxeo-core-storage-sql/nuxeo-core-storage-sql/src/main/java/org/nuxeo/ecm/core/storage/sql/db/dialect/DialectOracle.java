@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Oracle-specific dialect.
@@ -325,15 +326,33 @@ public class DialectOracle extends Dialect {
         return res;
     }
 
+    // SELECT ..., SCORE(1) / 100
+    // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
+    // WHERE ... AND CONTAINS(fulltext.fulltext, ?, 1) > 0
+    // ORDER BY SCORE(1) DESC
     @Override
-    public String[] getFulltextMatch(String indexName, String fulltextQuery,
-            Column mainColumn, Model model, Database database) {
-        String suffix = model.getFulltextIndexSuffix(indexName);
-        Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_FULLTEXT_KEY + suffix);
-        String whereExpr = String.format("CONTAINS(%s, ?) > 0",
-                ftColumn.getFullQuotedName());
-        return new String[] { null, null, whereExpr, fulltextQuery };
+    public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
+            String indexName, int nthMatch, Column mainColumn, Model model,
+            Database database) {
+        String indexSuffix = model.getFulltextIndexSuffix(indexName);
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
+                + indexSuffix);
+        String score = String.format("SCORE(%d)", nthMatch);
+        FulltextMatchInfo info = new FulltextMatchInfo();
+        info.leftJoin = String.format(
+                "%s ON %s = %s", //
+                ft.getQuotedName(), ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName());
+        info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0",
+                ftColumn.getFullQuotedName(), nthMatch);
+        info.whereExprParam = fulltextQuery;
+        info.scoreExpr = String.format("%s / 100", score);
+        info.scoreAlias = score;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null, model);
+        return info;
     }
 
     @Override
