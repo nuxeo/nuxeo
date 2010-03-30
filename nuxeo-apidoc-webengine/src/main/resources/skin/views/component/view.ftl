@@ -27,9 +27,10 @@ Implementation class : ${component.componentClass}
 ${component.documentation}
 
 XML File:
-<pre style="border-width:1px;border-style:solid;border-color:black">
-
+<pre>
+<code>
  ${component.xmlFileContent?html}
+</code>
 </pre>
 
 <h2> Services </h2>

@@ -11,10 +11,11 @@
 <#assign nestedLevel=0/>
 
 <H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
+<#assign description=docs.getDescription(Context.getCoreSession())/>
 
-<#include "/views/bundleGroup/bundleGroupMacros.ftl">
+<#include "/views/component/componentMacros.ftl">
 
-<@viewBundleGroup bundleGroupWO=This />
+<@viewComponent componentWO=This />
 
 </@block>
 

@@ -12,7 +12,9 @@
 
 <h2> Documentation </h2>
 <pre>
+<code>
 ${extensionPoint.documentation?html}
+</code>
 </pre>
 <h2> Contributions </h2>
 <ul>

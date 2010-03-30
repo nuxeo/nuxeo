@@ -187,4 +187,57 @@ color:#fff;
   cursor:default;
 }
 
+.hiddenResource {
+  display:none;
+  border-style:solid;
+  border-width:1px;
+  border-color:black;
+}
+
+.resourceToggle {
+  cursor:hand;
+  border-style:outset;
+  border-width:2px;
+  border-color:#CCCCCC;
+  padding:2px;
+  margin:2px;
+  background-color:#DDDDDD;
+}
+
+.blocTitle {
+  background-color:#EEEEFF;
+  cursor:hand;
+  border-style:outset;
+  border-width:1 0 0 1;
+  border-color:#CCCCCC;
+  padding:4px;
+
+}
+
+.blocFrame {
+ border-style:solid;
+ border-width:1 0 0 1;
+ border-color:#CCCCCC;
+ padding: 3px;
+}
+
+.bTitle1 {
+   font-size:16pt;
+}
+.bTitle2 {
+   font-size:15pt;
+}
+.bTitle3 {
+   font-size:14pt;
+}
+.bTitle4 {
+   font-size:13pt;
+}
+.bTitle5 {
+   font-size:12pt;
+}
+.bTitle6 {
+   font-size:11pt;
+}
+
 

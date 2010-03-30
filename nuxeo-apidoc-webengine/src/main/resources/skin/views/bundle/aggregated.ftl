@@ -7,6 +7,9 @@
 </@block>
 
 <@block name="right">
+<#include "/docMacros.ftl">
+<#assign nestedLevel=0/>
+
 <H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 

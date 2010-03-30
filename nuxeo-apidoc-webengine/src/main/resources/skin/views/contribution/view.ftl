@@ -10,9 +10,10 @@
 <@block name="right">
 <h1> view Contribution ${contribution.id} </h1>
 
-<pre style="border-width:1px;border-style:solid;border-color:black">
-
+<pre>
+<code>
 ${contribution.xml?html}
+</code>
 </pre>
 
 <h2> target ExtensionPoint </h2>

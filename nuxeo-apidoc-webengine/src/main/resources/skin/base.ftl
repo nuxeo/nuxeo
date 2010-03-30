@@ -7,11 +7,16 @@
 
   <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
   <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8" />
+  <link rel="stylesheet" href="${skinPath}/css/code.css" type="text/css" media="screen" charset="utf-8" />
 
   <@block name="stylesheets" />
 
    <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
    <script type="text/javascript" src="${skinPath}/script/jquery/cookie.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/highlight.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/java.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/html-xml.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/manifest.js"></script>
 
    <@block name="header_scripts" />
 
@@ -103,6 +108,28 @@
   </tr>
 </table>
 
+
+<script type="text/javascript">
+
+    hljs.initHighlightingOnLoad();
+
+    // toggle code viewer
+    $(".resourceToggle").click(function() {
+     $(this).next().toggleClass('hiddenResource');
+    });
+
+    // toggle title bars
+    $(".blocTitle").click(function() {
+     $(this).parent().find(".foldablePannel").toggle("fold",{horizFirst: true },1000);
+    });
+    $(".blocTitle").click(function() {
+     var toFold=$(this).parent().find(".foldablePannel").get(0);                                 
+     $(toFold).toggle("fold",{horizFirst: true },10);
+    });
+
+
+
+</script>
 
 </body>
 </html>

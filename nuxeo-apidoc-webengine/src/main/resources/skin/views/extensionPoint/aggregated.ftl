@@ -12,9 +12,9 @@
 
 <H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
 
-<#include "/views/bundleGroup/bundleGroupMacros.ftl">
+<#include "/views/extensionPoint/extensionPointMacros.ftl">
 
-<@viewBundleGroup bundleGroupWO=This />
+<@viewExtensionPoint extensionPointWO=This />
 
 </@block>
 
