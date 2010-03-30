@@ -132,6 +132,21 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         res.close();
     }
 
+    public void testQueryIterableWithTransformer() throws Exception {
+        createDocs();
+        IterableQueryResult res;
+
+        res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
+        assertEquals(7, res.size());
+
+        // NoFile2SecurityPolicy
+        deployContrib("org.nuxeo.ecm.core.query.test",
+                "OSGI-INF/security-policy2-contrib.xml");
+
+        res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
+        assertEquals(4, res.size());
+    }
+
     @Override
     public void testQueryBasic() throws Exception {
         // Documents without creation date don't match any DATE query
