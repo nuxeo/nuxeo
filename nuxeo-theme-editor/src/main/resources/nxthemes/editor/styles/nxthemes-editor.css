@@ -975,6 +975,7 @@ div.nxthemesFragment b, div.nxthemesFragmentHidden b {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
+  overflow: hidden;
 }
 
 .nxthemesPresets table {
@@ -1026,7 +1027,7 @@ ul.nxthemesSelector li a {
 }
 
 ul.nxthemesSelector li a:hover {
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   color: #000;
 }
 
@@ -1043,7 +1044,11 @@ ul.nxthemesSelector li a:hover span.info {
 
 ul.nxthemesSelector li.selected a {
   background-color: #eee;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
+}
+
+ul.nxthemesSelector li.selected a:hover {
+  background-color: #eee;
 }
 
 ul.nxthemesSelector li.disabled a {
@@ -1054,11 +1059,11 @@ ul.nxthemesSelector li.disabled a {
 ul.nxthemesSelector li.disabled a:hover span.info {
   visibility: hidden;
 }
+
 ul.nxthemesSelector img {
   border: none;
   vertical-align: middle;	
 }
-
 
 .nxthemesScreen a {
   text-decoration: none;
@@ -1624,3 +1629,21 @@ table.fragmentFactory td {
 .nxthemesStyleTree ul ul li { 
   left: 110px;
 }
+
+
+.nxthemesManageScreen {
+  width: 100%;
+}
+
+.nxthemesManageScreen th {
+  text-align: left;
+  color: #fff;
+  background: #000 url(${basePath}/skin/nxthemes-editor/img/th-bg.png) repeat-x; 
+  padding: 4px 13px;  
+}
+
+.nxthemesManageScreen td {
+  vertical-align: top;
+  padding: 3px;  
+}
+

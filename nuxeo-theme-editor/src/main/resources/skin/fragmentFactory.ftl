@@ -4,7 +4,7 @@
 
 <#if selected_element_id>
 
-  <table class="fragmentFactory" cellpadding="0" cellspacing="0">
+  <table class="fragmentFactory">
   <tr>
   <th style="width: 30%">
     1. Select fragment type

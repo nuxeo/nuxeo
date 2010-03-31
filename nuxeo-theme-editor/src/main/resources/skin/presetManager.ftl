@@ -20,13 +20,13 @@
 
 <p class="nxthemesExplanation">Theme presets</p>
 
-<table style="width: 100%;" cellpadding="3" cellspacing="1">
+<table class="nxthemesManageScreen">
   <tr>
-    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Category</th>
-    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">Presets</th>
+    <th style="width: 25%;">Category</th>
+    <th style="width: 75%;">Presets</th>
   </tr>
   <tr>
-    <td style="vertical-align: top">
+    <td>
        <ul class="nxthemesSelector">
          <li <#if selected_preset_category = 'color'>class="selected"</#if>>
               <a href="javascript:NXThemesPresetManager.selectPresetCategory('color')">
@@ -48,11 +48,11 @@
              <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> All categories</a></li>             
        </ul>
      </td>
-    <td style="vertical-align: top">
+    <td>
 
 <#assign presets = This.getCustomPresets(current_theme_name, selected_preset_category)>
 
-<table cellspacing="0" cellpadding="1" style="width: 100%">
+<table class="nxthemesManageScreen">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -64,7 +64,7 @@
   </#if>
 <td class="preset">
 
-<div class="preview" title="${preset_info.value}">
+<div class="preview" title="${preset_info.value?replace(r'${basePath}', '${basePath}')}">
 <ins class="model">
   {"id": "preset_${current_theme_name}_${preset_info.name}",
    "type": "preset",
@@ -95,7 +95,7 @@
 </ins>
 
 <#if preset_info.category>
-${preset_info.preview}
+${preset_info.preview?replace(r'${basePath}', '${basePath}')}
 <#else>
 <div><em style="color: #666"><br/>category not set</em></div>
 </#if>
@@ -146,7 +146,7 @@ ${preset_info.preview}
 
 <#if preset_names>
 <h3 class="nxthemesEditorFocus">These presets need to be defined:</h3>
-<table cellspacing="0" cellpadding="1" style="width: 100%">
+<table class="nxthemesManageScreen">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -192,7 +192,7 @@ ${preset_info.preview}
 <#if colors>
 <h3 class="nxthemesEditorFocus">These colors could be registered as presets:</h3>
 
-<table cellspacing="5" cellpadding="4" style="width: 100%">
+<table class="nxthemesManageScreen">
 <#assign count = 0 />
 <#assign row = 1 />
 <#assign row = (count % 10) +1 /> 
@@ -231,7 +231,7 @@ ${preset_info.preview}
 <#if images>
 <h3 class="nxthemesEditorFocus">These images could be registered as presets ...</h3>
 
-<table cellspacing="5" cellpadding="4" style="width: 100%">
+<table class="nxthemesManageScreen">
 <#assign count = 0 />
 <#assign row = 1 />
 <#assign row = (count % 10) +1 /> 
@@ -273,14 +273,14 @@ ${preset_info.preview}
 
 <p class="nxthemesExplanation">Application presets are categorized in palettes. They cannot be modified.</p>
 
-<table style="width: 100%;" cellpadding="3" cellspacing="1">
+<table class="nxthemesManageScreen">
   <tr>
-    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Palette</th>
-    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">Presets</th>
+    <th style="width: 25%;">Palette</th>
+    <th style="width: 75%;">Presets</th>
   </tr>
 
 <tr>
-<td style="vertical-align: top; width: 200px; padding-right: 5px;">
+<td style="width: 200px; padding-right: 5px;">
 
 <ul class="nxthemesSelector">
 <#list preset_groups as group>
@@ -291,12 +291,12 @@ ${preset_info.preview}
 </ul>
 
 </td>
-<td style="padding-left: 10px; vertical-align: top;">
+<td style="padding-left: 10px;">
 
 <#if selected_preset_group>
 <!-- Palettes -->
 
-<table cellspacing="2" cellpadding="2" style="width: 100%">
+<table class="nxthemesManageScreen">
 <#assign count = 0 /> 
 <#assign row = 1 /> 
 
@@ -308,7 +308,7 @@ ${preset_info.preview}
   </#if>
 <td class="preset">
 
-<div class="preview" title="${preset_info.value}">
+<div class="preview" title="${preset_info.value?replace(r'${basePath}', '${basePath}')}">
 <ins class="model">
   {"id": "preset_${group}_${preset_info.name}",
    "type": "preset",
@@ -325,7 +325,7 @@ ${preset_info.preview}
   }
 </ins>
 
-${preset_info.preview}</div>
+${preset_info.preview?replace(r'${basePath}', '${basePath}')}</div>
 <div class="name">${preset_info.name}</div>
 
 </td>
