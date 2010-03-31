@@ -294,7 +294,7 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
-        If set to true, local resources added from <nxthemes:require /> will be ignored.
+        If set to true, local resources added from &lt;nxthemes:require /&gt; will be ignored.
       </description>
     </attribute>    
   </tag>
