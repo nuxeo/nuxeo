@@ -5,10 +5,14 @@
   <#assign contributionDocs=contributionWO.getAssociatedDocuments()/>
   <#assign contributionDesc=contributionDocs.getDescription(Context.getCoreSession())/>
 
-  <div id="contribution.${contributionItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*8}px">
+  <div id="contribution.${contributionItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="contribution.${contributionItem.id}">  </A>
 
-  <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">${contributionDesc.title}</div>
+  <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">${contributionDesc.title}
+
+  <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/doc"> Edit </A>
+
+  </div>
 
   <div class="foldablePannel">
 
@@ -36,6 +40,7 @@
   </div>
 
   <#assign nestedLevel=nestedLevel-1/>
+
 </#macro>
 
 

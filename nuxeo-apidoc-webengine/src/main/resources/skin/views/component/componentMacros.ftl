@@ -11,19 +11,30 @@
   <#assign xps=componentWO.getExtensionPoints()/>
   <#assign contribs=componentWO.getContributions()/>
 
-  <div id="Component.${componentItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*8}px">
+  <div id="Component.${componentItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
 
   <A name="Component.${componentItem.id}">  </A>
-  <div class="blocTitle bTitle${nestedLevel}" id="Component.${componentItem.id}"> Component ${componentDesc.title}</div>
+  <div class="blocTitle bTitle${nestedLevel}" id="Component.${componentItem.id}"> Component ${componentDesc.title}
+
+  <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc"> Edit </A>
+
+  </div>
 
   <div class="foldablePannel">
 
   <span class="componentId">Component Id : ${componentItem.id}</span> <br/>
 
+  <#if componentItem.xmlPureComponent>
+      ${componentDesc.title} is a pure Xml Component (no java Code).
+  </#if>
+  <#if !componentItem.xmlPureComponent>
+       ${componentDesc.title} holds a Java component (implementation class : ${componentItem.componentClass})
+  </#if>
+  <br/>
+
   <p><@docContent docItem=componentDesc /></p>
 
-
-   <span class="resourceToggle"> XML Definition </span>
+  Component <span class="resourceToggle"> XML Definition </span>.
     <div class="hiddenResource">
     <pre><code>
     ${componentItem.xmlFileContent?html}
@@ -34,10 +45,13 @@
 
 
   <#if (services?size>0) >
-  <hr/>
-  <p>
-  ${componentDesc.title} contains ${services?size} services.
 
+  <b>Declared services</b>
+  <p>
+  ${componentDesc.title} contains ${services?size} services. <br/>
+
+  <#if (services?size>1) >
+  Service index : <br/>
   <table class="linkTable">
     <#list services as service>
       <tr>
@@ -50,6 +64,7 @@
       </tr>
     </#list>
   </table>
+  </#if>
 
     <#list services as service>
       <@viewService serviceWO=service />
@@ -58,10 +73,12 @@
   </#if>
 
   <#if (xps?size>0) >
-  <hr/>
+  <b>Declared extension points</b>
   <p>
-  ${componentDesc.title} exposes ${xps?size} extension points.
+  ${componentDesc.title} exposes ${xps?size} extension points. <br/>
 
+  <#if (xps?size>1) >
+  Extension point index : <br/>
   <table class="linkTable">
     <#list xps as xp>
       <tr>
@@ -74,6 +91,7 @@
       </tr>
     </#list>
   </table>
+  </#if>
 
     <#list xps as xp>
       <@viewExtensionPoint extensionPointWO=xp />
@@ -83,10 +101,12 @@
 
 
  <#if (contribs?size>0) >
- <hr/>
+ <b>Declared contributions</b>
   <p>
-  ${componentDesc.title} holds ${contribs?size} contributions.
+  ${componentDesc.title} holds ${contribs?size} contributions.<br/>
 
+ <#if (contribs?size>1) >
+  Contribution index : <br/>
   <table class="linkTable">
     <#list contribs as contrib>
       <tr>
@@ -99,6 +119,7 @@
       </tr>
     </#list>
   </table>
+ </#if>
 
     <#list contribs as contrib>
       <@viewContribution contributionWO=contrib />
@@ -108,6 +129,7 @@
 
   </div>
   </div>
+
  <#assign nestedLevel=nestedLevel-1/>
 </#macro>
 

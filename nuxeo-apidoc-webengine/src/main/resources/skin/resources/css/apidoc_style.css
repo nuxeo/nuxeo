@@ -196,9 +196,6 @@ color:#fff;
 
 .resourceToggle {
   cursor:hand;
-  border-style:outset;
-  border-width:2px;
-  border-color:#CCCCCC;
   padding:2px;
   margin:2px;
   background-color:#DDDDDD;
@@ -211,6 +208,7 @@ color:#fff;
   border-width:1 0 0 1;
   border-color:#CCCCCC;
   padding:4px;
+  margin: 0 0 8 -2;
 
 }
 
@@ -218,8 +216,10 @@ color:#fff;
  border-style:solid;
  border-width:1 0 0 1;
  border-color:#CCCCCC;
- padding: 3px;
+ margin: 20 3 3 3;
+ padding : 0 2 2 2;
 }
+
 
 .bTitle1 {
    font-size:16pt;
@@ -239,5 +239,47 @@ color:#fff;
 .bTitle6 {
    font-size:11pt;
 }
+
+.docVersionDisplay {
+  float:right;
+  font-size:10pt;
+  padding:4px;
+  border-style:solid;
+  border-width:1px;
+  border-color:#CCCCCC;
+}
+
+
+.bundleInfo td {
+ border-style:solid;
+ border-width:1px;
+ border-color:#CCCCCC;
+ margin:0px;
+ padding:4px;
+}
+.bundleInfo {
+ border-style:solid;
+ border-width:1px;
+ border-color:#BBBBBB;
+ margin:0px;
+ padding:0px;
+}
+
+
+.linkTable td {
+ border-style:solid;
+ border-width:1px;
+ border-color:#CCCCCC;
+ margin:0px;
+ padding:4px;
+}
+.linkTable {
+ border-style:solid;
+ border-width:1px;
+ border-color:#BBBBBB;
+ margin:0px;
+ padding:0px;
+}
+
 
 

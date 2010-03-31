@@ -8,9 +8,11 @@
   <#assign components=bundleWO.getComponents()/>
 
 
-  <div id="Bundle.${bundleItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*8}px">
+  <div id="Bundle.${bundleItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="Bundle.${bundleItem.id}"> </A>
-  <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">  Bundle ${bundleDesc.title} </div>
+  <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">  Bundle ${bundleDesc.title}
+  <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/doc"> Edit </A>
+  </div>
   <div class="foldablePannel">
 
   <span class="componentId">Bundle Id : ${bundleItem.id}</span><br/>
@@ -30,8 +32,8 @@
     <tr> <td> Maven version </td> <td> ${bundleItem.artifactVersion} </td> </tr>
     </table>
   </td>
-  <td>
-    <span class="resourceToggle"> MANIFEST </span>
+  <td width="50%">
+    <span class="resourceToggle"> MANIFEST.MF </span> file for this Bundle.
     <div class="hiddenResource">
     <pre><code>
     ${bundleItem.manifest}
@@ -42,10 +44,13 @@
   </tr>
   </table>
 
+  <br/>
   <#if (components?size>0) >
 
-  ${bundleDesc.title} contains ${components?size} components.
+  This bundle contains ${components?size} components.
 
+  <#if (components?size>1) >
+  Sub Components index :
   <table class="linkTable">
     <#list components as component>
       <tr>
@@ -58,6 +63,7 @@
       </tr>
     </#list>
   </table>
+  </#if>
 
     <#list components as component>
       <@viewComponent componentWO=component />

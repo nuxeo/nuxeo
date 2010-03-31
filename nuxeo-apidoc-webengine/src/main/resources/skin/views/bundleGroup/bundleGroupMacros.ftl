@@ -7,8 +7,12 @@
   <#assign bundleGroupDesc=bundleGroupDocs.getDescription(Context.getCoreSession())/>
   <#assign bundles=bundleGroupWO.getBundles()/>
 
-  <div id="BundleGroup.${bundleGroupItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*8}px">
-  <div class="blocTitle bTitle${nestedLevel}" id="${bundleGroupItem.id}"> BundleGroup ${bundleGroupDesc.title} </div>
+  <div id="BundleGroup.${bundleGroupItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
+  <div class="blocTitle bTitle${nestedLevel}" id="${bundleGroupItem.id}"> BundleGroup ${bundleGroupDesc.title}
+
+  <A href="${Root.path}/${distId}/viewBundleGroup/${bundleGroupItem.id}/doc"> Edit </A>
+
+  </div>
 
   <div class="foldablePannel">
   <p><@docContent docItem=bundleGroupDesc /></p>

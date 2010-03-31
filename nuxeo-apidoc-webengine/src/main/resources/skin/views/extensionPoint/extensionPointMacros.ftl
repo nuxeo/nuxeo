@@ -5,10 +5,12 @@
   <#assign extensionPointDocs=extensionPointWO.getAssociatedDocuments()/>
   <#assign extensionPointDesc=extensionPointDocs.getDescription(Context.getCoreSession())/>
 
-  <div id="extensionPoint.${extensionPointItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*8}px">
+  <div id="extensionPoint.${extensionPointItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="extensionPoint.${extensionPointItem.id}"> </A>
 
-  <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">  ExtensionPoint ${extensionPointDesc.title} (${extensionPointItem.name})</div>
+  <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">  ExtensionPoint ${extensionPointDesc.title} (${extensionPointItem.name})
+  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/doc"> Edit </A>
+  </div>
 
   <div class="foldablePannel">
 
@@ -16,7 +18,7 @@
 
   <p><@docContent docItem=extensionPointDesc /></p>
 
-  <span class="resourceToggle"> XML Definition for this extension point</span>
+  <span class="resourceToggle"> Built-in documentation</span> for this extension point.
   <div class="hiddenResource">
   <pre>
   <code>

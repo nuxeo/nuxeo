@@ -120,14 +120,9 @@
 
     // toggle title bars
     $(".blocTitle").click(function() {
-     $(this).parent().find(".foldablePannel").toggle("fold",{horizFirst: true },1000);
-    });
-    $(".blocTitle").click(function() {
-     var toFold=$(this).parent().find(".foldablePannel").get(0);                                 
+     var toFold=$(this).parent().find(".foldablePannel").get(0);
      $(toFold).toggle("fold",{horizFirst: true },10);
     });
-
-
 
 </script>
 

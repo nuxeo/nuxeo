@@ -46,6 +46,18 @@ public class TestBrowse extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
     }
 
+
+    public void testMe() {
+
+        String id = "oprg.nuxeo.class";
+
+        String[] parts = id.split("\\.");
+
+        String name = parts[parts.length-1];
+
+
+    }
+
     public void testBrowse() throws Exception  {;
 
         DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();

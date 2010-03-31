@@ -7,9 +7,13 @@ import java.util.Map;
 
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
+import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ExtensionPoint;
 
 public class AssociatedDocumensImpl implements AssociatedDocuments {
 
@@ -96,6 +100,18 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
             }
 
             public String getTitle() {
+                if (item.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
+                    return ((ExtensionPointInfo)item).getName();
+                } else if (item.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
+                    return ((ExtensionInfo)item).getExtensionPoint() + "-contrib";
+                } else if (item.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
+                    String id = ((ServiceInfo)item).getId();
+                    String[] parts = id.split("\\.");
+                    if (parts.length>1) {
+                        String name = parts[parts.length-1];
+                        return name;
+                    }
+                }
                 return item.getId();
             }
 
