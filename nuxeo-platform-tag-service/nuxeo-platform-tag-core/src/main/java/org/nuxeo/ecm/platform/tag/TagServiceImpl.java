@@ -589,7 +589,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
     protected static class UnrestrictedSessionCreateRootTag extends
             UnrestrictedSessionRunner {
         public UnrestrictedSessionCreateRootTag(CoreSession session) {
-            super(session);
+            super(session.getRepositoryName()); // always open new session
             rootTagDocumentId = null;
         }
 
@@ -635,7 +635,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService,
         public UnrestrictedSessionCreateTag(CoreSession session,
                 DocumentModel parent, String label, boolean privateFlag)
                 throws ClientException {
-            super(session);
+            super(session.getRepositoryName()); // always open new session
             this.parent = parent;
             tagDocument = null;
             this.label = label;
