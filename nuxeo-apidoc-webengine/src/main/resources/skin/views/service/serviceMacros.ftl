@@ -8,7 +8,9 @@
   <div id="Service.${serviceItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
     <A name="Service.${serviceItem.id}"> </A>
 
-    <div class="blocTitle bTitle${nestedLevel}" id="Service.${serviceItem.id}">  Service ${serviceDesc.title}
+    <div class="blocTitle bTitle${nestedLevel}" id="Service.${serviceItem.id}">
+    <img src="${skinPath}/images/${serviceDesc.targetType}.png" alt="Service"/>
+     ${serviceDesc.title}
     <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/doc"> Edit </A>
     </div>
 

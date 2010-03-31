@@ -10,7 +10,9 @@
 
   <div id="Bundle.${bundleItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="Bundle.${bundleItem.id}"> </A>
-  <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">  Bundle ${bundleDesc.title}
+  <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">
+  <img src="${skinPath}/images/${bundleDesc.targetType}.png" alt="Bundle"/>
+  ${bundleDesc.title}
   <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/doc"> Edit </A>
   </div>
   <div class="foldablePannel">
@@ -71,6 +73,7 @@
 
   </#if>
 
+  <@viewAdditionnalDoc docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

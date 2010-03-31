@@ -8,7 +8,9 @@
   <div id="extensionPoint.${extensionPointItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="extensionPoint.${extensionPointItem.id}"> </A>
 
-  <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">  ExtensionPoint ${extensionPointDesc.title} (${extensionPointItem.name})
+  <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">
+  <img src="${skinPath}/images/${extensionPointDesc.targetType}.png" alt="ExtensionPoint"/>
+   ${extensionPointDesc.title} (${extensionPointItem.name})
   <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/doc"> Edit </A>
   </div>
 
@@ -38,6 +40,7 @@
   </ul>
   </p>
 
+  <@viewAdditionnalDoc docsByCat=extensionPointDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

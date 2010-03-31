@@ -8,7 +8,9 @@
   <div id="contribution.${contributionItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <A name="contribution.${contributionItem.id}">  </A>
 
-  <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">${contributionDesc.title}
+  <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">
+  <img src="${skinPath}/images/${contributionDesc.targetType}.png" alt="Contribution"/>
+  ${contributionDesc.title}
 
   <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/doc"> Edit </A>
 
@@ -36,6 +38,7 @@
   ${contributionItem.extensionPoint}
   </A>
 
+  <@viewAdditionnalDoc docsByCat=contributionDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

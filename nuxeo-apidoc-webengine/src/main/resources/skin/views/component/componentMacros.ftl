@@ -14,7 +14,9 @@
   <div id="Component.${componentItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
 
   <A name="Component.${componentItem.id}">  </A>
-  <div class="blocTitle bTitle${nestedLevel}" id="Component.${componentItem.id}"> Component ${componentDesc.title}
+  <div class="blocTitle bTitle${nestedLevel}" id="Component.${componentItem.id}">
+  <img src="${skinPath}/images/${componentDesc.targetType}.png" alt="Component"/>
+  ${componentDesc.title}
 
   <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc"> Edit </A>
 
@@ -127,6 +129,8 @@
   </p>
   </#if>
 
+
+  <@viewAdditionnalDoc docsByCat=componentDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

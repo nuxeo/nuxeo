@@ -103,7 +103,7 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
                 if (item.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
                     return ((ExtensionPointInfo)item).getName();
                 } else if (item.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
-                    return ((ExtensionInfo)item).getExtensionPoint() + "-contrib";
+                    return ((ExtensionInfo)item).getExtensionPoint();
                 } else if (item.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
                     String id = ((ServiceInfo)item).getId();
                     String[] parts = id.split("\\.");

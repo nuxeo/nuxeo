@@ -35,8 +35,13 @@
   <#list bundles as bundle>
    <@viewBundle bundleWO=bundle />
   </#list>
+
+  <@viewAdditionnalDoc docsByCat=bundleGroupDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
+
+
+
 
   <#assign nestedLevel=nestedLevel-1/>
 </#macro>

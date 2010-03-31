@@ -124,6 +124,17 @@
      $(toFold).toggle("fold",{horizFirst: true },10);
     });
 
+    var lastDisplayedDoc;
+    function showAddDoc(docId) {
+      if (lastDisplayedDoc) {
+       if (lastDisplayedDoc!=docId) {
+         $('#' + lastDisplayedDoc).toggle("fold",{horizFirst: true},1000);
+       }
+      }
+      $('#' + docId).toggle("fold",{horizFirst: true},1000);
+      lastDisplayedDoc=docId;
+    }
+
 </script>
 
 </body>

@@ -281,5 +281,30 @@ color:#fff;
  padding:0px;
 }
 
+.additionnalDocs {
+ border-style:solid;
+ border-width:2px;
+ border-color:#BBBBBB;
+ background-color:#CCCCCC;
+ margin:3px;
+}
 
+.additionnalDocPannel {
+ border-style:solid;
+ border-width:2px;
+ border-color:#EEEEEE;
+ background-color:white;
+ margin:3px;
+ padding:4px;
+
+}
+.hiddenDocPanel {
+ display:none;
+}
+
+.catHeader {
+ vertical-align:top;
+ font-weight:bold;
+ font-size:11pt;
+}
 
