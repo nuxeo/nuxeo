@@ -30,6 +30,10 @@
     <unzip dest="${jetty}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${maven.project.version}:zip" />
     </unzip>
+    <unzip dest="${jetty}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
     <copy todir="${jetty}">
       <fileset dir="src/main/resources" />
     </copy>

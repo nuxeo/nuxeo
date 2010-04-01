@@ -1098,6 +1098,13 @@
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-resources</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+        <classifier>doc</classifier>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

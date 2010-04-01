@@ -57,6 +57,10 @@
       <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
                             classifier="light" />
     </unzip>
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
     <copy todir="${jboss}">
       <fileset dir="src/main/resources/jboss" />
     </copy>

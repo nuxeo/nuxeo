@@ -198,6 +198,10 @@
       </patternset>
     </unzip>
     <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
+    <unzip dest="${tomcat}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
     <!-- Remove non-nuxeo information files from root -->
     <mkdir dir="${tomcat}/doc-tomcat"/>
     <move todir="${tomcat}/doc-tomcat">
