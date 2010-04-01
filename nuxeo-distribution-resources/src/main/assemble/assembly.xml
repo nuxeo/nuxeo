@@ -20,6 +20,9 @@
     <antcall target="build-resources">
       <param name="distribution" value="doc" />
     </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="bin" />
+    </antcall>
   </target>
 
   <target name="build-resources"

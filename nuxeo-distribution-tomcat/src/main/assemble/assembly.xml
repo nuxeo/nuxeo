@@ -195,6 +195,10 @@
       <patternset>
         <exclude name="**/webapps/examples/**" />
         <exclude name="**/webapps/docs/**" />
+        <exclude name="**/bin/*.bat" />
+        <exclude name="**/bin/*.exe" />
+        <exclude name="**/bin/*.sh" />
+        <exclude name="**/bin/*.tar.gz" />
       </patternset>
     </unzip>
     <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
@@ -213,19 +217,10 @@
       </fileset>
     </move>
     
-    <!-- patch catalina.sh to add custom JAVA properties -->
-    <replace file="${tomcat}/bin/catalina.sh">
-      <replacetoken><![CDATA[#!/bin/sh]]></replacetoken>
-      <replacevalue><![CDATA[#!/bin/sh
-JAVA_OPTS="$JAVA_OPTS -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8"
-]]></replacevalue>
-    </replace>
-    <replace file="${tomcat}/bin/catalina.bat">
-      <replacetoken><![CDATA[@echo off]]></replacetoken>
-      <replacevalue><![CDATA[@echo off
-set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF-8
-]]></replacevalue>
-    </replace>
+    <unzip dest="${tomcat}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
     <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
   </target>
 

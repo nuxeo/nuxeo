@@ -64,12 +64,15 @@
     <copy todir="${jboss}">
       <fileset dir="src/main/resources/jboss" />
     </copy>
+    <unzip dest="${jboss}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
     <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
     <!-- Remove non-nuxeo information files from root -->
-    <mkdir dir="${jboss}/doc-jboss"/>
+    <mkdir dir="${jboss}/doc-jboss" />
     <move todir="${jboss}/doc-jboss">
       <fileset dir="${jboss}">
-        <include name="readme-jboss.html"/>
         <include name="lgpl.html"/>
         <include name="JBossORG-EULA.txt"/>
         <include name="jar-versions.xml"/>

@@ -29,6 +29,11 @@
   <target name="prepare-jetty">
     <unzip dest="${jetty}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${maven.project.version}:zip" />
+      <patternset>
+        <exclude name="nxserver.cmd" />
+        <exclude name="nxserver.sh" />
+        <exclude name="nxserverctl.sh" />
+      </patternset>
     </unzip>
     <unzip dest="${jetty}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
@@ -38,7 +43,14 @@
       <fileset dir="src/main/resources" />
     </copy>
     <delete file="${jetty}/config/login-anonymous-config.xml" />
-    <chmod dir="${jetty}" perm="750" includes="*.sh" />
+
+    <mkdir dir="${jetty}/bin"/>
+    <unzip dest="${jetty}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <chmod dir="${jetty}/bin" perm="750" includes="*.sh" />
+    
     <copy todir="${jetty}/bundles">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
