@@ -100,7 +100,7 @@ fi
 if [ "x$LOG_DIR" = "x" ]; then
 	LOG_DIR=$NUXEO_HOME
 fi
-LOG="$LOG_DIR/nuxeo.log"
+LOG="$LOG_DIR/console.log"
 
 # Setup PID_DIR
 
@@ -286,7 +286,7 @@ case "$1" in
 			echo "Nuxeo is not running."
 		fi
 		;;
-	start)
+	startbg)
 		if checkalive; then
 			die "Nuxeo is already running with pid `cat $PID`"
 		fi
@@ -295,7 +295,7 @@ case "$1" in
 		NUXEO_PID=$!
 		echo $NUXEO_PID > $PID
 		;;
-	slowstart)
+	start)
 		if checkalive; then
 			die "Nuxeo is already running with pid `cat $PID`"
 		fi
@@ -348,7 +348,7 @@ case "$1" in
 		fi
 		;;
 	*)
-		echo "Usage: nuxeoctl (start|stop|console|slowstart|status)"
+		echo "Usage: nuxeoctl (startbg|start|console|stop|status)"
 		;;
 esac
 
