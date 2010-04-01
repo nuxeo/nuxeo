@@ -67,7 +67,7 @@ public class NoteImporter extends AbstractFileImporter {
     /**
      * Return the note document type. Can be override if the document to be
      * created is an extension of the Note type.
-     * 
+     *
      * @return
      */
     protected String getNoteTypeName() {
@@ -78,6 +78,7 @@ public class NoteImporter extends AbstractFileImporter {
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);
+        doSecurityCheck(documentManager, path, getNoteTypeName(), typeService);
 
         String filename = FileManagerUtils.fetchFileName(fullname);
 
