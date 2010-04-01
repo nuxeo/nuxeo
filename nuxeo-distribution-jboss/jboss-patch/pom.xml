@@ -323,22 +323,6 @@
             </goals>
           </execution>
           <execution>
-            <id>patch-launcher</id>
-            <phase>process-resources</phase>
-            <configuration>
-              <tasks>
-                <echo message="Updating JBoss launcher..." />
-                <concat destfile="${jboss.dir}/bin/run.conf" append="true"
-                  fixlastline="true">
-                  <fileset file="java_opt" />
-                </concat>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>patch-interceptors</id>
             <phase>process-resources</phase>
             <configuration>
