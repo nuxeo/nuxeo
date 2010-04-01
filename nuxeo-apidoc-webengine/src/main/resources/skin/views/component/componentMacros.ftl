@@ -15,7 +15,15 @@
 
   <A name="Component.${componentItem.id}">  </A>
   <div class="blocTitle bTitle${nestedLevel}" id="Component.${componentItem.id}">
-  <img src="${skinPath}/images/${componentDesc.targetType}.png" alt="Component"/>
+
+  <#if componentItem.xmlPureComponent>
+    <img src="${skinPath}/images/${componentDesc.targetType}-xml.png" alt="XML Component"/>
+  </#if>
+  <#if !componentItem.xmlPureComponent>
+    <img src="${skinPath}/images/${componentDesc.targetType}-java.png" alt="Java Component"/>
+  </#if>
+
+
   ${componentDesc.title}
 
   <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc"> Edit </A>

@@ -13,7 +13,6 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ExtensionPoint;
 
 public class AssociatedDocumensImpl implements AssociatedDocuments {
 
@@ -137,6 +136,10 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
 
             public List<String> getApplicableVersion() {
                 return null;
+            }
+
+            public Map<String, String> getAttachements() {
+                return new HashMap<String, String>();
             }
         };
 

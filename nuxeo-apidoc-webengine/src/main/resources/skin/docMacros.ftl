@@ -17,6 +17,20 @@
         </div>
         </#if>
       </#if>
+
+    <#assign attachements=docItem.attachements>
+    <#if attachements??>
+      <#assign attachementKeys=attachements?keys>
+      <#list attachementKeys as attachementName>
+       <div class="attachementTitle">${attachementName}</div>
+       <div class="attachementContent">
+       <pre><code>
+       ${attachements[attachementName]?html}
+       </code></pre>
+       </div>
+    </#list>
+</#if>
+
   </div>
 </#macro>
 

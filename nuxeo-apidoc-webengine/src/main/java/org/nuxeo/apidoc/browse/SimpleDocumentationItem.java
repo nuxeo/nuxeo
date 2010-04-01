@@ -2,7 +2,9 @@ package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 
@@ -19,6 +21,7 @@ public class SimpleDocumentationItem implements DocumentationItem {
     protected String type="";
     protected String uuid="";
     protected boolean approved=false;
+    protected Map<String, String> attachements = new LinkedMap();
 
     public SimpleDocumentationItem() {
 
@@ -71,6 +74,10 @@ public class SimpleDocumentationItem implements DocumentationItem {
 
     public boolean isApproved() {
         return approved;
+    }
+
+    public Map<String, String> getAttachements() {
+        return attachements;
     }
 
 }

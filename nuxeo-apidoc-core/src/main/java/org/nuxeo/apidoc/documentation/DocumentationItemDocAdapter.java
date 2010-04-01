@@ -1,8 +1,11 @@
 package org.nuxeo.apidoc.documentation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
@@ -141,5 +144,23 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
             log.error("Error while reading title", e);
             return "";
         }
+    }
+
+    public Map<String, String> getAttachements() {
+
+        Map<String, String> attachements = new LinkedMap();
+
+        try {
+            List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+            if (atts!=null) {
+                for (Map<String, Serializable> att : atts) {
+                    attachements.put((String)att.get("filename"), ((Blob)att.get("file")).getString());
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("Error while reading Attachements", e);
+        }
+        return attachements;
     }
 }

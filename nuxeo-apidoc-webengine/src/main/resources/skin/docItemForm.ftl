@@ -103,6 +103,21 @@ enctype="application/x-www-form-urlencoded">
 </tr>
 </table>
 
+<#if mode=='edit'>
+Attachements [<A href="javascript:addAttachement()"> Add </A>]
+<div class="attachementBox">
+<#assign attachements=docItem.attachements>
+<#if attachements??>
+  <#assign attachementKeys=attachements?keys>
+  <#list attachementKeys as attachementName>
+   <div><input type="text" name="attachementsTitle" value="${attachementName}"/> </div>
+   <div> <textarea name="attachementsContent" cols="80" rows="20">${attachements[attachementName]}</textarea> </div>
+  </#list>
+</#if>
+   <span id="attachementEnd"></span>
+</div>
+</#if>
+
 <input type="hidden" name="id" value="${docItem.id}"/>
 <input type="hidden" name="uuid" value="${docItem.getUUID()}"/>
 <input type="hidden" name="targetType" value="${docItem.targetType}"/>
@@ -121,6 +136,10 @@ enctype="application/x-www-form-urlencoded">
 
 
 <script>
+function addAttachement() {
+ $("<div><input type='text' name='attachementsTitle' /> </div><div> <textarea name='attachementsContent' cols='80' rows='20'></textarea> </div>").insertBefore($("#attachementEnd"));
+}
+
 function launchWikiEditor() {
   wikiSettings = {
       nameSpace:          "wiki", // Useful to prevent multi-instances CSS conflict

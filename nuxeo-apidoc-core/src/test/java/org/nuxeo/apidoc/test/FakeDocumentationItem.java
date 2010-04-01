@@ -1,6 +1,7 @@
 package org.nuxeo.apidoc.test;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.DocumentationItem;
 
@@ -78,6 +79,11 @@ public class FakeDocumentationItem implements DocumentationItem {
 
     public String getTargetType() {
         return targetType;
+    }
+
+    public Map<String, String> getAttachements() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

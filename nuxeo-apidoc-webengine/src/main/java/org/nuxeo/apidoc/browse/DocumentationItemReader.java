@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
@@ -25,7 +27,7 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
     protected static final Log log = LogFactory.getLog(DocumentationItemReader.class);
 
     protected @Context HttpServletRequest request;
-    
+
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return DocumentationItemMediaType.equals(mediaType);
@@ -54,8 +56,21 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             for (int i=0; i<ar.length; i++) {
                 item.applicableVersion.add(ar[i]);
             }
-        }        
+        }
 
+        String[] attachementsTitles = request.getParameterValues("attachementsTitle");
+        if (attachementsTitles!=null && attachementsTitles.length>0) {
+            String[] attachementsContents = request.getParameterValues("attachementsContent");
+            Map<String, String> attachements = new LinkedMap();
+            int idx=0;
+            for (String attachementsTitle : attachementsTitles) {
+                if (attachementsContents.length>idx) {
+                    attachements.put(attachementsTitle, attachementsContents[idx]);
+                }
+                idx+=1;
+            }
+            item.attachements=attachements;
+        }
         return item;
     }
 

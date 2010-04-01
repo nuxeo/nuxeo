@@ -174,6 +174,8 @@ public class DocumentationComponent extends DefaultComponent implements
         doc.setPathInfo(getDocumentationRoot(session).getPathAsString(), name);
         doc.setPropertyValue("dc:title", title);
         Blob blob = new StringBlob(content);
+        blob.setFilename(item.getArtifactType());
+        blob.setMimeType("text/plain");
         doc.setPropertyValue("file:content", (Serializable)blob);
         doc.setPropertyValue("nxdoc:target", item.getId());
         doc.setPropertyValue("nxdoc:targetType", item.getArtifactType());
@@ -200,6 +202,22 @@ public class DocumentationComponent extends DefaultComponent implements
         doc.setPropertyValue("nxdoc:applicableVersions",
                 (Serializable) item.getApplicableVersion());
 
+        ArrayList<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
+        Map<String, String> attData = item.getAttachements();
+        if (attData!=null && attData.size()>0) {
+            for (String fileName : attData.keySet()) {
+                Map<String, Serializable> fileItem = new HashMap<String, Serializable>();
+                Blob blob = new StringBlob(attData.get(fileName));
+                blob.setFilename(fileName);
+                blob.setMimeType("text/plain");
+
+                fileItem.put("file", (Serializable) blob);
+                fileItem.put("filename", fileName);
+
+                atts.add(fileItem);
+            }
+            doc.setPropertyValue("files:files", (Serializable) atts);
+        }
 
         return doc;
     }
