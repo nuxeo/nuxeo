@@ -56,6 +56,11 @@
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
                             classifier="light" />
+      <patternset>
+        <exclude name="**/bin/*.bat" />
+        <exclude name="**/bin/*.sh" />
+        <exclude name="**/bin/run.conf" />
+      </patternset>
     </unzip>
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
