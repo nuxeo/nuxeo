@@ -57,17 +57,29 @@
       <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
                             classifier="light" />
     </unzip>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources/jboss" />
+    </copy>
+    <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${jboss}/doc-jboss"/>
+    <move todir="${jboss}/doc-jboss">
+      <fileset dir="${jboss}">
+        <include name="readme-jboss.html"/>
+        <include name="lgpl.html"/>
+        <include name="JBossORG-EULA.txt"/>
+        <include name="jar-versions.xml"/>
+        <include name="derby.log"/>
+        <include name="copyright.txt"/>
+      </fileset>
+    </move>
+    
     <ant antfile="build.xml" target="patch">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
     <ant antfile="build.xml" target="copy-lib">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
-    <copy todir="${jboss}">
-      <fileset dir="src/main/resources/jboss" />
-    </copy>
-    <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
-
     <copy todir="${jboss}/server/default/lib">
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />

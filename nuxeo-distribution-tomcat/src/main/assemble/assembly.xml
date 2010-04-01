@@ -198,6 +198,17 @@
       </patternset>
     </unzip>
     <nx:rename from="${stagedir}/apache-tomcat*" to="${tomcat}" />
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${tomcat}/doc-tomcat"/>
+    <move todir="${tomcat}/doc-tomcat">
+      <fileset dir="${tomcat}">
+        <include name="LICENSE"/>
+        <include name="NOTICE"/>
+        <include name="RELEASE-NOTES"/>
+        <include name="RUNNING.txt"/>
+      </fileset>
+    </move>
+    
     <!-- patch catalina.sh to add custom JAVA properties -->
     <replace file="${tomcat}/bin/catalina.sh">
       <replacetoken><![CDATA[#!/bin/sh]]></replacetoken>
