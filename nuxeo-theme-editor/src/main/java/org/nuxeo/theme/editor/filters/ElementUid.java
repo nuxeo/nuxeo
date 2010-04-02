@@ -31,7 +31,11 @@ public final class ElementUid extends StandaloneFilter {
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         final String markup = info.getMarkup();
-
+        if (markup.startsWith("<@nxthemes_fragment")
+                || markup.startsWith("<nxthemes:fragment")) {
+            return info;
+        }
+        
         final Matcher firstMatcher = firstTagPattern.matcher(markup);
         final Matcher othersMatcher = otherTagsPattern.matcher(markup);
 

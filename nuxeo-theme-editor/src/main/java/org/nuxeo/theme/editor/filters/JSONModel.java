@@ -52,6 +52,11 @@ public class JSONModel extends StandaloneFilter {
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         final Element element = info.getElement();
         final String markup = info.getMarkup();
+        if (markup.startsWith("<@nxthemes_fragment")
+                || markup.startsWith("<nxthemes:fragment")) {
+            return info;
+        }
+
         final String templateEngine = info.getTemplateEngine().getName();
         final String viewMode = info.getViewMode();
         if (viewMode != null && viewMode.startsWith("area-styles")) {
