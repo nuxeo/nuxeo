@@ -21,11 +21,8 @@ public final class FragmentTag extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
-        if (!cache) {
-            return info;
-        }
         // postpone the rendering
-        if (info.isDirty()) {
+        if (info.isRenderingPostponed(cache)) {
             String markup = String.format(
                     "<nxthemes:fragment xmlns:nxthemes=\"http://nuxeo.org/nxthemes\" uid=\"%s\" engine=\"%s\" mode=\"%s\" />",
                     info.getElement().getUid().toString(),
