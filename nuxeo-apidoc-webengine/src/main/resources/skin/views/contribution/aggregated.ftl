@@ -10,7 +10,9 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
+<H1> View for ${nxItem.artifactType} ${nxItem.id}
+<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.id?split("--")[0]}/aggView"> Up </A>
+</H1>
 
 <#include "/views/contribution/contributionMacros.ftl">
 

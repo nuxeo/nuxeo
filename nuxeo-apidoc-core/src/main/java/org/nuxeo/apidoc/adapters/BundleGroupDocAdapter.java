@@ -68,7 +68,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     public List<String> getBundleIds() {
         List<String> bundles = new ArrayList<String>();
 
-        String query = "select * from NXBundleGroup where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
+        String query = "select * from NXBundle where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
          try {
              DocumentModelList docs = getCoreSession().query(query);
              for(DocumentModel child : docs) {

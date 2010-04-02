@@ -20,6 +20,17 @@
 
     <p><@docContent docItem=serviceDesc /></p>
 
+    <#assign javaDocUrl="http://doc.nuxeo.org/current/apidocs/${serviceItem.id?replace('.','/')}.html"/>
+
+    Associated <span class="resourceToggle"> JavaDoc </span>
+    <div class="hiddenResource"><br/>
+    <A href="${javaDocUrl}" target="NxJavaDoc">Open in a new window</A>
+    <iframe src="${javaDocUrl}" width="98%" height="300px" border="0"></iframe>
+
+   </div>
+
+   <@viewAdditionnalDoc docsByCat=serviceDocs.getDocumentationItems(Context.getCoreSession())/>
+
   </div>
   </div>
 

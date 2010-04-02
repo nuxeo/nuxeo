@@ -30,6 +30,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -102,7 +103,6 @@ public class SnapshotManager {
     public static List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
         List<String> versions = new ArrayList<String>();
 
-
         Map<String, DistributionSnapshot> distribs = getPersistentSnapshots(session);
 
         DistributionSnapshot runtime = getRuntimeSnapshot();
@@ -143,12 +143,17 @@ public class SnapshotManager {
                     version = epi.getVersion();
                 }
             }
+            else if (ServiceInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+                ServiceInfo si = snap.getService(nxItem.getId());
+                if (si!=null) {
+                    version = si.getVersion();
+                }
+            }
 
             if (version!=null && !versions.contains(version)) {
                 versions.add(version);
             }
         }
-
         return versions;
     }
 }

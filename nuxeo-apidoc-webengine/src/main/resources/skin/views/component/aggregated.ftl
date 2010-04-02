@@ -10,7 +10,9 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
+<H1> View for ${nxItem.artifactType} ${nxItem.id}
+<A href="${Root.path}/${distId}/viewBundle/${This.nxArtifact.bundle.id}/aggView"> Up </A>
+</H1>
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 
 <#include "/views/component/componentMacros.ftl">

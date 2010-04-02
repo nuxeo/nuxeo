@@ -21,6 +21,8 @@ package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -56,10 +58,28 @@ public class BundleWO extends NuxeoArtifactWebObject {
         return getTargetBundleInfo();
     }
 
+    protected class ComponentInfoSorter implements Comparator<ComponentInfo> {
+        public int compare(ComponentInfo ci0, ComponentInfo ci1) {
+
+            if (ci0.isXmlPureComponent() && ! ci1.isXmlPureComponent()) {
+                return 1;
+            }
+            if (!ci0.isXmlPureComponent() && ci1.isXmlPureComponent()) {
+                return -1;
+            }
+
+            return ci0.getId().compareTo(ci1.getId());
+        }
+    }
+
     public List<ComponentWO> getComponents() {
         List<ComponentWO> result = new ArrayList<ComponentWO>();
         BundleInfo bundle = getTargetBundleInfo();
-        for (ComponentInfo ci : bundle.getComponents()) {
+
+        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(bundle.getComponents());
+        Collections.sort(cis, new ComponentInfoSorter());
+
+        for (ComponentInfo ci : cis) {
             result.add((ComponentWO)ctx.newObject("component", ci.getId()));
         }
         return result;

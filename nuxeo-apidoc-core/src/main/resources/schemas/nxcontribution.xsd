@@ -9,7 +9,6 @@
     </xs:sequence>
   </xs:complexType>
 
-
   <xs:element name="contribId" type="xs:string"/>
   <xs:element name="targetComponentName" type="xs:string"/>
   <xs:element name="extensionPoint" type="xs:string"/>

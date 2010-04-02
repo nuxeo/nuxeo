@@ -16,7 +16,7 @@
 
   <div class="foldablePannel">
 
-  <span class="componentId">Component Id : ${componentItem.id}</span> <br/>
+  <span class="componentId">ExtensionPoint Id : ${extensionPointItem.id}</span> <br/>
 
   <p><@docContent docItem=extensionPointDesc /></p>
 
@@ -35,7 +35,7 @@
   <h4> Known contributions </h4>
   <ul>
   <#list extensionPointItem.extensions as contrib>
-    <li>From <A href="${Root.path}/${distId}/viewComponent/${contrib.targetComponentName.name}"> ${contrib.targetComponentName.name}</A> contribution : <A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
+    <li><A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
   </#list>
   </ul>
   </p>

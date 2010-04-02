@@ -24,9 +24,7 @@
       <#list attachementKeys as attachementName>
        <div class="attachementTitle">${attachementName}</div>
        <div class="attachementContent">
-       <pre><code>
-       ${attachements[attachementName]?html}
-       </code></pre>
+       <pre><code>${attachements[attachementName]?html}</code></pre>
        </div>
     </#list>
 </#if>

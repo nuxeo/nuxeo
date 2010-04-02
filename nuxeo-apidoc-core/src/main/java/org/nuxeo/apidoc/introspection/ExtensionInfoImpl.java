@@ -50,6 +50,11 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         return targetComponentName.getName() + "--" + extensionPoint;
     }
 
+    public String getComponentName() {
+        return component.getId();
+    }
+
+
     public ComponentInfoImpl getComponent() {
         return component;
     }

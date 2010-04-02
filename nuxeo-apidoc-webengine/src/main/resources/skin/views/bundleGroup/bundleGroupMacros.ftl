@@ -6,6 +6,7 @@
   <#assign bundleGroupDocs=bundleGroupWO.getAssociatedDocuments()/>
   <#assign bundleGroupDesc=bundleGroupDocs.getDescription(Context.getCoreSession())/>
   <#assign bundles=bundleGroupWO.getBundles()/>
+  <#assign subGroups=bundleGroupWO.getSubGroups()/>
 
   <div id="BundleGroup.${bundleGroupItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <div class="blocTitle bTitle${nestedLevel}" id="${bundleGroupItem.id}"> BundleGroup ${bundleGroupDesc.title}
@@ -16,6 +17,27 @@
 
   <div class="foldablePannel">
   <p><@docContent docItem=bundleGroupDesc /></p>
+
+  <#if (subGroups?size>0)>
+  ${bundleGroupDesc.title} is contains ${subGroups?size} sub BundleGroups.
+
+  <table class="linkTable">
+  <#list subGroups as subGroup>
+  <tr>
+  <td>
+  ${subGroup.associatedDocuments.getDescription(Context.getCoreSession()).title}
+  </td>
+  <td>
+  <A href="#BundleGroup.${subGroup.nxArtifact.id}">${subGroup.nxArtifact.id}</A>
+  </td>
+  </tr>
+  </#list>
+  </table>
+
+  <#list subGroups as subGroup>
+   <@viewBundleGroup bundleGroupWO=subGroup />
+  </#list>
+  </#if>
 
   ${bundleGroupDesc.title} is composed of ${bundles?size} bundles.
 

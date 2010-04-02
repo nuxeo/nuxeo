@@ -143,9 +143,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-
-
-        return getView("../aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView");
+        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView");
     }
 
     @GET

@@ -80,5 +80,15 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
         return result;
     }
 
+    public List<BundleGroupWO> getSubGroups() {
+        List<BundleGroupWO> result = new ArrayList<BundleGroupWO>();
+
+        BundleGroup group = getTargetBundleGroup();
+        for (BundleGroup bg : group.getSubGroups()) {
+            result.add((BundleGroupWO)ctx.newObject("bundleGroup", bg.getId()));
+        }
+        return result;
+    }
+
 
 }
