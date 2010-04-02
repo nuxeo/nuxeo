@@ -55,6 +55,8 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     public URL getXmlFileUrl();
 
+    public String getXmlFileName();
+
     public String getXmlFileContent() throws IOException;
 
 }

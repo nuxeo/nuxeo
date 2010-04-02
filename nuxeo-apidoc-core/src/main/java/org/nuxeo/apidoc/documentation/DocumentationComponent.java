@@ -174,8 +174,9 @@ public class DocumentationComponent extends DefaultComponent implements
         doc.setPathInfo(getDocumentationRoot(session).getPathAsString(), name);
         doc.setPropertyValue("dc:title", title);
         Blob blob = new StringBlob(content);
-        blob.setFilename(item.getArtifactType());
+        blob.setFilename(type);
         blob.setMimeType("text/plain");
+        blob.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable)blob);
         doc.setPropertyValue("nxdoc:target", item.getId());
         doc.setPropertyValue("nxdoc:targetType", item.getArtifactType());
@@ -195,7 +196,11 @@ public class DocumentationComponent extends DefaultComponent implements
     protected DocumentModel updateDocumenModel(DocumentModel doc, DocumentationItem item) throws ClientException{
 
         doc.setPropertyValue("dc:title", item.getTitle());
-        doc.setPropertyValue("file:content", new StringBlob(item.getContent()));
+        Blob content = new StringBlob(item.getContent());
+        content.setMimeType("text/plain");
+        content.setFilename(item.getTypeLabel());
+        content.setEncoding("utf-8");
+        doc.setPropertyValue("file:content", (Serializable) content);
         doc.setPropertyValue("nxdoc:documentationId", item.getId());
         doc.setPropertyValue("nxdoc:nuxeoApproved", item.isApproved());
         doc.setPropertyValue("nxdoc:renderingType", item.getRenderingType());
@@ -210,6 +215,7 @@ public class DocumentationComponent extends DefaultComponent implements
                 Blob blob = new StringBlob(attData.get(fileName));
                 blob.setFilename(fileName);
                 blob.setMimeType("text/plain");
+                blob.setEncoding("utf-8");
 
                 fileItem.put("file", (Serializable) blob);
                 fileItem.put("filename", fileName);

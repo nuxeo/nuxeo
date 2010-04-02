@@ -134,6 +134,20 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         this.xmlFileUrl = xmlFileUrl;
     }
 
+    public String getXmlFileName() {
+
+        if (xmlFileUrl==null) {
+            return "";
+        }
+        String path = xmlFileUrl.getPath();
+        String[] parts = path.split("!");
+        if (parts.length==2) {
+            return parts[1];
+        } else {
+            return path;
+        }
+    }
+
     public String getXmlFileContent() {
 
         if (xmlFileUrl==null) {

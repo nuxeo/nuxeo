@@ -41,10 +41,11 @@
        ${componentDesc.title} holds a Java component (implementation class : ${componentItem.componentClass})
   </#if>
   <br/>
+  <br/>
 
   <p><@docContent docItem=componentDesc /></p>
 
-  Component <span class="resourceToggle"> XML Definition </span>.
+  Component XML descriptor <span class="resourceToggle"> ${componentItem.xmlFileName} </span>
     <div class="hiddenResource">
     <pre><code>
     ${componentItem.xmlFileContent?html}
@@ -55,7 +56,7 @@
 
 
   <#if (services?size>0) >
-
+  <br/>
   <b>Declared services</b>
   <p>
   ${componentDesc.title} contains ${services?size} services. <br/>

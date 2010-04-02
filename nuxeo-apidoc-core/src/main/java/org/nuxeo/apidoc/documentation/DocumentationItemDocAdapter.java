@@ -47,6 +47,12 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     public String getContent() {
         try {
             Blob blob = (Blob) doc.getPropertyValue("file:content");
+            if (blob==null) {
+                return "";
+            }
+            if (blob.getEncoding()==null || blob.getEncoding()=="") {
+                blob.setEncoding("utf-8");
+            }
             return blob.getString();
         } catch (Exception e) {
             log.error("Error while reading content", e);
@@ -149,12 +155,15 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     public Map<String, String> getAttachements() {
 
         Map<String, String> attachements = new LinkedMap();
-
         try {
             List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
             if (atts!=null) {
                 for (Map<String, Serializable> att : atts) {
-                    attachements.put((String)att.get("filename"), ((Blob)att.get("file")).getString());
+                    Blob attBlob = (Blob) att.get("file");
+                    if (attBlob.getEncoding()==null || attBlob.getEncoding()=="") {
+                        attBlob.setEncoding("utf-8");
+                    }
+                    attachements.put((String)att.get("filename"), attBlob.getString());
                 }
             }
         }

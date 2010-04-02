@@ -60,7 +60,7 @@
         ${component.associatedDocuments.getDescription(Context.getCoreSession()).title}
         </td>
         <td>
-        <A href="#Component.${component.nxArtifact.id}">${component.nxArtifact.id}</A>
+        <A href="#Component.${component.nxArtifact.id}">${component.nxArtifact.xmlFileName}</A>
         </td>
       </tr>
     </#list>

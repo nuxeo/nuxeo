@@ -25,13 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -170,6 +168,15 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         } catch (IOException e) {
             log.error("Error while reading blob", e);
             return "";
+        }
+    }
+
+    public String getXmlFileName() {
+        Blob xml = safeGet(Blob.class, "file:content", null);
+        if (xml!=null) {
+            return xml.getFilename();
+        } else {
+            return null;
         }
     }
 
