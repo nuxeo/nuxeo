@@ -17,6 +17,8 @@ package org.nuxeo.theme.editor.filters;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.theme.elements.Element;
+import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;
 
@@ -30,12 +32,10 @@ public final class ElementUid extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
-        final String markup = info.getMarkup();
-        if (markup.startsWith("<@nxthemes_fragment")
-                || markup.startsWith("<nxthemes:fragment")) {
+        if (info.isRenderingPostponed(cache)) {
             return info;
         }
-        
+        final String markup = info.getMarkup();
         final Matcher firstMatcher = firstTagPattern.matcher(markup);
         final Matcher othersMatcher = otherTagsPattern.matcher(markup);
 
@@ -52,8 +52,8 @@ public final class ElementUid extends StandaloneFilter {
         String f = "";
 
         if (inBrackets.endsWith("/")) {
-            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll("/$",
-                    "").trim(), info.getElement().getUid(),
+            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll(
+                    "/$", "").trim(), info.getElement().getUid(),
                     othersMatcher.group(1));
         } else {
             f = String.format("<%s id=\"e%s\">%s", inBrackets,

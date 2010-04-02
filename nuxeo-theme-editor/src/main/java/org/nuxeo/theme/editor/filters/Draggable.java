@@ -21,9 +21,7 @@ public final class Draggable extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
-        final String markup = info.getMarkup();
-        if (markup.startsWith("<@nxthemes_fragment")
-                || markup.startsWith("<nxthemes:fragment")) {
+        if (info.isRenderingPostponed(cache)) {
             return info;
         }
         info.setMarkup(String.format(
