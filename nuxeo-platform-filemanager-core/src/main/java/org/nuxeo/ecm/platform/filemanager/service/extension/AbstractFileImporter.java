@@ -177,6 +177,9 @@ public abstract class AbstractFileImporter implements FileImporter {
         DocumentModel container = documentManager.getDocument(containerRef);
 
         Type containerType = typeService.getType(container.getType());
+        if (containerType == null) {
+            return;
+        }
         List<String> subTypes = new ArrayList<String>(
                 containerType.getAllowedSubTypes().keySet());
         if (!subTypes.contains(typeName)) {
