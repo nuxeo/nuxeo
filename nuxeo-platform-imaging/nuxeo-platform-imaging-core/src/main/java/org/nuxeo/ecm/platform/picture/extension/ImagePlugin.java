@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
@@ -77,10 +78,10 @@ public class ImagePlugin extends AbstractFileImporter {
             // Creating an unique identifier
             String docId = IdUtils.generateId(title);
 
-            DocumentModel doc = documentManager.createDocumentModel(path,
+            docModel = documentManager.createDocumentModel(path,
                     docId, ImagingDocumentConstants.PICTURE_TYPE_NAME);
             try {
-                DocumentModel parent = documentManager.getDocument(docModel.getParentRef());
+                DocumentModel parent = documentManager.getDocument(new PathRef(path));
                 ArrayList<Map<String, Object>> pictureTemplates = null;
                 if (parent.getType().equals(
                         ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME)) {
@@ -94,7 +95,7 @@ public class ImagePlugin extends AbstractFileImporter {
             } catch (Exception e) {
                 log.error("Picture.views generation failed", e);
             }
-            docModel = documentManager.createDocument(doc);
+            docModel = documentManager.createDocument(docModel);
         }
         documentManager.save();
 
