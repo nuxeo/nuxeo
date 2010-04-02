@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +28,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
@@ -61,28 +55,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);
-
-        // perform the security checks
-        PathRef containerRef = new PathRef(path);
-        if (!documentManager.hasPermission(containerRef,
-                SecurityConstants.READ_PROPERTIES)
-                || !documentManager.hasPermission(containerRef,
-                        SecurityConstants.ADD_CHILDREN)) {
-            throw new DocumentSecurityException(
-                    "Not enough rights to create folder");
-        }
-        DocumentModel container = documentManager.getDocument(containerRef);
-
         String typeName = getTypeName();
-        Type containerType = typeService.getType(container.getType());
-        List<String> subTypes = new ArrayList<String>(
-                containerType.getAllowedSubTypes().keySet());
-        if (!subTypes.contains(typeName)) {
-            throw new ClientException(
-                    String.format(
-                            "Cannot create document of type %s in container with type %s",
-                            typeName, containerType.getId()));
-        }
+        doSecurityCheck(documentManager, path, typeName, typeService);
 
         String filename = FileManagerUtils.fetchFileName(fullname);
         input.setFilename(filename);

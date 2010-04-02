@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -36,6 +37,8 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
     protected FileManager service;
 
     protected DocumentModel root;
+
+    protected DocumentModel workspace;
 
     @Override
     public void setUp() throws Exception {
@@ -57,6 +60,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         openRepository();
         service = Framework.getService(FileManager.class);
         root = coreSession.getRootDocument();
+        createWorkspace();
     }
 
     @Override
@@ -79,6 +83,13 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         super.tearDown();
     }
 
+    private void createWorkspace() throws ClientException {
+        DocumentModel workspace = coreSession.createDocumentModel(
+                root.getPathAsString(), "workspace", "Workspace");
+        coreSession.createDocument(workspace);
+        this.workspace = workspace;
+    }
+
     protected File getTestFile(String relativePath) {
         return new File(FileUtils.getResourcePathFromContext(relativePath));
     }
@@ -90,7 +101,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.doc");
+                workspace.getPathAsString(), true, "test-data/hello.doc");
         assertNotNull(doc);
         assertEquals("hello", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
@@ -105,7 +116,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.doc");
+                workspace.getPathAsString(), true, "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -118,7 +129,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
         // create again with same file
         doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.doc");
+                workspace.getPathAsString(), true, "test-data/hello.doc");
         assertNotNull(doc);
 
         DocumentRef newDocRef = doc.getRef();
@@ -139,7 +150,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         ByteArrayBlob input = new ByteArrayBlob(content, "application/msword");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.doc");
+                workspace.getPathAsString(), true, "test-data/hello.doc");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -149,7 +160,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
         // update it with another file with same name
         doc = service.updateDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), "test-data/update/hello.doc");
+                workspace.getPathAsString(), "test-data/update/hello.doc");
         assertNotNull(doc);
 
         DocumentRef newDocRef = doc.getRef();
@@ -168,7 +179,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.xml");
         assertNotNull(doc);
         assertEquals("hello", doc.getProperty("dublincore", "title"));
         assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
@@ -182,7 +193,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         ByteArrayBlob input = new ByteArrayBlob(content, "application/xml");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.xml");
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
@@ -194,7 +205,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
         // create again with same file
         doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/hello.xml");
+                workspace.getPathAsString(), true, "test-data/hello.xml");
         assertNotNull(doc);
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);

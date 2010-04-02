@@ -24,9 +24,12 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
+import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.runtime.api.Framework;
@@ -157,6 +160,34 @@ public abstract class AbstractFileImporter implements FileImporter {
         doc.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         doc.putContextData(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, VersioningActions.ACTION_INCREMENT_MINOR);
         return documentManager.saveDocument(doc);
+    }
+
+    protected void doSecurityCheck(CoreSession documentManager, String path,
+            String typeName, TypeManager typeService)
+            throws DocumentSecurityException, ClientException {
+        // perform the security checks
+        PathRef containerRef = new PathRef(path);
+        if (!documentManager.hasPermission(containerRef,
+                SecurityConstants.READ_PROPERTIES)
+                || !documentManager.hasPermission(containerRef,
+                        SecurityConstants.ADD_CHILDREN)) {
+            throw new DocumentSecurityException(
+                    "Not enough rights to create folder");
+        }
+        DocumentModel container = documentManager.getDocument(containerRef);
+
+        Type containerType = typeService.getType(container.getType());
+        if (containerType == null) {
+            return;
+        }
+        List<String> subTypes = new ArrayList<String>(
+                containerType.getAllowedSubTypes().keySet());
+        if (!subTypes.contains(typeName)) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot create document of type %s in container with type %s",
+                            typeName, containerType.getId()));
+        }
     }
 
 }
