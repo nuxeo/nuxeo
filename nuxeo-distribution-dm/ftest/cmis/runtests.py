@@ -2,6 +2,7 @@
 
 import cmislibtest
 import unittest
+import sys
 
 TESTS = """
 #cmislibtest.ACLTest.testApplyACL
