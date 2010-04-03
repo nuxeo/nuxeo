@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * A set of modification descriptors.
  * <p>
  * This class is not thread safe.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ModificationSet implements Serializable, Iterable<Modification> {
@@ -77,7 +77,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
 
     /**
      * Retrieves the merged modification value for the DocumentRef
-     * 
+     *
      * @param ref The document ref
      * @return Merged modification relating to this document
      * @deprecated returns a merged modification, unsafe to use this where order
@@ -132,7 +132,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
 
     /**
      * Removes any modifications for the provided document ref
-     * 
+     *
      * @param ref The document ref
      * @return Merged modification relating to this document
      * @deprecated returns a merged modification, unsafe to use this where order

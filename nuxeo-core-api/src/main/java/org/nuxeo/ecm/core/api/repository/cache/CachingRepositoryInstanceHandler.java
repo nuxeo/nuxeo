@@ -96,7 +96,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     // --------------------------- Document Provider API --------------------------------
-    
+
     /**
      * The doc
      * cache should be always updated first (before paths cache). It is not a blocking issue if we
@@ -112,7 +112,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         if (cache.containsKey(id)) { // doc is already in cache, return cached instance
             return cache.get(id);
         }
-        cache.put(id, doc); 
+        cache.put(id, doc);
         path2Ids.put(doc.getPathAsString(), id);
         childrenCache.remove(id);
         return doc;
@@ -125,7 +125,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
             /* Doc maybe gone already, but remove id anyway for safety */
             childrenCache.remove(id);
             ((DualHashBidiMap)path2Ids).removeValue(id);
-            return doc; 
+            return doc;
         }
         // else assume a path
         String path = ((PathRef) ref).value;
@@ -136,7 +136,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         }
         return null;
     }
-    
+
     public synchronized DocumentModel getCachedDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             return cache.get(((IdRef) ref).value);
@@ -165,7 +165,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         }
         return cacheDocument(session.getDocument(ref));
     }
-    
+
 
     public synchronized DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
         DocumentModel doc = getCachedDocument(parent);
@@ -180,7 +180,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
                     return doc;
                 }
             }
-        } 
+        }
         return cacheDocument(session.getChild(parent, name));
     }
 
@@ -287,7 +287,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
 
-    /** Children Cache 
+    /** Children Cache
      * @throws ClientException */
 
     public String getDocumentId(DocumentRef docRef) {
