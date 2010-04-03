@@ -87,4 +87,9 @@ for line in TESTS.split("\n"):
 
 suite = unittest.TestLoader().loadTestsFromNames(testNames)
 
-unittest.TextTestRunner(verbosity=1).run(suite)
+status = unittest.TextTestRunner(verbosity=1).run(suite)
+
+if not status.wasSuccessful():
+    sys.exit(1)
+
+
