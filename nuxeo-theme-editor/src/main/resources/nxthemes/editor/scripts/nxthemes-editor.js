@@ -1994,7 +1994,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
 
 NXThemesStyleManager.selectNamedStyle = function(uid) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_named_style"; 
-      new Ajax.Request(url, {
+    new Ajax.Request(url, {
          method: 'post',
          parameters: {
              uid: uid
@@ -2009,9 +2009,61 @@ NXThemesStyleManager.selectNamedStyle = function(uid) {
       });
 };
 
+NXThemesStyleManager.setStyleInheritance = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var id = data.get('id');
+    var themeName = data.get('theme_name');	
+    var parent = info.options.choice;
+    var url = nxthemesBasePath + "/nxthemes-editor/set_style_inheritance";	  
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,		 	
+             style_name: id,
+			 ancestor_name: parent
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+             NXThemesEditor.refreshUndoActions();			 
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+      });
+};
+
+NXThemesStyleManager.removeStyleInheritance = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var themeName = data.get('theme_name');	
+    var id = data.get('id');	
+	var url = nxthemesBasePath + "/nxthemes-editor/remove_style_inheritance";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+		 	 theme_name: themeName,
+             style_name: id
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+             NXThemesEditor.refreshUndoActions();			 
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+      });
+};
+
 //actions
 NXThemes.addActions({
-  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView
+  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView,
+  'set style inheritance': NXThemesStyleManager.setStyleInheritance,
+  'remove style inheritance': NXThemesStyleManager.removeStyleInheritance
 });
 
 // Fragment factory

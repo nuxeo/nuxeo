@@ -1,4 +1,5 @@
-
+<!-- style menu -->
+<@nxthemes_view resource="style-menu.json" />   
 
 <div id="nxthemesStyleManager" class="nxthemesScreen">
 
@@ -153,6 +154,27 @@
     <ul>
       <#list objects as s>
         <li>${s.name}
+        
+         <ins class="model">
+          {"id": "style_${s.name}",
+           "type": "named style",
+           "data": {
+             "title": "${s.name}",
+             "id": "${s.name}",
+             "theme_name": "${current_theme_name}",
+             "styles": [
+               <#list named_styles as style>
+                 <#if style.name != s.name>
+                   {"label": "${style.name}", "choice": "${style.name}", "selected": "false"},
+                 </#if>
+               </#list>
+             ],
+             "can inherit": true,
+             "inherits": true          
+           }
+          }
+          </ins>
+        
           <@listTree Root.listNamedStylesDirectlyInheritingFrom(s) />
         </li>
       </#list>

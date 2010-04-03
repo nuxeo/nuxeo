@@ -713,6 +713,33 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
+
+  @POST
+  @Path("set_style_inheritance")
+  public void makeStyleInherit() {
+      FormData form = ctx.getForm()
+      String styleName = form.getString("style_name")
+      String ancestorName = form.getString("ancestor_name")
+      String themeName = form.getString("theme_name")
+      try {
+          Editor.setStyleInheritance(styleName, ancestorName, themeName)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }
+
+  @POST
+  @Path("remove_style_inheritance")
+  public void removeStyleInheritance() {
+      FormData form = ctx.getForm()
+      String styleName = form.getString("style_name")
+      String themeName = form.getString("theme_name")      
+      try {
+          Editor.removeStyleInheritance(styleName, themeName)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }  
   
   @POST
   @Path("move_element")

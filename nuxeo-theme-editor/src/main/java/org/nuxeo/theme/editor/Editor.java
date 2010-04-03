@@ -417,6 +417,38 @@ public class Editor {
         saveTheme(themeName);
     }
 
+    public static void removeStyleInheritance(String styleName, String themeName)
+            throws ThemeException {
+        saveToUndoBuffer(themeName, "remove style inheritance");
+        ThemeManager themeManager = Manager.getThemeManager();
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        if (style == null) {
+            throw new ThemeException("Could not find named style: " + styleName);
+        }
+        ThemeManager.removeInheritanceTowards(style);
+        saveTheme(themeName);
+    }
+
+    public static void setStyleInheritance(String styleName, String ancestorName,
+            String themeName) throws ThemeException {
+        saveToUndoBuffer(themeName, "set style inheritance");
+        ThemeManager themeManager = Manager.getThemeManager();
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        if (style == null) {
+            throw new ThemeException("Could not find named style: " + styleName);
+        }
+        Style ancestor = (Style) themeManager.getNamedObject(themeName,
+                "style", ancestorName);
+        if (ancestor == null) {
+            throw new ThemeException("Could not find named style: "
+                    + ancestorName);
+        }
+        themeManager.makeFormatInherit(style, ancestor);
+        saveTheme(themeName);
+    }
+
     public static String addPage(String path) throws ThemeException,
             NodeException, ThemeIOException {
 
@@ -936,7 +968,8 @@ public class Editor {
         try {
             xmlSource = serializer.serializeToXml(themeDef.getSrc(), 0);
         } catch (ThemeIOException e) {
-            throw new ThemeException("Could not save theme into the under buffer", e);
+            throw new ThemeException(
+                    "Could not save theme into the under buffer", e);
         }
         UndoBuffer undoBuffer = SessionManager.getUndoBuffer(themeName);
         if (undoBuffer == null) {
