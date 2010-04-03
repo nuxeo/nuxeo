@@ -17,8 +17,6 @@ package org.nuxeo.theme.editor.filters;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.theme.elements.Element;
-import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;
 

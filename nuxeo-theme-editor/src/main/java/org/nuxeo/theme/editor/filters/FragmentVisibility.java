@@ -77,9 +77,11 @@ public class FragmentVisibility extends StandaloneFilter {
                         format.getName()));
                 content.append("</div>");
                 info.setMarkup(content.toString());
+                info.setDirty(false);
                 return info;
             } else if (!visible) {
                 info.setMarkup("<div></div>");
+                info.setDirty(false);
                 return info;
             }
 
