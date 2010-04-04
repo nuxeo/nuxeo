@@ -292,7 +292,7 @@ public class Editor {
     public static void deletePage(String pagePath) throws ThemeIOException,
             ThemeException {
         final String themeName = pagePath.split("/")[0];
-        saveToUndoBuffer(themeName, "delete theme");
+        saveToUndoBuffer(themeName, "delete page");
 
         ThemeManager themeManager = Manager.getThemeManager();
         themeManager.deletePage(pagePath);

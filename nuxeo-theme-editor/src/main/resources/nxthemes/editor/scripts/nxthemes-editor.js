@@ -725,11 +725,11 @@ NXThemesEditor.addTheme = function(viewid) {
     var name = prompt("Enter a theme name:", "");
     if (name === "") {
         window.alert("Theme names cannot be empty.");
-        return "";
+        return;
     }
     if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Theme names may only contain lower-case alpha-numeric characters, digits, underscores and dashes");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_theme";
     new Ajax.Request(url, {
@@ -754,11 +754,11 @@ NXThemesEditor.addPage = function(themeName) {
     var name = prompt("Please enter a page name:", "");
     if (name === "") {
         window.alert("Page names cannot be empty.");
-        return "";
+        return;
     }
     if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_page";
     new Ajax.Request(url, {
@@ -800,11 +800,11 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
     var name = prompt("Please enter a preset name:", "");
     if (name === "") {
         window.alert("Preset names cannot be empty.");
-        return "";
+        return;
     }
     if (!NXThemesEditor.isLowerCaseOrSpace(name)) {
         window.alert("Preset names may only contain lower case characters and spaces.");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
     new Ajax.Request(url, {
