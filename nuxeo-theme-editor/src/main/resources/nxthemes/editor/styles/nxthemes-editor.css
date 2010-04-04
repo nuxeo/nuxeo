@@ -745,19 +745,22 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesForm button {
-  border-style: solid;
-  border-width: 1px;
-  border-color: #ccc #333 #333 #ccc;
-  background-color: #fff;
   text-transform: uppercase;
-  font: 12px Arial, sans-serif;
+  font: 11px Arial, sans-serif;
   margin: 15px 0 0 0;
-  padding: 0 3px;
+  padding: 1px 8px;
+  -moz-border-radius: 11px;
+  -webkit-border-radius: 11px;
+  border-radius: 11px;  
+  border: 1px solid #ccc;
+  background: #f2f2f2 url(${basePath}/skin/nxthemes-editor/img/white-button-bg.png) repeat-x left top;
+  color: #333;
 }
 
 .nxthemesForm button:hover {
-  background-color: #ffc;
-  border-color: #fc0;
+  background: #f2f2f2 url(${basePath}/skin/nxthemes-editor/img/white-button-bg.png) repeat-x left bottom;
+  border-color: #999;
+  color: #444;
   cursor: pointer;
 }
 
