@@ -1476,22 +1476,23 @@ ul.namedStyleSelector li a.selected {
 
 table.fragmentFactory {
   width: 100%;
-  border-left: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #666;
+  border-bottom: 1px solid #666;
+  border-collapse: collapse;
 }
 
 table.fragmentFactory th {
-  border-right: 1px solid #ccc;
-  border-top: 1px solid #ccc;
+  border-right: 1px solid #666;
+  border-top: 1px solid #000;
   text-align: left;
   padding: 5px 7px;
-  background-color: #eee;
-  color: #333;
-  font-size: 11px;
+  color: #fff;
+  font-size: 12px;
+  background: #000 url(${basePath}/skin/nxthemes-editor/img/th-bg.png) repeat-x; 
 }
 
 table.fragmentFactory td {
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #666;
 }
 
 .nxthemesDropDownMenu {

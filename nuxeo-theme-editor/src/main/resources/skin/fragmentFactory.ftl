@@ -13,7 +13,7 @@
     2. Select view
   </th>
   <th style="width: 40%">
-    3. Add fragment 
+    3. Review selection
   </th>
   </tr>
   
@@ -39,9 +39,9 @@
   
   <td style="vertical-align: top">
     <#if selected_fragment_type & selected_fragment_view>
-    <div>
-      <button onclick="NXThemesEditor.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_element_id}'); return false;">ADD</button>
-    </div>
+    <form class="nxthemesForm">
+      <button onclick="NXThemesEditor.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_element_id}'); return false;">ADD FRAGMENT</button>
+    </form>
     </#if>
   </td>
   </tr>
