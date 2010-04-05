@@ -1194,6 +1194,15 @@ public class Main extends ModuleRoot {
           if (fragments.contains(fragmentType)) {
               continue
           }
+          def views = []
+          for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+              if (templateEngine.equals(viewType.getTemplateEngine())) {
+                  views.add(viewType)
+              }
+          }
+          if (views.isEmpty()) {
+              continue
+          }
           fragments.add(fragmentType)
       }
       return fragments
