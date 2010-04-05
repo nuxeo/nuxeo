@@ -111,27 +111,6 @@ NXThemesEditor.moveElement = function(info) {
     });
 };
 
-NXThemesEditor.addFragment = function(typeName, destId) {
-    var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment";
-    new Ajax.Request(url, {
-         method: 'post',
-         parameters: {
-             type_name: typeName,
-             dest_id: destId
-         },
-         onSuccess: function(r) {
-             NXThemesEditor.switchToCanvas();
-             NXThemesEditor.refreshCanvas();
-             NXThemesEditor.refreshUndoActions();
-         },
-         onFailure: function(r) {
-             var text = r.responseText;
-             window.alert(text);
-         }         
-    });
-    return false;
-};
-
 NXThemesEditor.editElement = function(info) {
     var id = NXThemesEditor.extractElementUid(info.target);
     var url = nxthemesBasePath + "/nxthemes-editor/select_element";
@@ -2106,3 +2085,42 @@ NXThemesFragmentFactory.selectView = function(view) {
     });
 };
 
+NXThemesFragmentFactory.selectStyle = function(style) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_fragment_style"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             style: style
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("fragment factory").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
+
+
+NXThemesFragmentFactory.addFragment = function(typeName, styleName, destId) {
+    var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             type_name: typeName,
+			 style_name: styleName,
+             dest_id: destId
+         },
+         onSuccess: function(r) {
+             NXThemesEditor.switchToCanvas();
+             NXThemesEditor.refreshCanvas();
+             NXThemesEditor.refreshUndoActions();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+    return false;
+};

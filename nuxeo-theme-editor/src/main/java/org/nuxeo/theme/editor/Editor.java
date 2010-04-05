@@ -430,8 +430,8 @@ public class Editor {
         saveTheme(themeName);
     }
 
-    public static void setStyleInheritance(String styleName, String ancestorName,
-            String themeName) throws ThemeException {
+    public static void setStyleInheritance(String styleName,
+            String ancestorName, String themeName) throws ThemeException {
         saveToUndoBuffer(themeName, "set style inheritance");
         ThemeManager themeManager = Manager.getThemeManager();
         Style style = (Style) themeManager.getNamedObject(themeName, "style",
@@ -879,8 +879,8 @@ public class Editor {
         }
     }
 
-    public static void insertFragment(Element destElement, String typeName)
-            throws NodeException, ThemeException {
+    public static void insertFragment(Element destElement, String typeName,
+            String styleName) throws NodeException, ThemeException {
         final String themeName = ThemeManager.getThemeOf(destElement).getName();
         saveToUndoBuffer(themeName, "add fragment");
 
@@ -897,10 +897,20 @@ public class Editor {
         String fragmentTypeName = typeName.split("/")[0];
         Fragment fragment = FragmentFactory.create(fragmentTypeName);
         // add a temporary view to the fragment
-        Format widget = themeManager.createWidget();
+        Widget widget = themeManager.createWidget();
         String viewTypeName = typeName.split("/")[1];
         widget.setName(viewTypeName);
         ElementFormatter.setFormat(fragment, widget);
+        // set a style
+        if (!"".equals(styleName)) {
+            Style ancestor = (Style) themeManager.getNamedObject(themeName,
+                    "style", styleName);
+            if (ancestor != null) {
+                Style style = themeManager.createStyle();
+                themeManager.makeFormatInherit(style, ancestor);
+                ElementFormatter.setFormat(fragment, style);
+            }
+        }
         // insert the fragment
         destContainer.addChild(fragment);
         // set the fragment order
