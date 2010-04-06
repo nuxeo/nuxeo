@@ -23,7 +23,7 @@
   <tr>
   <td style="vertical-align: top">   
   <ul class="nxthemesSelector">
-  <#list fragments as fragment>
+  <#list fragments?sort_by('typeName') as fragment>
     <li <#if fragment.getTypeName() = selected_fragment_type>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesFragmentFactory.selectFragmentType('${fragment.getTypeName()}')">
     <img src="${basePath}/skin/nxthemes-editor/img/fragment-16.png" width="16" height="16" /> ${fragment.getTypeName()}</a></li>
@@ -34,7 +34,7 @@
   <td style="vertical-align: top">
   <#if views>
   <ul class="nxthemesSelector">
-  <#list views as view>
+  <#list views?sort_by('viewName') as view>
     <li <#if view.getViewName() = selected_fragment_view>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesFragmentFactory.selectView('${view.getViewName()}')">
     <img src="${basePath}/skin/nxthemes-editor/img/view-16.png" width="16" height="16" /> ${view.getViewName()}</a></li>
@@ -46,7 +46,7 @@
   <td style="vertical-align: top">   
     <#if selected_fragment_type & selected_fragment_view>
     <ul class="nxthemesSelector">
-    <#list styles as style>
+    <#list styles?sort_by('name') as style>
       <li <#if style.name = selected_fragment_style>class="selected"</#if>><a href="javascript:void(0)"
       onclick="NXThemesFragmentFactory.selectStyle('${style.name}')"><img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16" /> ${style.name}</a></li>
     </#list>
@@ -61,6 +61,7 @@
 
   <td style="vertical-align: top; text-align: center">
     <#if selected_fragment_type & selected_fragment_view & selected_fragment_style>
+    
     <form class="nxthemesForm">
       <div>
         <button onclick="NXThemesFragmentFactory.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_fragment_style}', '${selected_element_id}'); return false;">ADD FRAGMENT</button>
