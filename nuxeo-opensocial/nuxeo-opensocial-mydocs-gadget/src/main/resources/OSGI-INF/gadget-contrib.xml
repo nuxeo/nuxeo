@@ -8,7 +8,7 @@
       <mountPoint>/mydocs</mountPoint>
       <entryPoint>mydocs.xml</entryPoint>
       <category>gadget.category.collaborative</category>
-      <icon>documents.jpg</icon>
+      <icon>documents_icon.png</icon>
     </internalGadget>
 
   </extension>

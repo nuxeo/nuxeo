@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<project name="nuxeo-opensocial-gadgets" default="deploy" basedir=".">
+<project name="nuxeo-opensocial-gadgets-core" default="deploy" basedir=".">
 
   <!-- From the pom.xml -->
-  <property name="name" value="nuxeo-opensocial-gadgets" />
+  <property name="name" value="nuxeo-opensocial-gadgets-core" />
   <property name="version" value="${version}" />
 
   <!-- Create a build.properties file from build.properties.sample
