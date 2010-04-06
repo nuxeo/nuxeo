@@ -17,6 +17,7 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -68,6 +69,12 @@ public class AnnotationScanner {
         return null;
     }
 
+    /**
+     * TODO when collecting annotations annotated with {@link Inherited} they will be collected twice.
+     * @param clazz
+     * @param result
+     * @param visitedClasses
+     */
     protected void collectAnnotations(Class<?> clazz, List<Annotation> result, Set<Class<?>> visitedClasses) {
         if (visitedClasses.contains(clazz)) {
             return;
@@ -76,7 +83,7 @@ public class AnnotationScanner {
         List<Annotation> partialResult = new ArrayList<Annotation>(); // collect only the annotation on this class
         List<Annotation> annos = classes.get(clazz);
         if (annos != null) {
-            partialResult.addAll(annos);
+            result.addAll(annos);
             return;
         }
         // collect local annotations
