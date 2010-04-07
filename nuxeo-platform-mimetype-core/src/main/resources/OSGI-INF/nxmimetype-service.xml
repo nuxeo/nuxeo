@@ -678,7 +678,7 @@
         <extension>jpg</extension>
         <extension>jpeg</extension>
       </extensions>
-    </mimetype>   
+    </mimetype>
     <mimetype normalized="image/x-portable-bitmap" binary="true"
       iconPath="image.gif">
       <mimetypes>
@@ -894,7 +894,7 @@
         <extension>mp4</extension>
       </extensions>
     </mimetype>
-    
+
     <mimetype normalized="audio/x-ms-wax" binary="true" iconPath="audio.png">
       <mimetypes>
         <mimetype>audio/x-ms-wax</mimetype>
@@ -1028,10 +1028,10 @@
     </mimetype>
 
     <!-- MIME types specific to RAW images; for more details see
-    	http://www.rawsamples.ch
-    	http://ufraw.sourceforge.net/wiki
-    	http://dotwhat.net/
-    	http://trac.imagemagick.org/browser/ImageMagick/trunk/config/mime.xml -->
+      http://www.rawsamples.ch
+      http://ufraw.sourceforge.net/wiki
+      http://dotwhat.net/
+      http://trac.imagemagick.org/browser/ImageMagick/trunk/config/mime.xml -->
 
     <!-- Canon RAW image file format -->
     <mimetype normalized="image/x-canon-cr2" binary="true"
@@ -1219,10 +1219,10 @@
         <mimetype>image/raw</mimetype>
       </mimetypes>
       <extensions>
-      	<extension>mos</extension>
-      	<extension>nrw</extension>
-      	<!-- Hasselblad RAW image file format -->
-      	<extension>3fr</extension>
+        <extension>mos</extension>
+        <extension>nrw</extension>
+        <!-- Hasselblad RAW image file format -->
+        <extension>3fr</extension>
       </extensions>
     </mimetype>
 
@@ -1236,6 +1236,17 @@
         <extension>mef</extension>
       </extensions>
     </mimetype>
+
+    <mimetype normalized="application/wordperfect"
+     binary="true" iconPath="wpd.png" oleSupported="false">
+     <mimetypes>
+       <mimetype>application/wordperfect</mimetype>
+     </mimetypes>
+     <extensions>
+       <extension>wpd</extension>
+     </extensions>
+   </mimetype>
+
 
   </extension>
 
