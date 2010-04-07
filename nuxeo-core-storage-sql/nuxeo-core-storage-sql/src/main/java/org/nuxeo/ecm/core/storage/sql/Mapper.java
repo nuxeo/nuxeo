@@ -40,9 +40,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
@@ -1951,9 +1951,10 @@ public class Mapper {
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
-
+   
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
+
         if (isLogEnabled()) {
             String sql = q.selectInfo.sql;
             if (limit != 0) {
@@ -1964,9 +1965,20 @@ public class Mapper {
             }
             logSQL(sql, q.selectParams);
         }
+
+        final Dialect dialect = session.getModel().getDialect();
+        
+        String sql = q.selectInfo.sql;
+        
+        if (!countTotal && dialect.supportsPaging()) { //  full results set not needed for counting
+            sql += " " + dialect.getPagingClause(limit, offset);
+            limit = 0;
+            offset = 0;
+        }
+        
         PreparedStatement ps = null;
         try {
-            ps = connection.prepareStatement(q.selectInfo.sql,
+            ps = connection.prepareStatement(sql,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
             int i = 1;
