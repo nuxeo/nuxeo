@@ -378,7 +378,8 @@ gadgets.io = function() {
         gadget : urlParams.url,
         container : urlParams.container || urlParams.synd || "default",
         // should we bypass gadget spec cache (e.g. to read OAuth provider URLs)
-        bypassSpecCache : gadgets.util.getUrlParameters().nocache || ""
+        bypassSpecCache : gadgets.util.getUrlParameters().nocache || "",
+        nocache : params.NO_CACHE || "0"
       };
 
       // OAuth goodies
@@ -519,7 +520,8 @@ gadgets.io.RequestParameters = gadgets.util.makeEnum([
   "OAUTH_TOKEN_NAME",
   "OAUTH_REQUEST_TOKEN",
   "OAUTH_REQUEST_TOKEN_SECRET",
-  "OAUTH_RECEIVED_CALLBACK"
+  "OAUTH_RECEIVED_CALLBACK",
+  "NO_CACHE"
 ]);
 
 gadgets.io.MethodType = gadgets.util.makeEnum([
