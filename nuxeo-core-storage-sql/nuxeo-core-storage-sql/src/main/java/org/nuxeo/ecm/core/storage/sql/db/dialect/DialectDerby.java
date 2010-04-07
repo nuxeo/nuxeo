@@ -401,7 +401,7 @@ public class DialectDerby extends Dialect {
     
     @Override
     public String getPagingClause(long limit, long offset) {
-        return String.format("OFFSET %d ROWS FETCH %d rows ONLY"); // available from 10.5
+        return String.format("OFFSET %d ROWS FETCH %d ROWS ONLY", limit, offset); // available from 10.5
     }
 
 }
