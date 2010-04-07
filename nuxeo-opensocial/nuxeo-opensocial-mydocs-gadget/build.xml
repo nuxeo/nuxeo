@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<project name="nuxeo-opensocial-gadgets-core" default="deploy-webengine" basedir=".">
+<project name="nuxeo-opensocial-mydocs-gadget" default="deploy-webengine" basedir=".">
 
   <!-- From the pom.xml -->
-  <property name="name" value="nuxeo-opensocial-gadgets-core" />
+  <property name="name" value="nuxeo-opensocial-mydocs-gadget" />
   <property name="version" value="${version}" />
 
   <!-- Create a build.properties file from build.properties.sample
@@ -44,6 +44,7 @@
     <exec executable="cmd" failonerror="true">
       <arg value="/c" />
       <arg value="mvn.bat" />
+      <arg value="clean" />
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
     </exec>

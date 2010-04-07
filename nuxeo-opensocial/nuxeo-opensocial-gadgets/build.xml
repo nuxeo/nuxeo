@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nuxeo-opensocial-gadgets" default="deploy" basedir=".">
+<project name="nuxeo-opensocial-gadgets" default="deploy-webengine" basedir=".">
 
   <!-- From the pom.xml -->
   <property name="name" value="nuxeo-opensocial-gadgets" />
@@ -50,9 +50,8 @@
   </target>
 
   <target name="copy" description="Copy files to JBoss">
-
     <echo message="${name}" />
-    <copy todir="${lm.portal.dir}/bundles/" overwrite="true">
+    <copy todir="${deploy.dir}/${nuxeo.ear}/system/" overwrite="true">
       <fileset dir="${build.dir}" casesensitive="yes">
         <include name="${name}-*.jar" />
         <exclude name="${name}-*-sources.jar" />
@@ -62,6 +61,7 @@
   </target>
 
   <target name="copy-webengine" description="Copy files to webengine">
+    <echo message="${name}" />
 	<copy todir="${webengine.bundle.dir}/" overwrite="true">
   	  <fileset dir="${build.dir}" casesensitive="yes">
   	    <include name="${name}-*.jar"/>

@@ -53,7 +53,8 @@ public class GadgetPortlet extends Portlet {
 
     private void buildPortlet() {
         this.setLayout(new FitLayout());
-        this.setTitle(this.gadget.getTitle());
+//        this.setTitle(this.gadget.getTitle());
+        this.setTitle("");
         if (!this.view.equals(DEFAULT_VIEW)) {
             this.setDraggable(false);
             this.setHideCollapseTool(true);
