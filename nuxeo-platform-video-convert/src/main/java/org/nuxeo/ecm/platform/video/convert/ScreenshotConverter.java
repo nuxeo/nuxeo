@@ -96,7 +96,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
                     positionParam));
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            properties.put("duration", extractDuration(result.getOutput()));
+            properties.put("duration", BaseVideoConverter.extractDuration(result.getOutput()));
             return new SimpleBlobHolderWithProperties(outBlob, properties);
         } catch (Exception e) {
             if (blob != null) {
