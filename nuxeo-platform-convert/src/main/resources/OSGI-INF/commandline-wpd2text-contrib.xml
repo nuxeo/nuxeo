@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.wpd2text.contrib">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+    <command name="wpd2text" enabled="true">
+      <commandLine>wpd2text</commandLine>
+      <parameterString> #{inFilePath}</parameterString>
+      <installationDirective>You need to install wpd2text (deb : libwpd-tools)  http://libwpd.sourceforge.net/download.html </installationDirective>
+    </command>
+
+  </extension>
+
+</component>

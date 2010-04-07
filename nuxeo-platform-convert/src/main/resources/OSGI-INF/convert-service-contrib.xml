@@ -9,6 +9,23 @@
       <sourceMimeType>application/zip</sourceMimeType>
     </converter>
 
+    <converter name="wpd2text" class="org.nuxeo.ecm.platform.convert.plugins.WordPerfect2TextConverter">
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">wpd2text</parameter>
+      </parameters>
+    </converter>
+
+    <converter name="wpd2html" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+               <sourceMimeType>application/wordperfect</sourceMimeType>
+               <destinationMimeType>text/html</destinationMimeType>
+               <parameters>
+                       <parameter name="ooo_host_name">${org.nuxeo.ecm.platform.transform.ooo.host.name}</parameter>
+                       <parameter name="ooo_host_port">${org.nuxeo.ecm.platform.transform.ooo.host.port}</parameter>
+               </parameters>
+    </converter>
+
     <converter name="pdf2html" class="org.nuxeo.ecm.platform.convert.plugins.PDF2HtmlConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
       <destinationMimeType>text/html</destinationMimeType>
@@ -16,7 +33,7 @@
         <parameter name="CommandLineName">pdftohtml</parameter>
       </parameters>
     </converter>
-    
+
     <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.PDF2ImageConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
@@ -149,6 +166,9 @@
       <sourceMimeType>
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
 
     <parameters>
         <parameter name="ooo_host_name">

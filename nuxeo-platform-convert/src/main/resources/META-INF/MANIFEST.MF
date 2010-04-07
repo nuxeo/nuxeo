@@ -11,4 +11,5 @@ Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-pdf2image-contrib.xml,
+ OSGI-INF/commandline-wpd2text-contrib.xml,
  OSGI-INF/ooo-server-daemon-framework.xml

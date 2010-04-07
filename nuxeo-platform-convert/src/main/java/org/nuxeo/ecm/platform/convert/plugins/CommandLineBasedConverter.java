@@ -149,7 +149,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
                 }
             }
 
-            ExecResult result = cls.execCommand(commandName, params);
+            ExecResult result = getCommandeLineService().execCommand(commandName, params);
 
             if (!result.isSuccessful()) {
                 throw new ConversionException("CommandLine returned code "
@@ -192,7 +192,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             return new ConverterCheckResult();
         }
 
-        CommandAvailability ca = cls.getCommandAvailability(commandName);
+        CommandAvailability ca = getCommandeLineService().getCommandAvailability(commandName);
 
         if (ca.isAvailable()) {
             return new ConverterCheckResult();
