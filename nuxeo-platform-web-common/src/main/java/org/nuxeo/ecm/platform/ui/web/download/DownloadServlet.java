@@ -81,7 +81,8 @@ public class DownloadServlet extends HttpServlet {
         } catch (URISyntaxException e1) {
             requestURI = req.getRequestURI();
         }
-        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/nxbigfile/", "");
+        String filePath = requestURI.replace(
+                VirtualHostHelper.getContextPath(req) + "/nxbigfile/", "");
         String[] pathParts = filePath.split("/");
 
         String repoName = pathParts[0];
@@ -109,18 +110,17 @@ public class DownloadServlet extends HttpServlet {
                 // BlobHolder urls
                 if (fieldPath.startsWith("/blobholder")) {
                     BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                    if (bh==null) {
+                    if (bh == null) {
                         return;
                     }
                     String bhPath = fieldPath.replace("/blobholder:", "");
                     if ("".equals(bhPath) || "0".equals(bhPath)) {
-                        blob= bh.getBlob();
+                        blob = bh.getBlob();
                     } else {
                         int idxbh = Integer.parseInt(bhPath);
                         blob = bh.getBlobs().get(idxbh);
                     }
-                }
-                else {
+                } else {
                     blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
                             DocumentModelUtils.decodePropertyName(fieldPath));
                     if (blob == null) {
@@ -134,7 +134,8 @@ public class DownloadServlet extends HttpServlet {
             }
 
             if (fileName == null || fileName.length() == 0) {
-                if (blob.getFilename()!=null && blob.getFilename().length()>0) {
+                if (blob.getFilename() != null
+                        && blob.getFilename().length() > 0) {
                     fileName = blob.getFilename();
                 } else {
                     fileName = "file";
@@ -148,8 +149,8 @@ public class DownloadServlet extends HttpServlet {
             resp.setContentType(blob.getMimeType());
 
             long fileSize = blob.getLength();
-            if (fileSize>0) {
-                resp.setContentLength((int)fileSize);
+            if (fileSize > 0) {
+                resp.setContentLength((int) fileSize);
             }
 
             OutputStream out = resp.getOutputStream();
@@ -160,18 +161,15 @@ public class DownloadServlet extends HttpServlet {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-        }
-        catch (ClientAbortException cae) {
+        } catch (ClientAbortException cae) {
             log.warn("Download aborted by client");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ServletException(e);
         } finally {
             if (resp != null) {
                 try {
                     resp.flushBuffer();
-                }
-                catch (ClientAbortException cae) {
+                } catch (ClientAbortException cae) {
                     log.warn("Download aborted by client");
                 }
             }
