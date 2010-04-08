@@ -950,18 +950,13 @@
         <text-align>left</text-align>
       </selector>
       <selector path=".fieldColumn img">
-        <margin-left>4px</margin-left>
-        <margin-right>4px</margin-right>
+        <margin>0px 4px</margin>
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
         <border>0px none #fff</border>
         <vertical-align>top</vertical-align>
         <margin>0 0 0 0</margin>
-      </selector>
-      <selector path=".required">
-        <background preset="required (Galaxy backgrounds)"/>
-        <padding-right>8px</padding-right>
       </selector>
       <selector path=".archiveTabContent .dataInput">
         <border>none</border>
@@ -994,6 +989,13 @@
         <width>120px</width>
         <vertical-align>top</vertical-align>
         <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".labelColumn span">
+        <padding-left>8px</padding-left>
+        <display>block</display>
+      </selector>
+      <selector path=".required">
+        <background preset="required (Galaxy backgrounds)"/>
       </selector>
       <selector path=".rightsAddManager .labelColumn">
         <width>80px</width>
