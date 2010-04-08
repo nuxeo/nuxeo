@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
@@ -54,7 +55,7 @@ import org.richfaces.event.NodeExpandedEvent;
 
 /**
  * Manages the navigation tree.
- *
+ * 
  * @author Razvan Caraghin
  * @author Anahide Tchertchian
  */
@@ -73,6 +74,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    protected boolean isUserWorkspace = false;
+
+    protected String userWorkspacePath;
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -90,19 +95,28 @@ public class TreeActionsBean implements TreeActions, Serializable {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
-                List<DocumentModel> parents = documentManager.getParentDocuments(currentDocument.getRef());
-                if (!parents.isEmpty()) {
-                    firstAccessibleParent = parents.get(0);
-                } else if (!"Root".equals(currentDocument.getType())
-                        && currentDocument.isFolder()) {
-                    // default on current doc
-                    firstAccessibleParent = currentDocument;
+
+                if (isUserWorkspace) {
+                    firstAccessibleParent = documentManager.getDocument(new PathRef(
+                            userWorkspacePath));
                 } else {
-                	if (showRoot) {
-                		firstAccessibleParent = currentDocument;
-                		firstAccessibleParent.setPropertyValue("dc:title", "/");
-                	}
+
+                    List<DocumentModel> parents = documentManager.getParentDocuments(currentDocument.getRef());
+                    if (!parents.isEmpty()) {
+                        firstAccessibleParent = parents.get(0);
+                    } else if (!"Root".equals(currentDocument.getType())
+                            && currentDocument.isFolder()) {
+                        // default on current doc
+                        firstAccessibleParent = currentDocument;
+                    } else {
+                        if (showRoot) {
+                            firstAccessibleParent = currentDocument;
+                            firstAccessibleParent.setPropertyValue("dc:title", "/");
+                        }
+                    }
+
                 }
+
             }
             if (firstAccessibleParent != null) {
                 Filter filter = null;
@@ -208,6 +222,19 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @Remove
     public void destroy() {
         log.debug("Removing SEAM component...");
+    }
+
+    @Observer(value = { EventNames.GO_PERSONAL_WORKSPACE }, create = false)
+    public void switchToUserWorkspace() {
+        isUserWorkspace = true;
+        userWorkspacePath = getCurrentDocumentPath();
+        reset();
+    }
+
+    @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
+    public void switchToDocumentBase() {
+        isUserWorkspace = false;
     }
 
 }
