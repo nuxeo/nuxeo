@@ -55,11 +55,11 @@ cmislibtest.FolderTest.testPropertyFilter
 cmislibtest.FolderTest.testSubFolder
 cmislibtest.FolderTest.testUpdateProperties
 
-#cmislibtest.QueryTest.testFullText
-#cmislibtest.QueryTest.testPropertyMatch
-#cmislibtest.QueryTest.testScore
-#cmislibtest.QueryTest.testSimpleSelect
-#cmislibtest.QueryTest.testWildcardPropertyMatch
+cmislibtest.QueryTest.testFullText
+cmislibtest.QueryTest.testPropertyMatch
+cmislibtest.QueryTest.testScore
+cmislibtest.QueryTest.testSimpleSelect
+cmislibtest.QueryTest.testWildcardPropertyMatch
 
 cmislibtest.RepositoryTest.testCreateDocument
 cmislibtest.RepositoryTest.testCreateFolder
