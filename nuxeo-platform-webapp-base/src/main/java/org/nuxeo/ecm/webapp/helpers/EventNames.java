@@ -143,6 +143,11 @@ public final class EventNames {
      * Event raised when a search is performed
      */
     public static final String SEARCH_PERFORMED = "searchPerformed";
+    
+    /**
+     * Event raised when user go to his personal workspace
+     */
+    public static final String GO_PERSONAL_WORKSPACE = "personnalWorkspace";
 
     // Constant utility class.
     private EventNames() {
