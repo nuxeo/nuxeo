@@ -24,7 +24,6 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -42,7 +41,7 @@ public class ServiceWO  extends NuxeoArtifactWebObject {
     }
 
     public ServiceInfo getServiceInfo() {
-        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getService(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getService(nxArtifactId);
     }
 
     @Override

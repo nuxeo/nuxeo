@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
     protected ServerInfo serverInfo;
+    protected Date created = null;
     protected List<String> bundlesIds = new ArrayList<String>();
     protected List<String> javaComponentsIds = new ArrayList<String>();
     protected Map<String, String> components2Bundles = new HashMap<String, String>();
@@ -76,6 +79,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected synchronized ServerInfo buildServerInfo() {
         if (serverInfo == null) {
             serverInfo = ServerInfo.build();
+            created=new Date();
             spi.addAll(serverInfo.getAllSpi());
             for (BundleInfoImpl bInfo : serverInfo.getBundles()) {
                 bundlesIds.add(bInfo.getId());
@@ -298,13 +302,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return getName() + "-" + getVersion();
     }
 
-    public DistributionSnapshot persist(CoreSession session) throws ClientException {
-        SnapshotPersister sp = new SnapshotPersister();
-        DistributionSnapshot snap =  sp.persist(this, session, this.getKey());
-        SnapshotManager.addPersistentSnapshot(snap.getKey(), snap);
-        return snap;
-    }
-
     public List<Class> getSpi() {
         return spi;
     }
@@ -346,6 +343,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             }
         }
         return result;
+    }
+
+    public Date getCreationDate() {
+        return created;
+    }
+
+    public boolean isLive() {
+        return true;
     }
 
 }

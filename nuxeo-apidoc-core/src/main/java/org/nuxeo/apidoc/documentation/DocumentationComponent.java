@@ -1,12 +1,18 @@
 package org.nuxeo.apidoc.documentation;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.common.utils.IdUtils;
@@ -24,6 +30,15 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.io.DocumentPipe;
+import org.nuxeo.ecm.core.io.DocumentReader;
+import org.nuxeo.ecm.core.io.DocumentTransformer;
+import org.nuxeo.ecm.core.io.DocumentWriter;
+import org.nuxeo.ecm.core.io.ExportedDocument;
+import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
+import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
+import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
+import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -39,6 +54,8 @@ public class DocumentationComponent extends DefaultComponent implements
 
     public static final String Read_Grp = "Everyone";
     public static final String Write_Grp = "members";
+
+    protected static Log log = LogFactory.getLog(DocumentationComponent.class);
 
     class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
 
@@ -169,7 +186,9 @@ public class DocumentationComponent extends DefaultComponent implements
                 .createDocumentModel(DocumentationItemDocAdapter.DOC_TYPE);
 
         String name = title + '-' + item.getId();
-        name = IdUtils.generateId(name, "-", true, 50);
+        name = IdUtils.generateId(name, "-", true, 64);
+
+        UUID docUUID = UUID.nameUUIDFromBytes(name.getBytes());
 
         doc.setPathInfo(getDocumentationRoot(session).getPathAsString(), name);
         doc.setPropertyValue("dc:title", title);
@@ -180,7 +199,7 @@ public class DocumentationComponent extends DefaultComponent implements
         doc.setPropertyValue("file:content", (Serializable)blob);
         doc.setPropertyValue("nxdoc:target", item.getId());
         doc.setPropertyValue("nxdoc:targetType", item.getArtifactType());
-        doc.setPropertyValue("nxdoc:documentationId", name);
+        doc.setPropertyValue("nxdoc:documentationId", docUUID.toString());
         doc.setPropertyValue("nxdoc:nuxeoApproved", approved);
         doc.setPropertyValue("nxdoc:type", type);
         doc.setPropertyValue("nxdoc:renderingType", renderingType);
@@ -302,6 +321,75 @@ public class DocumentationComponent extends DefaultComponent implements
             session.close();
         }
         return categories;
+    }
+
+
+    public void exportDocumentation(CoreSession session, OutputStream out) {
+
+         DocumentReader reader = null;
+         DocumentWriter writer = null;
+         try {
+             String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+             DocumentModelList docList = session.query(query);
+             reader = new DocumentModelListReader(docList);
+             writer = new NuxeoArchiveWriter(out);
+             DocumentPipe pipe = new DocumentPipeImpl(10);
+             pipe.setReader(reader);
+             pipe.setWriter(writer);
+             pipe.run();
+             reader.close();
+             writer.close();
+         }
+         catch (Exception e) {
+             log.error("Error while exporting documentation", e);
+         }
+    }
+
+
+    public void importDocumentation(CoreSession session, InputStream is ) {
+
+        DocumentReader reader = null;
+        DocumentWriter writer = null;
+        try {
+
+            String importPath = getDocumentationRoot(session).getPathAsString();
+            reader = new NuxeoArchiveReader(is);
+            writer = new DocumentModelWriter(session, importPath);
+
+            DocumentPipe pipe = new DocumentPipeImpl(10);
+            pipe.setReader(reader);
+            pipe.setWriter(writer);
+            DocumentTransformer rootCutter = new DocumentTransformer() {
+                public boolean transform(ExportedDocument doc) throws IOException {
+                    doc.setPath(doc.getPath().removeFirstSegments(1));
+                    return true;
+                }
+            };
+            pipe.addTransformer(rootCutter);
+            pipe.run();
+            reader.close();
+            writer.close();
+
+        }
+        catch (Exception e) {
+            log.error("Error while importing documentation", e);
+        }
+
+    }
+
+
+    public String getDocumentationStats(CoreSession session) {
+        String result="";
+        try {
+            String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+            DocumentModelList docList = session.query(query);
+            result = docList.size() + " documents";
+
+        }
+        catch (Exception e) {
+            log.error("Error while exporting documentation", e);
+        }
+        return result;
     }
 
 

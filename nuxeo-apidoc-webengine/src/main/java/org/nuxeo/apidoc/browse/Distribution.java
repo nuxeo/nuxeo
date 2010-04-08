@@ -19,7 +19,11 @@
 
 package org.nuxeo.apidoc.browse;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
@@ -28,14 +32,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.apidoc.documentation.DocumentationService;
+import org.nuxeo.apidoc.export.ArchiveFile;
+import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.DocumentPipe;
+import org.nuxeo.ecm.core.io.DocumentReader;
+import org.nuxeo.ecm.core.io.DocumentWriter;
+import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
+import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
+import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -44,76 +63,157 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @WebObject(type = "distribution")
 public class Distribution extends ModuleRoot{
-	
-	protected static Log log = LogFactory.getLog(Distribution.class);
-	
+
+    protected static Log log = LogFactory.getLog(Distribution.class);
+
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
+
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView("index");        
+        return getView("index");
     }
-        
+
     @Path(value = "{distributionId}")
     public Resource viewDistribution(@PathParam("distributionId") String distributionId) {
         try {
-        	if (distributionId==null || "".equals(distributionId)) {
-        		return this;
-        	}
-        	ctx.setProperty("distribution", SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()));
-        	ctx.setProperty("distId", distributionId);
+            if (distributionId==null || "".equals(distributionId)) {
+                return this;
+            }
+            ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()));
+            ctx.setProperty("distId", distributionId);
             return ctx.newObject("apibrowser", distributionId);
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
     }
-    
-    public List<String> getAvailableDistributions() {    	
-    	return SnapshotManager.getAvailableDistributions(ctx.getCoreSession());    
-    }
-    
-    public String getRuntimeDistributionName() {    	
-    	return SnapshotManager.RUNTIME;
+
+    public List<DistributionSnapshotDesc> getAvailableDistributions() {
+        return getSnapshotManager().getAvailableDistributions(ctx.getCoreSession());
     }
 
-    public DistributionSnapshot getRuntimeDistribution() {    	
-    	return SnapshotManager.getRuntimeSnapshot();
+    public String getRuntimeDistributionName() {
+        return SnapshotManagerComponent.RUNTIME;
     }
 
-    public List<String> getPersistedDistributions() {    	
-    	return SnapshotManager.getPersistentSnapshotNames(ctx.getCoreSession());    
+    public DistributionSnapshot getRuntimeDistribution() {
+        return getSnapshotManager().getRuntimeSnapshot();
     }
-    
+
+    public Map<String,DistributionSnapshot> getPersistedDistributions() {
+        return getSnapshotManager().getPersistentSnapshots(ctx.getCoreSession());
+    }
+
     public DistributionSnapshot getCurrentDistribution() {
-    	String distId = (String) ctx.getProperty("distId");
-    	if (distId==null) {
-    		return null;
-    	} else {
-    		return SnapshotManager.getSnapshot(distId,ctx.getCoreSession());
-    	}
+        String distId = (String) ctx.getProperty("distId");
+        if (distId==null) {
+            return null;
+        } else {
+            return getSnapshotManager().getSnapshot(distId,ctx.getCoreSession());
+        }
     }
-    
+
     @POST
-    @Path(value = "save")    
+    @Path(value = "save")
+    @Produces("text/html")
     public Object doSave() throws Exception {
-    	log.info("Start Snapshoting...");
-    	UserTransaction tx = TransactionHelper.lookupUserTransaction(); 
-    	if (tx!=null) {
-    		tx.begin();
-    	}
-    	try {
-    		SnapshotManager.getRuntimeSnapshot().persist(getContext().getCoreSession());
-    	}
-    	catch (Exception e) {
-    		log.error("Error during storage", e);	
-    		if (tx!=null) {
-    			tx.rollback();
-    		}
-    		return getView("index");
-		}
-    	log.info("Snapshoting saved.");
-		if (tx!=null) {
-			tx.commit();
-		}
-		return getView("index");    	    	    	
+        log.info("Start Snapshoting...");
+        UserTransaction tx = TransactionHelper.lookupUserTransaction();
+        if (tx!=null) {
+            tx.begin();
+        }
+        try {
+            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession());
+        }
+        catch (Exception e) {
+            log.error("Error during storage", e);
+            if (tx!=null) {
+                tx.rollback();
+            }
+            return getView("index");
+        }
+        log.info("Snapshoting saved.");
+        if (tx!=null) {
+            tx.commit();
+        }
+        return getView("index");
     }
+
+    public String getDocumentationInfo() throws Exception {
+        DocumentationService ds = Framework.getService(DocumentationService.class);
+        return ds.getDocumentationStats(getContext().getCoreSession());
+    }
+
+    @GET
+    @Path(value = "downloadDoc")
+    public Response downloadDoc() throws Exception {
+
+        File tmp= null;
+        DocumentationService ds = Framework.getService(DocumentationService.class);
+        //tmp = File.createTempFile("export", ".zip");
+        tmp = new File("/tmp/test.zip");
+        tmp.createNewFile();
+        OutputStream out = new FileOutputStream(tmp);
+        ds.exportDocumentation(getContext().getCoreSession(), out);
+        out.flush();
+        out.close();
+        ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
+        return Response.ok(aFile).header("Content-Disposition",
+                 "attachment;filename=" + "nuxeo-documentation.zip").type("application/zip").build();
+
+    }
+
+    @GET
+    @Path(value = "download/{distributionId}")
+    public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
+
+        File tmp= null;
+        //tmp = File.createTempFile("export", ".zip");
+        tmp = new File("/tmp/test.zip");
+        tmp.createNewFile();
+        OutputStream out = new FileOutputStream(tmp);
+
+        getSnapshotManager().exportSnapshot(getContext().getCoreSession(), distribId, out);
+        out.close();
+        ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
+        return Response.ok(aFile).header("Content-Disposition",
+                 "attachment;filename=" + "nuxeo-documentation.zip").type("application/zip").build();
+        //return Response.ok(aFile).header("Content-Disposition",
+        //        "attachment;filename=" + "nuxeo-documentation.zip").build();
+
+    }
+
+    @POST
+    @Path(value = "uploadDistrib")
+    @Produces("text/html")
+    public Object uploadDistrib() {
+
+        Blob blob = getContext().getForm().getFirstBlob();
+
+        return getView("index");
+    }
+
+    @POST
+    @Path(value = "uploadDoc")
+    @Produces("text/html")
+    public Object uploadDoc() throws Exception {
+
+        UserTransaction tx = TransactionHelper.lookupUserTransaction();
+        if (tx!=null) {
+            tx.begin();
+        }
+        Blob blob = getContext().getForm().getFirstBlob();
+
+        DocumentationService ds = Framework.getService(DocumentationService.class);
+        ds.importDocumentation(getContext().getCoreSession(), blob.getStream());
+
+        log.info("Documents imported.");
+        if (tx!=null) {
+            tx.commit();
+        }
+        return getView("index");
+    }
+
 }

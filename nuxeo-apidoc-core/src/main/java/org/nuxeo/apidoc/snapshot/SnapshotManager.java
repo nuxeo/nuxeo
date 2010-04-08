@@ -19,141 +19,44 @@
 
 package org.nuxeo.apidoc.snapshot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.apidoc.api.BundleGroup;
-import org.nuxeo.apidoc.api.BundleInfo;
-import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
-import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+
 
 /**
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
-public class SnapshotManager {
+public interface SnapshotManager {
 
-    protected static DistributionSnapshot runtimeSnapshot = null;
+    DistributionSnapshot getRuntimeSnapshot();
 
-    protected static Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
+    void addPersistentSnapshot(String key, DistributionSnapshot snapshot);
 
-    public static final String RUNTIME="current";
+    DistributionSnapshot getSnapshot(String key, CoreSession session);
 
-    public static DistributionSnapshot getRuntimeSnapshot() {
-        if (runtimeSnapshot==null) {
-            runtimeSnapshot = new RuntimeSnapshot();
-        }
-        return runtimeSnapshot;
-    }
+    List<DistributionSnapshot> readPersistentSnapshots(CoreSession session);
 
-    public static void addPersistentSnapshot(String key, DistributionSnapshot snapshot) {
-        persistentSnapshots.put(key, snapshot);
-    }
+    Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session);
 
-    public static DistributionSnapshot getSnapshot(String key, CoreSession session) {
-        if (key==null || RUNTIME.equals(key)) {
-            return getRuntimeSnapshot();
-        }
-        readPersistentSnapshots(session);
-        return persistentSnapshots.get(key);
-    }
+    List<String> getPersistentSnapshotNames(CoreSession session);
 
-    public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
-        List<DistributionSnapshot> snaps = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
+    List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session);
 
-        for (DistributionSnapshot snap : snaps) {
-            addPersistentSnapshot(snap.getKey(), snap);
-        }
-        return snaps;
-    }
+    List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem);
 
-    public static Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
-        if (persistentSnapshots==null || persistentSnapshots.size()==0) {
-            if (session!=null) {
-                readPersistentSnapshots(session);
-            } else {
-                persistentSnapshots = new HashMap<String, DistributionSnapshot>();
-            }
-        }
-        return persistentSnapshots;
-    }
+    void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception ;
 
-    public static List<String> getPersistentSnapshotNames(CoreSession session) {
-        List<String> names = new ArrayList<String>();
-        names.addAll(getPersistentSnapshots(session).keySet());
-        return names;
-    }
+    void importSnapshot(CoreSession session,InputStream is) throws Exception;
 
-    public static List<String> getAvailableDistributions(CoreSession session) {
-        List<String> names = new ArrayList<String>();
-        names.addAll(getPersistentSnapshots(session).keySet());
-        names.add(0,RUNTIME);
-        return names;
-    }
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException;
 
-    public static List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
-        List<String> versions = new ArrayList<String>();
-
-        Map<String, DistributionSnapshot> distribs = getPersistentSnapshots(session);
-
-        DistributionSnapshot runtime = getRuntimeSnapshot();
-        if (!distribs.containsKey(runtime.getKey())) {
-            distribs.put(runtime.getKey(), runtime);
-        }
-
-        for (DistributionSnapshot snap : distribs.values()) {
-
-            String version = null;
-            if (BundleGroup.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                BundleGroup bg = snap.getBundleGroup(nxItem.getId());
-                if (bg!=null) {
-                    version = bg.getVersion();
-                }
-            }
-            else if (BundleInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                BundleInfo bi = snap.getBundle(nxItem.getId());
-                if (bi!=null) {
-                    version = bi.getVersion();
-                }
-            }
-            else if (ComponentInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                ComponentInfo ci = snap.getComponent(nxItem.getId());
-                if (ci!=null) {
-                    version = ci.getVersion();
-                }
-            }
-            else if (ExtensionInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                ExtensionInfo ei = snap.getContribution(nxItem.getId());
-                if (ei!=null) {
-                    version = ei.getVersion();
-                }
-            }
-            else if (ExtensionPointInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                ExtensionPointInfo epi = snap.getExtensionPoint(nxItem.getId());
-                if (epi!=null) {
-                    version = epi.getVersion();
-                }
-            }
-            else if (ServiceInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
-                ServiceInfo si = snap.getService(nxItem.getId());
-                if (si!=null) {
-                    version = si.getVersion();
-                }
-            }
-
-            if (version!=null && !versions.contains(version)) {
-                versions.add(version);
-            }
-        }
-        return versions;
-    }
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException;
 }

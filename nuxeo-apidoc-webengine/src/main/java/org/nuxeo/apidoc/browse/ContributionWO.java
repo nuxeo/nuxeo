@@ -42,7 +42,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionInfo getTargetExtensionInfo() {
-        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getContribution(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getContribution(nxArtifactId);
     }
 
     @Override

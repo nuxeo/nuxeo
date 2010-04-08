@@ -33,11 +33,16 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         openSession();
     }
 
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
+
+
     public void testService() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         assertNotNull(ds);
 
-        DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();
+        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
         BundleGroup bg = runtimeSnapshot.getBundleGroup("org.nuxeo.ecm.core");
         assertNotNull(bg);

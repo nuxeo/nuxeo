@@ -31,7 +31,6 @@ import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -46,13 +45,13 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     @Produces("text/html")
     public Object doGet() throws Exception {
         BundleGroup group = getTargetBundleGroup();
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()));
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()));
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(nxArtifactId);
         return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg("tree", tree);
     }
 
     public BundleGroup getTargetBundleGroup() {
-        return SnapshotManager.getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(nxArtifactId);
     }
 
     @Override

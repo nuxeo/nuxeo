@@ -1,5 +1,7 @@
 package org.nuxeo.apidoc.documentation;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -21,4 +23,11 @@ public interface DocumentationService {
      Map<String, String> getCategories()  throws Exception;
 
      List<String> getCategoryKeys()  throws Exception;
+
+     void exportDocumentation(CoreSession session, OutputStream out);
+
+     void importDocumentation(CoreSession session,InputStream is);
+
+     String getDocumentationStats(CoreSession session);
+
 }

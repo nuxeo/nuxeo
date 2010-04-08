@@ -50,7 +50,7 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     public BundleInfo getTargetBundleInfo() {
-        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getBundle(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getBundle(nxArtifactId);
     }
 
     @Override

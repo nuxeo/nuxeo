@@ -37,6 +37,7 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
@@ -46,6 +47,10 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 public class ApiBrowser extends DefaultObject {
 
     String distributionId = null;
+
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
 
     @Override
     protected void initialize(Object... args) {
@@ -63,7 +68,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listBundleGroups")
     public Object getMavenGroups() {
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()));
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()));
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         return getView("listBundleGroups").arg("tree", tree).arg("distId", ctx.getProperty("distId"));
     }
@@ -72,7 +77,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listBundles")
     public Object getBundles() {
-        List<String> bundleIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getBundleIds();
+        List<String> bundleIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getBundleIds();
         return getView("listBundles").arg("bundleIds", bundleIds).arg("distId", ctx.getProperty("distId"));
     }
 
@@ -80,13 +85,13 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listComponents")
     public Object getComponents() {
-        List<String> javaComponentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getJavaComponentIds();
+        List<String> javaComponentIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getJavaComponentIds();
         List<ArtifactLabel> javaLabels = new ArrayList<ArtifactLabel>();
         for (String id : javaComponentIds) {
             javaLabels.add(ArtifactLabel.createLabelFromComponent(id));
         }
 
-        List<String> xmlComponentIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getXmlComponentIds();
+        List<String> xmlComponentIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getXmlComponentIds();
         List<ArtifactLabel> xmlLabels = new ArrayList<ArtifactLabel>();
         for (String id : xmlComponentIds) {
             xmlLabels.add(ArtifactLabel.createLabelFromComponent(id));
@@ -102,7 +107,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listServices")
     public Object getServices() {
-        List<String> serviceIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
+        List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
 
         List<ArtifactLabel> serviceLabels = new ArrayList<ArtifactLabel>();
 
@@ -118,7 +123,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listExtensionPoints")
     public Object getExtensionPoints() {
-        List<String> epIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
+        List<String> epIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
 
         List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
         for (String id : epIds) {
@@ -133,7 +138,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listContributions")
     public Object getContributions() {
-        List<String> cIds = SnapshotManager.getSnapshot(distributionId,ctx.getCoreSession()).getContributionIds();
+        List<String> cIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getContributionIds();
         return getView("listContributions").arg("cIds", cIds).arg("distId", ctx.getProperty("distId"));
     }
 

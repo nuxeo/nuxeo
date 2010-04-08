@@ -59,6 +59,10 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return nxArtifactId;
     }
 
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
+
     @Override
     public Template getView(String viewId) {
         return super.getView(viewId).arg(DIST_ID, getDistributionId()).arg("enableDocumentationView", true);
@@ -151,7 +155,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Path(value = "createForm")
     public Object doAddDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
-        List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
+        List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
         return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
@@ -161,7 +165,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Path(value = "editForm/{uuid}")
     public Object doEditDoc(@PathParam("uuid") String uuid) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
-        List<String> versions = SnapshotManager.getAvailableVersions(ctx.getCoreSession(), nxItem);
+        List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
         DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
         return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");

@@ -19,6 +19,8 @@
 package org.nuxeo.apidoc.repository;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
@@ -28,7 +30,6 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -263,11 +264,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         }
     }
 
-    public DistributionSnapshot persist(CoreSession session) throws ClientException {
-        session.save();
-        return null;
-    }
-
     public List<Class> getSpi() {
         return null;
     }
@@ -321,6 +317,19 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             }
         }
         return ids;
+    }
+
+    public Date getCreationDate() {
+        try {
+            Calendar cal =  (Calendar) getDoc().getPropertyValue("dc:created");
+            return cal.getTime();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean isLive() {
+        return false;
     }
 
 }

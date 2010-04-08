@@ -308,3 +308,14 @@ color:#fff;
  font-size:11pt;
 }
 
+.linkHolder A {
+ font-size:14pt;
+ font-weight:bold;
+ text-decoration:none;
+ color:black;
+ cursor:hand;
+}
+
+.iconHolder {
+ text-align:right;
+  }

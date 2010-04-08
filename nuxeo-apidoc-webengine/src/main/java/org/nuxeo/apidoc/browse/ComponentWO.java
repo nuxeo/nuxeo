@@ -30,7 +30,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -49,7 +48,7 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     }
 
     public ComponentInfo getTargetComponentInfo() {
-        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getComponent(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getComponent(nxArtifactId);
     }
 
     @Override

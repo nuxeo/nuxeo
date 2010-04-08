@@ -46,7 +46,7 @@
       <@block name="middle">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr valign="top" align="left">
-          <td width="15%" style="padding:20px 10px 20px 20px; border-right:1px solid #d2d2d2">
+          <td width="20%" style="padding:20px 10px 20px 20px; border-right:1px solid #d2d2d2">
           <@block name="left">
 
           <#include "nav.ftl">

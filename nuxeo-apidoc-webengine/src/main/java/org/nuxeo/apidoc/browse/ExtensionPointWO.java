@@ -24,7 +24,6 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -43,7 +42,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionPointInfo getTargetExtensionPointInfo() {
-        return SnapshotManager.getSnapshot(getDistributionId(),ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
     }
     @Override
     public NuxeoArtifact getNxArtifact() {

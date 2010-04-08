@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestBrowse extends NXRuntimeTestCase {
@@ -44,6 +45,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployContrib("org.nuxeo.apidoc.core", "OSGI-INF/snapshot-service-framework.xml");
     }
 
 
@@ -58,9 +60,13 @@ public class TestBrowse extends NXRuntimeTestCase {
 
     }
 
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
+
     public void testBrowse() throws Exception  {;
 
-        DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();
+        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(runtimeSnapshot);
 
@@ -120,7 +126,7 @@ public class TestBrowse extends NXRuntimeTestCase {
     public void testIntrospection() throws Exception {
 
         String cid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService";
-        DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();
+        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
         ComponentInfo ci = runtimeSnapshot.getComponent(cid);
         assertNotNull(ci);

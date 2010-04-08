@@ -19,6 +19,7 @@
 
 package org.nuxeo.apidoc.snapshot;
 
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -35,15 +36,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
-public interface DistributionSnapshot {
+public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     public static final String TYPE_NAME ="NXDistribution";
 
     String getKey();
-
-    String getVersion();
-
-    String getName();
 
     List<BundleGroup> getBundleGroups();
 
@@ -73,14 +70,9 @@ public interface DistributionSnapshot {
 
     ExtensionInfo getContribution(String id);
 
-    //List<String> getBundleGroupIds();
-
     List<String> getBundleGroupChildren(String groupId);
 
-    //List<BundleInfo> getBundlesForBundleGroup(String groupId);
-
-    DistributionSnapshot persist(CoreSession session) throws ClientException;
-
     List<Class> getSpi();
+
 
 }

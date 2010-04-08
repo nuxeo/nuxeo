@@ -73,10 +73,10 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
              DocumentModelList docs = getCoreSession().query(query);
              for(DocumentModel child : docs) {
                  BundleInfo bi = child.getAdapter(BundleInfo.class);
-                 if (bi!=null) {
+                 if (bi!=null && !bi.getId().equals(this.getId())) {
                      bundles.add(bi.getId());
                  }
-                 }
+             }
          }
          catch (Exception e) {
              log.error("Error while getting subGroups",e);

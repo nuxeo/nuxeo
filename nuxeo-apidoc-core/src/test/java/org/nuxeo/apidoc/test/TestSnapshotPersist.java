@@ -22,6 +22,7 @@ package org.nuxeo.apidoc.test;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestSnapshotPersist extends SQLRepositoryTestCase {
 
@@ -41,14 +42,19 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         openSession();
     }
 
+    protected SnapshotManager getSnapshotManager() {
+        return Framework.getLocalService(SnapshotManager.class);
+    }
+
+
     public void testPersist() throws Exception {
 
-        DistributionSnapshot runtimeSnapshot = SnapshotManager.getRuntimeSnapshot();
-        DistributionSnapshot persistent = runtimeSnapshot.persist(session);       
+        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
+        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
         assertNotNull(persistent);
-        
-        persistent = SnapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
-        assertNotNull(persistent);                
+
+        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
+        assertNotNull(persistent);
 
     }
 
