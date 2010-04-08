@@ -998,7 +998,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
        assertEquals(1, secondPage.size());
        assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
     }
-    
+
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies

@@ -594,9 +594,10 @@ public class DialectMySQL extends Dialect {
     public boolean supportsPaging() {
         return true;
     }
-    
+
     @Override
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
+
 }

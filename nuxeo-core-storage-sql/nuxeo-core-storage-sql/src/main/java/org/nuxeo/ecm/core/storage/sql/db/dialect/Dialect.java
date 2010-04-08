@@ -287,17 +287,17 @@ public abstract class Dialect {
 
     /**
      * Indicates if dialect supports paging
-     * 
+     *
      * @return
      */
     public  boolean supportsPaging() {
         return false;
     }
-    
+
     /**
-     * 
+     *
      * Get paging clause to be appended at the end of select statement
-     * 
+     *
      * @param limit
      * @param offset
      * @return

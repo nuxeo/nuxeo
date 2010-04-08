@@ -1389,12 +1389,12 @@ public class DialectPostgreSQL extends Dialect {
         }
         return false;
     }
-    
+
     @Override
     public boolean supportsPaging() {
         return true;
     }
-        
+
     @Override
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);

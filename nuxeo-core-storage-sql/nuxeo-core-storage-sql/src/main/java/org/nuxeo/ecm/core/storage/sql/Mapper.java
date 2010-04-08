@@ -1951,7 +1951,7 @@ public class Mapper {
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
-
+   
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
 
