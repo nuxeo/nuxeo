@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * MySQL-specific dialect.
@@ -591,4 +590,13 @@ public class DialectMySQL extends Dialect {
         return "DELETE FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
     }
 
+    @Override
+    public boolean supportsPaging() {
+        return true;
+    }
+    
+    @Override
+    public String getPagingClause(long limit, long offset) {
+        return String.format("LIMIT %d OFFSET %d", limit, offset);
+    }
 }

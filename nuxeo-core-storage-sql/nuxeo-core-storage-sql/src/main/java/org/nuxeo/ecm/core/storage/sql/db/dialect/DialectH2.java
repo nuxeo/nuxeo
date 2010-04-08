@@ -553,5 +553,14 @@ public class DialectH2 extends Dialect {
                 "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
     }
+    
+    @Override
+    public boolean supportsPaging() {
+        return true;
+    }
 
+    @Override
+    public String getPagingClause(long limit, long offset) {
+        return String.format("LIMIT %d OFFSET %d", limit, offset);
+    }
 }
