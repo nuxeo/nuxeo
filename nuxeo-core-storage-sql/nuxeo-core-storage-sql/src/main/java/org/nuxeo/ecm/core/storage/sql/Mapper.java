@@ -1951,7 +1951,7 @@ public class Mapper {
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
-   
+
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
 
@@ -1967,15 +1967,15 @@ public class Mapper {
         }
 
         final Dialect dialect = session.getModel().getDialect();
-        
+
         String sql = q.selectInfo.sql;
-        
-        if (!countTotal && dialect.supportsPaging()) { //  full results set not needed for counting
+
+        if (!countTotal && limit > 0 && dialect.supportsPaging()) { //  full results set not needed for counting
             sql += " " + dialect.getPagingClause(limit, offset);
             limit = 0;
             offset = 0;
         }
-        
+
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql,
