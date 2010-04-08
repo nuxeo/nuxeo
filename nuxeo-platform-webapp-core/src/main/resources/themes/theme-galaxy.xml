@@ -991,7 +991,7 @@
         <font-weight>bold</font-weight>
       </selector>
       <selector path=".labelColumn span">
-        <padding-left>8px</padding-left>
+        <padding-right>8px</padding-right>
         <display>block</display>
       </selector>
       <selector path=".required">
