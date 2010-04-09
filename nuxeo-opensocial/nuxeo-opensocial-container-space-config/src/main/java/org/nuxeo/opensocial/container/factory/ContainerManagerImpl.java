@@ -142,8 +142,10 @@ public class ContainerManagerImpl implements ContainerManager {
         Gadget createGadget = space.createGadget(gadgetName);
         space.save();
 
-        return GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
+        GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
                 getLocale(gwtParams), getServerBase(gwtParams));
+        gadgetBean.setTitle("");
+        return gadgetBean;
 
     }
 
