@@ -92,8 +92,12 @@ public class VideoHelper {
                     Constants.STORYBOARD_CONVERTER,
                     new SimpleBlobHolder(video), null);
         } catch (ConversionException e) {
-            // this can happen and is recoverable by using a dummy preview
-            log.warn(e.getMessage());
+            // this can happen when if the codec is not supported or not
+            // readable by ffmpeg and is recoverable by using a dummy preview
+            log.warn(String.format(
+                    "could not process document '%s' with video file '%s': %s",
+                    docModel.getTitle(), video.getFilename(), e.getMessage()));
+            log.debug(e, e);
             return;
         } catch (Exception e) {
             throw ClientException.wrap(e);
@@ -136,8 +140,13 @@ public class VideoHelper {
                     Constants.SCREENSHOT_CONVERTER,
                     new SimpleBlobHolder(video), parameters);
         } catch (ConversionException e) {
-            // this can happen and is recoverable by using a dummy preview
-            log.warn(e.getMessage());
+            // this can happen when if the codec is not supported or not
+            // readable by ffmpeg and is recoverable by using a dummy preview
+            log.warn(String.format(
+                    "could not process document '%s' with video file '%s': %s",
+                    docModel.getTitle(), video.getFilename(), e.getMessage()));
+            log.debug(e, e);
+            return;
         } catch (Exception e) {
             ClientException.wrap(e);
         }
