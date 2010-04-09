@@ -55,6 +55,35 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+      <version>${nuxeo.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+      <version>${nuxeo.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4</version>
+        <scope>test</scope>
+      </dependency>
+
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
+      <version>${nuxeo.core.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
     </dependency>

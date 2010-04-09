@@ -8,6 +8,10 @@
 </@block>
 
 <@block name="right">
+<h1> Browsing ${Root.currentDistribution.key} distribution </h1>
+
+<br/>
+<br/>
 
 <table border="0">
 <tr>

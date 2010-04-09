@@ -70,3 +70,24 @@
     </div>
   </#if>
 </#macro>
+
+<#macro filterForm resultSize artifactType>
+  <#if searchFilter??>
+    <h1> listing ${artifactType}s with filter '${searchFilter}' (${resultSize}) </h1>
+  </#if>
+  <#if !searchFilter>
+    <h1> listing all ${artifactType}s (${resultSize})</h1>
+  </#if>
+
+  <#if !Root.currentDistribution.live>
+    <span style="float:right">
+    <form method="GET" action="${Root.path}/${distId}/filter${artifactType}s" >
+      <input type="text" name="fulltext" value="${searchFilter}">
+      <input type="submit" value="filter">
+    </form>
+    <#if searchFilter??>
+      <A href="${Root.path}/${distId}/list${artifactType}s"> [ Reset ] </A>
+    </#if>
+    </span>
+  </#if>
+</#macro>

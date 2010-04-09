@@ -19,11 +19,8 @@
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,6 +30,11 @@ import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
+import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -50,6 +52,10 @@ public class ApiBrowser extends DefaultObject {
 
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);
+    }
+
+    protected ArtifactSearcher getSearcher() {
+        return Framework.getLocalService(ArtifactSearcher.class);
     }
 
     @Override
@@ -79,6 +85,19 @@ public class ApiBrowser extends DefaultObject {
     public Object getBundles() {
         List<String> bundleIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getBundleIds();
         return getView("listBundles").arg("bundleIds", bundleIds).arg("distId", ctx.getProperty("distId"));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "filterBundles")
+    public Object filterBundles() throws Exception {
+        String fulltext = getContext().getForm().getFormProperty("fulltext");
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId, BundleInfo.TYPE_NAME, fulltext);
+        List<String> bundleIds = new ArrayList<String>();
+        for (NuxeoArtifact item : artifacts) {
+            bundleIds.add(item.getId());
+        }
+        return getView("listBundles").arg("bundleIds", bundleIds).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
     }
 
     @GET
@@ -121,6 +140,24 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "filterServices")
+    public Object filterServices() throws Exception {
+        String fulltext = getContext().getForm().getFormProperty("fulltext");
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId, ServiceInfo.TYPE_NAME, fulltext);
+        List<String> serviceIds = new ArrayList<String>();
+        for (NuxeoArtifact item : artifacts) {
+            serviceIds.add(item.getId());
+        }
+        List<ArtifactLabel> serviceLabels = new ArrayList<ArtifactLabel>();
+
+        for (String id : serviceIds) {
+            serviceLabels.add(ArtifactLabel.createLabelFromService(id));
+        }
+        return getView("listServices").arg("services", serviceLabels).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
+    }
+
+    @GET
+    @Produces("text/html")
     @Path(value = "listExtensionPoints")
     public Object getExtensionPoints() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
@@ -136,11 +173,53 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "filterExtensionPoints")
+    public Object filterExtensionPoints() throws Exception {
+        String fulltext = getContext().getForm().getFormProperty("fulltext");
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId, ExtensionPointInfo.TYPE_NAME, fulltext);
+        List<String> eps = new ArrayList<String>();
+        for (NuxeoArtifact item : artifacts) {
+            eps.add(item.getId());
+        }
+        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
+        for (String id : eps) {
+            labels.add(ArtifactLabel.createLabelFromExtensionPoint(id));
+        }
+        return getView("listExtensionPoints").arg("eps",labels).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
+    }
+
+
+    @GET
+    @Produces("text/html")
     @Path(value = "listContributions")
     public Object getContributions() {
         List<String> cIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getContributionIds();
         return getView("listContributions").arg("cIds", cIds).arg("distId", ctx.getProperty("distId"));
     }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "filterContributions")
+    public Object filterContributions() throws Exception {
+        String fulltext = getContext().getForm().getFormProperty("fulltext");
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId, ExtensionPointInfo.TYPE_NAME, fulltext);
+        List<String> cIds = new ArrayList<String>();
+        for (NuxeoArtifact item : artifacts) {
+            cIds.add(item.getId());
+        }
+        return getView("listContributions").arg("cIds", cIds).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
+    }
+
+
+    @Path(value = "doc")
+    public Resource viewDoc() {
+        try {
+            return ctx.newObject("documentation");
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
 
     @Path(value = "viewBundle/{bundleId}")
     public Resource viewBundle(@PathParam("bundleId") String bundleId) {

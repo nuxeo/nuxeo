@@ -1,62 +1,81 @@
 <#if Root.currentDistribution!=null>
+
+<h3>Browse distributions</h3>
 <table border=0>
 <tr>
       <td colspan="4" style="font-weight:bold">
-      ${Root.currentDistribution.key} <A href="${Root.path}"> change</A>
-      </td>
-</tr>
-<tr>
-      <td colspan="4" style="font-weight:bold">
-      Listings
+      <A href="${Root.path}"> Distributions </A>
       </td>
 </tr>
 <tr>
     <td width="10">&nbsp;</td>
-    <td colspan="3">
+    <td colspan="4">
       <A href="${Root.path}/${distId}/listBundleGroups">
-       List Bundle groups
+       Artifacts groups
       </A>
     </td>
 </tr>
 <tr>
+    <td width="10">&nbsp;</td>
     <td width="10">&nbsp;</td>
     <td colspan="3">
       <A href="${Root.path}/${distId}/listBundles">
-       List bundles
+       Bundles
       </A>
     </td>
 </tr>
 <tr>
     <td width="10">&nbsp;</td>
-    <td colspan="3">
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td colspan="2">
       <A href="${Root.path}/${distId}/listComponents">
-       List components
+       Components
       </A>
     </td>
 </tr>
 <tr>
     <td width="10">&nbsp;</td>
-    <td colspan="3">
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td>
       <A href="${Root.path}/${distId}/listServices">
-       List services
+       Services
       </A>
     </td>
 </tr>
 <tr>
     <td width="10">&nbsp;</td>
-    <td colspan="3">
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td >
       <A href="${Root.path}/${distId}/listExtensionPoints">
-       List ExtensionPoints
+       ExtensionPoints
       </A>
     </td>
 </tr>
 <tr>
     <td width="10">&nbsp;</td>
-    <td colspan="3">
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td width="10">&nbsp;</td>
+    <td>
       <A href="${Root.path}/${distId}/listContributions">
-       List Contributions
+       Contributions
       </A>
     </td>
 </tr>
 </table>
+<br/>
+<h3>Browse documentation</h3>
+<table border=0>
+<tr>
+      <td colspan="4" style="font-weight:bold">
+      <A href="${Root.path}/${distId}/doc"> FAQ and How to </A>
+      </td>
+</tr>
+</table>
+
 </#if>

@@ -30,7 +30,7 @@
 <td>${rtSnap.creationDate?datetime}</td>
 <td>Current deployed distribution (live) </td>
 <td>
-  <A href="${Root.path}/${rtSnap.key}/"> Browse </A>
+  <A href="${Root.path}/current/"> Browse </A>
 </td>
 <td>
   <form method="POST" action="${Root.path}/save">

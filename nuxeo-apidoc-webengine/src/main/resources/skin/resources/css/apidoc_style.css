@@ -19,7 +19,7 @@ height:280px;
 }
 
 h1 {
-font:normal 2.2em "Lucida Grande", Verdana, sans-serif;
+font:normal 2.0em "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
 color:black;
 }
@@ -311,8 +311,6 @@ color:#fff;
 .linkHolder A {
  font-size:14pt;
  font-weight:bold;
- text-decoration:none;
- color:black;
  cursor:hand;
 }
 

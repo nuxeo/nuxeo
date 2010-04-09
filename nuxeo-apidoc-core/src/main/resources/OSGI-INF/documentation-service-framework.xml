@@ -6,6 +6,8 @@
     <service>
         <provide
             interface="org.nuxeo.apidoc.documentation.DocumentationService" />
+        <provide
+            interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
     </service>
 
 </component>

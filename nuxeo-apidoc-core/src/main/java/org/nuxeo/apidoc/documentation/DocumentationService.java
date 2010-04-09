@@ -30,4 +30,6 @@ public interface DocumentationService {
 
      String getDocumentationStats(CoreSession session);
 
+     Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category) throws Exception;
+
 }

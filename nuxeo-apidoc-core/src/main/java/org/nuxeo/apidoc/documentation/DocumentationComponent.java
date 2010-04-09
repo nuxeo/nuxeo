@@ -15,6 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.search.ArtifactSearcher;
+import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,6 +58,8 @@ public class DocumentationComponent extends DefaultComponent implements
     public static final String Write_Grp = "members";
 
     protected static Log log = LogFactory.getLog(DocumentationComponent.class);
+
+    protected ArtifactSearcher searcher = new ArtifactSearcherImpl();
 
     class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
 
@@ -108,6 +112,72 @@ public class DocumentationComponent extends DefaultComponent implements
         return session.getDocument(creator.getRootRef());
     }
 
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(DocumentationService.class)) {
+            return (T) this;
+        } else if (adapter.isAssignableFrom(ArtifactSearcher.class)) {
+            return (T) searcher;
+        }
+        return null;
+    }
+
+    public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category) throws Exception {
+
+           String query = "select * from NXDocumentation where ";
+
+           if (category==null) {
+               query = query + " nxdoc:targetType!='description' ";
+           } else {
+               query = query + " nxdoc:targetType in ('" + category + "') ";
+           }
+
+           query = query + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
+           List<DocumentModel> docs =  session.query(query);
+
+           Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
+           for (DocumentModel doc : docs) {
+               DocumentationItem item = doc.getAdapter(DocumentationItem.class);
+
+               List<DocumentationItem> alternatives = sortMap.get(item.getId());
+               if (alternatives==null) {
+                   alternatives = new ArrayList<DocumentationItem>();
+                   alternatives.add(item);
+                   sortMap.put(item.getId(), alternatives);
+               } else {
+                   alternatives.add(item);
+               }
+           }
+
+           List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+
+           for (String documentationId : sortMap.keySet()) {
+               DocumentationItem bestDoc = sortMap.get(documentationId).get(0);
+               result.add(bestDoc);
+           }
+
+           Map<String, List<DocumentationItem>> sortedResult = new HashMap<String, List<DocumentationItem>>();
+
+           Map<String, String> categories = getCategories();
+
+           for (DocumentationItem item : result) {
+
+               String key = item.getType();
+               String label = categories.get(key);
+
+               if (sortedResult.containsKey(label)) {
+                   sortedResult.get(label).add(item);
+               } else {
+                   List<DocumentationItem> items = new ArrayList<DocumentationItem>();
+                   items.add(item);
+                   sortedResult.put(label, items);
+               }
+           }
+
+           return sortedResult;
+    }
 
     public List<DocumentationItem> findDocumentItems(CoreSession session,
             NuxeoArtifact nxItem) throws ClientException {

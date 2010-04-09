@@ -1,4 +1,5 @@
 <@extends src="base.ftl">
+<#setting url_escaping_charset="UTF-8">
 
 <@block name="stylesheets">
 </@block>
@@ -8,16 +9,11 @@
 </@block>
 
 <@block name="right">
-
 <#include "/docMacros.ftl">
 
-<@filterForm services?size 'Service'/>
+<h1> view ${doc.title} </h1>
 
-<#list services as service>
-
-  <A href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</A><br/>
-
-</#list>
+<@docContent doc/>
 
 </@block>
 

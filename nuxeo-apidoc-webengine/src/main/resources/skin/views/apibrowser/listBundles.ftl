@@ -9,7 +9,9 @@
 
 <@block name="right">
 
-<h1> listing all deployed bundles (${bundleIds?size})</h1>
+<#include "/docMacros.ftl">
+
+<@filterForm bundleIds?size 'Bundle'/>
 
 <#list bundleIds as bundleId>
 

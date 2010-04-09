@@ -10,7 +10,9 @@
 
 <@block name="right">
 
-<h1> listing all deployed Contributions (${cIds?size})</h1>
+<#include "/docMacros.ftl">
+
+<@filterForm cIds?size 'Contribution'/>
 
 <#list cIds as cId>
 

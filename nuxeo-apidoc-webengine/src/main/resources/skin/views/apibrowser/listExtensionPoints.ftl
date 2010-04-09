@@ -9,7 +9,9 @@
 
 <@block name="right">
 
-<h1> listing all deployed ExtensionPoints (${eps?size}) </h1>
+<#include "/docMacros.ftl">
+
+<@filterForm eps?size 'ExtensionPoint'/>
 
 <#list eps as ep>
 
