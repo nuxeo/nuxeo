@@ -94,10 +94,22 @@ function control(){
 
 function savePrefs(){
   prefs.set("richTitle",val("title-field"),
-  "link",val("link-field"),
+  "link",formatUrl(val("link-field")),
   "legend",val("legend-field"),
   "tmp",["",Math.random()].join(""));
 };
+
+function formatUrl(url)
+{
+  url = jQuery.trim(url);
+  if (url.toLowerCase().indexOf("http://") == 0) {
+    return(url);
+  } else if (url.length > 0) {
+    return("http://" + url);
+  } else {
+    return "";
+  }
+}
 
 function val(id){
   return gadgets.util.escapeString(jQuery(["#",id].join("")).val());

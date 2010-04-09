@@ -60,17 +60,20 @@ function addBookmark(name, url) {
 
 function formatUrl(url)
 {
-  if (url.toLowerCase().indexOf("http") == 0) {
-        return(url);
-    } else if (url.toLowerCase().indexOf("ftp") == 0) {
-      if (url.toLowerCase().indexOf("ftp://") == 0) {
-        return(url);
-      } else {
-        return("ftp://" + url);
-      }
+  url = jQuery.trim(url);
+  if (url.toLowerCase().indexOf("http://") == 0) {
+    return(url);
+  } else if (url.toLowerCase().indexOf("ftp") == 0) {
+    if (url.toLowerCase().indexOf("ftp://") == 0) {
+      return(url);
     } else {
       return("http://" + url);
     }
+  } else if (url.length > 0) {
+    return("http://" + url);
+  } else {
+    return "";
+  }
 }
 
 function editFormBookmark(number){
