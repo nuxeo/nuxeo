@@ -58,13 +58,20 @@
             <table width="100% class="tabs" id="tabbox">
             <tr>
 
+            <td width="33%" >
+            <div class="tabs
+            <#if "aggView"==selectedTab>
+            tabselected
+            </#if>
+            "> <A href="${This.path}/">Aggregated view</A></div></td>
+
             <td width="33%">
             <div class="tabs
             <#if "docView"!=selectedTab && "aggView"!=selectedTab>
         tabselected
             </#if>
             ">
-             <A href="${This.path}">Introspection view</A>
+             <A href="${This.path}/introspection">Introspection view</A>
             </div> </td>
 
             <td width="33%" >
@@ -74,12 +81,6 @@
             </#if>
             "> <A href="${This.path}/doc">Documentation view</A></div></td>
 
-            <td width="33%" >
-            <div class="tabs
-            <#if "aggView"==selectedTab>
-            tabselected
-            </#if>
-            "> <A href="${This.path}/aggView">Aggregated view</A></div></td>
 
             </tr>
             </table>

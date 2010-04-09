@@ -143,7 +143,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path(value = "aggView")
+    //@Path(value = "aggView")
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -41,6 +42,7 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "introspection")
     public Object doGet() throws Exception {
         ComponentInfo ci = getTargetComponentInfo();
         String bundleId = ci.getBundle().getBundleId();

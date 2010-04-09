@@ -62,6 +62,42 @@ public class Distribution extends ModuleRoot{
         return Framework.getLocalService(SnapshotManager.class);
     }
 
+    public String getNavigationPoint() {
+
+        String currentUrl = getContext().getURL();
+        String navPoint = "somewhere";
+
+        if (currentUrl.contains("/listBundles")) {
+            navPoint="listBundles";
+        }else if (currentUrl.contains("/listComponents")) {
+            navPoint="listComponents";
+        }else if (currentUrl.contains("/listServices")) {
+            navPoint="listServices";
+        }else if (currentUrl.contains("/listExtensionPoints")) {
+            navPoint="listExtensionPoints";
+        }else if (currentUrl.contains("/listContributions")) {
+            navPoint="listContributions";
+        }else if (currentUrl.contains("/listBundleGroups")) {
+            navPoint="listBundleGroups";
+        }else if (currentUrl.contains("/viewBundleGroup")) {
+            navPoint="viewBundleGroup";
+        }else if (currentUrl.contains("/viewComponent")) {
+            navPoint="viewComponent";
+        }else if (currentUrl.contains("/viewService")) {
+            navPoint="viewService";
+        }else if (currentUrl.contains("/viewExtensionPoint")) {
+            navPoint="viewExtensionPoint";
+        }else if (currentUrl.contains("/viewContribution")) {
+            navPoint="viewContribution";
+        }else if (currentUrl.contains("/viewBundle")) {
+            navPoint="viewBundle";
+        }else if (currentUrl.contains("/doc")) {
+            navPoint="documentation";
+        }
+
+        return navPoint;
+    }
+
     @GET
     @Produces("text/html")
     public Object doGet() {

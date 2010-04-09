@@ -12,7 +12,9 @@
 
 <H1> View for ${nxItem.artifactType} ${nxItem.id}
 
-<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.component.id}/aggView"> Up </A>
+<#if This.nxArtifact.component??>
+  <A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.component.id}/aggView"> Up </A>
+</#if>
 </H1>
 
 <#include "/views/extensionPoint/extensionPointMacros.ftl">

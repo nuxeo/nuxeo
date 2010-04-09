@@ -317,3 +317,17 @@ color:#fff;
 .iconHolder {
  text-align:right;
   }
+
+.currentNavPoint {
+  background-color:#CCCCDD;
+}
+
+.spacerTab {
+    font-size:6pt;
+    padding:5px;
+    margin:0px;
+}
+
+.currentNavPoint td {
+  background-color:#CCCCDD;
+}

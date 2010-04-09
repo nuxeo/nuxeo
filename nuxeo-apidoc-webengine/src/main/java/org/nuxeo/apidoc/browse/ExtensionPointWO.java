@@ -20,6 +20,7 @@
 package org.nuxeo.apidoc.browse;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
@@ -36,6 +37,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "introspection")
     public Object doGet() throws Exception {
         ExtensionPointInfo epi = getTargetExtensionPointInfo();
         return getView("view").arg("extensionPoint", epi);

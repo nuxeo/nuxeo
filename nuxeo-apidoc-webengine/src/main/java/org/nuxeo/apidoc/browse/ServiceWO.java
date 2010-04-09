@@ -20,6 +20,7 @@
 package org.nuxeo.apidoc.browse;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -35,6 +36,7 @@ public class ServiceWO  extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "introspection")
     public Object doGet() throws Exception {
         ServiceInfo si = getServiceInfo();
         return getView("view").arg("service", si);

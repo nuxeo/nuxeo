@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -42,6 +43,7 @@ public class BundleWO extends NuxeoArtifactWebObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "introspection")
     public Object doGet() throws Exception {
         BundleInfo bi = getTargetBundleInfo();
         Collection<ComponentInfo> ci = bi.getComponents();

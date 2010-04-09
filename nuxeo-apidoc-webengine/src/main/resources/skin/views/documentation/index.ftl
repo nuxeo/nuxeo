@@ -9,9 +9,18 @@
 <@block name="right">
 <H1> Documentation</H1>
 
+<span style="float:right">
+<form method="GET" action="${Root.path}/${distId}/doc/filter" >
+  <input type="text" name="fulltext" value="${searchFilter}">
+  <input type="submit" value="filter">
+</form>
+<#if searchFilter??>
+  <A href="${Root.path}/${distId}/doc"> [ Reset ] </A>
+</#if>
+</span>
+
 <#assign categories=docsByCat?keys/>
 
-<h2> Documentation index </h2>
 <#list categories as category>
  <h3>${category}</h3>
  <ul>

@@ -31,6 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
@@ -121,6 +122,28 @@ public class ApiBrowser extends DefaultObject {
 
         return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg("distId", ctx.getProperty("distId"));
     }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "filterComponents")
+    public Object filterComponents() throws Exception {
+        String fulltext = getContext().getForm().getFormProperty("fulltext");
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId, ComponentInfo.TYPE_NAME, fulltext);
+
+        List<ArtifactLabel> xmlLabels = new ArrayList<ArtifactLabel>();
+        List<ArtifactLabel> javaLabels = new ArrayList<ArtifactLabel>();
+
+        for (NuxeoArtifact item : artifacts) {
+            ComponentInfo ci = (ComponentInfo) item;
+            if (ci.isXmlPureComponent()) {
+                xmlLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
+            } else {
+                javaLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
+            }
+        }
+        return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
+    }
+
 
     @GET
     @Produces("text/html")
