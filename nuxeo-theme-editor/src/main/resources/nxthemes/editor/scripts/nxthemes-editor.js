@@ -238,7 +238,7 @@ NXThemesEditor.updateElementProperties = function(info) {
          method: 'post',
          parameters: {
              id: id,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemes.getViewById("element properties").refresh();
@@ -348,7 +348,7 @@ NXThemesEditor.updateElementStyle = function() {
              id: id,
              view_name: viewName,
              path: path,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemesStyleEditor.refreshCssPreview();
@@ -527,7 +527,7 @@ NXThemesEditor.updateElementPadding = function(info) {
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
@@ -1957,7 +1957,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
          method: 'post',
          parameters: {
              theme_name: themeName,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
