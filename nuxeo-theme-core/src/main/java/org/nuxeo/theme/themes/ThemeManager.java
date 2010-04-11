@@ -402,6 +402,34 @@ public final class ThemeManager implements Registrable {
         return themes.get(name);
     }
 
+    public PageElement createScratchPage(final String themeName) throws ThemeException, NodeException {
+        String pagePath = String.format("%s/~", themeName);
+
+        PageElement scratchPage = getPageByPath(pagePath);
+        if (scratchPage != null) {
+            destroyElement(scratchPage);
+        }
+        // create a new scratch page
+        scratchPage = (PageElement) ElementFactory.create("page");
+        Widget widget = (Widget) FormatFactory.create("widget");
+        widget.setName("page frame");
+        registerFormat(widget);
+        
+        ElementFormatter.setFormat(scratchPage, widget);
+        
+        UidManager uidManager = Manager.getUidManager();
+        uidManager.register(scratchPage);
+        pages.put(pagePath, scratchPage);
+        
+        return scratchPage;
+    }
+
+    public void fillScratchPage(final String themeName, final Element element)
+            throws NodeException, ThemeException {
+        PageElement scratchPage = createScratchPage(themeName);
+        scratchPage.addChild(element);
+    }
+
     public static Element getElementByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -783,6 +811,7 @@ public final class ThemeManager implements Registrable {
             String pagePath = String.format("%s/%s", themeName, page.getName());
             pages.put(pagePath, page);
         }
+
         log.debug("Added theme: " + themeName);
     }
 
