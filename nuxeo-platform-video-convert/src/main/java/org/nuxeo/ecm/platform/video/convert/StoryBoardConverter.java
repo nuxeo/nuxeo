@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -135,7 +136,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
                 // i.e. at least one thumbnail every 10s
                 rate = 0.1;
             }
-            String rateParam = String.format("%02f", rate);
+            String rateParam = String.format(Locale.US, "%f", rate);
 
             // add the command line parameters for the storyboard extraction and
             // run it
