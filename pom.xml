@@ -32,6 +32,7 @@
     <profile>
       <id>shell</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
       </modules>
@@ -39,12 +40,14 @@
     <profile>
       <id>nuxeo-ep</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
       </modules>
     </profile>
     <profile>
       <id>nuxeo-dm</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
@@ -56,6 +59,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -65,6 +69,7 @@
       <!-- Build all Jetty distributions -->
       <id>jetty</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
@@ -75,6 +80,7 @@
     <profile>
       <id>gf3</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -83,6 +89,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
