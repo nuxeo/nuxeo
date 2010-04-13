@@ -55,6 +55,8 @@ public class ChainSelectState {
 
     private boolean displayValueOnly;
 
+    protected String defaultRootKey;
+
     public boolean getQualifiedParentKeys() {
         return qualifiedParentKeys;
     }
@@ -69,6 +71,14 @@ public class ChainSelectState {
 
     public void setKeySeparator(String keySeparator) {
         this.keySeparator = keySeparator;
+    }
+
+    public String getDefaultRootKey() {
+        return defaultRootKey;
+    }
+
+    public void setDefaultRootKey(String defaultRootKey) {
+        this.defaultRootKey = defaultRootKey;
     }
 
     public boolean isRecursive() {

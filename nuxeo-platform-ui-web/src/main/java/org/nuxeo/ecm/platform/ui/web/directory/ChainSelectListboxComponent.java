@@ -177,13 +177,11 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public Map<String, DirectorySelectItem> getOptions() {
-        // return getChain().getOptions(index);
         index = getIndex();
         if (index == 0
                 || getChain().getSelection(0).getColumnValue(index - 1) != null) {
             return rebuildOptions();
         }
-        // return rebuildOptions();
         return new HashMap<String, DirectorySelectItem>();
     }
 
@@ -318,21 +316,14 @@ public class ChainSelectListboxComponent extends UIInput {
         }
 
         String directoryName = getDirectoryName();
+        String defaultRootKey = getChain().getDefaultRootKey();
         if (index == 0) {
             if (directoryName != null) {
                 if (DirectoryHelper.instance().hasParentColumn(directoryName)) {
-                    // explicitely filter on NULL parent in a xvocabulary
-                    filter.put("parent", null);
+                    filter.put("parent", defaultRootKey);
                 }
             } else {
-                // NestedChainSelectComponentInfo compInfo =
-                // getChain().compInfos.get(index);
-                // directoryName = compInfo.directoryName;
-                // if
-                // (DirectoryHelper.instance().hasParentColumn(directoryName)) {
-                // explicitely filter on NULL parent in a xvocabulary
-                filter.put("parent", null);
-                // }
+                filter.put("parent", defaultRootKey);
             }
         } else {
             boolean qualifiedParentKeys = getChain().isQualifiedParentKeys();
@@ -340,6 +331,10 @@ public class ChainSelectListboxComponent extends UIInput {
             Selection sel = getChain().getSelections()[0];
             String parentValue = sel.getParentKey(index, qualifiedParentKeys,
                     keySeparator);
+            if (parentValue == null) {
+                // use default parent key
+                parentValue = defaultRootKey;
+            }
             filter.put("parent", parentValue);
         }
 
