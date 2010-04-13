@@ -1,2 +1,0 @@
-
-JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=256m -Dfile.encoding=UTF-8"

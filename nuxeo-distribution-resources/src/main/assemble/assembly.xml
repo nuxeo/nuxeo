@@ -15,11 +15,14 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
-    <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
-    <mkdir dir="${nuxeo.ear}" />
-
     <antcall target="build-resources">
       <param name="distribution" value="jetty-base" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="doc" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="bin" />
     </antcall>
   </target>
 
@@ -27,8 +30,9 @@
           depends="init"
           description="Build resources package for ${distribution}"
           unless="no.alternate.build">
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <copy todir="${outdir}/${distribution}" overwrite="true">
-      <fileset dir="src/main/resources/jetty-base" />
+      <fileset dir="src/main/resources/${distribution}" />
     </copy>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
          basedir="${outdir}/${distribution}" />

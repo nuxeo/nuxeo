@@ -31,7 +31,6 @@
     </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
-    <property name="stagedir" value="${outdir}/stage" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
   </target>
@@ -42,7 +41,7 @@
 
   <target name="build" depends="init" unless="no.build">
     <echo>Building JBoss distributions...</echo>
-    <property name="jboss" value="${stagedir}/jboss" />
+    <property name="jboss" value="${outdir}/jboss.tmp" />
 
     <antcall target="prepare-jboss" />
     <artifact:attach file="pom.xml"
@@ -50,24 +49,50 @@
                      type="pom" />
     <antcall target="build-nuxeo-ep-jboss" />
     <antcall target="build-nuxeo-dm-jboss" />
+    
+    <delete dir="${jboss}" failonerror="false" />
   </target>
 
   <target name="prepare-jboss">
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
                             classifier="light" />
+      <patternset>
+        <exclude name="**/bin/*.bat" />
+        <exclude name="**/bin/*.sh" />
+        <exclude name="**/bin/run.conf" />
+      </patternset>
     </unzip>
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc" />
+    </unzip>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources/jboss" />
+    </copy>
+    <unzip dest="${jboss}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${jboss}/doc-jboss" />
+    <move todir="${jboss}/doc-jboss">
+      <fileset dir="${jboss}">
+        <include name="lgpl.html"/>
+        <include name="JBossORG-EULA.txt"/>
+        <include name="jar-versions.xml"/>
+        <include name="derby.log"/>
+        <include name="copyright.txt"/>
+      </fileset>
+    </move>
+    
     <ant antfile="build.xml" target="patch">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
     <ant antfile="build.xml" target="copy-lib">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
-    <copy todir="${jboss}">
-      <fileset dir="src/main/resources/jboss" />
-    </copy>
-    <chmod dir="${jboss}/bin" perm="750" includes="*.sh" />
-
     <copy todir="${jboss}/server/default/lib">
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
@@ -81,20 +106,21 @@
           if="build.ep"
           description="Build JBoss distribution with Nuxeo EP">
 
-    <delete failonerror="false" dir="${outdir}/nuxeo-ep-jboss" />
-    <copy todir="${outdir}/nuxeo-ep-jboss">
+    <delete failonerror="false" dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
+    <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
-    <unzip dest="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear">
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
     <antcall target="jboss-third-party-libraries">
       <param name="lib.dir"
-             value="${outdir}/nuxeo-ep-jboss/server/default/deploy/nuxeo.ear/lib" />
+             value="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
+    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
-         includes="nuxeo-ep-jboss/**" />
+         includes="nuxeo-ep-${maven.project.version}-jboss/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nuxeo-ep"
@@ -105,20 +131,21 @@
           if="build.dm"
           description="Build JBoss distribution with Nuxeo DM">
 
-    <delete failonerror="false" dir="${outdir}/nuxeo-dm-jboss" />
-    <copy todir="${outdir}/nuxeo-dm-jboss">
+    <delete failonerror="false" dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
-    <unzip dest="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear">
+    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
     <antcall target="jboss-third-party-libraries">
       <param name="lib.dir"
-             value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
+             value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
+    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
-         includes="nuxeo-dm-jboss/**" />
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nuxeo-dm"
@@ -131,17 +158,17 @@
   <target name="build-nuxeo-dm-jboss-cmis"
           if="build.cmis"
           description="Build JBoss distribution with Nuxeo DM and CMIS support">
-    <copy todir="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/system">
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/system">
       <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-impl" />
       <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-bindings" />
       <artifact:resolveFile key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
     </copy>
     <antcall target="cmis-third-party-libraries">
       <param name="lib.dir"
-             value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
+             value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
 
-    <replace file="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/config/default-repository-config.xml">
+    <replace file="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/config/default-repository-config.xml">
       <replacetoken>
         <![CDATA[<indexing>]]></replacetoken>
       <replacevalue>
@@ -151,9 +178,10 @@
 ]]></replacevalue>
     </replace>
 
+    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
          basedir="${outdir}"
-         includes="nuxeo-dm-jboss/**" />
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nuxeo-dm-cmis"
@@ -192,10 +220,6 @@
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
     </copy>
-  </target>
-
-  <target name="clean">
-    <delete dir="${stagedir}" />
   </target>
 
 </project>

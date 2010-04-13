@@ -1,12 +1,15 @@
 <html>
 <body>
-  <h1>Nuxeo Document Management 5.3.0 Release Notes</h1>
+  <h1>Nuxeo Document Management 5.3.2-SNAPSHOT Release Notes</h1>
 
-  <p>Welcome to Nuxeo Document Management  (DM) 5.3.0.<br>Download  latest release of Nuxeo DM from <a href="http://www.nuxeo.com/downloads/">http://www.nuxeo.com/downloads/</a></p>
+  <p>Welcome to Nuxeo Document Management  (DM) 5.3.2-SNAPSHOT.<br>Download  latest release of Nuxeo DM from <a href="http://www.nuxeo.com/downloads/">http://www.nuxeo.com/downloads/</a></p>
 
   <h2>Requirements</h2>
   
-  <p>Nuxeo DM 5.3 needs Java. <br>Please set up recommended <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">Sun Java Runtime Environment  (JRE) 1.5</a> if it's not already installed on your computer.<br>It won't work with  any previous release of Java (e.g. Java 1.4). It also works with Java 6 (see  specific <a href="readme-java6.html">notes about Java 6</a>).</p>
+  <p>Nuxeo DM 5.3 needs Java. <br>Please set up recommended <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">Sun Java Runtime Environment  (JRE) 1.5</a> if it's not already installed on your computer.<br/>
+  Nuxeo is also compliant with Java 6 (see specific <a href="readme-java6.html">notes about Java 6</a>).<br/>
+  It won't work with  any previous release of Java (e.g. Java 1.4).
+  </p>
 
   <h2>Getting Started</h2>
 
@@ -16,8 +19,9 @@
     <li>Go to your installation directory</li>
 
     <li>Start the application
-      <ul><li>under Linux/Unix/MacOS, run &quot;chmod u+x bin/*.sh&quot; then &quot;./bin/startup.sh&quot;.</li>
-      <li>under Windows, run &quot;bin\startup.bat&quot;.</li>
+      <ul><li>under Linux/Unix/MacOS, run "<tt>./bin/nuxeoctl start</tt>" (run "<tt>./bin/nuxeoctl help</tt>" for list of available commands).</li>
+      <li>under Windows if you installed Nuxeo from the .zip file, run "<tt>bin\nuxeoctl.bat</tt>".</li>
+      <li>under Windows if you installed Nuxeo from the .exe file, either run "<tt>bin\nuxeoctl.bat</tt>" or use the "nuxeo" Windows service.</li>
       </ul>
     </li>
 
@@ -26,6 +30,9 @@
     <li>Log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;).</li>
 
   </ol>
+  <p>Edit nuxeo.conf if you want to change default values.<br/>
+  By default, JBoss is binded only on all available addresses (BINDHOST=0.0.0.0), change the BINDHOST value if you want to set a specific IP (recommended).
+  </p>
 
   <h2>Complementary features</h2>
   <p>The following features depend on the environment where you installed Nuxeo DM.</p>
@@ -67,9 +74,8 @@ Save time: you can save and reuse your most frequent queries.</li>
 
   <h2>Known Issues</h2>
 
-  <p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel">Jira issue tracker</a> for the Nuxeo ECM Platform project on jira.nuxeo.org to check the currently bugs and issues with this release.</br>
-  <a href="http://jira.nuxeo.org/browse/NXP/fixforversion/10812">Fix for 5.3 GA</a>.</br>
-  <a href="http://jira.nuxeo.org/browse/NXP/fixforversion/10646">Fix for 5.3 RC</a>.
+  <p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel">Jira issue tracker</a> for the Nuxeo ECM Platform project on jira.nuxeo.org to check the 
+  <a href="https://jira.nuxeo.org/browse/NXP/fixforversion/">currently bugs and issues with this release</a>.</br>
   </p>
 
   <h2>Documentation and Help</h2>
@@ -83,7 +89,7 @@ Save time: you can save and reuse your most frequent queries.</li>
     
     <li>How to develop with Nuxeo - <a href="http://doc.nuxeo.org/current/books/nuxeo-learning/html/">The Tutorial (draft)</a></li>
 
-    <li>The <a href="http://doc.nuxeo.org/current/books/nuxeo-book/html/">Nuxeo EP book - The Reference</a></li>
+    <li>The <a href="http://doc.nuxeo.org/current/books/nuxeo-book/html/">Nuxeo Reference Guide (aka Nuxeo Book)</a></li>
 
     <li>The <a href="http://doc.nuxeo.org/current/books/nuxeo-book/html/index-admin.html">Nuxeo Administration Guide</a></li>
 

@@ -35,7 +35,7 @@
               <runPreprocessor>false</runPreprocessor>
               <!--format>directory</format-->
               <format>zip</format>
-              <zipRoot>nxshell</zipRoot>
+              <zipRoot>nuxeo-shell-${project.version}</zipRoot>
               <outputDirectory>target</outputDirectory>
               <targetFile>${application.name}</targetFile>
               <descriptor>
