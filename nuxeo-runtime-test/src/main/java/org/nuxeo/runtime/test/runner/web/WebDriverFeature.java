@@ -35,18 +35,19 @@ public class WebDriverFeature extends SimpleFeature {
     private static final Log log = LogFactory.getLog(WebDriverFeature.class);
 
     protected Configuration config;
+
     protected Class<? extends WebPage> home;
 
     @Override
-    public void initialize(FeaturesRunner runner)
-            throws Exception {
+    public void initialize(FeaturesRunner runner) throws Exception {
         Class<?> classToTest = runner.getTargetTestClass();
-        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, Browser.class);
+        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(
+                classToTest, Browser.class);
         DriverFactory factory;
         // test here if the driver factory is specified by environment
         String fcName = System.getProperty(DriverFactory.class.getName());
         if (fcName != null) {
-            factory = (DriverFactory)Class.forName(fcName).newInstance();
+            factory = (DriverFactory) Class.forName(fcName).newInstance();
         } else {
             if (browser == null) {
                 factory = BrowserFamily.HTML_UNIT.getDriverFactory();
@@ -61,9 +62,11 @@ public class WebDriverFeature extends SimpleFeature {
         }
         config = new Configuration(factory);
 
-        // get the home page and the url - first check for an url from the environment
-        String url = System.getProperty(HomePage.class.getName()+".url");
-        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, HomePage.class);
+        // get the home page and the url - first check for an url from the
+        // environment
+        String url = System.getProperty(HomePage.class.getName() + ".url");
+        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(
+                classToTest, HomePage.class);
         if (home != null) {
             config.setHomePageClass(home.type());
             if (url == null) {
@@ -86,6 +89,7 @@ public class WebDriverFeature extends SimpleFeature {
                     }
                     return true;
                 }
+
                 @Override
                 public String describe() {
                     return "Filtering tests according to current browser settings";
@@ -110,10 +114,11 @@ public class WebDriverFeature extends SimpleFeature {
         if (config.getHomePageClass() != null) {
             binder.bind(config.getHomePageClass()).toProvider(new Provider() {
                 public Object get() {
-                    Object obj = PageFactory.initElements(config.getDriver(), config.getHomePageClass());
+                    Object obj = PageFactory.initElements(config.getDriver(),
+                            config.getHomePageClass());
                     runner.getInjector().injectMembers(obj);
                     if (obj instanceof WebPage) {
-                        ((WebPage)obj).ensureLoaded();
+                        ((WebPage) obj).ensureLoaded();
                     }
                     return obj;
                 }

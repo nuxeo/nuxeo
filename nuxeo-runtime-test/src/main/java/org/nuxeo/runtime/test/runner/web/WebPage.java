@@ -41,10 +41,11 @@ import com.google.inject.Inject;
 public abstract class WebPage {
 
     /**
-     * Can be used by tests as default timeouts. This way you can change these values to
-     * change all the timeout in the tests.
-     * DEFAULT_TIMEOUT is used for regular timeouts (loading an ajax page an ajax dialog etc.)
-     * while BIG_TIMEOUT should be used for pages that are slower (like the home of a GWT application)
+     * Can be used by tests as default timeouts. This way you can change these
+     * values to change all the timeout in the tests. DEFAULT_TIMEOUT is used
+     * for regular timeouts (loading an ajax page an ajax dialog etc.) while
+     * BIG_TIMEOUT should be used for pages that are slower (like the home of a
+     * GWT application)
      */
     public static int DEFAULT_TIMEOUT = 5;
 
@@ -52,15 +53,20 @@ public abstract class WebPage {
 
     private static final Map<Class<?>, WebPage> pages = new HashMap<Class<?>, WebPage>();
 
-    @Inject protected Configuration config;
+    @Inject
+    protected Configuration config;
 
-    @Inject protected WebDriver driver;
+    @Inject
+    protected WebDriver driver;
 
-    @Inject protected FeaturesRunner runner;
+    @Inject
+    protected FeaturesRunner runner;
 
     /**
-     * Should be overridden by dynamic page (using ajax) to wait until the page is completely loaded
-     * By default nothing is done (page is assumed to be loaded)
+     * Should be overridden by dynamic page (using ajax) to wait until the page
+     * is completely loaded By default nothing is done (page is assumed to be
+     * loaded)
+     *
      * @return the page itself
      */
     public WebPage ensureLoaded() {
@@ -130,29 +136,27 @@ public abstract class WebPage {
         try {
             return findElement(by); // try once first
         } catch (NotFoundException e) {
-            return new WebDriverWait(driver, timeOutInSeconds).until(
-                    new ExpectedCondition<WebElement>() {
-                        public WebElement apply(WebDriver arg0) {
-                            return driver.findElement(by);
-                        }
-                    });
+            return new WebDriverWait(driver, timeOutInSeconds).until(new ExpectedCondition<WebElement>() {
+                public WebElement apply(WebDriver arg0) {
+                    return driver.findElement(by);
+                }
+            });
         }
     }
 
     public void waitUntilElementNotFound(final By by, int timeOutInSeconds) {
         try {
             findElement(by); // try once first
-            new WebDriverWait(driver, timeOutInSeconds).until(
-                    new ExpectedCondition<Boolean>() {
-                        public Boolean apply(WebDriver arg0) {
-                            try {
-                                driver.findElement(by);
-                                return Boolean.FALSE;
-                            } catch (NotFoundException e) {
-                                return Boolean.TRUE;
-                            }
-                        }
-                    });
+            new WebDriverWait(driver, timeOutInSeconds).until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver arg0) {
+                    try {
+                        driver.findElement(by);
+                        return Boolean.FALSE;
+                    } catch (NotFoundException e) {
+                        return Boolean.TRUE;
+                    }
+                }
+            });
         } catch (NotFoundException e) {
             return;
         }
@@ -160,10 +164,10 @@ public abstract class WebPage {
 
     @SuppressWarnings("unchecked")
     public <T extends WebPage> T getPage(Class<T> type) {
-        T page = (T)pages.get(type);
+        T page = (T) pages.get(type);
         if (page == null) {
             synchronized (pages) {
-                page = (T)pages.get(type);
+                page = (T) pages.get(type);
                 if (page != null) {
                     return page;
                 }
@@ -172,11 +176,14 @@ public abstract class WebPage {
                 pages.put(type, page);
             }
         }
-        return (T)page.ensureLoaded(); // this will block until page is loaded (if implementation needs this)
+        return (T) page.ensureLoaded(); // this will block until page is loaded
+        // (if implementation needs this)
     }
 
     public static void flushPageCache() {
-        synchronized (pages) { pages.clear(); }
+        synchronized (pages) {
+            pages.clear();
+        }
     }
 
 }
