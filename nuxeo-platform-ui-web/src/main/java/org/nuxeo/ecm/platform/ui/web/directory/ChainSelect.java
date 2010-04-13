@@ -58,6 +58,8 @@ public class ChainSelect extends UIInput {
 
     public static final String DEFAULT_KEY_SEPARATOR = "/";
 
+    public static final String DEFAULT_PARENT_KEY = null;
+
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
     // Direct access from ChainSelectStatus
@@ -113,6 +115,14 @@ public class ChainSelect extends UIInput {
      */
     private String keySeparator;
 
+    /**
+     * Value used to filter on parent key when searching for a hierarchical
+     * directory roots.
+     * <p>
+     * If not set, will use null.
+     */
+    protected String defaultRootKey;
+
     public boolean isAllowBranchSelection() {
         return allowBranchSelection;
     }
@@ -164,11 +174,12 @@ public class ChainSelect extends UIInput {
         compInfos = (Map<Integer, NestedChainSelectComponentInfo>) values[18];
         keyList = (List<String>) values[19];
         onchange = (String) values[20];
+        defaultRootKey = (String) values[21];
     }
 
     @Override
     public Object saveState(FacesContext arg0) {
-        Object[] values = new Object[21];
+        Object[] values = new Object[22];
         values[0] = super.saveState(arg0);
         values[1] = componentValue;
         values[2] = optionList;
@@ -190,6 +201,7 @@ public class ChainSelect extends UIInput {
         values[18] = compInfos;
         values[19] = keyList;
         values[20] = onchange;
+        values[21] = defaultRootKey;
         return values;
     }
 
@@ -545,9 +557,7 @@ public class ChainSelect extends UIInput {
 
             componentValue = new Selection[rows.length];
             for (int i = 0; i < rows.length; i++) {
-                String[] columns = StringUtils.split(rows[i],
-                        keySeparator != null ? keySeparator
-                                : ChainSelect.DEFAULT_KEY_SEPARATOR);
+                String[] columns = StringUtils.split(rows[i], getKeySeparator());
                 componentValue[i] = createSelection(columns);
             }
 
@@ -596,16 +606,14 @@ public class ChainSelect extends UIInput {
                 if (directoryName != null) {
                     if (DirectoryHelper.instance().hasParentColumn(
                             directoryName)) {
-                        // explicitely filter on NULL parent in a xvocabulary
-                        filter.put("parent", null);
+                        filter.put("parent", getDefaultRootKey());
                     }
                 }
             } else {
                 String parentId;
                 if (qualifiedParentKeys) {
                     parentId = StringUtils.join(keyList.iterator(),
-                            keySeparator != null ? keySeparator
-                                    : ChainSelect.DEFAULT_KEY_SEPARATOR);
+                            getKeySeparator());
                 } else {
                     parentId = columns[i - 1];
                 }
@@ -702,6 +710,14 @@ public class ChainSelect extends UIInput {
 
     public void setKeySeparator(String keySeparator) {
         this.keySeparator = keySeparator;
+    }
+
+    public String getDefaultRootKey() {
+        return defaultRootKey;
+    }
+
+    public void setDefaultRootKey(String defaultRootKey) {
+        this.defaultRootKey = defaultRootKey;
     }
 
     @Override

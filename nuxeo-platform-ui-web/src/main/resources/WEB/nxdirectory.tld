@@ -321,9 +321,7 @@
     <attribute>
       <name>value</name>
       <required>true</required>
-      <description>
-        The entry identifier - can be a value binding
-      </description>
+      <description>The entry identifier - can be a value binding</description>
     </attribute>
     <attribute>
       <name>directoryName</name>
@@ -503,6 +501,13 @@
         Css style class to use when displaying only the value
       </description>
     </attribute>
+    <attribute>
+      <name>defaultRootKey</name>
+      <description>
+        Parent key to filter on to get a directory roots. Defaults to null if
+        not set.
+      </description>
+    </attribute>
   </tag>
 
   <tag>
@@ -638,7 +643,8 @@
     <attribute>
       <name>handleMultipleValues</name>
       <description>
-        Boolean to treat multi-valued fields as seperate entries (multi-line rendering).
+        Boolean to treat multi-valued fields as seperate entries (multi-line
+        rendering).
       </description>
     </attribute>
   </tag>

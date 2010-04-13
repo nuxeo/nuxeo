@@ -100,8 +100,9 @@ public abstract class ChainSelectBase extends UIInput implements
 
     private boolean displayValueOnly;
 
-    protected Map<String, String[]> selectionMap = new HashMap<String, String[]>();
+    protected String defaultRootKey;
 
+    protected Map<String, String[]> selectionMap = new HashMap<String, String[]>();
 
     protected ChainSelectBase() {
         HtmlSelectOneListbox select = new HtmlSelectOneListbox();
@@ -142,6 +143,7 @@ public abstract class ChainSelectBase extends UIInput implements
         allowBranchSelection = chainState.getAllowBranchSelection();
         reRender = chainState.getReRender();
         displayValueOnly = chainState.getDisplayValueOnly();
+        defaultRootKey = chainState.getDefaultRootKey();
     }
 
     @Override
@@ -160,6 +162,7 @@ public abstract class ChainSelectBase extends UIInput implements
         chainState.setAllowBranchSelection(allowBranchSelection);
         chainState.setReRender(reRender);
         chainState.setDisplayValueOnly(displayValueOnly);
+        chainState.setDefaultRootKey(defaultRootKey);
 
         Object[] values = new Object[3];
         values[0] = super.saveState(context);
@@ -243,8 +246,10 @@ public abstract class ChainSelectBase extends UIInput implements
     /**
      * Computes the items that should be displayed for the nth listbox,
      * depending on the options that have been selected in the previous ones.
+     *
      * @param level the index of the listbox for which to compute the items
-     * @param selectedKeys the keys for the items selected on the previous levels
+     * @param selectedKeys the keys for the items selected on the previous
+     *            levels
      * @return a list of directory items
      */
     public List<DirectoryEntry> getDirectoryEntries(int level,
@@ -311,8 +316,10 @@ public abstract class ChainSelectBase extends UIInput implements
     }
 
     /**
-     * Resolves a list of keys (a selection) to a list of coresponding directory items.
-     * Example: [a, b, c] is resolved to [getNode(a), getNode(b), getNode(c)]
+     * Resolves a list of keys (a selection) to a list of coresponding directory
+     * items. Example: [a, b, c] is resolved to [getNode(a), getNode(b),
+     * getNode(c)]
+     *
      * @param keys
      * @return
      */
@@ -321,7 +328,7 @@ public abstract class ChainSelectBase extends UIInput implements
 
         DirectoryService service = DirectoryHelper.getDirectoryService();
         Session session = null;
-        for (int level=0; level<keys.length; level++) {
+        for (int level = 0; level < keys.length; level++) {
             try {
                 String directoryName = getDirectory(level);
                 String schema = service.getDirectorySchema(directoryName);
@@ -334,9 +341,10 @@ public abstract class ChainSelectBase extends UIInput implements
                     }
                 } else {
                     if (getQualifiedParentKeys()) {
-                        Iterator<String> iter = Arrays.asList(keys).subList(
-                                0, level).iterator();
-                        String fullPath = StringUtils.join(iter, getKeySeparator());
+                        Iterator<String> iter = Arrays.asList(keys).subList(0,
+                                level).iterator();
+                        String fullPath = StringUtils.join(iter,
+                                getKeySeparator());
                         filter.put("parent", fullPath);
                     } else {
                         filter.put("parent", keys[level - 1]);
@@ -388,6 +396,19 @@ public abstract class ChainSelectBase extends UIInput implements
 
     public void setKeySeparator(String keySeparator) {
         this.keySeparator = keySeparator;
+    }
+
+    public String getDefaultRootKey() {
+        ValueExpression ve = getValueExpression("defaultRootKey");
+        if (ve != null) {
+            return (String) ve.getValue(FacesContext.getCurrentInstance().getELContext());
+        } else {
+            return defaultRootKey;
+        }
+    }
+
+    public void setDefaultRootKey(String defaultRootKey) {
+        this.defaultRootKey = defaultRootKey;
     }
 
     public boolean getDisplayValueOnly() {
