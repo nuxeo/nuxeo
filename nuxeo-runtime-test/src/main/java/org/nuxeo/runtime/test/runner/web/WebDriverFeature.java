@@ -129,6 +129,7 @@ public class WebDriverFeature extends SimpleFeature {
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         config.resetDriver();
+        WebPage.flushPageCache();
     }
 
 }
