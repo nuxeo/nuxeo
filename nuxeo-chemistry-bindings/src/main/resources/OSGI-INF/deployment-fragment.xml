@@ -30,6 +30,28 @@
         </handler-chain>
       </handler-chains>
     </endpoint>
+    <endpoint name="ObjectService"
+        implementation="org.apache.chemistry.soap.server.ObjectServicePortImpl"
+        url-pattern="/webservices/cmis/ObjectService">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>org.nuxeo.ecm.core.chemistry.bindings.NuxeoAuthHandler</handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+    <endpoint name="NavigationService"
+        implementation="org.apache.chemistry.soap.server.NavigationServicePortImpl"
+        url-pattern="/webservices/cmis/NavigationService">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>org.nuxeo.ecm.core.chemistry.bindings.NuxeoAuthHandler</handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
   </extension>
 
 </fragment>
