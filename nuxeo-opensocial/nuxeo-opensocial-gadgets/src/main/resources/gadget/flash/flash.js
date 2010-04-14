@@ -73,7 +73,7 @@ function savePrefs(){
 };
 
 function loadFlash(id){
-  var flashUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
+  var flashUrl = gadgets.nuxeo.getFileActionUrl(id);
   jQuery("#formUpload").attr("action", gadgets.nuxeo.getFormActionUrl(id));
   jQuery.ajax({
     type : "GET",

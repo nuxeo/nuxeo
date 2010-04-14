@@ -9,13 +9,22 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
@@ -41,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "GadgetDocument")
 public class GadgetDocument extends DocumentObject {
 
+    private static final String DTEFORMAT = "ddMMMyyyyHH:mm:ss z";
+
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
 
     private static final int DEFAULT_SIZE_WIDTH = 600;
@@ -50,6 +61,7 @@ public class GadgetDocument extends DocumentObject {
     private static final Log log = LogFactory.getLog(GadgetDocument.class);
 
     private ImagingService imagingService;
+
 
     @GET
     @Override
@@ -205,10 +217,19 @@ public class GadgetDocument extends DocumentObject {
 
     @GET
     @Path("file")
-    public Object getFile() {
+    public Object getFile(@Context Request request) {
         try {
+            Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
+            EntityTag tag = getEntityTagForDocument(doc);
+            Response.ResponseBuilder rb = request.evaluatePreconditions(modified.getTime(), tag);
+            if (rb != null) {
+                throw new WebApplicationException(rb.build());
+            }
+
             Blob blob = getBlobFromDoc(doc);
             String filename = blob.getFilename();
+
+
 
             String contentDisposition = "attachment;filename=" + filename;
 
@@ -223,9 +244,33 @@ public class GadgetDocument extends DocumentObject {
             return Response.ok(blob)
                     .header("Content-Disposition", contentDisposition)
                     .type(blob.getMimeType())
+                    .lastModified(modified.getTime())
+                    .expires(modified.getTime())
+                    .tag(tag)
                     .build();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get the attached file", e);
+        }
+    }
+
+    static EntityTag getEntityTagForDocument(DocumentModel doc) {
+        Calendar modified;
+        try {
+            modified = (Calendar) doc.getPropertyValue("dc:modified");
+        } catch (ClientException e) {
+            modified = Calendar.getInstance();
+        }
+        return new EntityTag(computeDigest(doc.getId() + new SimpleDateFormat(DTEFORMAT).format(modified.getTime())));
+    }
+
+    private static String computeDigest(String content) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA");
+            byte[] digest = md.digest(content.getBytes());
+            BigInteger bi = new BigInteger(digest);
+            return bi.toString(16);
+        } catch (Exception e) {
+            return "";
         }
     }
 
@@ -258,7 +303,12 @@ public class GadgetDocument extends DocumentObject {
 
     @GET
     @Path("html")
-    public Object doGetHtml() throws PropertyException, ClientException {
+    public Object doGetHtml(@Context Request request) throws PropertyException, ClientException {
+        EntityTag tag = getEntityTagForDocument(doc);
+        Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
+        if (rb != null) {
+            throw new WebApplicationException(rb.build());
+        }
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
         return Response.ok(htmlContent, MediaType.TEXT_HTML)
                 .build();

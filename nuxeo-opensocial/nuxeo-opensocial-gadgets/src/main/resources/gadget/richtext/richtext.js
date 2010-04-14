@@ -71,7 +71,7 @@ jQuery(document).ready(function(){
       type : "POST",
       url : [formUrl,"/deletePicture"].join(""),
       success:function(data){
-      	jQuery('#deletePhoto').hide();
+        jQuery('#deletePhoto').hide();
         jQuery("#imgPreview").hide();
         jQuery("#upContainer").remove();
       }
@@ -180,7 +180,7 @@ function loadImage(id){
         jQuery("#imgPreview").show();
         jQuery('#deletePhoto').show();
         var imgContainer = "";
-        var photoUrl = [gadgets.nuxeo.getFileActionUrl(id),'?junk=',Math.random()].join("");
+        var photoUrl = gadgets.nuxeo.getFileActionUrl(id);
         jQuery.ajax({
           type : "GET",
           url : photoUrl,
@@ -194,7 +194,7 @@ function loadImage(id){
               aLink.append(img);
               imgContainer.append(aLink);
             } else {
-           	  imgContainer.append(img);
+               imgContainer.append(img);
             }
             imgContainer.append(jQuery("<span></span>").attr("id","legend").text(gadgets.util.unescapeString(prefs.getString("legend"))));
             jQuery("#imgPreview").attr("src", photoUrl);
