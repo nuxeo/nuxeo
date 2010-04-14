@@ -1,1 +1,1 @@
-There is no site with URL: ${url?xml}
+There is no blog with URL: ${url?xml}
