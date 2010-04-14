@@ -2,13 +2,13 @@
 
   <h1 class="nxthemesEditor">Manage themes</h1>
   
-  <table style="width: 100%;" cellpadding="3" cellspacing="1">
+  <table class="nxthemesManageScreen">
   <tr>
-    <th style="text-align: left; width: 50%; background-color: #999; color: #fff">Working list</th>
-    <th style="text-align: left; width: 50%; background-color: #999; color: #fff">Available themes</th>
+    <th style="width: 50%;">Working list</th>
+    <th style="width: 50%;">Available themes</th>
   </tr>
   <tr>
-  <td style="vertical-align: top">
+  <td>
     
     <ul class="nxthemesSelector">
       <#list workspace_themes as theme>
@@ -22,7 +22,7 @@
     </ul>
 
   </td>
-  <td style="vertical-align: top;">
+  <td>
 
     <ul class="nxthemesSelector">
     <#list available_themes as theme>

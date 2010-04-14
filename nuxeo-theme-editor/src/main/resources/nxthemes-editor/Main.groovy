@@ -191,11 +191,14 @@ public class Main extends ModuleRoot {
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path,
           @QueryParam("org.nuxeo.theme.application.name") String name) {
     String fragmentType = getSelectedFragmentType()
-    String fragmentVIew = getSelectedFragmentView()
+    String fragmentView = getSelectedFragmentView()
+    String fragmentStyle = getSelectedFragmentStyle()
     return getTemplate("fragmentFactory.ftl").arg(
             "selected_fragment_type", fragmentType).arg(
-            "selected_fragment_view", fragmentVIew).arg(
+            "selected_fragment_view", fragmentView).arg(
+            "selected_fragment_style", fragmentStyle).arg(
             "fragments", getFragments(path)).arg(
+            "styles", getNamedStyles(path, name)).arg(
             "views", getViews(fragmentType, path)).arg(
             "selected_element_id", getSelectedElementId())
   }
@@ -366,8 +369,9 @@ public class Main extends ModuleRoot {
     SessionManager.setPresetGroup(null);
     SessionManager.setPresetCategory(null);
     SessionManager.setClipboardElementId(null);
-    SessionManager.setFragmentView(null);
     SessionManager.setFragmentType(null);
+    SessionManager.setFragmentView(null);
+    SessionManager.setFragmentStyle(null);
   }
   
   @POST
@@ -384,8 +388,9 @@ public class Main extends ModuleRoot {
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
     SessionManager.setPresetCategory(null);
-    SessionManager.setFragmentView(null);
     SessionManager.setFragmentType(null);
+    SessionManager.setFragmentView(null);
+    SessionManager.setFragmentStyle(null);
   }
   
   @POST
@@ -575,10 +580,11 @@ public class Main extends ModuleRoot {
   public void insertFragment() {
       FormData form = ctx.getForm()
       String destId = form.getString("dest_id")    
-      String typeName = form.getString("type_name")             
+      String typeName = form.getString("type_name")            
+      String styleName = form.getString("style_name")
       Element destElement = ThemeManager.getElementById(destId)
     try {
-        Editor.insertFragment(destElement, typeName)
+        Editor.insertFragment(destElement, typeName, styleName)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
@@ -612,6 +618,7 @@ public class Main extends ModuleRoot {
       String type = form.getString("type")        
       SessionManager.setFragmentType(type)
       SessionManager.setFragmentView(null)
+      SessionManager.setFragmentStyle(null)      
   }
   
   @POST
@@ -620,6 +627,15 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String view = form.getString("view")        
       SessionManager.setFragmentView(view)
+      SessionManager.setFragmentStyle(null)      
+  }
+  
+  @POST
+  @Path("select_fragment_style")
+  public void selectFragmentStyle() {
+      FormData form = ctx.getForm()
+      String style = form.getString("style")        
+      SessionManager.setFragmentStyle(style)
   }
   
   @POST
@@ -713,6 +729,33 @@ public class Main extends ModuleRoot {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
+
+  @POST
+  @Path("set_style_inheritance")
+  public void makeStyleInherit() {
+      FormData form = ctx.getForm()
+      String styleName = form.getString("style_name")
+      String ancestorName = form.getString("ancestor_name")
+      String themeName = form.getString("theme_name")
+      try {
+          Editor.setStyleInheritance(styleName, ancestorName, themeName)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }
+
+  @POST
+  @Path("remove_style_inheritance")
+  public void removeStyleInheritance() {
+      FormData form = ctx.getForm()
+      String styleName = form.getString("style_name")
+      String themeName = form.getString("theme_name")      
+      try {
+          Editor.removeStyleInheritance(styleName, themeName)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }  
   
   @POST
   @Path("move_element")
@@ -1149,6 +1192,15 @@ public class Main extends ModuleRoot {
       for (f in Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {
           FragmentType fragmentType = (FragmentType) f
           if (fragments.contains(fragmentType)) {
+              continue
+          }
+          def views = []
+          for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+              if (templateEngine.equals(viewType.getTemplateEngine())) {
+                  views.add(viewType)
+              }
+          }
+          if (views.isEmpty()) {
               continue
           }
           fragments.add(fragmentType)
@@ -1598,6 +1650,10 @@ public class Main extends ModuleRoot {
   
   public static String getSelectedFragmentView() {
       return SessionManager.getFragmentView()
+  }
+  
+  public static String getSelectedFragmentStyle() {
+      return SessionManager.getFragmentStyle()
   }
   
   public static String getTemplateEngine(applicationPath) {

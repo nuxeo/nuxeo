@@ -1,4 +1,5 @@
-
+<!-- style menu -->
+<@nxthemes_view resource="style-menu.json" />   
 
 <div id="nxthemesStyleManager" class="nxthemesScreen">
 
@@ -10,9 +11,7 @@
 
 <h1 class="nxthemesEditor">Manage styles</h1>
 
-
 <#if style_manager_mode = 'named styles'>
-
 
 <div style="float: right">
   <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
@@ -21,13 +20,13 @@
 
   <p class="nxthemesExplanation">List styles by name.<p>
 
-  <table style="width: 100%;" cellpadding="3" cellspacing="1">
+  <table class="nxthemesManageScreen">
   <tr>
-    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Style</th>
-    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">CSS properties</th>
+    <th style="width: 25%;">Style</th>
+    <th style="width: 75%;">CSS properties</th>
   </tr>
   <tr>
-  <td style="vertical-align: top">
+  <td>
 
 <ul class="nxthemesSelector">
 <#list named_styles as style>
@@ -111,16 +110,16 @@
 
   <form class="nxthemesForm" action="javascript:void(0)"
     onsubmit="NXThemesStyleManager.setPageStyles('${current_theme_name}', this); return false">
-  <table style="width: 100%;" cellpadding="3" cellspacing="1">
+  <table class="nxthemesManageScreen">
   <tr>
-    <th style="text-align: left; width: 25%; background-color: #999; color: #fff">Page</th>
-    <th style="text-align: left; width: 75%; background-color: #999; color: #fff">Style</th>
+    <th style="width: 25%;">Page</th>
+    <th style="width: 75%;">Style</th>
   </tr>
     
   <#list page_styles?keys as page_name>
   <#assign current_style_name=page_styles[page_name]>
   <tr>
-  <td style="vertical-align: top">
+  <td>
     ${page_name} 
   </td>
   <td>
@@ -155,6 +154,27 @@
     <ul>
       <#list objects as s>
         <li>${s.name}
+        
+         <ins class="model">
+          {"id": "style_${s.name}",
+           "type": "named style",
+           "data": {
+             "title": "${s.name}",
+             "id": "${s.name}",
+             "theme_name": "${current_theme_name}",
+             "styles": [
+               <#list named_styles as style>
+                 <#if style.name != s.name>
+                   {"label": "${style.name}", "choice": "${style.name}", "selected": "false"},
+                 </#if>
+               </#list>
+             ],
+             "can inherit": true,
+             "inherits": true          
+           }
+          }
+          </ins>
+        
           <@listTree Root.listNamedStylesDirectlyInheritingFrom(s) />
         </li>
       </#list>

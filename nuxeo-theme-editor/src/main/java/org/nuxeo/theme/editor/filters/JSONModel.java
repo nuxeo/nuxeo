@@ -50,6 +50,9 @@ public class JSONModel extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
+        if (info.isRenderingPostponed(cache)) {
+            return info;
+        }
         final Element element = info.getElement();
         final String markup = info.getMarkup();
         final String templateEngine = info.getTemplateEngine().getName();

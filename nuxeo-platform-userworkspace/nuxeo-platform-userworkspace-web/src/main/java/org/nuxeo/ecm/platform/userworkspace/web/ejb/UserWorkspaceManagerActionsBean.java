@@ -141,10 +141,12 @@ public class UserWorkspaceManagerActionsBean implements
                 && currentDocument.getPath().segment(0) != null) {
             lastAccessedDocument = navigationContext.getCurrentDocument();
         }
-        navigationContext.setCurrentDocument(currentUserPersonalWorkspace);
+        navigationContext.setCurrentDocument(currentUserPersonalWorkspace);     
         showingPersonalWorkspace = true;
 
-        Events.instance().raiseEvent(EventNames.GO_HOME);
+
+        Events.instance().raiseEvent(EventNames.GO_PERSONAL_WORKSPACE);
+
 
         return returnView;
     }

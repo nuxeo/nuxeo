@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -215,6 +216,10 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doPutExtendedInfos(LogEntry entry,
             EventContext eventContext, DocumentModel source, Principal principal) {
+        if ( source instanceof DeletedDocumentModel) { // nothing to log ; it's a light doc
+            return;
+        }
+        
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
             expressionEvaluator.bindValue(context, "message", eventContext);
@@ -223,7 +228,12 @@ public class NXAuditEventsService extends DefaultComponent implements
             expressionEvaluator.bindValue(context, "source", source);
             // inject now the adapters
             for ( AdapterDescriptor ad : documentAdapters ){
-            	Object adapter = source.getAdapter(ad.getKlass());
+            	Object adapter = null;
+            	try {
+            	    adapter = source.getAdapter(ad.getKlass());
+            	} catch (Exception e) {
+            	    log.debug(String.format("can't get adapter for %s to log extinfo: %s", source.getPathAsString(), e.getMessage()));
+                }
 				if ( adapter != null ){
             		expressionEvaluator.bindValue(context, ad.getName(), adapter);
             	}

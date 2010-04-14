@@ -30,8 +30,10 @@ public final class ElementUid extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
+        if (info.isRenderingPostponed(cache)) {
+            return info;
+        }
         final String markup = info.getMarkup();
-
         final Matcher firstMatcher = firstTagPattern.matcher(markup);
         final Matcher othersMatcher = otherTagsPattern.matcher(markup);
 
@@ -48,8 +50,8 @@ public final class ElementUid extends StandaloneFilter {
         String f = "";
 
         if (inBrackets.endsWith("/")) {
-            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll("/$",
-                    "").trim(), info.getElement().getUid(),
+            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll(
+                    "/$", "").trim(), info.getElement().getUid(),
                     othersMatcher.group(1));
         } else {
             f = String.format("<%s id=\"e%s\">%s", inBrackets,

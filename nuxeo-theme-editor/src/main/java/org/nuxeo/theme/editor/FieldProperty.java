@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.editor;
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -66,6 +68,25 @@ public class FieldProperty {
             rendered.append(String.format(
                     "<textarea name=\"%s\" class=\"fieldInput\">%s</textarea>",
                     name, value));
+
+        } else if ("lines".equals(type)) {
+            String text = "";
+            try {
+                StringBuilder sb = new StringBuilder();
+                Iterator<String> it = org.nuxeo.theme.Utils.csvToList(value).iterator();
+                while (it.hasNext()) {
+                    sb.append(it.next());
+                    if (it.hasNext()) {
+                        sb.append('\n');
+                    }
+                }
+                text = sb.toString();
+            } catch (IOException e) {
+                log.error("Could not interpret value of: " + value);
+            }
+            rendered.append(String.format(
+                    "<textarea name=\"%s:lines\" class=\"linesInput fieldInput\">%s</textarea>",
+                    name, text));
 
         } else if ("string".equals(type) || "integer".equals(type)) {
             rendered.append(String.format(

@@ -21,8 +21,12 @@ public final class Draggable extends StandaloneFilter {
 
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
+        if (info.isRenderingPostponed(cache)) {
+            return info;
+        }
         info.setMarkup(String.format(
-                "<div class=\"nxthemesDraggable\"><div class=\"nxthemesFrameTop\"></div><div class=\"nxthemesFrameRight\"></div><div class=\"nxthemesFrameLeft\"></div><div class=\"nxthemesFrameBottom\"></div>%s</div>", info.getMarkup()));
+                "<div class=\"nxthemesDraggable\"><div class=\"nxthemesFrameTop\"></div><div class=\"nxthemesFrameRight\"></div><div class=\"nxthemesFrameLeft\"></div><div class=\"nxthemesFrameBottom\"></div>%s</div>",
+                info.getMarkup()));
         return info;
     }
 

@@ -14,6 +14,10 @@
  */
 package org.nuxeo.ecm.platform.preview.adapter.base;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -23,14 +27,13 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
+import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
+import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for preview based on "on the fly" HTML transformers
@@ -47,6 +50,8 @@ public class ConverterBasedHtmlPreviewAdapter extends
     protected static ConversionService cs;
 
     protected String defaultFieldXPath;
+
+    protected MimetypeRegistry mimeTypeService;
 
     public static ConversionService getConversionService() throws Exception {
         if (cs==null) {
@@ -171,22 +176,36 @@ public class ConverterBasedHtmlPreviewAdapter extends
     }
 
     protected void setMimeType(BlobHolder result) throws ClientException {
-        boolean foundHtmlBlob = false;
         for (Blob blob : result.getBlobs()) {
-            String filename = blob.getFilename();
-            if (filename != null && filename.endsWith("html")) {
-                blob.setMimeType("text/html");
-                foundHtmlBlob = true;
+            if (blob.getMimeType() == null && blob.getFilename().endsWith("html")) {
+                String mimeTpye = getMimeType(blob);
+                blob.setMimeType(mimeTpye);
             }
         }
-        if (!foundHtmlBlob) {
-            // Set the mimeType to 'text/html' of the first Blob (the one
-            // containing the HTML preview)
-            Blob blob = result.getBlob();
-            if (blob.getMimeType() == null) {
-                blob.setMimeType("text/html");
+    }
+
+
+    public String getMimeType(File file) throws ConversionException{
+        try {
+            return getMimeTypeService().getMimetypeFromFile(file);
+        } catch (ConversionException e) {
+            throw new ConversionException("Could not get MimeTypeRegistry");
+        } catch (MimetypeNotFoundException e) {
+            return "application/octet-stream";
+        } catch (MimetypeDetectionException e) {
+            return "application/octet-stream";
+        }
+    }
+
+    public MimetypeRegistry getMimeTypeService() throws ConversionException {
+        if (mimeTypeService == null) {
+            try {
+                mimeTypeService = Framework.getService(MimetypeRegistry.class);
+            } catch (Exception e) {
+                throw new ConversionException("Could not get MimeTypeRegistry");
             }
         }
+        return mimeTypeService;
     }
 
     public void cleanup() {

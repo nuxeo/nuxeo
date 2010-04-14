@@ -292,7 +292,7 @@ public class Editor {
     public static void deletePage(String pagePath) throws ThemeIOException,
             ThemeException {
         final String themeName = pagePath.split("/")[0];
-        saveToUndoBuffer(themeName, "delete theme");
+        saveToUndoBuffer(themeName, "delete page");
 
         ThemeManager themeManager = Manager.getThemeManager();
         themeManager.deletePage(pagePath);
@@ -414,6 +414,38 @@ public class Editor {
                 themeManager.makeFormatInherit(currentStyle, namedStyle);
             }
         }
+        saveTheme(themeName);
+    }
+
+    public static void removeStyleInheritance(String styleName, String themeName)
+            throws ThemeException {
+        saveToUndoBuffer(themeName, "remove style inheritance");
+        ThemeManager themeManager = Manager.getThemeManager();
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        if (style == null) {
+            throw new ThemeException("Could not find named style: " + styleName);
+        }
+        ThemeManager.removeInheritanceTowards(style);
+        saveTheme(themeName);
+    }
+
+    public static void setStyleInheritance(String styleName,
+            String ancestorName, String themeName) throws ThemeException {
+        saveToUndoBuffer(themeName, "set style inheritance");
+        ThemeManager themeManager = Manager.getThemeManager();
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        if (style == null) {
+            throw new ThemeException("Could not find named style: " + styleName);
+        }
+        Style ancestor = (Style) themeManager.getNamedObject(themeName,
+                "style", ancestorName);
+        if (ancestor == null) {
+            throw new ThemeException("Could not find named style: "
+                    + ancestorName);
+        }
+        themeManager.makeFormatInherit(style, ancestor);
         saveTheme(themeName);
     }
 
@@ -847,8 +879,8 @@ public class Editor {
         }
     }
 
-    public static void insertFragment(Element destElement, String typeName)
-            throws NodeException, ThemeException {
+    public static void insertFragment(Element destElement, String typeName,
+            String styleName) throws NodeException, ThemeException {
         final String themeName = ThemeManager.getThemeOf(destElement).getName();
         saveToUndoBuffer(themeName, "add fragment");
 
@@ -865,10 +897,20 @@ public class Editor {
         String fragmentTypeName = typeName.split("/")[0];
         Fragment fragment = FragmentFactory.create(fragmentTypeName);
         // add a temporary view to the fragment
-        Format widget = themeManager.createWidget();
+        Widget widget = themeManager.createWidget();
         String viewTypeName = typeName.split("/")[1];
         widget.setName(viewTypeName);
         ElementFormatter.setFormat(fragment, widget);
+        // set a style
+        if (!"".equals(styleName)) {
+            Style ancestor = (Style) themeManager.getNamedObject(themeName,
+                    "style", styleName);
+            if (ancestor != null) {
+                Style style = themeManager.createStyle();
+                themeManager.makeFormatInherit(style, ancestor);
+                ElementFormatter.setFormat(fragment, style);
+            }
+        }
         // insert the fragment
         destContainer.addChild(fragment);
         // set the fragment order
@@ -929,11 +971,16 @@ public class Editor {
 
     // UndoBuffer
     public static void saveToUndoBuffer(final String themeName,
-            final String message) {
+            final String message) throws ThemeException {
         ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(themeName);
         ThemeSerializer serializer = new ThemeSerializer();
-        String xmlSource = serializer.serializeToXml(themeDef.getSrc(), 0);
-
+        String xmlSource;
+        try {
+            xmlSource = serializer.serializeToXml(themeDef.getSrc(), 0);
+        } catch (ThemeIOException e) {
+            throw new ThemeException(
+                    "Could not save theme into the under buffer", e);
+        }
         UndoBuffer undoBuffer = SessionManager.getUndoBuffer(themeName);
         if (undoBuffer == null) {
             undoBuffer = new UndoBuffer();

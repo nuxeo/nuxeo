@@ -111,27 +111,6 @@ NXThemesEditor.moveElement = function(info) {
     });
 };
 
-NXThemesEditor.addFragment = function(typeName, destId) {
-    var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment";
-    new Ajax.Request(url, {
-         method: 'post',
-         parameters: {
-             type_name: typeName,
-             dest_id: destId
-         },
-         onSuccess: function(r) {
-             NXThemesEditor.switchToCanvas();
-             NXThemesEditor.refreshCanvas();
-             NXThemesEditor.refreshUndoActions();
-         },
-         onFailure: function(r) {
-             var text = r.responseText;
-             window.alert(text);
-         }         
-    });
-    return false;
-};
-
 NXThemesEditor.editElement = function(info) {
     var id = NXThemesEditor.extractElementUid(info.target);
     var url = nxthemesBasePath + "/nxthemes-editor/select_element";
@@ -171,7 +150,7 @@ NXThemesEditor.insertFragment = function(info) {
 
 NXThemesEditor.manageStyles = function() {
     NXThemes.getControllerById("editor perspectives").switchTo('style manager');
-    NXThemesStyleManager.setEditMode('named styles');
+    NXThemesStyleManager.setEditMode('named styles', 'named_styles');
 };
 
 NXThemesEditor.changeElementStyle = function(info) {
@@ -200,7 +179,7 @@ NXThemesEditor.setSize = function(info) {
     var width = null;
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "width") {
@@ -231,14 +210,27 @@ NXThemesEditor.updateElementProperties = function(info) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
-          id = value;
+            id = value;
         } else {
+			if (name.match(":lines$") == ":lines") {
+				name = name.replace(/:lines$/, '');
+				var lines = value.split(/\r|\n|\r\n/);
+				value = "";
+				var len = lines.length;
+				for (i=0; i<len; i++) {
+					var line = lines[i];
+					value += '"' + line.replace(/"/g, '""') + '"';
+				    if (i < len - 1) {
+						value += ',';
+					}
+				}
+			}
             if (i.type == 'checkbox') {
                 value = value == 'on' ? "true" : "false";
             }
-        	propertyMap.set(i.name, value);
+        	propertyMap.set(name, value);
         }
     });
     var url = nxthemesBasePath + "/nxthemes-editor/update_element_properties"; 
@@ -246,7 +238,7 @@ NXThemesEditor.updateElementProperties = function(info) {
          method: 'post',
          parameters: {
              id: id,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemes.getViewById("element properties").refresh();
@@ -266,7 +258,7 @@ NXThemesEditor.updateElementWidget = function(info) {
     var viewName = "";
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "viewName") {
@@ -301,7 +293,7 @@ NXThemesEditor.updateElementDescription = function(info) {
     var description = "";
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "description") {
@@ -337,7 +329,7 @@ NXThemesEditor.updateElementStyle = function() {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "id") {
           id = value;
         } else if (name == "path") {
@@ -356,7 +348,7 @@ NXThemesEditor.updateElementStyle = function() {
              id: id,
              view_name: viewName,
              path: path,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemesStyleEditor.refreshCssPreview();
@@ -528,14 +520,14 @@ NXThemesEditor.updateElementPadding = function(info) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         propertyMap.set(i.name, value);
     });    
     var url = nxthemesBasePath + "/nxthemes-editor/update_element_layout"; 
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
@@ -712,11 +704,11 @@ NXThemesEditor.addTheme = function(viewid) {
     var name = prompt("Enter a theme name:", "");
     if (name === "") {
         window.alert("Theme names cannot be empty.");
-        return "";
+        return;
     }
     if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Theme names may only contain lower-case alpha-numeric characters, digits, underscores and dashes");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_theme";
     new Ajax.Request(url, {
@@ -741,11 +733,11 @@ NXThemesEditor.addPage = function(themeName) {
     var name = prompt("Please enter a page name:", "");
     if (name === "") {
         window.alert("Page names cannot be empty.");
-        return "";
+        return;
     }
     if (!name.match(/^([a-z]|[a-z][a-z0-9_\-]*?[a-z0-9])$/)) {
         window.alert("Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_page";
     new Ajax.Request(url, {
@@ -780,18 +772,18 @@ NXThemesEditor.backToCanvas = function() {
 
 NXThemesEditor.managePresets = function() {
     NXThemes.getControllerById("editor perspectives").switchTo('preset manager');
-    NXThemesPresetManager.setEditMode('theme presets');
+    NXThemesPresetManager.setEditMode('theme presets', 'theme_presets');
 };
 
 NXThemesEditor.addPreset = function(themeName, category, view_id) {
     var name = prompt("Please enter a preset name:", "");
     if (name === "") {
         window.alert("Preset names cannot be empty.");
-        return "";
+        return;
     }
     if (!NXThemesEditor.isLowerCaseOrSpace(name)) {
         window.alert("Preset names may only contain lower case characters and spaces.");
-        return "";
+        return;
     }
     var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
     new Ajax.Request(url, {
@@ -1178,7 +1170,7 @@ NXThemesPresetManager.refresh = function() {
     NXThemes.getViewById("preset manager").refresh();
 };
 
-NXThemesPresetManager.setEditMode = function(mode) {
+NXThemesPresetManager.setEditMode = function(mode, button) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_preset_manager_mode"; 
     new Ajax.Request(url, {
          method: 'post',
@@ -1187,6 +1179,7 @@ NXThemesPresetManager.setEditMode = function(mode) {
          },
          onSuccess: function(r) {
         	 NXThemesPresetManager.refresh();
+		 NXThemes.getControllerById("theme buttons").select(button);
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1871,7 +1864,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
     var themeName, styleUid, viewName;
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "style_uid") {
         	styleUid = value;
         } else if (name == "view_name") {
@@ -1899,7 +1892,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
     });     
 };
 
-NXThemesStyleManager.setEditMode = function(mode) {
+NXThemesStyleManager.setEditMode = function(mode, button) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_style_manager_mode"; 
     new Ajax.Request(url, {
          method: 'post',
@@ -1908,6 +1901,7 @@ NXThemesStyleManager.setEditMode = function(mode) {
          },
          onSuccess: function(req) {
         	 NXThemes.getViewById("style manager").refresh();
+		 NXThemes.getControllerById("theme buttons").select(button);
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1921,7 +1915,7 @@ NXThemesStyleManager.updateNamedStyleCSS = function(form) {
 	var css_source = '';
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name == "style_uid") {
           style_uid = value;
         } else if (name == "css_source") {
@@ -1953,7 +1947,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
     var propertyMap = $H();
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
-        var value = Form.Element.getValue(i);
+        var value = $F(i);
         if (name.startsWith('style_')) {
             propertyMap.set(name.substr(6), value);
         }
@@ -1963,7 +1957,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
          method: 'post',
          parameters: {
              theme_name: themeName,
-             property_map: propertyMap.toJSON()
+             property_map: Object.toJSON(propertyMap)
          },
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
@@ -1979,7 +1973,7 @@ NXThemesStyleManager.setPageStyles = function(themeName, form) {
 
 NXThemesStyleManager.selectNamedStyle = function(uid) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_named_style"; 
-      new Ajax.Request(url, {
+    new Ajax.Request(url, {
          method: 'post',
          parameters: {
              uid: uid
@@ -1994,9 +1988,61 @@ NXThemesStyleManager.selectNamedStyle = function(uid) {
       });
 };
 
+NXThemesStyleManager.setStyleInheritance = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var id = data.get('id');
+    var themeName = data.get('theme_name');	
+    var parent = info.options.choice;
+    var url = nxthemesBasePath + "/nxthemes-editor/set_style_inheritance";	  
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme_name: themeName,		 	
+             style_name: id,
+			 ancestor_name: parent
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+             NXThemesEditor.refreshUndoActions();			 
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+      });
+};
+
+NXThemesStyleManager.removeStyleInheritance = function(info) {
+    var target = Event.element(info);
+    var model = info.model;
+    var data = model.getData();
+    var themeName = data.get('theme_name');	
+    var id = data.get('id');	
+	var url = nxthemesBasePath + "/nxthemes-editor/remove_style_inheritance";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+		 	 theme_name: themeName,
+             style_name: id
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+             NXThemesEditor.refreshUndoActions();			 
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+      });
+};
+
 //actions
 NXThemes.addActions({
-  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView
+  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView,
+  'set style inheritance': NXThemesStyleManager.setStyleInheritance,
+  'remove style inheritance': NXThemesStyleManager.removeStyleInheritance
 });
 
 // Fragment factory
@@ -2039,3 +2085,42 @@ NXThemesFragmentFactory.selectView = function(view) {
     });
 };
 
+NXThemesFragmentFactory.selectStyle = function(style) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_fragment_style"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             style: style
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("fragment factory").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
+
+
+NXThemesFragmentFactory.addFragment = function(typeName, styleName, destId) {
+    var url = nxthemesBasePath + "/nxthemes-editor/insert_fragment";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             type_name: typeName,
+			 style_name: styleName,
+             dest_id: destId
+         },
+         onSuccess: function(r) {
+             NXThemesEditor.switchToCanvas();
+             NXThemesEditor.refreshCanvas();
+             NXThemesEditor.refreshUndoActions();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+    return false;
+};

@@ -454,7 +454,7 @@ NXThemesWebWidgets.changePreferences = function(info) {
          parameters: {
              'provider': providerName,
              'widget_uid': widgetUid,
-             'preferences': preferencesMap.toJSON()
+             'preferences': Object.toJSON(preferencesMap)
          },
          onSuccess: function(r) {
            widget.draw();

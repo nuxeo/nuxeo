@@ -11,5 +11,10 @@
        priority="-50">
       <event>documentProxyPublished</event>
     </listener>
+    <listener name="deleteRelationsListener" async="false" postCommit="false"
+       class="org.nuxeo.ecm.platform.relations.core.listener.DeleteRelationsListener"
+       priority="-40">
+      <event>documentRemoved</event>
+    </listener>
   </extension>
 </component>

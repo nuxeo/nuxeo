@@ -181,6 +181,10 @@
       <path>nxthemes/editor/views/preset-menu.json</path>
     </resource>
 
+    <resource name="style-menu.json">
+      <path>nxthemes/editor/views/style-menu.json</path>
+    </resource>
+	
     <resource name="style-manager-actions.json">
       <path>
         nxthemes/editor/controllers/style-manager-actions.json
@@ -489,7 +493,7 @@
         <filter>control fragment visibility</filter>
         <filter>make draggable</filter>
         <filter>set element id</filter>
-        <filter>insert json model</filter>
+        <filter>insert json model</filter>	
       </renderer>
 
     </engine>

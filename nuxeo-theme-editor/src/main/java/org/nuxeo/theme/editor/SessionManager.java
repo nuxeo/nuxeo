@@ -54,6 +54,8 @@ public class SessionManager extends AbstractComponent {
 
     private static final String SELECTED_FRAGMENT_VIEW = "org.nuxeo.theme.editor.fragment_view";
 
+    private static final String SELECTED_FRAGMENT_STYLE = "org.nuxeo.theme.editor.fragment_style";
+
     private static final String WORKSPACE_THEMES = "org.nuxeo.theme.editor.workspace_themes";
 
     private static final String UNDO_BUFFER = "org.nuxeo.theme.editor.undo_buffer";
@@ -180,6 +182,14 @@ public class SessionManager extends AbstractComponent {
 
     public static synchronized String getFragmentView() {
         return (String) getUserSession().get(SELECTED_FRAGMENT_VIEW);
+    }
+
+    public static synchronized void setFragmentStyle(String style) {
+        getUserSession().put(SELECTED_FRAGMENT_STYLE, style);
+    }
+
+    public static synchronized String getFragmentStyle() {
+        return (String) getUserSession().get(SELECTED_FRAGMENT_STYLE);
     }
 
     @SuppressWarnings("unchecked")
