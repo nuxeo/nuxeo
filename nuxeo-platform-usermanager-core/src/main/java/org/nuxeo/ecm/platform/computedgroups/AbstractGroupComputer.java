@@ -47,7 +47,9 @@ public abstract class AbstractGroupComputer implements GroupComputer {
         if (grpName != null) {
             for (String vGroupName : getAllGroupIds()) {
                 if (vGroupName.startsWith(grpName)) {
-                    result.add(grpName);
+                    if (!result.contains(vGroupName)) {
+                        result.add(vGroupName);
+                    }
                 }
             }
         }
