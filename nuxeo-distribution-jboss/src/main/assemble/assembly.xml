@@ -116,8 +116,8 @@
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
       <patternset>
-        <exclude name="config/*.*" />
-        <exclude name="datasources/*.*" />
+        <exclude name="config/**" />
+        <exclude name="datasources/**" />
       </patternset>
     </unzip>
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
@@ -152,8 +152,8 @@
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
-        <exclude name="config/*.*" />
-        <exclude name="datasources/*.*" />
+        <exclude name="config/**" />
+        <exclude name="datasources/**" />
       </patternset>
     </unzip>
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
