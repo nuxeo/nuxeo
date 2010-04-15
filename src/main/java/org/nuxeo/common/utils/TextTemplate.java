@@ -116,11 +116,13 @@ public class TextTemplate {
                 os.close();
             }
         } else if (in.isDirectory()) {
-            if (out.exists()) {
+            if (!out.exists()) {
+                // allow renaming destination directory
+                out.mkdirs();
+            } else if (!out.getName().equals(in.getName())) {
+                // allow copy over existing arborescence
                 out = new File(out, in.getName());
                 out.mkdir();
-            } else { // allow renaming destination directory
-                out.mkdirs();
             }
             for (File file : in.listFiles()) {
                 processDirectory(file, out);
