@@ -39,6 +39,8 @@ public final class NXAuthConstants {
 
     public static final String SWITCH_USER_PAGE = "swuser";
 
+    public static final String PAGE_AFTER_SWITCH = "pageAfterSwitch";
+
     public static final String SWITCH_USER_KEY = "deputy";
 
     public static final String ERROR_AUTHENTICATION_FAILED = "authentication.failed";

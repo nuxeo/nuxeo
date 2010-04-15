@@ -65,7 +65,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- * 
+ *
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -247,6 +247,10 @@ public class NuxeoAuthenticationFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(NXAuthConstants.SWITCH_USER_KEY);
+        String targetPageAfterSwitch = (String) httpRequest.getAttribute(NXAuthConstants.PAGE_AFTER_SWITCH);
+        if (targetPageAfterSwitch==null) {
+            targetPageAfterSwitch = DEFAULT_START_PAGE;
+        }
 
         if (deputyLogin == null) {
             return false;
@@ -286,7 +290,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 Boolean.TRUE);
         String baseURL = service.getBaseURL(request);
         ((HttpServletResponse) response).sendRedirect(baseURL
-                + DEFAULT_START_PAGE);
+                + targetPageAfterSwitch);
 
         return true;
     }
@@ -549,7 +553,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     /**
      * Save requested URL before redirecting to login form.
-     * 
+     *
      * Returns true if target url is a valid startup page.
      */
     public boolean saveRequestedURLBeforeRedirect(
