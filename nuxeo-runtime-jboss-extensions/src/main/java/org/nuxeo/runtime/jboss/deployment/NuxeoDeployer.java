@@ -43,6 +43,8 @@ import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
 import org.nuxeo.common.collections.DependencyTree;
+import org.nuxeo.runtime.deployment.preprocessor.ConfigurationException;
+import org.nuxeo.runtime.deployment.preprocessor.ServerConfigurator;
 import org.nuxeo.runtime.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.deployment.preprocessor.FragmentDescriptor;
@@ -52,36 +54,41 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.SeamHotReloadPreprocessor
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-@SuppressWarnings({"ResultOfObjectAllocationIgnored"})
+@SuppressWarnings( { "ResultOfObjectAllocationIgnored" })
 public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     public static final String LIB_DIR = "lib";
+
     public static final String SYSTEM_DIR = "system";
+
     public static final String CONFIG_DIR = "config";
+
     public static final String DS_DIR = "datasources";
+
     public static final String MBEANS_DIR = CONFIG_DIR + "/mbeans";
 
     /** The suffixes we accept, along with their relative order. */
-    private static final String[] DEFAULT_ENHANCED_SUFFIXES = {
-          "650:.ear", // from EARDeployer
-          // additional extension -> but do not use them  because there are some inconsistencies
-          // in jboss in how ejb3 mbean names (and jndi bean bindings) are generated.
-          // For example when using other extensions than .ear WebServices are no more
-          // working because they generate diferently mbean names than ejb3 deployer
-          "850:.nxar",
-          "850:.nxp",
-          "850:.nux",
-          "850:.ecm",
-    };
+    private static final String[] DEFAULT_ENHANCED_SUFFIXES = { "650:.ear", // from
+                                                                            // EARDeployer
+            // additional extension -> but do not use them because there are
+            // some inconsistencies
+            // in jboss in how ejb3 mbean names (and jndi bean bindings) are
+            // generated.
+            // For example when using other extensions than .ear WebServices are
+            // no more
+            // working because they generate differently mbean names than ejb3
+            // deployer
+            "850:.nxar", "850:.nxp", "850:.nux", "850:.ecm", };
 
     protected final ServiceControllerMBean controller;
 
     private DeploymentPreprocessor processor;
+
     private boolean debug = true;
 
-    // workaround that fix subdeployment deps - which is not handled correctly by jboss 1.4.x
+    // workaround that fix subdeployment deps - which is not handled correctly
+    // by jboss 1.4.x
     private List<DeploymentInfo> subDeployments;
-
 
     /**
      * Default CTOR.
@@ -89,9 +96,10 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     public NuxeoDeployer() {
         setEnhancedSuffixes(DEFAULT_ENHANCED_SUFFIXES);
         // controller = ServiceLocator.getServiceController();
-        //we do not use ServiceLocator because of isolation issues
+        // we do not use ServiceLocator because of isolation issues
         controller = (ServiceControllerMBean) MBeanProxyExt.create(
-                ServiceControllerMBean.class, ServiceControllerMBean.OBJECT_NAME,
+                ServiceControllerMBean.class,
+                ServiceControllerMBean.OBJECT_NAME,
                 MBeanServerLocator.locateJBoss());
     }
 
@@ -135,7 +143,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     @SuppressWarnings("unchecked")
     public boolean accepts(DeploymentInfo sdi) {
         if (super.accepts(sdi)) {
-            if (sdi.isDirectory && hasContainerDescriptor(sdi) && isPreprocessingEnabled(sdi)) {
+            if (sdi.isDirectory && hasContainerDescriptor(sdi)
+                    && isPreprocessingEnabled(sdi)) {
                 sdi.context.put("EAR_PREPROCESSING", Boolean.TRUE);
             }
             return true;
@@ -151,6 +160,13 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             super.init(di);
             return;
         }
+
+        try {
+            new ServerConfigurator().run();
+        } catch (ConfigurationException e) {
+            throw new DeploymentException("Configuration failure",e);
+        }
+
         try {
             String url = di.localUrl.toString();
             url = url.replace(" ", "%20");
@@ -158,7 +174,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             loadSystemProperties(directory);
 
             // create the preprocessor for Seam Hot Reload
-            SeamHotReloadPreprocessor seamHRP = new SeamHotReloadPreprocessor(directory, log);
+            SeamHotReloadPreprocessor seamHRP = new SeamHotReloadPreprocessor(
+                    directory, log);
             // clean up working directory
             seamHRP.initSpecialDirectory();
 
@@ -171,21 +188,22 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             // put all jars in the classpath
             addJarsToClassPath(di);
 
-//            FragmentRegistry freg = processor.getRootContainer().fragments;
-//            //freg.get("org.nuxeo.osgi");
-//            FragmentDescriptor fd = freg.get("org.nuxeo.osgi");
-//            if (fd != null) {
-//                di.addLibraryJar(new File(directory, fd.filePath).toURL());
-//            }
-//            //TODO this should not be hardcoded here -> find a fix for this
-//            di.addLibraryJar(new File(directory, "lib/osgi-core-4.1.jar").toURL());
+            // FragmentRegistry freg = processor.getRootContainer().fragments;
+            // //freg.get("org.nuxeo.osgi");
+            // FragmentDescriptor fd = freg.get("org.nuxeo.osgi");
+            // if (fd != null) {
+            // di.addLibraryJar(new File(directory, fd.filePath).toURL());
+            // }
+            // //TODO this should not be hardcoded here -> find a fix for this
+            // di.addLibraryJar(new File(directory,
+            // "lib/osgi-core-4.1.jar").toURL());
 
-            //di.addLibraryJar(new File(directory, "system/").toURL());
+            // di.addLibraryJar(new File(directory, "system/").toURL());
             // let the EAR deployer doing its job
             super.init(di);
 
             // handle special dirs
-            Collection<String> firstDeployments = new ArrayList<String>(); //processStaticLibraries(di);
+            Collection<String> firstDeployments = new ArrayList<String>(); // processStaticLibraries(di);
             Collection<String> mbeansDeployments = processNestedMBeans(di);
             firstDeployments.addAll(mbeansDeployments);
             Collection<String> dsDeployments = processNestedDataSources(di);
@@ -202,11 +220,14 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             if (root != null) {
                 log.info("Applying sub-deployments ordering workaround");
                 // copy sub-deployments
-                subDeployments = new ArrayList<DeploymentInfo>(di.subDeployments);
-                // clear subdeployments to avoid letting the jboss MainDeployer mess the ordering
+                subDeployments = new ArrayList<DeploymentInfo>(
+                        di.subDeployments);
+                // clear subdeployments to avoid letting the jboss MainDeployer
+                // mess the ordering
                 di.subDeployments.clear();
-                //EARDeployer is breaking order because modules are split in two separate files:
-                //appplication.xml and jboss-app.xml
+                // EARDeployer is breaking order because modules are split in
+                // two separate files:
+                // appplication.xml and jboss-app.xml
                 DeploymentSorter sorter = new DeploymentSorter(root);
                 sorter.addFirst(firstDeployments);
                 sorter.addLast(lastDeployments);
@@ -219,7 +240,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 Collections.sort(subDeployments, sorter);
 
                 if (log.isInfoEnabled()) {
-                    StringBuilder logBuf = new StringBuilder("Sub Deployment order is:\n");
+                    StringBuilder logBuf = new StringBuilder(
+                            "Sub Deployment order is:\n");
                     for (DeploymentInfo sub : subDeployments) {
                         logBuf.append("     ").append(sub.shortName).append(
                                 '\n');
@@ -233,8 +255,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 } else {
                     StringBuilder msgs = new StringBuilder();
                     for (DependencyTree.Entry<String, FragmentDescriptor> entry : pendingEntries) {
-                        String msg = "Unresolved Sub Deployment: " +
-                                entry.getKey() + ": " + entry.getWaitsFor();
+                        String msg = "Unresolved Sub Deployment: "
+                                + entry.getKey() + ": " + entry.getWaitsFor();
                         log.error(msg);
                         msgs.append(msg).append('\n');
                     }
@@ -248,9 +270,11 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             // ------------------ hack end -----------------------
 
         } catch (URISyntaxException e) {
-            throw new DeploymentException("Failed to get deployment directory for " + di.shortName, e);
+            throw new DeploymentException(
+                    "Failed to get deployment directory for " + di.shortName, e);
         } catch (Exception e) {
-            throw new DeploymentException("Deployment preprocessing failed for " + di.shortName, e);
+            throw new DeploymentException(
+                    "Deployment preprocessing failed for " + di.shortName, e);
         }
     }
 
@@ -298,13 +322,13 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     /**
      * Data sources must be deployed first.
-     *
+     * 
      * @param di
      * @throws DeploymentException
      */
     protected Collection<String> processNestedDataSources(DeploymentInfo di)
             throws DeploymentException {
-        List<String>names = new ArrayList<String>();
+        List<String> names = new ArrayList<String>();
         File directory = new File(getEarDirectory(di), DS_DIR);
         if (!directory.isDirectory()) {
             return names;
@@ -313,7 +337,9 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             try {
                 if (fileName.endsWith("-ds.xml")) {
                     log.info("Found DataSource subdeployment: " + fileName);
-                    new DeploymentInfo(new URL(di.url, DS_DIR + '/' + fileName), di, getServer());
+                    new DeploymentInfo(
+                            new URL(di.url, DS_DIR + '/' + fileName), di,
+                            getServer());
                     names.add(fileName);
                 }
             } catch (Exception e) {
@@ -324,13 +350,14 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     }
 
     /**
-     * Deploy the JBoss mbeans used to confiugre specific JBoss
-     * services like topics, etc.
+     * Deploy the JBoss mbeans used to confiugre specific JBoss services like
+     * topics, etc.
      * <p>
      * MBeans are deployed before any other bundle.
      */
-    protected Collection<String> processNestedMBeans(DeploymentInfo di) throws DeploymentException {
-        List<String>names = new ArrayList<String>();
+    protected Collection<String> processNestedMBeans(DeploymentInfo di)
+            throws DeploymentException {
+        List<String> names = new ArrayList<String>();
         File directory = new File(getEarDirectory(di), MBEANS_DIR);
         if (!directory.isDirectory()) {
             return names;
@@ -339,7 +366,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             try {
                 if (fileName.endsWith("-service.xml")) {
                     log.info("Found DataSource subdeployment: " + fileName);
-                    new DeploymentInfo(new URL(di.url, MBEANS_DIR + '/' + fileName), di, getServer());
+                    new DeploymentInfo(new URL(di.url, MBEANS_DIR + '/'
+                            + fileName), di, getServer());
                     names.add(fileName);
                 }
             } catch (Exception e) {
@@ -351,7 +379,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     protected Collection<String> processStaticLibraries(DeploymentInfo di)
             throws DeploymentException {
-        List<String>names = new ArrayList<String>();
+        List<String> names = new ArrayList<String>();
         File directory = new File(getEarDirectory(di), LIB_DIR);
         if (!directory.isDirectory()) {
             return names;
@@ -360,7 +388,9 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             try {
                 if (fileName.endsWith(".jar")) {
                     log.info("Found library: " + fileName);
-                    new DeploymentInfo(new URL(di.url, LIB_DIR + '/' + fileName), di, getServer());
+                    new DeploymentInfo(
+                            new URL(di.url, LIB_DIR + '/' + fileName), di,
+                            getServer());
                     names.add(fileName);
                 }
             } catch (Exception e) {
@@ -370,17 +400,20 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         return names;
     }
 
-    protected Collection<String> processConfig(DeploymentInfo di) throws DeploymentException {
-        List<String>names = new ArrayList<String>();
+    protected Collection<String> processConfig(DeploymentInfo di)
+            throws DeploymentException {
+        List<String> names = new ArrayList<String>();
         File directory = new File(getEarDirectory(di), CONFIG_DIR);
         if (!directory.isDirectory()) {
             return names;
         }
         for (String fileName : directory.list()) {
             try {
-                if (fileName.endsWith("-config.xml") || fileName.endsWith("-bundle.xml")) {
+                if (fileName.endsWith("-config.xml")
+                        || fileName.endsWith("-bundle.xml")) {
                     log.info("Found deployable configuration: " + fileName);
-                    new DeploymentInfo(new URL(di.url, CONFIG_DIR + '/' + fileName), di, getServer());
+                    new DeploymentInfo(new URL(di.url, CONFIG_DIR + '/'
+                            + fileName), di, getServer());
                     names.add(fileName);
                 }
             } catch (Exception e) {
@@ -391,14 +424,16 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     }
 
     // wokraround to fix -bundle.xml deployment
-    protected void _processNestedDeployments(DeploymentInfo di) throws DeploymentException {
+    protected void _processNestedDeployments(DeploymentInfo di)
+            throws DeploymentException {
         // deploy "-bundle.xml" files
         File directory = getEarDirectory(di);
         for (String fileName : directory.list()) {
             try {
                 if (fileName.endsWith("-bundle.xml")) {
                     log.info("Found XML bundle subdeployment: " + fileName);
-                    new DeploymentInfo(new URL(di.url, fileName), di, getServer());
+                    new DeploymentInfo(new URL(di.url, fileName), di,
+                            getServer());
                 }
             } catch (Exception e) {
                 log.error("Failed to create subdeployment for " + fileName, e);
@@ -414,8 +449,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
         DeploymentSorter(ContainerDescriptor container) {
             int i = 0;
-            for (DependencyTree.Entry<String, FragmentDescriptor> entry
-                    : container.fragments.getResolvedEntries()) {
+            for (DependencyTree.Entry<String, FragmentDescriptor> entry : container.fragments.getResolvedEntries()) {
                 FragmentDescriptor fd = entry.get();
                 map.put(fd.name, i++);
             }
@@ -472,7 +506,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         return di.context.containsKey("EAR_PREPROCESSING");
     }
 
-    public static boolean hasContainerDescriptor(DeploymentInfo di)  {
+    public static boolean hasContainerDescriptor(DeploymentInfo di) {
         return di.localCl.findResource("OSGI-INF/deployment-container.xml") != null;
     }
 
@@ -485,32 +519,38 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         }
     }
 
-    protected static File getEarDirectory(DeploymentInfo di) throws DeploymentException {
+    protected static File getEarDirectory(DeploymentInfo di)
+            throws DeploymentException {
         try {
             String url = di.localUrl.toString();
             url = url.replace(" ", "%20");
             return new File(new URI(url));
         } catch (Exception e) {
-            throw new DeploymentException("Cannot get deploying directory: " + di.shortName, e);
+            throw new DeploymentException("Cannot get deploying directory: "
+                    + di.shortName, e);
         }
     }
 
-    protected static File getPredeployStatusFile(DeploymentInfo di) throws DeploymentException {
+    protected static File getPredeployStatusFile(DeploymentInfo di)
+            throws DeploymentException {
         return new File(getEarDirectory(di), ".predeploy");
     }
 
-    protected static boolean isFirstRun(DeploymentInfo di) throws DeploymentException {
+    protected static boolean isFirstRun(DeploymentInfo di)
+            throws DeploymentException {
         return !getPredeployStatusFile(di).exists();
     }
 
-    protected static void writeStatusFile(DeploymentInfo di) throws DeploymentException {
+    protected static void writeStatusFile(DeploymentInfo di)
+            throws DeploymentException {
         File file = getPredeployStatusFile(di);
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (Exception e) {
-                throw new DeploymentException("Cannot create predeployment status file for: "
-                        + di.shortName, e);
+                throw new DeploymentException(
+                        "Cannot create predeployment status file for: "
+                                + di.shortName, e);
             }
         }
     }
@@ -535,7 +575,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         }
     }
 
-    protected void addJarsToClassPath(DeploymentInfo di, File dir) throws DeploymentException {
+    protected void addJarsToClassPath(DeploymentInfo di, File dir)
+            throws DeploymentException {
         if (dir.isDirectory()) {
             File[] jars = dir.listFiles();
             if (jars != null) {
@@ -543,7 +584,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                     try {
                         di.addLibraryJar(jar.toURI().toURL());
                     } catch (MalformedURLException e) {
-                        throw new DeploymentException("Invalid URL for file: "+jar, e);
+                        throw new DeploymentException("Invalid URL for file: "
+                                + jar, e);
                     }
                 }
             }
@@ -558,7 +600,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         return new File(getEarDirectory(di), SYSTEM_DIR);
     }
 
-    protected void addJarsToClassPath(DeploymentInfo di) throws DeploymentException {
+    protected void addJarsToClassPath(DeploymentInfo di)
+            throws DeploymentException {
         addJarsToClassPath(di, getLibDir(di));
         addJarsToClassPath(di, getSystemDir(di));
     }
