@@ -45,9 +45,9 @@ import com.gwtext.client.widgets.portal.PortalDropZone;
 /**
  * DropZone serve for catch drag and drop event and call container service for
  * save
- * 
+ *
  * @author Guillaume Cusnieux
- * 
+ *
  */
 public class DropZone extends PortalDropZone {
 
@@ -160,7 +160,7 @@ public class DropZone extends PortalDropZone {
     /**
      * This method is called by the code JSNI in overrideDragDrop, overriding
      * the method of endDrag PortalDropZone not working
-     * 
+     *
      * @param id
      */
     public static void endDragDrop(final String id) {
@@ -171,8 +171,7 @@ public class DropZone extends PortalDropZone {
             gp.addListener(new PortletListener(gp));
         }
         JsLibrary.hideGwtContainerMask();
-        // -1 for auto size
-        gp.setWidth(-1);
+        gp.setAutoWidth(true);
     };
 
     Timer t;
@@ -311,8 +310,7 @@ public class DropZone extends PortalDropZone {
         }
 
         gp.renderDefaultPreferences();
-        // -1 for auto size
-        gp.setWidth(-1);
+        gp.setAutoWidth(true);
         return true;
     }
 
