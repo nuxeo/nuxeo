@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,12 +13,17 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
 
 package org.nuxeo.common.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,19 +32,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO: doc
 /**
- * Please document me.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * TODO Please document me.
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 public class TextTemplate {
 
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
 
     private final Map<String, String> vars = new HashMap<String, String>();
-
 
     public TextTemplate() {
     }
@@ -86,6 +89,43 @@ public class TextTemplate {
     public void process(InputStream in, OutputStream out) throws IOException {
         String text = FileUtils.read(in);
         out.write(process(text).getBytes());
+    }
+
+    /**
+     * Recursive call {@link #process(InputStream, OutputStream)} on each file
+     * from "in" directory to "out" directory
+     * 
+     * @param in Directory to read files from
+     * @param out Directory to write files to
+     */
+    public void processDirectory(File in, File out)
+            throws FileNotFoundException, IOException {
+        if (in.isFile()) {
+            if (out.isDirectory()) {
+                out = new File(out, in.getName());
+            }
+            FileInputStream is = null;
+            FileOutputStream os = new FileOutputStream(out);
+            try {
+                is = new FileInputStream(in);
+                process(is, os);
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+                os.close();
+            }
+        } else if (in.isDirectory()) {
+            if (out.exists()) {
+                out = new File(out, in.getName());
+                out.mkdir();
+            } else { // allow renaming destination directory
+                out.mkdirs();
+            }
+            for (File file : in.listFiles()) {
+                processDirectory(file, out);
+            }
+        }
     }
 
 }
