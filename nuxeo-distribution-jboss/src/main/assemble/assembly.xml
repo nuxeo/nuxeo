@@ -156,11 +156,11 @@
         <exclude name="datasources/*.*" />
       </patternset>
     </unzip>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
+    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-jboss" />
     </unzip>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
+    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-dm" />
     </unzip>
