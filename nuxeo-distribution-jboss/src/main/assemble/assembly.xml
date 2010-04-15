@@ -49,7 +49,7 @@
                      type="pom" />
     <antcall target="build-nuxeo-ep-jboss" />
     <antcall target="build-nuxeo-dm-jboss" />
-    
+
     <delete dir="${jboss}" failonerror="false" />
   </target>
 
@@ -74,19 +74,21 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />
     </unzip>
-    <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+    <chmod dir="${jboss}/bin"
+           perm="ug+x"
+           includes="*.sh,nuxeoctl,openofficectl" />
     <!-- Remove non-nuxeo information files from root -->
     <mkdir dir="${jboss}/doc-jboss" />
     <move todir="${jboss}/doc-jboss">
       <fileset dir="${jboss}">
-        <include name="lgpl.html"/>
-        <include name="JBossORG-EULA.txt"/>
-        <include name="jar-versions.xml"/>
-        <include name="derby.log"/>
-        <include name="copyright.txt"/>
+        <include name="lgpl.html" />
+        <include name="JBossORG-EULA.txt" />
+        <include name="jar-versions.xml" />
+        <include name="derby.log" />
+        <include name="copyright.txt" />
       </fileset>
     </move>
-    
+
     <ant antfile="build.xml" target="patch">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
@@ -106,18 +108,29 @@
           if="build.ep"
           description="Build JBoss distribution with Nuxeo EP">
 
-    <delete failonerror="false" dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
+    <delete failonerror="false"
+            dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
     <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+      <patternset>
+        <exclude name="config/*.*" />
+        <exclude name="datasources/*.*" />
+      </patternset>
+    </unzip>
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss" />
     </unzip>
     <antcall target="jboss-third-party-libraries">
       <param name="lib.dir"
              value="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
-    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
          includes="nuxeo-ep-${maven.project.version}-jboss/**" />
@@ -131,18 +144,33 @@
           if="build.dm"
           description="Build JBoss distribution with Nuxeo DM">
 
-    <delete failonerror="false" dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
+    <delete failonerror="false"
+            dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+      <patternset>
+        <exclude name="config/*.*" />
+        <exclude name="datasources/*.*" />
+      </patternset>
+    </unzip>
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss" />
+    </unzip>
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-dm" />
     </unzip>
     <antcall target="jboss-third-party-libraries">
       <param name="lib.dir"
              value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
-    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-jboss/**" />
@@ -168,7 +196,7 @@
              value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
 
-    <replace file="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/config/default-repository-config.xml">
+    <replace file="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates/common/config/default-repository-config.xml">
       <replacetoken>
         <![CDATA[<indexing>]]></replacetoken>
       <replacevalue>
@@ -178,7 +206,9 @@
 ]]></replacevalue>
     </replace>
 
-    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,nuxeoctl,openofficectl" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-jboss/**" />
@@ -192,8 +222,8 @@
     <!--
     <delete>
       <fileset dir="${lib.dir}"> -->
-        <!-- Remove third-parties provided by JBoss -->
-        <!-- Remove duplicated third-parties -->
+    <!-- Remove third-parties provided by JBoss -->
+    <!-- Remove duplicated third-parties -->
     <!--
       </fileset>
     </delete> -->

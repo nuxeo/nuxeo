@@ -24,6 +24,12 @@
     <antcall target="build-resources">
       <param name="distribution" value="bin" />
     </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-jboss" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-dm" />
+    </antcall>
   </target>
 
   <target name="build-resources"
