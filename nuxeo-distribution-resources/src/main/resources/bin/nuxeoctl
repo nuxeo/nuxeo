@@ -114,7 +114,7 @@ PID="$PID_DIR/nuxeo.pid"
 if [ "$cygwin" = "false" ]; then
 	MAX_FD_LIMIT=`ulimit -H -n`
 	if [ $? -eq 0 ]; then
-		if [ "$darwin" = "true" ] && [ "MAX_FD_LIMIT" = "unlimited" ]; then
+		if [ "$darwin" = "true" ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
 			MAX_FD_LIMIT=`sysctl kern.maxfilesperproc`
 		fi
 		ulimit -n $MAX_FD_LIMIT
