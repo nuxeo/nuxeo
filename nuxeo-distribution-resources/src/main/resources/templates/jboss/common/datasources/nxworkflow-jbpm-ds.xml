@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- 
+    Link datasource to point to NuxeoDS.
+    See unified-nuxeo-ds.xml to set a different database
+  -->
+
+
+    <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxworkflowjbpm,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxjbpm</attribute>
+    </mbean>
+</datasources>

@@ -26,8 +26,8 @@
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
 
   <!--
-      Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME. For example java:comp/env/jdbc/nxsqldirectory
-      This means you need to update correspondly JNDI bindings in nuxeo data source definitions in the config directory
+      Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME. For example java:comp/env/jdbc/nxsqldirectory
+      This means you need to update corresponding JNDI bindings in nuxeo data source definitions in the config directory
   -->
   <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000"
