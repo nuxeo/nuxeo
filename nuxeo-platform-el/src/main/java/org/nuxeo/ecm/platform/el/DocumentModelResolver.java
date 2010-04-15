@@ -152,7 +152,10 @@ public class DocumentModelResolver extends BeanELResolver {
             subProperty = docProperty.get(((Long) propertyValue).intValue());
         } else if ((docProperty instanceof ArrayProperty || docProperty instanceof ListProperty)
                 && propertyValue instanceof Integer) {
-            subProperty = docProperty.get((Integer) propertyValue);
+            Integer idx = (Integer) propertyValue;
+            if (idx < docProperty.size()) {
+                subProperty = docProperty.get((Integer) propertyValue);
+            }
         } else if (docProperty instanceof ComplexProperty
                 && propertyValue instanceof String) {
             subProperty = docProperty.get((String) propertyValue);
