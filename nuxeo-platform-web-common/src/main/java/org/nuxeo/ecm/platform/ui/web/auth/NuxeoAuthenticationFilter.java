@@ -252,17 +252,24 @@ public class NuxeoAuthenticationFilter implements Filter {
             targetPageAfterSwitch = DEFAULT_START_PAGE;
         }
 
-        if (deputyLogin == null) {
-            return false;
-        }
-
         CachableUserIdentificationInfo cachableUserIdent = retrieveIdentityFromCache(httpRequest);
         String originatingUser = cachableUserIdent.getUserInfo().getUserName();
+
+        if (deputyLogin == null) {
+            // simply switch back to the previous identity
+            NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) cachableUserIdent.getPrincipal();
+            String previousUser = currentPrincipal.getOriginatingUser();
+            if (previousUser==null) {
+                return false;
+            }
+            deputyLogin = previousUser;
+            originatingUser=null;
+        }
+
         try {
             cachableUserIdent.getLoginContext().logout();
         } catch (LoginException e1) {
-            log.error("Error while logout from main identity :"
-                    + e1.getMessage());
+            log.error("Error while logout from main identity", e1);
         }
 
         HttpSession session = httpRequest.getSession(false);
@@ -278,7 +285,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
         if (principal != null) {
             NuxeoPrincipal nxUser = (NuxeoPrincipal) principal;
-            nxUser.setOriginatingUser(originatingUser);
+            if (originatingUser!=null) {
+                nxUser.setOriginatingUser(originatingUser);
+            }
             propagateUserIdentificationInformation(cachableUserIdent);
         }
 
