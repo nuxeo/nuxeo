@@ -89,6 +89,7 @@ public class ServerConfiguratorTest {
         configurator.generateFiles();
         assertTrue(configurator.isConfigured());
         File configDir = new File(nuxeoHome, ServerConfigurator.JBOSS_CONFIG);
+        assertTrue(new File(configDir,"test2").exists());
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(

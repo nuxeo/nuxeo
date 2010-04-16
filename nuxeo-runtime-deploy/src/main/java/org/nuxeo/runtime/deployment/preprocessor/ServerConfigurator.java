@@ -25,8 +25,10 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +54,8 @@ public class ServerConfigurator {
 
     private static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
+    private static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
+
     public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
 
     private File nuxeoHome;
@@ -61,6 +65,8 @@ public class ServerConfigurator {
 
     // Common default configuration file
     private File nuxeoDefaultConf;
+
+    private String chosenTemplate;
 
     // Default configuration file for the chosen template
     private File templateDefaultConf;
@@ -119,8 +125,8 @@ public class ServerConfigurator {
         File outputDirectory = new File(nuxeoHome,
                 new File(JBOSS_CONFIG).getParent());
 
-        // List template directories to copy from (order is: common,
-        // ${nuxeo.template}, custom)
+        // List template directories to copy from (order is: included templates
+        // then chosen template)
         List<File> inputDirectories = new ArrayList<File>();
         // FilenameFilter to exclude "nuxeo.defaults" files from copy
         FilenameFilter filter = new FilenameFilter() {
@@ -128,16 +134,20 @@ public class ServerConfigurator {
                 return !"nuxeo.defaults".equals(name);
             }
         };
-        // add common template directories
-        addDirectories(
-                new File(nuxeoDefaultConf.getParent(), "common").listFiles(filter),
-                inputDirectories);
+        // add included templates directories
+        StringTokenizer st = new StringTokenizer(
+                config.getProperty(PARAM_INCLUDED_TEMPLATES), ",");
+        List<String> includedTemplates = new ArrayList<String>();
+        while (st.hasMoreTokens()) {
+            includedTemplates.add(st.nextToken());
+        }
+        for (String includedTemplate : includedTemplates) {
+            addDirectories(new File(nuxeoDefaultConf.getParent(),
+                    includedTemplate).listFiles(filter), inputDirectories);
+        }
+
         // add chosen template directories
         addDirectories(templateDefaultConf.getParentFile().listFiles(filter),
-                inputDirectories);
-        // add custom template directories
-        addDirectories(
-                new File(nuxeoDefaultConf.getParent(), "custom").listFiles(filter),
                 inputDirectories);
 
         for (File in : inputDirectories) {
@@ -169,9 +179,9 @@ public class ServerConfigurator {
         userConfig.load(new FileInputStream(nuxeoConf));
         // Override default configuration with specific configuration of the
         // chosen template
+        chosenTemplate = userConfig.getProperty(PARAM_TEMPLATE_NAME);
         templateDefaultConf = new File(nuxeoDefaultConf.getParent(),
-                userConfig.getProperty(PARAM_TEMPLATE_NAME) + File.separator
-                        + NUXEO_DEFAULT_CONF);
+                chosenTemplate + File.separator + NUXEO_DEFAULT_CONF);
         defaultConfig.load(new FileInputStream(templateDefaultConf));
         return userConfig;
     }
