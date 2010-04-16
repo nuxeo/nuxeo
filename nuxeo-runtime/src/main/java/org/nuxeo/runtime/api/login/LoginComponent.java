@@ -36,6 +36,9 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.RuntimeInstanceIdentifier;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -43,6 +46,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class LoginComponent extends DefaultComponent implements LoginService {
 
@@ -62,6 +66,12 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     private SecurityDomain systemLogin;
 
     private SecurityDomain clientLogin;
+
+    protected static String instanceId = RuntimeInstanceIdentifier.getId();
+
+    protected static SystemLoginRestrictionManager systemLoginManager = new SystemLoginRestrictionManager();
+
+    protected static Log log = LogFactory.getLog(LoginComponent.class);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -206,7 +216,33 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     public static boolean isSystemLogin(Object principal) {
-        return principal != null && principal.getClass() == SystemID.class;
+        if (principal != null && principal.getClass() == SystemID.class) {
+            if (!systemLoginManager.isRemoteSystemLoginRestricted()) {
+                return true;
+            } else {
+                SystemID sys = (SystemID) principal;
+                String sourceInstanceId = sys.getSourceInstanceId();
+                if (sourceInstanceId==null) {
+                    log.warn("Can not accept a system login without InstanceID of the source : System login is rejected");
+                    return false;
+                } else {
+                    if (sourceInstanceId.equals(instanceId)) {
+                        return true;
+                    } else {
+                        if (systemLoginManager.isRemoveSystemLoginAllowedForInstance(sourceInstanceId)) {
+                            if (log.isTraceEnabled()) {
+                                log.trace("Remote SystemLogin from instance " + sourceInstanceId + " accepted");
+                            }
+                            return true;
+                        } else {
+                            log.warn("Remote SystemLogin attempt from instance " + sourceInstanceId + " was denied");
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static class SystemID implements Principal, Serializable {
@@ -214,6 +250,8 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         private static final long serialVersionUID = 2758247997191809993L;
 
         private final String userName;
+
+        protected String sourceInstanceId = instanceId;
 
         SystemID() {
             userName = null;
@@ -227,13 +265,17 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             return userName;
         }
 
+        public String getSourceInstanceId() {
+            return sourceInstanceId;
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other instanceof Principal) {
                 if (userName == null) {
                     return ((Principal) other).getName() == null;
                 } else {
-                    return userName.equals(((Principal) other).getName());
+                    return userName.hashCode()==other.hashCode();
                 }
             } else {
                 return false;
@@ -242,7 +284,11 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
         @Override
         public int hashCode() {
-            return userName == null ? 0 : userName.hashCode();
+            if (!systemLoginManager.isRemoteSystemLoginRestricted()) {
+                return userName == null ? 0 : userName.hashCode();
+            } else {
+                return userName == null ? 0 : userName.hashCode() + sourceInstanceId.hashCode();
+            }
         }
 
     }
