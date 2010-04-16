@@ -119,7 +119,7 @@
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources-${distribution}.zip"
          basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources-${distribution}.zip"
-                     classifier="platform-stateful-resources-${distribution}"
+                     classifier="resources-platform-stateful-${distribution}"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
 
@@ -189,7 +189,7 @@
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip"
-                     classifier="platform-stateful-resources" />
+                     classifier="resources-platform-stateful" />
   </target>
 
   <target name="build-stateless"
@@ -239,7 +239,7 @@
     <delete failonerror="false" dir="${nuxeo.ear.resources}" />
     <unzip dest="${nuxeo.ear.resources}">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-                            classifier="resources-web-stateless-resources" />
+                            classifier="resources-web-stateless" />
     </unzip>
     <copy todir="${nuxeo.ear.resources}" overwrite="true">
       <!-- Nuxeo DM specific properties -->
@@ -250,7 +250,7 @@
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless-resources.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip"
-                     classifier="web-stateless-resources" />
+                     classifier="resources-web-stateless" />
   </target>
 
   <target name="common-third-party-libraries"
