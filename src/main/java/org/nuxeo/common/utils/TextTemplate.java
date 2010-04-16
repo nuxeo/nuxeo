@@ -27,8 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,29 +42,45 @@ public class TextTemplate {
 
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
 
-    private final Map<String, String> vars = new HashMap<String, String>();
+    private final Properties vars;
 
     public TextTemplate() {
+        vars = new Properties();
     }
 
+    /**
+     * @deprecated prefer use of {@link #TextTemplate(Properties)}
+     */
     public TextTemplate(Map<String, String> vars) {
+        this.vars = new Properties();
         this.vars.putAll(vars);
     }
 
+    /**
+     * @param vars Properties containing keys and values for template processing
+     */
+    public TextTemplate(Properties vars) {
+        this.vars = vars;
+    }
+
+    /**
+     * @deprecated prefer use of {@link #getVariables()} then {@link Properties}
+     *             .load()
+     */
     public void setVariables(Map<String, String> vars) {
         this.vars.putAll(vars);
     }
 
-    public Map<String, String> getVariables() {
-        return vars;
-    }
-
     public void setVariable(String name, String value) {
-        vars.put(name, value);
+        vars.setProperty(name, value);
     }
 
     public String getVariable(String name) {
-        return vars.get(name);
+        return vars.getProperty(name);
+    }
+
+    public Properties getVariables() {
+        return vars;
     }
 
     public String process(CharSequence text) {
