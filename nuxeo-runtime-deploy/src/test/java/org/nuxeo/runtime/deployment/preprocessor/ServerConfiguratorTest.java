@@ -40,7 +40,7 @@ public class ServerConfiguratorTest {
 
     private static final Object PROPERTY_TO_GENERATE = "<config-property name=\""
             + "property\" type=\"java.lang.String\">URL=jdbc:h2:${jboss.server.data.dir}"
-            + "/h2/${nuxeo.db.name};AUTO_SERVER=true</config-property>";
+            + "/h2/nuxeo;AUTO_SERVER=true</config-property>";
 
     private ServerConfigurator configurator;
 
@@ -80,6 +80,8 @@ public class ServerConfiguratorTest {
                 "true"));
         assertTrue(config.getProperty(
                 "test.nuxeo.conf.override.defaults.template").equals("true"));
+        assertTrue(config.getProperty("nuxeo.db.name").equals("nuxeo"));
+        assertTrue(config.getProperty("nuxeo.db.user").equals("sa"));
     }
 
     @Test

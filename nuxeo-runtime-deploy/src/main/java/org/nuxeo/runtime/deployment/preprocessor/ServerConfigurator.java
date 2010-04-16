@@ -26,7 +26,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -112,10 +111,9 @@ public class ServerConfigurator {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    @SuppressWarnings("unchecked")
     private void parseAndCopy(Properties config) throws FileNotFoundException,
             IOException {
-        TextTemplate templateParser = new TextTemplate((Map) config);
+        TextTemplate templateParser = new TextTemplate(config);
 
         // copy files to nuxeo.ear
         File outputDirectory = new File(nuxeoHome,
@@ -143,7 +141,8 @@ public class ServerConfigurator {
                 inputDirectories);
 
         for (File in : inputDirectories) {
-            templateParser.processDirectory(in, new File(outputDirectory,in.getName()));
+            templateParser.processDirectory(in, new File(outputDirectory,
+                    in.getName()));
         }
     }
 
@@ -174,9 +173,6 @@ public class ServerConfigurator {
                 userConfig.getProperty(PARAM_TEMPLATE_NAME) + File.separator
                         + NUXEO_DEFAULT_CONF);
         defaultConfig.load(new FileInputStream(templateDefaultConf));
-        // // reload user configuration with default config
-        // userConfig = new Properties(defaultConfig);
-        // userConfig.load(new FileInputStream(nuxeoConf));
         return userConfig;
     }
 
