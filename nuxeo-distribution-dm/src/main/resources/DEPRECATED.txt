@@ -1,0 +1,6 @@
+DEPRECATED RESOURCES
+
+Those resources are kept for backward compliance only.
+
+See org.nuxeo.ecm.distribution:nuxeo-distribution-resources:templates-* instead.
+Instructions are available in nuxeo-distribution/nuxeo-distribution-resources/src/main/resources/templates-jboss/README.txt

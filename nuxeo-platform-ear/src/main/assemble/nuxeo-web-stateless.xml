@@ -1,16 +1,5 @@
 <assembly>
 
-  <!-- RESOURCES -->
-  <assemble>
-    <set>resources</set>
-    <outputFile>/</outputFile>
-  </assemble>
-  <zipEntrySet id="resources">
-    <artifact>
-      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-web-stateless
-    </artifact>
-  </zipEntrySet>
-
   <!-- ARTIFACTS -->
   <assemble>
     <outputFile>/</outputFile>
@@ -144,23 +133,6 @@
       <artifact group="com.sun.xml" name="xsom" />
     </artifacts>
   </artifactSet>
-
-  <!-- third party libraries based on dependencies -->
-  <!--
-    <assemble> <outputFile>lib2</outputFile>
-    <set>nuxeo-libs-via-dependency-tree</set> </assemble> <artifactSet
-    id="nuxeo-libs-via-dependency-tree"> <import>**</import>
-    <includeDependencies>true</includeDependencies> <includes> <artifact
-    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo*" />
-    </excludes> </artifactSet>
-  -->
-
-  <!-- CUSTOM RESOURCES -->
-  <!--
-    <assemble> <outputFile>/</outputFile> <set>custom-resources-stateless</set>
-    </assemble> <fileSet id="custom-resources-stateless">
-    <directory>src/main/resources_custom_stateless</directory> </fileSet>
-  -->
 
   <!-- CUSTOM ARTIFACTS -->
   <!--

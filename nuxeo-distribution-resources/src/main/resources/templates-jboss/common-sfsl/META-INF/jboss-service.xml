@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<server>
+
+   <mbean code="org.jboss.security.auth.login.DynamicLoginConfig"
+      name="jboss:service=DynamicLoginConfig">
+      <attribute name="AuthConfig">META-INF/login-config.xml</attribute>
+      <!-- The service which supports dynamic processing of login-config.xml
+         configurations.
+      -->
+      <depends optional-attribute-name="LoginConfigService">
+         jboss.security:service=XMLLoginConfig
+      </depends>
+      <!-- Optionally specify the security mgr service to use when
+         this service is stopped to flush the auth caches of the domains
+         registered by this service.
+      -->
+      <depends optional-attribute-name="SecurityManagerService">
+         jboss.security:service=JaasSecurityManager
+      </depends>
+   </mbean>
+
+   <mbean code="org.nuxeo.osgi.jboss.JBossOSGiAdapter"
+		name="nx:service=adapter">
+
+		<attribute name="SubscriptionList">
+			<subscription-list>
+				<mbean name="jboss.system:type=Server">
+					<notification
+						type="org.jboss.system.server.started" />
+				</mbean>
+				<mbean name="jboss.system:service=ServiceDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.system:service=JARDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.j2ee:service=EARDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.j2ee:service=ClientDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.ejb3:service=EJB3Deployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.ejb:service=EJBDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.web:service=WebServer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+				<mbean name="jboss.jca:service=RARDeployer">
+					<notification
+						type="org.jboss.deployment.SubDeployer.create" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.start" />
+					<notification
+						type="org.jboss.deployment.SubDeployer.stop" />
+				</mbean>
+
+			</subscription-list>
+
+		</attribute>
+
+	</mbean>
+
+</server>
+
+

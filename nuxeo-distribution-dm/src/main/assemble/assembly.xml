@@ -1,7 +1,10 @@
-<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
-  xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
 
 
   <target name="init" unless="init.done">
@@ -31,12 +34,16 @@
   <target name="build" depends="init,clean" unless="no.build">
     <echo>Building default Nuxeo DM EAR</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
+    <property name="nuxeo.ear.resources"
+              value="${stagedir}/nuxeo.ear.resources" />
     <mkdir dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear.resources}" />
 
     <antcall target="build-standard" />
     <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
     <copy todir="${outdir}/nuxeo.ear">
       <fileset dir="${nuxeo.ear}" />
+      <fileset dir="${nuxeo.ear.resources}" />
     </copy>
     <antcall target="build-distribution">
       <param name="distribution" value="derby" />
@@ -64,19 +71,13 @@
     <antcall target="clean" />
   </target>
 
-  <target name="build-distribution" depends="init"
-    description="Build distributions on various backends" unless="no.alternate.build">
+  <target name="build-distribution"
+          depends="init"
+          description="Build distributions on various backends"
+          unless="no.alternate.build">
     <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear" />
     <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
       <fileset dir="${nuxeo.ear}" />
-    </copy>
-    <unzip dest="${stagedir}/nuxeo-${distribution}.ear">
-      <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-${distribution}" />
-    </unzip>
-    <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
-      <fileset dir="src/main/resources" />
     </copy>
     <antcall target="use-jcr-storage" />
     <nx:profile name="${distribution}">
@@ -85,17 +86,41 @@
         <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
       </copy>
     </nx:profile>
-    <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-      basedir="${stagedir}/nuxeo-${distribution}.ear" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-      classifier="${distribution}" type="zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-${distribution}.ear" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+
+    <!-- resources artifact -->
+    <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+    <unzip dest="${stagedir}/nuxeo-${distribution}.ear.resources">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-${distribution}" />
+    </unzip>
+    <copy todir="${stagedir}/nuxeo-${distribution}.ear.resources"
+          overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <nx:profile name="${distribution}">
+      <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+      <copy todir="${outdir}/nuxeo.ear">
+        <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
+        <fileset dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+      </copy>
+    </nx:profile>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources-${distribution}.zip"
+                     classifier="resources-${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
-  <target name="use-jcr-storage" description="Replace VCS with JCR storage"
-    if="storage.jcr">
+  <target name="use-jcr-storage"
+          description="Replace VCS with JCR storage"
+          if="storage.jcr">
     <delete failonerror="false">
       <fileset dir="${stagedir}/nuxeo-${distribution}.ear/system">
         <include name="nuxeo-core-storage-sql*" />
@@ -103,21 +128,15 @@
     </delete>
     <copy todir="${stagedir}/nuxeo-${distribution}.ear/system" overwrite="true">
       <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jca" />
-      <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jcr-connector" />
+      <artifact:file groupId="org.nuxeo.ecm.core"
+                     artifactId="nuxeo-core-jcr-connector" />
     </copy>
   </target>
 
-  <target name="build-standard" description="Build default distribution"
-    depends="init">
-    <!-- Nuxeo resources and modules -->
-    <unzip dest="${nuxeo.ear}">
-      <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-        classifier="resources-mono" />
-    </unzip>
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
     <copy todir="${nuxeo.ear}" overwrite="true">
-      <!-- Nuxeo DM specific properties -->
-      <fileset dir="src/main/resources" />
       <artifact:file artifactId="nuxeo-platform-webapp" />
       <artifact:file artifactId="nuxeo-platform-webapp-core" />
     </copy>
@@ -145,10 +164,26 @@
     <!-- <antcall target="old-third-party-libraries" /> -->
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-      basedir="${nuxeo.ear}" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" type="zip" />
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+
+    <!-- resources artifact -->
+    <unzip dest="${nuxeo.ear.resources}">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-mono" />
+    </unzip>
+    <copy todir="${nuxeo.ear.resources}" overwrite="true">
+      <!-- Nuxeo DM specific properties -->
+      <fileset dir="src/main/resources" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+         basedir="${nuxeo.ear.resources}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="resources"
+                     type="zip" />
   </target>
 
   <target name="third-party-libraries">
@@ -285,8 +320,7 @@
       <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
       <artifact:resolveFile key="org.slf4j:slf4j-api" />
       <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
-      <artifact:resolveFile
-        key="org.apache.directory.server:apacheds-protocol-shared" />
+      <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
       <artifact:resolveFile key="org.openoffice:jurt" />
       <artifact:resolveFile key="org.fontbox:fontbox" />
       <artifact:resolveFile key="org.jempbox:jempbox" />

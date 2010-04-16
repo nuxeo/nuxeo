@@ -46,18 +46,23 @@
   <target name="build" depends="init,clean" unless="no.build">
     <echo>Building two parts Nuxeo DM EARs</echo>
     <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
+    <property name="nuxeo.ear.resources"
+              value="${stagedir}/nuxeo.ear.resources" />
     <mkdir dir="${nuxeo.ear}" />
+    <mkdir dir="${nuxeo.ear.resources}" />
 
     <antcall target="build-stateless" />
     <delete failonerror="false" dir="${outdir}/nuxeo.ear-web-stateless" />
     <copy todir="${outdir}/nuxeo-web-stateless.ear">
       <fileset dir="${nuxeo.ear}" />
+      <fileset dir="${nuxeo.ear.resources}" />
     </copy>
 
     <antcall target="build-stateful" />
     <delete failonerror="false" dir="${outdir}/nuxeo.ear-platform-stateful" />
     <copy todir="${outdir}/nuxeo-platform-stateful.ear">
       <fileset dir="${nuxeo.ear}" />
+      <fileset dir="${nuxeo.ear.resources}" />
     </copy>
 
     <antcall target="build-distribution-stateful">
@@ -80,7 +85,8 @@
   </target>
 
   <target name="build-distribution-stateful"
-          depends="init" unless="no.alternate.build"
+          depends="init"
+          unless="no.alternate.build"
           description="Build stateful distributions on various backends">
     <delete failonerror="false"
             dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
@@ -88,35 +94,48 @@
           overwrite="true">
       <fileset dir="${nuxeo.ear}" />
     </copy>
-    <unzip dest="${stagedir}/nuxeo-platform-stateful-${distribution}.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-                            classifier="resources-${distribution}" />
-    </unzip>
-    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear"
-          overwrite="true">
-      <fileset dir="src/main/resources" />
-    </copy>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
          basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-${distribution}.zip"
                      classifier="platform-stateful-${distribution}"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
+
+    <!-- resources artifact -->
+    <delete failonerror="false"
+            dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources" />
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources"
+          overwrite="true">
+      <fileset dir="${nuxeo.ear.resources}" />
+    </copy>
+    <unzip dest="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-${distribution}" />
+    </unzip>
+    <copy todir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources"
+          overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources-${distribution}.zip"
+                     classifier="platform-stateful-resources-${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+
+    <nx:profile name="${distribution}">
+      <delete failonerror="false" dir="${outdir}/nuxeo.ear-platform-stateful" />
+      <copy todir="${outdir}/nuxeo-platform-stateful.ear">
+        <fileset dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear" />
+        <fileset dir="${stagedir}/nuxeo-platform-stateful-${distribution}.ear.resources" />
+      </copy>
+    </nx:profile>
   </target>
 
   <target name="build-stateful"
           depends="init"
           description="Build platform stateful distribution">
-    <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
-    <unzip dest="${nuxeo.ear}">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-                            classifier="resources-platform-stateful" />
-    </unzip>
-    <copy todir="${nuxeo.ear}" overwrite="true">
-      <!-- Nuxeo DM specific properties -->
-      <fileset dir="src/main/resources" />
-    </copy>
     <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
@@ -154,6 +173,23 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip"
                      classifier="platform-stateful" />
+
+    <!-- resources artifact -->
+    <delete failonerror="false" dir="${nuxeo.ear.resources}" />
+    <unzip dest="${nuxeo.ear.resources}">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-platform-stateful" />
+    </unzip>
+    <copy todir="${nuxeo.ear.resources}" overwrite="true">
+      <!-- Nuxeo DM specific properties -->
+      <fileset dir="src/main/resources" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources.zip"
+         basedir="${nuxeo.ear.resources}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-platform-stateful-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip"
+                     classifier="platform-stateful-resources" />
   </target>
 
   <target name="build-stateless"
@@ -161,13 +197,7 @@
           depends="init">
     <!-- Nuxeo resources and modules -->
     <delete failonerror="false" dir="${nuxeo.ear}" />
-    <unzip dest="${nuxeo.ear}">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
-                            classifier="resources-web-stateless" />
-    </unzip>
     <copy todir="${nuxeo.ear}" overwrite="true">
-      <!-- Nuxeo DM specific properties -->
-      <fileset dir="src/main/resources" />
       <artifact:file artifactId="nuxeo-platform-webapp" />
       <artifact:file artifactId="nuxeo-platform-webapp-core" />
     </copy>
@@ -204,6 +234,23 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip"
                      classifier="web-stateless" />
+
+    <!-- resources artifact -->
+    <delete failonerror="false" dir="${nuxeo.ear.resources}" />
+    <unzip dest="${nuxeo.ear.resources}">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
+                            classifier="resources-web-stateless-resources" />
+    </unzip>
+    <copy todir="${nuxeo.ear.resources}" overwrite="true">
+      <!-- Nuxeo DM specific properties -->
+      <fileset dir="src/main/resources" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless-resources.zip"
+         basedir="${nuxeo.ear.resources}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-web-stateless-resources.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip"
+                     classifier="web-stateless-resources" />
   </target>
 
   <target name="common-third-party-libraries"

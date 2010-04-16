@@ -1,0 +1,10 @@
+## Edit this file to customize your configuration ##
+
+# Set list of templates to include, comma separated values.
+# Take care to set all required parameters in this file because other nuxeo.defaults 
+# files from included templates won't be read. 
+nuxeo.template.includes=common,default
+
+nuxeo.db.name=nuxeo
+nuxeo.db.user=sa
+nuxeo.db.password=
