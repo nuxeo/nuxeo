@@ -24,22 +24,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.theme.themes.ThemeManager;
 
-
-
-/*
- * (C) Copyright 2006-2009 Nuxeo SAS <http://nuxeo.com> and others
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Jean-Marc Orliaguet, Chalmers
- *
- * $Id$
- */
-
 public class StyleFieldProperty {
 
     private final String name;
@@ -47,14 +31,17 @@ public class StyleFieldProperty {
     private final String value;
 
     private final String type;
+    
+    private final String id;
 
     private static final Pattern cssChoicePattern = Pattern.compile("\\[(.*?)\\]");
 
-    public StyleFieldProperty(String name, String value, String type) {
+    public StyleFieldProperty(String name, String value, String type, String id) {
         this.name = name;
         // escape quotes (used internally to represent presets)
         this.value = value.replace("\"", "&quot;");
         this.type = type;
+        this.id = id;
     }
 
     public String getName() {
@@ -64,11 +51,13 @@ public class StyleFieldProperty {
     public String getValue() {
         return value;
     }
+    
+    public String getLabel() {
+        return name;
+    }
 
-    public String getRendered() {
+    public String getInputWidget() {
         final StringBuilder rendered = new StringBuilder();
-        final String label = name;
-        rendered.append("<label>").append(label).append("</label>");
 
         final Matcher choiceMatcher = cssChoicePattern.matcher(type);
 
@@ -78,7 +67,7 @@ public class StyleFieldProperty {
         if (hasChoices) {
             // render selection list
             String choices = choiceMatcher.group(1);
-            rendered.append(String.format("<select name=\"property:%s\">", name));
+            rendered.append(String.format("<select id=\"%s\" name=\"property:%s\">", id, name));
             rendered.append("<option></option>");
             for (String choice : choices.split("\\|")) {
                 rendered.append(String.format("<option%s>%s</option>",
@@ -89,18 +78,24 @@ public class StyleFieldProperty {
         } else {
             // render input area
             String input = String.format(
-                    "<input type=\"text\" class=\"textInput\" name=\"property:%s\" value=\"%s\" />",
-                    name, value);
+                    "<input id=\"%s\" type=\"text\" class=\"textInput\" name=\"property:%s\" value=\"%s\" />",
+                    id, name, value);
             rendered.append(input);
         }
 
         if (category != null) {
             // add a style picker
             rendered.append(String.format(
-                    "<input type=\"button\" class=\"picker\" property=\"%s\" category=\"%s\" value=\"\" />",
-                    name, category));
+                    "<input id=\"%s\" type=\"button\" class=\"picker\" property=\"%s\" category=\"%s\" value=\"\" />",
+                    id, name, category));
         }
 
         return rendered.toString();
     }
+
+    public String getId() {
+        return id;
+    }
+    
+    
 }

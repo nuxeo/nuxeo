@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.editor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -34,8 +35,6 @@ public class SessionManager extends AbstractComponent {
 
     private static final String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
 
-    private static final String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
-
     private static final String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
 
     private static final String STYLE_MANAGER_MODE = "org.nuxeo.theme.editor.style_manager_mode";
@@ -55,6 +54,8 @@ public class SessionManager extends AbstractComponent {
     private static final String SELECTED_FRAGMENT_VIEW = "org.nuxeo.theme.editor.fragment_view";
 
     private static final String SELECTED_FRAGMENT_STYLE = "org.nuxeo.theme.editor.fragment_style";
+
+    private static final String SELECTED_CSS_CATEGORIES = "org.nuxeo.theme.editor.css_categories";
 
     private static final String WORKSPACE_THEMES = "org.nuxeo.theme.editor.workspace_themes";
 
@@ -102,14 +103,6 @@ public class SessionManager extends AbstractComponent {
 
     public static synchronized void setStyleSelector(String selector) {
         getUserSession().put(STYLE_SELECTOR, selector);
-    }
-
-    public static synchronized String getStylePropertyCategory() {
-        return (String) getUserSession().get(STYLE_PROPERTY_CATEGORY);
-    }
-
-    public static synchronized void setStylePropertyCategory(String category) {
-        getUserSession().put(STYLE_PROPERTY_CATEGORY, category);
     }
 
     public static synchronized String getStyleCategory() {
@@ -210,6 +203,30 @@ public class SessionManager extends AbstractComponent {
             UndoBuffer undoBuffer) {
         getUserSession().put(String.format("%s.%s", UNDO_BUFFER, themeName),
                 undoBuffer);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static synchronized List<String> getSelectedCssCategories() {
+        List<String> categories = (List<String>) getUserSession().get(
+                SELECTED_CSS_CATEGORIES);
+        if (categories == null) {
+            categories = new ArrayList<String>();
+        }
+        return (List<String>) categories;
+    }
+
+    public static synchronized void toggleCssCategory(String name) {
+        List<String> categories = getSelectedCssCategories();
+        if (categories.contains(name)) {
+            categories.remove(name);
+        } else {
+            categories.add(name);
+        }
+        setSelectedCssCategories(categories);
+    }
+    
+    public static synchronized void setSelectedCssCategories(List<String> categories) {
+        getUserSession().put(SELECTED_CSS_CATEGORIES, categories);
     }
 
 }

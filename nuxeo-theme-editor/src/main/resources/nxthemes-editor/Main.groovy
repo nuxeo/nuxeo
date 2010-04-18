@@ -1,5 +1,6 @@
 package editor
 
+import java.util.Collection
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import javax.ws.rs.core.Response.ResponseBuilder
@@ -303,10 +304,10 @@ public class Main extends ModuleRoot {
             "style_selectors", getStyleSelectorsForSelectedElement()).arg(
             "rendered_style_properties", getRenderedStylePropertiesForSelectedElement()).arg(
             "selected_style_selector", getSelectedStyleSelector()).arg(
-            "style_properties", getStylePropertiesForSelectedElement()).arg(
-            "style_categories", getStyleCategories()).arg(
-            "selected_view_name", getViewNameOfSelectedElement()).arg(                    
-            "element_style_properties", getElementStyleProperties())
+            "element_style_properties", getStylePropertiesForSelectedElement()).arg(
+            "all_style_properties", getAvailableStylePropertiesForSelectedElement()).arg(            
+            "selected_view_name", getViewNameOfSelectedElement()).arg(
+            "selected_css_categories", getSelectedCssCategories())
   }
 
   @GET
@@ -364,7 +365,6 @@ public class Main extends ModuleRoot {
     SessionManager.setStyleLayerId(null);
     SessionManager.setStyleSelector(null);
     SessionManager.setNamedStyleId(null);
-    SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
     SessionManager.setPresetCategory(null);
@@ -384,7 +384,6 @@ public class Main extends ModuleRoot {
     SessionManager.setStyleLayerId(null);
     SessionManager.setNamedStyleId(null);
     SessionManager.setStyleSelector(null);
-    SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
     SessionManager.setPresetCategory(null);
@@ -888,13 +887,37 @@ public class Main extends ModuleRoot {
       String category = form.getString("category")      
       SessionManager.setStyleCategory(category)
   }
-  
+
   @POST
   @Path("select_style_edit_mode")
   public void selectStyleEditMode() {
       FormData form = ctx.getForm()
       String mode = form.getString("mode")        
       SessionManager.setStyleEditMode(mode)
+  }
+  
+  @POST
+  @Path("toggle_css_category")
+  public void toggleCssCategory() {
+      FormData form = ctx.getForm()
+      String name = form.getString("name")  
+      SessionManager.toggleCssCategory(name)
+  }
+  
+  @POST
+  @Path("collapse_css_categories")
+  public void collapseCssCategories() {
+      FormData form = ctx.getForm()
+      SessionManager.setSelectedCssCategories([])
+  }
+  
+  @POST
+  @Path("expand_css_categories")
+  public void expandCssCategories() {
+      FormData form = ctx.getForm()
+      Properties cssStyleCategories = org.nuxeo.theme.editor.Utils.getCssStyleCategories()
+      def allCssCategories = Collections.list(cssStyleCategories.propertyNames())
+      SessionManager.setSelectedCssCategories(allCssCategories)
   }
   
   @POST
@@ -917,14 +940,6 @@ public class Main extends ModuleRoot {
       if (style != null) {
           SessionManager.setNamedStyleId(uid)
       }
-  }
-  
-  @POST
-  @Path("select_style_property_category")
-  public void selectStylePropertyCategory() {
-      FormData form = ctx.getForm()
-      String category = form.getString("category")           
-      SessionManager.setStylePropertyCategory(category)
   }
   
   @POST
@@ -996,8 +1011,6 @@ public class Main extends ModuleRoot {
       String cssSource = form.getString("css_source")      
       Element element = ThemeManager.getElementById(id)
       Style selectedStyleLayer = getSelectedStyleLayer()
-
-      
       try {
           Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
       } catch (Exception e) {
@@ -1307,7 +1320,7 @@ public class Main extends ModuleRoot {
       return selectors
   }
   
-  public static List<StyleFieldProperty> getElementStyleProperties() {
+  public static List<StyleFieldProperty> getStylePropertiesForSelectedElement() {
       Style style = getStyleOfSelectedElement()
       Style selectedStyleLayer = getSelectedStyleLayer()
       if (selectedStyleLayer != null) {
@@ -1326,75 +1339,62 @@ public class Main extends ModuleRoot {
           viewName = "*"
       }
       Properties properties = style.getPropertiesFor(viewName, path)
-      String selectedCategory = getSelectedStylePropertyCategory()
 
+      int idx = 0;
       Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
-      Enumeration<?> propertyNames = cssProperties.propertyNames()
-      while (propertyNames.hasMoreElements()) {
-          String name = (String) propertyNames.nextElement()
-          String value = properties == null ? "" : properties.getProperty(name, "")
-          String category = ThemeManager.getPreviewCategoryForProperty(name)
-          String type = cssProperties.getProperty(name)
-          if (selectedCategory.equals("*") || selectedCategory.equals(category)) {
-              fieldProperties.add(new StyleFieldProperty(name, value, type))
+      if (properties != null) {
+          Enumeration<?> propertyNames = properties.propertyNames()
+          while (propertyNames.hasMoreElements()) {
+              String name = (String) propertyNames.nextElement()
+              String value = properties == null ? "" : properties.getProperty(name, "")
+              String type = cssProperties.getProperty(name, "")
+              String id = "p" + idx; 
+              fieldProperties.add(new StyleFieldProperty(name, value, type, id))
+              idx += 1;
           }
       }
       return fieldProperties    
   }
   
-  public static List getStylePropertiesForSelectedElement() {
+  public static Map<String, List<StyleFieldProperty>> getAvailableStylePropertiesForSelectedElement() {
       String viewName = getViewNameOfSelectedElement()
       Style style = getStyleOfSelectedElement()
       Style selectedStyleLayer = getSelectedStyleLayer()
       if (selectedStyleLayer != null) {
           style = selectedStyleLayer
       }
-      def fieldProperties = []
+      def styleFieldProperties = new LinkedHashMap<String, List<StyleFieldProperty>>()
       if (style == null) {
-          return fieldProperties
+          return styleFieldProperties
       }
       String path = getSelectedStyleSelector()
       if (path == null) {
-          return fieldProperties
+          return styleFieldProperties
       }
       if (style.getName() != null) {
           viewName = "*"
       }
-      Properties properties = style.getPropertiesFor(viewName, path)
-      String selectedCategory = getSelectedStylePropertyCategory()
-
+      Properties styleProperties = style.getPropertiesFor(viewName, path)
       Properties cssProperties = org.nuxeo.theme.html.Utils.getCssProperties()
-      Enumeration<?> propertyNames = cssProperties.propertyNames()
-      while (propertyNames.hasMoreElements()) {
-          String name = (String) propertyNames.nextElement()
-          String value = properties == null ? "" : properties.getProperty(name, "")
-          String category = ThemeManager.getPreviewCategoryForProperty(name)
-          if (selectedCategory.equals("") || selectedCategory.equals(category)) {
-              fieldProperties.add(new StyleFieldProperty(name, value, category))
+      Properties cssStyleCategories = org.nuxeo.theme.editor.Utils.getCssStyleCategories()
+      Enumeration<?> cssStyleCategoryNames = cssStyleCategories.propertyNames()
+      
+      int idx = 0;
+      while (cssStyleCategoryNames.hasMoreElements()) {
+          String cssStyleCategoryName = (String) cssStyleCategoryNames.nextElement()          
+          def fieldProperties = []
+          for (String name : cssStyleCategories.getProperty(cssStyleCategoryName).split(',')) {
+              String value = styleProperties == null ? "" : styleProperties.getProperty(name, "")
+              String type = cssProperties.getProperty(name, "")
+              String id = "s" + idx; 
+              fieldProperties.add(new StyleFieldProperty(name, value, type, id))
+              idx += 1;
           }
+          styleFieldProperties.put(cssStyleCategoryName, fieldProperties)
       }
-      return fieldProperties
+      return styleFieldProperties
   }
   
-  public static String getSelectedStylePropertyCategory() {
-      String category = SessionManager.getStylePropertyCategory()
-      if (!category) {
-          category = '*'
-      }
-      return category
-  }
-
-  
-  public static List<StyleCategory> getStyleCategories() {
-      String selectedStyleCategory = getSelectedStylePropertyCategory()
-      Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>()
-      categories.put("", new StyleCategory("*", "all", selectedStyleCategory.equals("*")))
-      for (String category : ThemeManager.getPreviewCategories()) {
-            boolean selected = category.equals(selectedStyleCategory)
-            categories.put(category, new StyleCategory(category, category, selected))
-      }
-      return new ArrayList<StyleCategory>(categories.values())
-  }
   
   public static String getInheritedStyleNameOfSelectedElement() {
       Style style = getStyleOfSelectedElement()
@@ -1419,6 +1419,10 @@ public class Main extends ModuleRoot {
   
   public static String getSelectedStyleLayerId() {
       return SessionManager.getStyleLayerId()
+  } 
+
+  public static List<String> getSelectedCssCategories() {
+      return SessionManager.getSelectedCssCategories()
   } 
 
   public static String getSelectedNamedStyleId() {
@@ -1659,7 +1663,7 @@ public class Main extends ModuleRoot {
   public static String getTemplateEngine(applicationPath) {
       return ThemeManager.getTemplateEngineName(applicationPath)
   }
-  
+
   public static String getDefaultTheme(applicationPath, name) {
       String defaultTheme = ThemeManager.getDefaultTheme(applicationPath)
       if(defaultTheme == null || defaultTheme.equals("")) {

@@ -27,15 +27,14 @@ if (typeof NXThemesEditor == "undefined") {
           }
           return true;
         },              
-	extractElementUid: function(el) {
-	  var attr = el.getAttribute('id');
-	  if (!attr) {
-	    return
-	  }
-	  return attr.replace(/^e/, '');
-	}
+	    extractElementUid: function(el) {
+	      var attr = el.getAttribute('id');
+	      if (!attr) {
+	        return
+	      }
+	      return attr.replace(/^e/, '');
+	    }
     };
-
 };
 
 NXThemesEditor.accessDenied = function() {
@@ -352,6 +351,7 @@ NXThemesEditor.updateElementStyle = function() {
          },
          onSuccess: function(r) {
              NXThemesStyleEditor.refreshCssPreview();
+			 NXThemes.getViewById("style properties").refresh();
              NXThemesEditor.refreshUndoActions();
              NXThemesEditor.writeMessage("Style updated.");
          },
@@ -1661,6 +1661,80 @@ NXThemesStyleEditor.pickPropertyValue = function(info) {
       });
 };
 
+
+NXThemesStyleEditor.toggleCssCategory = function(ctx, name){
+    var url = nxthemesBasePath + "/nxthemes-editor/toggle_css_category"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             name: name
+         },
+         onSuccess: function(req) {
+		   $$('.nxthemesStyleField').each(function(f) {
+		   	  if (name == f.getAttribute('category')) {
+			  	f.toggle();
+			  }
+		   });
+           var closeButton = $(ctx).select('.nxthemesStyleCategoryClose')[0];
+		   var openButton = $(ctx).select('.nxthemesStyleCategoryOpen')[0];
+           if (closeButton) {
+		   	 closeButton.className = 'nxthemesStyleCategoryOpen';
+		   }
+		   if (openButton) {
+             openButton.className = 'nxthemesStyleCategoryClose';
+           }
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+}
+
+NXThemesStyleEditor.expandAllCategories = function() {	
+    var url = nxthemesBasePath + "/nxthemes-editor/expand_css_categories"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             name: name
+         },
+         onSuccess: function(req) {
+           $$('.nxthemesStyleField').each(function(f) {
+              f.show();
+           });
+           $$('.nxthemesStyleCategoryClose').each(function(f) {
+              f.className = 'nxthemesStyleCategoryOpen';
+           });
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
+
+NXThemesStyleEditor.collapseAllCategories = function() {    
+    var url = nxthemesBasePath + "/nxthemes-editor/collapse_css_categories"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             name: name
+         },
+         onSuccess: function(req) {
+           $$('.nxthemesStyleField').each(function(f) {
+              f.hide();
+           });
+           $$('.nxthemesStyleCategoryOpen').each(function(f) {
+              f.className = 'nxthemesStyleCategoryClose';
+           });
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
+
 NXThemesStyleEditor.setStyleEditMode = function(mode, fromMode) {
     if (fromMode == 'form') {
       NXThemesEditor.updateElementStyle();
@@ -1800,6 +1874,7 @@ NXThemesStyleEditor.updateFormField = function(value) {
 NXThemesStyleEditor.refreshStylePicker = function() {
     NXThemes.getViewById("style picker").refresh();
 };
+
 
 
 // widgets

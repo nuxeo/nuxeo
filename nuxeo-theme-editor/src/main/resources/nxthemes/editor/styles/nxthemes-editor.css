@@ -764,12 +764,6 @@ div.nxthemesEditorFrame {
   cursor: pointer;
 }
 
-.nxthemesForm input.picker, .nxthemesForm input.picker:focus {
-  border: none;
-  width: 16px;
-  background: transparent url(${basePath}/skin/nxthemes-editor/img/style-picker.png) no-repeat;
-}
-
 .nxthemesForm p {
   width: 260px;
   clear: left;
@@ -797,8 +791,9 @@ div.nxthemesEditorFrame {
   color: #999;
 }
 
-.nxthemesForm input,.nxthemesForm textarea, .nxthemesForm select {
+.nxthemesForm input, .nxthemesForm textarea, .nxthemesForm select {
   border: 1px solid #ccc;
+  background-color: #fff;
   padding: 1px;
   font: 12px Arial, sans-serif;
   margin-right: 2px;
@@ -806,6 +801,7 @@ div.nxthemesEditorFrame {
 
 .nxthemesForm select {
   border: 1px solid #ccc;
+  background-color: #fff;
   width: 224px;
   margin: 0;
   padding: 0;
@@ -1298,6 +1294,10 @@ form.nxthemesInheritedStyles label {
   padding-right: 4px;
 }
 
+form.nxthemesInheritedStyles select, 
+  background-color: #fff;
+}
+
 form.nxthemesInheritedStyles select, form.nxthemesInheritedStyles button {
   border-style: solid;
   border-width: 1px;
@@ -1651,3 +1651,122 @@ table.fragmentFactory td {
   padding: 3px;  
 }
 
+
+/* CSS property editor */
+
+.nxthemesCssInspector {
+  height: 230px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+}
+
+.nxthemesCssInspector table {
+  background-color: #fff;
+  font: 11px tahoma;
+  border: 1px solid #ccc;
+  margin: 0;
+  padding: 0;
+  width: 400px;
+}
+
+.nxthemesCssInspector table td {
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+}
+
+.nxthemesCssInspector table td.label {
+  text-align: right;
+  padding: 1px;
+  padding-left: 10px;
+  padding-right: 5px;
+  width: 137px;
+  background-color: #f9f9f9;
+}
+
+.nxthemesCssInspector input.picker, .nxthemesCssInspector input.picker:focus {
+  border: none;
+  width: 16px;
+  margin: 0;
+  float: right;
+  background: transparent url(${basePath}/skin/nxthemes-editor/img/style-picker.png) no-repeat;
+}
+
+.nxthemesCssInspector input:focus, .nxthemesCssInspector select:focus {
+  background-color: #ffc;
+  color: #600;
+  border: 1px solid #fc0;
+}
+
+.nxthemesCssInspector label {
+  text-align: right;
+  float: right;
+}
+
+.nxthemesCssInspector input, .nxthemesCssInspector select {
+  padding: 0;
+  border: 1px solid #eee;
+  background-color: #fff;
+  font: 11px tahoma, arial, sans-serif;
+ }
+
+
+.nxthemesCssInspector input {
+  width: 190px;
+}
+
+.nxthemesCssInspector select {
+  margin: 0;
+  padding: 0;
+  width:  222px;
+  background-color: #fff;
+}
+
+.nxthemesCssInspector .nxthemesCategoryHeader {
+  border: 1px solid #bbb; 
+  text-transform: capitalize; 
+  padding: 2px 0px; 
+  background: #eee url(${basePath}/skin/nxthemes-editor/img/section-bg.png) repeat-x; 
+  font: bold 11px tahoma, arial, sans-serif;
+  cursor: pointer;
+}
+
+.nxthemesCssInspector .nxthemesCategoryHeader a {
+  color: #000;
+  display: block;
+}
+
+.nxthemesCssInspector .nxthemesCategoryHeader img {
+  padding: 0 3px 0 5px;
+}
+
+.nxthemesCssInspectorActions a {
+  font: 11px Tahoma, Arial;
+  color: #666;
+  padding-left: 12px;
+}
+
+.nxthemesCssInspectorActions a:hover {
+  color: #000;
+}
+
+.nxthemesStyleCategoryOpen {
+  background: url(${basePath}/skin/nxthemes-editor/img/tree-open.png) no-repeat;
+  width: 9px;
+  height: 9px;
+  display: block;
+  float: left;
+  margin: 2px 5px 2px 3px;
+}
+
+.nxthemesStyleCategoryClose {
+  background: url(${basePath}/skin/nxthemes-editor/img/tree-close.png) no-repeat;
+  width: 9px;
+  height: 9px;
+  display: block;
+  float: left;
+  margin: 2px 5px 2px 3px;
+}

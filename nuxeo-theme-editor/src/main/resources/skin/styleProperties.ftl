@@ -7,7 +7,7 @@
     </legend>
 
     <div class="nxthemesButtonSelector"
-      style="float: right; margin-top: -40px">
+      style="float: right; margin-top: -40px; margin-right: -10px">
       <span>Edit mode:</span>
       <#if style_edit_mode == 'form'>            
           <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('css', 'form')">CSS</a>
@@ -21,17 +21,17 @@
       <!-- Edit form -->
       <#if style_edit_mode == 'form'>
         <form id="nxthemesElementStyle" class="nxthemesForm" action="" onsubmit="return false">
-          <p style="margin-bottom: 10px;">
-            <label>
+          <p style="margin-bottom: 5px;">
+            <label style="width: 154px">
               Selector
             </label>
-	        <select id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
+	        <select style="width: 247px" id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
 	          <#list style_selectors as selector>
 	            <#if selector == selected_style_selector>
 	              <option value="${selector}" selected="selected">${selector}</option>
 	            <#else>
 	              <option value="${selector}">${selector}</option>
-		        </#if>
+                </#if>
               </#list>
 	        </select>
             <input type="hidden" name="id" value="#{selected_element.uid}" />
@@ -39,24 +39,54 @@
             <input type="hidden" name="viewName" value="${selected_view_name}" />
           </p>
 
-              <div class="nxthemesButtonSelector" style="padding: 3px; text-align: right"">
-                <span>categories: </span>
-                <#list style_categories as category>
-                  ${category.rendered}
-                </#list>
-              </div>
-       
-     
+          <div class="nxthemesCssInspectorActions" style="width: 395px; text-align: right">
+            <a href="javascript:void(0)"
+               onclick="NXThemesStyleEditor.expandAllCategories()">(+) Expand all</a>
+            <a href="javascript:void(0)"
+               onclick="NXThemesStyleEditor.collapseAllCategories()">(-) Collapse all</a>
+          </div>
+               
+          <div class="nxthemesCssInspector">
+            <table>          
             <#if element_style_properties>
-              <div style="height: 220px; margin-top: 5px; margin-bottom: 15px; overflow-y: scroll; overflow-x: hidden">
-                <#list element_style_properties as property>
-                  <p>${property.rendered}</p>
-                </#list>
-              </div>
-              <button type="submit">
-                Save
-              </button>
+              <#list element_style_properties as property>
+              <tr>
+                <td class="label"><label for="${property.id}">${property.label}</label></td>
+                <td class="input">${property.inputWidget}</td>
+              </tr>
+              </#list>
             </#if>
+                    
+            <#if all_style_properties>
+              <#list all_style_properties?keys as category>
+                <#assign visible=selected_css_categories?seq_contains(category) />
+                <tr>
+                  <td colspan="2" class="nxthemesCategoryHeader">
+                    <a href="javascript:void(0)" onclick="NXThemesStyleEditor.toggleCssCategory(this, '${category}')">
+                    <#if visible>
+                      <span class="nxthemesStyleCategoryClose">&nbsp;</span> 
+                    <#else>
+                      <span class="nxthemesStyleCategoryOpen">&nbsp;</span>                
+                    </#if>
+                    ${category}</a>
+                  </td>
+                </tr>
+                <#list all_style_properties[category] as property>
+                  <#if !property.value>
+                    <tr class="nxthemesStyleField" category="${category}" <#if !visible>style="display: none"</#if>>
+                      <td class="label"><label for="${property.id}">${property.label}</label></td>
+                      <td class="input">${property.inputWidget}</td>
+                    </tr>
+                  </#if>
+                </#list>
+              </#list>
+            </#if>
+            </table>
+          </div>
+
+          <button type="submit">
+            Save
+          </button>
         </form>
       
       <!-- Inline CSS editing -->

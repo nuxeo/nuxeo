@@ -24,11 +24,24 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.properties.FieldInfo;
+import org.nuxeo.theme.properties.OrderedProperties;
 import org.nuxeo.theme.themes.ThemeIOException;
 
 public class Utils {
 
     private static final Log log = LogFactory.getLog(Utils.class);
+    
+    private static final String STYLE_CATEGORIES_RESOURCE = "/nxthemes/editor/styles/categories.properties";
+
+    private static final Properties cssStyleCategories = new OrderedProperties();
+
+    static {
+        org.nuxeo.theme.Utils.loadProperties(cssStyleCategories, STYLE_CATEGORIES_RESOURCE);
+    }
+    
+    private Utils() {
+        // This class is not supposed to be instantiated.
+    }
 
     public static List<FieldProperty> getPropertiesOf(final Element element) {
         List<FieldProperty> fieldProperties = new ArrayList<FieldProperty>();
@@ -60,4 +73,9 @@ public class Utils {
         return fieldProperties;
     }
 
+    public static Properties getCssStyleCategories() {
+        return cssStyleCategories;
+    }
+
+    
 }

@@ -53,7 +53,7 @@
 
       <table style="width: 100%" cellpadding="10" cellspacing="0">
         <tr>
-          <td style="width: 50%; vertical-align: top">
+          <td style="with: 50%; vertical-align: top">
             <fieldset class="nxthemesEditor">
               <legend>
                 Preview
@@ -70,7 +70,7 @@
             <div id="labelInfo" style="display:none" />
 
           </td>
-          <td style="width: 50%; vertical-align: top">
+          <td style="width: 450px; vertical-align: top">
 
             <!--  Style properties form -->
             <@nxthemes_panel identifier="style properties"
