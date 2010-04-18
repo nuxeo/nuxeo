@@ -28,6 +28,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -188,6 +189,29 @@ public final class Utils {
 
         }
 
+    }
+    
+    public static void loadProperties(final Properties properties,
+            final String resourceName) {
+        if (properties.isEmpty()) {
+            InputStream in = null;
+            try {
+                in = Utils.class.getResourceAsStream(resourceName);
+                if (in != null) {
+                    properties.load(in);
+                }
+            } catch (IOException e) {
+                log.error("Could not load properties", e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        log.error("Failed to close stream", e);
+                    }
+                }
+            }
+        }
     }
 
 }

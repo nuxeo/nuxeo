@@ -94,7 +94,7 @@ public final class Utils {
     private static final Properties cssProperties = new OrderedProperties();
 
     static {
-        loadProperties(cssProperties, CSS_PROPERTIES_RESOURCE);
+        org.nuxeo.theme.Utils.loadProperties(cssProperties, CSS_PROPERTIES_RESOURCE);
     }
 
     private Utils() {
@@ -472,29 +472,6 @@ public final class Utils {
         }
         m.appendTail(sb);
         return sb.toString();
-    }
-
-    public static void loadProperties(final Properties properties,
-            final String resourceName) {
-        if (properties.isEmpty()) {
-            InputStream in = null;
-            try {
-                in = Utils.class.getResourceAsStream(resourceName);
-                if (in != null) {
-                    properties.load(in);
-                }
-            } catch (IOException e) {
-                log.error("Could not load properties", e);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        log.error("Failed to close stream", e);
-                    }
-                }
-            }
-        }
     }
 
     public static boolean supportsGzip(final HttpServletRequest request) {
