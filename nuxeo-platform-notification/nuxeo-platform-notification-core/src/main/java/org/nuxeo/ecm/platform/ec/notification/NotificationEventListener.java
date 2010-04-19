@@ -292,9 +292,11 @@ public class NotificationEventListener implements PostCommitEventListener {
         if (doc.getPath().segmentCount() > 1) {
             log.debug("Searching document: " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
-            DocumentModel parent = getDocumentParent(coreSession, doc);
-            gatherConcernedUsersForDocument(coreSession, parent, notifs,
-                    targetUsers);
+            if (doc.getParentRef() != null && coreSession.exists(doc.getParentRef())) {
+                DocumentModel parent = getDocumentParent(coreSession, doc);
+                gatherConcernedUsersForDocument(coreSession, parent, notifs,
+                        targetUsers);                
+            }
         }
     }
 
