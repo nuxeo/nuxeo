@@ -17,6 +17,9 @@
 
 package org.nuxeo.opensocial.container.factory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +46,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
     /**
      * Remove gadget to container
-     * 
+     *
      * @param bean
      *            : Gadget to delete
      * @param gwtParams
@@ -87,7 +90,7 @@ public class GadgetManagerImpl implements GadgetManager {
 
     /**
      * Save gadget preferences and update render url of gadget
-     * 
+     *
      */
     public GadgetBean savePreferences(GadgetBean bean,
             Map<String, String> updatePrefs, Map<String, String> gwtParams)
@@ -136,6 +139,26 @@ public class GadgetManagerImpl implements GadgetManager {
         } else
             retour = value;
         return retour;
+    }
+
+    public Boolean validateGadgets(Collection<GadgetBean> beans,
+            Map<String, String> gwtParams) throws ClientException {
+        try {
+            String spaceId = getParamValue(ContainerManagerImpl.DOC_REF,
+                    gwtParams, true, null);
+            Space space = spaceManager().getSpaceFromId(spaceId,
+                    getCoreSession(gwtParams));
+
+            List<Gadget> gadgets = new ArrayList<Gadget>();
+            for (GadgetBean bean : beans) {
+                gadgets.add(GadgetFactory.getGadget(bean));
+            }
+            return space.validateGadgets(gadgets);
+
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return true;
     }
 
 }

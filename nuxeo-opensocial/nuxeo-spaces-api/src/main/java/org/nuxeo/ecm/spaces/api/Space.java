@@ -27,21 +27,21 @@ public interface Space extends Comparable<Space> {
 
     /**
      * Unique identifier of a space instance
-     * 
+     *
      * @return
      */
     String getId();
 
     /**
      * Name of the space
-     * 
+     *
      * @return
      */
     String getName();
 
     /**
      * Space theme
-     * 
+     *
      * @return
      */
     String getTheme() throws ClientException;
@@ -50,7 +50,7 @@ public interface Space extends Comparable<Space> {
 
     /**
      * Title of the space
-     * 
+     *
      * @return
      */
     String getTitle() throws ClientException;
@@ -59,7 +59,7 @@ public interface Space extends Comparable<Space> {
 
     /**
      * description of the space
-     * 
+     *
      * @return
      */
     String getDescription() throws ClientException;
@@ -68,7 +68,7 @@ public interface Space extends Comparable<Space> {
 
     /**
      * A key for displaying elements in this space
-     * 
+     *
      * @return
      */
     String getLayout() throws ClientException;
@@ -77,7 +77,7 @@ public interface Space extends Comparable<Space> {
 
     /**
      * Family/category of this space
-     * 
+     *
      * @return
      */
     String getCategory() throws ClientException;
@@ -86,14 +86,14 @@ public interface Space extends Comparable<Space> {
 
     /**
      * Name of the creator of this space
-     * 
+     *
      * @return
      */
     String getOwner() throws ClientException;
 
     /**
      * Name of the viewer of this space
-     * 
+     *
      * @return
      */
     String getViewer() throws ClientException;
@@ -125,5 +125,7 @@ public interface Space extends Comparable<Space> {
     void setPublicationDate(Calendar datePublication) throws ClientException;
 
     public List<String> getPermissions() throws Exception;
+
+    Boolean validateGadgets(List<Gadget> gadgets) throws ClientException;
 
 }

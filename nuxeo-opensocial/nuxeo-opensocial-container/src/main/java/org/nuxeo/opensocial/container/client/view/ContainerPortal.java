@@ -41,7 +41,7 @@ import com.gwtext.client.widgets.portal.Portal;
 import com.gwtext.client.widgets.portal.PortalColumn;
 
 /**
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ContainerPortal extends Portal {
@@ -341,11 +341,6 @@ public class ContainerPortal extends Portal {
 
     public int getColumnIndex(String colId) {
         return Integer.parseInt(colId.replaceFirst(COLUMN_ID_PREFIX, "")) - 1;
-    }
-
-    public int getMaxGadget(String colId) {
-        int[] maxGadgets = container.getMaxGadgets();
-        return maxGadgets == null ? -1 : maxGadgets[getColumnIndex(colId)];
     }
 
 }

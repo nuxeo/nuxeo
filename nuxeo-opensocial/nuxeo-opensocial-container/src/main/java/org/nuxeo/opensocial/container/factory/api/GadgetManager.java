@@ -17,6 +17,7 @@
 
 package org.nuxeo.opensocial.container.factory.api;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,6 +36,9 @@ public interface GadgetManager {
             throws Exception;
 
     GadgetBean saveGadget(GadgetBean gadget, Map<String, String> gwtParams)
+            throws ClientException;
+
+    Boolean validateGadgets(Collection<GadgetBean> beans, Map<String, String> gwtParams)
             throws ClientException;
 
 }

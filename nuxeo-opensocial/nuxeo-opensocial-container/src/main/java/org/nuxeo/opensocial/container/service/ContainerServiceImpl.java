@@ -51,7 +51,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Retrieve a specific container
-     * 
+     *
      * @param gwtParams
      * @return Container
      * @throws ContainerServiceException
@@ -70,7 +70,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Save preferences of gadget with form parameter
-     * 
+     *
      * @param gadget
      * @param form
      *            : new preferences
@@ -107,7 +107,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Save collection of gadgets
-     * 
+     *
      * @param beans
      * @param gwtParams
      * @throws ContainerServiceException
@@ -118,6 +118,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
             GadgetManager factory = Framework.getService(FactoryManager.class)
                     .getGadgetFactory();
+            if (!factory.validateGadgets(beans, gwtParams)) {
+                return false;
+            }
             for (GadgetBean gadget : beans) {
                 factory.saveGadget(gadget, gwtParams);
             }
@@ -130,7 +133,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Remove gadget
-     * 
+     *
      * @param gadget
      * @param gwtParams
      * @return GadgetBean removed
@@ -151,7 +154,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Get collection of gadget name sorted by category
-     * 
+     *
      * @param gwtParams
      * @return key is category - value is list of gadget name
      * @throws ContainerServiceException
@@ -170,7 +173,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Add gadget
-     * 
+     *
      * @param gadgetName
      * @param gwtParams
      * @return GadgetBean added
@@ -203,7 +206,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Get a map of preferences
-     * 
+     *
      * @param form
      *            : html form result (&name=result&...)
      * @return Map of parameters key : name, value : result
@@ -230,7 +233,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Save layout of container
-     * 
+     *
      * @param gwtParams
      * @param layoutName
      * @return

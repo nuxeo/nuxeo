@@ -17,7 +17,6 @@
 
 package org.nuxeo.opensocial.container.client.bean;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -32,10 +31,6 @@ public class Container implements IsSerializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String LAYOUT_SEPARATOR = "-";
-
-    private static final String LAYOUT_MAXGADGETS_SEPARATOR = "-max-";
-
     private List<GadgetBean> gadgets;
 
     private List<String> permissions;
@@ -45,8 +40,6 @@ public class Container implements IsSerializable {
     private String spaceId;
 
     private int structure;
-
-    private int[] maxGadgets;
 
     /**
      * Default construcor (Specification of Gwt)
@@ -69,7 +62,6 @@ public class Container implements IsSerializable {
         this.structure = structure;
         this.permissions = permissions;
         this.spaceId = spaceId;
-        computeMaxGadgets();
     }
 
     public List<GadgetBean> getGadgets() {
@@ -90,7 +82,6 @@ public class Container implements IsSerializable {
 
     public void setLayout(String layout) {
         this.layout = layout;
-        computeMaxGadgets();
     }
 
     public void setStructure(int structure) {
@@ -107,21 +98,6 @@ public class Container implements IsSerializable {
                 return bean;
         }
         return null;
-    }
-
-    protected void computeMaxGadgets() {
-        if (layout.contains(LAYOUT_MAXGADGETS_SEPARATOR)) {
-            maxGadgets = new int[structure];
-            Arrays.fill(maxGadgets, -1);
-            String[] maxAsStr = layout.split(LAYOUT_MAXGADGETS_SEPARATOR)[1].split(LAYOUT_SEPARATOR);
-            for (int i = 0; i < maxAsStr.length; i++) {
-                maxGadgets[i] = Integer.parseInt(maxAsStr[i]);
-            }
-        }
-    }
-
-    public int[] getMaxGadgets() {
-        return maxGadgets;
     }
 
 }
