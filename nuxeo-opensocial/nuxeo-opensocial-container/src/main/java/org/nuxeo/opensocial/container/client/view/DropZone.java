@@ -289,6 +289,17 @@ public class DropZone extends PortalDropZone {
         proxy.getProxy()
                 .remove();
 
+        if (!ContainerEntryPoint.waitForGadgetsValidation()) {
+            if (lastPosC != null) {
+                if (dropPosition != null) {
+                    lastPosC.remove(gp.getId());
+                    lastPosC.insert(dropPosition.getPosition(), gp);
+                }
+                lastPosC.doLayout();
+                lastPosC = null;
+            }
+        }
+
         gp.renderDefaultPreferences();
         gp.setAutoWidth(true);
         return true;
@@ -344,17 +355,19 @@ public class DropZone extends PortalDropZone {
                             }
 
                             public void onSuccess(Boolean success) {
-                                if (success) {
-                                    if (lastPosC != null) {
-                                        if (dropPosition != null) {
-                                            lastPosC.remove(gp.getId());
-                                            lastPosC.insert(dropPosition.getPosition(), gp);
+                                if (ContainerEntryPoint.waitForGadgetsValidation()) {
+                                    if (success) {
+                                        if (lastPosC != null) {
+                                            if (dropPosition != null) {
+                                                lastPosC.remove(gp.getId());
+                                                lastPosC.insert(dropPosition.getPosition(), gp);
+                                            }
+                                            lastPosC.doLayout();
+                                            lastPosC = null;
                                         }
-                                        lastPosC.doLayout();
-                                        lastPosC = null;
+                                    } else {
+                                        gp.getGadgetBean().setPosition(prevPosition);
                                     }
-                                } else {
-                                    gp.getGadgetBean().setPosition(prevPosition);
                                 }
                             }
                         });
