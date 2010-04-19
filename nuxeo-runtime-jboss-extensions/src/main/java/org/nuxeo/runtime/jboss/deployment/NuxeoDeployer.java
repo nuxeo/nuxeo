@@ -44,7 +44,6 @@ import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
 import org.nuxeo.common.collections.DependencyTree;
 import org.nuxeo.runtime.deployment.preprocessor.ConfigurationException;
-import org.nuxeo.runtime.deployment.preprocessor.ServerConfigurator;
 import org.nuxeo.runtime.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.deployment.preprocessor.FragmentDescriptor;
@@ -503,7 +502,22 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     }
 
     public static boolean hasContainerDescriptor(DeploymentInfo di) {
-        return di.localCl.findResource("OSGI-INF/deployment-container.xml") != null;
+        try {
+            File earFile = getEarDirectory(di);
+            if (earFile.isDirectory()) {
+                String[] earList = earFile.list();
+                if (earList!=null) {
+                    for (String file : earList) {
+                        if (file.startsWith("nuxeo")) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (DeploymentException e) {
+            return false;
+        }
     }
 
     public final boolean isPreprocessingEnabled(DeploymentInfo di) {
