@@ -187,10 +187,10 @@ public class BlobsExtractor {
                     blobMatched(docType, schema, blobMatchedPath, field);
                     interesting = true;
                 } else {
-                    path = path
+                    String blobMatchedPath = path
                             + String.format("/%s",
                                     field.getName().getLocalName());
-                    interesting |= findInteresting(docType, schema, path, ctype);
+                    interesting |= findInteresting(docType, schema, blobMatchedPath, ctype);
                 }
             }
         }
