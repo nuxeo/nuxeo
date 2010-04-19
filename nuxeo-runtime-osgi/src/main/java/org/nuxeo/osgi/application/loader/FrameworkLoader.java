@@ -120,7 +120,7 @@ public class FrameworkLoader {
 
 
     private static void doInitialize(Map<String, Object> hostEnv) {
-        System.setProperty(HOME_DIR, home.getAbsolutePath()); // mkae sure this property was correctly initialized
+        System.setProperty(HOME_DIR, home.getAbsolutePath()); // make sure this property was correctly initialized
         boolean doPreprocessing = true;
         String v = (String)hostEnv.get(PREPROCESSING);
         if (v != null) {

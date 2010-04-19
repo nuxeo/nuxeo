@@ -31,7 +31,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.TextTemplate;
 
 /**
@@ -71,14 +70,21 @@ public class ServerConfigurator {
     // Default configuration file for the chosen template
     private File templateDefaultConf;
 
-    private Environment env;
+    private boolean isJBoss;
+
+    private boolean isJetty;
+
+    private boolean isTomcat;
 
     public ServerConfigurator() {
         nuxeoHome = new File(System.getProperty(NUXEO_HOME));
         nuxeoConf = new File(System.getProperty(NUXEO_CONF));
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
-        env = Environment.getDefault();
+        // detect server environment
+        isJBoss = System.getProperty("jboss.home.dir") != null;
+        isJetty = System.getProperty("jetty.home") != null;
+        isTomcat = System.getProperty("tomcat.home") != null;
     }
 
     /**
@@ -193,17 +199,19 @@ public class ServerConfigurator {
      * @return true if "config" files directory already exists
      */
     protected boolean isConfigured() {
-        if (env.isJBoss()) {
-            log.debug("env.getConfig(): " + env.getConfig());
+        if (isJBoss) {
+            log.debug("Detected JBoss server.");
             return new File(nuxeoHome, JBOSS_CONFIG).exists();
-        } else if (env.isJetty()) {
+        } else if (isJetty) {
+            log.debug("Detected Jetty server.");
             return true;
-        } else if (env.isTomcat()) {
+        } else if (isTomcat) {
+            log.debug("Detected Tomcat server.");
             return true;
         } else {
-            log.warn("Unrecognized server " + env.getHostApplicationName()
-                    + ". Considered as already configured.");
+            log.warn("Unrecognized server. Considered as already configured.");
             return true;
         }
     }
+
 }
