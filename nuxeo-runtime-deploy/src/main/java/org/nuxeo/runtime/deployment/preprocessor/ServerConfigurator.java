@@ -56,7 +56,7 @@ public class ServerConfigurator {
     private static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
     public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
-
+    
     private File nuxeoHome;
 
     // User configuration file
@@ -81,10 +81,22 @@ public class ServerConfigurator {
         nuxeoConf = new File(System.getProperty(NUXEO_CONF));
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
-        // detect server environment
+        // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
         isJetty = System.getProperty("jetty.home") != null;
         isTomcat = System.getProperty("tomcat.home") != null;
+        if (!isJBoss && !isJetty && !isTomcat) {
+            // fallback on jar detection
+            isJBoss=new File(nuxeoHome,"bin/run.jar").exists();
+            isTomcat=new File(nuxeoHome,"bin/bootstrap.jar").exists();
+            String[] files = nuxeoHome.list();
+            for (String file : files) {
+                if (file.startsWith("nuxeo-runtime-launcher")) {
+                    isJetty=true;
+                    break;
+                }
+            }
+        }
     }
 
     /**
