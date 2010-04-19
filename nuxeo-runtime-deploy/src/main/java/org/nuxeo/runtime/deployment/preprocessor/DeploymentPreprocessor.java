@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -44,8 +45,8 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 public class DeploymentPreprocessor {
 
@@ -64,7 +65,6 @@ public class DeploymentPreprocessor {
     // map jar names to bundle symbolic ids
     private final Map<String, String> jar2Id = new HashMap<String, String>();
 
-
     public DeploymentPreprocessor(File dir) {
         this.dir = dir;
         xmap = new XMap();
@@ -81,6 +81,7 @@ public class DeploymentPreprocessor {
     }
 
     public void init() throws Exception {
+        new ServerConfigurator().run();
         root = getContainer(dir);
         if (root != null) {
             // run container commands
@@ -140,7 +141,8 @@ public class DeploymentPreprocessor {
             if (fd != null) {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
-                fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(), file.getAbsolutePath());
+                fd.filePath = getRelativeChildPath(
+                        cd.directory.getAbsolutePath(), file.getAbsolutePath());
                 if (fd.templates != null) {
                     for (TemplateDescriptor td : fd.templates.values()) {
                         td.baseDir = file;
@@ -163,8 +165,7 @@ public class DeploymentPreprocessor {
         }
 
         // run installer and register contributions for each fragment
-        for (DependencyTree.Entry<String, FragmentDescriptor> entry : cd.fragments
-                .getResolvedEntries()) {
+        for (DependencyTree.Entry<String, FragmentDescriptor> entry : cd.fragments.getResolvedEntries()) {
             FragmentDescriptor fd = entry.get();
 
             cd.context.put("bundle.fileName", fd.filePath);
@@ -174,8 +175,7 @@ public class DeploymentPreprocessor {
             // execute install instructions if any
             if (fd.install != null) {
                 fd.install.setLogger(log);
-                log.info("Running custom installation for fragment: "
-                        + fd.name);
+                log.info("Running custom installation for fragment: " + fd.name);
                 fd.install.exec(cd.context);
             }
 
@@ -183,11 +183,8 @@ public class DeploymentPreprocessor {
                 continue; // no contributions
             }
 
-
-
             // get fragment ncontributions and register them
             for (TemplateContribution tc : fd.contributions) {
-
 
                 // register template contributions if any
                 // get the target template
@@ -217,7 +214,8 @@ public class DeploymentPreprocessor {
             if (td.baseDir == null) {
                 td.baseDir = cd.directory;
             }
-            // if required process the template even if no contributions were made
+            // if required process the template even if no contributions were
+            // made
             if (td.template == null && td.isRequired) {
                 // compile the template
                 File file = new File(td.baseDir, td.src);
@@ -252,11 +250,10 @@ public class DeploymentPreprocessor {
         for (Object entry : result) {
             FragmentDescriptor fd = (FragmentDescriptor) entry;
             assert fd != null;
-            if (
-                    fd.name == null) {
+            if (fd.name == null) {
                 log.error("Invalid fragments file: "
-                    + file.getName()
-                    + ". Fragments declared in a -fragments.xml file must have names.");
+                        + file.getName()
+                        + ". Fragments declared in a -fragments.xml file must have names.");
             } else {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
@@ -274,7 +271,8 @@ public class DeploymentPreprocessor {
         if (file.isFile()) {
             fd = (FragmentDescriptor) xmap.load(file.toURL());
         } else {
-            log.warn("No "+FRAGMENT_FILE+" found in directory:"+directory+ " (must exist, must have exact name)");
+            log.warn("No " + FRAGMENT_FILE + " found in directory:" + directory
+                    + " (must exist, must have exact name)");
         }
         if (fd == null) {
             fd = new FragmentDescriptor();
@@ -313,12 +311,14 @@ public class DeploymentPreprocessor {
                 processManifest(fd, fileName, mf);
             }
         } else {
-            log.warn("No "+FRAGMENT_FILE+" found in "+file.getPath()+" (must exist, must have exact name)");
+            log.warn("No " + FRAGMENT_FILE + " found in " + file.getPath()
+                    + " (must exist, must have exact name)");
         }
         return fd;
     }
 
-    protected void processManifest(FragmentDescriptor fd, String fileName, Manifest mf) {
+    protected void processManifest(FragmentDescriptor fd, String fileName,
+            Manifest mf) {
         Attributes attrs = mf.getMainAttributes();
         String id = attrs.getValue("Bundle-SymbolicName");
         if (id != null) {
@@ -333,9 +333,11 @@ public class DeploymentPreprocessor {
                         "You must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
                                 + fileName);
             }
-            // needed to control start-up order (which differs from Require-Bundle)
+            // needed to control start-up order (which differs from
+            // Require-Bundle)
             String requires = attrs.getValue("Nuxeo-Require");
-            if (requires == null) { // if not specific requirement is met use Require-Bundle
+            if (requires == null) { // if not specific requirement is met use
+                                    // Require-Bundle
                 requires = attrs.getValue("Require-Bundle");
             }
             if (requires != null) {
@@ -385,7 +387,7 @@ public class DeploymentPreprocessor {
     }
 
     public static String getRelativeChildPath(String parent, String child) {
-        //TODO optimize this method
+        // TODO optimize this method
         // fix win32 case
         if (parent.indexOf('\\') > -1) {
             parent = parent.replace('\\', '/');
@@ -400,7 +402,6 @@ public class DeploymentPreprocessor {
         }
         return null;
     }
-
 
     public static void main(String[] args) {
         File root;

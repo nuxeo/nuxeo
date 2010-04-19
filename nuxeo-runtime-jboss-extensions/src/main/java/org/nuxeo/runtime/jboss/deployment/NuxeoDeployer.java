@@ -69,7 +69,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     /** The suffixes we accept, along with their relative order. */
     private static final String[] DEFAULT_ENHANCED_SUFFIXES = { "650:.ear", // from
-                                                                            // EARDeployer
+            // EARDeployer
             // additional extension -> but do not use them because there are
             // some inconsistencies
             // in jboss in how ejb3 mbean names (and jndi bean bindings) are
@@ -159,12 +159,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         if (!canPreprocess(di)) {
             super.init(di);
             return;
-        }
-
-        try {
-            new ServerConfigurator().run();
-        } catch (ConfigurationException e) {
-            throw new DeploymentException("Configuration failure",e);
         }
 
         try {
@@ -272,6 +266,8 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         } catch (URISyntaxException e) {
             throw new DeploymentException(
                     "Failed to get deployment directory for " + di.shortName, e);
+        } catch (ConfigurationException e) {
+            throw new DeploymentException("Configuration failure", e);
         } catch (Exception e) {
             throw new DeploymentException(
                     "Deployment preprocessing failed for " + di.shortName, e);
