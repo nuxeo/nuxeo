@@ -15,6 +15,15 @@
     <echo>Building Tomcat standard distribution...</echo>
     <antcall target="prepare-tomcat" />
     
+    <unzip dest="${outdir}/${tomcat}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
+    <unzip dest="${outdir}/${tomcat}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="templates-tomcat" />
+    </unzip>
+
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${outdir}/${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip"
@@ -25,11 +34,6 @@
       </patternset>
     </unzip>
     <nx:rename from="${outdir}/${tomcat}/nuxeo-*" to="${outdir}/${tomcat}/nxserver" />
-    
-    <!-- Custom resources -->
-    <copy todir="${outdir}/${tomcat}" overwrite="true">
-      <fileset dir="src/main/resources" />
-    </copy>
     <delete>
       <fileset dir="${outdir}/${tomcat}/nxserver/config" includes="webbindings-config.xml" />
       <fileset dir="${outdir}/${tomcat}/nxserver/config" includes="jetty.xml" />
@@ -56,23 +60,17 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
     
     <echo>Preparing Nuxeo Chemistry...</echo>
-    <antcall target="set-cmis" />
+    <antcall target="set-coreserver" />
     <nx:rename from="${outdir}/${tomcat}" to="${outdir}/${coreserver}" />
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-cmis.zip"
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
          basedir="${outdir}" includes="${coreserver}/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-cmis.zip"
-                     classifier="cmis"
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
+                     classifier="coreserver"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
   
   <target name="set-jtajca">
-    <!-- no more specific resources needed for now
-    <copy todir="${outdir}/${tomcat}" overwrite="true">
-      <fileset dir="src/main/resources-jtajca" />
-    </copy>
-    -->
-
     <copy todir="${outdir}/${tomcat}/nxserver/lib">
       <artifact:resolveFile key="org.apache.geronimo.components:geronimo-connector" />
       <artifact:resolveFile key="org.apache.geronimo.components:geronimo-transaction" />
@@ -85,11 +83,11 @@
                      artifactId="nuxeo-core-storage-sql-ra"
                      type="jar" />
     </copy>
-    <replace file="${outdir}/${tomcat}/nxserver/config/default-repository-config.xml">
+    <replace file="${outdir}/${tomcat}/templates/*/nxserver/config/default-repository-config.xml">
       <replacetoken>factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory"</replacetoken>
       <replacevalue>factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory"</replacevalue>
     </replace>
-    <replace file="${outdir}/${tomcat}/conf/Catalina/localhost/nuxeo.xml">
+    <replace file="${outdir}/${tomcat}/templates/*/conf/Catalina/localhost/nuxeo.xml">
       <replacetoken><![CDATA[</Context>]]></replacetoken>
       <replacevalue><![CDATA[
       <Resource name="TransactionManager" auth="Container"
@@ -106,10 +104,10 @@
       </replace>
   </target>
   
-  <target name="set-cmis">
+  <target name="set-coreserver">
     <!-- Custom resources -->
     <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true" >
-      <fileset dir="src/main/resources-cmis" />
+      <fileset dir="src/main/resources-coreserver" />
     </copy>
     
     <!-- Add CMIS bundles and dependent libraries -->
@@ -179,7 +177,7 @@
       <artifact:resolveFile key="jaxen:jaxen" />
     </copy>
 
-    <replace file="${outdir}/${tomcat}/nxserver/config/default-repository-config.xml">
+    <replace file="${outdir}/${tomcat}/templates/*/nxserver/config/default-repository-config.xml">
       <replacetoken><![CDATA[<indexing>]]></replacetoken>
       <replacevalue><![CDATA[<indexing>
           <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
@@ -217,11 +215,6 @@
         <include name="RUNNING.txt"/>
       </fileset>
     </move>
-    
-    <unzip dest="${outdir}/${tomcat}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="bin" />
-    </unzip>
   </target>
 
   <target name="third-party-libraries">
