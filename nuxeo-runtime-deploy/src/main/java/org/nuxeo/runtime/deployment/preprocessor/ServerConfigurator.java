@@ -51,6 +51,9 @@ public class ServerConfigurator {
 
     private static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
+    /**
+     * Absolute or relative PATH to the user chosen template
+     */
     private static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     private static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
@@ -64,8 +67,6 @@ public class ServerConfigurator {
 
     // Common default configuration file
     private File nuxeoDefaultConf;
-
-    private String chosenTemplate;
 
     // Default configuration file for the chosen template
     private File templateDefaultConf;
@@ -199,10 +200,13 @@ public class ServerConfigurator {
         Properties userConfig = new Properties(defaultConfig);
         userConfig.load(new FileInputStream(nuxeoConf));
         // Override default configuration with specific configuration of the
-        // chosen template
-        chosenTemplate = userConfig.getProperty(PARAM_TEMPLATE_NAME);
-        templateDefaultConf = new File(nuxeoDefaultConf.getParent(),
-                chosenTemplate + File.separator + NUXEO_DEFAULT_CONF);
+        // chosen template which can be outside of server filesystem
+        File chosenTemplate = new File(userConfig.getProperty(PARAM_TEMPLATE_NAME));
+        if (!chosenTemplate.exists()) {
+            chosenTemplate= new File(nuxeoDefaultConf.getParentFile(),
+                    userConfig.getProperty(PARAM_TEMPLATE_NAME));
+        }
+        templateDefaultConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
         defaultConfig.load(new FileInputStream(templateDefaultConf));
         return userConfig;
     }
