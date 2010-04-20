@@ -402,31 +402,29 @@ public final class ThemeManager implements Registrable {
         return themes.get(name);
     }
 
-    public PageElement createScratchPage(final String themeName) throws ThemeException, NodeException {
+    public void fillScratchPage(final String themeName, final Element element)
+    throws NodeException, ThemeException {
         String pagePath = String.format("%s/~", themeName);
-
+        
         PageElement scratchPage = getPageByPath(pagePath);
         if (scratchPage != null) {
-            destroyElement(scratchPage);
+            destroyDescendants(scratchPage);
+            removeRelationsOf(scratchPage);
+            pages.remove(pagePath);
+            removeOrphanedFormats();
         }
+        
         // create a new scratch page
         scratchPage = (PageElement) ElementFactory.create("page");
-        Widget widget = (Widget) FormatFactory.create("widget");
-        widget.setName("page frame");
-        registerFormat(widget);
-        
-        ElementFormatter.setFormat(scratchPage, widget);
-        
+        Widget pageWidget = (Widget) FormatFactory.create("widget");
+        pageWidget.setName("page frame");
+        registerFormat(pageWidget);
+        ElementFormatter.setFormat(scratchPage, pageWidget);
+                
         UidManager uidManager = Manager.getUidManager();
         uidManager.register(scratchPage);
         pages.put(pagePath, scratchPage);
-        
-        return scratchPage;
-    }
-
-    public void fillScratchPage(final String themeName, final Element element)
-            throws NodeException, ThemeException {
-        PageElement scratchPage = createScratchPage(themeName);
+      
         scratchPage.addChild(element);
     }
 
@@ -838,7 +836,7 @@ public final class ThemeManager implements Registrable {
     public void unregisterPage(PageElement page) {
         ThemeElement theme = (ThemeElement) page.getParent();
         if (theme == null) {
-            log.error("Page has no parent: " + page.getUid());
+            log.debug("Page has no parent: " + page.getUid());
             return;
         }
         String themeName = theme.getName();
