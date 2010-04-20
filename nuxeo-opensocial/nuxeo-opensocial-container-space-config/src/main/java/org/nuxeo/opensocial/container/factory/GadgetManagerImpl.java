@@ -101,7 +101,6 @@ public class GadgetManagerImpl implements GadgetManager {
             Gadget gadget = GadgetFactory.getGadget(bean, updatePrefs);
             space.save(gadget);
             return GadgetFactory.getGadgetBean(space.getGadget(gadget.getId()),
-                    ContainerManagerImpl.getPermissions(space),
                     ContainerManagerImpl.getLocale(gwtParams), serverBase);
         } catch (Exception e) {
             log.error("GadgetManagerImpl - savePreferences : "

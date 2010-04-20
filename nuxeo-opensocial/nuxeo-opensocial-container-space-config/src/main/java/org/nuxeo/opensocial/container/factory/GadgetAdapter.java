@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
@@ -140,10 +138,6 @@ class GadgetAdapter implements Gadget {
         return viewer;
     }
 
-    public boolean hasPermission(String permissioName) {
-        return false;
-    }
-
     public boolean isCollapsed() throws ClientException {
         return collapsed;
     }
@@ -238,6 +232,14 @@ class GadgetAdapter implements Gadget {
             }
         }
         return prefs;
+    }
+
+    public boolean isEditable() throws ClientException {
+        return false;
+    }
+
+    public boolean isConfigurable() throws ClientException {
+        return false;
     }
 
 }

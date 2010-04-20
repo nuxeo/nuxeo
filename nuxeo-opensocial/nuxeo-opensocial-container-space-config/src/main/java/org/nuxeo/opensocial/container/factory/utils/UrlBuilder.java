@@ -79,7 +79,7 @@ public class UrlBuilder {
     private static int containerId = 0;
 
     public static String buildShindigUrl(Gadget gadget, String serverBase,
-            List<String> permissions, String locale) throws ClientException {
+            String locale) throws ClientException {
 
         String gadgetDef = gadget.getDefinitionUrl().toString();
 
@@ -99,7 +99,8 @@ public class UrlBuilder {
         sb.append(PARENT_KEY + "=" + serverBase + "&");
 
         // perm=1 -> does the session has write perm on gadget
-        sb.append(PERMISSION_KEY + "=" + permissions + "&");
+        // XXX: is this used ?
+        sb.append(PERMISSION_KEY + "=" + (gadget.isEditable() ? 1 : 0) + "&");
 
         // url=http://.../gadget.xml?up_prefname=prefvalue
         sb.append(URL_KEY + "=" + gadgetDef

@@ -119,11 +119,10 @@ public class GadgetTools {
         if (gadget.getView(GadgetPortlet.CANVAS_VIEW) != null)
             tools.add(max);
 
-        if (gadget.hasPermission("Everything")
-                || gadget.hasPermission("SpaceContributeur"))
+        if (gadget.isConfigurable())
             tools.add(gear);
 
-        if (gadget.hasPermission("Everything"))
+        if (gadget.isEditable())
             tools.add(close);
 
         Tool[] array = tools.toArray(new Tool[tools.size()]);

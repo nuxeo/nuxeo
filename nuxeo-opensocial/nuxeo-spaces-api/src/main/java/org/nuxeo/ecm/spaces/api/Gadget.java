@@ -26,14 +26,14 @@ public interface Gadget {
 
     /**
      * Unique identifier of a gadget
-     * 
+     *
      * @return
      */
     String getId();
 
     /**
      * name
-     * 
+     *
      * @return
      */
     String getName() throws ClientException;
@@ -46,7 +46,7 @@ public interface Gadget {
 
     /**
      * description
-     * 
+     *
      * @return
      */
     String getDescription() throws ClientException;
@@ -55,7 +55,7 @@ public interface Gadget {
 
     /**
      * title
-     * 
+     *
      * @return
      */
     String getTitle() throws ClientException;
@@ -64,7 +64,7 @@ public interface Gadget {
 
     /**
      * creator name
-     * 
+     *
      * @return
      */
     String getOwner() throws ClientException;
@@ -73,7 +73,7 @@ public interface Gadget {
 
     /**
      * category of a gadget
-     * 
+     *
      * @return
      */
     String getCategory() throws ClientException;
@@ -82,7 +82,7 @@ public interface Gadget {
 
     /**
      * preferences values
-     * 
+     *
      * @return
      */
     Map<String, String> getPreferences() throws ClientException;
@@ -94,7 +94,7 @@ public interface Gadget {
     /**
      * Key corresponding to the place where the gadget will be positionned in
      * the view
-     * 
+     *
      * @return
      */
     String getPlaceId() throws ClientException;
@@ -103,7 +103,7 @@ public interface Gadget {
 
     /**
      * Relative position in the parent container at the place id "getPlaceID()"
-     * 
+     *
      * @return
      */
     int getPosition() throws ClientException;
@@ -112,7 +112,7 @@ public interface Gadget {
 
     /**
      * Determines if the display state of the gadget
-     * 
+     *
      * @return
      */
     boolean isCollapsed() throws ClientException;
@@ -129,8 +129,10 @@ public interface Gadget {
 
     void copyFrom(Gadget gadget) throws ClientException;
 
-    boolean hasPermission(String permissioName) throws ClientException;
-
     void save() throws ClientException;
+
+    boolean isEditable() throws ClientException;
+
+    boolean isConfigurable() throws ClientException;
 
 }

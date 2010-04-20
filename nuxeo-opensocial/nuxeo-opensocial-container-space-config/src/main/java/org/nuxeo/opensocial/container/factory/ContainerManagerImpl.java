@@ -19,7 +19,6 @@ package org.nuxeo.opensocial.container.factory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -81,7 +80,7 @@ public class ContainerManagerImpl implements ContainerManager {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param containerParams
      * @param required
@@ -123,7 +122,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
     /**
      * Add Gadget to Container
-     * 
+     *
      * @param gadgetName : Name of gadget
      * @param gwtParams : Container parameters
      * @return GadgetBean
@@ -142,7 +141,7 @@ public class ContainerManagerImpl implements ContainerManager {
         Gadget createGadget = space.createGadget(gadgetName);
         space.save();
 
-        GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
+        GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget,
                 getLocale(gwtParams), getServerBase(gwtParams));
         gadgetBean.setTitle("");
         return gadgetBean;
@@ -155,7 +154,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
     /**
      * Get a list of gadget
-     * 
+     *
      * @return Map of gadgets, key is category and value is list of gadget name
      */
     public Map<String, ArrayList<String>> getGadgetList()
@@ -196,10 +195,8 @@ public class ContainerManagerImpl implements ContainerManager {
             if (space != null) {
                 ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
 
-                List<String> perms = getPermissions(space);
-
                 for (Gadget g : space.getGadgets()) {
-                    gadgets.add(GadgetFactory.getGadgetBean(g, perms, locale,
+                    gadgets.add(GadgetFactory.getGadgetBean(g, locale,
                             serverBase));
                 }
                 Collections.sort(gadgets);
@@ -207,8 +204,7 @@ public class ContainerManagerImpl implements ContainerManager {
                 if (layout == null || layout.equals(""))
                     layout = DEFAULT_LAYOUT;
 
-                return new Container(gadgets, getStructure(space), layout,
-                        perms, space.getId());
+                return new Container(gadgets, getStructure(space), layout, space.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,8 +213,4 @@ public class ContainerManagerImpl implements ContainerManager {
         return null;
     }
 
-    static List<String> getPermissions(Space space) throws Exception {
-        return space.isReadOnly() ? new ArrayList<String>()
-                : space.getPermissions();
-    }
 }

@@ -31,12 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -313,29 +308,6 @@ public class DocSpaceImpl implements Space {
         CoreSession session = doc.getCoreSession();
         session.removeDocument(doc.getRef());
         session.save();
-    }
-
-    public List<String> getPermissions() throws Exception {
-        ACP acp = session().getACP(doc.getRef());
-
-        String user = session().getPrincipal()
-                .getName();
-
-        UserManager userManager = Framework.getService(UserManager.class);
-        List<String> perms = new ArrayList<String>();
-        for (ACL acl : acp.getACLs()) {
-            for (ACE ace : acl.getACEs()) {
-                if (user.equals(ace.getUsername())) {
-                    perms.add(ace.getPermission());
-                } else {
-                    NuxeoGroup group = userManager.getGroup(ace.getUsername());
-                    if (group != null && group.getMemberUsers()
-                            .contains(user))
-                        perms.add(ace.getPermission());
-                }
-            }
-        }
-        return perms;
     }
 
     public Boolean validateGadgets(List<Gadget> gadgets) throws ClientException {

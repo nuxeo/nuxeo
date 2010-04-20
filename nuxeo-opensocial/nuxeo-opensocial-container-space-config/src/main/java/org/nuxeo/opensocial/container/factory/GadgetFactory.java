@@ -1,7 +1,6 @@
 package org.nuxeo.opensocial.container.factory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -19,24 +18,23 @@ import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
  */
 public class GadgetFactory {
 
-    public static GadgetBean getGadgetBean(Gadget gadget,
-            List<String> permissions, String locale, String serverBase)
+    public static GadgetBean getGadgetBean(Gadget gadget, String locale, String serverBase)
             throws ClientException {
         GadgetBean bean = new GadgetBean();
         bean.setCollapsed(gadget.isCollapsed());
         bean.setHeight(gadget.getHeight());
         bean.setPosition(new GadgetPosition(gadget.getPlaceId(),
                 gadget.getPosition()));
-        bean.setRenderUrl(UrlBuilder.buildShindigUrl(gadget, serverBase,
-                permissions, locale));
+        bean.setRenderUrl(UrlBuilder.buildShindigUrl(gadget, serverBase, locale));
         bean.setTitle(getTitle(gadget));
         bean.setUserPrefs(PreferenceManager.getPreferences(gadget));
         bean.setDefaultPrefs(PreferenceManager.getDefaultPreferences(gadget));
         bean.setGadgetViews(createGadgetViews(gadget));
         bean.setName(gadget.getName());
-        bean.setPermission(permissions);
         bean.setRef(gadget.getId());
         bean.setViewer(gadget.getViewer());
+        bean.setEditable(gadget.isEditable());
+        bean.setConfigurable(gadget.isConfigurable());
         return bean;
     }
 

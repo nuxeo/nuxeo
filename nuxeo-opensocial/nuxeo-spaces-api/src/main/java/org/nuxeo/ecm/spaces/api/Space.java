@@ -124,8 +124,6 @@ public interface Space extends Comparable<Space> {
 
     void setPublicationDate(Calendar datePublication) throws ClientException;
 
-    public List<String> getPermissions() throws Exception;
-
     Boolean validateGadgets(List<Gadget> gadgets) throws ClientException;
 
 }

@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetBean
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
@@ -43,8 +43,6 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
     private List<PreferencesBean> userPrefs;
 
-    private List<String> permissions;
-
     private GadgetPosition position;
 
     private boolean collapsed;
@@ -59,6 +57,10 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
     private Integer height;
 
+    private boolean editable;
+
+    private boolean configurable;
+
     /**
      * Default construcor (Specification of Gwt)
      */
@@ -67,8 +69,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
     public GadgetBean(String ref, String title, String viewer,
             List<PreferencesBean> defaultPrefs,
-            List<PreferencesBean> userPrefs, List<String> permissions,
-            boolean collapsed, String name,
+            List<PreferencesBean> userPrefs, boolean collapsed, String name,
             Map<String, GadgetView> gadgetViews, String htmlContent,
             Integer height) {
         this.ref = ref;
@@ -76,7 +77,6 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
         this.defaultPrefs = defaultPrefs;
         this.userPrefs = userPrefs;
         this.viewer = viewer;
-        this.permissions = permissions;
         this.collapsed = collapsed;
         this.name = name;
         this.gadgetViews = gadgetViews;
@@ -152,14 +152,6 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
         return viewer;
     }
 
-    public boolean hasPermission(String name) {
-        return permissions.contains(name);
-    }
-
-    public void setPermission(List<String> permissions) {
-        this.permissions = permissions;
-    }
-
     public boolean isCollapsed() {
         return collapsed;
     }
@@ -231,6 +223,22 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
     public String getIcon() {
         return icon;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public boolean isConfigurable() {
+        return configurable;
+    }
+
+    public void setConfigurable(boolean configurable) {
+        this.configurable = configurable;
     }
 
 }

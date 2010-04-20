@@ -137,8 +137,7 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public boolean isEqualTo(Gadget gadget) {
-        return gadget.getId()
-                .equals(getId());
+        return gadget.getId().equals(getId());
     }
 
     public void setCategory(String category) throws ClientException {
@@ -212,20 +211,23 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public String getViewer() throws ClientException {
-        return doc.getCoreSession()
-                .getPrincipal()
-                .getName();
-    }
-
-    public boolean hasPermission(String permissioName) throws ClientException {
-        return doc.getCoreSession()
-                .hasPermission(doc.getRef(), permissioName);
+        return doc.getCoreSession().getPrincipal().getName();
     }
 
     public void save() throws ClientException {
         CoreSession session = doc.getCoreSession();
         session.saveDocument(doc);
         session.save();
+    }
+
+    public boolean isEditable() throws ClientException {
+        return doc.getCoreSession().hasPermission(doc.getRef(), "Everything");
+    }
+
+    public boolean isConfigurable() throws ClientException {
+        CoreSession session = doc.getCoreSession();
+        return session.hasPermission(doc.getRef(), "Everything")
+                || session.hasPermission(doc.getRef(), "SpaceContributeur");
     }
 
 }

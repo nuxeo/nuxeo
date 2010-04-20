@@ -33,8 +33,6 @@ public class Container implements IsSerializable {
 
     private List<GadgetBean> gadgets;
 
-    private List<String> permissions;
-
     private String layout;
 
     private String spaceId;
@@ -55,12 +53,10 @@ public class Container implements IsSerializable {
      * @param structure
      * @param permissions
      */
-    public Container(List<GadgetBean> gadgets, int structure, String layout,
-            List<String> permissions, String spaceId) {
+    public Container(List<GadgetBean> gadgets, int structure, String layout, String spaceId) {
         this.gadgets = gadgets;
         this.layout = layout;
         this.structure = structure;
-        this.permissions = permissions;
         this.spaceId = spaceId;
     }
 
@@ -86,10 +82,6 @@ public class Container implements IsSerializable {
 
     public void setStructure(int structure) {
         this.structure = structure;
-    }
-
-    public List<String> getPermission() {
-        return permissions;
     }
 
     public GadgetBean getGadgetBean(String ref) {
