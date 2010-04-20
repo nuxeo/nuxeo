@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
@@ -162,9 +164,52 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      */
     public void writeDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
-            setPropertyValue(property.getName(), property.getValueForWrite());
+            String name = property.getName();
+            Serializable value = property.getValueForWrite();
+            try {
+                setPropertyValue(name, value);
+            } catch (VersionNotModifiableException e) {
+                // hack, only dublincore is allowed to change and
+                // it contains only scalars and arrays
+                // cf also SQLSimpleProperty.VERSION_WRITABLE_PROPS
+                if (!name.startsWith("dc:")) {
+                    throw e;
+                }
+                // ignore if value is unchanged
+                Object oldValue = getPropertyValue(name);
+                if (same(value, oldValue)) {
+                    continue;
+                }
+                if (value == null || oldValue == null
+                        || !sameArray(value, oldValue)) {
+                    throw e;
+                }
+            }
         }
         clearDirtyFlags(dp);
+    }
+
+    protected static boolean same(Object a, Object b) {
+        if (a == null) {
+            return b == null;
+        } else {
+            return a.equals(b);
+        }
+    }
+
+    protected static boolean sameArray(Object a, Object b) {
+        Class<?> acls = a.getClass();
+        Class<?> bcls = b.getClass();
+        if (!acls.isArray() || !bcls.isArray()
+                || Array.getLength(a) != Array.getLength(b)) {
+            return false;
+        }
+        for (int i = 0; i < Array.getLength(a); i++) {
+            if (!same(Array.get(a, i), Array.get(b, i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected static void clearDirtyFlags(Property property) {

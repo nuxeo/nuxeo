@@ -3057,4 +3057,56 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(doc.isProxy());
     }
 
+    /**
+     * Check that lifecycle and dc:issued can be updated on a version. (Fields
+     * defined in SQLSimpleProperty.VERSION_WRITABLE_PROPS).
+     */
+    public void testVersionUpdatableFields() throws Exception {
+        Calendar cal1 = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
+                56);
+        Calendar cal2 = new GregorianCalendar(2010, Calendar.JANUARY, 1, 0, 0,
+                0);
+        Calendar cal3 = new GregorianCalendar(2010, Calendar.APRIL, 11, 11, 11,
+                11);
+
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "doc", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "t1");
+        doc.setProperty("dublincore", "issued", cal1);
+        doc = session.saveDocument(doc);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        session.checkIn(doc.getRef(), version);
+        session.checkOut(doc.getRef());
+        doc.setProperty("dublincore", "title", "t2");
+        doc.setProperty("dublincore", "issued", cal2);
+        doc = session.saveDocument(doc);
+
+        // get version
+        DocumentModel ver = session.getLastDocumentVersion(doc.getRef());
+        assertTrue(ver.isVersion());
+        assertEquals("project", ver.getCurrentLifeCycleState());
+        assertEquals("t1", ver.getProperty("dublincore", "title"));
+        assertEquals(cal1, ver.getProperty("dublincore", "issued"));
+
+        // change lifecycle
+        ver.followTransition("approve");
+        // change dc:issued
+        ver.setProperty("dublincore", "issued", cal3);
+        session.saveDocument(ver);
+        session.save();
+
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+        ver = session.getLastDocumentVersion(doc.getRef());
+        assertEquals("t1", ver.getProperty("dublincore", "title"));
+        assertEquals("approved", ver.getCurrentLifeCycleState());
+        assertEquals(cal3, ver.getProperty("dublincore", "issued"));
+    }
+
 }
