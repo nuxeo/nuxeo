@@ -27,6 +27,8 @@ import java.io.File;
  */
 public class JettyConfigurator extends ServerConfigurator {
 
+    public static final String JETTY_CONFIG = "config/sql.properties";
+
     /**
      * @param configurationGenerator
      */
@@ -39,12 +41,12 @@ public class JettyConfigurator extends ServerConfigurator {
      */
     protected boolean isConfigured() {
         log.debug("Detected Jetty server.");
-        return true;
+        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
     }
 
     @Override
     protected File getOutputDirectory() {
-        return null;
+        return generator.getNuxeoHome();
     }
 
 }
