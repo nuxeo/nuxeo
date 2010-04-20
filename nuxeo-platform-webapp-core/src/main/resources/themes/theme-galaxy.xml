@@ -383,6 +383,8 @@
       </selector>
       <selector path=".printButton div a img">
         <margin-left>5px</margin-left>
+        <height>16px</height>
+        <width>16px</width>
       </selector>
       <selector path=".printButton .liveEditCreateButtons">
         <margin-right>5px</margin-right>
