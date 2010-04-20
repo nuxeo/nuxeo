@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-wiki</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-I20100421_0115</version>
   </parent>
 
   <artifactId>nuxeo-platform-wiki-jsf</artifactId>
