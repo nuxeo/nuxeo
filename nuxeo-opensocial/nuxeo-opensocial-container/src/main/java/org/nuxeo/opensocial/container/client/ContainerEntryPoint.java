@@ -221,6 +221,21 @@ public class ContainerEntryPoint implements EntryPoint {
 
     public static boolean waitForGadgetsValidation() {
         String dndValidation = GWT_PARAMS.get("dndValidation");
-        return dndValidation != null && "true".equals(dndValidation.toLowerCase());
+        return dndValidation != null
+                && "true".equals(dndValidation.toLowerCase());
     }
+
+    /**
+     * Returns {@code true} if the Gadgets preferences need to be displayed
+     * after a gadget was added.
+     * <p>
+     * If the {@code showPreferences} parameter is not defined, default to
+     * {@code true}
+     */
+    public static boolean showPreferencesAfterGadgetAddition() {
+        String showPreferences = GWT_PARAMS.get("showPreferences");
+        return showPreferences == null
+                || "true".equals(showPreferences.toLowerCase());
+    }
+
 }
