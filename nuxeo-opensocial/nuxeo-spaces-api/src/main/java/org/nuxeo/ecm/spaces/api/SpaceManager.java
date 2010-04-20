@@ -92,6 +92,9 @@ public interface SpaceManager {
 
     Space getSpace(String name, CoreSession session) throws SpaceException;
 
+    @Deprecated
+    Space getSpace(String name, SpaceProvider provider, CoreSession session) throws SpaceException;
+
     Space getSpaceFromId(String spaceId, CoreSession session)
             throws SpaceException;
 

@@ -184,6 +184,12 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     public Space getSpace(String name, CoreSession session)
             throws SpaceException {
+        return getSpace(name, (SpaceProvider) null, session);
+    }
+
+    @Deprecated
+    public Space getSpace(String name, SpaceProvider provider,
+            CoreSession session) throws SpaceException {
         for (SpaceContribDescriptor desc : spaceProvider) {
             try {
                 Space space = desc.getProvider().getSpace(name, session);
