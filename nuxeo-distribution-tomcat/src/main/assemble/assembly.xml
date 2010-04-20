@@ -16,10 +16,6 @@
     <echo>Building Tomcat standard distribution...</echo>
     <antcall target="prepare-tomcat" />
 
-    <unzip dest="${outdir}/${tomcat}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="bin" />
-    </unzip>
     <unzip dest="${outdir}/${tomcat}/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="templates-tomcat" />
@@ -43,6 +39,14 @@
       <fileset dir="${outdir}/${tomcat}/nxserver/config"
                includes="default-web.xml" />
     </delete>
+    <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+
+    <unzip dest="${outdir}/${tomcat}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="bin" />
+    </unzip>
     <chmod dir="${outdir}/${tomcat}/bin"
            perm="ug+x"
            includes="*.sh,nuxeoctl,openofficectl" />
@@ -83,7 +87,7 @@
   </target>
 
   <target name="set-coreserver">
-    <!-- Custom resources -->
+    <!-- CoreServer resources -->
     <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true">
       <fileset dir="src/main/resources-coreserver" />
     </copy>
@@ -163,6 +167,8 @@
                includes="commentService-config-bundle.xml" />
       <fileset dir="${outdir}/${tomcat}/nxserver/config"
                includes="notification-config.xml" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/config"
+               includes="default-opensocial-config.xml" />
       <fileset dir="${outdir}/${tomcat}/nxserver/OSGI-INF/templates"
                includes="faces-config.xml" />
       <fileset dir="${outdir}/${tomcat}/nxserver/OSGI-INF/templates"
