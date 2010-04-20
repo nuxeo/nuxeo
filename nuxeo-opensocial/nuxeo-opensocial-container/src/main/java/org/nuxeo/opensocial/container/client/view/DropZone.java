@@ -277,19 +277,8 @@ public class DropZone extends PortalDropZone {
             DragData data) {
         GadgetPortlet gp = portal.getGadgetPortlet(source.getId());
         GadgetPosition dropPosition = portal.getDropPosition(source.getId());
-        GadgetBean bean = gp.getGadgetBean();
-        boolean doMove = false;
         if (dropPosition != null) {
-            PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
-                    .getPlaceID());
-            PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
-            int maxGadgets = portal.getMaxGadget(dropPosition.getPlaceID());
-            doMove = (maxGadgets == -1
-                    || dropCol.getComponents().length < maxGadgets || dragCol.equals(dropCol));
-
-            if (doMove) {
-                saveDropZone(bean, dropPosition, dragCol, dropCol);
-            }
+            saveDropZone(gp, dropPosition);
         }
 
         grid = null;
@@ -300,13 +289,15 @@ public class DropZone extends PortalDropZone {
         proxy.getProxy()
                 .remove();
 
-        if (lastPosC != null && doMove) {
-            if (dropPosition != null) {
-                lastPosC.remove(gp.getId());
-                lastPosC.insert(dropPosition.getPosition(), gp);
+        if (!ContainerEntryPoint.waitForGadgetsValidation()) {
+            if (lastPosC != null) {
+                if (dropPosition != null) {
+                    lastPosC.remove(gp.getId());
+                    lastPosC.insert(dropPosition.getPosition(), gp);
+                }
+                lastPosC.doLayout();
+                lastPosC = null;
             }
-            lastPosC.doLayout();
-            lastPosC = null;
         }
 
         gp.renderDefaultPreferences();
@@ -343,9 +334,14 @@ public class DropZone extends PortalDropZone {
         return posGrid;
     }
 
-    private static void saveDropZone(GadgetBean bean,
-            GadgetPosition dropPosition, PortalColumn dragCol,
-            PortalColumn dropCol) {
+    private void saveDropZone(final GadgetPortlet gp,
+            final GadgetPosition dropPosition) {
+        GadgetBean bean = gp.getGadgetBean();
+        final GadgetPosition prevPosition = bean.getGadgetPosition();
+        PortalColumn dragCol = portal.getPortalColumn(bean.getGadgetPosition()
+                .getPlaceID());
+        PortalColumn dropCol = portal.getPortalColumn(dropPosition.getPlaceID());
+
         bean.setPosition(dropPosition);
         ArrayList<GadgetBean> beans = getOrderingAndUpdatingBeans(dragCol, bean);
         beans.addAll(getOrderingAndUpdatingBeans(dropCol, bean));
@@ -355,9 +351,24 @@ public class DropZone extends PortalDropZone {
                         new AsyncCallback<Boolean>() {
 
                             public void onFailure(Throwable arg0) {
+                                gp.getGadgetBean().setPosition(prevPosition);
                             }
 
-                            public void onSuccess(Boolean arg0) {
+                            public void onSuccess(Boolean success) {
+                                if (ContainerEntryPoint.waitForGadgetsValidation()) {
+                                    if (success) {
+                                        if (lastPosC != null) {
+                                            if (dropPosition != null) {
+                                                lastPosC.remove(gp.getId());
+                                                lastPosC.insert(dropPosition.getPosition(), gp);
+                                            }
+                                            lastPosC.doLayout();
+                                            lastPosC = null;
+                                        }
+                                    } else {
+                                        gp.getGadgetBean().setPosition(prevPosition);
+                                    }
+                                }
                             }
                         });
     }

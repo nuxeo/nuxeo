@@ -40,9 +40,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * 
+ *
  * @author 10044893
- * 
+ *
  */
 public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
@@ -118,7 +118,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     /**
      * Get a univers
-     * 
+     *
      * @throws UniversNotFoundException , SpaceException
      */
     public Univers getUnivers(String name, CoreSession coreSession)
@@ -182,8 +182,8 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         }
     }
 
-    public Space getSpace(String name, SpaceProvider provider,
-            CoreSession session) throws SpaceException {
+    public Space getSpace(String name, CoreSession session)
+            throws SpaceException {
         for (SpaceContribDescriptor desc : spaceProvider) {
             try {
                 Space space = desc.getProvider().getSpace(name, session);

@@ -27,15 +27,15 @@ import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 /**
  * Framework service for CRUD operations concerning Univers, Space in a specific
  * univers, and Gadget in a specific space
- * 
+ *
  * @author 10044893
- * 
+ *
  */
 public interface SpaceManager {
 
     /**
      * List of all accesible universes
-     * 
+     *
      * @param sessionId sesssion id
      * @return the list of all accessible universes
      * @throws SpaceException a bug has happened
@@ -44,7 +44,7 @@ public interface SpaceManager {
 
     /**
      * Retrieve a specific universe from its name
-     * 
+     *
      * @param name identifier of a univers
      * @param sessionId sesssion id
      * @return a specific universe
@@ -56,7 +56,7 @@ public interface SpaceManager {
             throws UniversNotFoundException, SpaceException;
 
     /**
-     * 
+     *
      * @param universId
      * @return
      * @throws UniversNotFoundException
@@ -69,7 +69,7 @@ public interface SpaceManager {
 
     /**
      * List of all accesible spaces for a given univers
-     * 
+     *
      * @param univers the univers in which you are looking for spaces
      * @return all accessible univers
      * @throws UniversNotFoundException when no univers was found with the given
@@ -81,17 +81,16 @@ public interface SpaceManager {
 
     /**
      * Retrieve a specific space from its name and its parent universe
-     * 
+     *
      * @param name name of the searched space
      * @param univers parent container
      * @return the space if found , else a spaceexception is thrown
      * @throws SpaceNotFoundException when the space was not found
      */
-    Space getSpace(String name, SpaceProvider provider, CoreSession session)
-            throws SpaceException;
-
     Space getSpace(String name, Univers univers, CoreSession session)
             throws SpaceException;
+
+    Space getSpace(String name, CoreSession session) throws SpaceException;
 
     Space getSpaceFromId(String spaceId, CoreSession session)
             throws SpaceException;

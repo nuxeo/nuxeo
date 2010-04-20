@@ -42,7 +42,7 @@ import com.gwtext.client.widgets.layout.FitLayout;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ContainerEntryPoint implements EntryPoint {
@@ -219,4 +219,8 @@ public class ContainerEntryPoint implements EntryPoint {
       return top.nxContextPath;
     }-*/;
 
+    public static boolean waitForGadgetsValidation() {
+        String dndValidation = GWT_PARAMS.get("dndValidation");
+        return dndValidation != null && "true".equals(dndValidation.toLowerCase());
+    }
 }

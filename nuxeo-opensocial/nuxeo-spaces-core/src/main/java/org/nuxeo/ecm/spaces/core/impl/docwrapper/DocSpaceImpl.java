@@ -338,4 +338,8 @@ public class DocSpaceImpl implements Space {
         return perms;
     }
 
+    public Boolean validateGadgets(List<Gadget> gadgets) throws ClientException {
+        return true;
+    }
+
 }
