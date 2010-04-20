@@ -44,12 +44,16 @@
     </copy>
     <delete file="${jetty}/config/login-anonymous-config.xml" />
 
-    <mkdir dir="${jetty}/bin"/>
     <unzip dest="${jetty}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />
     </unzip>
     <chmod dir="${jetty}/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
+
+    <unzip dest="${jetty}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="templates-jetty" />
+    </unzip>
     
     <copy todir="${jetty}/bundles">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />
