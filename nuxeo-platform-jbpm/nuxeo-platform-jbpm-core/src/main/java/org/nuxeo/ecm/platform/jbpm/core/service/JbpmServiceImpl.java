@@ -264,6 +264,7 @@ public class JbpmServiceImpl implements JbpmService {
                 JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForInitiator.name()).setParameterList(
                 "initiators", actorsName).list();
         initiatorPD.addAll(list);
+        eagerLoadProcessInstances(initiatorPD);
         return initiatorPD;
     }
 
