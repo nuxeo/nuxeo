@@ -22,16 +22,11 @@ package org.nuxeo.runtime.deployment.preprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * @author jcarsique
@@ -39,27 +34,25 @@ import org.nuxeo.common.utils.TextTemplate;
  *         Builder for server configuration and datasource files from templates
  *         and properties.
  */
-public class ServerConfigurator {
+public class ConfigurationGenerator {
 
-    private static final Log log = LogFactory.getLog(ServerConfigurator.class);
+    private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
     public static final String NUXEO_HOME = "nuxeo.home";
 
     public static final String NUXEO_CONF = "nuxeo.conf";
 
-    private static final String TEMPLATES = "templates";
+    protected static final String TEMPLATES = "templates";
 
-    private static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
+    protected static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
     /**
      * Absolute or relative PATH to the user chosen template
      */
-    private static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
+    protected static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
-    private static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
+    protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
-    public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
-    
     private File nuxeoHome;
 
     // User configuration file
@@ -77,10 +70,12 @@ public class ServerConfigurator {
 
     private boolean isTomcat;
 
-    public ServerConfigurator() {
+    private ServerConfigurator serverConfigurator;
+
+    public ConfigurationGenerator() {
         nuxeoHome = new File(System.getProperty(NUXEO_HOME));
         nuxeoConf = new File(System.getProperty(NUXEO_CONF));
-        nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
+        nuxeoDefaultConf = new File(getNuxeoHome(), TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
@@ -88,15 +83,22 @@ public class ServerConfigurator {
         isTomcat = System.getProperty("tomcat.home") != null;
         if (!isJBoss && !isJetty && !isTomcat) {
             // fallback on jar detection
-            isJBoss=new File(nuxeoHome,"bin/run.jar").exists();
-            isTomcat=new File(nuxeoHome,"bin/bootstrap.jar").exists();
-            String[] files = nuxeoHome.list();
+            isJBoss = new File(getNuxeoHome(), "bin/run.jar").exists();
+            isTomcat = new File(getNuxeoHome(), "bin/bootstrap.jar").exists();
+            String[] files = getNuxeoHome().list();
             for (String file : files) {
                 if (file.startsWith("nuxeo-runtime-launcher")) {
-                    isJetty=true;
+                    isJetty = true;
                     break;
                 }
             }
+        }
+        if (isJBoss) {
+            serverConfigurator = new JBossConfigurator(this);
+        } else if (isTomcat) {
+            serverConfigurator = new TomcatConfigurator(this);
+        } else if (isJetty) {
+            serverConfigurator = new JettyConfigurator(this);
         }
     }
 
@@ -106,7 +108,9 @@ public class ServerConfigurator {
      * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {
-        if (isConfigured()) {
+        if (serverConfigurator == null) {
+            log.warn("Unrecognized server. Considered as already configured.");
+        } else if (serverConfigurator.isConfigured()) {
             log.info("Server already configured");
         } else {
             log.info("No current configuration, generating files...");
@@ -126,63 +130,11 @@ public class ServerConfigurator {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
         try {
-            parseAndCopy(config);
+            serverConfigurator.parseAndCopy(config);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
             throw new ConfigurationException("Configuration failure", e);
-        }
-    }
-
-    /**
-     * @param config Properties containing keys and values for parsing
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    private void parseAndCopy(Properties config) throws FileNotFoundException,
-            IOException {
-        TextTemplate templateParser = new TextTemplate(config);
-
-        // copy files to nuxeo.ear
-        File outputDirectory = new File(nuxeoHome,
-                new File(JBOSS_CONFIG).getParent());
-
-        // List template directories to copy from (order is: included templates
-        // then chosen template)
-        List<File> inputDirectories = new ArrayList<File>();
-        // FilenameFilter to exclude "nuxeo.defaults" files from copy
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return !"nuxeo.defaults".equals(name);
-            }
-        };
-        // add included templates directories
-        StringTokenizer st = new StringTokenizer(
-                config.getProperty(PARAM_INCLUDED_TEMPLATES), ",");
-        List<String> includedTemplates = new ArrayList<String>();
-        while (st.hasMoreTokens()) {
-            includedTemplates.add(st.nextToken());
-        }
-        for (String includedTemplate : includedTemplates) {
-            addDirectories(new File(nuxeoDefaultConf.getParent(),
-                    includedTemplate).listFiles(filter), inputDirectories);
-        }
-
-        // add chosen template directories
-        addDirectories(templateDefaultConf.getParentFile().listFiles(filter),
-                inputDirectories);
-
-        for (File in : inputDirectories) {
-            templateParser.processDirectory(in, new File(outputDirectory,
-                    in.getName()));
-        }
-    }
-
-    private void addDirectories(File[] filesToAdd, List<File> inputDirectories) {
-        if (filesToAdd != null) {
-            for (File in : filesToAdd) {
-                inputDirectories.add(in);
-            }
         }
     }
 
@@ -195,39 +147,33 @@ public class ServerConfigurator {
             IOException {
         // Load default configuration
         Properties defaultConfig = new Properties();
-        defaultConfig.load(new FileInputStream(nuxeoDefaultConf));
+        defaultConfig.load(new FileInputStream(getNuxeoDefaultConf()));
         // Load user configuration
         Properties userConfig = new Properties(defaultConfig);
         userConfig.load(new FileInputStream(nuxeoConf));
         // Override default configuration with specific configuration of the
         // chosen template which can be outside of server filesystem
-        File chosenTemplate = new File(userConfig.getProperty(PARAM_TEMPLATE_NAME));
+        File chosenTemplate = new File(
+                userConfig.getProperty(PARAM_TEMPLATE_NAME));
         if (!chosenTemplate.exists()) {
-            chosenTemplate= new File(nuxeoDefaultConf.getParentFile(),
+            chosenTemplate = new File(getNuxeoDefaultConf().getParentFile(),
                     userConfig.getProperty(PARAM_TEMPLATE_NAME));
         }
         templateDefaultConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
-        defaultConfig.load(new FileInputStream(templateDefaultConf));
+        defaultConfig.load(new FileInputStream(getTemplateDefaultConf()));
         return userConfig;
     }
 
-    /**
-     * @return true if "config" files directory already exists
-     */
-    protected boolean isConfigured() {
-        if (isJBoss) {
-            log.debug("Detected JBoss server.");
-            return new File(nuxeoHome, JBOSS_CONFIG).exists();
-        } else if (isJetty) {
-            log.debug("Detected Jetty server.");
-            return true;
-        } else if (isTomcat) {
-            log.debug("Detected Tomcat server.");
-            return true;
-        } else {
-            log.warn("Unrecognized server. Considered as already configured.");
-            return true;
-        }
+    public File getNuxeoHome() {
+        return nuxeoHome;
+    }
+
+    public File getNuxeoDefaultConf() {
+        return nuxeoDefaultConf;
+    }
+
+    public File getTemplateDefaultConf() {
+        return templateDefaultConf;
     }
 
 }
