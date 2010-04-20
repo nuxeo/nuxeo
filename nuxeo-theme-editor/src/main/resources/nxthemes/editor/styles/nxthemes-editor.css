@@ -1651,7 +1651,6 @@ table.fragmentFactory td {
   padding: 3px;  
 }
 
-
 /* CSS property editor */
 
 .nxthemesCssInspector {
@@ -1660,7 +1659,6 @@ table.fragmentFactory td {
   margin-bottom: 15px;
   overflow-y: scroll;
   overflow-x: hidden;
-
 }
 
 .nxthemesCssInspector table {
@@ -1670,6 +1668,15 @@ table.fragmentFactory td {
   margin: 0;
   padding: 0;
   width: 400px;
+}
+
+#fragmentPreviewArea {
+  text-align: left;
+  border: none;
+  border-bottom: 1px dotted #333;
+  overflow: hidden;
+  padding: 5px;
+  height: 180px;
 }
 
 .nxthemesCssInspector table td {

@@ -1,0 +1,8 @@
+    {"id": "fragment preview",
+     "widget": {
+       "type": "fragmentpreview"
+     },
+     "model": "theme editor",
+     "controllers": ["editor perspectives"],
+     "perspectives": ["fragment factory"]
+    }

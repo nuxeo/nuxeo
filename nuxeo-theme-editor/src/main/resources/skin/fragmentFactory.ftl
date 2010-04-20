@@ -51,22 +51,25 @@
       onclick="NXThemesFragmentFactory.selectStyle('${style.name}')"><img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16" /> ${style.name}</a></li>
     </#list>
     </ul>
-    <form class="nxthemesForm">
-      <div style="margin: 0 5px">
-        <button onclick="NXThemesFragmentFactory.selectStyle('${selected_fragment_type}/${selected_fragment_view}', '', '${selected_element_id}'); return false;">SKIP THIS STEP</button>
-      </div>
-    </form>
     </#if>
   </td>
 
   <td style="vertical-align: top; text-align: center">
-    <#if selected_fragment_type & selected_fragment_view & selected_fragment_style>
+    <#if selected_fragment_type & selected_fragment_view>
     
-    <form class="nxthemesForm">
-      <div>
-        <button onclick="NXThemesFragmentFactory.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_fragment_style}', '${selected_element_id}'); return false;">ADD FRAGMENT</button>
-      </div>
-    </form>
+      <@nxthemes_themestyles cache="true" inline="true" />
+
+      <@nxthemes_view resource="fragment-preview.json" />
+      ${Root.createFragmentPreview(current_theme_name)}
+
+      <div id="fragmentPreviewArea" theme="${current_theme_name}"></div>
+
+      <form class="nxthemesForm">
+        <div>
+          <button onclick="NXThemesFragmentFactory.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_fragment_style}', '${selected_element_id}'); return false;">ADD FRAGMENT</button>
+      
+        </div>
+      </form>
     </#if>
   </td>
   </tr>

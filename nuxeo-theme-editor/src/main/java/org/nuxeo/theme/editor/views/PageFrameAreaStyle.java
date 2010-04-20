@@ -22,7 +22,7 @@ public class PageFrameAreaStyle extends AbstractView {
     @Override
     public String render(final RenderingInfo info) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("<div id=\"nxthemesPageEditor\">").append(
+        sb.append("<div>").append(
                 "<table summary=\"\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%\">").append(
                 "<tr><td class=\"nxthemesAreaStyle\">");
         sb.append(AreaStyleToolbox.render(info));
