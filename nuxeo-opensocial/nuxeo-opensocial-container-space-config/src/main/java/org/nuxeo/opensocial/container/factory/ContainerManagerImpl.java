@@ -81,7 +81,7 @@ public class ContainerManagerImpl implements ContainerManager {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param containerParams
      * @param required
@@ -123,7 +123,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
     /**
      * Add Gadget to Container
-     * 
+     *
      * @param gadgetName : Name of gadget
      * @param gwtParams : Container parameters
      * @return GadgetBean
@@ -142,8 +142,9 @@ public class ContainerManagerImpl implements ContainerManager {
         Gadget createGadget = space.createGadget(gadgetName);
         space.save();
 
-        GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget, getPermissions(space),
-                getLocale(gwtParams), getServerBase(gwtParams));
+        GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget,
+                getPermissions(space), getLocale(gwtParams),
+                getServerBase(gwtParams));
         gadgetBean.setTitle("");
         return gadgetBean;
 
@@ -155,7 +156,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
     /**
      * Get a list of gadget
-     * 
+     *
      * @return Map of gadgets, key is category and value is list of gadget name
      */
     public Map<String, ArrayList<String>> getGadgetList()
