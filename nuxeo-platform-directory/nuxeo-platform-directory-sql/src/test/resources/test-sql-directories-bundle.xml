@@ -30,6 +30,7 @@
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
       <substringMatchType>subany</substringMatchType>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>

@@ -195,7 +195,9 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(SCHEMA, schemaNames[0]);
 
             assertEquals("user_0", dm.getProperty(SCHEMA, "username"));
-            assertEquals("pass_0", dm.getProperty(SCHEMA, "password"));
+            String password = (String) dm.getProperty(SCHEMA, "password");
+            assertFalse("pass_0".equals(password));
+            assertTrue(PasswordHelper.verifyPassword("pass_0", password));
             assertEquals(Long.valueOf(5), dm.getProperty(SCHEMA, "intField"));
             assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
                     dm.getProperty(SCHEMA, "dateField"));
@@ -249,7 +251,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         try {
             DocumentModelList entries = session.getEntries();
 
-            assertEquals(2, entries.size());
+            assertEquals(3, entries.size());
 
             Map<String, DocumentModel> entryMap = new HashMap<String, DocumentModel>();
             for (DocumentModel entry : entries) {
@@ -304,7 +306,9 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             session = getSession();
             dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            assertEquals("pass_2", dm.getProperty(SCHEMA, "password"));
+            String password = (String) dm.getProperty(SCHEMA, "password");
+            assertFalse("pass_2".equals(password));
+            assertTrue(PasswordHelper.verifyPassword("pass_2", password));
             assertEquals(Long.valueOf(2), dm.getProperty(SCHEMA, "intField"));
             assertEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7), dm.getProperty(
                     SCHEMA, "dateField"));
@@ -317,6 +321,16 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // the user_2 username change was ignored
             assertNull(session.getEntry("user_2"));
 
+            // change other field, check password still ok
+            dm.setProperty(SCHEMA, "company", "foo");
+            session.updateEntry(dm);
+            session.commit();
+            session.close();
+            session = getSession();
+            dm = session.getEntry("user_1");
+            password = (String) dm.getProperty(SCHEMA, "password");
+            assertFalse("pass_2".equals(password));
+            assertTrue(PasswordHelper.verifyPassword("pass_2", password));
         } finally {
             session.close();
         }
@@ -419,13 +433,13 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
-            filter.put("password", "pass_1");
+            filter.put("firstName", "f");
             DocumentModelList list = session.query(filter);
             assertEquals(1, list.size());
             DocumentModel docModel = list.get(0);
             assertNotNull(docModel);
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
-            assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
+            assertEquals("f", docModel.getProperty(SCHEMA, "firstName"));
 
             // simple query does not fetch references by default => restart with
             // an explicit fetch request
@@ -438,7 +452,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             docModel = list.get(0);
             assertNotNull(docModel);
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
-            assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
+            assertEquals("f", docModel.getProperty(SCHEMA, "firstName"));
 
             // test that the groups (reference) of user_1 were fetched as well
             groups = (List<String>) docModel.getProperty(SCHEMA, "groups");
@@ -459,7 +473,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             Set<String> set = new HashSet<String>();
             set.add("username");
             DocumentModelList list = session.query(filter, set);
-            assertEquals(1, list.size());
+            assertEquals(2, list.size());
             DocumentModel docModel = list.get(0);
             assertNotNull(docModel);
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
@@ -521,7 +535,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             // substring match
             users = session.getProjection(filter, filter.keySet(), "username");
-            assertEquals(1, users.size());
+            assertEquals(2, users.size());
             assertTrue(users.contains("user_1"));
 
             filter.put("username", "v");
@@ -536,7 +550,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // substring with empty key
             filter.put("username", "");
             users = session.getProjection(filter, filter.keySet(), "username");
-            assertEquals(2, users.size());
+            assertEquals(3, users.size());
             assertTrue(users.contains("user_1"));
             assertTrue(users.contains("Administrator"));
 
@@ -569,6 +583,9 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // successful authentication
             assertTrue(session.authenticate("Administrator", "Administrator"));
             assertTrue(session.authenticate("user_1", "pass_1"));
+
+            // authentication against encrypted password
+            assertTrue(session.authenticate("user_3", "pass_3"));
 
             // failed authentication: bad password
             assertFalse(session.authenticate("Administrator", "WrongPassword"));

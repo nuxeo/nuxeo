@@ -91,6 +91,10 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     final String idField;
 
+    final String passwordField;
+
+    final String passwordHashAlgorithm;
+
     IdGenerator idGenerator;
 
     final SQLDirectory directory;
@@ -112,6 +116,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.schemaName = config.getSchemaName();
         this.table = directory.getTable();
         this.idField = config.getIdField();
+        this.passwordField = config.getPasswordField();
+        this.passwordHashAlgorithm = config.passwordHashAlgorithm;
         this.schemaFieldMap = directory.getSchemaFieldMap();
         this.storedFieldNames = directory.getStoredFieldNames();
         this.dialect = directory.getDialect();
@@ -749,6 +755,14 @@ public class SQLSession extends BaseSession implements EntrySource {
                         } else {
                             ps.setString(index, (String) value);
                         }
+                    } else if (fieldName.equals(passwordField)) {
+                        // hash password if not already hashed
+                        String password = (String) value;
+                        if (!PasswordHelper.isHashed(password)) {
+                            password = PasswordHelper.hashPassword(password,
+                                    passwordHashAlgorithm);
+                        }
+                        ps.setString(index, password);
                     } else {
                         ps.setString(index, (String) value);
                     }
@@ -849,7 +863,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         String storedPassword = (String) entry.getProperty(schemaName,
                 getPasswordField());
-        return password.equals(storedPassword);
+        return PasswordHelper.verifyPassword(password, storedPassword);
     }
 
     public boolean isAuthenticating() throws ClientException {

@@ -96,6 +96,9 @@ public class SQLDirectoryDescriptor {
     @XNode("passwordField")
     private String passwordField;
 
+    @XNode("passwordHashAlgorithm")
+    public String passwordHashAlgorithm;
+
     @XNode("querySizeLimit")
     private int querySizeLimit;
 

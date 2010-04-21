@@ -28,6 +28,8 @@
           <table>t</table>
           <dialect>org.hibernate.dialect.HSQLDialect</dialect>
           <idField>username</idField>
+          <passwordField>password</passwordField>
+          <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
           <autoincrementIdField>false</autoincrementIdField>
           <createTablePolicy>on_missing_columns</createTablePolicy>
           <dataFile>setup-hsqldb.csv</dataFile>
@@ -66,6 +68,13 @@
         <li>
           idField - the id field designs the primary key in the table,
           used for retrieving entries by id.
+        </li>
+        <li>
+          passwordField - the password field.
+        </li>
+        <li>
+          passwordHashAlgorithm - the hash used to encode the password
+          written in the database, either empty (default), SSHA or SMD5.
         </li>
         <li>
           autoincrementIdField - if this is set true, the SQLDirectory
