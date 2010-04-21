@@ -30,43 +30,42 @@
       This means you need to update corresponding JNDI bindings in nuxeo data source definitions in the config directory
   -->
   <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxsqldirectory;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:nxsqldirectory;create=true" />
 
-  <Resource name="jdbc/nxrelations-default-jena" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxrelations-default-jena;create=true"/>
+  <Resource name="jdbc/nxrelations-default-jena" auth="Container"
+    type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
+    driverClassName="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:nxrelations-default-jena;create=true" />
 
   <Resource name="jdbc/comment-relations" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:comment-relations;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:comment-relations;create=true" />
 
   <Resource name="jdbc/nxaudit-logs" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxaudit-logs;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:nxaudit-logs;create=true" />
 
   <Resource name="jdbc/nxjbpm" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxjbpm;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:nxjbpm;create=true" />
 
   <Resource name="jdbc/placeful_service_ds" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:placeful_service_ds;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:placeful_service_ds;create=true" />
 
   <Resource name="jdbc/nxwebwidgets" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxwebwidgets;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:nxwebwidgets;create=true" />
 
   <Resource name="jdbc/nxtags" auth="Container" type="javax.sql.DataSource"
-            maxActive="100" maxIdle="30" maxWait="10000" username="sa" password="" 
-            driverClassName="org.h2.jdbcx.JdbcDataSource"
-            url="jdbc:h2:vcsh2repo;AUTO_SERVER=true;create=true"/>
+    maxActive="100" maxIdle="30" maxWait="10000" username="sa" password=""
+    driverClassName="org.h2.jdbcx.JdbcDataSource" url="jdbc:h2:vcsh2repo;AUTO_SERVER=true;create=true" />
 
+  <Resource name="TransactionManager" auth="Container"
+    type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
+    transactionTimeoutSeconds="300" />
+  <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
+  <Resource name="NuxeoConnectionManager" auth="Container"
+    type="javax.resource.spi.ConnectionManager" factory="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory"
+    minPoolSize="0" maxPoolSize="20" idleTimeoutMinutes="0" />
 </Context>

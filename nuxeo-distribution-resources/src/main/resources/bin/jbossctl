@@ -1,0 +1,10 @@
+#!/bin/sh
+#####
+#
+# Nuxeo backward compliance startup script
+#
+#####
+
+echo WARNING: jbossctl is DEPRECATED, please use nuxeoctl instead.
+
+./nuxeoctl $*

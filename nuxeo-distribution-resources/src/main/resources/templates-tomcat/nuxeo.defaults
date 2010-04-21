@@ -6,11 +6,6 @@
 # Default template to use if not defined in nuxeo.conf
 nuxeo.template=default
 
-nuxeo.url=http://localhost:8080/nuxeo/
-
-# Default IP address binding
-nuxeo.bind.address=0.0.0.0
-
 # Various other default values
 #nuxeo.db.host=
 #nuxeo.db.port=
@@ -20,14 +15,7 @@ nuxeo.bind.address=0.0.0.0
 #nuxeo.db.min-pool-size=
 nuxeo.db.max-pool-size=20
 
-nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
-
 org.nuxeo.ecm.instance.name=Nuxeo 5.3
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
-
-org.nuxeo.ecm.platform.transform.ooo.host.name=127.0.0.1
-org.nuxeo.ecm.platform.transform.ooo.host.port=8100
-org.nuxeo.ecm.platform.transform.ooo.version=2.2.1
-org.nuxeo.ecm.platform.transform.ooo.enableDaemon=true
 
 org.nuxeo.ecm.contextPath=/nuxeo

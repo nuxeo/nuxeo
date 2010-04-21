@@ -17,7 +17,7 @@
     <attribute name="Properties">
       java.naming.factory.initial=org.jnp.interfaces.NamingContextFactory
       java.naming.factory.url.pkgs=org.jnp.interfaces
-      java.naming.provider.url=nxjmsserver:1099
+      java.naming.provider.url=${org.nuxeo.ecm.stateful.host}:1099
     </attribute>
   </mbean>
 
