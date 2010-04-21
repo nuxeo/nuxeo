@@ -30,8 +30,8 @@
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
         <!-- Property name mentioned in SQLBackendHelper -->
         <property name="URL">jdbc:h2:vcsh2repo</property>
-        <property name="User">sa</property>
-        <property name="Password"></property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
       </repository>
     </repository>
   </extension>

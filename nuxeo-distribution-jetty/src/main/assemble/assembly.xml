@@ -50,10 +50,12 @@
     </unzip>
     <chmod dir="${jetty}/bin" perm="ug+x" includes="*.sh,nuxeoctl,openofficectl" />
 
+    <!-- Template configuration not yet implemented for Jetty 
     <unzip dest="${jetty}/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="templates-jetty" />
     </unzip>
+    -->
     
     <copy todir="${jetty}/bundles">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />

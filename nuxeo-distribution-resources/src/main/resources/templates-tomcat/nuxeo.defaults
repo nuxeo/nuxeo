@@ -6,9 +6,6 @@
 # Default template to use if not defined in nuxeo.conf
 nuxeo.template=default
 
-# Default IP address binding
-nuxeo.bind.address=0.0.0.0
-
 # Various other default values
 #nuxeo.db.host=
 #nuxeo.db.port=
@@ -17,3 +14,8 @@ nuxeo.bind.address=0.0.0.0
 #nuxeo.db.password=
 #nuxeo.db.min-pool-size=
 nuxeo.db.max-pool-size=20
+
+org.nuxeo.ecm.instance.name=Nuxeo 5.3
+org.nuxeo.ecm.instance.description=Nuxeo ECM server
+
+org.nuxeo.ecm.contextPath=/nuxeo

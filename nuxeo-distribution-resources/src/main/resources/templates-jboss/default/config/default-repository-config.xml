@@ -9,7 +9,6 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <!-- for H2 (Lucene Analyzer): -->
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
             <index name="default">
               <!-- all props implied -->
@@ -21,14 +20,6 @@
               <field>dc:description</field>
             </index>
           </fulltext>
-          <!-- for PostgreSQL (Text Search Configuration):
-               http://www.postgresql.org/docs/8.3/static/textsearch-configuration.html
-          <fulltext analyzer="english"/>
-          -->
-          <!-- for Oracle (Oracle Text indexing parameters):
-               http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
-          <fulltext analyzer="LEXER MY_LEXER"/>
-          -->
         </indexing>
       </repository>
     </repository>

@@ -4,3 +4,8 @@ nuxeo.template.includes=common-sfsl
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
+
+org.nuxeo.ecm.instance.name=Nuxeo 5.3 Web Stateless Server
+org.nuxeo.ecm.instance.description=Nuxeo Web Server on JBoss
+org.nuxeo.ecm.instance.host=nxwebserver
+org.nuxeo.ecm.stateful.host=nxplatformserver

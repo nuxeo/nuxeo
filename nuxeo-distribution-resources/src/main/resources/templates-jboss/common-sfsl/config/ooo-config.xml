@@ -6,11 +6,11 @@
 
   <OOoServer>
     <!-- enable Nuxeo Daemon to manage OOo server instances : default is true -->
-    <enableDaemon>true</enableDaemon>
+    <enableDaemon>${org.nuxeo.ecm.platform.transform.ooo.enableDaemon}</enableDaemon>
     <!-- define OOo server listen IP : used even if daemon is disabled -->
-    <oooListenIP>127.0.0.1</oooListenIP>
+    <oooListenIP>${org.nuxeo.ecm.platform.transform.ooo.host.name}</oooListenIP>
     <!-- define OOo server listen port : used even if daemon is disabled -->
-    <oooListenPort>8100</oooListenPort>
+    <oooListenPort>${org.nuxeo.ecm.platform.transform.ooo.host.port}</oooListenPort>
     <!-- define Daemon listen port : used only if daemon is enabled -->
     <oooDaemonListenPort>8101</oooDaemonListenPort>
     <!-- define number of OOo worker process : used only if daemon is enabled -->
@@ -29,7 +29,7 @@
     <!-- define number of time a worker process can be used before being recycled: used only if daemon is enabled -->
     <oooWorkersRecycleInterval>10</oooWorkersRecycleInterval>
 
-    <!-- define is Daemon is started at server startup : used only if daemon is enabled -->
+    <!-- define if Daemon is started at server startup : used only if daemon is enabled -->
     <autoStart>false</autoStart>
 
   </OOoServer>
