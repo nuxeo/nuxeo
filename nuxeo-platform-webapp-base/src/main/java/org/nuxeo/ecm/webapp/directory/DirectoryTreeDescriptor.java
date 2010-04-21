@@ -90,7 +90,7 @@ public class DirectoryTreeDescriptor {
         // check that each required directory exists and has the xvocabulary
         // schema
         DirectoryService directoryService = DirectoryHelper.getDirectoryService();
-        if (directoryService==null) {
+        if (directoryService == null) {
             log.warn("DirectoryService not ready, cannot check directories; skip validation");
         } else {
             boolean isFirst = true;
@@ -100,16 +100,18 @@ public class DirectoryTreeDescriptor {
                     throw new DirectoryException(directoryName
                             + " is not a registered directory");
                 }
+                String directorySchema = directory.getSchema();
                 if (isFirst) {
-                    if (!directory.getSchema().equals(VOCABULARY_SCHEMA)) {
+                    if (!(directorySchema.equals(VOCABULARY_SCHEMA) || directorySchema.equals(XVOCABULARY_SCHEMA))) {
                         throw new DirectoryException(directoryName
-                                + "does not have the required schema:"
-                                + VOCABULARY_SCHEMA);
+                                + "does not have the required schema: "
+                                + VOCABULARY_SCHEMA + " or "
+                                + XVOCABULARY_SCHEMA);
                     }
                 } else {
-                    if (!directory.getSchema().equals(XVOCABULARY_SCHEMA)) {
+                    if (!directorySchema.equals(XVOCABULARY_SCHEMA)) {
                         throw new DirectoryException(directoryName
-                                + "does not have the required schema:"
+                                + "does not have the required schema: "
                                 + XVOCABULARY_SCHEMA);
                     }
                 }

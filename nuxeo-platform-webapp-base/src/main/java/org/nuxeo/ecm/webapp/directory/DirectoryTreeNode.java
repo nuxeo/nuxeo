@@ -101,7 +101,8 @@ public class DirectoryTreeNode {
             if (values.contains(value)) {
                 values.remove(value);
             } else {
-                // unselect all previous selection that are either more generic or more specific
+                // unselect all previous selection that are either more generic
+                // or more specific
                 List<String> valuesToRemove = new ArrayList<String>();
                 String valueSlash = value + "/";
                 for (String existingSelection : values) {
@@ -120,13 +121,12 @@ public class DirectoryTreeNode {
         } else {
             queryModel.setProperty(schemaName, fieldName, value);
         }
-        Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED,
-                queryModel);
+        Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED, queryModel);
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
         Events.instance().raiseEvent(
-                 EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                 new DocumentModelImpl("Folder"));
+                EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                new DocumentModelImpl("Folder"));
         pathProcessing();
         return config.getOutcome();
     }
@@ -219,11 +219,19 @@ public class DirectoryTreeNode {
         Session session = getDirectorySession();
         try {
             if (level == 0) {
-                childrenEntries = session.getEntries();
+                String schema = getDirectorySchema();
+                if (DirectoryTreeDescriptor.XVOCABULARY_SCHEMA.equals(schema)) {
+                    // filter on empty parent
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    filter.put(PARENT_FIELD_ID, "");
+                    childrenEntries = session.query(filter);
+                } else {
+                    childrenEntries = session.getEntries();
+                }
             } else {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 String[] bitsOfPath = path.split("/");
-                filter.put(PARENT_FIELD_ID, bitsOfPath[level-1]);
+                filter.put(PARENT_FIELD_ID, bitsOfPath[level - 1]);
                 childrenEntries = session.query(filter);
             }
             return childrenEntries;
@@ -328,20 +336,13 @@ public class DirectoryTreeNode {
                 }
                 Session session = getDirectoryService().open(dirName);
                 DocumentModel docMod = session.getEntry(bitsOfPath[b]);
-                if (b == 0) {
-                    try {
-                        property = (String) docMod.getProperty("vocabulary",
-                                "label");
-                    } catch (ClientException e) {
-                        throw new DirectoryException(e);
-                    }
-                } else {
-                    try {
-                        property = (String) docMod.getProperty("xvocabulary",
-                                "label");
-                    } catch (ClientException e) {
-                        throw new DirectoryException(e);
-                    }
+                try {
+                    // take first schema: directory entries only have one
+                    final String schemaName = docMod.getDeclaredSchemas()[0];
+                    property = (String) docMod.getProperty(schemaName,
+                            LABEL_FIELD_ID);
+                } catch (ClientException e) {
+                    throw new DirectoryException(e);
                 }
                 myPath = myPath + property + '/';
 
