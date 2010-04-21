@@ -45,33 +45,42 @@ import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.api.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.api.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.api.VersioningService;
+import org.apache.chemistry.opencmis.commons.api.server.CallContext;
+import org.apache.chemistry.opencmis.commons.api.server.CmisService;
+import org.apache.chemistry.opencmis.commons.api.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
-import org.apache.chemistry.opencmis.server.spi.CallContext;
 import org.apache.chemistry.opencmis.server.spi.ObjectInfoHolder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 
 /**
  * Local client service delegating to the server view of the services.
  */
-public class NuxeoService implements AclService, DiscoveryService,
-        MultiFilingService, NavigationService, ObjectService, PolicyService,
-        RelationshipService, RepositoryService, VersioningService {
+public class NuxeoService implements CmisService {
 
     public static final String BINDING_JAVA = "java";
 
     private final NuxeoCmisService service;
 
-    private final CallContext context = new CallContextImpl(BINDING_JAVA);
+    private final CallContext context = new CallContextImpl(BINDING_JAVA, null,
+            false);
 
     private final ObjectInfoHolder objectInfos = null;
 
     public NuxeoService(NuxeoCmisService service) {
         this.service = service;
+    }
+
+    public void close() {
+        service.close();
+    }
+
+    public ObjectInfo getObjectInfo(String repositoryId, String objectId) {
+        return null;
     }
 
     public RepositoryInfo getRepositoryInfo(String repositoryId,
@@ -107,6 +116,14 @@ public class NuxeoService implements AclService, DiscoveryService,
             Acl removeAces, AclPropagation aclPropagation,
             ExtensionsData extension) {
         // TODO add / remove ACEs
+        throw new UnsupportedOperationException();
+    }
+
+    // ---------
+
+    public Acl applyAcl(String repositoryId, String objectId, Acl aces,
+            AclPropagation aclPropagation) {
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
@@ -203,6 +220,14 @@ public class NuxeoService implements AclService, DiscoveryService,
                 objectInfos);
     }
 
+    public String create(String repositoryId, Properties properties,
+            String folderId, ContentStream contentStream,
+            VersioningState versioningState, List<String> policies,
+            ExtensionsData extension) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     public String createDocument(String repositoryId, Properties properties,
             String folderId, ContentStream contentStream,
             VersioningState versioningState, List<String> policies,
@@ -253,6 +278,12 @@ public class NuxeoService implements AclService, DiscoveryService,
             Boolean allVersions, ExtensionsData extension) {
         service.deleteObjectOrCancelCheckOut(context, repositoryId, objectId,
                 allVersions, extension);
+    }
+
+    public void deleteObjectOrCancelCheckOut(String repositoryId,
+            String objectId, Boolean allVersions, ExtensionsData extension) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public FailedToDeleteData deleteTree(String repositoryId, String folderId,
@@ -386,19 +417,13 @@ public class NuxeoService implements AclService, DiscoveryService,
                 filter, includeAllowableActions, extension, objectInfos);
     }
 
-    public List<ObjectData> getAllVersions(String repositoryId,
-            String versionSeriesId, String filter,
-            Boolean includeAllowableActions, ExtensionsData extension) {
-        return service.getAllVersions(context, repositoryId, versionSeriesId,
-                filter, includeAllowableActions, extension, objectInfos);
-    }
-
     public ObjectData getObjectOfLatestVersion(String repositoryId,
-            String versionSeriesId, Boolean major, String filter,
-            Boolean includeAllowableActions,
+            String objectId, String versionSeriesId, Boolean major,
+            String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
             ExtensionsData extension) {
+        // TODO objectId
         return service.getObjectOfLatestVersion(context, repositoryId,
                 versionSeriesId, major, filter, includeAllowableActions,
                 includeRelationships, renditionFilter, includePolicyIds,
@@ -406,10 +431,12 @@ public class NuxeoService implements AclService, DiscoveryService,
     }
 
     public Properties getPropertiesOfLatestVersion(String repositoryId,
-            String versionSeriesId, Boolean major, String filter,
-            ExtensionsData extension) {
+            String objectId, String versionSeriesId, Boolean major,
+            String filter, ExtensionsData extension) {
+        // TODO objectId
         return service.getPropertiesOfLatestVersion(context, repositoryId,
                 versionSeriesId, major, filter, extension);
+
     }
 
 }

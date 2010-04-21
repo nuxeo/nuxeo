@@ -24,44 +24,23 @@ package org.nuxeo.ecm.core.opencmis.impl.util;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.api.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.api.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
-import org.apache.chemistry.opencmis.commons.enums.Cardinality;
-import org.apache.chemistry.opencmis.commons.enums.ContentStreamAllowed;
-import org.apache.chemistry.opencmis.commons.enums.PropertyType;
-import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyDefinition;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractTypeDefinition;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.DocumentTypeDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.FolderTypeDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyTypeDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyBooleanDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDateTimeDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyHtmlDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIntegerDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriDefinitionImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.RelationshipTypeDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionListImpl;
-import org.apache.chemistry.opencmis.server.spi.CallContext;
 
 /**
  * Simple Type Manager.
@@ -118,9 +97,9 @@ public class SimpleTypeManager {
     /**
      * CMIS getTypesChildren.
      */
-    public TypeDefinitionList getTypesChildren(CallContext context,
-            String typeId, boolean includePropertyDefinitions,
-            BigInteger maxItems, BigInteger skipCount) {
+    public TypeDefinitionList getTypesChildren(String typeId,
+            boolean includePropertyDefinitions, BigInteger maxItems,
+            BigInteger skipCount) {
         TypeDefinitionListImpl result = new TypeDefinitionListImpl();
         result.setList(new ArrayList<TypeDefinition>());
         result.setHasMoreItems(Boolean.FALSE);
@@ -189,9 +168,8 @@ public class SimpleTypeManager {
     /**
      * CMIS getTypesDescendants.
      */
-    public List<TypeDefinitionContainer> getTypesDescendants(
-            CallContext context, String typeId, BigInteger depth,
-            Boolean includePropertyDefinitions) {
+    public List<TypeDefinitionContainer> getTypesDescendants(String typeId,
+            BigInteger depth, Boolean includePropertyDefinitions) {
         List<TypeDefinitionContainer> result = new ArrayList<TypeDefinitionContainer>();
 
         // check depth

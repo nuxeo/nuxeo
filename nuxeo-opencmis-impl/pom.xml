@@ -18,7 +18,7 @@
   <description>Nuxeo Core: OpenCMIS Implementation</description>
 
   <properties>
-    <opencmis.version>0.1-SNAPSHOT</opencmis.version>
+    <opencmis.version>0.1-incubating-SNAPSHOT</opencmis.version>
   </properties>
 
   <build>

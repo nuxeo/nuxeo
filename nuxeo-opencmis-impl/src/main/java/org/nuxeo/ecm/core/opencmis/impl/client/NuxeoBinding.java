@@ -41,6 +41,10 @@ public class NuxeoBinding implements CmisBinding {
         this.service = service;
     }
 
+    public void close() {
+        service.close();
+    }
+
     public RepositoryService getRepositoryService() {
         return service;
     }
