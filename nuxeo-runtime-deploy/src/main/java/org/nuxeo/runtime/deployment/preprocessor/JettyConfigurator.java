@@ -40,8 +40,9 @@ public class JettyConfigurator extends ServerConfigurator {
      * @return true if "config" files directory already exists
      */
     protected boolean isConfigured() {
-        log.debug("Detected Jetty server.");
-        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
+        log.debug("Detected Jetty server. Template configuration not yet implemented for Jetty.");
+        return true;
+//        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
     }
 
     @Override
