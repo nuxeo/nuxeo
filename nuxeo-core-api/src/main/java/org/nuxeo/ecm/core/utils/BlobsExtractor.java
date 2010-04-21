@@ -160,7 +160,7 @@ public class BlobsExtractor {
             } else if (type.isListType()) {
                 Type ftype = ((ListType) type).getField().getType();
                 if (ftype.isComplexType()) {
-                    path = path
+                    String blobMatchedPath = path
                             + String.format("/%s/*",
                                     field.getName().getLocalName());
                     if ("*".equals(field.getName())) {
@@ -168,9 +168,9 @@ public class BlobsExtractor {
                                 "A field can't be named '*' please check this field: "
                                         + path);
                     }
-                    if (findInteresting(docType, schema, path,
+                    if (findInteresting(docType, schema, blobMatchedPath,
                             (ComplexType) ftype)) {
-                        containsBlob(docType, schema, path, field);
+                        containsBlob(docType, schema, blobMatchedPath, field);
                         interesting |= true;
                     }
                 } else {
