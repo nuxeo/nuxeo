@@ -7,7 +7,11 @@
 
   <xs:include schemaLocation="core-types.xsd" />
 
+  <!-- Complex Type -->
   <xs:element name="attachedFile" type="nxs:fileext" />
+
+  <!-- List -->
+  <xs:element name="aList" type="nxs:vignettes" />
 
   <xs:complexType name="fileext">
     <xs:sequence>
