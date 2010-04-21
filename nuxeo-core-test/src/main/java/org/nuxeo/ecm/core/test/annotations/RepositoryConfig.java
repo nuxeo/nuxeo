@@ -29,12 +29,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE })
 public @interface RepositoryConfig {
-    
+
     BackendType type() default BackendType.H2;
-    
+
     Class<? extends RepositoryInit> init() default RepositoryInit.class;
-    
+
     Granularity cleanup() default Granularity.CLASS;
-    
-    String user() default "Administrator";    
+
+    String user() default "Administrator";
 }

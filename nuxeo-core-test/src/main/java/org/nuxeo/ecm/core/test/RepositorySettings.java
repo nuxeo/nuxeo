@@ -41,16 +41,16 @@ import com.google.inject.Provider;
 
 /**
  * Repository configuration that can be set using {@link RepositoryConfig} annotations.
- * 
- * If you are modifying fields in this class do not forget to update the {@link RepositorySettings#importSettings(RepositorySettings) method 
- * 
+ *
+ * If you are modifying fields in this class do not forget to update the {@link RepositorySettings#importSettings(RepositorySettings) method
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class RepositorySettings implements Provider<CoreSession> {
 
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
-    
+
     protected FeaturesRunner runner;
     protected BackendType type;
     protected String username;
@@ -59,7 +59,7 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     protected TestRepositoryHandler repo;
     protected CoreSession session;
-    
+
     /**
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}
      */
@@ -80,21 +80,21 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
         importAnnotations(repo);
     }
-    
+
     public void importAnnotations(RepositoryConfig repo) {
-        type = repo.type();        
+        type = repo.type();
         username = repo.user();
-        granularity = repo.cleanup(); 
+        granularity = repo.cleanup();
         Class<? extends RepositoryInit> clazz = repo.init();
         if (clazz != RepositoryInit.class) {
             try {
                 initializer = clazz.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
-            }            
-        }        
+            }
+        }
     }
-    
+
     public void importSettings(RepositorySettings settings) {
         shutdown();
         // override only the user name and the type.
@@ -103,7 +103,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         if (defaultConfig.type() != settings.type) {
             type = settings.type;
         }
-        username = settings.username;        
+        username = settings.username;
     }
 
 
@@ -118,7 +118,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     public String getUsername() {
         return username;
     }
-    
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -126,7 +126,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     public RepositoryInit getInitializer() {
         return initializer;
     }
-    
+
     public void setInitializer(RepositoryInit initializer) {
         this.initializer = initializer;
     }
@@ -134,12 +134,12 @@ public class RepositorySettings implements Provider<CoreSession> {
     public Granularity getGranularity() {
         return granularity;
     }
-    
+
     public void setGranularity(Granularity granularity) {
         this.granularity = granularity;
     }
-    
-    
+
+
     public void initialize() {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
@@ -155,7 +155,7 @@ public class RepositorySettings implements Provider<CoreSession> {
                 log.info("Deploying a VCS repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
 //                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
-                
+
                 // TODO: should use a factory
                 DatabaseHelper dbHelper;
                 if (repoType == BackendType.H2) {
@@ -188,7 +188,7 @@ public class RepositorySettings implements Provider<CoreSession> {
             log.error(e.toString(), e);
         }
     }
-    
+
     @SuppressWarnings("deprecation")
     public void shutdown() {
         if (repo != null) {
@@ -212,7 +212,7 @@ public class RepositorySettings implements Provider<CoreSession> {
             return "test";
         }
     }
-    
+
     public TestRepositoryHandler getRepositoryHandler() {
         if (repo == null) {
             try {
@@ -238,7 +238,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
         return session;
     }
-    
+
     public CoreSession get() {
         return getSession();
     }

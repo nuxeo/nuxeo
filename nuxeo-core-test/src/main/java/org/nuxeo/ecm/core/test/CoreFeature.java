@@ -37,10 +37,10 @@ import com.google.inject.Binder;
  * The core feature provides deployments needed to have a nuxeo core running.
  * Several annotations can be used:
  * <ul>
- * <li> 
+ * <li>
  * <li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -59,15 +59,15 @@ public class CoreFeature extends SimpleFeature {
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
     private RepositorySettings repository;
-    
+
     public RepositorySettings getRepository() {
         return repository;
     }
-    
+
     public BackendType getBackendType() {
         return repository.getBackendType();
     }
-    
+
     @Override
     public void initialize(FeaturesRunner runner)
             throws Exception {
@@ -77,26 +77,26 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        repository.initialize();        
+        repository.initialize();
     }
-    
+
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(RepositorySettings.class).toInstance(repository);
     }
-        
+
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         initializeSession(runner);
     }
-    
+
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         //TODO cleanupSession(runner);
         repository.shutdown();
     }
-    
-    
+
+
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
@@ -104,7 +104,7 @@ public class CoreFeature extends SimpleFeature {
             cleanupSession(runner);
         }
     }
-    
+
 
     protected void cleanupSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
@@ -117,10 +117,10 @@ public class CoreFeature extends SimpleFeature {
 
         initializeSession(runner);
     }
-    
+
     protected void initializeSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
-        
+
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
@@ -129,12 +129,11 @@ public class CoreFeature extends SimpleFeature {
             } catch (ClientException e) {
                 log.error(e.toString(), e);
             }
-        }        
+        }
     }
-    
+
     public void setRepositorySettings(RepositorySettings settings) {
         repository.importSettings(settings);
     }
 
 }
-

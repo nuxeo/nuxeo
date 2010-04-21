@@ -141,7 +141,7 @@ public class OperationEventFactory {
                     CoreEventConstants.PARENT_PATH);
             modifs.add(docRef, Modification.MOVE);
             modifs.add(srcParent, Modification.REMOVE_CHILD);
-            modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);            
+            modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
         } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
             modifs.add(docRef, Modification.CONTENT);
         }

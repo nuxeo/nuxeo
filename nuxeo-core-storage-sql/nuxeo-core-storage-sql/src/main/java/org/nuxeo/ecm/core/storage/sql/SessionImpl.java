@@ -265,11 +265,33 @@ public class SessionImpl implements Session {
         context.rollback();
     }
 
+    /**
+     * Recursively checks if any of a fragment's parents has been deleted.
+     */
+    protected boolean isDeleted(Serializable id) throws StorageException {
+        while (id != null) {
+            SimpleFragment fragment = (SimpleFragment) context.get(
+                    model.mainTableName, id, false);
+            State state;
+            if (fragment == null
+                    || (state = fragment.getState()) == State.ABSENT
+                    || state == State.DELETED
+                    || state == State.INVALIDATED_DELETED) {
+                return true;
+            }
+            id = fragment.get(model.HIER_PARENT_KEY);
+        }
+        return false;
+    }
+
     public Node getNodeById(Serializable id) throws StorageException {
         checkThread();
         checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
+        }
+        if (isDeleted(id)) {
+            return null;
         }
 
         // get main row
@@ -321,6 +343,8 @@ public class SessionImpl implements Session {
         // get main fragments
         List<Fragment> mainFragments = context.getMulti(model.mainTableName,
                 ids, false);
+        // the ids usually come from a query, in which case we don't need to
+        // check if they are removed using isDeleted()
 
         // find what type names we have and the associated fragments
         Set<String> fragmentNames = new HashSet<String>();
@@ -649,7 +673,10 @@ public class SessionImpl implements Session {
             }
         }
         node.remove();
-        // TODO XXX remove recursively the children
+        // We cannot recursively delete the children from the cache as we don't
+        // know all their ids and it would be costly to obtain them. Instead we
+        // do a check on getNodeById using isDeleted() to see if there's a
+        // deleted parent.
     }
 
     public Node checkIn(Node node, String label, String description)

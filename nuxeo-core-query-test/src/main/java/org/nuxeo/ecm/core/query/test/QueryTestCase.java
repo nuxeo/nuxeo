@@ -987,6 +987,18 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(0, dml.size()); // contradictory clauses
     }
 
+    public void testQueryPaging() throws Exception {
+        createDocs();
+        DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
+        assertTrue(whole.size() >= 2);
+       DocumentModelList firstPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1, 0, false);
+       assertEquals(1, firstPage.size());
+       assertEquals(whole.get(0).getId(), firstPage.get(0).getId());
+       DocumentModelList secondPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1, 1, false);
+       assertEquals(1, secondPage.size());
+       assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
+    }
+
     public void testQuerySpecialFields() throws Exception {
         // ecm:isProxy and ecm:isCheckedInVersion are already tested in
         // testQueryWithProxies
@@ -1088,7 +1100,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         /*
          * ecm:lock
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> ''");
+        // don't use a '' here for Oracle, for which '' IS NULL
+        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
         assertIdSet(dml, file1.getId());
         dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
         assertEquals(9, dml.size());

@@ -185,14 +185,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save(); // important for the test
     }
 
-    public void TODOtestChildrenRemoval3() throws Exception {
+    public void testChildrenRemoval3() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node foo = session.addChildNode(root, "foo", null, "TestDoc", false);
         session.addChildNode(foo, "bar", null, "TestDoc", false);
         session.removeNode(foo);
-        // we remove foo but bar is still marked "created" and will be saved
-        // with a nonexistent parent...
         List<Node> children = session.getChildren(root, null, false);
         assertEquals(0, children.size());
         session.save(); // important for the test
@@ -223,6 +221,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session = repository.getConnection();
         for (int i = 1; i < depth; i++) {
             assertNull(session.getNodeById(ids[i]));
+        }
+    }
+
+    // same as above but without opening a new session
+    public void testRecursiveRemoval2() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = root;
+        int depth = 5;
+        Serializable[] ids = new Serializable[depth];
+        for (int i = 0; i < depth; i++) {
+            node = session.addChildNode(node, String.valueOf(i), null,
+                    "TestDoc", false);
+            ids[i] = node.getId();
+        }
+        session.save();
+        // delete the second one
+        session.removeNode(session.getNodeById(ids[1]));
+        session.save();
+
+        // check all children were really deleted recursively
+        for (int i = 1; i < depth; i++) {
+            assertNull("" + i, session.getNodeById(ids[i]));
         }
     }
 

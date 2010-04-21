@@ -34,8 +34,8 @@ import java.lang.annotation.Target;
  * @RunWith(MultiNuxeoCoreRunner.class)
  * public class MySuite {
  * }
- * </pre> 
- * 
+ * </pre>
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -44,5 +44,5 @@ import java.lang.annotation.Target;
 public @interface RepositoryConfigs {
 
     RepositoryConfig[] value() default { @RepositoryConfig };
-    
+
 }

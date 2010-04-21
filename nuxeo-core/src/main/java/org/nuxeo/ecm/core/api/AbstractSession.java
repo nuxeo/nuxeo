@@ -80,7 +80,7 @@ import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
@@ -240,8 +240,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -1368,8 +1368,8 @@ public abstract class AbstractSession implements CoreSession,
                     principals = SecurityService.getPrincipalsToCheck(principal);
                 }
                 String[] permissions = securityService.getPermissionsToCheck(permission);
-                QueryFilter queryFilter = new QueryFilter(principal, principals,
-                        permissions,
+                QueryFilter queryFilter = new QueryFilter(principal,
+                        principals, permissions,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
                         securityService.getPoliciesQueryTransformers(),
@@ -1445,8 +1445,17 @@ public abstract class AbstractSession implements CoreSession,
             }
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
-            QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
-                    null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+            Collection<Transformer> transformers;
+            if ("NXQL".equals(queryType)) {
+                if (!securityService.arePoliciesExpressibleInQuery()) {
+                    log.warn("Security policy cannot be expressed in query");
+                }
+                transformers = securityService.getPoliciesQueryTransformers();
+            } else {
+                transformers = Collections.emptyList();
+            }
+            QueryFilter queryFilter = new QueryFilter(principal, principals,
+                    permissions, null, transformers, 0, 0);
             return getSession().queryAndFetch(query, queryType, queryFilter,
                     params);
         } catch (Exception e) {

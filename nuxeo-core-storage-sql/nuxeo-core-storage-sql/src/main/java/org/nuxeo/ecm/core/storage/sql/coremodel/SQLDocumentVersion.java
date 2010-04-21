@@ -18,12 +18,15 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -43,6 +46,19 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
         DocumentVersion {
 
     private final Node versionableNode;
+
+    public static class VersionNotModifiableException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public VersionNotModifiableException() {
+            super();
+        }
+
+        public VersionNotModifiableException(String message) {
+            super(message);
+        }
+
+    }
 
     protected SQLDocumentVersion(Node node, ComplexType type,
             SQLSession session, boolean readonly) throws DocumentException {
@@ -123,18 +139,18 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
 
     @Override
     public void removeChild(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void orderBefore(String src, String dest) throws DocumentException {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public Document addChild(String name, String typeName)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
@@ -168,17 +184,17 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
 
     @Override
     public void checkIn(String label) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void checkIn(String label, String description) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void checkOut() {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
@@ -188,7 +204,7 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
 
     @Override
     public void restore(String label) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
@@ -235,68 +251,68 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
 
     @Override
     public void importFlatMap(Map<String, Object> map) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void importMap(Map<String, Map<String, Object>> map) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
-        if (readonly && !Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
-            throw new UnsupportedOperationException(String.format(
+        if (readonly
+                && !SQLSimpleProperty.VERSION_WRITABLE_PROPS.contains(name)) {
+            throw new VersionNotModifiableException(String.format(
                     "Cannot set property on a version: %s = %s", name, value));
-        } else {
-            // import
-            super.setPropertyValue(name, value);
         }
+        // import
+        super.setPropertyValue(name, value);
     }
 
     @Override
     public void setString(String name, String value) throws DocumentException {
-        if (Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
-            super.setString(name, value);
-        } else {
-            throw new UnsupportedOperationException();
+        if (readonly
+                && !SQLSimpleProperty.VERSION_WRITABLE_PROPS.contains(name)) {
+            throw new VersionNotModifiableException();
         }
+        super.setString(name, value);
     }
 
     @Override
     public void setBoolean(String name, boolean value) throws DocumentException {
-        if (readonly) {
-            throw new UnsupportedOperationException();
-        } else {
-            // import
-            super.setBoolean(name, value);
+        if (readonly
+                && !SQLSimpleProperty.VERSION_WRITABLE_PROPS.contains(name)) {
+            throw new VersionNotModifiableException();
         }
+        // import
+        super.setBoolean(name, value);
     }
 
     @Override
     public void setLong(String name, long value) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void setDouble(String name, double value) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void setDate(String name, Calendar value) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void setContent(String name, Blob value) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     @Override
     public void removeProperty(String name) {
-        throw new UnsupportedOperationException();
+        throw new VersionNotModifiableException();
     }
 
     /*

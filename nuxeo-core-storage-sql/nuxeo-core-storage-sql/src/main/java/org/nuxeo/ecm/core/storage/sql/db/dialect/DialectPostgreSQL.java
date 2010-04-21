@@ -44,8 +44,8 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -1388,6 +1388,16 @@ public class DialectPostgreSQL extends Dialect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        return true;
+    }
+
+    @Override
+    public String getPagingClause(long limit, long offset) {
+        return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
 
 }

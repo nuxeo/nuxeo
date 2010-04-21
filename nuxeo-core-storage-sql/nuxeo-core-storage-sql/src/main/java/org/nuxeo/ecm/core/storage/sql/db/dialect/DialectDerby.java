@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Derby-specific dialect.
@@ -393,6 +392,16 @@ public class DialectDerby extends Dialect {
                 null,
                 "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
         return statements;
+    }
+
+    @Override
+    public boolean supportsPaging() {
+        return true;
+    }
+    
+    @Override
+    public String getPagingClause(long limit, long offset) {
+        return String.format("OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset, limit); // available from 10.5
     }
 
 }

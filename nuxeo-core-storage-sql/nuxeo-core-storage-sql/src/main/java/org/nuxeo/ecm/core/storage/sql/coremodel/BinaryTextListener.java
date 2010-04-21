@@ -115,9 +115,8 @@ public class BinaryTextListener implements PostCommitEventListener {
             if (session.getPrincipal() == null) {
                 continue;
             }
-            // Check hierarchy for documents gone
-            // http://jira.nuxeo.org/browse/NXP-4022
-            if (!existsWithItsHierarchy(session, rootRef, docRef)) {
+            if (!session.exists(docRef)) {
+                // doc is gone
                 continue;
             }
             DocumentModel doc = session.getDocument(docRef);
@@ -178,29 +177,6 @@ public class BinaryTextListener implements PostCommitEventListener {
             }
         }
         return StringUtils.join(strings, " ");
-    }
-
-    /*
-     * This code exists because VCS doesn't completely invalidate its caches of
-     * the children when a folder object is removed. In the future it won't be
-     * needed.
-     */
-    public static boolean existsWithItsHierarchy(CoreSession session,
-            DocumentRef rootRef, DocumentRef docRef) throws ClientException {
-        boolean first = true;
-        DocumentRef currentRef = docRef;
-        while (true) {
-            if (rootRef.equals(currentRef)) {
-                return true;
-            }
-            if (!session.exists(currentRef)) {
-                log.error("document " + docRef + " is "
-                        + (first ? "gone" : "an orphan"));
-                return false;
-            }
-            currentRef = session.getDocument(currentRef).getParentRef();
-            first = false;
-        }
     }
 
 }

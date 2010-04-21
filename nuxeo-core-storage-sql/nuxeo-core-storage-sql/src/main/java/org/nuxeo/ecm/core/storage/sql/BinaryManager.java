@@ -50,6 +50,6 @@ public interface BinaryManager {
      * @return the corresponding binary
      */
 
-    public Binary getBinary(String digest);
+    Binary getBinary(String digest);
 
 }

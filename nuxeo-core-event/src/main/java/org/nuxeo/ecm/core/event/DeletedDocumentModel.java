@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 public class DeletedDocumentModel extends ShallowDocumentModel{
 
     private static final long serialVersionUID = 1L;
-    
+
     public DeletedDocumentModel(DocumentModel doc) {
         super(doc);
     }

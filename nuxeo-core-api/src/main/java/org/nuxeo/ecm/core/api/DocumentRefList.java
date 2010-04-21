@@ -26,7 +26,7 @@ import java.util.List;
  * Use this instead of <code>List&lt;DocumentRef&gt;</code> when a list of document references should be returned.
  * <p>
  * This object is type safe and can help services which need to dynamically discover which type of object is returned.
- * (see operation framework for this)  
+ * (see operation framework for this)
  * <p>
  * This class is the equivalent of {@link DocumentModelList} but for document references.
  *
