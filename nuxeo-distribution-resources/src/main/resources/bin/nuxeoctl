@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #####
 #
 # Nuxeo startup script
@@ -52,12 +52,27 @@ PROGNAME=`basename "$PRG"`
 
 
 # Read nuxeo.conf
+# We can't just source it as sh/bash don't like dots in variable names
 
 if [ "x$NUXEO_CONF" = "x" ]; then
 	NUXEO_CONF="$DIRNAME/nuxeo.conf"
 fi
 if [ -r "$NUXEO_CONF" ]; then
-	. "$NUXEO_CONF"
+	while read confline
+	do
+		if [ "x$confline" = "x" ]; then
+			continue
+		fi
+		if [[ "$confline" == \#* ]]; then
+			continue
+		fi
+		key="$(echo $confline | cut -d= -f1)"
+		value="$(echo $confline | cut -d= -f2-)"
+		if [[ "$key" == *.* ]]; then
+			continue
+		fi
+		read -r $key <<< $value
+	done < $NUXEO_CONF
 fi
 
 
@@ -346,6 +361,7 @@ case "$1" in
 			die "Nuxeo is already running with pid `cat $PID`"
 		fi
 		createdirs
+		echo "Command : "$CMD_START
 		$CMD_START
 		;;
 	stop)
