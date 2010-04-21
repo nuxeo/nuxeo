@@ -236,32 +236,36 @@ public class SQLSession extends BaseSession implements EntrySource {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
-    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
-        if (staticFilters.length==0) {
+    protected String addFilterWhereClause(String whereClause)
+            throws DirectoryException {
+        if (staticFilters.length == 0) {
             return whereClause;
         }
-        if (whereClause!=null && whereClause.trim().length()>0) {
+        if (whereClause != null && whereClause.trim().length() > 0) {
             whereClause = whereClause + " AND ";
         } else {
-            whereClause="";
+            whereClause = "";
         }
-        for (int i = 0 ; i< staticFilters.length; i++) {
+        for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            whereClause = whereClause + filter.getDirectoryColumn().getQuotedName(dialect);
-            whereClause = whereClause + " " + filter.getOperator() + " " ;
-            whereClause = whereClause + "? " ;
+            whereClause = whereClause
+                    + filter.getDirectoryColumn().getQuotedName(dialect);
+            whereClause = whereClause + " " + filter.getOperator() + " ";
+            whereClause = whereClause + "? ";
 
-            if (i<staticFilters.length-1) {
+            if (i < staticFilters.length - 1) {
                 whereClause = whereClause + " AND ";
             }
         }
         return whereClause;
     }
 
-    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
-        for (int i = 0 ; i< staticFilters.length; i++) {
+    protected void addFilterValues(PreparedStatement ps, int startIdx)
+            throws DirectoryException {
+        for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            setFieldValue(ps, startIdx + i, filter.getColumn(), filter.getValue());
+            setFieldValue(ps, startIdx + i, filter.getColumn(),
+                    filter.getValue());
 
         }
     }
@@ -275,7 +279,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
 
-        String whereClause = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+        String whereClause = table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?";
         whereClause = addFilterWhereClause(whereClause);
 
         select.setWhere(whereClause);
@@ -482,7 +487,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             delete.setWhere(whereClause.toString());
             PreparedStatement ps = sqlConnection.prepareStatement(delete.getStatement());
             for (int i = 0; i < values.size(); i++) {
-                if (i==0) {
+                if (i == 0) {
                     setFieldValue(ps, 1, idField, values.get(i));
                 } else {
                     ps.setString(1 + i, values.get(i));
@@ -724,27 +729,27 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             Field field = schemaFieldMap.get(fieldName);
             String typeName = "string";
-            if (field==null) {
-                for (SQLStaticFilter filter :  staticFilters) {
+            if (field == null) {
+                for (SQLStaticFilter filter : staticFilters) {
                     if (filter.getColumn().equals(fieldName)) {
                         typeName = filter.type;
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 typeName = field.getType().getName();
             }
             if ("string".equals(typeName)) {
                 if (value != null) {
                     if (fieldName.equals(idField)) {
-                       if ((table.getPrimaryColumn().getSqlType()== Types.BIGINT) || (table.getPrimaryColumn().getSqlType()== Types.INTEGER) || (table.getPrimaryColumn().getSqlType()== Types.SMALLINT)){
-                             ps.setInt(index, Integer.parseInt((String)value));
-                       } else {
-                             ps.setString(index, (String)value);
-                       }
-                    }
-                    else {
+                        if ((table.getPrimaryColumn().getSqlType() == Types.BIGINT)
+                                || (table.getPrimaryColumn().getSqlType() == Types.INTEGER)
+                                || (table.getPrimaryColumn().getSqlType() == Types.SMALLINT)) {
+                            ps.setInt(index, Integer.parseInt((String) value));
+                        } else {
+                            ps.setString(index, (String) value);
+                        }
+                    } else {
                         ps.setString(index, (String) value);
                     }
                 } else {
