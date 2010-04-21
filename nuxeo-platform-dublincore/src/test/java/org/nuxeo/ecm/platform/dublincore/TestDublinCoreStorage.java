@@ -19,24 +19,21 @@
 
 package org.nuxeo.ecm.platform.dublincore;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
 /**
@@ -44,11 +41,9 @@ import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-public class TestDublinCoreStorage extends RepositoryTestCase {
+public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     private DocumentModel root;
-
-    private CoreSession session;
 
     @Override
     public void setUp() throws Exception {
@@ -57,19 +52,14 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "LifeCycleService.xml");
+        "LifeCycleService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.dublincore",
-                "OSGI-INF/nxdublincore-service.xml");
+        "OSGI-INF/nxdublincore-service.xml");
 
         deployBundle("org.nuxeo.ecm.core.event");
 
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", "Administrator");
-        session = CoreInstance.getInstance().open("demo", context);
-        assertNotNull(session);
+        openSession();
 
         root = session.getRootDocument();
     }
@@ -164,27 +154,41 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         session.save();
         session.disconnect();
         session = null;
-
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
         // UserPrincipal newUser = new UserPrincipal("Jacky");
         // newUser.groups.add(SecurityService.ADMINISTRATORS);
         // context.put("username", newUser);
         // switch user in session
         // LocalSession local = (LocalSession) session;
         // local.setPrincipal(newUser);
-        context.put("username", "Jacky");
-        session = CoreInstance.getInstance().open("demo", context);
+        session = openSessionAs("Jacky");
 
         DocumentModel childFile3 = session.getDocument(childFile2.getRef());
         childFile3.setProperty("dublincore", "source", "testing");
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-                "contributors");
+        "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
         assertEquals("Administrator",
                 childFile3.getProperty("dublincore", "creator"));
+        closeSession();
+    }
+
+    public void testIssuedDate() throws ClientException {
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "Test", "File");
+        DocumentModel childFile2 = session.createDocument(childFile);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        session.save();
+        session.checkIn(childFile2.getRef(), version);
+
+        DocumentModel versionModel = session.getDocumentWithVersion(childFile2.getRef(), version);
+        DataModel dm = session.getDataModel(versionModel.getRef(), "dublincore");
+        Calendar modified = (Calendar) dm.getData("issued");
+        assertNotNull(modified);
     }
 
 }

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
 /**
  * Core Event Listener for updating DublinCore.
- *
+ * 
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
@@ -50,7 +50,7 @@ public class DublinCoreListener implements EventListener {
      * Core event notification.
      * <p>
      * Gets core events and updates DublinCore if needed.
-     *
+     * 
      * @param event event fired at core layer
      */
     public void handleEvent(Event event) throws ClientException {
@@ -76,13 +76,19 @@ public class DublinCoreListener implements EventListener {
         }
 
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.isVersion()) {
-            log.debug("No DublinCore update on versions");
-            return;
-        }
+
         Date eventDate = new Date(event.getTime());
         Calendar cEventDate = Calendar.getInstance();
         cEventDate.setTime(eventDate);
+
+        if (doc.isVersion()) {
+            if (eventId.equals(DOCUMENT_CREATED)) {
+                service.setIssuedDate(doc, cEventDate);
+            } else {
+                log.debug("No others DublinCore update on versions except for issued date");
+            }
+            return;
+        }
 
         if (eventId.equals(BEFORE_DOC_UPDATE)) {
             service.setModificationDate(doc, cEventDate, event);

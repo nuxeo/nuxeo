@@ -78,7 +78,7 @@ public class DublinCoreStorageService extends DefaultComponent {
         String[] contributorsArray;
         try {
             contributorsArray = (String[]) doc.getProperty("dublincore",
-                    "contributors");
+            "contributors");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -111,6 +111,15 @@ public class DublinCoreStorageService extends DefaultComponent {
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
+        }
+    }
+
+    public void setIssuedDate(DocumentModel doc,
+            Calendar issuedDate){
+        try {
+            doc.setProperty("dublincore", "issued", issuedDate);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 
