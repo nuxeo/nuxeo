@@ -25,20 +25,22 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
- *
+ * 
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class TestDublinCoreStorage extends SQLRepositoryTestCase {
@@ -49,16 +51,9 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-        "LifeCycleService.xml");
-
         deployContrib("org.nuxeo.ecm.platform.dublincore",
         "OSGI-INF/nxdublincore-service.xml");
-
         deployBundle("org.nuxeo.ecm.core.event");
-
         openSession();
 
         root = session.getRootDocument();
@@ -70,8 +65,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     }
 
     public void testCreationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(), "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         DataModel dm = childFile2.getDataModel("dublincore");
@@ -84,8 +79,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     }
 
     public void testCreator() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(), "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         DataModel dm = childFile2.getDataModel("dublincore");
@@ -102,8 +97,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
     }
 
     public void testModificationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         try {
@@ -129,8 +124,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     // Wait until we can have a real list management
     public void testContributors() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(), "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -170,25 +165,36 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
-        assertEquals("Administrator",
-                childFile3.getProperty("dublincore", "creator"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore",
+        "creator"));
         closeSession();
     }
 
-    public void testIssuedDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "Test", "File");
-        DocumentModel childFile2 = session.createDocument(childFile);
+    public void testIssuedDate() throws ClientException, DocumentException {
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
+        "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
+                "testfile1", "File");
+        file1 = session.createDocument(file1);
+        DocumentModel proxyDoc = session.publishDocument(file1, folder1);
 
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-        session.save();
-        session.checkIn(childFile2.getRef(), version);
+        getEventProducer().fireEvent(
+                new DocumentEventContext(session, session.getPrincipal(),
+                        proxyDoc).newEvent("documentPublished"));
 
-        DocumentModel versionModel = session.getDocumentWithVersion(childFile2.getRef(), version);
-        DataModel dm = session.getDataModel(versionModel.getRef(), "dublincore");
-        Calendar modified = (Calendar) dm.getData("issued");
-        assertNotNull(modified);
+        DocumentModel version =  session.getSourceDocument(proxyDoc.getRef());
+        Calendar issued = (Calendar) version.getPropertyValue("dc:issued");
+        assertNotNull(issued);
+    }
+
+    private EventProducer getEventProducer() throws ClientException {
+        try {
+            return Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+
+        }
     }
 
 }

@@ -114,10 +114,9 @@ public class DublinCoreStorageService extends DefaultComponent {
         }
     }
 
-    public void setIssuedDate(DocumentModel doc,
-            Calendar issuedDate){
+    public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {
         try {
-            doc.setProperty("dublincore", "issued", issuedDate);
+            doc.setPropertyValue("dc:issued", issuedDate);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

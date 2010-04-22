@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.dublincore.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
 import java.util.Calendar;
@@ -29,6 +30,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -65,7 +67,8 @@ public class DublinCoreListener implements EventListener {
 
         if (!eventId.equals(DOCUMENT_UPDATED)
                 && !eventId.equals(DOCUMENT_CREATED)
-                && !eventId.equals(BEFORE_DOC_UPDATE)) {
+                && !eventId.equals(BEFORE_DOC_UPDATE)
+                && !eventId.equals(DOCUMENT_PUBLISHED)) {
             return;
         }
 
@@ -77,17 +80,25 @@ public class DublinCoreListener implements EventListener {
 
         DocumentModel doc = docCtx.getSourceDocument();
 
+        if (doc.isVersion()) {
+            log.debug("No DublinCore update on versions execpt for the issued date");
+            return;
+        }
+
         Date eventDate = new Date(event.getTime());
         Calendar cEventDate = Calendar.getInstance();
         cEventDate.setTime(eventDate);
 
-        if (doc.isVersion()) {
-            if (eventId.equals(DOCUMENT_CREATED)) {
-                service.setIssuedDate(doc, cEventDate);
-            } else {
-                log.debug("No others DublinCore update on versions except for issued date");
+        if (doc.isProxy()) {
+            if (eventId.equals(DOCUMENT_PUBLISHED)) {
+                CoreSession session = event.getContext().getCoreSession();
+                DocumentModel version = session.getSourceDocument(
+                        doc.getRef());
+                if (version != null) {
+                    service.setIssuedDate(version, cEventDate);
+                    session.saveDocument(version);
+                }
             }
-            return;
         }
 
         if (eventId.equals(BEFORE_DOC_UPDATE)) {
