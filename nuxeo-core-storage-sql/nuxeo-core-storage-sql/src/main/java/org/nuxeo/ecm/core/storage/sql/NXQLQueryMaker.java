@@ -1402,7 +1402,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 String fulltextQuery = ((StringLiteral) node.rvalue).value;
                 fulltextQuery = dialect.getDialectFulltextQuery(fulltextQuery);
                 ftJoinNumber++;
-                Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+                Column mainColumn = dataHierTable.getColumn(model.MAIN_KEY);
                 FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
                         fulltextQuery, name, ftJoinNumber, mainColumn, model,
                         database);

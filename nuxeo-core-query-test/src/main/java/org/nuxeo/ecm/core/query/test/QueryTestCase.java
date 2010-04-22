@@ -991,12 +991,16 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         createDocs();
         DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
         assertTrue(whole.size() >= 2);
-       DocumentModelList firstPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1, 0, false);
-       assertEquals(1, firstPage.size());
-       assertEquals(whole.get(0).getId(), firstPage.get(0).getId());
-       DocumentModelList secondPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1, 1, false);
-       assertEquals(1, secondPage.size());
-       assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
+        DocumentModelList firstPage = session.query(
+                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", null,
+                1, 0, false);
+        assertEquals(1, firstPage.size());
+        assertEquals(whole.get(0).getId(), firstPage.get(0).getId());
+        DocumentModelList secondPage = session.query(
+                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", null,
+                1, 1, false);
+        assertEquals(1, secondPage.size());
+        assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
     }
 
     public void testQuerySpecialFields() throws Exception {
@@ -1200,6 +1204,48 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+    }
+
+    public void testFulltextProxy() throws Exception {
+        createDocs();
+        sleepForFulltext();
+
+        String query;
+        DocumentModelList dml;
+
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
+        String docId = doc.getId();
+
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'testfile4_Title'";
+        dml = session.query(query);
+        assertIdSet(dml, docId);
+
+        // publish doc
+        DocumentModel proxy = publishDoc();
+        String proxyId = proxy.getId();
+        String versionId = proxy.getSourceId();
+        sleepForFulltext();
+
+        // query must return also proxies and versions
+        dml = session.query(query);
+        assertIdSet(dml, docId, proxyId, versionId);
+
+        // remove proxy
+        session.removeDocument(proxy.getRef());
+        session.save();
+
+        // leaves live doc and version
+        dml = session.query(query);
+        assertIdSet(dml, docId, versionId);
+
+        // remove live doc
+        session.removeDocument(doc.getRef());
+        session.save();
+
+        // version gone as well
+        dml = session.query(query);
+        assertTrue(dml.isEmpty());
     }
 
     public void testFulltextExpressionSyntax() throws Exception {
