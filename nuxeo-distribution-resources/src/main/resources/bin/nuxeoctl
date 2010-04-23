@@ -68,6 +68,9 @@ if [ -r "$NUXEO_CONF" ]; then
 		fi
 		key="$(echo $confline | cut -d= -f1)"
 		value="$(echo $confline | cut -d= -f2-)"
+		if [[ "$key" == "nuxeo.bind.address" ]]; then
+			read -r NUXEO_BIND_ADDRESS <<< $value
+		fi
 		if [[ "$key" == *.* ]]; then
 			continue
 		fi
@@ -167,6 +170,10 @@ if [ "x$SERVER_SET" = "x" ]; then
 	fi
 fi
 
+# Bind address
+if [ "x$NUXEO_BIND_ADDRESS" = "x" ]; then
+	NUXEO_BIND_ADDRESS=0.0.0.0
+fi
 
 # Application server detection
 # We're checking for the presence of the jars used to start each server
@@ -225,7 +232,7 @@ if [ "$jboss" = "true" ]; then
 		NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
 		NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
 	fi
-	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Djboss.server.log.dir=$LOG_DIR -Djboss.server.data.dir=$DATA_DIR -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main"
+	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Djboss.server.log.dir=$LOG_DIR -Djboss.server.data.dir=$DATA_DIR -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main -b $NUXEO_BIND_ADDRESS"
 
 #
 # TOMCAT
