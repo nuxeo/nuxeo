@@ -50,6 +50,8 @@ public abstract class AbstractDocumentReader implements DocumentReader {
 
             /*NXP-1688 Rux: no ID, it should be a OS folder and not an exported one*/
             if (doc.getId() != null) {
+                log.debug("Adding document to be transformed (path): "
+                        + doc.getPath());
                 docs.add(doc);
             }
             else {
