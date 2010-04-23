@@ -34,8 +34,10 @@ import java.util.List;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -58,8 +60,9 @@ public class DialectSQLServer extends Dialect {
     protected final String fulltextCatalog;
 
     public DialectSQLServer(DatabaseMetaData metadata,
+            BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, repositoryDescriptor);
+        super(metadata, binaryManager, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
         fulltextCatalog = repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
@@ -205,7 +208,7 @@ public class DialectSQLServer extends Dialect {
         case Types.CLOB:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
-                return column.getModel().getBinary(string);
+                return getBinaryManager().getBinary(string);
             } else {
                 return string;
             }
@@ -319,7 +322,7 @@ public class DialectSQLServer extends Dialect {
                 scoreAlias);
         info.scoreAlias = scoreAlias;
         info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null, model);
+                ColumnType.DOUBLE, null);
         return info;
     }
 

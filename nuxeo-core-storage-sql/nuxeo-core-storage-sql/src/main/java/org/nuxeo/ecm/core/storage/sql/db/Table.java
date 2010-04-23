@@ -95,7 +95,7 @@ public interface Table extends Serializable {
      *
      * @return the SQL strings
      */
-    List<String> getPostCreateSqls();
+    List<String> getPostCreateSqls(Model model);
 
     /**
      * Computes the SQL statements to finish adding a column, usually some ALTER
@@ -103,7 +103,7 @@ public interface Table extends Serializable {
      *
      * @return the SQL strings
      */
-    List<String> getPostAddSqls(Column column);
+    List<String> getPostAddSqls(Column column, Model model);
 
     /**
      * Computes the SQL statement to drop the table.

@@ -352,11 +352,7 @@ public class Model {
         public Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
     }
 
-    private final BinaryManager binaryManager;
-
     protected final RepositoryDescriptor repositoryDescriptor;
-
-    private final Dialect dialect;
 
     /** The id generation policy. */
     public final IdGenPolicy idGenPolicy;
@@ -434,13 +430,14 @@ public class Model {
 
     protected final FulltextInfo fulltextInfo;
 
-    public Model(RepositoryImpl repository, SchemaManager schemaManager,
-            Dialect dialect) throws StorageException {
-        binaryManager = repository.getBinaryManager();
+    private final boolean materializeFulltextSyntheticColumn;
+
+    public Model(RepositoryImpl repository, Dialect dialect,
+            SchemaManager schemaManager) throws StorageException {
         repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
-        this.dialect = dialect;
+        materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
         temporaryIdCounter = new AtomicLong(0);
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
@@ -491,24 +488,6 @@ public class Model {
      */
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
-    }
-
-    /**
-     * Gets the dialect used for this model.
-     */
-    public Dialect getDialect() {
-        return dialect;
-    }
-
-    /**
-     * Gets a binary given its digest.
-     *
-     * @param digest the digest
-     * @return the binary for this digest, or {@code null} if unavailable
-     *         (error)
-     */
-    public Binary getBinary(String digest) {
-        return binaryManager.getBinary(digest);
     }
 
     /**
@@ -1289,7 +1268,7 @@ public class Model {
     private void initFullTextModel() {
         for (String indexName : fulltextInfo.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
-            if (dialect.getMaterializeFulltextSyntheticColumn()) {
+            if (materializeFulltextSyntheticColumn) {
                 addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
                         PropertyType.STRING, FULLTEXT_TABLE_NAME,
                         FULLTEXT_FULLTEXT_KEY + suffix, false,

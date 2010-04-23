@@ -35,8 +35,10 @@ import java.util.List;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -49,9 +51,9 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectMySQL extends Dialect {
 
-    public DialectMySQL(DatabaseMetaData metadata,
+    public DialectMySQL(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, repositoryDescriptor);
+        super(metadata, binaryManager, repositoryDescriptor);
     }
 
     @Override
@@ -197,7 +199,7 @@ public class DialectMySQL extends Dialect {
         case Types.LONGVARCHAR:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
-                return column.getModel().getBinary(string);
+                return getBinaryManager().getBinary(string);
             } else {
                 return string;
             }
@@ -297,7 +299,7 @@ public class DialectMySQL extends Dialect {
         info.scoreExprParam = fulltextQuery;
         info.scoreAlias = scoreAlias;
         info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null, model);
+                ColumnType.DOUBLE, null);
         return info;
     }
 

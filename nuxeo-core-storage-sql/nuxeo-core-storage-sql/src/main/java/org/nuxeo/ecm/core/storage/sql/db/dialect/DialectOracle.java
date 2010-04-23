@@ -44,8 +44,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
@@ -65,8 +67,9 @@ public class DialectOracle extends Dialect {
     protected final String fulltextParameters;
 
     public DialectOracle(DatabaseMetaData metadata,
+            BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, repositoryDescriptor);
+        super(metadata, binaryManager, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
     }
@@ -234,7 +237,7 @@ public class DialectOracle extends Dialect {
         case Types.VARCHAR:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
-                return column.getModel().getBinary(string);
+                return getBinaryManager().getBinary(string);
             } else {
                 return string;
             }
@@ -351,7 +354,7 @@ public class DialectOracle extends Dialect {
         info.scoreExpr = String.format("%s / 100", score);
         info.scoreAlias = score;
         info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null, model);
+                ColumnType.DOUBLE, null);
         return info;
     }
 

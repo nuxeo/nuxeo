@@ -34,8 +34,10 @@ import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -63,6 +65,8 @@ public abstract class Dialect {
         return new JDBCInfo(string, jdbcType);
     }
 
+    protected final BinaryManager binaryManager;
+
     protected final boolean storesUpperCaseIdentifiers;
 
     protected final boolean fulltextDisabled;
@@ -76,6 +80,7 @@ public abstract class Dialect {
      * @throws StorageException if a SQL connection problem occurs
      */
     public static Dialect createDialect(Connection connection,
+            BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         DatabaseMetaData metadata;
         String databaseName;
@@ -86,35 +91,45 @@ public abstract class Dialect {
             throw new StorageException(e);
         }
         if ("Apache Derby".equals(databaseName)) {
-            return new DialectDerby(metadata, repositoryDescriptor);
+            return new DialectDerby(metadata, binaryManager,
+                    repositoryDescriptor);
         }
         if ("H2".equals(databaseName)) {
-            return new DialectH2(metadata, repositoryDescriptor);
+            return new DialectH2(metadata, binaryManager, repositoryDescriptor);
         }
         if ("MySQL".equals(databaseName)) {
-            return new DialectMySQL(metadata, repositoryDescriptor);
+            return new DialectMySQL(metadata, binaryManager,
+                    repositoryDescriptor);
         }
         if ("Oracle".equals(databaseName)) {
-            return new DialectOracle(metadata, repositoryDescriptor);
+            return new DialectOracle(metadata, binaryManager,
+                    repositoryDescriptor);
         }
         if ("PostgreSQL".equals(databaseName)) {
-            return new DialectPostgreSQL(metadata, repositoryDescriptor);
+            return new DialectPostgreSQL(metadata, binaryManager,
+                    repositoryDescriptor);
         }
         if ("Microsoft SQL Server".equals(databaseName)) {
-            return new DialectSQLServer(metadata, repositoryDescriptor);
+            return new DialectSQLServer(metadata, binaryManager,
+                    repositoryDescriptor);
         }
         throw new StorageException("Unsupported database: " + databaseName);
     }
 
-    public Dialect(DatabaseMetaData metadata,
+    public Dialect(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
             throw new StorageException("An error has occured.", e);
         }
+        this.binaryManager = binaryManager;
         fulltextDisabled = repositoryDescriptor.fulltextDisabled;
         aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
+    }
+
+    public BinaryManager getBinaryManager() {
+        return binaryManager;
     }
 
     /**
@@ -290,7 +305,7 @@ public abstract class Dialect {
      *
      * @return
      */
-    public  boolean supportsPaging() {
+    public boolean supportsPaging() {
         return false;
     }
 
@@ -302,7 +317,7 @@ public abstract class Dialect {
      * @param offset
      * @return
      */
-    public String getPagingClause(long limit, long offset)  {
+    public String getPagingClause(long limit, long offset) {
         throw new UnsupportedOperationException("paging is not supported");
     }
 

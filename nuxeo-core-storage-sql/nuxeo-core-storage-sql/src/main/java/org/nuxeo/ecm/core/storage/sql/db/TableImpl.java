@@ -108,7 +108,7 @@ public class TableImpl implements Table {
             throw new IllegalArgumentException("duplicate column "
                     + physicalName);
         }
-        Column column = new Column(this, physicalName, type, key, model);
+        Column column = new Column(this, physicalName, type, key);
         columns.put(name, column);
         return column;
     }
@@ -197,21 +197,21 @@ public class TableImpl implements Table {
         // check
     }
 
-    public List<String> getPostCreateSqls() {
+    public List<String> getPostCreateSqls(Model model) {
         List<String> sqls = new LinkedList<String>();
         for (Column column : columns.values()) {
-            postAddColumn(column, sqls);
+            postAddColumn(column, sqls, model);
         }
         return sqls;
     }
 
-    public List<String> getPostAddSqls(Column column) {
+    public List<String> getPostAddSqls(Column column, Model model) {
         List<String> sqls = new LinkedList<String>();
-        postAddColumn(column, sqls);
+        postAddColumn(column, sqls, model);
         return sqls;
     }
 
-    protected void postAddColumn(Column column, List<String> sqls) {
+    protected void postAddColumn(Column column, List<String> sqls, Model model) {
         if (column.isPrimary()) {
             StringBuilder buf = new StringBuilder();
             String constraintName = dialect.openQuote() + name
@@ -289,7 +289,7 @@ public class TableImpl implements Table {
             String indexName = fulltextIndexedColumns.get(columnNames);
             if (indexName != null) {
                 createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
-                        quotedIndexName, this, cols, column.getModel());
+                        quotedIndexName, this, cols, model);
             } else {
                 createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
                         getQuotedName(), qcols);

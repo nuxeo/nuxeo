@@ -154,11 +154,12 @@ public class SQLInfo {
      * @param model the model
      * @param dialect the SQL dialect
      */
-    public SQLInfo(Model model, Dialect dialect) throws StorageException {
+    public SQLInfo(RepositoryImpl repository, Model model, Dialect dialect)
+            throws StorageException {
         this.model = model;
         this.dialect = dialect;
 
-        database = new Database(dialect);
+        database = new Database(repository, dialect);
 
         selectRootIdSql = null;
         selectRootIdWhatColumn = null;

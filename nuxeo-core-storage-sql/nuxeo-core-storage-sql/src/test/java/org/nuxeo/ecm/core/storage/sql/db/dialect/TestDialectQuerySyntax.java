@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
 public class TestDialectQuerySyntax extends TestCase {
@@ -47,15 +48,32 @@ public class TestDialectQuerySyntax extends TestCase {
                 new DatabaseMetaDataInvocationHandler());
     }
 
+    public DatabaseMetaData metadata;
+
+    public BinaryManager binaryManager;
+
+    public RepositoryDescriptor repositoryDescriptor;
+
     public Dialect dialect;
+
+    @Override
+    public void setUp() {
+        metadata = getDatabaseMetaData();
+        binaryManager = null;
+        repositoryDescriptor = new RepositoryDescriptor();
+    }
+
+    @Override
+    public void tearDown() {
+
+    }
 
     public void check(String expected, String query) {
         assertEquals(expected, dialect.getDialectFulltextQuery(query));
     }
 
     public void testH2() throws Exception {
-        dialect = new DialectH2(getDatabaseMetaData(),
-                new RepositoryDescriptor());
+        dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         check("+foo", "foo");
         check("+foo +bar", "foo    bar");
         check("+foo -bar", "foo -bar");
@@ -64,8 +82,8 @@ public class TestDialectQuerySyntax extends TestCase {
     }
 
     public void testPostgreSQL() throws Exception {
-        dialect = new DialectPostgreSQL(getDatabaseMetaData(),
-                new RepositoryDescriptor());
+        dialect = new DialectPostgreSQL(metadata, binaryManager,
+                repositoryDescriptor);
         check("foo", "foo");
         check("foo & bar", "foo    bar");
         check("foo & bar", "foo  &  bar"); // compat with native queries
@@ -75,8 +93,8 @@ public class TestDialectQuerySyntax extends TestCase {
     }
 
     public void testOracle() throws Exception {
-        dialect = new DialectOracle(getDatabaseMetaData(),
-                new RepositoryDescriptor());
+        dialect = new DialectOracle(metadata, binaryManager,
+                repositoryDescriptor);
         check("foo", "foo");
         check("foo%", "foo*");
         check("foo & bar", "foo    bar");
@@ -86,8 +104,8 @@ public class TestDialectQuerySyntax extends TestCase {
     }
 
     public void testSQLServer() throws Exception {
-        dialect = new DialectSQLServer(getDatabaseMetaData(),
-                new RepositoryDescriptor());
+        dialect = new DialectSQLServer(metadata, binaryManager,
+                repositoryDescriptor);
         check("foo", "foo");
         check("foo & bar", "foo    bar");
         check("foo &! bar", "foo -bar");
@@ -96,8 +114,8 @@ public class TestDialectQuerySyntax extends TestCase {
     }
 
     public void testMySQL() throws Exception {
-        dialect = new DialectMySQL(getDatabaseMetaData(),
-                new RepositoryDescriptor());
+        dialect = new DialectMySQL(metadata, binaryManager,
+                repositoryDescriptor);
         check("+foo", "foo");
         check("+foo +bar", "foo    bar");
         check("+foo -bar", "foo -bar");

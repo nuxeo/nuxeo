@@ -36,11 +36,11 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
         NuxeoContainer.initTransactionManager(new TransactionManagerConfiguration());
         NuxeoContainer.initConnectionManager(new ConnectionManagerConfiguration());
         InitialContext context = new InitialContext();
-        context.bind("java:comp/TransactionManager",
+        context.rebind("java:comp/TransactionManager",
                 NuxeoContainer.getTransactionManager());
-        context.bind("java:comp/UserTransaction",
+        context.rebind("java:comp/UserTransaction",
                 NuxeoContainer.getUserTransaction());
-        context.bind("java:comp/NuxeoConnectionManager",
+        context.rebind("java:comp/NuxeoConnectionManager",
                 NuxeoContainer.getConnectionManager());
     }
 

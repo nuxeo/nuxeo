@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.JDBCInfo;
 
@@ -68,8 +67,6 @@ public class Column implements Serializable {
 
     private final String key;
 
-    private final Model model;
-
     private boolean identity;
 
     private boolean primary;
@@ -90,10 +87,8 @@ public class Column implements Serializable {
      * @param physicalName the column physical name
      * @param type the column's type
      * @param key the associated field name
-     * @param model the model (to fetch binaries)
      */
-    public Column(Table table, String physicalName, ColumnType type,
-            String key, Model model) {
+    public Column(Table table, String physicalName, ColumnType type, String key) {
         this.table = table;
         dialect = table.getDialect();
         this.physicalName = physicalName;
@@ -102,7 +97,6 @@ public class Column implements Serializable {
         jdbcType = jdbcInfo.jdbcType;
         jdbcTypeString = jdbcInfo.string;
         this.key = key;
-        this.model = model;
         quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
         freeVariableSetter = dialect.getFreeVariableSetterForType(type);
     }
@@ -111,7 +105,7 @@ public class Column implements Serializable {
      * Creates a column from an existing column and an aliased table.
      */
     public Column(Column column, Table table) {
-        this(table, column.physicalName, column.type, column.key, column.model);
+        this(table, column.physicalName, column.type, column.key);
     }
 
     public Table getTable() {
@@ -136,10 +130,6 @@ public class Column implements Serializable {
 
     public ColumnType getType() {
         return type;
-    }
-
-    public Model getModel() {
-        return model;
     }
 
     public String getFreeVariableSetter() {

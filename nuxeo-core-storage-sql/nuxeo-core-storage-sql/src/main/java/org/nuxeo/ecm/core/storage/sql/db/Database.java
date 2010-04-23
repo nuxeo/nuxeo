@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
@@ -38,23 +40,30 @@ public class Database implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    protected final BinaryManager binaryManager;
+
     protected final Dialect dialect;
 
     protected final Map<String, Table> tables;
 
     protected final Set<String> physicalTables;
 
-    public Database(Dialect dialect) {
+    public Database(RepositoryImpl repository, Dialect dialect) {
+        binaryManager = repository.getBinaryManager();
         this.dialect = dialect;
         tables = new LinkedHashMap<String, Table>();
         physicalTables = new HashSet<String>();
     }
 
+    public BinaryManager getBinaryManager() {
+        return binaryManager;
+    }
+
     public Table addTable(String name) throws IllegalArgumentException {
         String physicalName = getTablePhysicalName(name);
         if (!physicalTables.add(physicalName)) {
-            throw new IllegalArgumentException("Duplicate table name: " +
-                    physicalName);
+            throw new IllegalArgumentException("Duplicate table name: "
+                    + physicalName);
         }
         Table table = new TableImpl(this, physicalName);
         tables.put(name, table);

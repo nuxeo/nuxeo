@@ -37,7 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  * datasource.
  * <p>
  * (When repositories are looked up through JNDI, the class
- * {@link org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl} is used instead of this one.)
+ * {@link org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl} is used
+ * instead of this one.)
  * <p>
  * This class is constructed by {@link SQLRepositoryFactory}.
  *
@@ -57,8 +58,7 @@ public class SQLRepository implements Repository {
 
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
-        repository = new RepositoryImpl(getDescriptor(descriptor),
-                schemaManager);
+        repository = new RepositoryImpl(getDescriptor(descriptor));
         if (descriptor.getSecurityManagerClass() == null) {
             securityManager = new SQLSecurityManager();
         } else {

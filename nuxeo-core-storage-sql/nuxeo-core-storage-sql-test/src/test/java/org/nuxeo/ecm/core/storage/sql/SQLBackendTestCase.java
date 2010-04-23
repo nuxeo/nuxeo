@@ -46,11 +46,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     protected Repository newRepository(long clusteringDelay,
             boolean fulltextDisabled) throws Exception {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        assertNotNull(schemaManager);
         RepositoryDescriptor descriptor = newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        return new RepositoryImpl(descriptor, schemaManager);
+        return new RepositoryImpl(descriptor);
     }
 
     protected RepositoryDescriptor newDescriptor(long clusteringDelay,

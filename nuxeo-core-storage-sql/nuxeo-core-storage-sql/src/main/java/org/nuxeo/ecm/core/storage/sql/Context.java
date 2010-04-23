@@ -63,10 +63,10 @@ public class Context {
     /** Number of columns in table. */
     private final int tableSize;
 
-    // also accessed by Fragment
-    protected final Mapper mapper;
-
     protected final Model model;
+
+    // also accessed by Fragment.refetch()
+    protected final Mapper mapper;
 
     protected final PersistenceContext persistenceContext;
 
@@ -118,12 +118,12 @@ public class Context {
     protected final boolean isCollection;
 
     @SuppressWarnings("unchecked")
-    public Context(String tableName, Mapper mapper,
+    public Context(String tableName, Model model, Mapper mapper,
             PersistenceContext persistenceContext) {
         this.tableName = tableName;
+        this.model = model;
         this.mapper = mapper;
         this.persistenceContext = persistenceContext;
-        model = mapper.getModel();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
         modified = new HashMap<Serializable, Fragment>();
 

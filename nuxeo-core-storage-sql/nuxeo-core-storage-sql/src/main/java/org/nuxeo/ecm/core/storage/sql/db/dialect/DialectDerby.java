@@ -32,8 +32,10 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
@@ -46,9 +48,10 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
  */
 public class DialectDerby extends Dialect {
 
-    public DialectDerby(DatabaseMetaData metadata,
-            RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, repositoryDescriptor);
+    public DialectDerby(DatabaseMetaData metadata, BinaryManager binaryManager,
+            RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
+        super(metadata, binaryManager, repositoryDescriptor);
     }
 
     @Override
@@ -158,7 +161,7 @@ public class DialectDerby extends Dialect {
         case Types.CLOB:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
-                return column.getModel().getBinary(string);
+                return getBinaryManager().getBinary(string);
             } else {
                 return string;
             }
@@ -398,10 +401,11 @@ public class DialectDerby extends Dialect {
     public boolean supportsPaging() {
         return true;
     }
-    
+
     @Override
     public String getPagingClause(long limit, long offset) {
-        return String.format("OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset, limit); // available from 10.5
+        return String.format("OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset,
+                limit); // available from 10.5
     }
 
 }

@@ -441,8 +441,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
             WhereBuilder whereBuilder;
             try {
-                whereBuilder = new WhereBuilder(database, session, hierTable,
-                        hierId, dataHierTable, dataHierId,
+                whereBuilder = new WhereBuilder(database, session, dialect,
+                        hierTable, hierId, dataHierTable, dataHierId,
                         docKind == DocKind.PROXY, aliasColumns);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
@@ -1049,12 +1049,13 @@ public class NXQLQueryMaker implements QueryMaker {
         private int ftJoinNumber;
 
         public WhereBuilder(Database database, Session session,
-                Table hierTable, String hierId, Table dataHierTable,
-                String dataHierId, boolean isProxies, boolean aliasColumns) {
+                Dialect dialect, Table hierTable, String hierId,
+                Table dataHierTable, String dataHierId, boolean isProxies,
+                boolean aliasColumns) {
             try {
                 this.session = session;
                 this.model = session.getModel();
-                this.dialect = model.getDialect();
+                this.dialect = dialect;
                 this.database = database;
                 this.hierTable = hierTable;
                 this.hierId = hierId;

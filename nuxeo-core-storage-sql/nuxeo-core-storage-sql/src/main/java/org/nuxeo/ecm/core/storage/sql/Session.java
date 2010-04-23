@@ -382,7 +382,14 @@ public interface Session extends Connection {
             boolean countTotal) throws StorageException;
 
     /**
+     * Makes a query to the database and returns an iterable (which must be
+     * closed when done).
      *
+     * @param query the query
+     * @param queryType the query type
+     * @param queryFilter the query filter
+     * @param params optional query-type-dependent parameters
+     * @return an iterable, which <b>must</b> be closed when done
      * @throws StorageException
      */
     IterableQueryResult queryAndFetch(String query, String queryType,
@@ -406,7 +413,7 @@ public interface Session extends Connection {
     void updateReadAcls() throws StorageException;
 
     /**
-     * Rebuild the read ACLs for the wall repository.
+     * Rebuild the read ACLs for the whole repository.
      *
      * @throws StorageException
      */

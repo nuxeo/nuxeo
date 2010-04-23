@@ -124,11 +124,11 @@ public class TableAlias implements Table {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getPostCreateSqls() {
+    public List<String> getPostCreateSqls(Model model) {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getPostAddSqls(Column column) {
+    public List<String> getPostAddSqls(Column column, Model model) {
         throw new UnsupportedOperationException();
     }
 

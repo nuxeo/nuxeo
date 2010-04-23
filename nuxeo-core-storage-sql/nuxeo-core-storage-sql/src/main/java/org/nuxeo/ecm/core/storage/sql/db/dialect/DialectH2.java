@@ -36,8 +36,10 @@ import java.util.List;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
@@ -53,9 +55,9 @@ public class DialectH2 extends Dialect {
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
-    public DialectH2(DatabaseMetaData metadata,
+    public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
-        super(metadata, repositoryDescriptor);
+        super(metadata, binaryManager, repositoryDescriptor);
     }
 
     @Override
@@ -171,7 +173,7 @@ public class DialectH2 extends Dialect {
         case Types.CLOB:
             String string = rs.getString(index);
             if (column.getType() == ColumnType.BLOBID && string != null) {
-                return column.getModel().getBinary(string);
+                return getBinaryManager().getBinary(string);
             } else {
                 return string;
             }
@@ -265,7 +267,7 @@ public class DialectH2 extends Dialect {
         info.scoreExpr = String.format("1 AS %s", scoreAlias);
         info.scoreAlias = scoreAlias;
         info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null, model);
+                ColumnType.DOUBLE, null);
         return info;
     }
 

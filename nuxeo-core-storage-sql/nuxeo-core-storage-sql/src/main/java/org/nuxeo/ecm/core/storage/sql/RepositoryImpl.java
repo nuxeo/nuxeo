@@ -75,10 +75,9 @@ public class RepositoryImpl implements Repository {
     // modified only under clusterMapper synchronization
     private long clusterLastInvalidationTimeMillis;
 
-    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
-            SchemaManager schemaManager) throws StorageException {
+    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
+            throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
-        this.schemaManager = schemaManager;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         xadatasource = getXADataSource();
         try {
@@ -88,6 +87,7 @@ public class RepositoryImpl implements Repository {
             }
             Constructor<? extends BinaryManager> constructor = klass.getConstructor(RepositoryDescriptor.class);
             binaryManager = constructor.newInstance(repositoryDescriptor);
+            schemaManager = Framework.getService(SchemaManager.class);
         } catch (InvocationTargetException e) {
             throw new StorageException(e.getCause());
         } catch (Exception e) {
@@ -95,11 +95,11 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected RepositoryDescriptor getRepositoryDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
     }
 
-    protected BinaryManager getBinaryManager() {
+    public BinaryManager getBinaryManager() {
         return binaryManager;
     }
 
@@ -135,10 +135,11 @@ public class RepositoryImpl implements Repository {
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
         if (!initialized) {
+            // create dialect, model, sqlInfo
             initialize();
         }
 
-        Mapper mapper = new Mapper(this, model, sqlInfo, xadatasource);
+        Mapper mapper = newMapper();
 
         if (!initialized) {
             // first connection, initialize the database
@@ -151,16 +152,19 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = new Mapper(this, model, sqlInfo, xadatasource);
+                mapper = newMapper();
             }
             initialized = true;
         }
 
-        SessionImpl session = new SessionImpl(this, schemaManager, mapper,
-                credentials);
+        SessionImpl session = new SessionImpl(this, model, mapper, credentials);
 
         sessions.add(session);
         return session;
+    }
+
+    protected Mapper newMapper() throws StorageException {
+        return new JDBCMapper(this, model, sqlInfo, xadatasource);
     }
 
     public ResourceAdapterMetaData getMetaData() {
@@ -299,7 +303,7 @@ public class RepositoryImpl implements Repository {
             Connection connection = null;
             try {
                 connection = xaconnection.getConnection();
-                dialect = Dialect.createDialect(connection,
+                dialect = Dialect.createDialect(connection, binaryManager,
                         repositoryDescriptor);
             } finally {
                 if (connection != null) {
@@ -308,10 +312,10 @@ public class RepositoryImpl implements Repository {
                 xaconnection.close();
             }
         } catch (SQLException e) {
-            throw new StorageException("Cannot get XAConnection", e);
+            throw new StorageException(e);
         }
-        model = new Model(this, schemaManager, dialect);
-        sqlInfo = new SQLInfo(model, dialect);
+        model = new Model(this, dialect, schemaManager);
+        sqlInfo = new SQLInfo(this, model, dialect);
     }
 
     // called by session
