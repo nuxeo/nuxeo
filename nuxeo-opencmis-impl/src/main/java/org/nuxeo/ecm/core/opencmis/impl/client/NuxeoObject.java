@@ -33,7 +33,7 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
-import org.apache.chemistry.opencmis.client.api.PagingList;
+import org.apache.chemistry.opencmis.client.api.PagingIterable;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
@@ -46,9 +46,7 @@ import org.apache.chemistry.opencmis.commons.api.Acl;
 import org.apache.chemistry.opencmis.commons.api.AllowableActions;
 import org.apache.chemistry.opencmis.commons.api.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.ObjectData;
 import org.apache.chemistry.opencmis.commons.api.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.api.Properties;
 import org.apache.chemistry.opencmis.commons.api.PropertyBooleanDefinition;
 import org.apache.chemistry.opencmis.commons.api.PropertyData;
 import org.apache.chemistry.opencmis.commons.api.PropertyDateTimeDefinition;
@@ -258,7 +256,7 @@ public abstract class NuxeoObject implements CmisObject {
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<Relationship> getRelationships(
+    public PagingIterable<Relationship> getRelationships(
             boolean includeSubRelationshipTypes,
             RelationshipDirection relationshipDirection, ObjectType type,
             OperationContext context, int itemsPerPage) {
@@ -520,23 +518,23 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
-        public PagingList<Document> getCheckedOutDocs(int itemsPerPage) {
+        public PagingIterable<Document> getCheckedOutDocs(int itemsPerPage) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingList<Document> getCheckedOutDocs(OperationContext context,
+        public PagingIterable<Document> getCheckedOutDocs(OperationContext context,
                 int itemsPerPage) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingList<CmisObject> getChildren(int itemsPerPage) {
+        public PagingIterable<CmisObject> getChildren(int itemsPerPage) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingList<CmisObject> getChildren(OperationContext context,
+        public PagingIterable<CmisObject> getChildren(OperationContext context,
                 int itemsPerPage) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();

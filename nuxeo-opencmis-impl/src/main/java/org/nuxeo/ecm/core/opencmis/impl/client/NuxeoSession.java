@@ -29,7 +29,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectFactory;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
-import org.apache.chemistry.opencmis.client.api.PagingList;
+import org.apache.chemistry.opencmis.client.api.PagingIterable;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Session;
@@ -45,10 +45,9 @@ import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 
 /**
  * Nuxeo Persistent Session, having a direct connection to a Nuxeo CoreSession.
@@ -159,18 +158,18 @@ public class NuxeoSession implements Session {
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<Document> getCheckedOutDocs(int itemsPerPage) {
+    public PagingIterable<Document> getCheckedOutDocs(int itemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<Document> getCheckedOutDocs(OperationContext context,
+    public PagingIterable<Document> getCheckedOutDocs(OperationContext context,
             int itemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<ChangeEvent> getContentChanges(String changeLogToken,
+    public PagingIterable<ChangeEvent> getContentChanges(String changeLogToken,
             int itemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -238,7 +237,7 @@ public class NuxeoSession implements Session {
         return (Folder) folder;
     }
 
-    public PagingList<ObjectType> getTypeChildren(String typeId,
+    public PagingIterable<ObjectType> getTypeChildren(String typeId,
             boolean includePropertyDefinitions, int itemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -256,13 +255,13 @@ public class NuxeoSession implements Session {
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<QueryResult> query(String statement,
+    public PagingIterable<QueryResult> query(String statement,
             boolean searchAllVersions, int itemsPerPage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public PagingList<QueryResult> query(String statement,
+    public PagingIterable<QueryResult> query(String statement,
             boolean searchAllVersions, OperationContext context,
             int itemsPerPage) {
         // TODO Auto-generated method stub
