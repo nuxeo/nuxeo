@@ -9,8 +9,10 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <fulltext analyzer="english">
-            <index name="default"> 
+          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
+          <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
+          <fulltext>
+            <index name="default">
               <!-- all props implied -->
             </index>
             <index name="title">
@@ -19,7 +21,7 @@
             <index name="description">
               <field>dc:description</field>
             </index>
-          </fulltext> 
+          </fulltext>
         </indexing>
       </repository>
     </repository>

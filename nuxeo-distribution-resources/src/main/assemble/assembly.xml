@@ -28,7 +28,7 @@
       <param name="distribution" value="templates-jboss" />
     </antcall>
     <antcall target="build-resources">
-      <param name="distribution" value="templates-dm" />
+      <param name="distribution" value="templates-jboss-dm" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat" />

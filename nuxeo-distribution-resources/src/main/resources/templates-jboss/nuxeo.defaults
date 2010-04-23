@@ -22,9 +22,6 @@ nuxeo.db.max-pool-size=20
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 
-org.nuxeo.ecm.instance.name=Nuxeo 5.3
-org.nuxeo.ecm.instance.description=Nuxeo ECM server
-
 org.nuxeo.ecm.platform.transform.ooo.host.name=127.0.0.1
 org.nuxeo.ecm.platform.transform.ooo.host.port=8100
 org.nuxeo.ecm.platform.transform.ooo.version=2.2.1

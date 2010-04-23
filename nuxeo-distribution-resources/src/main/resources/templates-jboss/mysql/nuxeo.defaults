@@ -6,3 +6,6 @@ nuxeo.db.port=3306
 nuxeo.db.name=nuxeo
 nuxeo.db.user=nuxeo
 nuxeo.db.password=password
+
+org.nuxeo.ecm.instance.name=Nuxeo 5.3
+org.nuxeo.ecm.instance.description=Nuxeo ECM server
