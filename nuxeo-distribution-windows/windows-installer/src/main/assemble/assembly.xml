@@ -7,7 +7,6 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
   <!-- Properties -->
-  <property file="build.properties" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="project.build.directory" value="target" />
@@ -116,7 +115,7 @@
                             classifier="${distribution}" />
     </unzip>
     <unzip dest="${project.build.directory}/nuxeo-shell">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-shell:${nuxeo.distribution.version}:zip"  />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-shell:${nuxeo.distribution.version}:zip" />
     </unzip>
     <delete dir="${installer.path}/jboss/NuxeoServer" />
     <move file="${project.build.directory}/nuxeo-jboss/nuxeo-dm-jboss"

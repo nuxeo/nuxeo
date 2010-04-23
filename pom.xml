@@ -125,6 +125,12 @@
         <module>nuxeo-distribution-windows</module>
       </modules>
     </profile>
+    <profile>
+      <id>windows-startup</id>
+      <modules>
+        <module>nuxeo-distribution-windows</module>
+      </modules>
+    </profile>
   </profiles>
 
   <dependencyManagement>
