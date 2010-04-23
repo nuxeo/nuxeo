@@ -15,7 +15,7 @@
       </or>
     </condition>
     <condition property="no.alternate.build">
-      <isset property="maven.profile.vcs" />
+      <isset property="maven.profile.nuxeo-dm" />
     </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
@@ -44,6 +44,7 @@
       <fileset dir="${nuxeo.ear}" />
       <fileset dir="${nuxeo.ear.resources}" />
     </copy>
+    <!-- DEPRECATED distributions -->
     <antcall target="build-distribution">
       <param name="distribution" value="derby" />
     </antcall>
@@ -85,15 +86,10 @@
         <fileset dir="${stagedir}/nuxeo-${distribution}.ear" />
       </copy>
     </nx:profile>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-         basedir="${stagedir}/nuxeo-${distribution}.ear" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-                     classifier="${distribution}"
-                     type="zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
 
-    <!-- resources artifact -->
-    <delete failonerror="false" dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
+    <!-- DEPRECATED resources artifact, temporarily built for backward compliance -->
+    <delete failonerror="false"
+            dir="${stagedir}/nuxeo-${distribution}.ear.resources" />
     <unzip dest="${stagedir}/nuxeo-${distribution}.ear.resources">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
                             classifier="resources-${distribution}" />
@@ -130,6 +126,12 @@
       <artifact:file groupId="org.nuxeo.ecm.core"
                      artifactId="nuxeo-core-jcr-connector" />
     </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+         basedir="${stagedir}/nuxeo-${distribution}.ear" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
+                     classifier="${distribution}"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
   <target name="build-standard"
@@ -160,7 +162,6 @@
 
     <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
-    <!-- <antcall target="old-third-party-libraries" /> -->
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />
@@ -168,13 +169,12 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip" />
 
-    <!-- resources artifact -->
+    <!-- DEPRECATED resources artifact, temporarily built for backward compliance -->
     <unzip dest="${nuxeo.ear.resources}">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${maven.project.version}:zip"
                             classifier="resources-mono" />
     </unzip>
     <copy todir="${nuxeo.ear.resources}" overwrite="true">
-      <!-- Nuxeo DM specific properties -->
       <fileset dir="src/main/resources" />
     </copy>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-resources.zip"
@@ -339,6 +339,21 @@
       <artifact:resolveFile key="org.apache.poi:poi" />
       <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
       <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
+      <!--
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+      -->
     </copy>
   </target>
 

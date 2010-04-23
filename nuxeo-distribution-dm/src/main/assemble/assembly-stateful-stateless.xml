@@ -10,7 +10,7 @@
     <condition property="no.build">
       <and>
         <or>
-          <isset property="maven.profile.vcs" />
+          <isset property="maven.profile.nuxeo-dm" />
           <isset property="maven.profile.nuxeo-ep" />
         </or>
         <not>
@@ -412,6 +412,21 @@
       <artifact:resolveFile key="org.apache.poi:poi" />
       <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
       <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
+      <!--
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
+      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
+      <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
+      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
+      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
+      -->
     </copy>
   </target>
 

@@ -9,7 +9,9 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <fulltext analyzer="english">
+          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
+          <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
+          <fulltext>
             <index name="default"> 
               <!-- all props implied -->
             </index>
@@ -20,6 +22,13 @@
               <field>dc:description</field>
             </index>
           </fulltext> 
+          <!--
+            For Oracle (Oracle Text indexing parameters):
+            <fulltext analyzer="LEXER MY_LEXER"/>
+            See doc at:
+            http://jira.nuxeo.org/browse/NXP-4035
+            http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
+          -->
         </indexing>
       </repository>
     </repository>

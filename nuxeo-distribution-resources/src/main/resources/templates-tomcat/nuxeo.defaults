@@ -15,7 +15,4 @@ nuxeo.template=default
 #nuxeo.db.min-pool-size=
 nuxeo.db.max-pool-size=20
 
-org.nuxeo.ecm.instance.name=Nuxeo 5.3
-org.nuxeo.ecm.instance.description=Nuxeo ECM server
-
 org.nuxeo.ecm.contextPath=/nuxeo

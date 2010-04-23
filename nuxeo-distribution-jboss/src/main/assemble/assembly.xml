@@ -17,14 +17,6 @@
     <condition property="build.dm">
       <or>
         <isset property="maven.profile.nuxeo-dm" />
-        <isset property="maven.profile.cmis" />
-        <isset property="maven.profile.all" />
-        <isset property="maven.profile.all-distributions" />
-      </or>
-    </condition>
-    <condition property="build.cmis">
-      <or>
-        <isset property="maven.profile.cmis" />
         <isset property="maven.profile.all" />
         <isset property="maven.profile.all-distributions" />
       </or>
@@ -154,7 +146,7 @@
     </unzip>
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-dm" />
+                            classifier="templates-jboss-dm" />
     </unzip>
     <antcall target="jboss-third-party-libraries">
       <param name="lib.dir"
@@ -169,44 +161,6 @@
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nuxeo-dm"
-                     type="zip" />
-
-    <!-- CMIS build requires Nuxeo DM build -->
-    <antcall target="build-nuxeo-dm-jboss-cmis" />
-  </target>
-
-  <target name="build-nuxeo-dm-jboss-cmis"
-          if="build.cmis"
-          description="Build JBoss distribution with Nuxeo DM and CMIS support">
-    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/system">
-      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-impl" />
-      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-bindings" />
-      <artifact:resolveFile key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
-    </copy>
-    <antcall target="cmis-third-party-libraries">
-      <param name="lib.dir"
-             value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
-    </antcall>
-
-    <replace file="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates/common/config/default-repository-config.xml">
-      <replacetoken>
-        <![CDATA[<indexing>]]></replacetoken>
-      <replacevalue>
-        <![CDATA[<indexing>
-        <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
-        <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
-]]></replacevalue>
-    </replace>
-
-    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin"
-           perm="ug+x"
-           includes="*.sh,nuxeoctl,openofficectl" />
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
-         basedir="${outdir}"
-         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-dm-cmis"
                      type="zip" />
   </target>
 
@@ -223,25 +177,6 @@
     <copy todir="${lib.dir}" overwrite="true">
     </copy>
     -->
-  </target>
-
-  <target name="cmis-third-party-libraries">
-    <!-- Add libraries required under JBoss (not present in the dependency tree) -->
-    <copy todir="${lib.dir}" overwrite="true">
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
-      <artifact:resolveFile key="org.antlr:antlr-runtime" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
-      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
-      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
-    </copy>
   </target>
 
 </project>
