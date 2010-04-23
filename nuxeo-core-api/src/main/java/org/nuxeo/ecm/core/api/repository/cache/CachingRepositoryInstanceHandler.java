@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.repository.cache;
 
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,6 +40,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.operation.LockOperation;
+import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
@@ -51,11 +56,14 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
  */
 @SuppressWarnings("unchecked")
 public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
-        implements DocumentModelCache {
-
+implements DocumentModelCache {
+    
+    public static final Log log = LogFactory.getLog(CachingRepositoryInstanceHandler.class);
+    
     protected Principal principal;
     protected String sessionId;
-
+    protected long lastModified;
+    
     // access to maps should be synchronized
     protected final Map<String, DocumentModel> cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
     protected final Map<String, String> path2Ids = new DualHashBidiMap();
@@ -96,6 +104,11 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     // --------------------------- Document Provider API --------------------------------
+    public void setLastModified(long value) {
+        if (lastModified < value) {
+            lastModified = value;
+        }
+    }
 
     /**
      * The doc
@@ -112,7 +125,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         if (cache.containsKey(id)) { // doc is already in cache, return cached instance
             return cache.get(id);
         }
-        cache.put(id, doc);
+        cache.put(id, doc); 
         path2Ids.put(doc.getPathAsString(), id);
         childrenCache.remove(id);
         return doc;
@@ -122,16 +135,15 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         if (ref.type() == DocumentRef.ID) {
             String id = ((IdRef) ref).value;
             DocumentModel doc = cache.remove(id);
-            /* Doc maybe gone already, but remove id anyway for safety */
-            childrenCache.remove(id);
-            ((DualHashBidiMap)path2Ids).removeValue(id);
-            return doc;
+            if (doc != null) {
+                path2Ids.remove(doc.getPathAsString());
+            }
+            return doc; 
         }
         // else assume a path
         String path = ((PathRef) ref).value;
         String id = path2Ids.remove(path);
         if (id != null) {
-            childrenCache.remove(id);
             return cache.remove(id);
         }
         return null;
@@ -152,9 +164,12 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public synchronized void flushDocumentCache() {
-        path2Ids.clear();
-        childrenCache.clear();
-        cache.clear();
+        // Race condition: try to clean until we succeed - this may not work from first time
+        // because we are not in a synchronized block
+        while (path2Ids.isEmpty() && cache.isEmpty()) {
+            path2Ids.clear();
+            cache.clear();
+        }
     }
 
     public DocumentModel fetchDocument(DocumentRef ref) throws ClientException {
@@ -165,7 +180,6 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         }
         return cacheDocument(session.getDocument(ref));
     }
-
 
     public synchronized DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
         DocumentModel doc = getCachedDocument(parent);
@@ -271,12 +285,12 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public DocumentModel createDocumentModel(String type, Map<String, Object> options)
-            throws ClientException {
+    throws ClientException {
         return cacheDocument(session.createDocumentModel(type, options));
     }
 
     public DocumentModel createDocumentModel(String parentPath, String id, String type)
-            throws ClientException {
+    throws ClientException {
         return cacheDocument(session.createDocumentModel(parentPath, id, type));
     }
 
@@ -287,7 +301,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
 
-    /** Children Cache
+    /** Children Cache 
      * @throws ClientException */
 
     public String getDocumentId(DocumentRef docRef) {
@@ -346,7 +360,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public DocumentModelList fetchChildren(DocumentRef parent)
-            throws Exception {
+    throws Exception {
         return getSession().getChildren(parent);
     }
 
@@ -507,4 +521,30 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         }
     }
 
+    
+    public void setLock(DocumentRef ref, String key) throws ClientException {
+        if (log.isTraceEnabled()) {
+            log.trace("reified lock(" + ref + "," + key + ") into an operation for concurrency detection");
+        }
+        Operation op = new LockOperation(ref, key);
+        op.setLastModified(this.lastModified); // play cache validation on locks
+        session.run(op); 
+    }
+    
+    public void save() {
+        log.warn("saved filtered, session is automacally saved server side");
+    }
+    
+    @Override
+    public synchronized Object invoke(Object proxy, Method method, Object[] args)
+    throws Throwable {
+
+        if (args != null && args[0] instanceof Operation) {
+            Operation op = (Operation) args[0];
+            op.setLastModified(lastModified);
+        }
+
+        return super.invoke(proxy, method, args);
+
+    }
 }

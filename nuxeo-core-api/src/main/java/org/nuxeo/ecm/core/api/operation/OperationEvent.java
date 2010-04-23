@@ -33,6 +33,8 @@ public interface OperationEvent extends Serializable {
     String getId();
 
     ModificationSet getModifications();
+    
+    long getLastModified();
 
     String getRepositoryName();
 
