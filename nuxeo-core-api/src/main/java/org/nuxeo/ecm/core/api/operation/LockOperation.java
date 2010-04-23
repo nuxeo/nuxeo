@@ -17,8 +17,8 @@ public class LockOperation extends  Operation<String> {
     @Override
     public String doRun(ProgressMonitor montior) throws Exception {
        session.setLock(ref, key);
-       addModification(new Modification(ref,Modification.CONTENT));
-       return key;
+       addModification(new Modification(ref,Modification.STATE));
+       return ref + " is locked";
     }
 
 }

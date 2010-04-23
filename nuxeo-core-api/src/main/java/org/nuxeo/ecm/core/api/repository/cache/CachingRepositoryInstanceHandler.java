@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.operation.LockOperation;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.UnlockOperation;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
@@ -531,8 +532,17 @@ implements DocumentModelCache {
         session.run(op); 
     }
     
+    public void unlock(DocumentRef ref) throws ClientException {
+        if (log.isTraceEnabled()) {
+            log.trace("reified unlock(" + ref + ") into an operation for concurrency detection");
+        }
+        Operation op =new UnlockOperation(ref);
+        op.setLastModified(this.lastModified);
+        session.run(op);
+    }
+    
     public void save() {
-        log.warn("saved filtered, session is automacally saved server side");
+        log.warn("filtered save, session is remote and is auto committed");
     }
     
     @Override
