@@ -251,6 +251,20 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector</artifactId>
     </dependency>
+    
+    <!-- CMIS -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-chemistry-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-chemistry-bindings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -267,8 +281,8 @@
       <!-- profile for disabling build of all classifiers -->
     </profile>
     <profile>
-      <id>vcs</id>
-      <!-- default profile for building only with VCS -->
+      <id>nuxeo-dm</id>
+      <!-- default profile for building only Nuxeo DM -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>

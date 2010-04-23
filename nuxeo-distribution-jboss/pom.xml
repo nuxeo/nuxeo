@@ -34,10 +34,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
     </profile>
-    <profile>
-      <id>cmis</id>
-      <!-- profile for building JBoss with Nuxeo DM and CMIS support -->
-    </profile>
   </profiles>
 
   <build>
