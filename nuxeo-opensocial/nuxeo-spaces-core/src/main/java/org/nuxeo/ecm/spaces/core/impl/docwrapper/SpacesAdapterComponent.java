@@ -19,7 +19,6 @@ package org.nuxeo.ecm.spaces.core.impl.docwrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,11 +64,9 @@ public class SpacesAdapterComponent extends DefaultComponent implements
 
     @SuppressWarnings("unchecked")
     public Object getAdapter(DocumentModel doc, Class itf) {
-        if (Space.class.isAssignableFrom(itf)) {
+        if (Space.class.isAssignableFrom(itf)
+                || Gadget.class.isAssignableFrom(itf)) {
             return getSpaceFactory(doc, itf);
-        } else if (doc.getType().equals(DocGadgetImpl.TYPE)
-                && Gadget.class.isAssignableFrom(itf)) {
-            return new DocGadgetImpl(doc);
         }
         return null;
     }
@@ -94,10 +91,12 @@ public class SpacesAdapterComponent extends DefaultComponent implements
             try {
                 SchemaManager sm = Framework.getService(SchemaManager.class);
 
-                Set<String> types = sm.getDocumentTypeNamesExtending(DocSpaceImpl.TYPE);
-
-                if (types.contains(doc.getType())) {
+                if (sm.getDocumentTypeNamesExtending(DocSpaceImpl.TYPE).contains(
+                        doc.getType())) {
                     return new DocSpaceImpl(doc);
+                } else if (sm.getDocumentTypeNamesExtending(DocGadgetImpl.TYPE).contains(
+                        doc.getType())) {
+                    return new DocGadgetImpl(doc);
                 }
                 return null;
             } catch (Exception e) {
