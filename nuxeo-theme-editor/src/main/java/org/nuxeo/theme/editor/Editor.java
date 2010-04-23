@@ -1009,7 +1009,38 @@ public class Editor {
             throw new ThemeException(e.getMessage(), e);
         }
         undoBuffer.clearBuffer();
+        saveTheme(themeName);
         return undoBuffer.getMessage();
+    }
+
+    public static void createFragmentPreview(String currentThemeName) {
+        ThemeManager themeManager = Manager.getThemeManager();
+        String fragmentType = SessionManager.getFragmentType();
+        String viewName = SessionManager.getFragmentView();
+        String styleName = SessionManager.getFragmentStyle();
+
+        Fragment fragment = FragmentFactory.create(fragmentType);
+        try {
+            // View
+            Widget widget = (Widget) FormatFactory.create("widget");
+            widget.setName(viewName);
+            ElementFormatter.setFormat(fragment, widget);
+            
+            // Style
+            Style style = (Style) FormatFactory.create("style");
+            ElementFormatter.setFormat(fragment, style);
+
+            themeManager.makeElementUseNamedStyle(fragment, styleName,
+                    currentThemeName);
+            
+            String themeName = currentThemeName.split("/")[0];
+            themeManager.fillScratchPage(themeName, fragment);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Clean cache
+        themeManager.themeModified(currentThemeName);
     }
 
 }

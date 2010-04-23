@@ -19,8 +19,12 @@ package org.nuxeo.opensocial.container.factory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.spaces.api.Gadget;
@@ -37,12 +41,18 @@ import com.ibm.icu.util.StringTokenizer;
 
 public class ContainerManagerImpl implements ContainerManager {
 
+    private static final Log log = LogFactory.getLog(ContainerManagerImpl.class);
+
     /**
      * Constant of default container params key
      */
     public static final String DOC_REF = "docRef";
 
     public static final String REPO_NAME = "repoName";
+
+    public static final String RESET_GADGET_TITLE = "resetGadgetTitle";
+
+    public static final String USER_LANGUAGE = "userLanguage";
 
     private static final String LAYOUT_PREFIX = "x-";
 
@@ -66,7 +76,7 @@ public class ContainerManagerImpl implements ContainerManager {
             Space space = spaceManager().getSpaceFromId(spaceId,
                     getCoreSession(containerParams));
             return createContainer(space, getLocale(containerParams),
-                    getServerBase(containerParams));
+                    getServerBase(containerParams), containerParams.get(USER_LANGUAGE));
         } catch (Exception e) {
             throw new ClientException("Space not found");
         }
@@ -143,7 +153,13 @@ public class ContainerManagerImpl implements ContainerManager {
 
         GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget,
                 getLocale(gwtParams), getServerBase(gwtParams));
-        gadgetBean.setTitle("");
+        if (!gwtParams.containsKey(RESET_GADGET_TITLE)
+                || "true".equalsIgnoreCase(gwtParams.get(RESET_GADGET_TITLE))) {
+            gadgetBean.setTitle("");
+        } else {
+            internationalizeGadgetTitle(gadgetBean,
+                    gwtParams.get(USER_LANGUAGE));
+        }
         return gadgetBean;
 
     }
@@ -186,18 +202,20 @@ public class ContainerManagerImpl implements ContainerManager {
         space.setLayout(layout);
         space.save();
         return createContainer(space, getLocale(containerParams),
-                getServerBase(containerParams));
+                getServerBase(containerParams), containerParams.get(USER_LANGUAGE));
     }
 
     private Container createContainer(Space space, String locale,
-            String serverBase) {
+            String serverBase, String userLanguage) {
         try {
             if (space != null) {
                 ArrayList<GadgetBean> gadgets = new ArrayList<GadgetBean>();
 
                 for (Gadget g : space.getGadgets()) {
-                    gadgets.add(GadgetFactory.getGadgetBean(g, locale,
-                            serverBase));
+                    GadgetBean gadgetBean = GadgetFactory.getGadgetBean(g, locale,
+                           serverBase);
+                    internationalizeGadgetTitle(gadgetBean, userLanguage);
+                    gadgets.add(gadgetBean);
                 }
                 Collections.sort(gadgets);
                 String layout = space.getLayout();
@@ -207,10 +225,23 @@ public class ContainerManagerImpl implements ContainerManager {
                 return new Container(gadgets, getStructure(space), layout, space.getId());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unable to create container", e);
         }
 
         return null;
+    }
+
+    protected void internationalizeGadgetTitle(GadgetBean gadgetBean,
+            String userLanguage) {
+        Locale locale = userLanguage != null ? new Locale(userLanguage)
+                : Locale.getDefault();
+        String labelKey = "label.gadget." + gadgetBean.getName();
+        String i18nTitle = I18NUtils.getMessageString("messages", labelKey,
+                null, locale);
+        if (!i18nTitle.equals(labelKey)) {
+            // we found a match
+            gadgetBean.setTitle(i18nTitle);
+        }
     }
 
 }

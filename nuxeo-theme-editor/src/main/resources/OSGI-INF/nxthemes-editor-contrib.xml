@@ -143,6 +143,12 @@
       </path>
     </resource>
 
+    <resource name="fragment-preview.json">
+      <path>
+        nxthemes/editor/views/fragment-preview.json
+      </path>
+    </resource>
+	
     <resource name="canvas-mode-selector.json">
       <path>
         nxthemes/editor/controllers/canvas-mode-selector.json
@@ -241,9 +247,6 @@
 
   </extension>
 
-
-
-
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
@@ -262,7 +265,7 @@
       <resource>nxthemes-editor.js</resource>
       <resource>nxthemes-editor.css</resource>
     </view>
-
+	
     <view name="page frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>page</element-type>
@@ -404,7 +407,7 @@
         nxthemes/editor/widgets/jsf/page-frame.xml
       </template>
     </view>
-
+	
     <view name="page frame" template-engine="jsf-facelets">
       <engine>page-editor</engine>
       <mode>area-styles-section</mode>
@@ -440,6 +443,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">
 
+    <!-- This engine renders the theme editor's UI -->
     <engine name="editor">
 
       <renderer element="theme">
@@ -457,6 +461,7 @@
 
     </engine>
 
+    <!-- This engine renders the editor view of the page canvas -->
     <engine name="page-editor">
 
       <renderer element="theme" />
@@ -498,6 +503,7 @@
 
     </engine>
 
+    <!-- This engine renders all fragments in a linearized fashion -->
     <engine name="fragments-only">
 
       <renderer element="theme">
@@ -521,6 +527,25 @@
 
     </engine>
 
+    <!-- This engine renders fragment previews -->
+    <engine name="preview">
+
+      <renderer element="theme" />
+
+      <renderer element="page" />
+
+      <renderer element="section" />
+
+      <renderer element="cell" />
+
+      <renderer element="fragment">
+        <filter>add widget</filter>
+		<filter>set style</filter>
+        <filter>write fragment tag</filter>
+      </renderer>
+
+    </engine>
+	
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
@@ -554,5 +579,5 @@
     </preview>
 
   </extension>
-
+  
 </component>
