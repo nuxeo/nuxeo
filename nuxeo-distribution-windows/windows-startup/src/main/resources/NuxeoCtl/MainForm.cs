@@ -95,6 +95,7 @@ namespace NuxeoCtl
 		// Same thing with the application version
 		
 		private void nxAppDisplay() {
+			if (nxControl==null) return;
 			if (nxControl.running==false) {
 				startButton.Enabled=true;
 				stopButton.Enabled=false;
