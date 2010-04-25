@@ -37,7 +37,7 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public static final String TYPE = "Gadget";
 
-    private final DocumentModel doc;
+    protected final DocumentModel doc;
 
     private static final Log LOGGER = LogFactory.getLog(DocGadgetImpl.class);
 
