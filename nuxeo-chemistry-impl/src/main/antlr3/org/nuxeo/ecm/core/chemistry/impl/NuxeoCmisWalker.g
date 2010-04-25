@@ -57,8 +57,8 @@ import org.apache.chemistry.util.GregorianCalendar;
 import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.Join;
 import org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker.SelectedColumn;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 }
 
 @members {

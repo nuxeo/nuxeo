@@ -33,8 +33,10 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.Query;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
@@ -58,6 +60,8 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         repo = new NuxeoRepository(session.getRepositoryName());
         conn = repo.getConnection(null);
         Captured captured = new Captured();
+        QueryMakerService queryMakerService = Framework.getService(QueryMakerService.class);
+        queryMakerService.registerQueryMaker(CapturingQueryMaker.class);
         session.queryAndFetch("", CapturingQueryMaker.TYPE, captured);
         sqlInfo = captured.sqlInfo;
         model = captured.model;

@@ -61,12 +61,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
-import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -91,29 +86,6 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
      */
     public abstract Repository makeRepository() throws Exception;
 
-    // needed to change the repo config to add CMISQLQueryMaker
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        if (database instanceof DatabaseH2) {
-            String contrib = "OSGI-INF/test-repo-repository-h2-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
-        } else if (database instanceof DatabasePostgreSQL) {
-            String contrib = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
-        } else if (database instanceof DatabaseOracle) {
-            String contrib = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
-        } else if (database instanceof DatabaseMySQL) {
-            String contrib = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
-        } else if (database instanceof DatabaseSQLServer) {
-            String contrib = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.chemistry.tests", contrib);
-        } else {
-            super.deployRepositoryContrib();
-        }
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -122,7 +94,10 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
+        // event listener and query maker service
+        deployBundle("org.nuxeo.ecm.core.storage.sql");
+        // CMIS query maker
+        deployBundle("org.nuxeo.ecm.core.chemistry.impl");
 
         // MyDocType
         deployContrib("org.nuxeo.ecm.core.chemistry.tests.test",

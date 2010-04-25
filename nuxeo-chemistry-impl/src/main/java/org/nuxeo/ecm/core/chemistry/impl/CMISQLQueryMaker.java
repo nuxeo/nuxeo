@@ -62,8 +62,8 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.Session;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
@@ -939,7 +939,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (propertyName == null) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
-            PropertyInfo propertyInfo = model.getPropertyInfo(propertyName);
+            ModelProperty propertyInfo = model.getPropertyInfo(propertyName);
             if (multi != propertyInfo.propertyType.isArray()) {
                 String msg = multi ? "Must use multi-valued property instead of %s"
                         : "Cannot use multi-valued property %s";
