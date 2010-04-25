@@ -107,8 +107,10 @@ namespace NuxeoCtl
 		
 		bool StartApplication() {
 			if (nxControl==null) nxControl=new NuxeoProcess.NuxeoController();
-			nxControl.DelegatedLog+=new LogEventHandler(AppLog);
-			nxControl.SetDelegateLog(true);
+			if (!nxControl.IsLogDelegated()) {
+				nxControl.DelegatedLog+=new LogEventHandler(AppLog);
+				nxControl.SetDelegateLog(true);
+			}
 			if (nxControl.Start()==false) {
 				Log("Could not start the application","ERROR");
 				return false;

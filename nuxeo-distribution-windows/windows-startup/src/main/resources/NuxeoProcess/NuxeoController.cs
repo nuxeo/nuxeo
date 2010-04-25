@@ -60,6 +60,9 @@ namespace NuxeoProcess
 		public void SetDelegateLog(bool sdl) {
 			delegateLog=sdl;
 		}
+		public bool IsLogDelegated() {
+			return delegateLog;
+		}
 		public event LogEventHandler DelegatedLog;
 		
 		private void Log(String message) {
@@ -74,14 +77,6 @@ namespace NuxeoProcess
 			} else {
 				Console.WriteLine("["+level+"] "+message);
 			}
-		}
-		
-		// Utility : reset process definitions
-		
-		private void Reset() {
-			nxConfig=new Dictionary<String, String>();
-			nxProcess=null;
-			running=false;
 		}
 		
 		// Utility : check java version
@@ -149,7 +144,9 @@ namespace NuxeoProcess
 		
 		private void Process_Exited(object sender, EventArgs e) {
 			Log("Application has exited.","WARN");
-			Reset();
+			nxConfig=new Dictionary<String, String>();
+			nxProcess=null;
+			running=false;
 		}
 		
 		// ********** STARTUP **********
@@ -447,7 +444,6 @@ namespace NuxeoProcess
 		
 		public bool Stop() {
 			if (nxProcess!=null) nxProcess.Kill();
-			Reset();
 			return true;
 		}
 		
