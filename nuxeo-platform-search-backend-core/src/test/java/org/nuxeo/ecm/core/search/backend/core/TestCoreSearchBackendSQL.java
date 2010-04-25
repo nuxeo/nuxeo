@@ -27,6 +27,7 @@ public class TestCoreSearchBackendSQL extends CoreSearchBackendTestCase {
     @Override
     public void deployRepository() throws Exception {
         DatabaseHelper.DATABASE.setUp();
+        deployBundle("org.nuxeo.ecm.core.storage.sql");
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
     }
