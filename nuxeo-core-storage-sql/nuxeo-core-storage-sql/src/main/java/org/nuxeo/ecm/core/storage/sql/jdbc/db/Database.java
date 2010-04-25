@@ -13,11 +13,9 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Database.java 18365 2007-2008-05-08 10:24:00Z sfermigier $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,7 +27,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * A collection of {@link Table}s.

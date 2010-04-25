@@ -13,11 +13,9 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Select.java 18033 2007-2008-05-01 01:34:45Z fguillaume $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
 

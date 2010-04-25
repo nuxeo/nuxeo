@@ -164,28 +164,49 @@ public interface Mapper extends XAResource {
             boolean complexProp, Context context) throws StorageException;
 
     /**
+     * Creates an empty collection fragment given a table name and id.
+     *
+     * @param id the id
+     * @param context the persistence context to which the empty fragment is
+     *            tied
+     * @return the new collection fragment
+     */
+    CollectionFragment makeEmptyCollectionRow(Serializable id,
+            Context context);
+
+    /**
      * Gets an array for a {@link CollectionFragment} from the database, given
      * its table name and id. If now rows are found, an empty array is returned.
      *
      * @param id the id
-     * @param context the persistence context to which the read collection is
-     *            tied
+     * @param context the persistence context to which the read fragment is tied
      * @return the array
      */
     Serializable[] readCollectionArray(Serializable id, Context context)
             throws StorageException;
 
     /**
-     * Gets a per-id map of arrays for {@link CollectionFragment}s from the
-     * database, given a table name and the ids.
+     * Reads a collection fragment from the database, given its table name and
+     * id.
+     *
+     * @param id the id
+     * @param context the persistence context to which the read fragment is tied
+     * @return the collection fragment
+     * @throws StorageException
+     */
+    CollectionFragment readCollectionRow(Serializable id, Context context)
+            throws StorageException;
+
+    /**
+     * Reads several collection fragments, given a table name and the ids.
      *
      * @param ids the ids
-     * @param context the persistence context to which the read collection is
+     * @param context the persistence context to which the read fragments are
      *            tied
-     * @return the map of id to array
+     * @param fragments a list to which fragments are added
      */
-    Map<Serializable, Serializable[]> readCollectionsArrays(
-            List<Serializable> ids, Context context) throws StorageException;
+    void readCollectionsRows(List<Serializable> ids, Context context,
+            List<Fragment> fragments) throws StorageException;
 
     /**
      * Updates a row in the database.

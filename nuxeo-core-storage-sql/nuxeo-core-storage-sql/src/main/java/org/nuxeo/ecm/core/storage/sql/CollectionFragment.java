@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,29 +18,37 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
  * A type of fragment corresponding to several rows with the same id.
- *
- * @author Florent Guillaume
  */
-public abstract class CollectionFragment extends Fragment {
+public class CollectionFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
+    /** The collection actually holding the data. */
+    public Serializable[] array;
+
     protected boolean dirty;
 
-    public CollectionFragment(Serializable id, State state, Context context) {
+    /**
+     * Constructs an empty {@link CollectionFragment} of the given table with
+     * the given id (which may be a temporary one).
+     *
+     * @param id the id
+     * @param state the initial state for the fragment
+     * @param context the persistence context to which the row is tied, or
+     *            {@code null}
+     * @param array the initial collection data to use, or {@code null}
+     */
+    public CollectionFragment(Serializable id, State state, Context context,
+            Serializable[] array) {
         super(id, state, context);
+        assert array != null; // for now
+        this.array = array;
     }
 
     /**
@@ -48,7 +56,19 @@ public abstract class CollectionFragment extends Fragment {
      *
      * @param value the value
      */
-    public abstract void set(Serializable[] value) throws StorageException;
+    public void set(Serializable[] value) throws StorageException {
+        // unless invalidated (in which case don't try to refetch the value just
+        // to compare state), don't mark modified or dirty if there is no change
+        if (getState() != State.INVALIDATED_MODIFIED) {
+            // not invalidated, so no need to call accessed()
+            if (Arrays.equals(array, value)) {
+                return;
+            }
+        }
+        array = value.clone();
+        markModified();
+        setDirty(true);
+    }
 
     /**
      * Gets the value.
@@ -56,47 +76,16 @@ public abstract class CollectionFragment extends Fragment {
      * @return the value
      * @throws StorageException
      */
-    public abstract Serializable[] get() throws StorageException;
-
-    /**
-     * Interface for a class that knows how to build an array from a SQL result
-     * set, and build the appropriate collection fragments.
-     */
-    protected interface CollectionMaker {
-
-        Serializable[] makeArray(ResultSet rs, List<Column> columns,
-                Context context, Model model) throws SQLException;
-
-        /**
-         * Makes arrays for multiple fragments. The result sets have to contain
-         * values for the id column, and be ordered by id, pos.
-         */
-        Map<Serializable, Serializable[]> makeArrays(ResultSet rs,
-                List<Column> columns, Context context, Model model)
-                throws SQLException;
-
-        CollectionFragment makeCollection(Serializable id,
-                Serializable[] array, Context context);
-
-        CollectionFragment makeEmpty(Serializable id, Context context,
-                Model model);
+    public Serializable[] get() throws StorageException {
+        accessed();
+        return array.clone();
     }
 
-    /**
-     * Gets a specialized iterator allowing setting of values to a SQL prepared
-     * statement.
-     */
-    protected abstract CollectionFragmentIterator getIterator();
-
-    protected interface CollectionFragmentIterator extends
-            Iterator<Serializable> {
-
-        /**
-         * Sets the current value of the iterator to a SQL prepared statement.
-         */
-        void setToPreparedStatement(List<Column> columns, PreparedStatement ps,
-                Model model, List<Serializable> debugValues)
-                throws SQLException;
+    @Override
+    protected State refetch() throws StorageException {
+        Context context = getContext();
+        array = context.mapper.readCollectionArray(getId(), context);
+        return State.PRISTINE;
     }
 
     /**
@@ -109,8 +98,39 @@ public abstract class CollectionFragment extends Fragment {
     /**
      * Sets the fragment's dirty state;
      */
-    protected void setDirty(boolean dirty) {
+    public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append('(');
+        buf.append(getTableName());
+        buf.append(", id=");
+        buf.append(getId());
+        buf.append(", state=");
+        buf.append(getState());
+        buf.append(", ");
+        buf.append('[');
+        for (int i = 0; i < array.length; i++) {
+            if (i > 0) {
+                buf.append(", ");
+            }
+            Serializable value = array[i];
+            boolean truncated = false;
+            if (value instanceof String && ((String) value).length() > 100) {
+                value = ((String) value).substring(0, 100);
+                truncated = true;
+            }
+            buf.append(value);
+            if (truncated) {
+                buf.append("...");
+            }
+        }
+        buf.append("])");
+        return buf.toString();
     }
 
 }

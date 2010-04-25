@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -23,7 +23,9 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 
 /**
  * A Query Maker, that can transform a query string into a SQL statement.
@@ -73,4 +75,21 @@ public interface QueryMaker {
         public List<Serializable> selectParams = new LinkedList<Serializable>();
 
     }
+
+    public static class QueryMakerException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public QueryMakerException(String message) {
+            super(message);
+        }
+
+        public QueryMakerException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    public static class QueryCannotMatchException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+    }
+
 }

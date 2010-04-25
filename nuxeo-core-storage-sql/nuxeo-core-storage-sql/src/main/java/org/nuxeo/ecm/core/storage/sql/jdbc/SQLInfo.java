@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -35,17 +35,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
-import org.nuxeo.ecm.core.storage.sql.db.Delete;
-import org.nuxeo.ecm.core.storage.sql.db.Insert;
-import org.nuxeo.ecm.core.storage.sql.db.Select;
-import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.Update;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.ConditionalStatement;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.ConditionalStatement;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for
@@ -146,6 +149,8 @@ public class SQLInfo {
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
     protected List<Column> clusterInvalidationsColumns;
+
+    private final boolean separateMainTable = false;
 
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
@@ -474,8 +479,7 @@ public class SQLInfo {
             if (tableName.equals(model.HIER_TABLE_NAME)) {
                 continue;
             }
-            if (tableName.equals(model.MAIN_TABLE_NAME)
-                    && !model.separateMainTable) {
+            if (tableName.equals(model.MAIN_TABLE_NAME) && !separateMainTable) {
                 // merged into already-generated hierarchy
                 continue;
             }
@@ -567,7 +571,7 @@ public class SQLInfo {
     protected void initHierarchySQL() {
         assert model.idGenPolicy == IdGenPolicy.APP_UUID;
         TableMaker maker = new TableMaker(model.hierTableName);
-        if (model.separateMainTable) {
+        if (separateMainTable) {
             maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
         } else {
             maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
@@ -577,12 +581,12 @@ public class SQLInfo {
         maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.VARCHAR);
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
-        if (!model.separateMainTable) {
+        if (!separateMainTable) {
             maker.newFragmentFields();
         }
         maker.postProcess();
         maker.postProcessHierarchy();
-        if (!model.separateMainTable) {
+        if (!separateMainTable) {
             maker.postProcessIdGeneration();
         }
 
@@ -820,7 +824,7 @@ public class SQLInfo {
 
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
-            assert !model.separateMainTable; // otherwise join needed
+            assert !separateMainTable; // otherwise join needed
             List<Column> whatColumns = new ArrayList<Column>(2);
             List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);

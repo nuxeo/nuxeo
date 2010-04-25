@@ -13,11 +13,9 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Delete.java 18043 2007-2008-05-01 18:01:55Z fguillaume $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
 

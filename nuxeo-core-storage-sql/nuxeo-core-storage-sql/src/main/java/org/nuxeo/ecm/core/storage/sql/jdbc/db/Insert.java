@@ -13,18 +13,16 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Insert.java 18035 2007-2008-05-01 03:34:19Z fguillaume $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * An {@code INSERT} statement.

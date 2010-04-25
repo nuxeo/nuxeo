@@ -107,14 +107,14 @@ public enum PropertyType {
             if (value instanceof String) {
                 return (String) value;
             }
-            throw new IllegalArgumentException("value is not a String: " +
-                    value);
+            throw new IllegalArgumentException("value is not a String: "
+                    + value);
         case BOOLEAN:
             if (value instanceof Boolean) {
                 return (Boolean) value;
             }
-            throw new IllegalArgumentException("value is not a Boolean: " +
-                    value);
+            throw new IllegalArgumentException("value is not a Boolean: "
+                    + value);
         case LONG:
             if (value instanceof Long) {
                 return (Long) value;
@@ -124,8 +124,8 @@ public enum PropertyType {
             if (value instanceof Double) {
                 return (Double) value;
             }
-            throw new IllegalArgumentException("value is not a Double: " +
-                    value);
+            throw new IllegalArgumentException("value is not a Double: "
+                    + value);
         case DATETIME:
             if (value instanceof Calendar) {
                 return (Calendar) value;
@@ -135,20 +135,20 @@ public enum PropertyType {
                 cal.setTime((Date) value);
                 return cal;
             }
-            throw new IllegalArgumentException("value is not a Calendar: " +
-                    value);
+            throw new IllegalArgumentException("value is not a Calendar: "
+                    + value);
         case BINARY:
             if (value instanceof Binary) {
                 return (Binary) value;
             }
-            throw new IllegalArgumentException("value is not a Binary: " +
-                    value);
+            throw new IllegalArgumentException("value is not a Binary: "
+                    + value);
         case ACL:
             if (value instanceof ACLRow) {
                 return (ACLRow) value;
             }
-            throw new IllegalArgumentException("value is not a ACLRow: " +
-                    value);
+            throw new IllegalArgumentException("value is not a ACLRow: "
+                    + value);
         default:
             throw new RuntimeException(this.toString());
         }
@@ -201,14 +201,14 @@ public enum PropertyType {
         } else if (fieldType instanceof BinaryType) {
             return array ? ARRAY_BINARY : BINARY;
         } else if (fieldType instanceof IntegerType) {
-            throw new RuntimeException("Unimplemented primitive type: " +
-                    fieldType.getClass().getName());
+            throw new RuntimeException("Unimplemented primitive type: "
+                    + fieldType.getClass().getName());
         } else if (fieldType instanceof SimpleTypeImpl) {
             // simple type with constraints -- ignore constraints XXX
             return fromFieldType(fieldType.getSuperType(), array);
         } else {
-            throw new RuntimeException("Invalid primitive type: " +
-                    fieldType.getClass().getName());
+            throw new RuntimeException("Invalid primitive type: "
+                    + fieldType.getClass().getName());
         }
     }
 

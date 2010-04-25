@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 
 /**
  * A dummy QueryMaker usable to capture the low level sqlInfo, model and session

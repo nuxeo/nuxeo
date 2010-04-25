@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.db.dialect;
+package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -45,15 +45,15 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
-import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Oracle-specific dialect.

@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.db.dialect;
+package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

@@ -135,7 +135,7 @@ public class PersistenceContext implements XAResource {
     }
 
     // get or create if missing
-    protected Context getContext(String tableName) {
+    public Context getContext(String tableName) {
         Context context = contexts.get(tableName);
         if (context == null) {
             context = new Context(tableName, model, mapper, this);
@@ -144,7 +144,7 @@ public class PersistenceContext implements XAResource {
         return context;
     }
 
-    protected HierarchyContext getHierContext() {
+    public HierarchyContext getHierContext() {
         return hierContext;
     }
 

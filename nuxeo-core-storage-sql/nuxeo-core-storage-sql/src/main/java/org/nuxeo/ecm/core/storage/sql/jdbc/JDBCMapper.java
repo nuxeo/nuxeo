@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
@@ -35,12 +35,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
@@ -58,15 +56,26 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
+import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
+import org.nuxeo.ecm.core.storage.sql.Context;
+import org.nuxeo.ecm.core.storage.sql.Fragment;
+import org.nuxeo.ecm.core.storage.sql.HierarchyContext;
+import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.PersistenceContext;
+import org.nuxeo.ecm.core.storage.sql.PropertyType;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
+import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.Update;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.ConditionalStatement;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.DialectOracle;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.ConditionalStatement;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific
@@ -77,18 +86,18 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.DialectOracle;
  */
 public class JDBCMapper implements Mapper {
 
-    private static final Log log = LogFactory.getLog(Mapper.class);
+    private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
-    protected static boolean debugTestUpgrade;
+    public static boolean debugTestUpgrade;
 
     /** The repository from which this was built. */
     private final RepositoryImpl repository;
 
     /** The model used to do the mapping. */
-    private final Model model;
+    final Model model;
 
     /** The SQL information. */
-    private final SQLInfo sqlInfo;
+    final SQLInfo sqlInfo;
 
     /** The xa datasource. */
     private final XADataSource xadatasource;
@@ -97,7 +106,7 @@ public class JDBCMapper implements Mapper {
     private XAConnection xaconnection;
 
     /** The actual connection. */
-    private Connection connection;
+    Connection connection;
 
     private XAResource xaresource;
 
@@ -105,11 +114,8 @@ public class JDBCMapper implements Mapper {
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
     // for debug
-    protected final long instanceNumber = instanceCounter.incrementAndGet();
-
-    private static final int DEBUG_MAX_ARRAY = 10;
-
-    private static final int DEBUG_MAX_STRING = 100;
+    protected final JDBCMapperLogger logger = new JDBCMapperLogger(
+            instanceCounter.incrementAndGet());
 
     /**
      * Creates a new Mapper.
@@ -187,137 +193,6 @@ public class JDBCMapper implements Mapper {
     public int getTableSize(String tableName) {
         return sqlInfo.getDatabase().getTable(tableName).getColumns().size();
     }
-
-    // for debug
-    private static boolean isLogEnabled() {
-        return log.isTraceEnabled();
-    }
-
-    // for debug
-    private void logCount(int count) {
-        if ((count > 0) && isLogEnabled()) {
-            log("  -> " + count + " row" + (count > 1 ? "s" : ""));
-        }
-    }
-
-    // for debug
-    private void log(String string) {
-        log.trace("(" + instanceNumber + ") SQL: " + string);
-    }
-
-    // for debug
-    private void logResultSet(ResultSet rs, List<Column> columns)
-            throws SQLException {
-        List<String> res = new LinkedList<String>();
-        int i = 0;
-        for (Column column : columns) {
-            i++;
-            Serializable v = column.getFromResultSet(rs, i);
-            res.add(column.getKey() + "=" + loggedValue(v));
-        }
-        log("  -> " + StringUtils.join(res, ", "));
-    }
-
-    // for debug
-    private void logSQL(String sql, List<Column> columns, SimpleFragment row) {
-        List<Serializable> values = new ArrayList<Serializable>(columns.size());
-        for (Column column : columns) {
-            String key = column.getKey();
-            Serializable value;
-            if (key.equals(Model.MAIN_KEY)) {
-                value = row.getId();
-            } else {
-                try {
-                    value = row.get(key);
-                } catch (StorageException e) {
-                    // cannot happen
-                    value = "ACCESSFAILED";
-                }
-            }
-            values.add(value);
-        }
-        logSQL(sql, values);
-    }
-
-    // for debug
-    private void logSQL(String sql, List<Serializable> values) {
-        StringBuilder buf = new StringBuilder();
-        int start = 0;
-        for (Serializable v : values) {
-            int index = sql.indexOf('?', start);
-            if (index == -1) {
-                // mismatch between number of ? and number of values
-                break;
-            }
-            buf.append(sql, start, index);
-            buf.append(loggedValue(v));
-            start = index + 1;
-        }
-        buf.append(sql, start, sql.length());
-        log(buf.toString());
-    }
-
-    /**
-     * Returns a loggable value using pseudo-SQL syntax.
-     */
-    @SuppressWarnings("boxing")
-    private static String loggedValue(Serializable value) {
-        if (value == null) {
-            return "NULL";
-        }
-        if (value instanceof String) {
-            String v = (String) value;
-            if (v.length() > DEBUG_MAX_STRING) {
-                v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length()
-                        + " chars)...";
-            }
-            return "'" + v.replace("'", "''") + "'";
-        }
-        if (value instanceof Calendar) {
-            Calendar cal = (Calendar) value;
-            char sign;
-            int offset = cal.getTimeZone().getOffset(cal.getTimeInMillis()) / 60000;
-            if (offset < 0) {
-                offset = -offset;
-                sign = '-';
-            } else {
-                sign = '+';
-            }
-            return String.format(
-                    "TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d'",
-                    cal.get(Calendar.YEAR), //
-                    cal.get(Calendar.MONTH) + 1, //
-                    cal.get(Calendar.DAY_OF_MONTH), //
-                    cal.get(Calendar.HOUR_OF_DAY), //
-                    cal.get(Calendar.MINUTE), //
-                    cal.get(Calendar.SECOND), //
-                    cal.get(Calendar.MILLISECOND), //
-                    sign, offset / 60, offset % 60);
-        }
-        if (value instanceof Binary) {
-            return "'" + ((Binary) value).getDigest() + "'";
-        }
-        if (value.getClass().isArray()) {
-            Serializable[] v = (Serializable[]) value;
-            StringBuilder b = new StringBuilder();
-            b.append('[');
-            for (int i = 0; i < v.length; i++) {
-                if (i > 0) {
-                    b.append(',');
-                    if (i > DEBUG_MAX_ARRAY) {
-                        b.append("...(" + v.length + " items)...");
-                        break;
-                    }
-                }
-                b.append(loggedValue(v[i]));
-            }
-            b.append(']');
-            return b.toString();
-        }
-        return value.toString();
-    }
-
-    // ---------- low-level JDBC methods ----------
 
     protected static void closePreparedStatement(PreparedStatement ps)
             throws SQLException {
@@ -397,15 +272,15 @@ public class JDBCMapper implements Mapper {
                 }
 
                 String sql = table.getCreateSql();
-                log(sql);
+                logger.log(sql);
                 st.execute(sql);
                 for (String s : table.getPostCreateSqls(model)) {
-                    log(s);
+                    logger.log(s);
                     st.execute(s);
                 }
                 for (String s : sqlInfo.dialect.getPostCreateTableSqls(table,
                         model, sqlInfo.database)) {
-                    log(s);
+                    logger.log(s);
                     st.execute(s);
                 }
             }
@@ -443,10 +318,10 @@ public class JDBCMapper implements Mapper {
                     log.warn("Adding missing column in database: "
                             + column.getFullQuotedName());
                     String sql = table.getAddColumnSql(column);
-                    log(sql);
+                    logger.log(sql);
                     st.execute(sql);
                     for (String s : table.getPostAddSqls(column, model)) {
-                        log(s);
+                        logger.log(s);
                         st.execute(s);
                     }
                 } else {
@@ -490,17 +365,49 @@ public class JDBCMapper implements Mapper {
         return tableNames;
     }
 
+    protected void executeConditionalStatements(
+            Collection<ConditionalStatement> statements, boolean early)
+            throws SQLException {
+        Statement st = connection.createStatement();
+        for (ConditionalStatement s : statements) {
+            if (s.early != early) {
+                continue;
+            }
+            boolean doPre;
+            if (s.doPre != null) {
+                doPre = s.doPre.booleanValue();
+            } else {
+                logger.log(s.checkStatement);
+                ResultSet rs = st.executeQuery(s.checkStatement);
+                if (rs.next()) {
+                    // already present
+                    logger.log("  -> (present)");
+                    doPre = true;
+                } else {
+                    doPre = false;
+                }
+            }
+            if (doPre) {
+                logger.log(s.preStatement);
+                st.execute(s.preStatement);
+            }
+            logger.log(s.statement);
+            st.execute(s.statement);
+        }
+        st.close();
+    }
+
     public void createClusterNode() throws StorageException {
         try {
             Statement st = connection.createStatement();
             String sql = sqlInfo.getCleanupClusterNodesSql();
-            log(sql);
+            logger.log(sql);
             int n = st.executeUpdate(sql);
-            if (isLogEnabled()) {
-                logCount(n);
+            if (logger.isLogEnabled()) {
+                logger.logCount(n);
             }
             sql = sqlInfo.getCreateClusterNodeSql();
-            log(sql);
+            logger.log(sql);
             st.execute(sql);
             st.close();
         } catch (SQLException e) {
@@ -512,7 +419,7 @@ public class JDBCMapper implements Mapper {
         try {
             Statement st = connection.createStatement();
             String sql = sqlInfo.getRemoveClusterNodeSql();
-            log(sql);
+            logger.log(sql);
             st.execute(sql);
             st.close();
         } catch (SQLException e) {
@@ -535,9 +442,9 @@ public class JDBCMapper implements Mapper {
                 for (Entry<Serializable, Set<String>> e : m.entrySet()) {
                     Serializable id = e.getKey();
                     String fragments = join(e.getValue(), ' ');
-                    if (isLogEnabled()) {
-                        logSQL(sql, Arrays.<Serializable> asList(id, fragments,
-                                Integer.valueOf(kind)));
+                    if (logger.isLogEnabled()) {
+                        logger.logSQL(sql, Arrays.<Serializable> asList(id,
+                                fragments, Integer.valueOf(kind)));
                     }
                     Serializable frags;
                     if (sqlInfo.dialect.supportsArrays()
@@ -561,7 +468,7 @@ public class JDBCMapper implements Mapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -617,8 +524,8 @@ public class JDBCMapper implements Mapper {
         Statement st = null;
         try {
             st = connection.createStatement();
-            if (isLogEnabled()) {
-                log(sql);
+            if (logger.isLogEnabled()) {
+                logger.log(sql);
             }
             ResultSet rs = st.executeQuery(sql);
             int n = 0;
@@ -636,17 +543,17 @@ public class JDBCMapper implements Mapper {
                 }
                 invalidations.add(id, fragments, kind);
             }
-            if (isLogEnabled()) {
+            if (logger.isLogEnabled()) {
                 // logCount(n);
-                log("  -> " + invalidations);
+                logger.log("  -> " + invalidations);
             }
             if (sqlInfo.dialect.isClusteringDeleteNeeded()) {
-                if (isLogEnabled()) {
-                    log(sqldel);
+                if (logger.isLogEnabled()) {
+                    logger.log(sqldel);
                 }
                 n = st.executeUpdate(sqldel);
-                if (isLogEnabled()) {
-                    logCount(n);
+                if (logger.isLogEnabled()) {
+                    logger.logCount(n);
                 }
             }
             return invalidations;
@@ -658,7 +565,7 @@ public class JDBCMapper implements Mapper {
                 try {
                     st.close();
                 } catch (SQLException e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -668,23 +575,23 @@ public class JDBCMapper implements Mapper {
             throws StorageException {
         String sql = sqlInfo.getSelectRootIdSql();
         try {
-            if (isLogEnabled()) {
-                logSQL(sql, Collections.singletonList(repositoryId));
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Collections.singletonList(repositoryId));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
                 ps.setObject(1, repositoryId);
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
-                    if (isLogEnabled()) {
-                        log("  -> (none)");
+                    if (logger.isLogEnabled()) {
+                        logger.log("  -> (none)");
                     }
                     return null;
                 }
                 Column column = sqlInfo.getSelectRootIdWhatColumn();
                 Serializable id = column.getFromResultSet(rs, 1);
-                if (isLogEnabled()) {
-                    log("  -> " + Model.MAIN_KEY + '=' + id);
+                if (logger.isLogEnabled()) {
+                    logger.log("  -> " + Model.MAIN_KEY + '=' + id);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -701,38 +608,6 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    protected void executeConditionalStatements(
-            Collection<ConditionalStatement> statements, boolean early)
-            throws SQLException {
-        Statement st = connection.createStatement();
-        for (ConditionalStatement s : statements) {
-            if (s.early != early) {
-                continue;
-            }
-            boolean doPre;
-            if (s.doPre != null) {
-                doPre = s.doPre.booleanValue();
-            } else {
-                log(s.checkStatement);
-                ResultSet rs = st.executeQuery(s.checkStatement);
-                if (rs.next()) {
-                    // already present
-                    log("  -> (present)");
-                    doPre = true;
-                } else {
-                    doPre = false;
-                }
-            }
-            if (doPre) {
-                log(s.preStatement);
-                st.execute(s.preStatement);
-            }
-            log(s.statement);
-            st.execute(s.statement);
-        }
-        st.close();
-    }
-
     public void setRootId(Serializable repositoryId, Serializable id)
             throws StorageException {
         String sql = sqlInfo.getInsertRootIdSql();
@@ -741,7 +616,7 @@ public class JDBCMapper implements Mapper {
             try {
                 List<Column> columns = sqlInfo.getInsertRootIdColumns();
                 List<Serializable> debugValues = null;
-                if (isLogEnabled()) {
+                if (logger.isLogEnabled()) {
                     debugValues = new ArrayList<Serializable>(2);
                 }
                 int i = 0;
@@ -762,7 +637,7 @@ public class JDBCMapper implements Mapper {
                     }
                 }
                 if (debugValues != null) {
-                    logSQL(sql, debugValues);
+                    logger.logSQL(sql, debugValues);
                     debugValues.clear();
                 }
                 ps.execute();
@@ -775,6 +650,18 @@ public class JDBCMapper implements Mapper {
         }
     }
 
+    protected CollectionIO getCollectionIO(String tableName) {
+        return tableName.equals(Model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE
+                : ScalarCollectionIO.INSTANCE;
+    }
+
+    public CollectionFragment makeEmptyCollectionRow(Serializable id,
+            Context context) {
+        Serializable[] empty = model.getCollectionFragmentType(
+                context.getTableName()).getEmptyArray();
+        return new CollectionFragment(id, State.CREATED, context, empty);
+    }
+
     public Serializable insertSingleRow(SimpleFragment row)
             throws StorageException {
         String tableName = row.getTableName();
@@ -785,8 +672,8 @@ public class JDBCMapper implements Mapper {
             String sql = sqlInfo.getInsertSql(tableName);
             List<Column> columns = sqlInfo.getInsertColumns(tableName);
             try {
-                if (isLogEnabled()) {
-                    logSQL(sql, columns, row);
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(sql, columns, row);
                 }
                 ps = connection.prepareStatement(sql);
                 int i = 0;
@@ -812,7 +699,7 @@ public class JDBCMapper implements Mapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error("Cannot close connection", e);
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -828,23 +715,13 @@ public class JDBCMapper implements Mapper {
             String sql = sqlInfo.getInsertSql(tableName);
             List<Column> columns = sqlInfo.getInsertColumns(tableName);
             try {
-                Serializable id = fragment.getId();
                 List<Serializable> debugValues = null;
-                if (isLogEnabled()) {
+                if (logger.isLogEnabled()) {
                     debugValues = new ArrayList<Serializable>(3);
                 }
                 ps = connection.prepareStatement(sql);
-
-                CollectionFragmentIterator it = fragment.getIterator();
-                while (it.hasNext()) {
-                    Serializable n = it.next();
-                    it.setToPreparedStatement(columns, ps, model, debugValues);
-                    if (debugValues != null) {
-                        logSQL(sql, debugValues);
-                        debugValues.clear();
-                    }
-                    ps.execute();
-                }
+                getCollectionIO(tableName).setToPreparedStatement(fragment,
+                        columns, ps, model, debugValues, sql, logger);
             } catch (SQLException e) {
                 checkConnectionReset(e);
                 throw new StorageException("Could not insert: " + sql, e);
@@ -855,7 +732,7 @@ public class JDBCMapper implements Mapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error("Cannot close connection", e);
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -974,7 +851,7 @@ public class JDBCMapper implements Mapper {
              * Compute where part.
              */
             List<Serializable> debugValues = null;
-            if (isLogEnabled()) {
+            if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<Serializable>();
             }
             int i = 1;
@@ -1008,7 +885,7 @@ public class JDBCMapper implements Mapper {
                 }
             }
             if (debugValues != null) {
-                logSQL(select.sql, debugValues);
+                logger.logSQL(select.sql, debugValues);
             }
 
             /*
@@ -1031,8 +908,8 @@ public class JDBCMapper implements Mapper {
                         map.put(column.getKey(), SimpleFragment.OPAQUE);
                     }
                 }
-                if (isLogEnabled()) {
-                    logResultSet(rs, select.whatColumns);
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs, select.whatColumns);
                 }
                 list.add(map);
                 if (limitToOne) {
@@ -1051,7 +928,7 @@ public class JDBCMapper implements Mapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -1093,7 +970,7 @@ public class JDBCMapper implements Mapper {
         try {
             // XXX statement should be already prepared
             List<Serializable> debugValues = null;
-            if (isLogEnabled()) {
+            if (logger.isLogEnabled()) {
                 debugValues = new ArrayList<Serializable>(2);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -1122,7 +999,7 @@ public class JDBCMapper implements Mapper {
                     }
                 }
                 if (debugValues != null) {
-                    logSQL(sql, debugValues);
+                    logger.logSQL(sql, debugValues);
                 }
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
@@ -1150,8 +1027,8 @@ public class JDBCMapper implements Mapper {
                         Boolean.valueOf(complexProp));
                 SimpleFragment row = new SimpleFragment(id, State.PRISTINE,
                         context, map);
-                if (isLogEnabled()) {
-                    logResultSet(rs, columns);
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs, columns);
                 }
                 // check that we didn't get several rows
                 while (rs.next()) {
@@ -1206,8 +1083,8 @@ public class JDBCMapper implements Mapper {
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
         try {
             // XXX statement should be already prepared
-            if (isLogEnabled()) {
-                logSQL(sql, Collections.singletonList(id));
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -1216,10 +1093,17 @@ public class JDBCMapper implements Mapper {
                 ResultSet rs = ps.executeQuery();
 
                 // construct the resulting collection using each row
-                Serializable[] array = model.newCollectionArray(rs, columns,
-                        context);
-                if (isLogEnabled()) {
-                    log("  -> " + Arrays.asList(array));
+                CollectionIO io = getCollectionIO(tableName);
+                ArrayList<Serializable> list = new ArrayList<Serializable>();
+                while (rs.next()) {
+                    list.add(io.getCurrentFromResultSet(rs, columns, model,
+                            null));
+                }
+                PropertyType type = model.getCollectionFragmentType(tableName).getArrayBaseType();
+                Serializable[] array = type.collectionToArray(list);
+
+                if (logger.isLogEnabled()) {
+                    logger.log("  -> " + Arrays.asList(array));
                 }
                 return array;
             } finally {
@@ -1231,7 +1115,13 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public Map<Serializable, Serializable[]> readCollectionsArrays(
+    public CollectionFragment readCollectionRow(Serializable id, Context context)
+            throws StorageException {
+        Serializable[] array = readCollectionArray(id, context);
+        return new CollectionFragment(id, State.PRISTINE, context, array);
+    }
+
+    protected Map<Serializable, Serializable[]> readCollectionsArrays(
             List<Serializable> ids, Context context) throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyMap();
@@ -1246,8 +1136,8 @@ public class JDBCMapper implements Mapper {
 
         String sql = select.sql;
         try {
-            if (isLogEnabled()) {
-                logSQL(sql, ids);
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, ids);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -1257,8 +1147,33 @@ public class JDBCMapper implements Mapper {
                 }
                 ResultSet rs = ps.executeQuery();
 
-                Map<Serializable, Serializable[]> res = model.newCollectionArrays(
-                        rs, select.whatColumns, context);
+                // get all values from result set, separate by ids
+                // the result set is ordered by id, pos
+                CollectionIO io = getCollectionIO(tableName);
+                PropertyType type = model.getCollectionFragmentType(tableName).getArrayBaseType();
+                Serializable curId = null;
+                List<Serializable> list = null;
+                Serializable[] returnId = new Serializable[1];
+                Map<Serializable, Serializable[]> res = new HashMap<Serializable, Serializable[]>();
+                while (rs.next()) {
+                    Serializable value = io.getCurrentFromResultSet(rs,
+                            select.whatColumns, model, returnId);
+                    Serializable newId = returnId[0];
+                    if (newId != null && !newId.equals(curId)) {
+                        // flush old list
+                        if (list != null) {
+                            res.put(curId, type.collectionToArray(list));
+                        }
+                        curId = newId;
+                        list = new ArrayList<Serializable>();
+                    }
+                    list.add(value);
+                }
+                if (curId != null && list != null) {
+                    // flush last list
+                    res.put(curId, type.collectionToArray(list));
+                }
+
                 // fill empty ones
                 for (Serializable id : ids) {
                     if (!res.containsKey(id)) {
@@ -1267,9 +1182,9 @@ public class JDBCMapper implements Mapper {
                         res.put(id, array);
                     }
                 }
-                if (isLogEnabled()) {
+                if (logger.isLogEnabled()) {
                     for (Entry<Serializable, Serializable[]> entry : res.entrySet()) {
-                        log("  -> " + entry.getKey() + " = "
+                        logger.log("  -> " + entry.getKey() + " = "
                                 + Arrays.asList(entry.getValue()));
                     }
                 }
@@ -1283,6 +1198,18 @@ public class JDBCMapper implements Mapper {
         }
     }
 
+    public void readCollectionsRows(List<Serializable> ids, Context context,
+            List<Fragment> fragments) throws StorageException {
+        Map<Serializable, Serializable[]> arrays = readCollectionsArrays(ids,
+                context);
+        for (Serializable id : ids) {
+            Serializable[] array = arrays.get(id);
+            Fragment fragment = new CollectionFragment(id, State.PRISTINE,
+                    context, array);
+            fragments.add(fragment);
+        }
+    }
+
     public void updateSingleRow(SimpleFragment row) throws StorageException {
         Collection<String> dirty = row.getDirty();
         if (dirty.isEmpty()) {
@@ -1293,8 +1220,8 @@ public class JDBCMapper implements Mapper {
         try {
             PreparedStatement ps = connection.prepareStatement(update.sql);
             try {
-                if (isLogEnabled()) {
-                    logSQL(update.sql, update.whatColumns, row);
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(update.sql, update.whatColumns, row);
                 }
                 int i = 0;
                 for (Column column : update.whatColumns) {
@@ -1309,7 +1236,7 @@ public class JDBCMapper implements Mapper {
                     column.setToPreparedStatement(ps, i, v);
                 }
                 int count = ps.executeUpdate();
-                logCount(count);
+                logger.logCount(count);
             } finally {
                 closePreparedStatement(ps);
             }
@@ -1331,11 +1258,11 @@ public class JDBCMapper implements Mapper {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                if (isLogEnabled()) {
+                if (logger.isLogEnabled()) {
                     List<Serializable> values = new LinkedList<Serializable>();
                     values.addAll(map.values());
                     values.add(id);
-                    logSQL(sql, values);
+                    logger.logSQL(sql, values);
                 }
                 int i = 1;
                 for (Entry<String, Serializable> entry : map.entrySet()) {
@@ -1345,7 +1272,7 @@ public class JDBCMapper implements Mapper {
                 }
                 ps.setObject(i, id);
                 int count = ps.executeUpdate();
-                logCount(count);
+                logger.logCount(count);
             } finally {
                 closePreparedStatement(ps);
             }
@@ -1382,14 +1309,14 @@ public class JDBCMapper implements Mapper {
     protected boolean deleteFragment(String tableName, Serializable id)
             throws SQLException {
         String sql = sqlInfo.getDeleteSql(tableName);
-        if (isLogEnabled()) {
-            logSQL(sql, Collections.singletonList(id));
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(id));
         }
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
             ps.setObject(1, id);
             int count = ps.executeUpdate();
-            logCount(count);
+            logger.logCount(count);
             return count > 0;
         } finally {
             closePreparedStatement(ps);
@@ -1400,7 +1327,7 @@ public class JDBCMapper implements Mapper {
             Serializable destParentId, String destName,
             Serializable overwriteId, Map<String, Serializable> overwriteMap,
             PersistenceContext persistenceContext) throws StorageException {
-        assert !model.separateMainTable; // other case not implemented
+        // assert !model.separateMainTable; // other case not implemented
         HierarchyContext hierContext = persistenceContext.getHierContext();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
@@ -1511,7 +1438,7 @@ public class JDBCMapper implements Mapper {
             newId = model.generateNewId();
 
             List<Serializable> debugValues = null;
-            if (isLogEnabled()) {
+            if (logger.isLogEnabled()) {
                 debugValues = new ArrayList<Serializable>(4);
             }
             List<Column> columns = sqlInfo.getCopyHierColumns(explicitName,
@@ -1545,10 +1472,10 @@ public class JDBCMapper implements Mapper {
             whereColumn.setToPreparedStatement(ps, i, id);
             if (debugValues != null) {
                 debugValues.add(id);
-                logSQL(sql, debugValues);
+                logger.logSQL(sql, debugValues);
             }
             int count = ps.executeUpdate();
-            logCount(count);
+            logger.logCount(count);
 
             // TODO DB_IDENTITY
             // post insert fetch idrow
@@ -1567,14 +1494,14 @@ public class JDBCMapper implements Mapper {
             boolean onlyComplex) throws SQLException {
         List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
         String sql = sqlInfo.getSelectChildrenIdsAndTypesSql(onlyComplex);
-        if (isLogEnabled()) {
-            logSQL(sql, Collections.singletonList(id));
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(id));
         }
         List<Column> columns = sqlInfo.getSelectChildrenIdsAndTypesWhatColumns();
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
             List<String> debugValues = null;
-            if (isLogEnabled()) {
+            if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
             ps.setObject(1, id); // parent id
@@ -1598,7 +1525,7 @@ public class JDBCMapper implements Mapper {
                 }
             }
             if (debugValues != null) {
-                log("  -> " + debugValues);
+                logger.log("  -> " + debugValues);
             }
             return childrenIds;
         } finally {
@@ -1631,21 +1558,22 @@ public class JDBCMapper implements Mapper {
                 boolean overwrite = newId.equals(overwriteId);
                 if (overwrite) {
                     // remove existing first
-                    if (isLogEnabled()) {
-                        logSQL(deleteSql, Collections.singletonList(newId));
+                    if (logger.isLogEnabled()) {
+                        logger.logSQL(deleteSql,
+                                Collections.singletonList(newId));
                     }
                     deletePs.setObject(1, newId);
                     int delCount = deletePs.executeUpdate();
-                    logCount(delCount);
+                    logger.logCount(delCount);
                     before = delCount > 0;
                 }
                 copyIdColumn.setToPreparedStatement(copyPs, 1, newId);
                 copyIdColumn.setToPreparedStatement(copyPs, 2, id);
-                if (isLogEnabled()) {
-                    logSQL(copySql, Arrays.asList(newId, id));
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(copySql, Arrays.asList(newId, id));
                 }
                 int copyCount = copyPs.executeUpdate();
-                logCount(copyCount);
+                logger.logCount(copyCount);
                 if (overwrite) {
                     after = copyCount > 0;
                 }
@@ -1745,7 +1673,7 @@ public class JDBCMapper implements Mapper {
                 query, queryFilter);
 
         if (q == null) {
-            log("Query cannot return anything due to conflicting clauses");
+            logger.log("Query cannot return anything due to conflicting clauses");
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
@@ -1753,7 +1681,7 @@ public class JDBCMapper implements Mapper {
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
 
-        if (isLogEnabled()) {
+        if (logger.isLogEnabled()) {
             String sql = q.selectInfo.sql;
             if (limit != 0) {
                 sql += " -- LIMIT " + limit + " OFFSET " + offset;
@@ -1761,7 +1689,7 @@ public class JDBCMapper implements Mapper {
             if (countTotal) {
                 sql += " -- COUNT TOTAL";
             }
-            logSQL(sql, q.selectParams);
+            logger.logSQL(sql, q.selectParams);
         }
 
         String sql = q.selectInfo.sql;
@@ -1833,25 +1761,8 @@ public class JDBCMapper implements Mapper {
                 }
             }
 
-            if (isLogEnabled()) {
-                List<Serializable> debugIds = ids;
-                String end = "";
-                if (ids.size() > DEBUG_MAX_ARRAY) {
-                    debugIds = new ArrayList<Serializable>(DEBUG_MAX_ARRAY);
-                    i = 0;
-                    for (Serializable id : ids) {
-                        debugIds.add(id);
-                        i++;
-                        if (i == DEBUG_MAX_ARRAY) {
-                            break;
-                        }
-                    }
-                    end = "...(" + ids.size() + " ids)...";
-                }
-                if (countTotal) {
-                    end += " (total " + totalSize + ')';
-                }
-                log("  -> " + debugIds + end);
+            if (logger.isLogEnabled()) {
+                logger.logIds(ids, countTotal, totalSize);
             }
 
             return new PartialList<Serializable>(ids, totalSize);
@@ -1885,212 +1796,6 @@ public class JDBCMapper implements Mapper {
             checkConnectionReset(e);
             throw new StorageException("Invalid query: " + queryType + ": "
                     + query, e);
-        }
-    }
-
-    protected static class ResultSetQueryResult implements IterableQueryResult,
-            Iterator<Map<String, Serializable>> {
-
-        private final long instanceNumber;
-
-        private QueryMaker.Query q;
-
-        private PreparedStatement ps;
-
-        private ResultSet rs;
-
-        private Map<String, Serializable> next;
-
-        private boolean eof;
-
-        private long pos;
-
-        private long size = -1;
-
-        protected ResultSetQueryResult(QueryMaker queryMaker, String query,
-                QueryFilter queryFilter, Session session, JDBCMapper mapper,
-                Object... params) throws StorageException, SQLException {
-            instanceNumber = mapper.instanceNumber;
-            q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, session,
-                    query, queryFilter, params);
-            if (q == null) {
-                log("Query cannot return anything due to conflicting clauses");
-                ps = null;
-                rs = null;
-                eof = true;
-                return;
-            } else {
-                eof = false;
-            }
-            if (isLogEnabled()) {
-                mapper.logSQL(q.selectInfo.sql, q.selectParams);
-            }
-            ps = mapper.connection.prepareStatement(q.selectInfo.sql,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            int i = 1;
-            for (Object object : q.selectParams) {
-                if (object instanceof Calendar) {
-                    Calendar cal = (Calendar) object;
-                    Timestamp ts = new Timestamp(cal.getTimeInMillis());
-                    ps.setTimestamp(i++, ts, cal); // cal passed for timezone
-                } else if (object instanceof String[]) {
-                    Array array = mapper.sqlInfo.dialect.createArrayOf(
-                            Types.VARCHAR, (Object[]) object, mapper.connection);
-                    ps.setArray(i++, array);
-                } else {
-                    ps.setObject(i++, object);
-                }
-            }
-            rs = ps.executeQuery();
-            // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
-        }
-
-        // for debug
-        private void log(String string) {
-            log.trace("(" + instanceNumber + ") SQL: " + string);
-        }
-
-        // for debug
-        private void logMap(Map<String, Serializable> map) throws SQLException {
-            List<String> res = new LinkedList<String>();
-            for (Entry<String, Serializable> en : map.entrySet()) {
-                res.add(en.getKey() + "=" + loggedValue(en.getValue()));
-            }
-            log("  -> " + StringUtils.join(res, ", "));
-        }
-
-        public void close() {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    closePreparedStatement(ps);
-                } catch (SQLException e) {
-                    log.error("Error closing statement: " + e.getMessage(), e);
-                } finally {
-                    pos = -1;
-                    rs = null;
-                    ps = null;
-                    q = null;
-                }
-            }
-        }
-
-        @Override
-        protected void finalize() {
-            if (rs != null) {
-                log.warn("Closing an IterableQueryResult for you. Please close them yourself.");
-            }
-            close();
-        }
-
-        public long size() {
-            if (size != -1) {
-                return size;
-            }
-            try {
-                // save cursor pos
-                int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2
-                        : rs.getRow();
-                // find size
-                rs.last();
-                size = rs.getRow();
-                // set back cursor
-                if (old == -1) {
-                    rs.beforeFirst();
-                } else if (old == -2) {
-                    rs.afterLast();
-                } else if (old != 0) {
-                    rs.absolute(old);
-                }
-                return size;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public long pos() {
-            return pos;
-        }
-
-        public void skipTo(long pos) {
-            if (rs == null || pos < 0) {
-                this.pos = -1;
-                return;
-            }
-            try {
-                boolean available = rs.absolute((int) pos + 1);
-                if (available) {
-                    next = fetchCurrent();
-                    eof = false;
-                    this.pos = pos;
-                } else {
-                    // after last row
-                    next = null;
-                    eof = true;
-                    this.pos = -1; // XXX
-                }
-            } catch (SQLException e) {
-                log.error("Error skipping to: " + pos + ": " + e.getMessage(),
-                        e);
-            }
-        }
-
-        public Iterator<Map<String, Serializable>> iterator() {
-            return this;
-        }
-
-        protected Map<String, Serializable> fetchNext()
-                throws StorageException, SQLException {
-            if (rs == null) {
-                return null;
-            }
-            if (!rs.next()) {
-                if (isLogEnabled()) {
-                    log("  -> END");
-                }
-                return null;
-            }
-            return fetchCurrent();
-        }
-
-        protected Map<String, Serializable> fetchCurrent() throws SQLException {
-            Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
-            if (isLogEnabled()) {
-                logMap(map);
-            }
-            return map;
-        }
-
-        public boolean hasNext() {
-            if (next != null) {
-                return true;
-            }
-            if (eof) {
-                return false;
-            }
-            try {
-                next = fetchNext();
-            } catch (Exception e) {
-                log.error("Error fetching next: " + e.getMessage(), e);
-            }
-            eof = next == null;
-            return !eof;
-        }
-
-        public Map<String, Serializable> next() {
-            if (!hasNext()) {
-                pos = -1;
-                throw new NoSuchElementException();
-            }
-            Map<String, Serializable> n = next;
-            next = null;
-            pos++;
-            return n;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
         }
     }
 

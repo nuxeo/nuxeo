@@ -13,15 +13,8 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Column.java 18286 2007-2008-05-06 02:18:58Z fguillaume $
  */
-
-package org.nuxeo.ecm.core.storage.sql.db;
-
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
+package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -31,7 +24,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.storage.sql.Binary;
 
 /**
  * Abstract representation of the database-level column types.
@@ -39,13 +31,13 @@ import org.nuxeo.ecm.core.storage.sql.Binary;
 public enum ColumnType {
 
     // ----- schema-based columns -----
-    VARCHAR(String.class), // size-limited string (oracle max 2000)
-    CLOB(String.class), // large text fields
-    BOOLEAN(Boolean.class), //
-    LONG(Long.class), //
-    DOUBLE(Double.class), //
-    TIMESTAMP(Calendar.class), //
-    BLOBID(Binary.class), // attached files
+    VARCHAR(), // size-limited string (oracle max 2000)
+    CLOB(), // large text fields
+    BOOLEAN(), //
+    LONG(), //
+    DOUBLE(), //
+    TIMESTAMP(), //
+    BLOBID(), // attached files
 
     // ----- system columns -----
     NODEID, // node id primary generated key
@@ -61,27 +53,6 @@ public enum ColumnType {
     FTSTORED, // individual ft column
     CLUSTERNODE, // cluster node id
     CLUSTERFRAGS; // list of fragments impacted, for clustering
-
-    private final Class<?> klass;
-
-    private ColumnType() {
-        klass = null;
-    }
-
-    private ColumnType(Class<?> klass) {
-        this.klass = klass;
-    }
-
-    public Serializable[] collectionToArray(Collection<Serializable> collection) {
-        // contrary to list.toArray(), this creates an array
-        // of the property type instead of an Object[]
-        if (klass == null) {
-            throw new IllegalStateException(this.toString());
-        }
-        Serializable[] array = (Serializable[]) java.lang.reflect.Array.newInstance(
-                klass, collection.size());
-        return collection.toArray(array);
-    }
 
     public static ColumnType fromFieldType(
             org.nuxeo.ecm.core.schema.types.Type coreType) {

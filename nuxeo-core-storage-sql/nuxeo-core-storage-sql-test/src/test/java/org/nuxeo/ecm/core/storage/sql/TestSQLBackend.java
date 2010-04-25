@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 /**
  * @author Florent Guillaume

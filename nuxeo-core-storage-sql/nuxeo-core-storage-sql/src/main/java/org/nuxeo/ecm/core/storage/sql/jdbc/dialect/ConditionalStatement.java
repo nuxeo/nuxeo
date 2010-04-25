@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.db.dialect;
+package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 /**
  * Class holding info about a conditional statement whose execution may depend

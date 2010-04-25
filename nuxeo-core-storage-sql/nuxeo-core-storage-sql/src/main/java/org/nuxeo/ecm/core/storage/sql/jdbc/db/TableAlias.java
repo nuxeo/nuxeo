@@ -15,14 +15,15 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * An alias for an existing table. The returned columns are wrapped.

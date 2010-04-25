@@ -18,8 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,13 +47,10 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.ColumnType;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -392,9 +387,6 @@ public class Model {
     /** Maps collection table names to their type. */
     private final Map<String, PropertyType> collectionTables;
 
-    /** The factories to build collection fragments. */
-    private final Map<String, CollectionMaker> collectionMakers;
-
     /** Column ordering for collections. */
     private final Map<String, String> collectionOrderBy;
 
@@ -428,7 +420,7 @@ public class Model {
     /** Map of field name to fragments holding them */
     protected final Map<String, Set<String>> fieldFragments;
 
-    protected final FulltextInfo fulltextInfo;
+    public final FulltextInfo fulltextInfo;
 
     private final boolean materializeFulltextSyntheticColumn;
 
@@ -454,7 +446,6 @@ public class Model {
 
         collectionTables = new HashMap<String, PropertyType>();
         collectionOrderBy = new HashMap<String, String>();
-        collectionMakers = new HashMap<String, CollectionMaker>();
 
         schemaFragment = new HashMap<String, String>();
         typeFragments = new HashMap<String, Set<String>>();
@@ -862,10 +853,9 @@ public class Model {
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
-            PropertyType propertyType, CollectionMaker maker, String orderBy,
+            PropertyType propertyType, String orderBy,
             Map<String, ColumnType> keysType) {
         collectionTables.put(fragmentName, propertyType);
-        collectionMakers.put(fragmentName, maker);
         collectionOrderBy.put(fragmentName, orderBy);
         // set all keys types
         Map<String, ColumnType> old = fragmentsKeys.get(fragmentName);
@@ -898,42 +888,6 @@ public class Model {
 
     public Map<String, ColumnType> getFragmentKeysType(String fragmentName) {
         return fragmentsKeys.get(fragmentName);
-    }
-
-    public Serializable[] newCollectionArray(ResultSet rs,
-            List<Column> columns, Context context) throws SQLException {
-        CollectionMaker maker = collectionMakers.get(context.getTableName());
-        if (maker == null) {
-            throw new IllegalArgumentException(context.getTableName());
-        }
-        return maker.makeArray(rs, columns, context, this);
-    }
-
-    public Map<Serializable, Serializable[]> newCollectionArrays(ResultSet rs,
-            List<Column> columns, Context context) throws SQLException {
-        CollectionMaker maker = collectionMakers.get(context.getTableName());
-        if (maker == null) {
-            throw new IllegalArgumentException(context.getTableName());
-        }
-        return maker.makeArrays(rs, columns, context, this);
-    }
-
-    public CollectionFragment newCollectionFragment(Serializable id,
-            Serializable[] array, Context context) {
-        CollectionMaker maker = collectionMakers.get(context.getTableName());
-        if (maker == null) {
-            throw new IllegalArgumentException(context.getTableName());
-        }
-        return maker.makeCollection(id, array, context);
-    }
-
-    public CollectionFragment newEmptyCollectionFragment(Serializable id,
-            Context context) {
-        CollectionMaker maker = collectionMakers.get(context.getTableName());
-        if (maker == null) {
-            throw new IllegalArgumentException(context.getTableName());
-        }
-        return maker.makeEmpty(id, context, this);
     }
 
     protected void addTypeSimpleFragment(String typeName, String fragmentName) {
@@ -1302,7 +1256,7 @@ public class Model {
         keysType.put(ACL_GROUP_KEY, ColumnType.SYSNAME);
         String fragmentName = ACL_TABLE_NAME;
         addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL,
-                ACLsFragment.MAKER, ACL_POS_KEY, keysType);
+                ACL_POS_KEY, keysType);
         addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
                 null, false, null, null);
     }
@@ -1355,8 +1309,7 @@ public class Model {
                         keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
                         keysType.put(COLL_TABLE_VALUE_KEY, type);
                         addCollectionFragmentInfos(fragmentName, propertyType,
-                                ArrayFragment.MAKER, COLL_TABLE_POS_KEY,
-                                keysType);
+                                COLL_TABLE_POS_KEY, keysType);
 
                         addTypeCollectionFragment(typeName, fragmentName);
                         addFieldFragment(field, fragmentName);

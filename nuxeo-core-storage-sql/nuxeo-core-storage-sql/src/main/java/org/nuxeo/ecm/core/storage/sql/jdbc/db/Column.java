@@ -13,21 +13,19 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Column.java 18286 2007-2008-05-06 02:18:58Z fguillaume $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.JDBCInfo;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.JDBCInfo;
 
 /**
  * An SQL {@code column}.
@@ -224,10 +222,6 @@ public class Column implements Serializable {
             result = null;
         }
         return result;
-    }
-
-    public Serializable[] listToArray(List<Serializable> list) {
-        return type.collectionToArray(list);
     }
 
     @Override

@@ -13,11 +13,9 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: Table.java 18035 2007-2008-05-01 03:34:19Z fguillaume $
  */
 
-package org.nuxeo.ecm.core.storage.sql.db;
+package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * The basic implementation of a SQL table.

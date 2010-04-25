@@ -206,8 +206,8 @@ public class Context {
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
-     *            was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
     public Fragment get(Serializable id, boolean allowAbsent)
@@ -231,8 +231,8 @@ public class Context {
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value allowAbsent}
-     *            was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
     public List<Fragment> getMulti(List<Serializable> ids, boolean allowAbsent)
@@ -288,15 +288,14 @@ public class Context {
         if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
-                return model.newEmptyCollectionFragment(id, this);
+                return mapper.makeEmptyCollectionRow(id, this);
             } else {
                 return allowAbsent ? new SimpleFragment(id, State.ABSENT, this,
                         null) : null;
             }
         } else {
             if (isCollection) {
-                Serializable[] array = mapper.readCollectionArray(id, this);
-                return model.newCollectionFragment(id, array, this);
+                return mapper.readCollectionRow(id, this);
             } else {
                 Map<String, Serializable> map = mapper.readSingleRowMap(
                         tableName, id, this);
@@ -326,13 +325,7 @@ public class Context {
         // fetch these fragments in bulk
         List<Fragment> fetchFragments = new ArrayList<Fragment>(fetchIds.size());
         if (isCollection) {
-            Map<Serializable, Serializable[]> arrays = mapper.readCollectionsArrays(
-                    fetchIds, this);
-            for (Serializable id : fetchIds) {
-                Serializable[] array = arrays.get(id);
-                Fragment fragment = model.newCollectionFragment(id, array, this);
-                fetchFragments.add(fragment);
-            }
+            mapper.readCollectionsRows(fetchIds, this, fetchFragments);
         } else {
             Map<Serializable, Map<String, Serializable>> maps = mapper.readMultipleRowMaps(
                     tableName, fetchIds, this);
@@ -363,7 +356,7 @@ public class Context {
                 // the id has not been saved, so nothing exists yet in the
                 // database
                 if (isCollection) {
-                    fragment = model.newEmptyCollectionFragment(id, this);
+                    fragment = mapper.makeEmptyCollectionRow(id, this);
                 } else {
                     fragment = allowAbsent ? new SimpleFragment(id,
                             State.ABSENT, this, null) : null;
@@ -384,7 +377,7 @@ public class Context {
      * Called by {@link #get}, and by the {@link Mapper} to reuse known
      * hierarchy fragments in lists of children.
      */
-    protected Fragment getIfPresent(Serializable id) {
+    public Fragment getIfPresent(Serializable id) {
         Fragment fragment = pristine.get(id);
         if (fragment != null) {
             return fragment;
@@ -552,7 +545,7 @@ public class Context {
      * @param wasModified {@code true} for a modification, {@code false} for a
      *            deletion
      */
-    protected void markInvalidated(Serializable id, boolean wasModified) {
+    public void markInvalidated(Serializable id, boolean wasModified) {
         if (wasModified) {
             Fragment fragment = getIfPresent(id);
             if (fragment != null) {
