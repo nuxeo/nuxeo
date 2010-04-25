@@ -30,11 +30,11 @@ import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
-import org.nuxeo.ecm.core.storage.sql.QueryMaker.Query;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.Query;
 
 public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 

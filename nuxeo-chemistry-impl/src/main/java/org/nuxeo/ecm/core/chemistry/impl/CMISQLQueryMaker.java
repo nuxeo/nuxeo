@@ -62,19 +62,19 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.QueryMaker;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo.MapMaker;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
-import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
-import org.nuxeo.ecm.core.storage.sql.db.Select;
-import org.nuxeo.ecm.core.storage.sql.db.Table;
-import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
-import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Transformer of CMISQL queries into underlying SQL queries to the actual
