@@ -7,8 +7,6 @@
     <field type="xyz">foo</field>
   </schema>
   <indexing>
-    <queryMaker class="java.lang.Integer" />
-    <queryMaker class="java.lang.Long" />
     <fulltext catalog="nuxeo" analyzer="french">
       <index>
         <!-- fieldType for all implied -->

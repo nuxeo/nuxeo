@@ -103,8 +103,10 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@catalog")
     public String fulltextCatalog;
 
-    @XNodeList(value = "indexing/queryMaker@class", type = ArrayList.class, componentType = Class.class)
-    public List<Class<?>> queryMakerClasses;
+    @XNode("indexing/queryMaker@class")
+    public void setQueryMakerDeprecated(String klass) {
+        log.warn("Setting queryMaker from repository configuration is now deprecated");
+    }
 
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public List<FulltextIndexDescriptor> fulltextIndexes;
@@ -133,7 +135,6 @@ public class RepositoryDescriptor {
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
-        queryMakerClasses = other.queryMakerClasses;
         fulltextIndexes = other.fulltextIndexes;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;

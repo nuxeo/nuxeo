@@ -40,6 +40,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.storage.sql");
         DatabaseHelper.DATABASE.setUp();
         repository = newRepository(-1, false);
     }
@@ -61,7 +62,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField);
         descriptor.binaryStorePath = "testbinaries";
-        descriptor.queryMakerClasses = Collections.<Class<?>> singletonList(NXQLQueryMaker.class);
         descriptor.fulltextDisabled = fulltextDisabled;
         return descriptor;
     }

@@ -49,8 +49,6 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals("foo", desc.name);
         assertTrue(desc.clusteringEnabled);
         assertEquals(1234, desc.clusteringDelay);
-        assertEquals(Arrays.asList(java.lang.Integer.class,
-                java.lang.Long.class), desc.queryMakerClasses);
     }
 
     @SuppressWarnings("unchecked")
@@ -79,7 +77,8 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals("blobs", fti.name);
         assertEquals("blob", fti.fieldType);
         assertEquals(new HashSet(), fti.fields);
-        assertEquals(new HashSet(Collections.singleton("foo:bar")), fti.excludeFields);
+        assertEquals(new HashSet(Collections.singleton("foo:bar")),
+                fti.excludeFields);
 
         fti = desc.fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);

@@ -13,8 +13,6 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker" />
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker" />
           <fulltext>
             <index> <!-- name="default" implied -->
               <!-- all props implied -->

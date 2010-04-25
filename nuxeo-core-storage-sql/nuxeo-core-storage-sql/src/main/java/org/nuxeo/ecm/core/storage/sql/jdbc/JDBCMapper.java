@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.ConditionalStatement;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific
@@ -117,6 +118,8 @@ public class JDBCMapper implements Mapper {
     protected final JDBCMapperLogger logger = new JDBCMapperLogger(
             instanceCounter.incrementAndGet());
 
+    private final QueryMakerService queryMakerService;
+
     /**
      * Creates a new Mapper.
      *
@@ -132,6 +135,12 @@ public class JDBCMapper implements Mapper {
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
         resetConnection();
+        try {
+            queryMakerService = Framework.getService(QueryMakerService.class);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+
     }
 
     public void close() {
@@ -1639,27 +1648,18 @@ public class JDBCMapper implements Mapper {
     }
 
     protected QueryMaker findQueryMaker(String query) throws StorageException {
-        List<Class<?>> classes = repository.getRepositoryDescriptor().queryMakerClasses;
-        if (classes.isEmpty()) {
-            classes.add(NXQLQueryMaker.class);
-        }
-        QueryMaker queryMaker = null;
-        for (Class<?> klass : classes) {
-            // build QueryMaker instance
+        for (Class<? extends QueryMaker> klass : queryMakerService.getQueryMakers()) {
+            QueryMaker queryMaker;
             try {
-                queryMaker = (QueryMaker) klass.newInstance();
+                queryMaker = klass.newInstance();
             } catch (Exception e) {
-                throw new StorageException("Cannot instantiate class: "
-                        + klass.getName(), e);
+                throw new StorageException(e);
             }
-            // check if it accepts the query
-            if (!queryMaker.accepts(query)) {
-                queryMaker = null;
-                continue;
+            if (queryMaker.accepts(query)) {
+                return queryMaker;
             }
-            break;
         }
-        return queryMaker;
+        return null;
     }
 
     public PartialList<Serializable> query(String query,
