@@ -141,16 +141,6 @@
              value="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/lib" />
     </antcall>
 
-    <replace file="${outdir}/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear/config/default-repository-config.xml">
-      <replacetoken>
-        <![CDATA[<indexing>]]></replacetoken>
-      <replacevalue>
-        <![CDATA[<indexing>
-        <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
-        <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
-]]></replacevalue>
-    </replace>
-
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-cmis.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-jboss/**" />

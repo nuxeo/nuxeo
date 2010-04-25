@@ -177,14 +177,6 @@
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
       <artifact:resolveFile key="jaxen:jaxen" />
     </copy>
-
-    <replace file="${nxserver}/config/default-repository-config.xml">
-      <replacetoken><![CDATA[<indexing>]]></replacetoken>
-      <replacevalue><![CDATA[<indexing>
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
-          <queryMaker class="org.nuxeo.ecm.core.chemistry.impl.CMISQLQueryMaker" />
-]]></replacevalue>
-    </replace>
   </target>
   
   <target name="prepare-tomcat">
