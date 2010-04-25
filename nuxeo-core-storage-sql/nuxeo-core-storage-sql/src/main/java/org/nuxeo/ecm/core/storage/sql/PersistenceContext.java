@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
 
@@ -252,7 +251,7 @@ public class PersistenceContext implements XAResource {
         List<String> strings = new LinkedList<String>();
 
         for (String path : paths) {
-            PropertyInfo pi = model.getPathPropertyInfo(documentType, path);
+            ModelProperty pi = model.getPathPropertyInfo(documentType, path);
             if (pi == null) {
                 continue; // doc type doesn't have this property
             }

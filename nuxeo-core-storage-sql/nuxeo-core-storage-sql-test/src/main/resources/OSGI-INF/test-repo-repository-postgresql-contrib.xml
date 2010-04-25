@@ -13,7 +13,7 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
+          <queryMaker class="org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker" />
           <queryMaker class="org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker" />
           <fulltext analyzer="french">
             <index> <!-- name="default" implied -->

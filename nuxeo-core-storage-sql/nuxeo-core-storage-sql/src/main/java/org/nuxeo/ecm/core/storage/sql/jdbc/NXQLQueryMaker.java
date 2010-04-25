@@ -62,9 +62,9 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Session;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -269,7 +269,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         Set<String> fragmentNames = new HashSet<String>();
         for (String prop : info.props) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(prop);
+            ModelProperty propertyInfo = model.getPropertyInfo(prop);
             if (propertyInfo == null) {
                 throw new StorageException("Unknown field: " + prop);
             }
@@ -906,7 +906,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new QueryMakerException("Unknown field: " + name);
             }
 
-            PropertyInfo propertyInfo = model.getPropertyInfo(name);
+            ModelProperty propertyInfo = model.getPropertyInfo(name);
             if (propertyInfo == null) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
@@ -1062,7 +1062,7 @@ public class NXQLQueryMaker implements QueryMaker {
             if (name.startsWith(NXQL.ECM_PREFIX)) {
                 column = getSpecialColumn(name);
             } else {
-                PropertyInfo propertyInfo = model.getPropertyInfo(name);
+                ModelProperty propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
                     throw new QueryMakerException("Unknown field: " + name);
                 }
@@ -1170,7 +1170,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     || op == Operator.IN || op == Operator.NOTIN
                     || op == Operator.LIKE || op == Operator.NOTLIKE)
                     && name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
-                PropertyInfo propertyInfo = model.getPropertyInfo(name);
+                ModelProperty propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
                     throw new QueryMakerException("Unknown field: " + name);
                 }
@@ -1274,7 +1274,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected void visitExpressionStartsWithNonPath(Expression node,
                 String name, String path) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(name);
+            ModelProperty propertyInfo = model.getPropertyInfo(name);
             if (propertyInfo == null) {
                 throw new QueryMakerException("Unknown field: " + name);
             }

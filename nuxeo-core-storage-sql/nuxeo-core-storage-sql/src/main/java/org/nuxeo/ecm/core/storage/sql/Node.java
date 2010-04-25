@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
 /**
  * A {@code Node} implementation. The actual data is stored in contained objects
@@ -171,7 +170,7 @@ public class Node {
             throws StorageException {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+            ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
                     name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
@@ -203,7 +202,7 @@ public class Node {
             throws StorageException {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
-            PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+            ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
                     name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
@@ -222,7 +221,7 @@ public class Node {
         if (property != null) {
             return property;
         }
-        PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+        ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
                 name);
         if (propertyInfo == null) {
             throw new IllegalArgumentException("Unknown field: " + name);

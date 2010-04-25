@@ -17,36 +17,27 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author Florent Guillaume
+ * {@link Repository} implementation, to be extended by backend-specific
+ * initialization code.
+ *
+ * @see RepositoryBackend
  */
 public class RepositoryImpl implements Repository {
 
@@ -54,23 +45,17 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
+    protected final RepositoryDescriptor repositoryDescriptor;
+
     protected final SchemaManager schemaManager;
 
-    private final RepositoryDescriptor repositoryDescriptor;
+    protected final BinaryManager binaryManager;
+
+    private final RepositoryBackend backend;
 
     private final Collection<SessionImpl> sessions;
 
-    private final BinaryManager binaryManager;
-
-    private final XADataSource xadatasource;
-
-    private boolean initialized; // initialized at first access
-
-    private Dialect dialect;
-
     private Model model;
-
-    private SQLInfo sqlInfo;
 
     private Mapper clusterMapper; // used synchronized
 
@@ -81,17 +66,28 @@ public class RepositoryImpl implements Repository {
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
-        xadatasource = getXADataSource();
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
         try {
             Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
             if (klass == null) {
                 klass = DefaultBinaryManager.class;
             }
-            Constructor<? extends BinaryManager> constructor = klass.getConstructor(RepositoryDescriptor.class);
-            binaryManager = constructor.newInstance(repositoryDescriptor);
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (InvocationTargetException e) {
-            throw new StorageException(e.getCause());
+            binaryManager = klass.newInstance();
+            binaryManager.initialize(repositoryDescriptor);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+        try {
+            Class<? extends RepositoryBackend> klass = repositoryDescriptor.backendClass;
+            if (klass == null) {
+                klass = JDBCBackend.class;
+            }
+            backend = klass.newInstance();
+            backend.initialize(this);
         } catch (Exception e) {
             throw new StorageException(e);
         }
@@ -136,12 +132,18 @@ public class RepositoryImpl implements Repository {
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
+        boolean initialized = model != null;
         if (!initialized) {
-            // create dialect, model, sqlInfo
-            initialize();
+            log.debug("Initializing");
+            ModelSetup modelSetup = new ModelSetup();
+            modelSetup.repositoryDescriptor = repositoryDescriptor;
+            modelSetup.schemaManager = schemaManager;
+            backend.initializeModelSetup(modelSetup);
+            model = new Model(modelSetup);
+            backend.initializeModel(model);
         }
 
-        Mapper mapper = newMapper();
+        Mapper mapper = backend.newMapper(model);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -154,20 +156,23 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = newMapper();
+                mapper = backend.newMapper(model);
             }
-            initialized = true;
         }
 
-        SessionImpl session = new SessionImpl(this, model, mapper, credentials);
-
+        SessionImpl session = newSession(mapper, credentials);
         sessions.add(session);
         return session;
     }
 
-    protected Mapper newMapper() throws StorageException {
-        return new JDBCMapper(this, model, sqlInfo, xadatasource);
+    protected SessionImpl newSession(Mapper mapper, Credentials credentials)
+            throws StorageException {
+        return new SessionImpl(this, model, mapper, credentials);
     }
+
+    /*
+     * -----
+     */
 
     public ResourceAdapterMetaData getMetaData() {
         throw new UnsupportedOperationException();
@@ -248,81 +253,6 @@ public class RepositoryImpl implements Repository {
     // callback by session at close time
     protected void closeSession(SessionImpl session) {
         sessions.remove(session);
-    }
-
-    private XADataSource getXADataSource() throws StorageException {
-        // instantiate the datasource
-        String className = repositoryDescriptor.xaDataSourceName;
-        Class<?> klass;
-        try {
-            klass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new StorageException("Unknown class: " + className, e);
-        }
-        Object instance;
-        try {
-            instance = klass.newInstance();
-        } catch (Exception e) {
-            throw new StorageException(
-                    "Cannot instantiate class: " + className, e);
-        }
-        if (!(instance instanceof XADataSource)) {
-            throw new StorageException("Not a XADataSource: " + className);
-        }
-        XADataSource xadatasource = (XADataSource) instance;
-
-        // set JavaBean properties
-        for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
-            String name = entry.getKey();
-            Object value = Framework.expandVars(entry.getValue());
-            if (name.contains("/")) {
-                // old syntax where non-String types were explicited
-                name = name.substring(0, name.indexOf('/'));
-            }
-            // transform to proper JavaBean convention
-            if (Character.isLowerCase(name.charAt(1))) {
-                name = Character.toLowerCase(name.charAt(0))
-                        + name.substring(1);
-            }
-            try {
-                BeanUtils.setProperty(xadatasource, name, value);
-            } catch (Exception e) {
-                log.error(String.format("Cannot set %s = %s", name, value));
-            }
-        }
-
-        return xadatasource;
-    }
-
-    /**
-     * Lazy initialization, to delay dialect detection until the first
-     * connection is really needed.
-     */
-    private void initialize() throws StorageException {
-        log.debug("Initializing");
-        try {
-            XAConnection xaconnection = xadatasource.getXAConnection();
-            Connection connection = null;
-            try {
-                connection = xaconnection.getConnection();
-                dialect = Dialect.createDialect(connection, binaryManager,
-                        repositoryDescriptor);
-            } finally {
-                if (connection != null) {
-                    connection.close();
-                }
-                xaconnection.close();
-            }
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
-        model = new Model(this, dialect, schemaManager);
-        sqlInfo = new SQLInfo(this, model, dialect);
-    }
-
-    // called by session
-    public Binary getBinary(InputStream in) throws IOException {
-        return binaryManager.getBinary(in);
     }
 
     /**

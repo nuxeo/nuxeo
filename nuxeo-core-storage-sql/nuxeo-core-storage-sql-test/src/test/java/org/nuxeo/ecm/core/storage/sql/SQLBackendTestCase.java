@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;

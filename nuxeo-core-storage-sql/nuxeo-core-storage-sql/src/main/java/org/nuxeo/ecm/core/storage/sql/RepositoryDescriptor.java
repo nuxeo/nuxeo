@@ -82,6 +82,9 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("backendClass")
+    public Class<? extends RepositoryBackend> backendClass;
+
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 
@@ -123,6 +126,7 @@ public class RepositoryDescriptor {
 
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
+        backendClass = other.backendClass;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         schemaFields = other.schemaFields;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -256,97 +255,6 @@ public class Model {
             ACL_TABLE_NAME, VERSION_TABLE_NAME, LOCK_TABLE_NAME,
             MISC_TABLE_NAME };
 
-    public static class PropertyInfo {
-
-        public final PropertyType propertyType;
-
-        public final String fragmentName;
-
-        public final String fragmentKey;
-
-        public final boolean readonly;
-
-        public final boolean fulltext;
-
-        public PropertyInfo(PropertyType propertyType, String fragmentName,
-                String fragmentKey, boolean readonly) {
-            this.propertyType = propertyType;
-            this.fragmentName = fragmentName;
-            this.fragmentKey = fragmentKey;
-            this.readonly = readonly;
-            // TODO use some config to decide this
-            fulltext = (propertyType.equals(PropertyType.STRING)
-                    || propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING))
-                    && (fragmentKey == null || !fragmentKey.equals(MAIN_KEY))
-                    && !fragmentName.equals(HIER_TABLE_NAME)
-                    && !fragmentName.equals(MAIN_TABLE_NAME)
-                    && !fragmentName.equals(VERSION_TABLE_NAME)
-                    && !fragmentName.equals(PROXY_TABLE_NAME)
-                    && !fragmentName.equals(FULLTEXT_TABLE_NAME)
-                    && !fragmentName.equals(LOCK_TABLE_NAME)
-                    && !fragmentName.equals(UID_SCHEMA_NAME)
-                    && !fragmentName.equals(MISC_TABLE_NAME);
-        }
-
-        @Override
-        public String toString() {
-            return "PropertyInfo(" + fragmentName + ", " + fragmentKey + ", "
-                    + propertyType + (readonly ? ", RO" : "")
-                    + (fulltext ? ", FT" : "") + ')';
-        }
-    }
-
-    /**
-     * Info about the fulltext configuration.
-     */
-    public static class FulltextInfo implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        public static final String PROP_TYPE_STRING = "string";
-
-        public static final String PROP_TYPE_BLOB = "blob";
-
-        /** All index names. */
-        public Set<String> indexNames = new LinkedHashSet<String>();
-
-        /** Indexes holding exactly one field. */
-        public Map<String, String> fieldToIndexName = new HashMap<String, String>();
-
-        /** Map of index to analyzer (may be null). */
-        public Map<String, String> indexAnalyzer = new HashMap<String, String>();
-
-        /** Map of index to catalog (may be null). */
-        public Map<String, String> indexCatalog = new HashMap<String, String>();
-
-        /** Indexes containing all simple properties. */
-        public Set<String> indexesAllSimple = new HashSet<String>();
-
-        /** Indexes containing all binaries properties. */
-        public Set<String> indexesAllBinary = new HashSet<String>();
-
-        /** Indexes for each specific simple property path. */
-        public Map<String, Set<String>> indexesByPropPathSimple = new HashMap<String, Set<String>>();
-
-        /** Indexes for each specific binary property path. */
-        public Map<String, Set<String>> indexesByPropPathBinary = new HashMap<String, Set<String>>();
-
-        /** Indexes for each specific simple property path excluded. */
-        public Map<String, Set<String>> indexesByPropPathExcludedSimple = new HashMap<String, Set<String>>();
-
-        /** Indexes for each specific binary property path excluded. */
-        public Map<String, Set<String>> indexesByPropPathExcludedBinary = new HashMap<String, Set<String>>();
-
-        // inverse of above maps
-        public Map<String, Set<String>> propPathsByIndexSimple = new HashMap<String, Set<String>>();
-
-        public Map<String, Set<String>> propPathsByIndexBinary = new HashMap<String, Set<String>>();
-
-        public Map<String, Set<String>> propPathsExcludedByIndexSimple = new HashMap<String, Set<String>>();
-
-        public Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
-    }
-
     protected final RepositoryDescriptor repositoryDescriptor;
 
     /** The id generation policy. */
@@ -361,25 +269,25 @@ public class Model {
     private final Map<String, Type> specialPropertyTypes;
 
     /** Per-schema/type info about properties, using their key. */
-    private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyKeyInfos;
+    private final HashMap<String, Map<String, ModelProperty>> schemaPropertyKeyInfos;
 
     /** Per-schema/type info about properties. */
-    private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
+    private final HashMap<String, Map<String, ModelProperty>> schemaPropertyInfos;
 
     /** Shared properties. */
-    private final Map<String, PropertyInfo> sharedPropertyInfos;
+    private final Map<String, ModelProperty> sharedPropertyInfos;
 
     /** Merged properties (all schemas together + shared). */
-    private final Map<String, PropertyInfo> mergedPropertyInfos;
+    private final Map<String, ModelProperty> mergedPropertyInfos;
 
     /** Per-doctype map of path to property info. */
-    private final Map<String, Map<String, PropertyInfo>> pathPropertyInfos;
+    private final Map<String, Map<String, ModelProperty>> pathPropertyInfos;
 
     /** Per-doctype set of path to simple fulltext properties. */
     private final Map<String, Set<String>> typeSimpleTextPaths;
 
     /** Map of path (from all doc types) to property info. */
-    private final Map<String, PropertyInfo> allPathPropertyInfos;
+    private final Map<String, ModelProperty> allPathPropertyInfos;
 
     /** Per-table info about fragments keys type. */
     private final Map<String, Map<String, ColumnType>> fragmentsKeys;
@@ -420,28 +328,27 @@ public class Model {
     /** Map of field name to fragments holding them */
     protected final Map<String, Set<String>> fieldFragments;
 
-    public final FulltextInfo fulltextInfo;
+    public final ModelFulltext fulltextInfo;
 
     private final boolean materializeFulltextSyntheticColumn;
 
-    public Model(RepositoryImpl repository, Dialect dialect,
-            SchemaManager schemaManager) throws StorageException {
-        repositoryDescriptor = repository.getRepositoryDescriptor();
+    public Model(ModelSetup modelSetup) throws StorageException {
+        repositoryDescriptor = modelSetup.repositoryDescriptor;
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
-        materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
+        materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
         temporaryIdCounter = new AtomicLong(0);
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
 
-        schemaPropertyKeyInfos = new HashMap<String, Map<String, PropertyInfo>>();
-        schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
-        sharedPropertyInfos = new HashMap<String, PropertyInfo>();
-        mergedPropertyInfos = new HashMap<String, PropertyInfo>();
-        pathPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        schemaPropertyKeyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        schemaPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        sharedPropertyInfos = new HashMap<String, ModelProperty>();
+        mergedPropertyInfos = new HashMap<String, ModelProperty>();
+        pathPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         typeSimpleTextPaths = new HashMap<String, Set<String>>();
-        allPathPropertyInfos = new HashMap<String, PropertyInfo>();
-        fulltextInfo = new FulltextInfo();
+        allPathPropertyInfos = new HashMap<String, ModelProperty>();
+        fulltextInfo = new ModelFulltext();
         fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
@@ -466,7 +373,7 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
-        initModels(schemaManager);
+        initModels(modelSetup.schemaManager);
         if (!repositoryDescriptor.fulltextDisabled) {
             initFullTextModel();
         }
@@ -537,24 +444,24 @@ public class Model {
             PropertyType propertyType, String fragmentName, String fragmentKey,
             boolean readonly, Type coreType, ColumnType type) {
         // per-type
-        Map<String, PropertyInfo> propertyKeyInfos;
-        Map<String, PropertyInfo> propertyInfos;
+        Map<String, ModelProperty> propertyKeyInfos;
+        Map<String, ModelProperty> propertyInfos;
         if (schemaName == null) {
             propertyKeyInfos = null;
             propertyInfos = sharedPropertyInfos;
         } else {
             propertyKeyInfos = schemaPropertyKeyInfos.get(schemaName);
             if (propertyKeyInfos == null) {
-                propertyKeyInfos = new HashMap<String, PropertyInfo>();
+                propertyKeyInfos = new HashMap<String, ModelProperty>();
                 schemaPropertyKeyInfos.put(schemaName, propertyKeyInfos);
             }
             propertyInfos = schemaPropertyInfos.get(schemaName);
             if (propertyInfos == null) {
-                propertyInfos = new HashMap<String, PropertyInfo>();
+                propertyInfos = new HashMap<String, ModelProperty>();
                 schemaPropertyInfos.put(schemaName, propertyInfos);
             }
         }
-        PropertyInfo propertyInfo = new PropertyInfo(propertyType,
+        ModelProperty propertyInfo = new ModelProperty(propertyType,
                 fragmentName, fragmentKey, readonly);
         propertyInfos.put(propertyName, propertyInfo);
         if (propertyKeyInfos != null && fragmentKey != null) {
@@ -577,7 +484,7 @@ public class Model {
         }
 
         // merged properties
-        PropertyInfo previous = mergedPropertyInfos.get(propertyName);
+        ModelProperty previous = mergedPropertyInfos.get(propertyName);
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
@@ -601,18 +508,18 @@ public class Model {
      * Infers type property information from all its schemas.
      */
     private void inferTypePropertyInfos(String typeName, String[] schemaNames) {
-        Map<String, PropertyInfo> propertyInfos = schemaPropertyInfos.get(typeName);
+        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(typeName);
         if (propertyInfos == null) {
-            propertyInfos = new HashMap<String, PropertyInfo>();
+            propertyInfos = new HashMap<String, ModelProperty>();
             schemaPropertyInfos.put(typeName, propertyInfos);
         }
         for (String schemaName : schemaNames) {
-            Map<String, PropertyInfo> infos = schemaPropertyInfos.get(schemaName);
+            Map<String, ModelProperty> infos = schemaPropertyInfos.get(schemaName);
             if (infos == null) {
                 // schema with no properties (complex list)
                 continue;
             }
-            for (Entry<String, PropertyInfo> info : infos.entrySet()) {
+            for (Entry<String, ModelProperty> info : infos.entrySet()) {
                 propertyInfos.put(info.getKey(), info.getValue());
             }
         }
@@ -623,7 +530,7 @@ public class Model {
      */
     private void inferTypePropertyPaths(DocumentType documentType) {
         String typeName = documentType.getName();
-        Map<String, PropertyInfo> propertyInfoByPath = new HashMap<String, PropertyInfo>();
+        Map<String, ModelProperty> propertyInfoByPath = new HashMap<String, ModelProperty>();
         for (Schema schema : documentType.getSchemas()) {
             if (schema == null) {
                 // happens when a type refers to a nonexistent schema
@@ -636,8 +543,8 @@ public class Model {
         allPathPropertyInfos.putAll(propertyInfoByPath);
         // those for simpletext properties
         Set<String> simplePaths = new HashSet<String>();
-        for (Entry<String, PropertyInfo> entry : propertyInfoByPath.entrySet()) {
-            PropertyInfo pi = entry.getValue();
+        for (Entry<String, ModelProperty> entry : propertyInfoByPath.entrySet()) {
+            ModelProperty pi = entry.getValue();
             if (pi.propertyType != PropertyType.STRING
                     && pi.propertyType != PropertyType.ARRAY_STRING) {
                 continue;
@@ -649,7 +556,7 @@ public class Model {
 
     // recurses in a complex type
     private void inferTypePropertyPaths(ComplexType complexType, String prefix,
-            Map<String, PropertyInfo> propertyInfoByPath, Set<String> done) {
+            Map<String, ModelProperty> propertyInfoByPath, Set<String> done) {
         if (done == null) {
             done = new LinkedHashSet<String>();
         }
@@ -683,7 +590,7 @@ public class Model {
             } else {
                 // else primitive type
             }
-            PropertyInfo pi = schemaPropertyInfos.get(typeName).get(
+            ModelProperty pi = schemaPropertyInfos.get(typeName).get(
                     propertyName);
             propertyInfoByPath.put(path, pi);
         }
@@ -725,9 +632,9 @@ public class Model {
             }
 
             if (desc.fieldType != null) {
-                if (desc.fieldType.equals(FulltextInfo.PROP_TYPE_STRING)) {
+                if (desc.fieldType.equals(ModelFulltext.PROP_TYPE_STRING)) {
                     fulltextInfo.indexesAllSimple.add(name);
-                } else if (desc.fieldType.equals(FulltextInfo.PROP_TYPE_BLOB)) {
+                } else if (desc.fieldType.equals(ModelFulltext.PROP_TYPE_BLOB)) {
                     fulltextInfo.indexesAllBinary.add(name);
                 } else {
                     log.error("Ignoring unknow repository fulltext configuration fieldType: "
@@ -744,7 +651,7 @@ public class Model {
             for (Set<String> fields : Arrays.asList(desc.fields,
                     desc.excludeFields)) {
                 for (String path : fields) {
-                    PropertyInfo pi = allPathPropertyInfos.get(path);
+                    ModelProperty pi = allPathPropertyInfos.get(path);
                     if (pi == null) {
                         log.error(String.format(
                                 "Ignoring unknown property '%s' in fulltext configuration: %s",
@@ -787,18 +694,18 @@ public class Model {
         }
     }
 
-    public PropertyInfo getPropertyInfo(String schemaName, String propertyName) {
-        Map<String, PropertyInfo> propertyInfos = schemaPropertyInfos.get(schemaName);
+    public ModelProperty getPropertyInfo(String schemaName, String propertyName) {
+        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(schemaName);
         if (propertyInfos == null) {
             // no such schema
             return null;
         }
-        PropertyInfo propertyInfo = propertyInfos.get(propertyName);
+        ModelProperty propertyInfo = propertyInfos.get(propertyName);
         return propertyInfo != null ? propertyInfo
                 : sharedPropertyInfos.get(propertyName);
     }
 
-    public PropertyInfo getPropertyInfo(String propertyName) {
+    public ModelProperty getPropertyInfo(String propertyName) {
         return mergedPropertyInfos.get(propertyName);
     }
 
@@ -806,8 +713,8 @@ public class Model {
         return mergedPropertyInfos.keySet();
     }
 
-    public PropertyInfo getPathPropertyInfo(String typeName, String path) {
-        Map<String, PropertyInfo> propertyInfoByPath = pathPropertyInfos.get(typeName);
+    public ModelProperty getPathPropertyInfo(String typeName, String path) {
+        Map<String, ModelProperty> propertyInfoByPath = pathPropertyInfos.get(typeName);
         if (propertyInfoByPath == null) {
             return null;
         }
@@ -818,7 +725,7 @@ public class Model {
         return typeSimpleTextPaths.get(typeName);
     }
 
-    public FulltextInfo getFulltextInfo() {
+    public ModelFulltext getFulltextInfo() {
         return fulltextInfo;
     }
 
@@ -840,11 +747,11 @@ public class Model {
             }
             return null;
         } else {
-            Map<String, PropertyInfo> infos = schemaPropertyKeyInfos.get(fragmentName);
+            Map<String, ModelProperty> infos = schemaPropertyKeyInfos.get(fragmentName);
             if (infos == null) {
                 return null;
             }
-            PropertyInfo info = infos.get(fragmentKey);
+            ModelProperty info = infos.get(fragmentKey);
             if (info != null && info.fulltext) {
                 return info.propertyType;
             }

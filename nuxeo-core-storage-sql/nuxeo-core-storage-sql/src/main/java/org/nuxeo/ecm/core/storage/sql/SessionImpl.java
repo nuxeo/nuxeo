@@ -191,7 +191,7 @@ public class SessionImpl implements Session, XAResource {
 
     public Binary getBinary(InputStream in) throws StorageException {
         try {
-            return repository.getBinary(in);
+            return repository.getBinaryManager().getBinary(in);
         } catch (IOException e) {
             throw new StorageException(e);
         }
