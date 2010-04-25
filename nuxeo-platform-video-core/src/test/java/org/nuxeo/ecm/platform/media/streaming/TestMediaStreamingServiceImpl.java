@@ -149,7 +149,9 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
                 RepositoryService.NAME);
         RepositoryManager repositoryManager = repositoryService.getRepositoryManager();
         RepositoryDescriptor descriptor = repositoryManager.getDescriptor(repositoryName);
-        return new DefaultBinaryManager(SQLRepository.getDescriptor(descriptor));
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize(SQLRepository.getDescriptor(descriptor));
+        return binaryManager;
     }
 
     @Override

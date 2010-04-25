@@ -130,8 +130,9 @@ public class MediaStreamingServiceImpl extends DefaultComponent implements
             RepositoryManager repositoryManager = repositoryService.getRepositoryManager();
             RepositoryDescriptor descriptor = repositoryManager.getDescriptor(repositoryName);
             try {
-                binaryManagers.put(repositoryName, new DefaultBinaryManager(
-                        SQLRepository.getDescriptor(descriptor)));
+                DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+                binaryManager.initialize(SQLRepository.getDescriptor(descriptor));
+                binaryManagers.put(repositoryName, binaryManager);
             } catch (IOException e) {
                 throw new ClientException(e);
             } catch (Exception e) {
