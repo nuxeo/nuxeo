@@ -220,6 +220,23 @@
       </sortAscending>
 
     </queryModel>
+
+    <queryModel name="statelessRedefinedModel" >
+      <pattern>
+      SELECT * FROM Document
+     </pattern>
+    </queryModel>
+
+    <queryModel name="statefullRedefinedModel" >
+      <whereClause>
+
+        <predicate parameter="dc:creator" operator="IN">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+      </whereClause>
+    </queryModel>
+
   </extension>
 
 </component>

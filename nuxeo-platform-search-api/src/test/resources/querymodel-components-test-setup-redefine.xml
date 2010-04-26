@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.test.types2">
+
+  <required>
+  org.nuxeo.ecm.core.test.types2
+  </required>
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="statelessRedefinedModel">
+
+      <sortable defaultSortColumn="dc:modified" defaultSortAscending="true" />
+
+    </queryModel>
+
+    <queryModel name="statefullRedefinedModel" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="dc:creator" operator="IN">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+        <predicate parameter="someint" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <predicate parameter="textparameter" operator="ILIKE">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+           
+    </queryModel>
+    
+  </extension>
+
+</component>

@@ -78,8 +78,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
     private QueryModel statelessModelWithLongPattern;
 
     private QueryModelService service;
+    
+    protected QueryModel statelessRedefinedModel;
 
+    protected QueryModel statefullRedefinedModel;
 
+    
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.search.api.tests";
 
     @Override
@@ -88,6 +92,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.ecm.platform.search.api"); // ourselves !
         deployContrib(TEST_BUNDLE, "querymodel-components-test-setup.xml");
+        deployContrib(TEST_BUNDLE, "querymodel-components-test-setup-redefine.xml");
 
         openRepository();
 
@@ -136,6 +141,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         statelessModelWithFloatParam = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithFloatParam"));
 
+        statelessRedefinedModel = new QueryModel(
+                service.getQueryModelDescriptor("statelessRedefinedModel"));
+
+        statefullRedefinedModel = new QueryModel(
+                service.getQueryModelDescriptor("statefullRedefinedModel"));
+
     }
 
     protected QueryModel initializeStatefulQueryModel(
@@ -157,6 +168,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 "SELECT * FROM Document WHERE dc:contributors = 'Administrator' AND ecm:path STARTSWITH 'somelocation'",
                 descriptor.getQuery(new Object[] { "Administrator",
                         "somelocation" }));
+   
         try {
             descriptor.getQuery(documentModel);
             fail("Should have raised an exception since stateless models need a parameters array");
@@ -559,5 +571,38 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 "SELECT * FROM Document WHERE ecm:path STARTSWITH '/to/toto' OR ecm:path STARTSWITH '/tu/tutu'",
                 descriptor.getQuery(documentModelWithMultiStartswith));
     }
+    
+    public void testStatelessRedefinedQueryModel() throws ClientException {
+       
+        QueryModelDescriptor descriptor = statelessRedefinedModel.getDescriptor();
+        
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+        
+        String query = "SELECT * FROM Document ORDER BY dc:modified";
+        
+        SortInfo sortInfo = descriptor.getDefaultSortInfo(documentModel);    
+        assertEquals(query, descriptor.getQuery(new Object[0], sortInfo));
+    
+    }
+    
+    public void testStatefullRedefinedQueryModel() throws ClientException {
+        
+        QueryModelDescriptor descriptor = statefullRedefinedModel.getDescriptor();
+        assertFalse(statefullRedefinedModel.getDescriptor().isStateless());
+        assertTrue(statefullRedefinedModel.getDescriptor().isStateful());
 
+        documentModel2.setProperty(QM_SCHEMA, "listfield", new String[] {
+                "Pedro", "Piotr", "Pierre" });
+
+        documentModel2.setProperty(QM_SCHEMA, "intfield", 4L);
+        documentModel2.setProperty(QM_SCHEMA, "textfield", "foo");
+        assertEquals(
+                "SELECT * FROM Document WHERE (dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre') "
+                + "AND someint = 4 AND textparameter ILIKE 'foo'",
+                descriptor.getQuery(documentModel2));
+          
+    }
+    
+    
 }
