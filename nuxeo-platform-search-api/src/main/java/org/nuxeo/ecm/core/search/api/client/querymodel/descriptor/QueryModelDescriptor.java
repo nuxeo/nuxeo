@@ -53,7 +53,9 @@ public class QueryModelDescriptor {
     @XNode("pattern")
     public void setPattern(String pattern) {
         // remove new lines and following spaces
-        this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
+        if(pattern != null) {
+          this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
+        }
     }
 
     @XNode("whereClause")
@@ -77,8 +79,64 @@ public class QueryModelDescriptor {
     @XNode("sortable@defaultSortColumn")
     protected String defaultSortColumn;
 
+    public FieldDescriptor getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(FieldDescriptor batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public FieldDescriptor getBatchLength() {
+        return batchLength;
+    }
+
+    public void setBatchLength(FieldDescriptor batchLength) {
+        this.batchLength = batchLength;
+    }
+
+    public String getDefaultSortColumn() {
+        return defaultSortColumn;
+    }
+
+    public void setDefaultSortColumn(String defaultSortColumn) {
+        this.defaultSortColumn = defaultSortColumn;
+    }
+
+    public Boolean getDefaultSortAscending() {
+        return defaultSortAscending;
+    }
+
+    public void setDefaultSortAscending(Boolean defaultSortAscending) {
+        this.defaultSortAscending = defaultSortAscending;
+    }
+
+    public Boolean getSortable() {
+        return sortable;
+    }
+
+    public void setSortable(Boolean sortable) {
+        this.sortable = sortable;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSortColumnField(FieldDescriptor sortColumnField) {
+        this.sortColumnField = sortColumnField;
+    }
+
+    public void setSortAscendingField(FieldDescriptor sortAscendingField) {
+        this.sortAscendingField = sortAscendingField;
+    }
+
     @XNode("sortable@defaultSortAscending")
-    protected boolean defaultSortAscending = true;
+    protected Boolean defaultSortAscending = true;
 
     /**
      * used for stateless qm a sortable qm is one that does not have an ORDER BY
@@ -89,7 +147,7 @@ public class QueryModelDescriptor {
      */
     @Deprecated
     @XNode("sortable@value")
-    boolean sortable = false;
+    Boolean sortable = false;
 
     @XNode("max")
     // TODO tie page length to a field and use this one as default for BBB
@@ -263,6 +321,10 @@ public class QueryModelDescriptor {
 
     public Integer getMax() {
         return max;
+    }
+    
+    public void setMax(Integer max) {
+        this.max = max;
     }
 
     public String getName() {

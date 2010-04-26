@@ -59,6 +59,48 @@ public class QueryModelService extends DefaultComponent {
         if (descriptor.isStateful()) {
             descriptor.initEscaper(contributor.getContext());
         }
+        
+        QueryModelDescriptor existing = descriptors.get(descriptor.getName());
+        if (existing!=null) {
+
+            if(descriptor.getMax()==null) {
+                descriptor.setMax(existing.getMax());
+            }
+
+            if(descriptor.getDefaultSortAscending()==null) {
+                descriptor.setDefaultSortAscending(existing.getDefaultSortAscending());
+            }
+
+            if(descriptor.getSortable()==null) {
+                descriptor.setSortable(existing.getSortable());
+            }
+
+            if(descriptor.getBatchLength()==null) {
+                descriptor.setBatchLength(existing.getBatchLength());
+            }
+
+            if(descriptor.getBatchSize()==null) {
+                descriptor.setBatchSize(existing.getBatchSize());
+            }
+
+            if(descriptor.getDefaultSortColumn()==null) {
+                descriptor.setDefaultSortColumn(existing.getDefaultSortColumn());
+            }
+
+            if(descriptor.getPattern()==null) {
+                descriptor.setPattern(existing.getPattern());
+            }
+
+            if(descriptor.getWhereClause()==null) {
+                descriptor.setWhereClause(existing.getWhereClause());
+            }
+
+            if(descriptor.getSortAscendingField()==null) {
+                descriptor.setSortAscendingField(existing.getSortAscendingField());
+            }
+
+        }
+
         descriptors.put(descriptor.getName(), descriptor);
         log.debug("registered QueryModelDescriptor: "
                 + descriptor.getName());
