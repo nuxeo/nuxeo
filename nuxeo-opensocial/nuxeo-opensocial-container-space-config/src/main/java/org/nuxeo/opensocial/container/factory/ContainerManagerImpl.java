@@ -151,6 +151,9 @@ public class ContainerManagerImpl implements ContainerManager {
         Gadget createGadget = space.createGadget(gadgetName);
         space.save();
 
+        if (createGadget == null) {
+            return null;
+        }
         GadgetBean gadgetBean = GadgetFactory.getGadgetBean(createGadget,
                 getLocale(gwtParams), getServerBase(gwtParams));
         if (!gwtParams.containsKey(RESET_GADGET_TITLE)

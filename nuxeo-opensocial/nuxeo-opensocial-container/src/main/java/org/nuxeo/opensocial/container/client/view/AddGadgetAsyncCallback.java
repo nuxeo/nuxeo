@@ -39,10 +39,12 @@ public class AddGadgetAsyncCallback<T> implements AsyncCallback<GadgetBean> {
     }
 
     public void onSuccess(GadgetBean bean) {
-        GadgetPortlet port = ContainerEntryPoint.getContainerPortal().addGadget(
-                bean);
-        if (ContainerEntryPoint.showPreferencesAfterGadgetAddition()) {
-            port.getTools().launchGear();
+        if (bean != null) {
+            GadgetPortlet port = ContainerEntryPoint.getContainerPortal().addGadget(
+                    bean);
+            if (ContainerEntryPoint.showPreferencesAfterGadgetAddition()) {
+                port.getTools().launchGear();
+            }
         }
     }
 
