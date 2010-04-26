@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.storage.sql.Model.FulltextInfo;
+import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,7 +79,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             return;
         }
         CoreSession session = null;
-        FulltextInfo fulltextInfo;
+        ModelFulltext fulltextInfo;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
             if (!event.getName().equals(EVENT_NAME)) {
@@ -146,9 +146,9 @@ public class BinaryTextListener implements PostCommitEventListener {
         return (Set<Serializable>) eventContext.getArguments()[0];
     }
 
-    protected FulltextInfo getFulltextInfoFromEventContext(
+    protected ModelFulltext getFulltextInfoFromEventContext(
             EventContext eventContext) {
-        return (FulltextInfo) eventContext.getArguments()[1];
+        return (ModelFulltext) eventContext.getArguments()[1];
     }
 
     protected String blobsToText(List<Blob> blobs) {

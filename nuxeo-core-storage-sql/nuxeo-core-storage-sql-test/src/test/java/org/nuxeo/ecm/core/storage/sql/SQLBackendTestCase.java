@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -38,19 +38,19 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.storage.sql");
         DatabaseHelper.DATABASE.setUp();
         repository = newRepository(-1, false);
     }
 
     protected Repository newRepository(long clusteringDelay,
             boolean fulltextDisabled) throws Exception {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        assertNotNull(schemaManager);
         RepositoryDescriptor descriptor = newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        return new RepositoryImpl(descriptor, schemaManager);
+        return new RepositoryImpl(descriptor);
     }
 
     protected RepositoryDescriptor newDescriptor(long clusteringDelay,
@@ -63,7 +63,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField);
         descriptor.binaryStorePath = "testbinaries";
-        descriptor.queryMakerClasses = Collections.<Class<?>> singletonList(NXQLQueryMaker.class);
         descriptor.fulltextDisabled = fulltextDisabled;
         return descriptor;
     }

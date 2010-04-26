@@ -40,11 +40,10 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 /**
  * @author Florent Guillaume
@@ -318,10 +317,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     public void testBasicsUpgrade() throws Exception {
         try {
-            Mapper.debugTestUpgrade = true;
+            JDBCMapper.debugTestUpgrade = true;
             testBasics();
         } finally {
-            Mapper.debugTestUpgrade = false;
+            JDBCMapper.debugTestUpgrade = false;
         }
     }
 
@@ -1426,8 +1425,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         fti.name = "title";
         fti.fields = Collections.singleton("tst:title");
         ftis.add(fti);
-        repository = new RepositoryImpl(descriptor,
-                Framework.getService(SchemaManager.class));
+        repository = new RepositoryImpl(descriptor);
 
         // check new values can be written
         session = repository.getConnection();

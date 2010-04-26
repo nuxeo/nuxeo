@@ -35,7 +35,9 @@ import javax.resource.cci.ConnectionMetaData;
 import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
+import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +46,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -56,15 +57,11 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
  * 
  * @author Florent Guillaume
  */
-public class SessionImpl implements Session {
+public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
     private final RepositoryImpl repository;
-
-    protected final SchemaManager schemaManager;
-
-    private final Mapper mapper;
 
     private final Model model;
 
@@ -72,7 +69,7 @@ public class SessionImpl implements Session {
 
     private boolean live;
 
-    private final TransactionalSession transactionalSession;
+    private boolean inTransaction;
 
     private Node rootNode;
 
@@ -82,17 +79,14 @@ public class SessionImpl implements Session {
 
     private String threadName;
 
-    SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
-            Mapper mapper, Credentials credentials) throws StorageException {
+    public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
+            Credentials credentials) throws StorageException {
         this.repository = repository;
-        this.schemaManager = schemaManager;
-        this.mapper = mapper;
         // this.credentials = credentials;
-        model = mapper.getModel();
-        context = new PersistenceContext(mapper);
+        this.model = model;
+        context = new PersistenceContext(model, mapper);
         live = true;
         readAclsChanged = false;
-        transactionalSession = new TransactionalSession(this, mapper);
         computeRootNode();
     }
 
@@ -101,14 +95,14 @@ public class SessionImpl implements Session {
      * wraps it in a connection-aware implementation.
      */
     public XAResource getXAResource() {
-        return transactionalSession;
+        return this;
     }
 
     /**
      * Clears all the caches. Called by RepositoryManagement.
      */
     protected int clearCaches() {
-        if (transactionalSession.isInTransaction()) {
+        if (inTransaction) {
             // avoid potential multi-threaded access to active session
             return 0;
         }
@@ -197,7 +191,7 @@ public class SessionImpl implements Session {
 
     public Binary getBinary(InputStream in) throws StorageException {
         try {
-            return repository.getBinary(in);
+            return repository.getBinaryManager().getBinary(in);
         } catch (IOException e) {
             throw new StorageException(e);
         }
@@ -206,7 +200,7 @@ public class SessionImpl implements Session {
     public void save() throws StorageException {
         checkLive();
         flush();
-        if (!transactionalSession.isInTransaction()) {
+        if (!inTransaction) {
             sendInvalidationsToOthers();
             // as we don't have a way to know when the next non-transactional
             // statement will start, process invalidations immediately
@@ -747,12 +741,12 @@ public class SessionImpl implements Session {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, queryFilter, countTotal, this);
+        return context.query(query, queryFilter, countTotal, this);
     }
 
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        return mapper.queryAndFetch(query, queryType, queryFilter, true, this,
+        return context.queryAndFetch(query, queryType, queryFilter, this,
                 params);
     }
 
@@ -761,12 +755,12 @@ public class SessionImpl implements Session {
     }
 
     public void updateReadAcls() throws StorageException {
-        mapper.updateReadAcls();
+        context.updateReadAcls();
         readAclsChanged = false;
     }
 
     public void rebuildReadAcls() throws StorageException {
-        mapper.rebuildReadAcls();
+        context.rebuildReadAcls();
         readAclsChanged = false;
     }
 
@@ -863,6 +857,112 @@ public class SessionImpl implements Session {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");
+    }
+
+    /*
+     * ----- XAResource -----
+     */
+
+    public boolean isSameRM(XAResource xaresource) {
+        return xaresource == this;
+    }
+
+    public void start(Xid xid, int flags) throws XAException {
+        if (flags == TMNOFLAGS) {
+            try {
+                processReceivedInvalidations();
+            } catch (Exception e) {
+                log.error("Could not start transaction", e);
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
+        }
+        context.start(xid, flags);
+        inTransaction = true;
+        checkThreadStart();
+    }
+
+    public void end(Xid xid, int flags) throws XAException {
+        boolean failed = true;
+        try {
+            if (flags != TMFAIL) {
+                try {
+                    flush();
+                } catch (Exception e) {
+                    log.error("Could not end transaction", e);
+                    throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+                }
+            }
+            failed = false;
+            context.end(xid, flags);
+        } finally {
+            if (failed) {
+                try {
+                    context.end(xid, TMFAIL);
+                } finally {
+                    rollback(xid);
+                }
+            }
+        }
+    }
+
+    public int prepare(Xid xid) throws XAException {
+        return context.prepare(xid);
+    }
+
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+        try {
+            context.commit(xid, onePhase);
+        } finally {
+            inTransaction = false;
+            try {
+                try {
+                    sendInvalidationsToOthers();
+                } finally {
+                    checkThreadEnd();
+                }
+            } catch (Exception e) {
+                log.error("Could not commit transaction", e);
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
+        }
+    }
+
+    public void rollback(Xid xid) throws XAException {
+        try {
+            try {
+                context.rollback(xid);
+            } finally {
+                rollback();
+            }
+        } finally {
+            inTransaction = false;
+            try {
+                try {
+                    sendInvalidationsToOthers();
+                } finally {
+                    checkThreadEnd();
+                }
+            } catch (Exception e) {
+                log.error("Could not rollback transaction", e);
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
+        }
+    }
+
+    public void forget(Xid xid) throws XAException {
+        context.forget(xid);
+    }
+
+    public Xid[] recover(int flag) throws XAException {
+        return context.recover(flag);
+    }
+
+    public boolean setTransactionTimeout(int seconds) throws XAException {
+        return context.setTransactionTimeout(seconds);
+    }
+
+    public int getTransactionTimeout() throws XAException {
+        return context.getTransactionTimeout();
     }
 
 }

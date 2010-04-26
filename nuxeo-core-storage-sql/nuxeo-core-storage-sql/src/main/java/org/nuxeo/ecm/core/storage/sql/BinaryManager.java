@@ -22,12 +22,14 @@ import java.io.InputStream;
 
 /**
  * A binary manager stores binaries according to their digest.
- * <p>
- * It must have a one-argument constructor taking a {@link RepositoryDescriptor}.
- *
- * @author Florent Guillaume
  */
 public interface BinaryManager {
+
+    /**
+     * Initializer.
+     */
+    void initialize(RepositoryDescriptor repositoryDescriptor)
+            throws IOException;
 
     /**
      * Saves the given input stream into a {@link Binary}.

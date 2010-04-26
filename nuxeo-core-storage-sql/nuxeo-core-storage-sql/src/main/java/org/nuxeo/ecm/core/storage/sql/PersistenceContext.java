@@ -30,16 +30,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,17 +60,17 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @author Florent Guillaume
  */
-public class PersistenceContext {
+public class PersistenceContext implements XAResource {
 
     private static final Log log = LogFactory.getLog(PersistenceContext.class);
+
+    private final Model model;
 
     private final Mapper mapper;
 
     private final Map<String, Context> contexts;
 
     private final HierarchyContext hierContext;
-
-    private final Model model;
 
     private EventProducer eventProducer;
 
@@ -83,14 +89,14 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    public PersistenceContext(Mapper mapper) {
+    public PersistenceContext(Model model, Mapper mapper) {
+        this.model = model;
         this.mapper = mapper;
-        model = mapper.getModel();
         // accessed by invalidator, needs to be concurrent
         contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        hierContext = new HierarchyContext(mapper, this);
+        hierContext = new HierarchyContext(model, mapper, this);
         contexts.put(model.hierTableName, hierContext);
 
         // this has to be linked to keep creation order, as foreign keys
@@ -128,16 +134,16 @@ public class PersistenceContext {
     }
 
     // get or create if missing
-    protected Context getContext(String tableName) {
+    public Context getContext(String tableName) {
         Context context = contexts.get(tableName);
         if (context == null) {
-            context = new Context(tableName, mapper, this);
+            context = new Context(tableName, model, mapper, this);
             contexts.put(tableName, context);
         }
         return context;
     }
 
-    protected HierarchyContext getHierContext() {
+    public HierarchyContext getHierContext() {
         return hierContext;
     }
 
@@ -245,7 +251,7 @@ public class PersistenceContext {
         List<String> strings = new LinkedList<String>();
 
         for (String path : paths) {
-            PropertyInfo pi = model.getPathPropertyInfo(documentType, path);
+            ModelProperty pi = model.getPathPropertyInfo(documentType, path);
             if (pi == null) {
                 continue; // doc type doesn't have this property
             }
@@ -780,6 +786,104 @@ public class PersistenceContext {
     protected Serializable getContainingDocument(Serializable id)
     throws StorageException {
         return hierContext.getContainingDocument(id);
+    }
+
+    /**
+     * Makes a NXQL query to the database.
+     *
+     * @param query the query
+     * @param queryFilter the query filter
+     * @param countTotal if {@code true}, count the total size without
+     *            limit/offset
+     * @param session the current session (to resolve paths)
+     * @return the list of matching document ids
+     * @throws StorageException
+     */
+    public PartialList<Serializable> query(String query,
+            QueryFilter queryFilter, boolean countTotal, Session session)
+            throws StorageException {
+        return mapper.query(query, queryFilter, countTotal, session);
+    }
+
+    /**
+     * Makes a query to the database and returns an iterable (which must be
+     * closed when done).
+     *
+     * @param query the query
+     * @param queryType the query type
+     * @param queryFilter the query filter
+     * @param session the current session (to resolve paths)
+     * @param params optional query-type-dependent parameters
+     * @return an iterable, which <b>must</b> be closed when done
+     * @throws StorageException
+     */
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Session session, Object... params)
+            throws StorageException {
+        return mapper.queryAndFetch(query, queryType, queryFilter, session,
+                params);
+    }
+
+    /**
+     * Updates only the read ACLs that have changed.
+     *
+     * @throws StorageException
+     */
+    public void updateReadAcls() throws StorageException {
+        mapper.updateReadAcls();
+    }
+
+    /**
+     * Rebuilds the read ACLs for the whole repository.
+     *
+     * @throws StorageException
+     */
+    public void rebuildReadAcls() throws StorageException {
+        mapper.rebuildReadAcls();
+    }
+
+    /*
+     * ----- XAResource -----
+     */
+
+    public void start(Xid xid, int flags) throws XAException {
+        mapper.start(xid, flags);
+    }
+
+    public void end(Xid xid, int flags) throws XAException {
+        mapper.end(xid, flags);
+    }
+
+    public int prepare(Xid xid) throws XAException {
+        return mapper.prepare(xid);
+    }
+
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+        mapper.commit(xid, onePhase);
+    }
+
+    public void rollback(Xid xid) throws XAException {
+        mapper.rollback(xid);
+    }
+
+    public void forget(Xid xid) throws XAException {
+        mapper.forget(xid);
+    }
+
+    public Xid[] recover(int flag) throws XAException {
+        return mapper.recover(flag);
+    }
+
+    public boolean setTransactionTimeout(int seconds) throws XAException {
+        return mapper.setTransactionTimeout(seconds);
+    }
+
+    public int getTransactionTimeout() throws XAException {
+        return mapper.getTransactionTimeout();
+    }
+
+    public boolean isSameRM(XAResource xares) throws XAException {
+        throw new UnsupportedOperationException();
     }
 
 }

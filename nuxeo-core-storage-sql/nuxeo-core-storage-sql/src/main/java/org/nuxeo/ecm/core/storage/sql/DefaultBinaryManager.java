@@ -65,13 +65,13 @@ public class DefaultBinaryManager implements BinaryManager {
 
     public static final String CONFIG_FILE = "config.xml";
 
-    protected final File storageDir;
+    protected File storageDir;
 
-    protected final File tmpDir;
+    protected File tmpDir;
 
-    protected final BinaryManagerDescriptor descriptor;
+    protected BinaryManagerDescriptor descriptor;
 
-    public DefaultBinaryManager(RepositoryDescriptor repositoryDescriptor)
+    public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
         String path = repositoryDescriptor.binaryStorePath;
         if (path == null || path.trim().length() == 0) {

@@ -62,8 +62,8 @@ public class HierarchyContext extends Context {
 
     private final PositionComparator posComparator;
 
-    public HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
-        super(mapper.getModel().hierTableName, mapper, persistenceContext);
+    public HierarchyContext(Model model, Mapper mapper, PersistenceContext persistenceContext) {
+        super(model.hierTableName, model, mapper, persistenceContext);
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
         childrenRegularHard = new HashMap<Serializable, Children>();
@@ -580,7 +580,7 @@ public class HierarchyContext extends Context {
      * Called by the mapper when it has added new children (of unknown ids) to a
      * node.
      */
-    protected void markChildrenAdded(Serializable parentId) {
+    public void markChildrenAdded(Serializable parentId) {
         for (Map<Serializable, Children> map : new Map[] { childrenRegularSoft,
                 childrenRegularHard, childrenComplexPropSoft,
                 childrenComplexPropHard }) {

@@ -64,10 +64,10 @@ public class Context {
     /** Number of columns in table. */
     private final int tableSize;
 
-    // also accessed by Fragment
-    protected final Mapper mapper;
-
     protected final Model model;
+
+    // also accessed by Fragment.refetch()
+    protected final Mapper mapper;
 
     protected final PersistenceContext persistenceContext;
 
@@ -119,12 +119,12 @@ public class Context {
     protected final boolean isCollection;
 
     @SuppressWarnings("unchecked")
-    public Context(String tableName, Mapper mapper,
+    public Context(String tableName, Model model, Mapper mapper,
             PersistenceContext persistenceContext) {
         this.tableName = tableName;
+        this.model = model;
         this.mapper = mapper;
         this.persistenceContext = persistenceContext;
-        model = mapper.getModel();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
         modified = new HashMap<Serializable, Fragment>();
 
@@ -289,15 +289,14 @@ public class Context {
         if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
-                return model.newEmptyCollectionFragment(id, this);
+                return mapper.makeEmptyCollectionRow(id, this);
             } else {
                 return allowAbsent ? new SimpleFragment(id, State.ABSENT, this,
                         null) : null;
             }
         } else {
             if (isCollection) {
-                Serializable[] array = mapper.readCollectionArray(id, this);
-                return model.newCollectionFragment(id, array, this);
+                return mapper.readCollectionRow(id, this);
             } else {
                 Map<String, Serializable> map = mapper.readSingleRowMap(
                         tableName, id, this);
@@ -327,13 +326,7 @@ public class Context {
         // fetch these fragments in bulk
         List<Fragment> fetchFragments = new ArrayList<Fragment>(fetchIds.size());
         if (isCollection) {
-            Map<Serializable, Serializable[]> arrays = mapper.readCollectionsArrays(
-                    fetchIds, this);
-            for (Serializable id : fetchIds) {
-                Serializable[] array = arrays.get(id);
-                Fragment fragment = model.newCollectionFragment(id, array, this);
-                fetchFragments.add(fragment);
-            }
+            mapper.readCollectionsRows(fetchIds, this, fetchFragments);
         } else {
             Map<Serializable, Map<String, Serializable>> maps = mapper.readMultipleRowMaps(
                     tableName, fetchIds, this);
@@ -364,7 +357,7 @@ public class Context {
                 // the id has not been saved, so nothing exists yet in the
                 // database
                 if (isCollection) {
-                    fragment = model.newEmptyCollectionFragment(id, this);
+                    fragment = mapper.makeEmptyCollectionRow(id, this);
                 } else {
                     fragment = allowAbsent ? new SimpleFragment(id,
                             State.ABSENT, this, null) : null;
@@ -385,7 +378,7 @@ public class Context {
      * Called by {@link #get}, and by the {@link Mapper} to reuse known
      * hierarchy fragments in lists of children.
      */
-    protected Fragment getIfPresent(Serializable id) {
+    public Fragment getIfPresent(Serializable id) {
         Fragment fragment = pristine.get(id);
         if (fragment != null) {
             return fragment;
@@ -553,7 +546,7 @@ public class Context {
      * @param wasModified {@code true} for a modification, {@code false} for a
      *            deletion
      */
-    protected void markInvalidated(Serializable id, boolean wasModified) {
+    public void markInvalidated(Serializable id, boolean wasModified) {
         if (wasModified) {
             Fragment fragment = getIfPresent(id);
             if (fragment != null) {

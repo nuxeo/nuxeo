@@ -39,14 +39,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * The managed connection factory receives requests from the application server
@@ -241,16 +239,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private void initialize() throws StorageException {
         synchronized (this) {
             if (repository == null) {
-                // XXX TODO
-                SchemaManager schemaManager;
-                try {
-                    schemaManager = Framework.getService(SchemaManager.class);
-                } catch (Exception e) {
-                    throw new StorageException(e);
-                }
                 repositoryDescriptor.mergeFrom(getRepositoryDescriptor(repositoryDescriptor.name));
-                repository = new RepositoryImpl(repositoryDescriptor,
-                        schemaManager);
+                repository = new RepositoryImpl(repositoryDescriptor);
             }
         }
     }

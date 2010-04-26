@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="testVersionListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener">
+      <event>beforeDocumentModification</event>
+      <event>incrementBeforeUpdate</event>
+    </listener>
+  </extension>
+
+</component>

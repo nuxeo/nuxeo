@@ -17,13 +17,17 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
 
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -36,6 +40,7 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.security.SecurityService;
 
 /**
  * @author Florent Guillaume
@@ -51,6 +56,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-permissions-contrib.xml");
         openSession();
     }
 
@@ -311,14 +318,14 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         session.save();
 
         List<DocumentModel> ws2ParentsUnderAdministrator = session.getParentDocuments(ws2.getRef());
-        assertTrue("list parents for" + ws2.getName() + "under " +
-                session.getPrincipal().getName() + " is not empty:",
+        assertTrue("list parents for" + ws2.getName() + "under "
+                + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
         CoreSession testSession = openSessionAs("test");
         List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
-        assertTrue("list parents for" + ws2.getName() + "under " +
-                testSession.getPrincipal().getName() + " is empty:",
+        assertTrue("list parents for" + ws2.getName() + "under "
+                + testSession.getPrincipal().getName() + " is empty:",
                 ws2ParentsUnderTest.isEmpty());
         closeSession(testSession);
     }
@@ -487,4 +494,42 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertTrue(permissions.contains("Everything"));
     }
 
+    public void testReadAclSecurity() throws ClientException {
+        // Check that all permissions that contain Browse enable to list a document using aclOptimization
+        SecurityService securityService = NXCore.getSecurityService();
+        String[] browsePermissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
+        // Check for test permission contribution
+        assertTrue(Arrays.asList(browsePermissions).contains("ViewTest"));
+        List<String> docNames = new ArrayList<String>(browsePermissions.length);
+        DocumentModel root = session.getRootDocument();
+        for (String permission : browsePermissions) {
+            // Create a folder with only the browse permission
+            String name = "joe-has-" + permission + "-permission";
+            docNames.add(name);
+            DocumentModel folder = new DocumentModelImpl(
+                    root.getPathAsString(), name, "Folder");
+            folder = session.createDocument(folder);
+            ACP acp = folder.getACP();
+            assertNotNull(acp); // the acp inherited from root is returned
+            acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("joe", permission, true));
+            acp.addACL(acl);
+            folder.setACP(acp, true);
+        }
+        session.save();
+        CoreSession joeSession = openSessionAs("joe");
+        try {
+            DocumentModelList list;
+            list = joeSession.query("SELECT * FROM Folder");
+            List<String> names = new ArrayList<String>();
+            for (DocumentModel doc : list) {
+                names.add(doc.getName());
+            }
+            assertEquals("Expecting " + docNames + " got " + names,
+                    browsePermissions.length, list.size());
+        } finally {
+            closeSession(joeSession);
+        }
+    }
 }

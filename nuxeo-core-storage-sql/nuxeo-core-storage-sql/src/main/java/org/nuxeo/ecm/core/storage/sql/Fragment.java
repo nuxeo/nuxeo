@@ -122,10 +122,10 @@ public abstract class Fragment implements Serializable {
 
     private transient Context context;
 
-    private void logStateTransition(State newState) {
-        log.info("(" + context.mapper.instanceNumber + ") " + id + '/'
-                + getTableName() + ' ' + state + " -> " + newState);
-    }
+    // private void logStateTransition(State newState) {
+    // log.info("(" + context.mapper.instanceNumber + ") " + id + '/'
+    // + getTableName() + ' ' + state + " -> " + newState);
+    // }
 
     /**
      * Constructs an empty {@link Fragment} with the given id (which may be a

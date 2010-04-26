@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
 /**
  * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
@@ -3107,6 +3108,41 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("t1", ver.getProperty("dublincore", "title"));
         assertEquals("approved", ver.getCurrentLifeCycleState());
         assertEquals(cal3, ver.getProperty("dublincore", "issued"));
+    }
+
+    /**
+     * Check that the "incrementBeforeUpdate" and "beforeDocumentModification"
+     * are not fired on a DocumentModel where the {@code isImmutable()} returns
+     * {@code true}.
+     */
+    public void testDoNotFireBeforeUpdateEventsOnVersion() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listeners-contrib.xml");
+
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "doc", "File");
+
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "t1");
+        doc = session.saveDocument(doc);
+
+        VersionModel version = new VersionModelImpl();
+        version.setLabel("v1");
+        session.checkIn(doc.getRef(), version);
+        session.checkOut(doc.getRef());
+        doc.setProperty("dublincore", "title", "t2");
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // Reset the listener
+        DummyTestListener.LISTENER_CALLED = false;
+        DocumentModel versionDoc = session.getLastDocumentVersion(doc.getRef());
+        versionDoc.setProperty("dublincore", "issued", new GregorianCalendar());
+        session.saveDocument(versionDoc);
+        session.save();
+
+        assertFalse(DummyTestListener.LISTENER_CALLED);
     }
 
 }

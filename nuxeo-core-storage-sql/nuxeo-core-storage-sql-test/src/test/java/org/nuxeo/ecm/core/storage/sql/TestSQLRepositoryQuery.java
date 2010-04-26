@@ -39,6 +39,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     public void deployRepository() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib-2.xml");
+        deployBundle("org.nuxeo.ecm.core.storage.sql");
         DatabaseHelper.DATABASE.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
@@ -61,7 +62,6 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
         super.testFulltextBlob();
     }
 

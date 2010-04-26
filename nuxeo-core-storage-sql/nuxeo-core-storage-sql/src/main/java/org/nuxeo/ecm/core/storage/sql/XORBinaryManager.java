@@ -30,16 +30,15 @@ import java.io.IOException;
  * This is to prevent casual reading of the files, but of course the algorithm
  * and key for scrambling are available on the system as well, so this not a
  * secure store.
- *
- * @author Florent Guillaume
  */
 public class XORBinaryManager extends DefaultBinaryManager {
 
-    protected final byte[] pattern;
+    protected byte[] pattern;
 
-    public XORBinaryManager(RepositoryDescriptor repositoryDescriptor)
+    @Override
+    public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
-        super(repositoryDescriptor);
+        super.initialize(repositoryDescriptor);
         String key = repositoryDescriptor.binaryManagerKey;
         if (key == null || key.length() == 0) {
             key = "U"; // 0x55

@@ -13,8 +13,6 @@
           <field type="largetext">note</field>
         </schema>
         <indexing>
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.NXQLQueryMaker" />
-          <queryMaker class="org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker" />
           <fulltext catalog="nuxeo" analyzer="french"/>
         </indexing>
         <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>

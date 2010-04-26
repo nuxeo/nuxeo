@@ -15,9 +15,12 @@ Bundle-Category: core
 Export-Package: org.nuxeo.ecm.core.storage,
  org.nuxeo.ecm.core.storage.sql,
  org.nuxeo.ecm.core.storage.sql.coremodel,
- org.nuxeo.ecm.core.storage.sql.db,
- org.nuxeo.ecm.core.storage.sql.db.dialect,
+ org.nuxeo.ecm.core.storage.sql.jdbc,
+ org.nuxeo.ecm.core.storage.sql.jdbc.db,
+ org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
  org.nuxeo.ecm.core.storage.sql.management
 Eclipse-LazyStart: true
 Nuxeo-Component: OSGI-INF/management-contrib.xml,
- OSGI-INF/listener-contrib.xml
+ OSGI-INF/listener-contrib.xml,
+ OSGI-INF/querymaker-service.xml,
+ OSGI-INF/querymaker-contrib.xml
