@@ -22,21 +22,35 @@ namespace NuxeoCtl
 		
 		// Logging to the logBox
 		
-		private delegate void LogHandler(String outLine);
+		private delegate void LogHandler(String outLine, String loglevel);
 		
 		private void Log(String message) {
 			Log(message,"INFO");
 		}
 		
+		private static char[] splitParams={' '};
+		
 		private void Log(String message, String loglevel) {
 			if (logBox.InvokeRequired) {
-				logBox.Invoke(new LogHandler(Log), new object[] {message});
+				logBox.Invoke(new LogHandler(Log), new object[] {message,loglevel});
 			} else {
 				Color color=Color.Black;
 				if (loglevel=="INFO") color=Color.Black;
 				else if (loglevel=="DEBUG") color=Color.Green;
 				else if (loglevel=="WARN") color=Color.DarkBlue;
 				else if (loglevel=="ERROR") color=Color.Red;
+				else if (loglevel=="LOG") {
+					String[] split=message.Split(splitParams,3);
+					if (split.Length==3) {
+						if (split[1]=="INFO") color=Color.Black;
+						else if (split[1]=="DEBUG") color=Color.Green;
+						else if (split[1]=="WARN") color=Color.DarkBlue;
+						else if (split[1]=="ERROR") color=Color.Red;
+						else color=Color.Black;
+					} else {
+						color=Color.Black;
+					}
+				}
 				else Log("NO SUCH LOGLEVEL :"+loglevel,"ERROR");
 				logBox.SelectionStart=logBox.TextLength;
 				logBox.SelectionColor=color;
@@ -50,7 +64,7 @@ namespace NuxeoCtl
 		
 		private void OutputLog(object sender, DataReceivedEventArgs outLine) {
 			if (!String.IsNullOrEmpty(outLine.Data)) {
-				Log(outLine.Data,"INFO");
+				Log(outLine.Data,"LOG");
 			}
 		}
 		
@@ -69,7 +83,7 @@ namespace NuxeoCtl
 			}
 		}
 		
-		private void AppLog(object sender, LogEventArgs arg) {
+		private void nxControllerLog(object sender, LogEventArgs arg) {
 			Log(arg.GetMessage(),arg.GetLogLevel());
 		}
 		
