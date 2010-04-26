@@ -262,14 +262,19 @@ public class ContainerPortal extends Portal {
     }
 
     public GadgetPortlet addGadget(GadgetBean bean) {
-        bean.setPosition(new GadgetPosition(getColumnId(0), columns.get(
-                getColumnId(0))
-                .getItems().length));
+        GadgetPosition gadgetPosition = bean.getPosition();
+        String placeId = gadgetPosition.getPlaceID();
+        if ("".equals(placeId)) {
+            placeId = getDefaultColId();
+            gadgetPosition.setPlaceId(placeId);
+        }
+        if (gadgetPosition.getPosition().intValue() == -1) {
+            gadgetPosition.setPosition(columns.get(placeId).getItems().length);
+        }
         bean.setHeight(-1);
         GadgetPortlet g = addGadget(bean, null);
         g.setVisible(true);
-        columns.get(getColumnId(0))
-                .doLayout();
+        columns.get(placeId).doLayout();
         return g;
     }
 

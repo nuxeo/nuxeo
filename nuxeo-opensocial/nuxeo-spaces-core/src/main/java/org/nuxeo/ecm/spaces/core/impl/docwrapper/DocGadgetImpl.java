@@ -111,7 +111,7 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public int getPosition() throws ClientException {
         Long result = (Long) doc.getPropertyValue(GADGET_POSITION);
-        return (result == null) ? 0 : result.intValue();
+        return (result == null) ? -1 : result.intValue();
     }
 
     @SuppressWarnings("unchecked")
