@@ -62,6 +62,9 @@ namespace NuxeoCtl
 			// 
 			// logBox
 			// 
+			this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.logBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.logBox.Location = new System.Drawing.Point(12, 79);
 			this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -108,7 +111,7 @@ namespace NuxeoCtl
 		bool StartApplication() {
 			if (nxControl==null) nxControl=new NuxeoProcess.NuxeoController();
 			if (!nxControl.IsLogDelegated()) {
-				nxControl.DelegatedLog+=new LogEventHandler(AppLog);
+				nxControl.DelegatedLog+=new LogEventHandler(nxControllerLog);
 				nxControl.SetDelegateLog(true);
 			}
 			if (nxControl.Start()==false) {

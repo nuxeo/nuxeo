@@ -44,13 +44,25 @@ namespace NuxeoProcess
 	/// This class starts and stop a Nuxeo server in the background.
 	/// It can be used both by the service and the Windows application.
 	/// </summary>
-	public class NuxeoController
+	public partial class NuxeoController
 	{
-		
+		private String platform=null;
 		private static Process nxProcess=null;
-		private Dictionary<String,String> nxConfig=new Dictionary<String, String>();
-		private String NuxeoConf="";
 		public bool running=false;
+		
+		// Constructor
+		
+		public NuxeoController() {
+			
+			// Detect platform
+			int p = (int) Environment.OSVersion.Platform;
+                if ((p==4)||(p==6)||(p==128)) {
+                	platform="unix";
+                } else {
+                    platform="windows";
+                }
+
+		}
 		
 		// Utility : log
 		// If delegateLog is true, this will generate a LogEvent
@@ -79,72 +91,11 @@ namespace NuxeoProcess
 			}
 		}
 		
-		// Utility : check java version
-		
-		private String CheckJavaVersion(String java) {
-			Regex jv=new Regex("^java version \"([^\"]*)\"$");
-			Process javaProcess=new Process();
-			javaProcess.StartInfo.FileName=java;
-			javaProcess.StartInfo.Arguments="-version";
-			javaProcess.StartInfo.UseShellExecute=false;
-			javaProcess.StartInfo.CreateNoWindow=true;
-			javaProcess.StartInfo.RedirectStandardError=true;
-			javaProcess.Start();
-			String line;
-			while ((line=javaProcess.StandardError.ReadLine())!=null) {
-				MatchCollection matchList=jv.Matches(line);
-				if (matchList.Count>0) {
-					Match firstMatch=matchList[0];
-					if (firstMatch.Groups.Count<2) continue;
-					return firstMatch.Groups[1].ToString();
-				}
-			}
-			return "UNKNOWN";
-		}
-		
-		// Utility : read nuxeo.conf into the nxConfig dictionary
-		
-		private bool ParseConfig() {
-			// Get config file location
-			NuxeoConf=Environment.GetEnvironmentVariable("NUXEO_CONF");
-			if (!File.Exists(NuxeoConf)) {
-				NuxeoConf="nuxeo.conf";
-				if (!File.Exists(NuxeoConf)) {
-					NuxeoConf="C:\\DEV\\nuxeo-dm-jboss\\bin\\nuxeo.conf";
-					if (!File.Exists(NuxeoConf)) {
-						Log("Could not find nuxeo configuration");
-						return false;
-					}
-				}
-			}
-			Log("Using configuration at "+NuxeoConf,"INFO");
-			// Read config file
-			String line;
-			String[] split;
-			char[] splitParams={'='};
-			try {
-				System.IO.StreamReader file=new System.IO.StreamReader(NuxeoConf);
-				while ((line=file.ReadLine())!=null) {
-					if (line.Length==0) continue;
-					if (line[0]=='#') continue;
-					split=line.Split(splitParams,2);
-					if (split.Length!=2) continue;
-					nxConfig.Add(split[0],split[1]);
-					Log(split[0]+" -> "+split[1],"DEBUG");
-				}
-			} catch (Exception e) {
-				Log("Error reading "+NuxeoConf);
-				Log(e.Message);
-				return false;
-			}
-			return true;
-		}
 		
 		// Callback on process exit
 		
 		private void Process_Exited(object sender, EventArgs e) {
 			Log("Application has exited.","WARN");
-			nxConfig=new Dictionary<String, String>();
 			nxProcess=null;
 			running=false;
 		}
@@ -152,9 +103,18 @@ namespace NuxeoProcess
 		// ********** STARTUP **********
 		
 		public bool Start() {
-			if (nxProcess!=null) return false;
-			if (ParseConfig()==false) return false;
 			
+			// Return if The process is already started
+			if (nxProcess!=null) return false;
+			
+			// Parse Nuxeo configuration file
+			Dictionary<String,String> nxConfig;
+			if ((nxConfig=ParseConfig())==null) {
+				Log("Could not parse nuxeo.conf","ERROR");
+				return false;
+			}
+			String NuxeoConf=nxConfig["NuxeoConf"];
+		
 			Log("*** Setting up environment ***","DEBUG");
 			
 			DirectoryInfo di;
@@ -162,8 +122,9 @@ namespace NuxeoProcess
 			
 			// Setup the JVM
 			String JAVA="java.exe";
+			if (platform=="unix") JAVA="java";
 			if (nxConfig.ContainsKey("JAVA_HOME")) {
-				JAVA=Path.Combine(Path.Combine(nxConfig["JAVA_HOME"],"bin"),"java.exe");
+				JAVA=Path.Combine(Path.Combine(nxConfig["JAVA_HOME"],"bin"),JAVA);
 			}
 			Log("JAVA = "+JAVA,"DEBUG");
 			
