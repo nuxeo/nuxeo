@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-I20100426_1059</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
