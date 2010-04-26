@@ -186,8 +186,11 @@ namespace NuxeoProcess
 			
 			// Setup LOG_DIR
 			String LOG_DIR=null;
-			if (nxConfig.ContainsKey("LOG_DIR")) {
-				LOG_DIR=nxConfig["LOG_DIR"];
+			if (nxConfig.ContainsKey("nuxeo.log.dir")) {
+				LOG_DIR=nxConfig["nuxeo.log.dir"];
+				if (!Path.IsPathRooted(LOG_DIR)) {
+					LOG_DIR=Path.Combine(NUXEO_HOME,LOG_DIR);
+				}
 			} else {
 				LOG_DIR=Path.Combine(NUXEO_HOME,"log");
 			}
@@ -203,8 +206,11 @@ namespace NuxeoProcess
 			
 			// Setup PID_DIR
 			String PID_DIR=null;
-			if (nxConfig.ContainsKey("PID_DIR")) {
-				PID_DIR=nxConfig["PID_DIR"];
+			if (nxConfig.ContainsKey("nuxeo.pid.dir")) {
+				PID_DIR=nxConfig["nuxeo.pid.dir"];
+				if (!Path.IsPathRooted(PID_DIR)) {
+					PID_DIR=Path.Combine(NUXEO_HOME,PID_DIR);
+				}
 			} else {
 				PID_DIR=LOG_DIR;
 			}
@@ -219,20 +225,22 @@ namespace NuxeoProcess
 			Log("PID = "+PID,"DEBUG");
 			
 			// Setup DATA_DIR
+			// We don't set a default to keep backward compatibility
 			String DATA_DIR=null;
-			if (nxConfig.ContainsKey("DATA_DIR")) {
-				DATA_DIR=nxConfig["DATA_DIR"];
-			} else {
-				DATA_DIR=Path.Combine(NUXEO_HOME,"data");
+			if (nxConfig.ContainsKey("nuxeo.data.dir")) {
+				DATA_DIR=nxConfig["nuxeo.data.dir"];
+				if (!Path.IsPathRooted(DATA_DIR)) {
+					DATA_DIR=Path.Combine(NUXEO_HOME,DATA_DIR);
+				}
+				try {
+					if (!Directory.Exists(DATA_DIR)) Directory.CreateDirectory(DATA_DIR);
+				} catch (Exception e) {
+					Log("Cannot create "+DATA_DIR,"ERROR");
+					Log(e.Message,"ERROR");
+					return false;
+				}
+				Log("DATA_DIR = "+DATA_DIR,"DEBUG");
 			}
-			try {
-				if (!Directory.Exists(DATA_DIR)) Directory.CreateDirectory(DATA_DIR);
-			} catch (Exception e) {
-				Log("Cannot create "+DATA_DIR,"ERROR");
-				Log(e.Message,"ERROR");
-				return false;
-			}
-			Log("DATA_DIR = "+DATA_DIR,"DEBUG");
 			
 			// Setup NUXEO_BIND_ADDRESS
 			String NUXEO_BIND_ADDRESS="0.0.0.0";
@@ -341,6 +349,8 @@ namespace NuxeoProcess
 			    NUXEO_CLASSPATH=NUXEO_CLASSPATH+jbossjar;
 			    
 			    String NUXEO_ENDORSED=Path.Combine(Path.Combine(NUXEO_HOME,"lib"),"endorsed");
+			    String NUXEO_DATA="";
+			    if (DATA_DIR!=null) NUXEO_DATA=" -Djboss.server.data.dir="+DATA_DIR;
 			    
 			    String JAVA_OPTS="";
 			    if (nxConfig.ContainsKey("JAVA_OPTS")) {
@@ -349,8 +359,8 @@ namespace NuxeoProcess
 			    
 			    JavaArgs=JAVA_OPTS+" -classpath "+NUXEO_CLASSPATH+
 			    	" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="+NUXEO_ENDORSED+
-			    	" -Djboss.server.log.dir="+LOG_DIR+" -Djboss.server.data.dir="+
-			    	DATA_DIR+" -Dnuxeo.home="+NUXEO_HOME+" -Dnuxeo.conf="+NuxeoConf+
+			    	" -Djboss.server.log.dir="+LOG_DIR+NUXEO_DATA+
+			    	" -Dnuxeo.home="+NUXEO_HOME+" -Dnuxeo.conf="+NuxeoConf+
 			    	" org.jboss.Main -b "+NUXEO_BIND_ADDRESS;
 			    
 			    Log("Jboss startup options : "+JavaArgs,"DEBUG");
@@ -443,6 +453,7 @@ namespace NuxeoProcess
 		}
 		
 		public bool Stop() {
+			// Unclean shutdown. Will change to use the shutdown jars soon.
 			if (nxProcess!=null) nxProcess.Kill();
 			return true;
 		}
