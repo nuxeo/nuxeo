@@ -13,6 +13,7 @@ import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+@Path("randomImporter")
 public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     private static final Log log = LogFactory

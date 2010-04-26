@@ -6,10 +6,10 @@ and a sample JAX-RS interface to launch, monitor and abort import jobs.
 
 Build with::
 
-  $ mvn install -Dmave.test.skip=true
+  $ mvn install -Dmaven.test.skip=true
 
 And deploy the two jars from the target subfolder into the nuxeo.ear/plugins or
-nxserver/bundles folder of you nuxeo server (and restart).
+nxserver/bundles folder of your nuxeo server (and restart).
 
 To import the folder '/home/ogrisel/Documents' into the workspace
 '/default-domain/workspaces/my-workspace' while monitoring the import logs from

@@ -15,6 +15,7 @@ import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+@Path("fileImporter")
 public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     private static final Log log = LogFactory.getLog(HttpFileImporterExecutor.class);
