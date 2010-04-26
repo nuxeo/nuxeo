@@ -652,4 +652,14 @@ public abstract class Dialect {
         return t instanceof SocketException;
     }
 
+    /**
+     * Let the dialect processes additional statements after tables creation and
+     * conditional statements. Can be used for specific upgrade procedure.
+     *
+     * @param connection
+     */
+    public void performAdditionalStatements(Connection connection)
+            throws SQLException {
+    }
+
 }

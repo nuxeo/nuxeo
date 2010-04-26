@@ -82,6 +82,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
         descriptor.pathOptimizationsEnabled = true;
+        descriptor.aclOptimizationsEnabled = true;
         return descriptor;
     }
 

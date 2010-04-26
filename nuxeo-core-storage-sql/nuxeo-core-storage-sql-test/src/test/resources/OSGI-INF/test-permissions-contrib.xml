@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.security">
+  <require>org.nuxeo.ecm.core.security.SecurityService</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+    <!--  Add a new browse permission to check read acl -->
+    <permission name="ViewTest">
+      <include>Browse</include>
+    </permission>
+
+  </extension>
+
+</component>

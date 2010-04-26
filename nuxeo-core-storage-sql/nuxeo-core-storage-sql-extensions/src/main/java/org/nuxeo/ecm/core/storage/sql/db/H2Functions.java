@@ -282,7 +282,7 @@ public class H2Functions extends EmbeddedFunctions {
                 + "   \"ID\" = '"
                 + id
                 + "'"//
-                + "   AND \"PERMISSION\" IN ('Read', 'ReadWrite', 'Everything', 'Browse')"
+                + "   AND \"PERMISSION\" IN (SELECT permission FROM read_acl_permissions)"
                 + " ORDER BY \"POS\"";
         if (isLogEnabled()) {
             logDebug(sql);

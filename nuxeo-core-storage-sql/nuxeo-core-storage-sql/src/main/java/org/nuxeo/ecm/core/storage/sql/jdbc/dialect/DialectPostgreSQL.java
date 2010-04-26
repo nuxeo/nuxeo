@@ -34,13 +34,18 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
@@ -885,6 +890,32 @@ public class DialectPostgreSQL extends Dialect {
                         + "  is_new boolean" //
                         + ");", //
                 "SELECT 1;"));
+
+        // dump browse permission into a table
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM pg_tables WHERE tablename='read_acl_permissions');",
+                "CREATE TABLE read_acl_permissions ("
+                        + "  permission character varying(250)" //
+                        + ");", //
+                "SELECT 1;"));
+
+        SecurityService securityService = NXCore.getSecurityService();
+        String[] permissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
+        String permissionValues = "";
+        for (String perm : permissions) {
+            permissionValues += "('" + perm + "')";
+        }
+        permissionValues = permissionValues.replace(")(", "), (");
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acl_permissions);",
+                "INSERT INTO read_acl_permissions VALUES " + permissionValues
+                        + ";", //
+                "SELECT 1;"));
+
         statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // do a drop
@@ -898,16 +929,16 @@ public class DialectPostgreSQL extends Dialect {
                         + "  r record;\n" //
                         + "BEGIN\n" //
                         + "  -- RAISE DEBUG 'call %', curid;\n" //
-                        + "  FOR r in SELECT CASE\n" //
-                        + "         WHEN (acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
-                        + "           acls.user\n" //
-                        + "         WHEN (NOT acls.grant AND\n" //
-                        + "             acls.permission IN ('Read', 'ReadWrite', 'Everything', 'Browse')) THEN\n" //
-                        + "           '-'|| acls.user\n" //
-                        + "         ELSE NULL END AS op\n" //
-                        + "       FROM acls WHERE acls.id = curid\n" //
-                        + "       ORDER BY acls.pos LOOP\n" //
+                        + "  FOR r IN SELECT CASE\n" //
+                        + "      WHEN (NOT acls.grant) THEN\n" //
+                        + "          '-'\n" //
+                        + "      WHEN (acls.grant) THEN\n" //
+                        + "          ''\n" //
+                        + "      ELSE NULL END || acls.user AS op\n" //
+                        + "  FROM acls\n" //
+                        + "  WHERE acls.id = curid AND\n" //
+                        + "      permission IN (SELECT permission FROM read_acl_permissions)\n" //
+                        + "  ORDER BY acls.pos LOOP\n" //
                         + "    IF r.op IS NULL THEN\n" //
                         + "      CONTINUE;\n" //
                         + "    END IF;\n" //
@@ -1402,5 +1433,30 @@ public class DialectPostgreSQL extends Dialect {
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
+
+    @Override
+    public void performAdditionalStatements(Connection connection)  throws SQLException {
+        // Warn user if BROWSE permissions has changed
+        Set<String> dbPermissions = new HashSet<String>();
+        String sql = "SELECT * FROM read_acl_permissions";
+        Statement s = connection.createStatement();
+        ResultSet rs = s.executeQuery(sql);
+        while (rs.next()) {
+            dbPermissions.add(rs.getString(1));
+        }
+        rs.close();
+        s.close();
+        Set<String> confPermissions = new HashSet<String>();
+        SecurityService securityService = NXCore.getSecurityService();
+        for (String perm : securityService.getPermissionsToCheck(SecurityConstants.BROWSE)) {
+            confPermissions.add(perm);
+        }
+        if (! dbPermissions.equals(confPermissions)) {
+            log.error("Security permission for BROWSE has changed, you need to rebuild the optimized read acls:"
+                    + "DROP TABLE read_acl_permissions; DROP TABLE read_acls; then restart.");
+        }
+
+    }
+
 
 }

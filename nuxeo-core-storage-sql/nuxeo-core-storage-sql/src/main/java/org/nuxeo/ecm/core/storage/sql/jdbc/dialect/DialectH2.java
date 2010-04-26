@@ -34,6 +34,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
@@ -406,6 +409,30 @@ public class DialectH2 extends Dialect {
                         + "  id character varying(36)," //
                         + "  is_new boolean" //
                         + ");"));
+        // dump browse permission into a table
+        statements.add(new ConditionalStatement(false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE TABLE IF NOT EXISTS read_acl_permissions ("
+                        + "  permission character varying(250)" //
+                        + ");"));
+
+        SecurityService securityService = NXCore.getSecurityService();
+        String[] permissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
+        String permissionValues = "";
+        for (String perm : permissions) {
+            permissionValues += "('" + perm + "')";
+        }
+        permissionValues = permissionValues.replace(")(", "), (");
+        statements.add(new ConditionalStatement(
+                false, // late
+                null, // perform a check
+                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acl_permissions);",
+                "INSERT INTO read_acl_permissions VALUES " + permissionValues
+                        + ";", //
+                "SELECT 1;"));
+
         statements.add(makeFunction("nx_get_read_acl", //
                 "getReadAcl"));
         statements.add(makeFunction("nx_get_read_acls_for", //

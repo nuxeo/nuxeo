@@ -223,6 +223,7 @@ public class JDBCMapper implements Mapper {
             }
             createTables();
             executeConditionalStatements(statements, false);
+            sqlInfo.dialect.performAdditionalStatements(connection);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
