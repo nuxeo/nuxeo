@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-I20100426_1059</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -15,16 +15,16 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.3.2-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.3.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.2-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>5.3.2-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.chemistry.version>1.6.2-SNAPSHOT</nuxeo.chemistry.version>
+    <nuxeo.common.version>1.6.2-I20100426_1059</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.2-I20100426_1059</nuxeo.runtime.version>
+    <nuxeo.core.version>1.6.2-I20100426_1059</nuxeo.core.version>
+    <nuxeo.theme.version>5.3.2-I20100426_1059</nuxeo.theme.version>
+    <nuxeo.features.version>5.3.2-I20100426_1059</nuxeo.features.version>
+    <nuxeo.webengine.version>5.3.2-I20100426_1059</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-I20100426_1059</nuxeo.services.version>
+    <nuxeo.jsf.version>5.3.2-I20100426_1059</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.3.2-I20100426_1059</nuxeo.dm.version>
+    <nuxeo.chemistry.version>1.6.2-I20100426_1059</nuxeo.chemistry.version>
     <nuxeo.distribution.version>${version}</nuxeo.distribution.version>
   </properties>
 
