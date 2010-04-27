@@ -66,46 +66,11 @@ function tableEnd() {
 
 function displayTaskList(data) {
   var htmlContent = tableStart(data);
-
-  // validation
-  var validation = data.data['workflowDirectiveValidation'];
-  var directive = data.translations['workflowDirectiveValidation'];
-  var i;
-
-  if (validation) {
-    for (i = 0; i < validation.length; i++) {
-      htmlContent += mkRow(validation[i], i, directive);
-    }
-  }
-  validation = data.data['workflowDirectiveCheck'];
-  directive = data.translations['workflowDirectiveCheck'];
-  if (validation) {
-    for (i = 0; i < validation.length; i++) {
-      htmlContent += mkRow(validation[i], i, directive);
-    }
-  }
-
-  validation = data.data['workflowDirectiveDiffusion'];
-  directive = data.translations['workflowDirectiveDiffusion'];
-  if (validation) {
-    for (i = 0; i < validation.length; i++) {
-      htmlContent += mkRow(validation[i], i, directive);
-    }
-  }
-  validation = data.data['workflowDirectiveOpinion'];
-  directive = data.translations['workflowDirectiveOpinion'];
-  if (validation) {
-    for (i = 0; i < validation.length; i++) {
-      htmlContent += mkRow(validation[i], i, directive);
-    }
-  }
-
-  validation = data.data['workflowDirectiveVerification'];
-  directive = data.translations['workflowDirectiveVerification'];
-  if (validation) {
-    for (i = 0; i < validation.length; i++) {
-      htmlContent += mkRow(validation[i], i, directive);
-    }
+  
+  for (var directive in data.data) {
+      for (i = 0; i <  data.data[directive].length; i++) {
+          htmlContent += mkRow(data.data[directive][i], i);
+      }
   }
 
   htmlContent += tableEnd();
@@ -146,7 +111,7 @@ function getBaseUrl() {
   return getNuxeoClientSideUrl();
 }
 
-function mkRow(dashBoardItem, i, directive) {
+function mkRow(dashBoardItem, i) {
   var docTitle = dashBoardItem.name;
   if ((dashBoardItem.title != null) && (dashBoardItem.title != "")) {
     docTitle = dashBoardItem.title;
@@ -198,7 +163,7 @@ function mkRow(dashBoardItem, i, directive) {
   }
   htmlRow += "</td>";
   htmlRow += "<td>";
-  htmlRow += directive;
+  htmlRow += dashBoardItem.directiveI18n;
   htmlRow += "</td>";
   htmlRow += "<td class=\"iconColumn\"/>";
   htmlRow += "</tr>";
