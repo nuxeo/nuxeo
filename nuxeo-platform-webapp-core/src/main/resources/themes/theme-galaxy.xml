@@ -1258,7 +1258,11 @@
         <clear>both</clear>
       </selector>
       <selector path=".bigIcon">
-        <width>50px</width>
+        <width>500px</width>
+      </selector>
+      <selector path=".smallIcon">
+        <width>16px</width>
+        <height>16px</height>
       </selector>
     </style>
     <style name="common style 2">
@@ -1563,6 +1567,10 @@
         <height>1%</height>
         <background-color preset="white (Galaxy backgrounds)"/>
         <margin>30px 0px 0px 0px</margin>
+      </selector>
+      <selector path=".smallIcon">
+        <width>16px</width>
+        <height>16px</height>
       </selector>
     </style>
     <!-- Main cell -->
