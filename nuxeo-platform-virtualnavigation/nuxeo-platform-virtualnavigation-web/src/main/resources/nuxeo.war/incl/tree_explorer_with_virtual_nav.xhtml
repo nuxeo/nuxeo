@@ -23,7 +23,9 @@
           <a4j:commandLink id="virtualNavTreeLink"
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
             reRender="MultiTreeView">
-            <nxu:graphicImage value="img/#{tree.treeId}.png" title="#{messages[docList.title]}" />
+            <nxu:graphicImage value="img/#{tree.treeId}.png"
+              title="#{messages[docList.title]}"
+              styleClass="smallIcon" />
           </a4j:commandLink>
          </nxu:dataList>
       </h:form>
