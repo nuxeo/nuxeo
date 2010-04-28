@@ -1,4 +1,21 @@
-﻿using System;
+﻿/*
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+* are made available under the terms of the GNU Lesser General Public License
+* (LGPL) version 2.1 which accompanies this distribution, and is available at
+* http://www.gnu.org/licenses/lgpl.html
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* Contributors:
+*     Mathieu Guillaume
+*/
+
+using System;
 using System.Diagnostics;
 using NuxeoProcess;
 
@@ -35,6 +52,7 @@ namespace NuxeoCtl
 			this.startButton = new System.Windows.Forms.Button();
 			this.stopButton = new System.Windows.Forms.Button();
 			this.logBox = new System.Windows.Forms.RichTextBox();
+			this.terminateButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// startButton
@@ -51,7 +69,7 @@ namespace NuxeoCtl
 			// stopButton
 			// 
 			this.stopButton.Enabled = false;
-			this.stopButton.Location = new System.Drawing.Point(405, 33);
+			this.stopButton.Location = new System.Drawing.Point(134, 33);
 			this.stopButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.stopButton.Name = "stopButton";
 			this.stopButton.Size = new System.Drawing.Size(116, 22);
@@ -62,20 +80,39 @@ namespace NuxeoCtl
 			// 
 			// logBox
 			// 
+			this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.logBox.DetectUrls = false;
 			this.logBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.logBox.Location = new System.Drawing.Point(12, 79);
 			this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.logBox.Name = "logBox";
 			this.logBox.ReadOnly = true;
-			this.logBox.Size = new System.Drawing.Size(509, 299);
+			this.logBox.Size = new System.Drawing.Size(917, 462);
 			this.logBox.TabIndex = 4;
+			this.logBox.TabStop = false;
 			this.logBox.Text = "";
+			// 
+			// terminateButton
+			// 
+			this.terminateButton.BackColor = System.Drawing.Color.Red;
+			this.terminateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.terminateButton.Location = new System.Drawing.Point(256, 32);
+			this.terminateButton.Name = "terminateButton";
+			this.terminateButton.Size = new System.Drawing.Size(113, 23);
+			this.terminateButton.TabIndex = 5;
+			this.terminateButton.Text = "Terminate";
+			this.terminateButton.UseVisualStyleBackColor = false;
+			this.terminateButton.Visible = false;
+			this.terminateButton.Click += new System.EventHandler(this.TerminateClick);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(533, 390);
+			this.ClientSize = new System.Drawing.Size(941, 553);
+			this.Controls.Add(this.terminateButton);
 			this.Controls.Add(this.logBox);
 			this.Controls.Add(this.stopButton);
 			this.Controls.Add(this.startButton);
@@ -85,6 +122,7 @@ namespace NuxeoCtl
 			this.Text = "NuxeoCtl";
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button terminateButton;
 		private System.Windows.Forms.RichTextBox logBox;
 		private System.Windows.Forms.Button startButton;
 		private System.Windows.Forms.Button stopButton;
@@ -108,7 +146,7 @@ namespace NuxeoCtl
 		bool StartApplication() {
 			if (nxControl==null) nxControl=new NuxeoProcess.NuxeoController();
 			if (!nxControl.IsLogDelegated()) {
-				nxControl.DelegatedLog+=new LogEventHandler(AppLog);
+				nxControl.DelegatedLog+=new LogEventHandler(nxControllerLog);
 				nxControl.SetDelegateLog(true);
 			}
 			if (nxControl.Start()==false) {
@@ -139,6 +177,22 @@ namespace NuxeoCtl
 			if (nxControl!=null) {
 				nxControl.Stop();
 				Log("Stopping "+nxSvcName+" application...","WARN");
+				Process stopProcess=nxControl.getStopProcess();
+				stopProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
+				stopProcess.BeginOutputReadLine();
+				stopProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
+				stopProcess.BeginErrorReadLine();
+				return true;
+			} else {
+				Log("Application is not started","WARN");
+				return false;
+			}
+		}
+		
+		bool TerminateApplication() {
+			if (nxControl!=null) {
+				nxControl.Terminate();
+				Log("Terminating "+nxSvcName+" application...","WARN");
 				return true;
 			} else {
 				Log("Application is not started","WARN");
@@ -167,10 +221,19 @@ namespace NuxeoCtl
 				statusChanged=StopService();
 			} else {
 				statusChanged=StopApplication();
+				terminateButton.Visible=true;
 			}
 			if (statusChanged) {
 				startButton.Enabled=true;
 				stopButton.Enabled=false;
+			}
+		}
+		
+		void TerminateClick(object sender, EventArgs e)
+		{
+			if (nxService==null) {
+				TerminateApplication();
+				terminateButton.Visible=false;
 			}
 		}
 	}

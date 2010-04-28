@@ -16,25 +16,21 @@
 */
 
 using System;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System.ServiceProcess;
+using System.Text;
 
-namespace NuxeoCtl
+namespace NuxeoService
 {
-	/// <summary>
-	/// Class with program entry point.
-	/// </summary>
-	internal sealed class Program
+	static class Program
 	{
 		/// <summary>
-		/// Program entry point.
+		/// This method starts the service.
 		/// </summary>
-		[STAThread]
-		private static void Main(string[] args)
+		static void Main()
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			// To run more than one service you have to add them here
+			ServiceBase.Run(new ServiceBase[] { new NuxeoService() });
 		}
-		
 	}
 }

@@ -68,8 +68,17 @@ if [ -r "$NUXEO_CONF" ]; then
 		fi
 		key="$(echo $confline | cut -d= -f1)"
 		value="$(echo $confline | cut -d= -f2-)"
+		if [[ "$key" == "nuxeo.log.dir" ]]; then
+			read -r LOG_DIR <<< $value
+		fi
+		if [[ "$key" == "nuxeo.pid.dir" ]]; then
+			read -r PID_DIR <<< $value
+		fi
+		if [[ "$key" == "nuxeo.data.dir" ]]; then
+			read -r DATA_DIR <<< $value
+		fi
 		if [[ "$key" == "nuxeo.bind.address" ]]; then
-			read -r NUXEO_BIND_ADDRESS <<< $value
+			read -r BIND_ADDRESS <<< $value
 		fi
 		if [[ "$key" == *.* ]]; then
 			continue
@@ -113,24 +122,31 @@ if [ "x$NUXEO_HOME" = "x" ]; then
 fi
 
 
-# Setup LOG_DIR
+# Layout setup
+
+# LOG_DIR
 
 if [ "x$LOG_DIR" = "x" ]; then
 	LOG_DIR=$NUXEO_HOME/log
+elif [[ "$LOG_DIR" != /* ]]; then
+	LOG_DIR=$NUXEO_HOME/$LOG_DIR
 fi
 LOG="$LOG_DIR/console.log"
 
-# Setup PID_DIR
+# PID_DIR
 
 if [ "x$PID_DIR" = "x" ]; then
 	PID_DIR=$LOG_DIR
+elif [[ "$PID_DIR" != /* ]]; then
+	PID_DIR=$NUXEO_HOME/$PID_DIR
 fi
 PID="$PID_DIR/nuxeo.pid"
 
-# Setup DATA_DIR
+# DATA_DIR
+# We don't use a default dir so as not to break backward compatibility
 
-if [ "x$DATA_DIR" = "x" ]; then
-	DATA_DIR=$NUXEO_HOME/data
+if [ ! -z "$DATA_DIR" ] && [[ "$DATA_DIR" != /* ]]; then
+	DATA_DIR=$NUXEO_HOME/$DATA_DIR
 fi
 
 # Where possible, increase the maximum number of file descriptors
@@ -171,8 +187,8 @@ if [ "x$SERVER_SET" = "x" ]; then
 fi
 
 # Bind address
-if [ "x$NUXEO_BIND_ADDRESS" = "x" ]; then
-	NUXEO_BIND_ADDRESS=0.0.0.0
+if [ "x$BIND_ADDRESS" = "x" ]; then
+	BIND_ADDRESS=0.0.0.0
 fi
 
 # Application server detection
@@ -226,13 +242,16 @@ if [ "$jboss" = "true" ]; then
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
 	NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
+	if [ ! -z "$DATA_DIR" ]; then
+		NUXEO_DATA="-Djboss.server.data.dir=$DATA_DIR"
+	fi
 	if [ "$cygwin" = "true" ]; then
 		NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
 		NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
 		NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
 		NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
 	fi
-	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Djboss.server.log.dir=$LOG_DIR -Djboss.server.data.dir=$DATA_DIR -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main -b $NUXEO_BIND_ADDRESS"
+	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=$NUXEO_ENDORSED -Djboss.server.log.dir=$LOG_DIR $NUXEO_DATA -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF org.jboss.Main -b $BIND_ADDRESS"
 
 #
 # TOMCAT
@@ -304,7 +323,7 @@ createdirs() {
 	if [ ! -d $PID_DIR ]; then
 		mkdir -p $PID_DIR
 	fi
-	if [ ! -d $DATA_DIR ]; then
+	if [ ! -z "$DATA_DIR" ] && [ ! -d $DATA_DIR ]; then
 		mkdir -p $DATA_DIR
 	fi
 }
