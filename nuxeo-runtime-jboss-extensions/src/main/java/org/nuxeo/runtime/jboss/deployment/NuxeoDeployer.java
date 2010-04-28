@@ -506,7 +506,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             File earFile = getEarDirectory(di);
             if (earFile.isDirectory()) {
                 String[] earList = earFile.list();
-                if (earList!=null) {
+                if (earList != null) {
                     for (String file : earList) {
                         if (file.startsWith("nuxeo")) {
                             return true;

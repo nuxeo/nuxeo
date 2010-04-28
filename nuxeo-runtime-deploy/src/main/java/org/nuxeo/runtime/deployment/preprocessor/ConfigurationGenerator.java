@@ -73,10 +73,18 @@ public class ConfigurationGenerator {
     private ServerConfigurator serverConfigurator;
 
     public ConfigurationGenerator() {
-        nuxeoHome = new File(System.getProperty(NUXEO_HOME));
-        nuxeoConf = new File(System.getProperty(NUXEO_CONF));
-        nuxeoDefaultConf = new File(getNuxeoHome(), TEMPLATES + File.separator
-                + NUXEO_DEFAULT_CONF);
+        String nuxeoHomePath = System.getProperty(NUXEO_HOME);
+        String nuxeoConfPath = System.getProperty(NUXEO_CONF);
+        if (nuxeoHomePath != null && nuxeoConfPath != null) {
+            nuxeoHome = new File(nuxeoHomePath);
+            nuxeoConf = new File(nuxeoConfPath);
+            nuxeoDefaultConf = new File(getNuxeoHome(), TEMPLATES
+                    + File.separator + NUXEO_DEFAULT_CONF);
+        } else {
+            nuxeoHome = new File(System.getProperty("user.dir")).getParentFile();
+            nuxeoConf = new File(nuxeoHome, "bin" + File.separator
+                    + "nuxeo.conf");
+        }
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
         isJetty = System.getProperty("jetty.home") != null;
