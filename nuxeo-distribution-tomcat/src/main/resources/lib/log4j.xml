@@ -10,7 +10,7 @@
   </appender>
 
   <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${catalina.base}/log/server.log" />
+    <param name="File" value="${nuxeo.log.dir}/server.log" />
     <param name="Append" value="true" />
     <!--    <param name="MaxFileSize" value="10MB" />-->
     <param name="MaxBackupIndex" value="3" />
@@ -21,8 +21,7 @@
 
   <!-- Specific appenders for some important nxshell commands -->
   <appender name="import" class="org.apache.log4j.RollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-    <param name="File" value="${catalina.base}/log/import.log" />
+    <param name="File" value="${nuxeo.log.dir}/import.log" />
     <param name="Append" value="true" />
     <param name="MaxFileSize" value="30MB" />
     <param name="MaxBackupIndex" value="5" />
