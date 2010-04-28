@@ -34,6 +34,7 @@
       <patternset>
         <exclude name="**/nxserver*.*" />
         <exclude name="**/readme.html" />
+        <exclude name="**/config/log4j.xml" />
       </patternset>
     </unzip>
     <nx:rename from="${outdir}/${tomcat}/nuxeo-*"

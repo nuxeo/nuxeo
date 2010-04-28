@@ -266,16 +266,14 @@ elif [ "$tomcat" = "true" ]; then
 
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
-	LOGGING_PROPERTIES="$NUXEO_HOME/conf/logging.properties"
 	CATALINA_TEMP="$NUXEO_HOME/temp"
 	if [ "$cygwin" = "true" ]; then
 		NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
-		LOGGING_PROPERTIES=`cygpath --absolute --windows "$LOGGING_PROPERTIES"`
 		CATALINA_TEMP==`cygpath --absolute --windows "$CATALINA_TEMP"`
 		NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
 		NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
 	fi
-	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF -Djava.util.logging.config.file=$LOGGING_PROPERTIES -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dcatalina.base=$NUXEO_HOME -Dcatalina.home=$NUXEO_HOME -Djava.io.tmpdir=$CATALINA_TEMP org.apache.catalina.startup.Bootstrap start"
+	CMD_START="$JAVA $JAVA_OPTS -classpath $NUXEO_CLASSPATH -Dnuxeo.home=$NUXEO_HOME -Dnuxeo.conf=$NUXEO_CONF -Dnuxeo.log.dir=$LOG_DIR -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dcatalina.base=$NUXEO_HOME -Dcatalina.home=$NUXEO_HOME -Djava.io.tmpdir=$CATALINA_TEMP org.apache.catalina.startup.Bootstrap start"
 
 #
 # JETTY
@@ -366,16 +364,35 @@ case "$1" in
 		trap "kill -PIPE `cat $PID`" PIPE
 		trap "kill -TERM `cat $PID`" TERM
 		# Wait for "Server started"
-		/bin/echo -n "Starting JBoss... "
+		/bin/echo -n "Starting Nuxeo... "
 		echo "(pressing Ctrl+C will interrupt starting process)"
 		max_count=300
 		count=0
 		while [ $count -le $max_count ]; do
-			line=$(tail -n80 "$LOG" 2>&1 | grep "Started in")
+			line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in")
 			if [ $? = 0 ]; then
-				echo "Server started."
+        countStatus=0
+        countActive=false
+        while read lineStatus; do
+          echo "$lineStatus" |grep "\[OSGiRuntimeService\] Nuxeo EP Started"
+          if [ $? = 0 ]; then
+            countActive=true
+          fi
+          if ! $countActive; then
+            continue
+          fi
+          echo "$lineStatus" | grep "======================================================================" > /dev/null
+          if [ $? = 0 ]; then
+            countStatus=`expr $countStatus + 1`
+          fi
+          if [ $countStatus -gt 0 ]; then
+            echo "$lineStatus"
+          fi
+          if [ $countStatus -eq 3 ]; then
+            break
+          fi          
+			  done < "$LOG"
 				echo $line
-				egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 "$LOG" | tail -n7
 				exit 0
 			fi
 			/bin/echo -n "."
