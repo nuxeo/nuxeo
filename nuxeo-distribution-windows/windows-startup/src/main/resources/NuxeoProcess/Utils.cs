@@ -361,19 +361,19 @@ namespace NuxeoProcess
 			
 			String NUXEO_DATA="";
 			if (nxEnv["DATA_DIR"]!=null) {
-			    	NUXEO_DATA=" -Djboss.server.data.dir="+nxEnv["DATA_DIR"];
+			    	NUXEO_DATA=" -Djboss.server.data.dir=\""+nxEnv["DATA_DIR"]+"\"";
 			}
 			
-			startArgs=nxEnv["JAVA_OPTS"]+" -classpath "+NUXEO_CLASSPATH+
-				" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="+NUXEO_ENDORSED+
-				" -Djboss.server.log.dir="+nxEnv["LOG_DIR"]+NUXEO_DATA+
-				" -Dnuxeo.home="+nxEnv["NUXEO_HOME"]+
-				" -Dnuxeo.conf="+nxEnv["NUXEO_CONF"]+
+			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
+				" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=\""+NUXEO_ENDORSED+"\""+
+				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_DATA+
+				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
 				" org.jboss.Main -b "+nxEnv["NUXEO_BIND_ADDRESS"];
 			
-			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath "+NUXEO_CLASSPATH+" -jar "+
+			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\" -jar \""+
 				Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"bin"),"shutdown.jar")+
-				" -S";
+				"\" -S";
 			
 			Log("JBoss startup options : "+startArgs,"DEBUG");
 			Log("JBoss shutdown options : "+stopArgs,"DEBUG");
@@ -389,25 +389,22 @@ namespace NuxeoProcess
 			if (nxEnv["CLASSPATH"].Length==0) NUXEO_CLASSPATH=srvStartJar;
 			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+Path.PathSeparator+srvStartJar;
 			    
-			String LOGGING_PROPERTIES=Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"conf"),"logging.properties");
 			String CATALINA_TEMP=Path.Combine(nxEnv["NUXEO_HOME"],"temp");
 			    
-			startArgs=nxEnv["JAVA_OPTS"]+" -classpath "+NUXEO_CLASSPATH+
-				" -Dnuxeo.home="+nxEnv["NUXEO_HOME"]+
-				" -Dnuxeo.conf="+nxEnv["NUXEO_CONF"]+
-				" -Djava.util.logging.config.file="+LOGGING_PROPERTIES+
+			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
+				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
 				" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"+
-				" -Dcatalina.base="+nxEnv["NUXEO_HOME"]+
-				" -Dcatalina.home="+nxEnv["NUXEO_HOME"]+
-				" -Djava.io.tmpdir="+CATALINA_TEMP+
+				" -Dcatalina.base=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Dcatalina.home=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Djava.io.tmpdir=\""+CATALINA_TEMP+"\""+
 				" org.apache.catalina.startup.Bootstrap start";
 			
-			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath "+NUXEO_CLASSPATH+
-				" -Djava.util.logging.config.file="+LOGGING_PROPERTIES+
+			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"+
-				" -Dcatalina.base="+nxEnv["NUXEO_HOME"]+
-				" -Dcatalina.home="+nxEnv["NUXEO_HOME"]+
-				" -Djava.io.tmpdir="+CATALINA_TEMP+
+				" -Dcatalina.base=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Dcatalina.home=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Djava.io.tmpdir=\""+CATALINA_TEMP+"\""+
 				" org.apache.catalina.startup.Bootstrap stop";
 				
 			Log("Tomcat startup options : "+startArgs,"DEBUG");
