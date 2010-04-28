@@ -201,6 +201,7 @@
         <exclude name="**/bin/*.exe" />
         <exclude name="**/bin/*.sh" />
         <exclude name="**/bin/*.tar.gz" />
+        <exclude name="conf/logging.properties" />
       </patternset>
     </unzip>
     <nx:rename from="${outdir}/apache-tomcat*" to="${outdir}/${tomcat}" />
