@@ -218,26 +218,31 @@ fi
 
 if [ "$jboss" = "true" ]; then
 
-	# Fix JRE 1.5/1.6 issue with script-api.jar
+	# Fix JRE 1.5/1.6 issue with script-api.jar and jaxb-api.jar
 	IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
 	NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
-	if [ ! -z "$IS_JRE_6" ]; then
-		#echo "Java 1.6 detected"
-		NXSCRIPT_API=`ls $NUXEO_EAR/lib/script-api*.jar 2>/dev/null || echo "null"`
-		if [ -f "$NXSCRIPT_API" ]; then
-			echo "Moving scripting API out of classpath (already provided by Java6)"
-			mkdir "$NUXEO_EAR/lib-jre1.5/" 2>/dev/null
-			mv "$NXSCRIPT_API" "$NUXEO_EAR/lib-jre1.5/"
-		fi
-	else
-		#echo "Assumed Java 1.5"
-		NXSCRIPT_API=`ls $NUXEO_EAR/lib/script-api*.jar 2>/dev/null || echo "null"`
-		if [ ! -f "$NXSCRIPT_API" ]; then
-			echo "Moving scripting API into classpath"
-			mv "$NUXEO_EAR"/lib-jre1.5/script-api*.jar "$NUXEO_EAR/lib/" 2>/dev/null || \
-			echo "Missing scripting API in $NUXEO_EAR/lib/" >&2
-		fi
-	fi
+	JAVA5_APIS="script-api jaxb-api"
+	for java5_api in $JAVA5_APIS;
+	do
+  	if [ ! -z "$IS_JRE_6" ]; then
+  		#echo "Java 1.6 detected"
+  		JAVA5_API=`ls $NUXEO_EAR/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+  		if [ -f "$JAVA5_API" ]; then
+  			echo "Moving $JAVA5_API out of classpath (already provided by Java6)"
+  			mkdir "$NUXEO_EAR/lib-jre1.5/" 2>/dev/null
+  			mv "$JAVA5_API" "$NUXEO_EAR/lib-jre1.5/"
+  		fi
+  		
+  	else
+  		#echo "Assumed Java 1.5"
+  		JAVA5_API=`ls $NUXEO_EAR/lib/java5_api$*.jar 2>/dev/null || echo "null"`
+  		if [ ! -f "$JAVA5_API" ]; then
+  			echo "Moving $JAVA5_API into classpath"
+  			mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR/lib/" 2>/dev/null || \
+  			echo "Missing $java5_api in $NUXEO_EAR/lib/ or $NUXEO_EAR/lib-jre1.5/" >&2
+  		fi
+  	fi
+	done
 
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"

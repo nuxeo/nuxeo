@@ -306,6 +306,9 @@
         <include name="xml-apis-*" />
         <include name="xmlParserAPIs-*" />
         <include name="xpp3_min-*" />
+        <include name="geronimo-*" />
+        <include name="jaxen-1.1-beta-9*" />
+        <include name="jsr311-api-1.0*" />
       </fileset>
     </delete>
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
@@ -339,8 +342,10 @@
       <artifact:resolveFile key="org.apache.poi:poi" />
       <artifact:resolveFile key="org.apache.poi:poi-ooxml" />
       <artifact:resolveFile key="org.apache.poi:poi-scratchpad" />
-      <artifact:resolveFile key="antlr:antlr" />
       <artifact:resolveFile key="org.antlr:antlr-runtime" />
+      <!--
+      <artifact:resolveFile key="antlr:antlr" />
+      -->
     </copy>
   </target>
 
