@@ -21,7 +21,6 @@
 
   <!-- Specific appenders for some important nxshell commands -->
   <appender name="import" class="org.apache.log4j.RollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
     <param name="File" value="${nuxeo.log.dir}/import.log" />
     <param name="Append" value="true" />
     <param name="MaxFileSize" value="30MB" />
