@@ -31,7 +31,7 @@ namespace NuxeoCtl
 	public partial class MainForm : Form
 	{
 		private ServiceController nxService;
-		private static String nxSvcName="NuxeoDM";
+		private static String nxSvcName="Nuxeo";
 		private String nxSvcStatus;
 		private System.Windows.Forms.Timer nxSvcTimer;
 		private System.Windows.Forms.Timer nxAppTimer;
@@ -161,7 +161,7 @@ namespace NuxeoCtl
 				nxSvcTimer.Start();
 				nxSvcDisplay();
 				// Logging
-				EventLog log=new EventLog("System");
+				EventLog log=new EventLog("Application");
 				log.EnableRaisingEvents=true;
 				log.EntryWritten+=new EntryWrittenEventHandler(ServiceLog);
 			} catch {

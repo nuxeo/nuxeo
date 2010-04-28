@@ -144,8 +144,6 @@ namespace NuxeoProcess
 				NUXEO_HOME=Environment.GetEnvironmentVariable("JBOSS_HOME");
 			} else if (Environment.GetEnvironmentVariable("CATALINA_HOME")!=null) {
 				NUXEO_HOME=Environment.GetEnvironmentVariable("CATALINA_HOME");
-			} else if (Environment.GetEnvironmentVariable("JETTY_HOME")!=null) {
-				NUXEO_HOME=Environment.GetEnvironmentVariable("JETTY_HOME");
 			} else {
 				NUXEO_HOME=Path.GetDirectoryName(Directory.GetCurrentDirectory());
 			}
@@ -262,33 +260,7 @@ namespace NuxeoProcess
 			}
 			
 			if (srvType==null) {
-				DirectoryInfo di=new DirectoryInfo(nxEnv["NUXEO_HOME"]);
-				FileInfo[] ls=di.GetFiles();
-				foreach (FileInfo fname in ls) {
-					if (fname.ToString().StartsWith("nuxeo-runtime-launcher")) {
-						srvType="jetty";
-						String jettyJarName=fname.ToString();
-						srvStartJar=Path.Combine(nxEnv["NUXEO_HOME"],jettyJarName);
-						Regex jv=new Regex("^nuxeo-runtime-launcher-(.*).jar");
-						MatchCollection matchList=jv.Matches(jettyJarName);
-						Match firstMatch=matchList[0];
-						if (firstMatch.Groups.Count<2) {
-							Log("Can't determine Jetty version","ERROR");
-							return false;
-						}
-						srvVersion=firstMatch.Groups[1].ToString();
-						Log("Jetty version = "+srvVersion,"DEBUG");
-						if (SetupJetty(srvStartJar,srvVersion)==false) {
-							Log("Could not set up Jetty options","ERROR");
-							return false;
-						}
-					}
-				}
-				
-			}
-			
-			if (srvType==null) {
-				Log("Could not find startup jars for either JBoss, Tomcat or Jetty in "+nxEnv["NUXEO_HOME"],"ERROR");
+				Log("Could not find startup jars for either JBoss or Tomcat "+nxEnv["NUXEO_HOME"],"ERROR");
 				return false;
 			}
 			
@@ -352,7 +324,7 @@ namespace NuxeoProcess
 			
 			String NUXEO_CLASSPATH;
 			if (nxEnv["CLASSPATH"].Length==0) NUXEO_CLASSPATH=srvStartJar;
-			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+":"+srvStartJar;
+			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+Path.PathSeparator+srvStartJar;
 			
 			String NUXEO_ENDORSED=Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"lib"),"endorsed");
 			
@@ -384,7 +356,7 @@ namespace NuxeoProcess
 			
 			String NUXEO_CLASSPATH;
 			if (nxEnv["CLASSPATH"].Length==0) NUXEO_CLASSPATH=srvStartJar;
-			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+":"+srvStartJar;
+			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+Path.PathSeparator+srvStartJar;
 			    
 			String LOGGING_PROPERTIES=Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"conf"),"logging.properties");
 			String CATALINA_TEMP=Path.Combine(nxEnv["NUXEO_HOME"],"temp");
@@ -414,36 +386,6 @@ namespace NuxeoProcess
 			
 		} // End SetupTomcat
 		
-		
-		private bool SetupJetty(String srvStartJar, String srvVersion) {
-			
-			Directory.SetCurrentDirectory(nxEnv["NUXEO_HOME"]);
-				
-			String NUXEO_CLASSPATH;
-			if (nxEnv["CLASSPATH"].Length==0) NUXEO_CLASSPATH=srvStartJar;
-			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+":"+srvStartJar;
-			    
-			String NUXEO_BUNDLES="bundles/.:lib/.:config";
-			    
-			String JAVA_OPTS=nxEnv["JAVA_OPTS"]+
-				" -Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader"+
-				" -Dsun.lang.ClassLoader.allowArraySyntax=true"+
-				" -Dderby.system.home="+Path.Combine(nxEnv["DATA_DIR"],"derby")+
-				" -Dorg.nuxeo.launcher.libdirs=lib";
-			    
-			startArgs=JAVA_OPTS+" -classpath "+NUXEO_CLASSPATH+
-				" -Dnuxeo.home="+nxEnv["NUXEO_HOME"]+
-				" -Dnuxeo.conf="+nxEnv["NUXEO_CONF"]+
-				" -jar "+srvStartJar+
-				" bundles/nuxeo-runtime-osgi-"+srvVersion+".jar/org.nuxeo.osgi.application.Main "+
-				NUXEO_BUNDLES+" -home "+nxEnv["NUXEO_HOME"];
-				
-			Log("Jetty startup options : "+startArgs,"DEBUG");
-			Log("Jetty shutdown options : "+stopArgs,"DEBUG");
-			
-			return true;
-			
-		} // End SetupJetty
 		
 	}
 }

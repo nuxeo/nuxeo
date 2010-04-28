@@ -83,6 +83,7 @@ namespace NuxeoCtl
 			this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 									| System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
+			this.logBox.DetectUrls = false;
 			this.logBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.logBox.Location = new System.Drawing.Point(12, 79);
 			this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -90,6 +91,7 @@ namespace NuxeoCtl
 			this.logBox.ReadOnly = true;
 			this.logBox.Size = new System.Drawing.Size(917, 462);
 			this.logBox.TabIndex = 4;
+			this.logBox.TabStop = false;
 			this.logBox.Text = "";
 			// 
 			// terminateButton
