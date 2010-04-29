@@ -67,5 +67,5 @@
   <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
   <Resource name="NuxeoConnectionManager" auth="Container"
     type="javax.resource.spi.ConnectionManager" factory="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory"
-    minPoolSize="0" maxPoolSize="20" idleTimeoutMinutes="0" />
+    minPoolSize="${nuxeo.vcs.min-pool-size}" maxPoolSize="${nuxeo.vcs.max-pool-size}" idleTimeoutMinutes="0" />
 </Context>
