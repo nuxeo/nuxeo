@@ -2,22 +2,15 @@
 <component name="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
 
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
-      point="userManager">
+    point="userManager">
 
-  <!--
     <userManager
-        class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+      class="org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups">
       <users>
         <listingMode>search_only</listingMode>
       </users>
-    </userManager> -->
-
-    <userManager
-            class="org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups">
-            <users>
-                <listingMode>search_only</listingMode>
-            </users>
     </userManager>
+
   </extension>
 
 </component>

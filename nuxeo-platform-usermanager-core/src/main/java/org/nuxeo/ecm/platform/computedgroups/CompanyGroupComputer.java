@@ -18,15 +18,15 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
-
 /**
-*
-* Sample {@link GroupComputer} implementation that uses company field
-*
-* @author Thierry Delprat
-*
-*/
-public class CompanyGroupComputer extends AbstractAttributeBasedGroupComputer implements GroupComputer {
+ *
+ * Sample {@link GroupComputer} implementation that uses company field
+ *
+ * @author Thierry Delprat
+ *
+ */
+public class CompanyGroupComputer extends AbstractAttributeBasedGroupComputer
+        implements GroupComputer {
 
     @Override
     protected String getAttributeForGroupComputation() {

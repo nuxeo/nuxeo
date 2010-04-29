@@ -861,9 +861,8 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-
-    protected void removeVirtualFilters (Map<String, Serializable> filter) {
-        if (filter==null) {
+    protected void removeVirtualFilters(Map<String, Serializable> filter) {
+        if (filter == null) {
             return;
         }
         List<String> keys = new ArrayList<String>(filter.keySet());

@@ -36,13 +36,12 @@ import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
-*
-* {@link UserManager} implementation that is aware of {@link ComputedGroup}.
-*
-* @author Thierry Delprat
-*
-*/
-
+ *
+ * {@link UserManager} implementation that is aware of {@link ComputedGroup}.
+ *
+ * @author Thierry Delprat
+ *
+ */
 public class UserManagerWithComputedGroups extends UserManagerImpl implements
         UserManager {
 
@@ -54,7 +53,6 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
     public static final String VIRTUAL_GROUP_MARKER = "__virtualGroup";
 
-
     protected ComputedGroupsService getService() {
         if (cgs == null) {
             cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -63,7 +61,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
     }
 
     protected boolean activateComputedGroup() {
-        if (useComputedGroup==null) {
+        if (useComputedGroup == null) {
             useComputedGroup = getService().activateComputedGroups();
         }
         return useComputedGroup;
@@ -114,7 +112,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
     @Override
     public NuxeoGroup getGroup(String groupName) throws ClientException {
         NuxeoGroup grp = super.getGroup(groupName);
-        if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
+        if (activateComputedGroup()
+                && (grp == null || getService().allowGroupOverride())) {
             grp = getService().getComputedGroup(groupName);
         }
         return grp;
@@ -150,14 +149,15 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
-            searchInVirtualGroups=false;
+            searchInVirtualGroups = false;
         }
 
         removeVirtualFilters(filter);
         DocumentModelList groups = super.searchGroups(filter, fulltext);
 
         if (searchInVirtualGroups) {
-            for (String vGroupName : getService().searchComputedGroups(filter, fulltext)) {
+            for (String vGroupName : getService().searchComputedGroups(filter,
+                    fulltext)) {
                 DocumentModel vGroup = getComputedGroupAsDocumentModel(vGroupName);
                 if (vGroup != null) {
                     if (!groups.contains(vGroup)) {
@@ -179,7 +179,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
         NuxeoGroup grp = getService().getComputedGroup(grpName);
 
-        groupDoc.setProperty(schemaName, getGroupMembersField(), grp.getMemberUsers());
+        groupDoc.setProperty(schemaName, getGroupMembersField(),
+                grp.getMemberUsers());
         groupDoc.setProperty(schemaName, id, grp.getName());
         groupDoc.setProperty(schemaName, getGroupIdField(), grp.getName());
 

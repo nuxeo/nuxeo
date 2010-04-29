@@ -28,19 +28,20 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
-* Base class for {@link GroupComputer} implementation.
-* Provides a naive implementation for searchGroups method.
-*
-* @author Thierry Delprat
-*
-*/
+ * Base class for {@link GroupComputer} implementation. Provides a naive
+ * implementation for searchGroups method.
+ *
+ * @author Thierry Delprat
+ *
+ */
 public abstract class AbstractGroupComputer implements GroupComputer {
 
-      protected UserManager getUM() {
-            return Framework.getLocalService(UserManager.class);
-        }
+    protected UserManager getUM() {
+        return Framework.getLocalService(UserManager.class);
+    }
 
-    public List<String> searchGroups(Map<String, Serializable> filter,HashSet<String> fulltext) throws Exception{
+    public List<String> searchGroups(Map<String, Serializable> filter,
+            HashSet<String> fulltext) throws Exception {
 
         List<String> result = new ArrayList<String>();
         String grpName = (String) filter.get(getUM().getGroupIdField());

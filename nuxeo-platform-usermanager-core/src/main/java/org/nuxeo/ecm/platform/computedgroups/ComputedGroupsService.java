@@ -38,6 +38,7 @@ public interface ComputedGroupsService {
 
     /**
      * Return list of ids for users computed groups
+     *
      * @param nuxeoPrincipal
      * @return
      */
@@ -93,7 +94,6 @@ public interface ComputedGroupsService {
      */
     List<String> getComputedGroupSubGroups(String groupName);
 
-
     /**
      *
      * search for a computed group
@@ -102,5 +102,6 @@ public interface ComputedGroupsService {
      * @param fulltext
      * @return
      */
-    List<String> searchComputedGroups(Map<String, Serializable> filter,HashSet<String> fulltext);
+    List<String> searchComputedGroups(Map<String, Serializable> filter,
+            HashSet<String> fulltext);
 }
