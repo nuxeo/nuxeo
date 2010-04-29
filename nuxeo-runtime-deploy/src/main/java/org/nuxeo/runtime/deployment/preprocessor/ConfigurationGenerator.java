@@ -118,7 +118,7 @@ public class ConfigurationGenerator {
     public void run() throws ConfigurationException {
         if (serverConfigurator == null) {
             log.warn("Unrecognized server. Considered as already configured.");
-        } else if (serverConfigurator.isConfigured()) {
+        } else if (!nuxeoConf.exists() || serverConfigurator.isConfigured()) {
             log.info("Server already configured");
         } else {
             log.info("No current configuration, generating files...");
