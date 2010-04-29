@@ -24,6 +24,7 @@
         key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.version}:zip"
         classifier="nuxeo-ep" />
     </unzip>
+    <rename dest="${jboss}" src="${integration.dir}/nuxeo-ep-${nuxeo.version}-jboss"/>
     <chmod dir="${jboss}/bin" perm="u+x" includes="*.sh,jbossctl" />
 
     <copy todir="${jboss}/server/default/lib">
@@ -54,7 +55,7 @@
       <artifact:resolveFile
         key="org.seleniumhq.selenium.server:selenium-server:1.0.1" classifier="standalone" />
     </copy>
-    <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh" />
+    <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh,*ctl" />
 
     <nx:profile name="testit">
       <exec executable="${selenium.dir}/hudson-run.sh" failonerror="true">
