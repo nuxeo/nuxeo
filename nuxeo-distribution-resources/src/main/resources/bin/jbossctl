@@ -5,6 +5,8 @@
 #
 #####
 
+DIRNAME=`dirname "$0"`
+
 echo WARNING: jbossctl is DEPRECATED, please use nuxeoctl instead.
 
-./nuxeoctl $*
+"$DIRNAME"/nuxeoctl $*
