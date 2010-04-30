@@ -63,6 +63,8 @@ public class SessionImpl implements Session, XAResource {
 
     private final RepositoryImpl repository;
 
+    private final Mapper mapper;
+
     private final Model model;
 
     private final PersistenceContext context;
@@ -82,12 +84,17 @@ public class SessionImpl implements Session, XAResource {
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
+        this.mapper = mapper;
         // this.credentials = credentials;
         this.model = model;
         context = new PersistenceContext(model, mapper);
         live = true;
         readAclsChanged = false;
         computeRootNode();
+    }
+
+    public Mapper getMapper() {
+        return mapper;
     }
 
     /**
@@ -491,34 +498,25 @@ public class SessionImpl implements Session, XAResource {
                 : parent.mainFragment.getId();
 
         // main info
-        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
-        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
+        Row mainRow = new Row(id);
+        mainRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
 
         // hierarchy info
         // TODO if folder is ordered, we have to compute the pos as max+1...
-        Map<String, Serializable> hierMap;
-        if (model.separateMainTable) {
-            hierMap = new HashMap<String, Serializable>();
-        } else {
-            hierMap = mainMap;
-        }
-        hierMap.put(model.HIER_PARENT_KEY, parentId);
-        hierMap.put(model.HIER_CHILD_POS_KEY, pos);
-        hierMap.put(model.HIER_CHILD_NAME_KEY, name);
-        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+        Row hierRow = model.separateMainTable ? new Row(id) : mainRow;
+        hierRow.putNew(model.HIER_PARENT_KEY, parentId);
+        hierRow.putNew(model.HIER_CHILD_POS_KEY, pos);
+        hierRow.putNew(model.HIER_CHILD_NAME_KEY, name);
+        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = context.createSimpleFragment(
-                model.mainTableName, id, mainMap);
+        SimpleFragment mainFragment = context.createSimpleFragment(
+                model.mainTableName, mainRow);
 
-        SimpleFragment hierRow;
-        if (model.separateMainTable) {
-            // TODO put it in a collection context instead
-            hierRow = context.createSimpleFragment(model.hierTableName, id,
-                    hierMap);
-        } else {
-            hierRow = null;
-        }
+        // TODO put it in a collection context instead
+        SimpleFragment hierFragment = model.separateMainTable ? context.createSimpleFragment(
+                model.hierTableName, hierRow)
+                : null;
 
         FragmentsMap fragments = new FragmentsMap();
         if (false) {
@@ -528,12 +526,13 @@ public class SessionImpl implements Session, XAResource {
                 // TODO fill data instead of null XXX or just have fragments
                 // empty
                 Fragment fragment = context.createSimpleFragment(schemaName,
-                        id, null);
+                        new Row(id));
                 fragments.put(schemaName, fragment);
             }
         }
 
-        FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
+        FragmentGroup rowGroup = new FragmentGroup(mainFragment, hierFragment,
+                fragments);
 
         requireReadAclsUpdate();
 
@@ -689,7 +688,7 @@ public class SessionImpl implements Session, XAResource {
     public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
         checkLive();
-        Serializable id = context.getVersionByLabel(versionableId, label);
+        Serializable id = context.getVersionIdByLabel(versionableId, label);
         if (id == null) {
             return null;
         }
@@ -787,34 +786,23 @@ public class SessionImpl implements Session, XAResource {
         Serializable id = context.generateNewId(null);
 
         // main info
-        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
-        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
+        Row mainRow = new Row(id);
+        mainRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
 
         // hierarchy info
-        Map<String, Serializable> hierMap;
-        if (model.separateMainTable) {
-            hierMap = new HashMap<String, Serializable>();
-        } else {
-            hierMap = mainMap;
-        }
-        hierMap.put(model.HIER_PARENT_KEY, null);
-        hierMap.put(model.HIER_CHILD_POS_KEY, null);
-        hierMap.put(model.HIER_CHILD_NAME_KEY, "");
-        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
+        Row hierRow = model.separateMainTable ? new Row(id) : mainRow;
+        hierRow.putNew(model.HIER_PARENT_KEY, null);
+        hierRow.putNew(model.HIER_CHILD_POS_KEY, null);
+        hierRow.putNew(model.HIER_CHILD_NAME_KEY, "");
+        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = context.createSimpleFragment(
-                model.mainTableName, id, mainMap);
-
-        SimpleFragment hierRow;
-        if (model.separateMainTable) {
-            hierRow = context.createSimpleFragment(model.hierTableName, id,
-                    hierMap);
-        } else {
-            hierRow = null;
-        }
-
-        FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);
-
+        SimpleFragment mainFragment = context.createSimpleFragment(
+                model.mainTableName, mainRow);
+        SimpleFragment hierFragment = model.separateMainTable ? context.createSimpleFragment(
+                model.hierTableName, hierRow)
+                : null;
+        FragmentGroup rowGroup = new FragmentGroup(mainFragment, hierFragment,
+                null);
         return new Node(this, context, rowGroup);
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
@@ -138,7 +137,7 @@ public class Context {
 
     @Override
     public String toString() {
-        return "Context(" + tableName + ')';
+        return getClass().getSimpleName() + '(' + tableName + ')';
     }
 
     public String getTableName() {
@@ -181,20 +180,20 @@ public class Context {
     }
 
     /**
-     * Creates a new row in the context.
+     * Creates a new fragment from a row in the context, with a new id (not yet
+     * saved).
      *
      * @param id the id
-     * @param map the fragments map, or {@code null}
-     * @return the created row
-     * @throws StorageException if the row is already in the context
+     * @param row the row
+     * @return the created fragment
+     * @throws StorageException if the fragment is already in the context
      */
     // FIXME: do we want to throw StorageException or IllegalStateException ?
-    public SimpleFragment create(Serializable id, Map<String, Serializable> map)
-            throws StorageException {
-        if (pristine.containsKey(id) || modified.containsKey(id)) {
-            throw new IllegalStateException("Row already registered: " + id);
+    public SimpleFragment createSimpleFragment(Row row) throws StorageException {
+        if (pristine.containsKey(row.id) || modified.containsKey(row.id)) {
+            throw new IllegalStateException("Row already registered: " + row.id);
         }
-        return new SimpleFragment(id, State.CREATED, this, map);
+        return new SimpleFragment(row, State.CREATED, this);
     }
 
     /**
@@ -280,6 +279,11 @@ public class Context {
         return fragments;
     }
 
+    protected CollectionFragment newEmptyCollectionFragment(Serializable id) {
+        Serializable[] empty = model.getCollectionFragmentType(tableName).getEmptyArray();
+        return new CollectionFragment(id, State.CREATED, this, empty);
+    }
+
     /**
      * Gets a fragment from the mapper.
      */
@@ -288,22 +292,22 @@ public class Context {
         if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
-                return mapper.makeEmptyCollectionRow(id, this);
+                return newEmptyCollectionFragment(id);
             } else {
-                return allowAbsent ? new SimpleFragment(id, State.ABSENT, this,
-                        null) : null;
+                return allowAbsent ? new SimpleFragment(id, State.ABSENT, this)
+                        : null;
             }
         } else {
             if (isCollection) {
-                return mapper.readCollectionRow(id, this);
+                Serializable[] array = mapper.readCollectionArray(tableName, id);
+                return new CollectionFragment(id, State.PRISTINE, this, array);
             } else {
-                Map<String, Serializable> map = mapper.readSingleRowMap(
-                        tableName, id, this);
-                if (map == null) {
+                Row row = mapper.readSingleRow(tableName, id);
+                if (row == null) {
                     return allowAbsent ? new SimpleFragment(id, State.ABSENT,
-                            this, null) : null;
+                            this) : null;
                 }
-                return new SimpleFragment(id, State.PRISTINE, this, map);
+                return new SimpleFragment(row, State.PRISTINE, this);
             }
         }
     }
@@ -325,18 +329,27 @@ public class Context {
         // fetch these fragments in bulk
         List<Fragment> fetchFragments = new ArrayList<Fragment>(fetchIds.size());
         if (isCollection) {
-            mapper.readCollectionsRows(fetchIds, this, fetchFragments);
+            Map<Serializable, Serializable[]> arrays = mapper.readCollectionsArrays(
+                    getTableName(), fetchIds);
+            for (Serializable id : ids) {
+                Fragment fragment = new CollectionFragment(id, State.PRISTINE,
+                        this, arrays.get(id));
+                fetchFragments.add(fragment);
+            }
         } else {
-            Map<Serializable, Map<String, Serializable>> maps = mapper.readMultipleRowMaps(
-                    tableName, fetchIds, this);
+            List<Row> rowlist = mapper.readMultipleRows(tableName, fetchIds);
+            Map<Serializable, Row> rows = new HashMap<Serializable, Row>();
+            for (Row row : rowlist) {
+                rows.put(row.id, row);
+            }
             for (Serializable id : fetchIds) {
-                Map<String, Serializable> map = maps.get(id);
+                Row row = rows.get(id);
                 Fragment fragment;
-                if (map == null) {
+                if (row == null) {
                     fragment = allowAbsent ? new SimpleFragment(id,
-                            State.ABSENT, this, null) : null;
+                            State.ABSENT, this) : null;
                 } else {
-                    fragment = new SimpleFragment(id, State.PRISTINE, this, map);
+                    fragment = new SimpleFragment(row, State.PRISTINE, this);
                 }
                 fetchFragments.add(fragment);
             }
@@ -356,10 +369,10 @@ public class Context {
                 // the id has not been saved, so nothing exists yet in the
                 // database
                 if (isCollection) {
-                    fragment = mapper.makeEmptyCollectionRow(id, this);
+                    fragment = newEmptyCollectionFragment(id);
                 } else {
                     fragment = allowAbsent ? new SimpleFragment(id,
-                            State.ABSENT, this, null) : null;
+                            State.ABSENT, this) : null;
                 }
             } else {
                 fragment = it.next();
@@ -409,7 +422,7 @@ public class Context {
             }
         } else {
             // this registers it with the "modified" map
-            new SimpleFragment(id, State.DELETED, this, null);
+            new SimpleFragment(id, State.DELETED, this);
         }
     }
 
@@ -498,9 +511,12 @@ public class Context {
                  * Do the creation.
                  */
                 if (isCollection) {
-                    mapper.insertCollectionRows((CollectionFragment) fragment);
+                    CollectionFragment frag = (CollectionFragment) fragment;
+                    mapper.insertCollectionRows(tableName, id, frag.array);
                 } else {
-                    mapper.insertSingleRow((SimpleFragment) fragment);
+                    SimpleFragment frag = (SimpleFragment) fragment;
+                    mapper.insertSingleRow(tableName, frag.getRow());
+                    frag.clearDirty();
                 }
                 fragment.setPristine();
                 // modified map cleared at end of loop
@@ -509,9 +525,16 @@ public class Context {
                 break;
             case MODIFIED:
                 if (isCollection) {
-                    mapper.updateCollectionRows((CollectionFragment) fragment);
+                    CollectionFragment frag = (CollectionFragment) fragment;
+                    if (frag.isDirty()) {
+                        mapper.updateCollectionRows(tableName, id, frag.array);
+                        frag.setDirty(false);
+                    }
                 } else {
-                    mapper.updateSingleRow((SimpleFragment) fragment);
+                    SimpleFragment frag = (SimpleFragment) fragment;
+                    mapper.updateSingleRow(tableName, frag.getRow(),
+                            frag.getDirty());
+                    frag.clearDirty();
                 }
                 fragment.setPristine();
                 // modified map cleared at end of loop
@@ -521,7 +544,7 @@ public class Context {
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
                 // itself as their foreign key to hierarchy is ON DELETE CASCADE
-                mapper.deleteFragment(fragment);
+                mapper.deleteRows(tableName, id);
                 fragment.setDetached();
                 // modified map cleared at end of loop
                 deletedInTransaction.add(id);
@@ -539,30 +562,37 @@ public class Context {
     }
 
     /**
-     * Called by the mapper when a fragment has been updated in the database.
-     *
-     * @param id the id
-     * @param wasModified {@code true} for a modification, {@code false} for a
-     *            deletion
+     * Marks locally all the invalidations gathered by a {@link Mapper}
+     * operation (like a version restore).
      */
-    public void markInvalidated(Serializable id, boolean wasModified) {
-        if (wasModified) {
-            Fragment fragment = getIfPresent(id);
-            if (fragment != null) {
-                fragment.markInvalidatedModified();
+    public void markInvalidated(Invalidations invalidations) {
+        Set<Serializable> ids;
+        ids = invalidations.modified.get(tableName);
+        if (ids != null) {
+            for (Serializable id : ids) {
+                Fragment fragment = getIfPresent(id);
+                if (fragment != null) {
+                    fragment.markInvalidatedModified();
+                }
+                modifiedInTransaction.add(id);
             }
-            modifiedInTransaction.add(id);
-        } else { // deleted
-            Fragment fragment = getIfPresent(id);
-            if (fragment != null) {
-                fragment.markInvalidatedDeleted();
+        }
+        ids = invalidations.deleted.get(tableName);
+        if (ids != null) {
+            for (Serializable id : ids) {
+                Fragment fragment = getIfPresent(id);
+                if (fragment != null) {
+                    fragment.markInvalidatedDeleted();
+                }
+                deletedInTransaction.add(id);
             }
-            deletedInTransaction.add(id);
         }
     }
 
     /**
      * Gathers invalidations from this context.
+     * <p>
+     * Called post-transaction to gathers invalidations to be sent to others.
      */
     protected void gatherInvalidations(Invalidations invalidations) {
         invalidations.addModified(tableName, modifiedInTransaction);
@@ -572,7 +602,9 @@ public class Context {
     }
 
     /**
-     * Processes all invalidations accumulated. Called pre-transaction.
+     * Processes all invalidations accumulated.
+     * <p>
+     * Called pre-transaction.
      */
     protected void processReceivedInvalidations() {
         synchronized (modifiedInvalidations) {

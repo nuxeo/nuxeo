@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
@@ -30,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Mapper.CopyHierarchyResult;
 
 /**
  * This class holds persistence context information for the hierarchy table, and
@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class HierarchyContext extends Context {
 
-    protected static final String INVAL_PARENT = "__PARENT__";
-
     protected final Map<Serializable, Children> childrenRegularSoft;
 
     protected final Map<Serializable, Children> childrenRegularHard;
@@ -48,6 +46,8 @@ public class HierarchyContext extends Context {
     protected final Map<Serializable, Children> childrenComplexPropSoft;
 
     protected final Map<Serializable, Children> childrenComplexPropHard;
+
+    private final Map<Serializable, Children>[] childrenAllMaps;
 
     /**
      * The parents modified in the transaction.
@@ -62,7 +62,8 @@ public class HierarchyContext extends Context {
 
     private final PositionComparator posComparator;
 
-    public HierarchyContext(Model model, Mapper mapper, PersistenceContext persistenceContext) {
+    public HierarchyContext(Model model, Mapper mapper,
+            PersistenceContext persistenceContext) {
         super(model.hierTableName, model, mapper, persistenceContext);
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
@@ -70,6 +71,9 @@ public class HierarchyContext extends Context {
         childrenComplexPropSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
         childrenComplexPropHard = new HashMap<Serializable, Children>();
+        childrenAllMaps = new Map[] { childrenRegularSoft, childrenRegularHard,
+                childrenComplexPropSoft, childrenComplexPropHard };
+
         modifiedParentsInTransaction = new HashSet<Serializable>();
         modifiedParentsInvalidations = new HashSet<Serializable>();
         posComparator = new PositionComparator(model.HIER_CHILD_POS_KEY);
@@ -179,13 +183,12 @@ public class HierarchyContext extends Context {
     }
 
     @Override
-    public SimpleFragment create(Serializable id, Map<String, Serializable> map)
-            throws StorageException {
-        SimpleFragment fragment = super.create(id, map);
+    public SimpleFragment createSimpleFragment(Row row) throws StorageException {
+        SimpleFragment fragment = super.createSimpleFragment(row);
         // add as a child of its parent
         addCreatedChild(fragment, complexProp(fragment));
         // note that this new row doesn't have children
-        addNewParent(id);
+        addNewParent(row.id);
         return fragment;
     }
 
@@ -227,11 +230,13 @@ public class HierarchyContext extends Context {
                 name);
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
-            fragment = mapper.readChildHierRow(parentId, name, complexProp,
-                    this);
-            if (fragment != null) {
+            Row row = mapper.readChildHierRow(parentId, name, complexProp);
+            if (row != null) {
                 // add as know child
+                fragment = persistenceContext.getSimpleFragment(this, row);
                 addExistingChild(fragment, complexProp);
+            } else {
+                fragment = null;
             }
         }
         return fragment;
@@ -255,7 +260,8 @@ public class HierarchyContext extends Context {
         List<SimpleFragment> fragments = children.getFragmentsByValue(name);
         if (fragments == null) {
             // ask the actual children to the mapper
-            fragments = mapper.readChildHierRows(parentId, complexProp, this);
+            List<Row> rows = mapper.readChildHierRows(parentId, complexProp);
+            fragments = persistenceContext.getSimpleFragments(this, rows);
             List<Serializable> ids = new ArrayList<Serializable>(
                     fragments.size());
             for (Fragment fragment : fragments) {
@@ -484,8 +490,10 @@ public class HierarchyContext extends Context {
          * Do the copy.
          */
         String typeName = source.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name,
-                null, null, persistenceContext);
+        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, parentId,
+                name, null);
+        Serializable newId = res.copyId;
+        persistenceContext.markInvalidated(res.invalidations);
         get(newId, false); // adds it as a new child of its parent
         return newId;
     }
@@ -525,17 +533,19 @@ public class HierarchyContext extends Context {
             Set<Serializable> createdIds) throws StorageException {
         Map<Serializable, Serializable> idMap = null;
         for (Serializable id : createdIds) {
-            SimpleFragment row = (SimpleFragment) modified.remove(id);
-            if (row == null) {
+            SimpleFragment fragment = (SimpleFragment) modified.remove(id);
+            if (fragment == null) {
                 // was created and deleted before save
                 continue;
             }
             if (idMap != null) {
-                remapFragmentOnSave(row, idMap);
+                remapFragmentOnSave(fragment, idMap);
             }
-            Serializable newId = mapper.insertSingleRow(row);
-            row.setPristine();
-            pristine.put(id, row);
+            Serializable newId = mapper.insertSingleRow(
+                    fragment.getTableName(), fragment.getRow());
+            fragment.clearDirty();
+            fragment.setPristine();
+            pristine.put(id, fragment);
             // save in translation map, if different
             // only happens for DB_IDENTITY id generation policy
             if (!newId.equals(id)) {
@@ -556,9 +566,7 @@ public class HierarchyContext extends Context {
         // map temporary parent ids for created parents
         for (Serializable id : idMap.keySet()) {
             Serializable newId = idMap.get(id);
-            for (Map<Serializable, Children> map : new Map[] {
-                    childrenRegularSoft, childrenRegularHard,
-                    childrenComplexPropSoft, childrenComplexPropHard }) {
+            for (Map<Serializable, Children> map : childrenAllMaps) {
                 Children children = map.remove(id);
                 if (children != null) {
                     map.put(newId, children);
@@ -576,26 +584,28 @@ public class HierarchyContext extends Context {
         childrenComplexPropHard.clear();
     }
 
-    /**
-     * Called by the mapper when it has added new children (of unknown ids) to a
-     * node.
-     */
-    public void markChildrenAdded(Serializable parentId) {
-        for (Map<Serializable, Children> map : new Map[] { childrenRegularSoft,
-                childrenRegularHard, childrenComplexPropSoft,
-                childrenComplexPropHard }) {
-            Children children = map.get(parentId);
-            if (children != null) {
-                children.setIncomplete();
+    @Override
+    public void markInvalidated(Invalidations invalidations) {
+        super.markInvalidated(invalidations);
+        Set<Serializable> parentIds = invalidations.modified.get(Invalidations.PARENT);
+        if (parentIds != null) {
+            for (Serializable parentId : parentIds) {
+                for (Map<Serializable, Children> map : childrenAllMaps) {
+                    Children children = map.get(parentId);
+                    if (children != null) {
+                        children.setIncomplete();
+                    }
+                }
+                modifiedParentsInTransaction.add(parentId);
             }
         }
-        modifiedParentsInTransaction.add(parentId);
     }
 
     @Override
     protected void gatherInvalidations(Invalidations invalidations) {
         super.gatherInvalidations(invalidations);
-        invalidations.addModified(INVAL_PARENT, modifiedParentsInTransaction);
+        invalidations.addModified(Invalidations.PARENT,
+                modifiedParentsInTransaction);
         modifiedParentsInTransaction.clear();
     }
 
@@ -604,10 +614,9 @@ public class HierarchyContext extends Context {
         super.processReceivedInvalidations();
         synchronized (modifiedParentsInvalidations) {
             for (Serializable parentId : modifiedParentsInvalidations) {
-                childrenRegularSoft.remove(parentId);
-                childrenRegularHard.remove(parentId);
-                childrenComplexPropSoft.remove(parentId);
-                childrenComplexPropHard.remove(parentId);
+                for (Map<Serializable, Children> map : childrenAllMaps) {
+                    map.remove(parentId);
+                }
             }
             modifiedParentsInvalidations.clear();
         }
@@ -616,7 +625,7 @@ public class HierarchyContext extends Context {
     @Override
     protected void invalidate(Invalidations invalidations) {
         super.invalidate(invalidations);
-        Set<Serializable> set = invalidations.modified.get(INVAL_PARENT);
+        Set<Serializable> set = invalidations.modified.get(Invalidations.PARENT);
         if (set != null) {
             synchronized (modifiedParentsInvalidations) {
                 modifiedParentsInvalidations.addAll(set);

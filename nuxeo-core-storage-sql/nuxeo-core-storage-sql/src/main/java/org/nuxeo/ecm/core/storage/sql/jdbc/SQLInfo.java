@@ -334,7 +334,7 @@ public class SQLInfo {
         return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
-    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
+    public Update getUpdateByIdForKeys(String tableName, List<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new ArrayList<String>(keys.size());
         for (String key : keys) {

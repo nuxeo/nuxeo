@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
@@ -46,6 +45,8 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.Mapper.CopyHierarchyResult;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
 
@@ -349,7 +350,17 @@ public class PersistenceContext implements XAResource {
     }
 
     /**
-     * Called post-transaction to gathers invalidations, to be sent to others.
+     * Marks locally all the invalidations gathered by a {@link Mapper}
+     * operation (like a version restore).
+     */
+    public void markInvalidated(Invalidations invalidations) {
+        for (Context context : contexts.values()) {
+            context.markInvalidated(invalidations);
+        }
+    }
+
+    /**
+     * Called post-transaction to gathers invalidations to be sent to others.
      */
     protected Invalidations gatherInvalidations() {
         Invalidations invalidations = new Invalidations();
@@ -395,18 +406,17 @@ public class PersistenceContext implements XAResource {
     }
 
     /**
-     * Creates a new row in the context, for a new id (not yet saved).
+     * Creates a new fragment from a row in the context, with a new id (not yet
+     * saved).
      *
      * @param tableName the table name
-     * @param id the new id
-     * @param map the fragments map, or {@code null}
-     * @return the created row
-     * @throws StorageException if the row is already in the context
+     * @param row the row
+     * @return the created fragment
+     * @throws StorageException if the fragment is already in the context
      */
-    public SimpleFragment createSimpleFragment(String tableName,
-            Serializable id, Map<String, Serializable> map)
+    public SimpleFragment createSimpleFragment(String tableName, Row row)
             throws StorageException {
-        return getContext(tableName).create(id, map);
+        return getContext(tableName).createSimpleFragment(row);
     }
 
     /**
@@ -567,6 +577,65 @@ public class PersistenceContext implements XAResource {
     }
 
     /**
+     * Attaches the given rows to the context, and returns the corresponding
+     * fragments.
+     * <p>
+     * For each row, if the context already contains a fragment with the given
+     * id, the original fragment is used instead. If the fragment was locally
+     * deleted, it is skipped.
+     *
+     * @param context the context
+     * @param rows the list of rows
+     * @return the list of fragments
+     */
+    protected List<SimpleFragment> getSimpleFragments(Context context,
+            List<Row> rows) {
+        List<SimpleFragment> fragments = new ArrayList<SimpleFragment>(
+                rows.size());
+        for (Row row : rows) {
+            SimpleFragment fragment = getSimpleFragment(context, row);
+            if (fragment != null) {
+                fragments.add(fragment);
+            }
+        }
+        return fragments;
+    }
+
+    /**
+     * Attaches the given row to the context, and returns the corresponding
+     * fragment.
+     * <p>
+     * If the context already contains a fragment with the given id, the
+     * original fragment is used instead. If the fragment was locally deleted,
+     * null is returned.
+     *
+     * @param context the context
+     * @param row the row
+     * @return the fragment, or {@code null} if it was deleted
+     */
+    protected SimpleFragment getSimpleFragment(Context context, Row row) {
+        SimpleFragment fragment = (SimpleFragment) context.getIfPresent(row.id);
+        if (fragment == null) {
+            return new SimpleFragment(row, State.PRISTINE, context);
+        } else {
+            // row is already known in the context, use it
+            State state = fragment.getState();
+            if (state == State.DELETED) {
+                // row has been deleted in the context, ignore it
+                return null;
+            } else if (state == State.ABSENT
+                    || state == State.INVALIDATED_MODIFIED
+                    || state == State.INVALIDATED_DELETED) {
+                // XXX TODO
+                throw new IllegalStateException(state.toString());
+            } else {
+                // known id, keep existing fragment
+                return fragment;
+            }
+        }
+    }
+
+    /**
      * Checks in a node.
      *
      * @param node the node to check in
@@ -586,20 +655,22 @@ public class PersistenceContext implements XAResource {
          */
         Serializable id = node.getId();
         String typeName = node.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, null, null,
-                null, null, this);
+        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, null,
+                null, null);
+        Serializable newId = res.copyId;
+        markInvalidated(res.invalidations);
         get(model.hierTableName, newId, false); // adds version as a new child
         // of its parent
         /*
          * Create a "version" row for our new version.
          */
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.VERSION_VERSIONABLE_KEY, id);
-        map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
-        map.put(model.VERSION_LABEL_KEY, label);
-        map.put(model.VERSION_DESCRIPTION_KEY, description);
+        Row row = new Row(newId);
+        row.putNew(model.VERSION_VERSIONABLE_KEY, id);
+        row.putNew(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
+        row.putNew(model.VERSION_LABEL_KEY, label);
+        row.putNew(model.VERSION_DESCRIPTION_KEY, description);
         SimpleFragment versionRow = createSimpleFragment(
-                model.VERSION_TABLE_NAME, newId, map);
+                model.VERSION_TABLE_NAME, row);
         /*
          * Update the original node to reflect that it's checked in.
          */
@@ -644,9 +715,8 @@ public class PersistenceContext implements XAResource {
          * Find the version.
          */
         Serializable versionableId = node.getId();
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        Serializable versionId = mapper.getVersionByLabel(versionableId, label,
-                versionsContext);
+        Serializable versionId = mapper.getVersionIdByLabel(versionableId,
+                label);
         if (versionId == null) {
             throw new StorageException("Unknown version: " + label);
         }
@@ -662,7 +732,7 @@ public class PersistenceContext implements XAResource {
         /*
          * Copy the version values.
          */
-        Map<String, Serializable> overwriteMap = new HashMap<String, Serializable>();
+        Row overwriteRow = new Row(versionableId);
         SimpleFragment versionHier = (SimpleFragment) hierContext.get(
                 versionId, false);
         for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
@@ -675,12 +745,13 @@ public class PersistenceContext implements XAResource {
                     || key.equals(model.MAIN_BASE_VERSION_KEY)) {
                 continue;
             }
-            overwriteMap.put(key, versionHier.get(key));
+            overwriteRow.putNew(key, versionHier.get(key));
         }
-        overwriteMap.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        overwriteMap.put(model.MAIN_BASE_VERSION_KEY, versionId);
-        mapper.copyHierarchy(versionId, typeName, node.getParentId(), null,
-                versionableId, overwriteMap, this);
+        overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
+        CopyHierarchyResult res = mapper.copyHierarchy(versionId, typeName,
+                node.getParentId(), null, overwriteRow);
+        markInvalidated(res.invalidations);
     }
 
     /**
@@ -691,10 +762,9 @@ public class PersistenceContext implements XAResource {
      * @return the version id, or {@code null} if not found
      * @throws StorageException
      */
-    public Serializable getVersionByLabel(Serializable versionableId,
+    public Serializable getVersionIdByLabel(Serializable versionableId,
             String label) throws StorageException {
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        return mapper.getVersionByLabel(versionableId, label, versionsContext);
+        return mapper.getVersionIdByLabel(versionableId, label);
     }
 
     /**
@@ -706,11 +776,7 @@ public class PersistenceContext implements XAResource {
      */
     public Serializable getLastVersion(Serializable versionableId)
             throws StorageException {
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-
-        SimpleFragment result = mapper.getLastVersion(versionableId,
-                versionsContext);
-        return (result == null) ? null : result.getId();
+        return mapper.getLastVersionId(versionableId);
     }
 
     /**
@@ -723,7 +789,8 @@ public class PersistenceContext implements XAResource {
     public List<SimpleFragment> getVersions(Serializable versionableId)
             throws StorageException {
         Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        return mapper.getVersions(versionableId, versionsContext);
+        List<Row> rows = mapper.getVersionsRows(versionableId);
+        return getSimpleFragments(versionsContext, rows);
     }
 
     /**
@@ -767,7 +834,8 @@ public class PersistenceContext implements XAResource {
             parentId = parent.getId();
         }
         Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
-        return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
+        List<Row> rows = mapper.getProxyRows(searchId, byTarget, parentId);
+        return getSimpleFragments(proxiesContext, rows);
     }
 
     /**

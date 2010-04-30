@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
@@ -56,19 +55,12 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
-import org.nuxeo.ecm.core.storage.sql.Context;
-import org.nuxeo.ecm.core.storage.sql.Fragment;
-import org.nuxeo.ecm.core.storage.sql.HierarchyContext;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.PersistenceContext;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
-import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
+import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.Session;
-import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -90,9 +82,6 @@ public class JDBCMapper implements Mapper {
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
     public static boolean debugTestUpgrade;
-
-    /** The repository from which this was built. */
-    private final RepositoryImpl repository;
 
     /** The model used to do the mapping. */
     final Model model;
@@ -123,14 +112,12 @@ public class JDBCMapper implements Mapper {
     /**
      * Creates a new Mapper.
      *
-     * @param repository the repository
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      */
-    public JDBCMapper(RepositoryImpl repository, Model model, SQLInfo sqlInfo,
-            XADataSource xadatasource) throws StorageException {
-        this.repository = repository;
+    public JDBCMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
+            throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
@@ -444,7 +431,8 @@ public class JDBCMapper implements Mapper {
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql);
-            for (int kind = 1; kind <= 2; kind++) {
+            int kind = Invalidations.MODIFIED;
+            while (true) {
                 Map<String, Set<Serializable>> map = invalidations.getKindMap(kind);
                 // turn fragment-based map into id-based map
                 Map<Serializable, Set<String>> m = invertMap(map);
@@ -453,7 +441,7 @@ public class JDBCMapper implements Mapper {
                     String fragments = join(e.getValue(), ' ');
                     if (logger.isLogEnabled()) {
                         logger.logSQL(sql, Arrays.<Serializable> asList(id,
-                                fragments, Integer.valueOf(kind)));
+                                fragments, Long.valueOf(kind)));
                     }
                     Serializable frags;
                     if (sqlInfo.dialect.supportsArrays()
@@ -467,6 +455,11 @@ public class JDBCMapper implements Mapper {
                     columns.get(2).setToPreparedStatement(ps, 3,
                             Long.valueOf(kind));
                     ps.execute();
+                }
+                if (kind == Invalidations.MODIFIED) {
+                    kind = Invalidations.DELETED;
+                } else {
+                    break;
                 }
             }
         } catch (SQLException e) {
@@ -600,7 +593,7 @@ public class JDBCMapper implements Mapper {
                 Column column = sqlInfo.getSelectRootIdWhatColumn();
                 Serializable id = column.getFromResultSet(rs, 1);
                 if (logger.isLogEnabled()) {
-                    logger.log("  -> " + Model.MAIN_KEY + '=' + id);
+                    logger.log("  -> " + model.MAIN_KEY + '=' + id);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -633,9 +626,9 @@ public class JDBCMapper implements Mapper {
                     i++;
                     String key = column.getKey();
                     Serializable v;
-                    if (key.equals(Model.MAIN_KEY)) {
+                    if (key.equals(model.MAIN_KEY)) {
                         v = id;
-                    } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
+                    } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                         v = repositoryId;
                     } else {
                         throw new RuntimeException(key);
@@ -660,20 +653,12 @@ public class JDBCMapper implements Mapper {
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
-        return tableName.equals(Model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE
+        return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE
                 : ScalarCollectionIO.INSTANCE;
     }
 
-    public CollectionFragment makeEmptyCollectionRow(Serializable id,
-            Context context) {
-        Serializable[] empty = model.getCollectionFragmentType(
-                context.getTableName()).getEmptyArray();
-        return new CollectionFragment(id, State.CREATED, context, empty);
-    }
-
-    public Serializable insertSingleRow(SimpleFragment row)
+    public Serializable insertSingleRow(String tableName, Row row)
             throws StorageException {
-        String tableName = row.getTableName();
         PreparedStatement ps = null;
         try {
             // insert the row
@@ -685,17 +670,10 @@ public class JDBCMapper implements Mapper {
                     logger.logSQL(sql, columns, row);
                 }
                 ps = connection.prepareStatement(sql);
-                int i = 0;
+                int i = 1;
                 for (Column column : columns) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(Model.MAIN_KEY)) {
-                        v = row.getId();
-                    } else {
-                        v = row.get(key);
-                    }
-                    column.setToPreparedStatement(ps, i, v);
+                    column.setToPreparedStatement(ps, i++,
+                            row.get(column.getKey()));
                 }
                 ps.execute();
             } catch (SQLException e) {
@@ -712,13 +690,11 @@ public class JDBCMapper implements Mapper {
                 }
             }
         }
-        row.clearDirty();
-        return row.getId();
+        return row.id;
     }
 
-    public void insertCollectionRows(CollectionFragment fragment)
-            throws StorageException {
-        String tableName = fragment.getTableName();
+    public void insertCollectionRows(String tableName, Serializable id,
+            Serializable[] array) throws StorageException {
         PreparedStatement ps = null;
         try {
             String sql = sqlInfo.getInsertSql(tableName);
@@ -729,7 +705,7 @@ public class JDBCMapper implements Mapper {
                     debugValues = new ArrayList<Serializable>(3);
                 }
                 ps = connection.prepareStatement(sql);
-                getCollectionIO(tableName).setToPreparedStatement(fragment,
+                getCollectionIO(tableName).setToPreparedStatement(id, array,
                         columns, ps, model, debugValues, sql, logger);
             } catch (SQLException e) {
                 checkConnectionReset(e);
@@ -748,109 +724,33 @@ public class JDBCMapper implements Mapper {
     }
 
     /**
-     * Fetch one row for a select of fragments with fixed criteria.
+     * Fetch the rows for a select with fixed criteria given as a map.
      */
-    protected SimpleFragment getSelectRow(SQLInfoSelect select,
-            Map<String, Serializable> criteriaMap, Context context)
-            throws StorageException {
-        Map<String, Serializable> joinMap = Collections.emptyMap();
-        List<SimpleFragment> rows = getSelectRows(select, criteriaMap, joinMap,
-                true, context);
-        if (rows == null) {
-            return null;
-        } else {
-            return rows.get(0);
-        }
-    }
-
-    /**
-     * Fetch the rows for a select of fragments with fixed criteria.
-     */
-    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
-            Map<String, Serializable> criteriaMap, Context context)
-            throws StorageException {
-        Map<String, Serializable> joinMap = Collections.emptyMap();
-        return getSelectRows(select, criteriaMap, joinMap, false, context);
-    }
-
-    /**
-     * Fetch the rows for a JOINed select of fragments with fixed criteria and a
-     * joined condition.
-     */
-    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
+    protected List<Row> getSelectRows(SQLInfoSelect select,
             Map<String, Serializable> criteriaMap,
-            Map<String, Serializable> joinMap, Context context)
+            Map<String, Serializable> joinMap, boolean limitToOne)
             throws StorageException {
-        return getSelectRows(select, criteriaMap, joinMap, false, context);
-    }
-
-    /**
-     * Fetch the rows for a select of fragments with fixed criteria given as a
-     * map.
-     */
-    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
-            Map<String, Serializable> criteriaMap,
-            Map<String, Serializable> joinMap, boolean limitToOne,
-            Context context) throws StorageException {
-        List<Map<String, Serializable>> maps = getSelectMaps(select,
-                criteriaMap, joinMap, limitToOne, context);
-        if (maps == null) {
-            return null;
-        }
-        List<SimpleFragment> fragments = new LinkedList<SimpleFragment>();
-        for (Map<String, Serializable> map : maps) {
-            Serializable id = map.remove(Model.MAIN_KEY);
-            SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
-            if (fragment == null) {
-                fragment = new SimpleFragment(id, State.PRISTINE, context, map);
-            } else {
-                // row is already known in the persistent context,
-                // use it
-                State state = fragment.getState();
-                if (state == State.DELETED) {
-                    // row has been deleted in the persistent context,
-                    // ignore it
-                    continue;
-                } else if ((state == State.ABSENT)
-                        || (state == State.INVALIDATED_MODIFIED)
-                        || (state == State.INVALIDATED_DELETED)) {
-                    // XXX TODO
-                    throw new IllegalStateException(state.toString());
-                }
-                // known id
-            }
-            fragments.add(fragment);
-        }
-        return fragments;
-    }
-
-    /**
-     * Fetch the maps for a select of fragments with fixed criteria given as a
-     * map.
-     */
-    protected List<Map<String, Serializable>> getSelectMaps(
-            SQLInfoSelect select, Map<String, Serializable> criteriaMap,
-            Map<String, Serializable> joinMap, boolean limitToOne,
-            Context context) throws StorageException {
-        List<Map<String, Serializable>> list = new LinkedList<Map<String, Serializable>>();
+        List<Row> list = new LinkedList<Row>();
         if (select.whatColumns.isEmpty()) {
             // happens when we fetch a fragment whose columns are all opaque
             // check it's a by-id query
-            if ((select.whereColumns.size() == 1)
-                    && (select.whereColumns.get(0).getKey() == Model.MAIN_KEY)
-                    && (joinMap == null)) {
-                Map<String, Serializable> map = new HashMap<String, Serializable>(
-                        criteriaMap);
-                if (select.opaqueColumns != null) {
-                    for (Column column : select.opaqueColumns) {
-                        map.put(column.getKey(), SimpleFragment.OPAQUE);
-                    }
-                }
-                list.add(map);
+            if (select.whereColumns.size() == 1
+                    && select.whereColumns.get(0).getKey() == model.MAIN_KEY
+                    && joinMap == null) {
+                Row row = new Row(criteriaMap);
+                // if (select.opaqueColumns != null) {
+                // for (Column column : select.opaqueColumns) {
+                // map.put(column.getKey(), Row.OPAQUE);
+                // }
+                // }
+                list.add(row);
                 return list;
             }
             // else do a useless select but the criteria are more complex and we
             // can't shortcut
+        }
+        if (joinMap == null) {
+            joinMap = Collections.emptyMap();
         }
         PreparedStatement ps = null;
         try {
@@ -906,21 +806,20 @@ public class JDBCMapper implements Mapper {
              * Construct the maps from the result set.
              */
             while (rs.next()) {
-                Map<String, Serializable> map = new HashMap<String, Serializable>(
-                        criteriaMap);
+                Row row = new Row(criteriaMap);
                 i = 1;
                 for (Column column : select.whatColumns) {
-                    map.put(column.getKey(), column.getFromResultSet(rs, i++));
+                    row.put(column.getKey(), column.getFromResultSet(rs, i++));
                 }
-                if (select.opaqueColumns != null) {
-                    for (Column column : select.opaqueColumns) {
-                        map.put(column.getKey(), SimpleFragment.OPAQUE);
-                    }
-                }
+                // if (select.opaqueColumns != null) {
+                // for (Column column : select.opaqueColumns) {
+                // row.putNew(column.getKey(), Row.OPAQUE);
+                // }
+                // }
                 if (logger.isLogEnabled()) {
                     logger.logResultSet(rs, select.whatColumns);
                 }
-                list.add(map);
+                list.add(row);
                 if (limitToOne) {
                     return list;
                 }
@@ -943,38 +842,29 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public Map<String, Serializable> readSingleRowMap(String tableName,
-            Serializable id, Context context) throws StorageException {
+    public Row readSingleRow(String tableName, Serializable id)
+            throws StorageException {
         SQLInfoSelect select = sqlInfo.selectFragmentById.get(tableName);
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(Model.MAIN_KEY, id);
-        List<Map<String, Serializable>> maps = getSelectMaps(select,
-                criteriaMap, null, true, context);
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(
+                model.MAIN_KEY, id);
+        List<Row> maps = getSelectRows(select, criteriaMap, null, true);
         return maps == null ? null : maps.get(0);
     }
 
-    public Map<Serializable, Map<String, Serializable>> readMultipleRowMaps(
-            String tableName, List<Serializable> ids, Context context)
+    public List<Row> readMultipleRows(String tableName, List<Serializable> ids)
             throws StorageException {
         if (ids.isEmpty()) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
         SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,
                 ids.size());
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.MAIN_KEY, (Serializable) ids);
-        List<Map<String, Serializable>> maps = getSelectMaps(select,
-                criteriaMap, null, false, context);
-        Map<Serializable, Map<String, Serializable>> res = new HashMap<Serializable, Map<String, Serializable>>();
-        for (Map<String, Serializable> map : maps) {
-            res.put(map.get(model.MAIN_KEY), map);
-        }
-        return res;
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(
+                model.MAIN_KEY, (Serializable) ids);
+        return getSelectRows(select, criteriaMap, null, false);
     }
 
-    public SimpleFragment readChildHierRow(Serializable parentId,
-            String childName, boolean complexProp, Context context)
-            throws StorageException {
+    public Row readChildHierRow(Serializable parentId, String childName,
+            boolean complexProp) throws StorageException {
         String sql = sqlInfo.getSelectByChildNameSql(complexProp);
         try {
             // XXX statement should be already prepared
@@ -990,9 +880,9 @@ public class JDBCMapper implements Mapper {
                     i++;
                     String key = column.getKey();
                     Serializable v;
-                    if (key.equals(Model.HIER_PARENT_KEY)) {
+                    if (key.equals(model.HIER_PARENT_KEY)) {
                         v = parentId;
-                    } else if (key.equals(Model.HIER_CHILD_NAME_KEY)) {
+                    } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
                         v = childName;
                     } else {
                         throw new RuntimeException("Invalid hier column: "
@@ -1016,26 +906,16 @@ public class JDBCMapper implements Mapper {
                     return null;
                 }
                 // construct the row from the results
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
-                i = 0;
+                Row row = new Row((Serializable) null);
+                i = 1;
                 List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
-                Serializable id = null;
                 for (Column column : columns) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable value = column.getFromResultSet(rs, i);
-                    if (key.equals(Model.MAIN_KEY)) {
-                        id = value;
-                    } else {
-                        map.put(key, value);
-                    }
+                    row.put(column.getKey(), column.getFromResultSet(rs, i++));
                 }
-                map.put(Model.HIER_PARENT_KEY, parentId);
-                map.put(Model.HIER_CHILD_NAME_KEY, childName);
-                map.put(Model.HIER_CHILD_ISPROPERTY_KEY,
+                row.put(model.HIER_PARENT_KEY, parentId);
+                row.put(model.HIER_CHILD_NAME_KEY, childName);
+                row.put(model.HIER_CHILD_ISPROPERTY_KEY,
                         Boolean.valueOf(complexProp));
-                SimpleFragment row = new SimpleFragment(id, State.PRISTINE,
-                        context, map);
                 if (logger.isLogEnabled()) {
                     logger.logResultSet(rs, columns);
                 }
@@ -1050,18 +930,17 @@ public class JDBCMapper implements Mapper {
                     Serializable childId = null;
                     for (Column column : columns) {
                         i++;
-                        if (column.getKey().equals(Model.MAIN_KEY)) {
+                        if (column.getKey().equals(model.MAIN_KEY)) {
                             childId = column.getFromResultSet(rs, i);
                         }
                     }
                     log.error(String.format(
                             "Child '%s' appeared twice as child of %s "
                                     + "(%s and %s), renaming second to '%s'",
-                            childName, parentId, id, childId, newName));
-                    Map<String, Serializable> rename = new HashMap<String, Serializable>();
-                    rename.put(Model.HIER_CHILD_NAME_KEY, newName);
-                    updateSingleRowWithValues(Model.HIER_TABLE_NAME, childId,
-                            rename);
+                            childName, parentId, row.id, childId, newName));
+                    Row rename = new Row(childId);
+                    rename.putNew(model.HIER_CHILD_NAME_KEY, newName);
+                    updateSingleRowWithValues(model.HIER_TABLE_NAME, rename);
                 }
                 return row;
             } finally {
@@ -1073,22 +952,21 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public List<SimpleFragment> readChildHierRows(Serializable parentId,
-            boolean complexProp, Context context) throws StorageException {
+    public List<Row> readChildHierRows(Serializable parentId,
+            boolean complexProp) throws StorageException {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
         }
         SQLInfoSelect select = sqlInfo.selectChildrenByIsProperty;
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(Model.HIER_PARENT_KEY, parentId);
-        criteriaMap.put(Model.HIER_CHILD_ISPROPERTY_KEY,
+        criteriaMap.put(model.HIER_PARENT_KEY, parentId);
+        criteriaMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
-        return getSelectRows(select, criteriaMap, context);
+        return getSelectRows(select, criteriaMap, null, false);
     }
 
-    public Serializable[] readCollectionArray(Serializable id, Context context)
+    public Serializable[] readCollectionArray(String tableName, Serializable id)
             throws StorageException {
-        String tableName = context.getTableName();
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
         try {
             // XXX statement should be already prepared
@@ -1124,18 +1002,11 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public CollectionFragment readCollectionRow(Serializable id, Context context)
-            throws StorageException {
-        Serializable[] array = readCollectionArray(id, context);
-        return new CollectionFragment(id, State.PRISTINE, context, array);
-    }
-
-    protected Map<Serializable, Serializable[]> readCollectionsArrays(
-            List<Serializable> ids, Context context) throws StorageException {
+    public Map<Serializable, Serializable[]> readCollectionsArrays(
+            String tableName, List<Serializable> ids) throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyMap();
         }
-        String tableName = context.getTableName();
         String[] orderBys = new String[] { model.MAIN_KEY,
                 model.COLL_TABLE_POS_KEY }; // clusters results
         Set<String> skipColumns = new HashSet<String>(
@@ -1207,42 +1078,22 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public void readCollectionsRows(List<Serializable> ids, Context context,
-            List<Fragment> fragments) throws StorageException {
-        Map<Serializable, Serializable[]> arrays = readCollectionsArrays(ids,
-                context);
-        for (Serializable id : ids) {
-            Serializable[] array = arrays.get(id);
-            Fragment fragment = new CollectionFragment(id, State.PRISTINE,
-                    context, array);
-            fragments.add(fragment);
-        }
-    }
-
-    public void updateSingleRow(SimpleFragment row) throws StorageException {
-        Collection<String> dirty = row.getDirty();
-        if (dirty.isEmpty()) {
+    public void updateSingleRow(String tableName, Row row, List<String> keys)
+            throws StorageException {
+        if (keys.isEmpty()) {
             return;
         }
-        String tableName = row.getTableName();
-        SQLInfoSelect update = sqlInfo.getUpdateById(tableName, dirty);
+        SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys);
         try {
             PreparedStatement ps = connection.prepareStatement(update.sql);
             try {
                 if (logger.isLogEnabled()) {
                     logger.logSQL(update.sql, update.whatColumns, row);
                 }
-                int i = 0;
+                int i = 1;
                 for (Column column : update.whatColumns) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(Model.MAIN_KEY)) {
-                        v = row.getId();
-                    } else {
-                        v = row.get(key);
-                    }
-                    column.setToPreparedStatement(ps, i, v);
+                    column.setToPreparedStatement(ps, i++,
+                            row.get(column.getKey()));
                 }
                 int count = ps.executeUpdate();
                 logger.logCount(count);
@@ -1253,15 +1104,14 @@ public class JDBCMapper implements Mapper {
             checkConnectionReset(e);
             throw new StorageException("Could not update: " + update.sql, e);
         }
-        row.clearDirty();
     }
 
     /**
      * Updates a row in the database with given explicit values.
      */
-    protected void updateSingleRowWithValues(String tableName, Serializable id,
-            Map<String, Serializable> map) throws StorageException {
-        Update update = sqlInfo.getUpdateByIdForKeys(tableName, map.keySet());
+    protected void updateSingleRowWithValues(String tableName, Row row)
+            throws StorageException {
+        Update update = sqlInfo.getUpdateByIdForKeys(tableName, row.getKeys());
         Table table = update.getTable();
         String sql = update.getStatement();
         try {
@@ -1269,17 +1119,19 @@ public class JDBCMapper implements Mapper {
             try {
                 if (logger.isLogEnabled()) {
                     List<Serializable> values = new LinkedList<Serializable>();
-                    values.addAll(map.values());
-                    values.add(id);
+                    values.addAll(row.getValues());
+                    values.add(row.id); // id last in SQL
                     logger.logSQL(sql, values);
                 }
                 int i = 1;
-                for (Entry<String, Serializable> entry : map.entrySet()) {
-                    String key = entry.getKey();
-                    Serializable value = entry.getValue();
+                Serializable[] data = row.getData();
+                int size = row.getDataSize();
+                for (int r = 0; r < size; r += 2) {
+                    String key = (String) data[r];
+                    Serializable value = data[r + 1];
                     table.getColumn(key).setToPreparedStatement(ps, i++, value);
                 }
-                ps.setObject(i, id);
+                ps.setObject(i, row.id); // id last in SQL
                 int count = ps.executeUpdate();
                 logger.logCount(count);
             } finally {
@@ -1291,92 +1143,95 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public void updateCollectionRows(CollectionFragment fragment)
-            throws StorageException {
-        if (!fragment.isDirty()) {
-            return;
-        }
-        deleteFragment(fragment);
-        insertCollectionRows(fragment);
-        fragment.setDirty(false);
+    public void updateCollectionRows(String tableName, Serializable id,
+            Serializable[] array) throws StorageException {
+        deleteRows(tableName, id);
+        insertCollectionRows(tableName, id, array);
     }
 
-    public void deleteFragment(Fragment fragment) throws StorageException {
+    public void deleteRows(String tableName, Serializable id)
+            throws StorageException {
         try {
-            deleteFragment(fragment.getTableName(), fragment.getId());
+            String sql = sqlInfo.getDeleteSql(tableName);
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Collections.singletonList(id));
+            }
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                ps.setObject(1, id);
+                int count = ps.executeUpdate();
+                logger.logCount(count);
+            } finally {
+                closePreparedStatement(ps);
+            }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not delete: "
-                    + fragment.getId().toString(), e);
+            throw new StorageException("Could not delete: " + id.toString(), e);
         }
     }
 
-    /**
-     * Deletes a fragment, and returns {@code true} if there really were rows
-     * deleted.
-     */
-    protected boolean deleteFragment(String tableName, Serializable id)
-            throws SQLException {
-        String sql = sqlInfo.getDeleteSql(tableName);
-        if (logger.isLogEnabled()) {
-            logger.logSQL(sql, Collections.singletonList(id));
-        }
-        PreparedStatement ps = connection.prepareStatement(sql);
-        try {
-            ps.setObject(1, id);
-            int count = ps.executeUpdate();
-            logger.logCount(count);
-            return count > 0;
-        } finally {
-            closePreparedStatement(ps);
-        }
-    }
-
-    public Serializable copyHierarchy(Serializable sourceId, String typeName,
-            Serializable destParentId, String destName,
-            Serializable overwriteId, Map<String, Serializable> overwriteMap,
-            PersistenceContext persistenceContext) throws StorageException {
+    public CopyHierarchyResult copyHierarchy(Serializable sourceId,
+            String typeName, Serializable destParentId, String destName,
+            Row overwriteRow) throws StorageException {
         // assert !model.separateMainTable; // other case not implemented
-        HierarchyContext hierContext = persistenceContext.getHierContext();
+        Invalidations invalidations = new Invalidations();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
-            Map<Serializable, String> idType = new HashMap<Serializable, String>();
+            Map<Serializable, String> idToType = new HashMap<Serializable, String>();
             // copy the hierarchy fragments recursively
+            Serializable overwriteId = overwriteRow == null ? null
+                    : overwriteRow.id;
             if (overwriteId != null) {
                 // overwrite hier root with explicit values
-                updateSingleRowWithValues(model.hierTableName, overwriteId,
-                        overwriteMap);
+                String tableName = model.hierTableName;
+                updateSingleRowWithValues(tableName, overwriteRow);
                 idMap.put(sourceId, overwriteId);
                 // invalidate
-                hierContext.markInvalidated(overwriteId, true);
+                invalidations.addModified(tableName,
+                        Collections.singleton(overwriteId));
             }
             // create the new hierarchy by copy
             Serializable newRootId = copyHierRecursive(sourceId, typeName,
-                    destParentId, destName, overwriteId, idMap, idType);
+                    destParentId, destName, overwriteId, idMap, idToType);
             // invalidate children
-            hierContext.markChildrenAdded(overwriteId == null ? destParentId
-                    : overwriteId);
+            Serializable invalParentId = overwriteId == null ? destParentId
+                    : overwriteId;
+            if (invalParentId != null) { // null for a new version
+                invalidations.addModified(Invalidations.PARENT,
+                        Collections.singleton(invalParentId));
+            }
             // copy all collected fragments
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
-                    idType).entrySet()) {
+                    idToType).entrySet()) {
                 String tableName = entry.getKey();
                 // TODO move ACL skip logic higher
-                if (tableName.equals(Model.ACL_TABLE_NAME)) {
+                if (tableName.equals(model.ACL_TABLE_NAME)) {
                     continue;
                 }
                 Set<Serializable> ids = entry.getValue();
-                boolean overwrite = (overwriteId != null)
-                        && !tableName.equals(model.mainTableName);
-                Boolean invalidation = copyFragments(tableName, ids, idMap,
-                        overwrite ? overwriteId : null);
+                // boolean overwrite = overwriteId != null
+                // && !tableName.equals(model.hierTableName);
+                // overwrite ? overwriteId : null
+                Boolean invalidation = copyRows(tableName, ids, idMap,
+                        overwriteId);
+                // TODO XXX check code:
                 if (invalidation != null) {
+                    // overwrote something
                     // make sure things are properly invalidated in this and
                     // other sessions
-                    persistenceContext.getContext(tableName).markInvalidated(
-                            overwriteId, invalidation.booleanValue());
+                    if (Boolean.TRUE.equals(invalidation)) {
+                        invalidations.addModified(tableName,
+                                Collections.singleton(overwriteId));
+                    } else {
+                        invalidations.addDeleted(tableName,
+                                Collections.singleton(overwriteId));
+                    }
                 }
             }
-            return newRootId;
+            CopyHierarchyResult res = new CopyHierarchyResult();
+            res.copyId = newRootId;
+            res.invalidations = invalidations;
+            return res;
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException(
@@ -1402,8 +1257,8 @@ public class JDBCMapper implements Mapper {
     protected Serializable copyHierRecursive(Serializable id, String type,
             Serializable parentId, String name, Serializable overwriteId,
             Map<Serializable, Serializable> idMap,
-            Map<Serializable, String> idType) throws SQLException {
-        idType.put(id, type);
+            Map<Serializable, String> idToType) throws SQLException {
+        idToType.put(id, type);
         Serializable newId;
         if (overwriteId == null) {
             newId = copyHier(id, type, parentId, name, idMap);
@@ -1417,7 +1272,7 @@ public class JDBCMapper implements Mapper {
             Serializable childId = info[0];
             String childType = (String) info[1];
             copyHierRecursive(childId, childType, newId, null, null, idMap,
-                    idType);
+                    idToType);
         }
         return newId;
     }
@@ -1458,16 +1313,16 @@ public class JDBCMapper implements Mapper {
             for (Column column : columns) {
                 String key = column.getKey();
                 Serializable v;
-                if (key.equals(Model.HIER_PARENT_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY)) {
                     v = parentId;
-                } else if (key.equals(Model.HIER_CHILD_NAME_KEY)) {
+                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
                     // present if name explicitely set (first iteration)
                     v = name;
-                } else if (key.equals(Model.MAIN_KEY)) {
+                } else if (key.equals(model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
                 } else if (createVersion
-                        && (key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY))) {
+                        && (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY))) {
                     v = null;
                 } else {
                     throw new RuntimeException(column.toString());
@@ -1522,9 +1377,9 @@ public class JDBCMapper implements Mapper {
                 for (Column column : columns) {
                     String key = column.getKey();
                     Serializable value = column.getFromResultSet(rs, i++);
-                    if (key.equals(Model.MAIN_KEY)) {
+                    if (key.equals(model.MAIN_KEY)) {
                         childId = value;
-                    } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
                         childType = value;
                     }
                 }
@@ -1543,15 +1398,17 @@ public class JDBCMapper implements Mapper {
     }
 
     /**
-     * Copy the rows from tableName with ids in fragmentIds into new ones with
-     * new ids given by idMap.
+     * Copy the rows from tableName with given ids into new ones with new ids
+     * given by idMap.
+     * <p>
+     * A new row with id {@code overwriteId} is first deleted.
      *
      * @return {@link Boolean#TRUE} for a modification or creation,
      *         {@link Boolean#FALSE} for a deletion, {@code null} otherwise
      *         (still absent)
      * @throws SQLException
      */
-    protected Boolean copyFragments(String tableName, Set<Serializable> ids,
+    protected Boolean copyRows(String tableName, Set<Serializable> ids,
             Map<Serializable, Serializable> idMap, Serializable overwriteId)
             throws SQLException {
         String copySql = sqlInfo.getCopySql(tableName);
@@ -1597,54 +1454,50 @@ public class JDBCMapper implements Mapper {
         }
     }
 
-    public Serializable getVersionByLabel(Serializable versionableId,
-            String label, Context context) throws StorageException {
+    public Serializable getVersionIdByLabel(Serializable versionableId,
+            String label) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByLabel;
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(Model.VERSION_VERSIONABLE_KEY, versionableId);
-        criteriaMap.put(Model.VERSION_LABEL_KEY, label);
-        List<SimpleFragment> selectRows = getSelectRows(select, criteriaMap,
-                context);
-        if (selectRows.isEmpty()) {
-            return null;
-        } else {
-            return selectRows.get(0).getId();
-        }
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        criteriaMap.put(model.VERSION_LABEL_KEY, label);
+        List<Row> rows = getSelectRows(select, criteriaMap, null, true);
+        return rows == null ? null : rows.get(0).id;
     }
 
-    public SimpleFragment getLastVersion(Serializable versionableId,
-            Context context) throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(Model.VERSION_VERSIONABLE_KEY, versionableId);
-        return getSelectRow(select, criteriaMap, context);
-    }
-
-    public List<SimpleFragment> getVersions(Serializable versionableId,
-            Context context) throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(Model.VERSION_VERSIONABLE_KEY, versionableId);
-        return getSelectRows(select, criteriaMap, context);
-    }
-
-    public List<SimpleFragment> getProxies(Serializable searchId,
-            boolean byTarget, Serializable parentId, Context context)
+    public Serializable getLastVersionId(Serializable versionableId)
             throws StorageException {
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(byTarget ? Model.PROXY_TARGET_KEY
-                : Model.PROXY_VERSIONABLE_KEY, searchId);
+        SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(
+                model.VERSION_VERSIONABLE_KEY, versionableId);
+        List<Row> maps = getSelectRows(select, criteriaMap, null, true);
+        return maps == null ? null : maps.get(0).id;
+    }
+
+    public List<Row> getVersionsRows(Serializable versionableId)
+            throws StorageException {
+        SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(
+                model.VERSION_VERSIONABLE_KEY, versionableId);
+        return getSelectRows(select, criteriaMap, null, false);
+    }
+
+    public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
+            Serializable parentId) throws StorageException {
+        Map<String, Serializable> criteriaMap = Collections.singletonMap(
+                byTarget ? model.PROXY_TARGET_KEY : model.PROXY_VERSIONABLE_KEY,
+                searchId);
+        SQLInfoSelect select;
+        Map<String, Serializable> joinMap;
         if (parentId == null) {
-            SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTarget
+            select = byTarget ? sqlInfo.selectProxiesByTarget
                     : sqlInfo.selectProxiesByVersionable;
-            return getSelectRows(select, criteriaMap, context);
+            joinMap = null;
         } else {
-            SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
+            select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
                     : sqlInfo.selectProxiesByVersionableAndParent;
-            Map<String, Serializable> joinMap = new HashMap<String, Serializable>();
-            joinMap.put(Model.HIER_PARENT_KEY, parentId);
-            return getSelectRows(select, criteriaMap, joinMap, context);
+            joinMap = Collections.singletonMap(model.HIER_PARENT_KEY, parentId);
         }
+        return getSelectRows(select, criteriaMap, joinMap, false);
     }
 
     protected QueryMaker findQueryMaker(String query) throws StorageException {

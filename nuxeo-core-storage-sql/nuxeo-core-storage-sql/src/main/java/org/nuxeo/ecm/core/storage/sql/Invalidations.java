@@ -30,6 +30,13 @@ import java.util.Set;
  */
 public class Invalidations {
 
+    /** Pseudo-table to use to notify about children invalidated. */
+    public static final String PARENT = "__PARENT__";
+
+    public static final int MODIFIED = 1;
+
+    public static final int DELETED = 2;
+
     public final Map<String, Set<Serializable>> modified = new HashMap<String, Set<Serializable>>();
 
     public final Map<String, Set<Serializable>> deleted = new HashMap<String, Set<Serializable>>();
@@ -39,13 +46,13 @@ public class Invalidations {
     }
 
     public Map<String, Set<Serializable>> getKindMap(int kind) {
-        if (kind == 1) {
+        switch (kind) {
+        case MODIFIED:
             return modified;
-        } else if (kind == 2) {
+        case DELETED:
             return deleted;
-        } else {
-            throw new AssertionError();
         }
+        throw new AssertionError();
     }
 
     public void addModified(String tableName, Set<Serializable> ids) {
@@ -54,8 +61,7 @@ public class Invalidations {
         }
         Set<Serializable> set = modified.get(tableName);
         if (set == null) {
-            set = new HashSet<Serializable>();
-            modified.put(tableName, set);
+            modified.put(tableName, set = new HashSet<Serializable>());
         }
         set.addAll(ids);
     }
@@ -66,8 +72,7 @@ public class Invalidations {
         }
         Set<Serializable> set = deleted.get(tableName);
         if (set == null) {
-            set = new HashSet<Serializable>();
-            deleted.put(tableName, set);
+            deleted.put(tableName, set = new HashSet<Serializable>());
         }
         set.addAll(ids);
     }
@@ -77,8 +82,7 @@ public class Invalidations {
         for (String tableName : tableNames) {
             Set<Serializable> set = map.get(tableName);
             if (set == null) {
-                set = new HashSet<Serializable>();
-                map.put(tableName, set);
+                map.put(tableName, set = new HashSet<Serializable>());
             }
             set.add(id);
         }

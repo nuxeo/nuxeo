@@ -135,7 +135,7 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     public Mapper newMapper(Model model) throws StorageException {
-        return new JDBCMapper(repository, model, sqlInfo, xadatasource);
+        return new JDBCMapper(model, sqlInfo, xadatasource);
     }
 
 }

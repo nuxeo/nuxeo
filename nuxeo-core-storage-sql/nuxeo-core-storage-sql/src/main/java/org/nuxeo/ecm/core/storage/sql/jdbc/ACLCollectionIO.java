@@ -20,16 +20,10 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
-import org.nuxeo.ecm.core.storage.sql.Context;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
@@ -73,19 +67,19 @@ public class ACLCollectionIO implements CollectionIO {
         return new ACLRow(pos, name, grant, permission, user, group);
     }
 
-    public void setToPreparedStatement(CollectionFragment fragment,
+    public void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)
             throws SQLException {
-        for (int i = 0; i < fragment.array.length; i++) {
-            ACLRow acl = (ACLRow) fragment.array[i];
+        for (int i = 0; i < array.length; i++) {
+            ACLRow acl = (ACLRow) array[i];
             int n = 0;
             for (Column column : columns) {
                 n++;
                 String key = column.getKey();
                 Serializable v;
                 if (key.equals(model.MAIN_KEY)) {
-                    v = fragment.getId();
+                    v = id;
                 } else if (key.equals(model.ACL_POS_KEY)) {
                     v = (long) acl.pos;
                 } else if (key.equals(model.ACL_NAME_KEY)) {

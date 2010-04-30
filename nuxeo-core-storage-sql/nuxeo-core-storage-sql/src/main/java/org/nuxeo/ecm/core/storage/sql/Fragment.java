@@ -21,8 +21,6 @@ import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -48,15 +46,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public abstract class Fragment implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(Fragment.class);
-
-    /**
-     * The id. If the fragment was just created, and database id generation is
-     * used, the initial temporary id will be changed at save time to its final
-     * value.
-     */
-    private Serializable id;
 
     /**
      * The possible states of a fragment.
@@ -129,7 +118,7 @@ public abstract class Fragment implements Serializable {
 
     /**
      * Constructs an empty {@link Fragment} with the given id (which may be a
-     * temporary one).
+     * temporary one), and ties it to its proper persistence context map.
      *
      * @param id the id
      * @param state the initial state for the fragment
@@ -137,7 +126,6 @@ public abstract class Fragment implements Serializable {
      *            {@code null}
      */
     protected Fragment(Serializable id, State state, Context context) {
-        this.id = id;
         this.state = state;
         this.context = context;
         switch (state) {
@@ -176,7 +164,7 @@ public abstract class Fragment implements Serializable {
      * @return the table name
      */
     public String getTableName() {
-        return context.getTableName();
+        return context == null ? null : context.getTableName();
     }
 
     /**
@@ -194,20 +182,14 @@ public abstract class Fragment implements Serializable {
      *
      * @param id the new persistent id
      */
-    public void setId(Serializable id) {
-        assert state == State.CREATED;
-        assert id != null;
-        this.id = id;
-    }
+    public abstract void setId(Serializable id);
 
     /**
      * Gets the id.
      *
      * @return the id
      */
-    public Serializable getId() {
-        return id;
-    }
+    public abstract Serializable getId();
 
     /**
      * Refetches this fragment from the database. Needed when an invalidation
@@ -250,8 +232,8 @@ public abstract class Fragment implements Serializable {
     protected void markModified() {
         switch (state) {
         case ABSENT:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
+            context.pristine.remove(getId());
+            context.modified.put(getId(), this);
             // logStateTransition(State.CREATED); // <---
             state = State.CREATED;
             break;
@@ -259,8 +241,8 @@ public abstract class Fragment implements Serializable {
             // can only happen if overwrite all invalidated (array)
             // fall through
         case PRISTINE:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
+            context.pristine.remove(getId());
+            context.modified.put(getId(), this);
             // logStateTransition(State.MODIFIED);
             state = State.MODIFIED;
             break;
@@ -284,21 +266,21 @@ public abstract class Fragment implements Serializable {
             break;
         case ABSENT:
         case INVALIDATED_DELETED:
-            context.pristine.remove(id);
+            context.pristine.remove(getId());
             context = null;
             // logStateTransition(State.DETACHED);
             state = State.DETACHED;
             break;
         case CREATED:
-            context.modified.remove(id);
+            context.modified.remove(getId());
             context = null;
             // logStateTransition(State.DETACHED);
             state = State.DETACHED;
             break;
         case PRISTINE:
         case INVALIDATED_MODIFIED:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
+            context.pristine.remove(getId());
+            context.modified.put(getId(), this);
             // logStateTransition(State.DELETED);
             state = State.DELETED;
             break;
@@ -322,8 +304,8 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
-            context.modified.remove(id);
-            context.pristine.put(id, this);
+            context.modified.remove(getId());
+            context.pristine.put(getId(), this);
             // fall through
         case ABSENT:
         case PRISTINE:
@@ -348,8 +330,8 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
-            context.modified.remove(id);
-            context.pristine.put(id, this);
+            context.modified.remove(getId());
+            context.pristine.put(getId(), this);
             // fall through
         case ABSENT:
         case PRISTINE:
@@ -365,7 +347,8 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Detaches the fragment from its persistence context.
+     * Detaches the fragment from its persistence context. The caller makes sure
+     * that the fragment is removed from the context map.
      */
     protected void setDetached() {
         // logStateTransition(State.DETACHED);

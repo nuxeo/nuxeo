@@ -29,6 +29,13 @@ public class CollectionFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The id. If the fragment was just created, and database id generation is
+     * used, the initial temporary id will be changed at save time to its final
+     * value.
+     */
+    private Serializable id;
+
     /** The collection actually holding the data. */
     public Serializable[] array;
 
@@ -48,7 +55,19 @@ public class CollectionFragment extends Fragment {
             Serializable[] array) {
         super(id, state, context);
         assert array != null; // for now
+        this.id = id;
         this.array = array;
+    }
+
+    @Override
+    public void setId(Serializable id) {
+        assert id != null;
+        this.id = id;
+    }
+
+    @Override
+    public Serializable getId() {
+        return id;
     }
 
     /**
@@ -84,7 +103,8 @@ public class CollectionFragment extends Fragment {
     @Override
     protected State refetch() throws StorageException {
         Context context = getContext();
-        array = context.mapper.readCollectionArray(getId(), context);
+        array = context.mapper.readCollectionArray(context.getTableName(),
+                getId());
         return State.PRISTINE;
     }
 
