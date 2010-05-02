@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -285,13 +285,14 @@ namespace NuxeoProcess
 				di=new DirectoryInfo(NuxeoLib);
 				ls=di.GetFiles();
 				foreach (FileInfo fname in ls) {
-					if (fname.ToString().StartsWith("script-api")) {
-				    	ScriptAPI=Path.Combine(NuxeoLib,fname.ToString());
-			    		ScriptAPI15=Path.Combine(NuxeoLib15,fname.ToString());
+					String shortname=Path.GetFileName(fname.ToString());
+					if (shortname.StartsWith("script-api")) {
+				    	ScriptAPI=Path.Combine(NuxeoLib,shortname);
+			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
-					if (fname.ToString().StartsWith("jaxb-api")) {
-				    	JaxbAPI=Path.Combine(NuxeoLib,fname.ToString());
-			    		JaxbAPI15=Path.Combine(NuxeoLib15,fname.ToString());
+					if (shortname.StartsWith("jaxb-api")) {
+				    	JaxbAPI=Path.Combine(NuxeoLib,shortname);
+			    		JaxbAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
 				}
 				if (ScriptAPI!=null) {
@@ -320,13 +321,14 @@ namespace NuxeoProcess
 				di=new DirectoryInfo(NuxeoLib15);
 				ls=di.GetFiles();
 			    foreach (FileInfo fname in ls) {
-			    	if (fname.ToString().StartsWith("script-api")) {
-			    		ScriptAPI=Path.Combine(NuxeoLib,fname.ToString());
-			    		ScriptAPI15=Path.Combine(NuxeoLib15,fname.ToString());
+					String shortname=Path.GetFileName(fname.ToString());
+					if (shortname.StartsWith("script-api")) {
+			    		ScriptAPI=Path.Combine(NuxeoLib,shortname);
+			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
-					if (fname.ToString().StartsWith("jaxb-api")) {
-			    		ScriptAPI=Path.Combine(NuxeoLib,fname.ToString());
-			    		ScriptAPI15=Path.Combine(NuxeoLib15,fname.ToString());
+					if (shortname.StartsWith("jaxb-api")) {
+			    		ScriptAPI=Path.Combine(NuxeoLib,shortname);
+			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
 			    }
 			    if (ScriptAPI!=null) {
