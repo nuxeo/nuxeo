@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Sean Radford
  *
  * $Id: ComponentUtils.java 28924 2008-01-10 14:04:05Z sfermigier $
  */
@@ -49,6 +50,8 @@ public final class ComponentUtils {
     public static final String WHITE_SPACE_CHARACTER = "&#x0020;";
 
     private static final Log log = LogFactory.getLog(ComponentUtils.class);
+
+    private static final String VH_HEADER = "nuxeo-virtual-host";
 
     // Utility class.
     private ComponentUtils() {
@@ -192,8 +195,9 @@ public final class ComponentUtils {
                 String contentDisposition = RFC2231.encodeContentDisposition(
                         filename, inline, userAgent);
                 response.setHeader("Content-Disposition", contentDisposition);
-                response.setHeader("Cache-Control", "no-cache");
-                response.setHeader("Pragma", "no-cache");
+
+                addCacheControlHeaders(request, response);
+
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());
                 long fileSize = blob.getLength();
@@ -212,6 +216,35 @@ public final class ComponentUtils {
             }
         }
         return null;
+    }
+
+    /*
+     * Internet Explorer file downloads over SSL do not work with certain HTTP cache control headers
+     * See http://support.microsoft.com/kb/323308/
+     * What is not mentioned in the above Knowledge Base is that "Pragma: no-cache" also breaks download in MSIE over SSL
+     */
+    private static void addCacheControlHeaders(HttpServletRequest request,
+            HttpServletResponse response) {
+        String userAgent = request.getHeader("User-Agent");
+        boolean secure = request.isSecure();
+        if (!secure) {
+            String nvh = request.getHeader(VH_HEADER);
+            if (nvh != null) {
+                secure = nvh.startsWith("https");
+            }
+        }
+        log.debug("User-Agent: " + userAgent);
+        log.debug("secure: " + secure);
+        if (secure && (userAgent.indexOf("MSIE") > -1)) {
+            log.debug("Setting \"Cache-Control: max-age=15, must-revalidate\"");
+            response.setHeader("Cache-Control", "max-age=15, must-revalidate");
+        } else {
+            log.debug("Setting \"Cache-Control: private\" and \"Pragma: no-cache\"");            
+            response.setHeader("Cache-Control", "private");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+            
+        }
     }
 
     // hook translation passing faces context
