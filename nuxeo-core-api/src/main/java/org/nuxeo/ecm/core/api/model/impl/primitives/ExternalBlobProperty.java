@@ -228,7 +228,7 @@ public class ExternalBlobProperty extends MapProperty {
     }
 
     public static Map<String, Serializable> getMapFromBlob(Blob blob) {
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
         if (blob == null) {
             map.put(FILE_NAME, null);
             map.put(MIME_TYPE, null);

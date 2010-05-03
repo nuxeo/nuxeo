@@ -391,8 +391,8 @@ public class SQLInfo {
         select.setWhere(wherebuf.toString());
         if (orderBys != null) {
             List<String> orders = new LinkedList<String>();
-            for (int i = 0; i < orderBys.length; i++) {
-                orders.add(table.getColumn(orderBys[i]).getQuotedName());
+            for (String orderBy : orderBys) {
+                orders.add(table.getColumn(orderBy).getQuotedName());
             }
             select.setOrderBy(StringUtils.join(orders, ", "));
         }

@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.core.api.operation;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.DocumentRef;

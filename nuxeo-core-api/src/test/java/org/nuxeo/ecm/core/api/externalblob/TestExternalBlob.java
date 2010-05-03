@@ -140,7 +140,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertEquals("Hello External Blob", ((Blob) blob).getString());
         assertEquals(file.getName(), ((Blob) blob).getFilename());
         // filename not set on property => return null
-        assertEquals(null, doc.getPropertyValue("extfile:content/name"));
+        assertNull(doc.getPropertyValue("extfile:content/name"));
         assertEquals(uri, doc.getPropertyValue("extfile:content/uri"));
     }
 
@@ -148,7 +148,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     public void testExternalBlobDocumentPropertyUpdate() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         String uri = getTempFileUri(file);
         map.put("uri", uri);
         doc.setPropertyValue("extfile:content/uri", uri);
@@ -160,9 +160,9 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertEquals("Hello External Blob", blob.getString());
         assertEquals(file.getName(), blob.getFilename());
         // filename not set on property => return null
-        assertEquals(null, doc.getPropertyValue("extfile:content/name"));
+        assertNull(doc.getPropertyValue("extfile:content/name"));
         assertEquals(uri, doc.getPropertyValue("extfile:content/uri"));
-        assertEquals(null, doc.getPropertyValue("extfile:content/mime-type"));
+        assertNull(doc.getPropertyValue("extfile:content/mime-type"));
 
         // update the blob properties
         blob.setMimeType("text");

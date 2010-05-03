@@ -40,9 +40,9 @@ import org.nuxeo.ecm.core.blob.storage.BlobStorageSession;
  */
 public class XASession implements XAResource, BlobStorageSession {
 
-    private final static Log log = LogFactory.getLog(XASession.class);
+    private static final Log log = LogFactory.getLog(XASession.class);
 
-    protected final static int DEAULT_TIMEOUT = 10;
+    protected static final int DEAULT_TIMEOUT = 10;
 
     protected int timeout = DEAULT_TIMEOUT;
     protected DefaultBlobStorage storage;

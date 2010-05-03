@@ -635,12 +635,12 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.save();
 
         Collection<String> transitions = proxy.getAllowedStateTransitions();
-        assertEquals(transitions.size(), 3);
+        assertEquals(3, transitions.size());
 
         if (proxy.getAllowedStateTransitions().contains("delete")) {
             proxy.followTransition("delete");
         }
-        assertEquals(proxy.getCurrentLifeCycleState(), "deleted");
+        assertEquals("deleted", proxy.getCurrentLifeCycleState());
     }
 
     public void testPublishingAfterVersionDelete() throws ClientException {

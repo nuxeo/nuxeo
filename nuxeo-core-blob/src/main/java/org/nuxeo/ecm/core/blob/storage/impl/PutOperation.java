@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.blob.storage.BlobStorageException;
  */
 public class PutOperation implements BlobOperation {
 
-    public final static String DIGEST_ALGO = "sha-256";
+    public static final String DIGEST_ALGO = "sha-256";
 
 
     protected DefaultBlobStorage storage;

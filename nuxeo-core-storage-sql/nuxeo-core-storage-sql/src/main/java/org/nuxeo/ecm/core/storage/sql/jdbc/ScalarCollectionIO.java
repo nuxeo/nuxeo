@@ -20,16 +20,10 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
-import org.nuxeo.ecm.core.storage.sql.Context;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**

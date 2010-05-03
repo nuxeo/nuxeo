@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.Attachment;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -47,7 +46,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
 import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.lifecycle.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 /**

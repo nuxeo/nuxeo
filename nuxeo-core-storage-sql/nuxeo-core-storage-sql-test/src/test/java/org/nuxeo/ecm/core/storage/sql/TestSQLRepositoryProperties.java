@@ -323,7 +323,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(blob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) blob).getString());
         assertEquals(file.getName(), ((Blob) blob).getFilename());
-        assertEquals(null, doc.getPropertyValue("tp:externalcontent/name"));
+        assertNull(doc.getPropertyValue("tp:externalcontent/name"));
         assertEquals(uri, doc.getPropertyValue("tp:externalcontent/uri"));
     }
 
@@ -336,7 +336,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         File file = createTempFile();
         ArrayList<Map> values = new ArrayList<Map>();
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");

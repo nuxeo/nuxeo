@@ -339,7 +339,7 @@ public interface Mapper extends XAResource {
      * @throws StorageException
      */
     // queryFilter used for principals and permissions
-    public IterableQueryResult queryAndFetch(String query, String queryType,
+    IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Session session, Object... params)
             throws StorageException;
 

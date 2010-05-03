@@ -10,3 +10,4 @@ derby.log
 *.iml
 *.iws
 *.ipr
+*.idea

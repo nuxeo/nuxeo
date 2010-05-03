@@ -23,10 +23,10 @@ import java.util.List;
  */
 public interface QueryMakerService {
 
-    public void registerQueryMaker(Class<? extends QueryMaker> klass);
+    void registerQueryMaker(Class<? extends QueryMaker> klass);
 
-    public void unregisterQueryMaker(Class<? extends QueryMaker> klass);
+    void unregisterQueryMaker(Class<? extends QueryMaker> klass);
 
-    public List<Class<? extends QueryMaker>> getQueryMakers();
+    List<Class<? extends QueryMaker>> getQueryMakers();
 
 }

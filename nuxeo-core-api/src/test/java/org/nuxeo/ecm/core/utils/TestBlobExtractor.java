@@ -188,10 +188,10 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         }
         log.error("Blob detected : \"" + blob.getFilename() + "\" and \"" + blob2.getFilename() + "\"");
         log.error("Waiting Values test2.pdf and test1.pdf");
-        assertTrue(false);
+        fail();
     }
 
-        @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void testGetTwoBlobsFromOneSchema() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -219,7 +219,7 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         }
         log.error("Blob detected : \"" + blob.getFilename() + "\" and \"" + blob2.getFilename() + "\"");
         log.error("Waiting Values test2.pdf and test1.pdf");
-        assertTrue(false);
+        fail();
     }
 
     protected Blob createTestBlob(boolean setMimeType, String filename) {
@@ -229,7 +229,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
             blob.setMimeType("application/pdf");
         }
         return blob;
-
     }
 
     protected SchemaManager typeMgr;

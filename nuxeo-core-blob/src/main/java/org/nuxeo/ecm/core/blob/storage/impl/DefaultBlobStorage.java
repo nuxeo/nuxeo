@@ -32,12 +32,11 @@ import org.nuxeo.ecm.core.blob.storage.BlobStorageSession;
  * A blob storage that use the file system to store blobs.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultBlobStorage implements BlobStorage {
 
-    public final static int MIN_BUF_SIZE = 8*1024; // 8KB
-    public final static int MAX_BUF_SIZE = 1024*1024; // 1MB
+    public static final int MIN_BUF_SIZE = 8*1024; // 8KB
+    public static final int MAX_BUF_SIZE = 1024*1024; // 1MB
 
     protected File root;
     protected File data;
