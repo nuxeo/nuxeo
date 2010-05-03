@@ -1,3 +1,4 @@
+@echo off
 rem This script will checkout the needed sources
 
 set CV=1.6
@@ -18,3 +19,7 @@ hg clone -r %PV% http://hg.nuxeo.org/nuxeo/nuxeo-dm
 hg clone -r %PV% http://hg.nuxeo.org/nuxeo/nuxeo-distribution
 
 hg clone -r %PV% http://hg.nuxeo.org/addons ../nuxeo-addons
+
+svn export https://svn.nuxeo.org/nuxeo/tools/mercurial .
+
+hgx %PV% %CV% up -C

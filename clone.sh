@@ -18,3 +18,8 @@ hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-dm
 hg clone -r $PV http://hg.nuxeo.org/nuxeo/nuxeo-distribution
 
 hg clone -r $PV http://hg.nuxeo.org/addons ../nuxeo-addons
+
+svn export https://svn.nuxeo.org/nuxeo/tools/mercurial/.hgfunctions
+. .hgfunctions
+
+hgx $PV $CV up -C
