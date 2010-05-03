@@ -200,15 +200,15 @@ public class Environment {
         this.properties.putAll(properties);
         this.properties.put(HOME_DIR, home.getAbsolutePath());
     }
-    
+
     public boolean isJBoss() {
         return JBOSS_HOST.equals(hostAppName);
     }
-    
+
     public boolean isJetty() {
         return NXSERVER_HOST.equals(hostAppName);
     }
-    
+
     public boolean isTomcat() {
         return TOMCAT_HOST.equals(hostAppName);
     }
