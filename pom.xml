@@ -54,6 +54,7 @@
     <module>nuxeo-opensocial</module>
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-platform-wss-backend</module>
+    <module>nuxeo-automation</module>
     <module>nuxeo-features-test</module>
   </modules>
 
