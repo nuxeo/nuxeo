@@ -34,7 +34,7 @@
       
           <nxd:restDocumentLink document="#{pathElement.documentModel}"
             rendered="#{pathElement.link}">
-            <nxh:outputText value="#{nxd:titleOrId(pathElement.documentModel)}"/>
+            <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}"/>
           </nxd:restDocumentLink>
           <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}"/>
       
