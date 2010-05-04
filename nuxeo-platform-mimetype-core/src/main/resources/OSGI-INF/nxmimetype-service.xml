@@ -227,6 +227,7 @@
       <extensions>
         <extension>ppt</extension>
         <extension>pot</extension>
+        <extension>pps</extension>        
       </extensions>
     </mimetype>
 
