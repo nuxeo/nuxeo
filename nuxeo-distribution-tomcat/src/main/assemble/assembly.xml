@@ -35,6 +35,9 @@
         <exclude name="**/nxserver*.*" />
         <exclude name="**/readme.html" />
         <exclude name="**/config/log4j.xml" />
+        <exclude name="**/config/default-repository-config.xml" />
+        <exclude name="**/config/nuxeo.properties" />
+        <exclude name="**/config/opensocial.properties" />
       </patternset>
     </unzip>
     <nx:rename from="${outdir}/${tomcat}/nuxeo-*"

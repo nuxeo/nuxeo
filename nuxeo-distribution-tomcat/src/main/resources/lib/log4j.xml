@@ -32,7 +32,7 @@
 
   <!-- Main logger -->
   <logger name="org.nuxeo">
-    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
   </logger>
   <!-- Loggers for import commands -->
   <logger name="org.nuxeo.ecm.shell.commands.io.ImportCommand">
@@ -54,7 +54,6 @@
 
   <root>
     <level value="INFO" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>
