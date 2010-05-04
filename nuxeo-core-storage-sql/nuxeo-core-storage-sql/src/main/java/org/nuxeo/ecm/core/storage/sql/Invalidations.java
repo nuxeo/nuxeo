@@ -28,7 +28,9 @@ import java.util.Set;
  * Records both modified and deleted fragments, as well as "parents modified"
  * fragments.
  */
-public class Invalidations {
+public class Invalidations implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** Pseudo-table to use to notify about children invalidated. */
     public static final String PARENT = "__PARENT__";

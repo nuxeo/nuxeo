@@ -49,4 +49,9 @@ public interface RepositoryBackend {
      */
     Mapper newMapper(Model model) throws StorageException;
 
+    /**
+     * Shuts down the backend.
+     */
+    void shutdown() throws StorageException;
+
 }

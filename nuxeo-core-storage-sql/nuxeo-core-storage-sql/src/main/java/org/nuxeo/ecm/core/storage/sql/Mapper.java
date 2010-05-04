@@ -33,6 +33,16 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public interface Mapper extends XAResource {
 
+    /**
+     * Returns a unique mapper id.
+     * <p>
+     * This is used in remote stateless mode to be able to identify to which
+     * mapper an incoming connection is targeted.
+     *
+     * @return the unique mapper id
+     */
+    String getMapperId();
+
     void close();
 
     // TODO
@@ -205,7 +215,9 @@ public interface Mapper extends XAResource {
      * ----- Copy -----
      */
 
-    public static class CopyHierarchyResult {
+    public static class CopyHierarchyResult implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         /** The id of the root of the copy. */
         public Serializable copyId;
 

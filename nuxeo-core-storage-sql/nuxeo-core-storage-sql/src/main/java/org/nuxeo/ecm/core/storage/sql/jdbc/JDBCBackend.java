@@ -138,4 +138,7 @@ public class JDBCBackend implements RepositoryBackend {
         return new JDBCMapper(model, sqlInfo, xadatasource);
     }
 
+    public void shutdown() {
+    }
+
 }

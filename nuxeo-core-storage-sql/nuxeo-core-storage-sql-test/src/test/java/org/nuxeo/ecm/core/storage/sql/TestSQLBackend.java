@@ -1455,7 +1455,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
 }
 
-class DummyXid implements Xid {
+class DummyXid implements Xid, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final byte[] gtrid;
 
@@ -1478,4 +1480,28 @@ class DummyXid implements Xid {
     public byte[] getBranchQualifier() {
         return bqual;
     }
+
+    @Override
+    public int hashCode() {
+        int result = 31 + Arrays.hashCode(bqual);
+        return 31 * result + Arrays.hashCode(gtrid);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof DummyXid) {
+            return equals((DummyXid) other);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean equals(DummyXid other) {
+        if (other == this) {
+            return true;
+        }
+        return Arrays.equals(bqual, other.bqual)
+                && Arrays.equals(gtrid, other.gtrid);
+    }
+
 }

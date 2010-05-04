@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
@@ -30,7 +31,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
+import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -62,6 +66,8 @@ public class RepositoryImpl implements Repository {
     // modified only under clusterMapper synchronization
     private long clusterLastInvalidationTimeMillis;
 
+    private Object server;
+
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
@@ -71,6 +77,8 @@ public class RepositoryImpl implements Repository {
         } catch (Exception e) {
             throw new StorageException(e);
         }
+
+        // binary manager
         try {
             Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
             if (klass == null) {
@@ -81,15 +89,35 @@ public class RepositoryImpl implements Repository {
         } catch (Exception e) {
             throw new StorageException(e);
         }
-        try {
-            Class<? extends RepositoryBackend> klass = repositoryDescriptor.backendClass;
-            if (klass == null) {
-                klass = JDBCBackend.class;
+
+        // backend / connect
+        Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
+        List<ServerDescriptor> connect = repositoryDescriptor.connect;
+        if (backendClass == null) {
+            if (!connect.isEmpty()) {
+                backendClass = NetBackend.class;
+            } else {
+                backendClass = JDBCBackend.class;
             }
-            backend = klass.newInstance();
-            backend.initialize(this);
+        } else {
+            if (!connect.isEmpty()) {
+                log.error("Repository descriptor specifies both backendClass and connect,"
+                        + " only the backend will be used.");
+            }
+        }
+        try {
+            backend = backendClass.newInstance();
         } catch (Exception e) {
             throw new StorageException(e);
+        }
+        backend.initialize(this);
+
+        // server
+        ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
+        if (serverDescriptor != null && !serverDescriptor.disabled) {
+            server = NetServer.startServer(repositoryDescriptor);
+        } else {
+            server = null;
         }
     }
 
@@ -218,6 +246,10 @@ public class RepositoryImpl implements Repository {
                 clusterMapper.close();
             }
             clusterMapper = null;
+        }
+        if (server != null) {
+            NetServer.stopServer(server);
+            server = null;
         }
     }
 

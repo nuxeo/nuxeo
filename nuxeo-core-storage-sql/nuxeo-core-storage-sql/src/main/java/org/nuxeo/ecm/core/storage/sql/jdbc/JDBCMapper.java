@@ -104,8 +104,11 @@ public class JDBCMapper implements Mapper {
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
     // for debug
+    private final long instanceNumber = instanceCounter.incrementAndGet();
+
+    // for debug
     protected final JDBCMapperLogger logger = new JDBCMapperLogger(
-            instanceCounter.incrementAndGet());
+            instanceNumber);
 
     private final QueryMakerService queryMakerService;
 
@@ -127,7 +130,10 @@ public class JDBCMapper implements Mapper {
         } catch (Exception e) {
             throw new StorageException(e);
         }
+    }
 
+    public String getMapperId() {
+        return "M"+instanceNumber;
     }
 
     public void close() {
@@ -1691,7 +1697,7 @@ public class JDBCMapper implements Mapper {
             xaresource.start(xid, flags);
         } catch (XAException e) {
             checkConnectionReset(e);
-            log.error("XA error on start: " + e.getMessage());
+            log.error("XA error on start: " + e);
             throw e;
         }
     }
@@ -1699,8 +1705,12 @@ public class JDBCMapper implements Mapper {
     public void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
+        } catch (NullPointerException e) {
+            // H2 when no active transaction
+            log.error("XA error on end: " + e, e);
+            throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
-            log.error("XA error on end: " + e.getMessage());
+            log.error("XA error on end: " + e, e);
             throw e;
         }
     }
@@ -1709,7 +1719,7 @@ public class JDBCMapper implements Mapper {
         try {
             return xaresource.prepare(xid);
         } catch (XAException e) {
-            log.error("XA error on prepare: " + e.getMessage());
+            log.error("XA error on prepare: " + e);
             throw e;
         }
     }
@@ -1718,7 +1728,7 @@ public class JDBCMapper implements Mapper {
         try {
             xaresource.commit(xid, onePhase);
         } catch (XAException e) {
-            log.error("XA error on commit: " + e.getMessage());
+            log.error("XA error on commit: " + e);
             throw e;
         }
     }
@@ -1727,7 +1737,7 @@ public class JDBCMapper implements Mapper {
         try {
             xaresource.rollback(xid);
         } catch (XAException e) {
-            log.error("XA error on rollback: " + e.getMessage());
+            log.error("XA error on rollback: " + e);
             throw e;
         }
     }

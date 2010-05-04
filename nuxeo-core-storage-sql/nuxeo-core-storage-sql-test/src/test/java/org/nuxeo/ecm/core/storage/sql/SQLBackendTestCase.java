@@ -66,15 +66,21 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeRepository();
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
+    }
+
+    protected void closeRepository() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         if (repository != null) {
             repository.close();
+            repository = null;
         }
         if (repository2 != null) {
             repository2.close();
+            repository2 = null;
         }
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
 }
