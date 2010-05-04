@@ -56,7 +56,7 @@
 
   <target name="start-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/jbossctl" />
+      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl" />
     <exec
       executable="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl">
       <arg value="start" />
@@ -77,9 +77,10 @@
 
   <target name="start-tomcat">
     <chmod perm="+x"
-      dir="${basedir}/nuxeo-dam-distribution/target/tomcat/bin" includes="**/*.sh"/>
+      dir="${basedir}/nuxeo-dam-distribution/target/tomcat/bin" includes="**/*.sh, **/*ctl"/>
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/startup.sh">
+      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/nuxeoctl">
+      <arg value="start" />
     </exec>
     <waitfor>
       <http url="http://localhost:8080/nuxeo/login.jsp" />
@@ -88,7 +89,8 @@
 
   <target name="stop-tomcat">
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/shutdown.sh">
+      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/nuxeoctl">
+      <arg value="stop" />
     </exec>
   </target>
 
