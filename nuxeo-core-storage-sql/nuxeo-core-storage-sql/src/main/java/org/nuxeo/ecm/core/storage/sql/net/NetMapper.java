@@ -16,21 +16,20 @@
  */
 package org.nuxeo.ecm.core.storage.sql.net;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
@@ -51,11 +50,37 @@ public class NetMapper implements InvocationHandler {
         return mapper;
     }
 
+    private enum Barrier {
+        BARRIER_VALUE;
+    }
+
+    public static final Object BARRIER = Barrier.BARRIER_VALUE;
+
     protected String mapperId;
 
     protected final String url;
 
     protected final HttpClient httpClient;
+
+    protected boolean inBatch;
+
+    protected List<Op> batch;
+
+    protected static final class Op {
+        String methodName;
+
+        Object[] args;
+
+        public Op(String methodName, Object[] args) {
+            this.methodName = methodName;
+            this.args = args;
+        }
+
+        @Override
+        public String toString() {
+            return "Op(" + methodName + ")";
+        }
+    }
 
     protected NetMapper(RepositoryImpl repository, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -92,22 +117,51 @@ public class NetMapper implements InvocationHandler {
             if (mapperId != null) {
                 return mapperId;
             }
-            // else ask remote
+            // else fall through (send to remote)
         } else if (methodName.equals("getTableSize")) {
             return Integer.valueOf(getTableSize((String) args[0]));
+        } else if (methodName.equals("beginBatch")) {
+            beginBatch();
+            return null;
+        } else if (methodName.equals("endBatch")) {
+            endBatch();
+            return null;
         } else if (methodName.equals("createDatabase")) {
             createDatabase();
             return null;
         }
 
-        // send through network
-        String postUrl = url + "?method=" + methodName;
+        if (inBatch) {
+            addBatch(methodName, args);
+            return null;
+        } else {
+            return invokeOne(methodName, args);
+        }
+    }
+
+    // send through network
+    // this is decoded by NetServlet
+    protected Object invokeOne(String methodName, Object[] args)
+            throws StorageException {
+        return invokeMany(Collections.singletonList(new Op(methodName, args)));
+    }
+
+    protected Object invokeMany(List<Op> batch) throws StorageException {
+        if (batch.isEmpty()) {
+            return null;
+        }
+        // System.out.println(batch); // debug
+        String postUrl = url;
         if (mapperId != null) {
-            postUrl += "&sid=" + mapperId;
+            postUrl += "?sid=" + mapperId;
         }
         PostMethod m = new PostMethod(postUrl);
         try {
-            m.setRequestEntity(new ObjectWriterRequestEntity(args));
+            ObjectWriterRequestEntity writer = new ObjectWriterRequestEntity();
+            for (Op op : batch) {
+                writer.add(op.methodName, op.args);
+            }
+            m.setRequestEntity(writer);
             int status = httpClient.executeMethod(m);
             if (status != HttpStatus.SC_OK) {
                 throw new ProtocolException(String.valueOf(status));
@@ -118,45 +172,29 @@ public class NetMapper implements InvocationHandler {
             }
             return new ObjectInputStream(m.getResponseBodyAsStream()).readObject();
         } catch (Exception e) {
-            throw new StorageException(methodName + ": " + e.getMessage(), e);
+            throw new StorageException(e);
         } finally {
             m.releaseConnection();
         }
     }
 
-    protected static class ObjectWriterRequestEntity implements RequestEntity {
-        public final Object[] objects;
-
-        public ObjectWriterRequestEntity(Object... objects) {
-            this.objects = objects;
-        }
-
-        public boolean isRepeatable() {
-            return true;
-        }
-
-        public void writeRequest(OutputStream out) throws IOException {
-            ObjectOutputStream oos = new ObjectOutputStream(out);
-            if (objects != null) {
-                for (Object object : objects) {
-                    oos.writeObject(object);
-                }
-            }
-            oos.flush();
-        }
-
-        public long getContentLength() {
-            return -1;
-        }
-
-        public String getContentType() {
-            return "application/octet-stream";
-        }
+    public void beginBatch() {
+        batch = new ArrayList<Op>();
+        inBatch = true;
     }
 
-    /*
-     * ----- Special-cased methods of Mapper -----
-     */
+    protected void addBatch(String methodName, Object[] args) {
+        batch.add(new Op(methodName, args));
+    }
+
+    public void endBatch() throws StorageException {
+        try {
+            invokeMany(batch);
+        } finally {
+            batch = null;
+            inBatch = false;
+        }
+    }
 
     public int getTableSize(String tableName) {
         return 5; // TODO get from remote

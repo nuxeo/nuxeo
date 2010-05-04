@@ -133,7 +133,7 @@ public class JDBCMapper implements Mapper {
     }
 
     public String getMapperId() {
-        return "M"+instanceNumber;
+        return "M" + instanceNumber;
     }
 
     public void close() {
@@ -205,6 +205,22 @@ public class JDBCMapper implements Mapper {
             // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
         }
     }
+
+    /*
+     * ----- Batch -----
+     */
+
+    public void beginBatch() {
+        // nothing
+    }
+
+    public void endBatch() {
+        // nothing
+    }
+
+    /*
+     * ----- Root -----
+     */
 
     public void createDatabase() throws StorageException {
         try {
@@ -663,7 +679,7 @@ public class JDBCMapper implements Mapper {
                 : ScalarCollectionIO.INSTANCE;
     }
 
-    public Serializable insertSingleRow(String tableName, Row row)
+    public void insertSingleRow(String tableName, Row row)
             throws StorageException {
         PreparedStatement ps = null;
         try {
@@ -696,7 +712,7 @@ public class JDBCMapper implements Mapper {
                 }
             }
         }
-        return row.id;
+        // return row.id;
     }
 
     public void insertCollectionRows(String tableName, Serializable id,
@@ -717,7 +733,7 @@ public class JDBCMapper implements Mapper {
                 checkConnectionReset(e);
                 throw new StorageException("Could not insert: " + sql, e);
             }
-
+            // TODO DB_IDENTITY : post insert fetch idrow
         } finally {
             if (ps != null) {
                 try {

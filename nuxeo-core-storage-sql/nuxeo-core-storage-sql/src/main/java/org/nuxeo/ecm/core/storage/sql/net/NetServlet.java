@@ -18,14 +18,16 @@ package org.nuxeo.ecm.core.storage.sql.net;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -103,22 +105,13 @@ public class NetServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         initialize();
-        String methodName = req.getParameter("method");
         String sid = req.getParameter("sid");
+        if ("".equals(sid)) {
+            sid = null;
+        }
+        InputStream is = req.getInputStream();
         Session session = null;
         try {
-            // method and arguments
-            ObjectInputStream ois = new ObjectInputStream(req.getInputStream());
-            ArrayList<Object> args = new ArrayList<Object>();
-            try {
-                while (true) {
-                    args.add(ois.readObject());
-                }
-            } catch (EOFException e) {
-                // stop
-            }
-            ois.close();
-
             // session
             if (sid == null) {
                 session = repository.getConnection();
@@ -142,17 +135,41 @@ public class NetServlet extends HttpServlet {
             ObjectOutputStream oos = new ObjectOutputStream(
                     new OutputStreamToWriter(writer));
 
-            // invoke method, special case for close
-            Object res;
-            if ("close".equals(methodName)) {
-                session.close();
-                sessions.remove(sid);
-                res = null;
-            } else {
-                res = invoke(mapper, methodName, args.toArray());
+            // read method and args, and invoke it
+            Object res = null;
+            ObjectInputStream ois = new ObjectInputStream(is);
+            while (true) {
+                String methodName;
+                try {
+                    methodName = (String) ois.readObject();
+                } catch (EOFException e) {
+                    break;
+                }
+                List<Object> args = new LinkedList<Object>();
+                try {
+                    while (true) {
+                        Object object = ois.readObject();
+                        if (object == NetMapper.BARRIER) {
+                            break;
+                        }
+                        args.add(object);
+                    }
+                } catch (EOFException e) {
+                    // shouldn't happen, missing BARRIER
+                    throw new RuntimeException("Unexpected EOF");
+                }
+
+                // invoke method, special case for close
+                if ("close".equals(methodName)) {
+                    session.close();
+                    sessions.remove(sid);
+                    res = null;
+                } else {
+                    res = invoke(mapper, methodName, args.toArray());
+                }
             }
 
-            // write result
+            // write last result
             oos.writeObject(res);
             oos.flush();
             oos.close();
@@ -171,7 +188,7 @@ public class NetServlet extends HttpServlet {
     }
 
     protected static Object invoke(Mapper mapper, String methodName,
-            Object[] args) throws StorageException, IOException {
+            Object[] args) throws Exception {
         Method method = mapperMethods.get(methodName);
         if (method == null) {
             throw new StorageException("Unknown Mapper method: " + methodName);

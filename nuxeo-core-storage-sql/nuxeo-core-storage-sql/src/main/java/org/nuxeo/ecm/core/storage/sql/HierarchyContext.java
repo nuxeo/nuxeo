@@ -541,14 +541,14 @@ public class HierarchyContext extends Context {
             if (idMap != null) {
                 remapFragmentOnSave(fragment, idMap);
             }
-            Serializable newId = mapper.insertSingleRow(
-                    fragment.getTableName(), fragment.getRow());
+            mapper.insertSingleRow(fragment.getTableName(), fragment.getRow());
+            Serializable newId = null; // TODO return id if generated
             fragment.clearDirty();
             fragment.setPristine();
             pristine.put(id, fragment);
             // save in translation map, if different
             // only happens for DB_IDENTITY id generation policy
-            if (!newId.equals(id)) {
+            if (newId != null && !newId.equals(id)) {
                 if (idMap == null) {
                     idMap = new HashMap<Serializable, Serializable>();
                 }

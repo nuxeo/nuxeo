@@ -55,6 +55,21 @@ public interface Mapper extends XAResource {
     void createDatabase() throws StorageException;
 
     /*
+     * ----- Batch -----
+     */
+
+    /**
+     * Marks the beginning of a batch operation. The method calls in a batch all
+     * return {@code void} and can be sent in one go to the backend.
+     */
+    void beginBatch();
+
+    /**
+     * Marks the end of a batch operation.
+     */
+    void endBatch();
+
+    /*
      * ----- Root -----
      */
 
@@ -156,10 +171,8 @@ public interface Mapper extends XAResource {
      *
      * @param tableName the table name
      * @param row the row
-     * @return the id (generated or not)
      */
-    Serializable insertSingleRow(String tableName, Row row)
-            throws StorageException;
+    void insertSingleRow(String tableName, Row row) throws StorageException;
 
     /**
      * Inserts a new set of collection rows in the database.

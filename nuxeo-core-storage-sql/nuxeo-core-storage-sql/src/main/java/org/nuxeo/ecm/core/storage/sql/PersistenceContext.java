@@ -314,6 +314,15 @@ public class PersistenceContext implements XAResource {
      * Saves all the data to persistent storage.
      */
     public void save() throws StorageException {
+        mapper.beginBatch();
+        try {
+            saveInternal();
+        } finally {
+            mapper.endBatch();
+        }
+    }
+
+    protected void saveInternal() throws StorageException {
         log.debug("Saving persistence context");
         /*
          * First, create the main rows to get final ids for each.
