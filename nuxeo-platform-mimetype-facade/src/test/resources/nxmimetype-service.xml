@@ -213,6 +213,7 @@
       </mimetypes>
       <extensions>
         <extension>ppt</extension>
+        <extension>pps</extension>        
       </extensions>
     </mimetype>
 
