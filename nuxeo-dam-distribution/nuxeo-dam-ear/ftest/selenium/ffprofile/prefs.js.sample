@@ -8,10 +8,6 @@ user_pref("capability.principal.codebase.p0.subjectName", "");
 user_pref("general.useragent.locale", "en");
 user_pref("intl.accept_languages", "en");
 
-// Set english as default language
-user_pref("general.useragent.locale", "en");
-user_pref("intl.accept_languages", "en");
-
 // Speed up firefox by pipelining requests on a single connection
 user_pref("network.http.keep-alive", true);
 user_pref("network.http.pipelining", true);

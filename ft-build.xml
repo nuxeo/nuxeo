@@ -9,7 +9,6 @@
     <echo message="run-ft                        => run all" />
     <echo message="make-distribution             => make Nuxeo DAM JBoss distribution" />
     <echo message="make-tomcat-distribution      => make Nuxeo DAM Tomcat distribution" />
-    <echo message="make-jetty-distribution       => make Nuxeo DAM Jetty distribution" />
     <echo message="start-jboss                   => start JBoss server" />
     <echo message="start-tomcat                  => start Tomcat server" />
     <echo message="run-selenium                  => run the selenium test" />
@@ -50,20 +49,6 @@
       <arg value="install" />
       <arg value="-P" />
       <arg value="tomcat" />
-      <arg value="-P" />
-      <arg value="${mvn.profiles}" />
-    </exec>
-  </target>
-
-  <target name="make-jetty-distribution">
-    <exec executable="mvn" failonerror="true">
-      <arg value="-f" />
-      <arg value="${pom.file}" />
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="install" />
-      <arg value="-P" />
-      <arg value="jetty" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
     </exec>

@@ -1,29 +1,57 @@
-<project name="nuxeo-assembly"
-         default="build"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
+
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
-  <artifact:expand depth="2" />
+    uri="urn:nuxeo-artifact" />
 
-  <property name="outdir" value="${maven.project.build.directory}" />
-  <property name="stagedir" value="${outdir}/stage" />
+  <target name="init" unless="init.done">
+    <condition property="no.alternate.build">
+      <isset property="maven.profile.vcs" />
+    </condition>
 
-  <target name="build">
-    <echo>Building Tomcat distribution...</echo>
-    <property name="tomcat" value="${stagedir}/nuxeo-dam-tomcat" />
-    <property name="nxserver" value="${tomcat}/nxserver" />
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <property name="finaltarget" value="../target" />
+    <antcall target="cleanoutput" />
 
-    <unzip dest="${stagedir}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
-                            classifier="nuxeo-dm" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+
+  </target>
+
+  <target name="expand">
+    <artifact:expand depth="3" />
+    <!--<artifact:print output="dependency-tree.log" />-->
+  </target>
+
+  <target name="build" depends="init">
+    <echo>Building DAM EAR</echo>
+    <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
+    <mkdir dir="${nuxeo.ear}" />
+
+    <antcall target="build-standard" />
+    <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+    <copy todir="${finaltarget}/nuxeo.ear">
+      <fileset dir="${nuxeo.ear}" />
+    </copy>
+
+    <antcall target="cleanstage" />
+  </target>
+
+  <target name="build-standard" description="Build default distribution"
+    depends="init">
+
+    <unzip dest="${nuxeo.ear}">
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
-    <nx:rename from="${stagedir}/nuxeo-dm*" to="${tomcat}" />
 
-    <chmod dir="${tomcat}/bin" perm="750" includes="*.sh" />
-
-    <copy todir="${nxserver}/bundles" overwrite="true">
+    <copy todir="${nuxeo.ear}" overwrite="true">
+      <artifact:file artifactId="nuxeo-dam-webapp" />
+      <artifact:file artifactId="nuxeo-dam-webapp-core" />
+    </copy>
+    <copy todir="${nuxeo.ear}/system" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="org.nuxeo.dam*" />
@@ -36,14 +64,19 @@
           <artifact artifactId="nuxeo-platform-categorization-coverage" />
           <artifact artifactId="nuxeo-platform-categorization-subjects" />
         </includes>
+        <excludes>
+          <artifact artifactId="nuxeo-dam-webapp" />
+          <artifact artifactId="nuxeo-dam-webapp-core" />
+        </excludes>
       </artifact:set>
     </copy>
 
     <delete>
-      <fileset dir="${nxserver}/bundles">
-        <exclude name="nuxeo-platform-webapp-base*" />
-        <exclude name="nuxeo-platform-webapp-types*" />
+      <fileset dir="${nuxeo.ear}">
         <include name="nuxeo-platform-webapp*" />
+      </fileset>
+
+      <fileset dir="${nuxeo.ear}/system">
         <include name="nuxeo-platform-virtualnavigation-web*" />
         <include name="nuxeo-platform-forum*" />
         <include name="nuxeo-platform-syndication*" />
@@ -69,7 +102,7 @@
         <include name="nuxeo-webengine-ui*" />
       </fileset>
 
-      <fileset dir="${nxserver}/lib">
+      <fileset dir="${nuxeo.ear}/lib">
         <include name="shindig*" />
         <include name="oauth*" />
         <include name="caja*" />
@@ -78,50 +111,27 @@
 
     <antcall target="third-party-libraries" />
 
-    <antcall target="copy-resources"/>
-
-    <antcall target="delete-resources"/>
-
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${stagedir}"
-         includes="nuxeo-dam-tomcat/**"/>
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     type="zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+       basedir="${nuxeo.ear}" />
 
-    <antcall target="clean" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+       target="${maven.project.groupId}:${maven.project.artifactId}"
+       type="zip" />
 
   </target>
 
   <target name="third-party-libraries">
-    <copy todir="${nxserver}/lib" overwrite="true">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
     </copy>
   </target>
 
-  <target name="copy-resources">
-    <concat destfile="${tomcat}/templates/default/nxserver/config/nuxeo.properties" append="true">
-      <filelist dir="src/main/resources/config" files="nuxeo.properties"/>
-    </concat>
-    <concat destfile="${tomcat}/bin/nuxeo.conf" append="true">
-      <filelist dir="src/main/resources/config" files="nuxeo.conf"/>
-    </concat>
-  </target>
-
-  <target name="delete-resources">
-    <delete file="${nxserver}/config/nxrelations-default-jena-bundle.xml" />
-    <delete file="${nxserver}/config/nxmail-scheduler-config.xml" />
-    <delete file="${nxserver}/config/default-opensocial-config.xml" />
-
-    <delete file="${tomcat}/templates/default/nxserver/config/opensocial.properties" />
-  </target>
-
-  <target name="clean">
+  <target name="cleanstage">
     <delete dir="${stagedir}" />
   </target>
 
-  <target name="cleanall">
-    <delete dir="${outdir}" />
+  <target name="cleanoutput">
+    <delete dir="${finaltarget}" />
   </target>
 
 </project>

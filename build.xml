@@ -10,9 +10,6 @@
   <property name="jboss.config" value="default" />
   <property name="mvn.opts" value="" />
 
-  <property name="jetty.dir" value="/opt/jetty" />
-  <property name="jetty.deploy.dir" value="${jetty.dir}/bundles" />
-
   <property name="tomcat.dir" value="/opt/tomcat" />
   <property name="tomcat.deploy.dir" value="${tomcat.dir}/nxserver/bundles" />
 
@@ -67,10 +64,6 @@
 
   <target name="deploy" depends="install-ear,package,copy,copy-lib" description="Build and copy to JBoss">
     <echo message="Deployed ${ant.project.name} to ${deploy.dir}" />
-  </target>
-
-  <target name="deploy-jetty" depends="install-ear,copy-jars-jetty" description="Build and copy to Jetty">
-    <echo message="Deployed ${ant.project.name} to ${jetty.deploy.dir}" />
   </target>
 
   <target name="deploy-tomcat" depends="install-ear,copy-jars-tomcat" description="Build and copy to Tomcat">
@@ -172,12 +165,6 @@
     </copy>
   </target>
 
-  <target name="web-jetty" description="Copy web files to a live Jetty">
-    <copy todir="${jetty.dir}/nuxeo.war">
-      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
-    </copy>
-  </target>
-
   <target name="web-tomcat" description="Copy web files to a live Tomcat">
     <copy todir="${tomcat.dir}/nxserver/nuxeo.war">
       <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
@@ -216,16 +203,6 @@
       <fileset dir="${basedir}">
         <include name="*/target/*.jar" />
         <exclude name="*/target/*-sources.jar" />
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="copy-jars-jetty">
-    <copy todir="${jetty.deploy.dir}" overwrite="true" flatten="true">
-      <fileset dir="${basedir}">
-        <include name="*/target/*.jar" />
-        <exclude name="*/target/*-sources.jar" />
-        <exclude name="*/target/*test*.jar" />
       </fileset>
     </copy>
   </target>

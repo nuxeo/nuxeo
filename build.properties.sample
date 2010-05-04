@@ -1,10 +1,8 @@
 # Example for Windows
 jboss.dir=C:/Program Files/JBoss
-jetty.dir=C:/Program Files/Jetty
 tomcat.dir=C:/Program Files/Tomcat
 # Example for Unix
 #jboss.dir=/opt/jboss
-jetty.dir=/opt/jetty
 #tomcat.dir=/opt/tomcat
 
 # Which JBoss server config to use
@@ -13,6 +11,3 @@ jboss.config=default
 # additional command line parameters for mvn commands
 # e.g. to work offline:
 #mvn.opts=-o
-
-# additional config to set the ear profile
-#assembly.name=dam-dev

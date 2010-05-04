@@ -29,8 +29,6 @@
 
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
-    <nuxeo.chemistry.version>1.6.1-20100121</nuxeo.chemistry.version>
-    <apache.chemistry.version>0.5-20100121</apache.chemistry.version>
   </properties>
 
   <dependencyManagement>

@@ -11,32 +11,15 @@
   </parent>
 
   <artifactId>nuxeo-dam-ear</artifactId>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>Nuxeo DAM EAR</name>
   <description>Nuxeo DAM EAR</description>
 
   <properties>
-    <dam.ear.assembly>dam-dev</dam.ear.assembly>
+    <nuxeo.distribution.version>5.3.2-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
-  <profiles>
-    <profile>
-      <id>dev</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <dam.ear.assembly>dam-dev</dam.ear.assembly>
-      </properties>
-    </profile>
-  </profiles>
-
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ear</artifactId>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-core</artifactId>
@@ -61,70 +44,7 @@
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-lang</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-facade</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-preview</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-jsf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-convert</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-preview</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-core-contrib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-facade</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-repository-plugin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-video-convert</artifactId>
@@ -143,10 +63,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-default-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-categorization-service</artifactId>
     </dependency>
     <dependency>
@@ -161,73 +77,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-categorization-subjects</artifactId>
     </dependency>
+
     <dependency>
       <groupId>de.schlichtherle.io</groupId>
       <artifactId>truezip</artifactId>
-    </dependency>
-
-    <!-- CMIS dependencies -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-chemistry-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-chemistry-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-chemistry-ws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-atompub</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-atompub-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry</groupId>
-      <artifactId>chemistry-ws</artifactId>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-i18n</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-parser</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ws.commons.axiom</groupId>
-      <artifactId>axiom-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ws.commons.axiom</groupId>
-      <artifactId>axiom-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
     </dependency>
 
   </dependencies>
@@ -235,36 +88,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>true</extensions>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory,zip</format>
-          <outputDirectory>target</outputDirectory>
-          <targetFile>${dam.ear.assembly}</targetFile>
-          <descriptor>${basedir}/src/main/assemble/${dam.ear.assembly}.xml</descriptor>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
         </configuration>
-        <executions>
-          <execution>
-            <id>assemble-ear</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${build.directory}/${dam.ear.assembly}.zip</file>
-              <type>zip</type>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <!-- build server/default/lib nuxeo modules -->
       <plugin>

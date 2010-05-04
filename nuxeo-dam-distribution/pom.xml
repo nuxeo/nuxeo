@@ -33,20 +33,11 @@
       </modules>
     </profile>
     <profile>
-      <id>jetty</id>
-      <modules>
-        <module>nuxeo-dam-ear</module>
-        <module>nuxeo-dam-distribution-jetty</module>
-      </modules>
-    </profile>
-    <profile>
       <id>tomcat</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-dam-ear</module>
-        <module>nuxeo-dam-distribution-jetty</module>
         <module>nuxeo-dam-distribution-tomcat</module>
       </modules>
     </profile>
@@ -56,7 +47,6 @@
       <modules>
         <module>nuxeo-dam-ear</module>
         <module>nuxeo-dam-distribution-jboss</module>
-        <module>nuxeo-dam-distribution-jetty</module>
         <module>nuxeo-dam-distribution-tomcat</module>
       </modules>
     </profile>
