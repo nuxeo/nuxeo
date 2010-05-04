@@ -56,9 +56,9 @@
 
   <target name="start-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
+      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/jbossctl" />
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl">
+      executable="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl">
       <arg value="start" />
     </exec>
     <waitfor>
@@ -68,18 +68,18 @@
 
   <target name="stop-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
+      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl" />
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl">
+      executable="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl">
       <arg value="stop" />
     </exec>
   </target>
 
   <target name="start-tomcat">
     <chmod perm="+x"
-      dir="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin" includes="**/*.sh"/>
+      dir="${basedir}/nuxeo-dam-distribution/target/tomcat/bin" includes="**/*.sh"/>
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin/startup.sh">
+      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/startup.sh">
     </exec>
     <waitfor>
       <http url="http://localhost:8080/nuxeo/login.jsp" />
@@ -88,12 +88,12 @@
 
   <target name="stop-tomcat">
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-tomcat/bin/shutdown.sh">
+      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/shutdown.sh">
     </exec>
   </target>
 
   <target name="run-selenium">
-    <exec executable=".${basedir}/nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh" />
+    <exec executable=".${basedir}/nuxeo-dam-distribution/ftest/selenium/run.sh" />
   </target>
 
 </project>

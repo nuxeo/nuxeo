@@ -4,11 +4,11 @@
 ant -f ft-build.xml make-tomcat-distribution -Dmvn.profiles=$MAVEN_PROFILES || exit 1
 
 # Start Tomcat
-(cd nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target && unzip nuxeo-dam-distribution-tomcat-*.zip && rm *.zip) || exit 1
+(cd nuxeo-dam-distribution/target && unzip nuxeo-dam-distribution-*-tomcat.zip && mv nuxeo-dam-distribution-*-tomcat tomcat) || exit 1
 ant -f ft-build.xml start-tomcat || exit 1
 
 # Run selenium tests
-HIDE_FF=true ./nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh
+HIDE_FF=true ./nuxeo-dam-distribution/ftest/selenium/run.sh
 ret1=$?
 
 # Stop Tomcat
