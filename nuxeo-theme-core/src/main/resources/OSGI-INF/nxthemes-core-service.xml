@@ -125,6 +125,7 @@
 
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceType"/>
+    <object class="org.nuxeo.theme.resources.ResourceBank"/>    
   </extension-point>
 
   <extension-point name="views">

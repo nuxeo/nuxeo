@@ -41,6 +41,14 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.sourceforge.cssparser</groupId>
+      <artifactId>cssparser</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.w3c</groupId>
+      <artifactId>sac</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>

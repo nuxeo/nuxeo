@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
@@ -57,6 +58,7 @@ import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.w3c.dom.Document;
@@ -312,7 +314,7 @@ public class ThemeParser {
             final String category = attrs.getNamedItem("category").getNodeValue();
             final String value = PresetManager.resolvePresets(themeName,
                     n.getTextContent());
-            final String group = theme.getName(); // use the theme's name as
+            final String group = themeName; // use the theme's name as
             // group name
             PresetType preset = new CustomPresetType(name, value, group,
                     category);
@@ -370,7 +372,7 @@ public class ThemeParser {
                 if (nameAttr != null) {
                     styleName = nameAttr.getNodeValue();
                     style.setName(styleName);
-                    themeManager.setNamedObject(theme.getName(), "style", style);
+                    themeManager.setNamedObject(themeName, "style", style);
                 }
 
                 if (inheritedAttr != null) {
@@ -378,8 +380,28 @@ public class ThemeParser {
                     Style inheritedStyle = (Style) themeManager.getNamedObject(
                             themeName, "style", inheritedName);
                     if (inheritedStyle == null) {
-                        log.error("Unknown style: " + inheritedName);
-                    } else {
+                        // Try to retrieve the style from the resource banks
+                        String cssSource = null;
+                        for (ResourceBank resourceBank : themeManager.getResourceBanks()) {
+                            cssSource = resourceBank.getResourceContent(
+                                    "style", inheritedName);
+                        }
+                        if (cssSource == null) {
+                            log.error("Unknown style: " + inheritedName);
+                        } else {
+                            try {
+                                inheritedStyle = (Style) FormatFactory.create("style");
+                                inheritedStyle.setName(inheritedName);
+                                themeManager.registerFormat(inheritedStyle);
+                                themeManager.setNamedObject(theme.getName(), "style", inheritedStyle);
+                            } catch (ThemeException e) {
+                                throw new ThemeIOException(e);
+                            }
+                            Utils.loadCss(inheritedStyle, cssSource, "*");
+                        }
+                    }
+                    
+                    if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
                         log.debug("Made style " + style + " inherit from "
                                 + inheritedName);

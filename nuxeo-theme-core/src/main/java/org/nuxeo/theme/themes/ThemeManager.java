@@ -76,6 +76,7 @@ import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
@@ -403,9 +404,9 @@ public final class ThemeManager implements Registrable {
     }
 
     public void fillScratchPage(final String themeName, final Element element)
-    throws NodeException, ThemeException {
+            throws NodeException, ThemeException {
         String pagePath = String.format("%s/~", themeName);
-        
+
         PageElement scratchPage = getPageByPath(pagePath);
         if (scratchPage != null) {
             destroyDescendants(scratchPage);
@@ -413,18 +414,18 @@ public final class ThemeManager implements Registrable {
             pages.remove(pagePath);
             removeOrphanedFormats();
         }
-        
+
         // create a new scratch page
         scratchPage = (PageElement) ElementFactory.create("page");
         Widget pageWidget = (Widget) FormatFactory.create("widget");
         pageWidget.setName("page frame");
         registerFormat(pageWidget);
         ElementFormatter.setFormat(scratchPage, pageWidget);
-                
+
         UidManager uidManager = Manager.getUidManager();
         uidManager.register(scratchPage);
         pages.put(pagePath, scratchPage);
-      
+
         scratchPage.addChild(element);
     }
 
@@ -1293,6 +1294,28 @@ public final class ThemeManager implements Registrable {
         return viewTypes;
     }
 
+    // Resource banks
+    public ResourceBank getResourceBank(String name) {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(
+                TypeFamily.RESOURCE_BANK, name);
+        if (resourceBank != null) {
+            return resourceBank;
+        } else {
+            log.warn("Resource bank not found: " + name);
+        }
+        return null;
+    }
+    
+    public List<ResourceBank> getResourceBanks() {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        List<ResourceBank> resourceBanks = new ArrayList<ResourceBank>();
+        for (Type type : typeRegistry.getTypes(TypeFamily.RESOURCE_BANK)) {
+            resourceBanks.add((ResourceBank) type);
+        }
+        return resourceBanks;
+    }
+    
     public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();

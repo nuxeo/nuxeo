@@ -41,6 +41,8 @@ import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -551,11 +553,16 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     private void registerResourceExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
         for (Object contrib : contribs) {
-            ResourceType resourceType = (ResourceType) contrib;
-            typeRegistry.register(resourceType);
+            if (contrib instanceof ResourceType) {
+                ResourceType resourceType = (ResourceType) contrib;
+                typeRegistry.register(resourceType);
+            } else if (contrib instanceof ResourceBank) {
+                ResourceBank resourceBank = (ResourceBank) contrib;
+                typeRegistry.register(resourceBank);
+            }
         }
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
         themeManager.updateResourceOrdering();
     }
 

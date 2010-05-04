@@ -68,8 +68,6 @@ public final class Utils {
     private static final Pattern classAttrPattern = Pattern.compile(
             " class=\"(.*?)\"", Pattern.DOTALL);
 
-    private static final Pattern emptyCssSelectorPattern = Pattern.compile(
-            "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
 
     private static final Pattern hexColorPattern = Pattern.compile(
             ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
@@ -85,7 +83,7 @@ public final class Utils {
     public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$",
             Pattern.DOTALL);
 
-    private static final String EMPTY_CSS_SELECTOR = "EMPTY";
+
 
     private static final String CLASS_ATTR_PREFIX = "nxStyle";
 
@@ -324,65 +322,6 @@ public final class Utils {
             }
         }
         return sb.toString();
-    }
-
-    public static void loadCss(final Style style, String cssSource,
-            final String viewName) {
-        // pre-processing: replace empty selectors (which are invalid selectors)
-        // with a marker selector
-
-        final Matcher matcher = emptyCssSelectorPattern.matcher(cssSource);
-        final StringBuilder buf = new StringBuilder();
-        while (matcher.find()) {
-            if (matcher.group(1).trim().equals("")) {
-                buf.append(EMPTY_CSS_SELECTOR);
-            }
-            buf.append(matcher.group(0));
-        }
-        cssSource = buf.toString();
-
-        final CSSOMParser parser = new CSSOMParser();
-        final InputSource is = new InputSource(new StringReader(cssSource));
-        CSSStyleSheet css = null;
-        try {
-            css = parser.parseStyleSheet(is, null, null);
-        } catch (NumberFormatException e) {
-            log.error("Error while converting CSS value: \n" + cssSource);
-        } catch (CSSException e) {
-            log.error("Invalid CSS: \n" + cssSource);
-        } catch (IOException e) {
-            log.error("Could not parse CSS: \n" + cssSource);
-        }
-
-        if (css == null) {
-            return;
-        }
-
-        // remove existing properties
-        style.clearPropertiesFor(viewName);
-
-        final CSSRuleList rules = css.getCssRules();
-        for (int i = 0; i < rules.getLength(); i++) {
-            final CSSRule rule = rules.item(i);
-            if (rule.getType() == CSSRule.STYLE_RULE) {
-                final CSSStyleRule sr = (CSSStyleRule) rule;
-                final CSSStyleDeclaration s = sr.getStyle();
-                final Properties properties = new Properties();
-                for (int j = 0; j < s.getLength(); j++) {
-                    final String propertyName = s.item(j);
-                    final CSSValue value = s.getPropertyCSSValue(propertyName);
-                    properties.setProperty(propertyName, value.toString());
-                }
-                if (s.getLength() == 0) {
-                    properties.setProperty("", "");
-                }
-                String selector = sr.getSelectorText();
-                if (selector.equals(EMPTY_CSS_SELECTOR)) {
-                    selector = "";
-                }
-                style.setPropertiesFor(viewName, selector, properties);
-            }
-        }
     }
 
     public static List<String> extractCssColors(String value) {
