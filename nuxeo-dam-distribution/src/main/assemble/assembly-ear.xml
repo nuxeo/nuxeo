@@ -1,0 +1,125 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <condition property="no.build">
+      <and>
+        <isset property="maven.profile.tomcat" />
+        <not>
+          <or>
+            <isset property="maven.profile.ear" />
+            <isset property="maven.profile.jboss" />
+            <isset property="maven.profile.all-distributions" />
+          </or>
+        </not>
+      </and>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+    <!-- <artifact:expand depth="3" /> -->
+    <!--<artifact:print output="dependency-tree.log" />-->
+  </target>
+
+  <target name="build" depends="init,cleanstage" unless="no.build">
+    <echo>Building DAM EAR</echo>
+    <property name="nuxeo.ear" value="${stagedir}/nuxeo.ear" />
+    <mkdir dir="${nuxeo.ear}" />
+
+    <unzip dest="${nuxeo.ear}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+      <patternset>
+        <exclude name="**/nuxeo-platform-webapp*" />
+
+        <exclude name="**/system/nuxeo-platform-virtualnavigation-web*" />
+        <exclude name="**/system/nuxeo-platform-forum*" />
+        <exclude name="**/system/nuxeo-platform-syndication*" />
+        <exclude name="**/system/nuxeo-platform-publish*" />
+        <exclude name="**/system/nuxeo-platform-comment-web*" />
+        <exclude name="**/system/nuxeo-platform-workflow*" />
+        <exclude name="**/system/nuxeo-platform-imaging-dm*" />
+        <exclude name="**/system/nuxeo-platform-directory-web*" />
+        <exclude name="**/system/nuxeo-platform-lang*" />
+        <exclude name="**/system/nuxeo-platform-tag*" />
+        <exclude name="**/system/nuxeo-platform-mail*" />
+        <exclude name="**/system/nuxeo-platform-ear*" />
+        <exclude name="**/system/nuxeo-platform-wss*" />
+        <exclude name="**/system/nuxeo-platform-spaces*" />
+        <exclude name="**/system/nuxeo-platform-virtualnavigation*" />
+
+        <exclude name="**/system/nuxeo-opensocial*" />
+
+        <exclude name="**/system/nuxeo-webengine-gadgets*" />
+        <exclude name="**/system/nuxeo-webengine-admin*" />
+        <exclude name="**/system/nuxeo-webengine-blogs*" />
+        <exclude name="**/system/nuxeo-webengine-sites*" />
+        <exclude name="**/system/nuxeo-webengine-ui*" />
+
+        <exclude name="**/lib/shindig*" />
+        <exclude name="**/lib/oauth*" />
+        <exclude name="**/lib/caja*" />
+
+        <exclude name="**/templates/common/config/nxmail-scheduler-config.xml" />
+        <exclude name="**/templates/common/config/default-opensocial-config.xml" />
+        <exclude name="**/templates/common/config/opensocial.properties" />
+      </patternset>
+    </unzip>
+
+    <copy todir="${nuxeo.ear}" overwrite="true">
+      <artifact:file artifactId="nuxeo-dam-webapp" />
+      <artifact:file artifactId="nuxeo-dam-webapp-core" />
+    </copy>
+    <copy todir="${nuxeo.ear}/system" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo.dam*" />
+          <artifact artifactId="nuxeo-platform-video-*" />
+          <artifact artifactId="nuxeo-platform-audio-core" />
+          <artifact artifactId="nuxeo-platform-categorization-*" />
+        </includes>
+        <excludes>
+          <artifact artifactId="nuxeo-dam-webapp" />
+          <artifact artifactId="nuxeo-dam-webapp-core" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <antcall target="third-party-libraries" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-ear.zip"
+         basedir="${nuxeo.ear}" />
+
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-ear.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="ear"
+                     type="zip" />
+
+    <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
+    <copy todir="${outdir}/nuxeo.ear">
+      <fileset dir="${nuxeo.ear}" />
+    </copy>
+  </target>
+
+  <target name="third-party-libraries">
+    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+      <artifact:resolveFile key="de.schlichtherle.io:truezip" />
+    </copy>
+  </target>
+
+  <target name="cleanstage">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>

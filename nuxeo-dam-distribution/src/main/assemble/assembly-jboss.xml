@@ -1,0 +1,83 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <condition property="no.build">
+      <and>
+        <or>
+          <isset property="maven.profile.tomcat" />
+          <isset property="maven.profile.ear" />
+        </or>
+        <not>
+          <or>
+            <isset property="maven.profile.jboss" />
+            <isset property="maven.profile.all-distributions" />
+          </or>
+        </not>
+      </and>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <property name="jboss" value="nuxeo-dam-${maven.project.version}-jboss" />
+    <property name="jbossdir" value="${stagedir}/${jboss}" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:expand depth="3" />
+  </target>
+
+  <target name="build" depends="init,cleanstage" unless="no.build">
+    <echo>Building JBoss distribution...</echo>
+
+    <unzip dest="${stagedir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.distribution.version}:zip"
+                            classifier="nuxeo-dm" />
+      <patternset>
+        <exclude name="**/templates/common/config/nxrelations-default-jena-bundle.xml" />
+        <exclude name="**/templates/common/config/nxmail-scheduler-config.xml" />
+        <exclude name="**/templates/common/config/default-opensocial-config.xml" />
+        <exclude name="**/templates/common/config/opensocial.properties" />
+      </patternset>
+    </unzip>
+    <nx:rename from="${stagedir}/nuxeo-dm*" to="${jbossdir}" />
+    <delete dir="${jbossdir}/server/default/deploy/nuxeo.ear" />
+    <unzip dest="${jbossdir}/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-ear:${maven.project.version}:zip" />
+    </unzip>
+    <chmod dir="${jbossdir}/bin" perm="750" includes="*.sh,*ctl" />
+
+    <antcall target="copy-resources" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-jboss.zip"
+         basedir="${stagedir}"
+         includes="${jboss}/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-jboss.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="jboss"
+                     type="zip" />
+  </target>
+
+  <target name="copy-resources">
+    <concat destfile="${jbossdir}/templates/common/config/nuxeo.properties"
+            append="true">
+      <filelist dir="src/main/resources-jboss/config"
+                files="nuxeo.properties" />
+    </concat>
+    <concat destfile="${jbossdir}/bin/nuxeo.conf" append="true">
+      <filelist dir="src/main/resources-jboss/config" files="nuxeo.conf" />
+    </concat>
+  </target>
+
+  <target name="cleanstage">
+    <delete dir="${stagedir}" />
+  </target>
+
+</project>
