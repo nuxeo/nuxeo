@@ -240,7 +240,7 @@ public final class ComponentUtils {
             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
         } else {
             log.debug("Setting \"Cache-Control: private\" and \"Pragma: no-cache\"");            
-            response.setHeader("Cache-Control", "private");
+            response.setHeader("Cache-Control", "private, must-revalidate");
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
             
