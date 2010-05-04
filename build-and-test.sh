@@ -4,7 +4,7 @@
 ant -f ft-build.xml make-distribution -Dmvn.profiles=$MAVEN_PROFILES || exit 1
 
 # Start JBoss
-(cd nuxeo-dam-distribution/target && unzip nuxeo-dam-distribution-*-jboss.zip && mv nuxeo-dam-distribution-*-jboss jboss) || exit 1
+(cd nuxeo-dam-distribution/target && unzip nuxeo-dam-distribution-*-jboss.zip && mv nuxeo-dam-*-jboss jboss) || exit 1
 chmod +x nuxeo-dam-distribution/target/jboss/bin/nuxeoctl || exit 1
 nuxeo-dam-distribution/target/jboss/bin/nuxeoctl start || exit 1
 
