@@ -87,14 +87,15 @@ public class NXAuditEventsService extends DefaultComponent implements
     private static final String EVENT_EXT_POINT = "event";
 
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
-    
+
     private static final String ADAPTER_POINT = "adapter";
 
     protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
     protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
-    
-    // the adapters that will injected in the EL context for extended information
+
+    // the adapters that will injected in the EL context for extended
+    // information
     protected final Set<AdapterDescriptor> documentAdapters = new HashSet<AdapterDescriptor>();
 
     protected final Set<String> eventNames = new HashSet<String>();
@@ -134,8 +135,8 @@ public class NXAuditEventsService extends DefaultComponent implements
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
             doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if ( extensionPoint.equals(ADAPTER_POINT)){
-        	doRegisterAdapter((AdapterDescriptor)contribution);
+        } else if (extensionPoint.equals(ADAPTER_POINT)) {
+            doRegisterAdapter((AdapterDescriptor) contribution);
         }
     }
 
@@ -162,14 +163,13 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         extendedInfoDescriptors.add(desc);
     }
-    
-    protected void doRegisterAdapter(AdapterDescriptor  desc) {
+
+    protected void doRegisterAdapter(AdapterDescriptor desc) {
         if (log.isDebugEnabled()) {
             log.debug("Registered adapter : " + desc.getName());
         }
         documentAdapters.add(desc);
     }
-    
 
     @Override
     public void unregisterContribution(Object contribution,
@@ -179,8 +179,8 @@ public class NXAuditEventsService extends DefaultComponent implements
             doUnregisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
             doUnregisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if ( extensionPoint.equals(ADAPTER_POINT)){
-        	doUnregisterAdapter((AdapterDescriptor)contribution);
+        } else if (extensionPoint.equals(ADAPTER_POINT)) {
+            doUnregisterAdapter((AdapterDescriptor) contribution);
         }
     }
 
@@ -197,7 +197,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             log.debug("Unregistered extended info: " + desc.getKey());
         }
     }
-    
+
     protected void doUnregisterAdapter(AdapterDescriptor desc) {
         documentAdapters.remove(desc.getName());
         if (log.isDebugEnabled()) {
@@ -208,18 +208,19 @@ public class NXAuditEventsService extends DefaultComponent implements
     public Set<String> getAuditableEventNames() {
         return eventNames;
     }
-    
+
     // useful ? beside tests ?
-    public AdapterDescriptor[] getRegisteredAdapters(){
-    	return documentAdapters.toArray(new AdapterDescriptor[documentAdapters.size()]);
+    public AdapterDescriptor[] getRegisteredAdapters() {
+        return documentAdapters.toArray(new AdapterDescriptor[documentAdapters.size()]);
     }
 
     protected void doPutExtendedInfos(LogEntry entry,
             EventContext eventContext, DocumentModel source, Principal principal) {
-        if ( source instanceof DeletedDocumentModel) { // nothing to log ; it's a light doc
+        if (source instanceof DeletedDocumentModel) { // nothing to log ; it's
+                                                        // a light doc
             return;
         }
-        
+
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
             expressionEvaluator.bindValue(context, "message", eventContext);
@@ -227,23 +228,25 @@ public class NXAuditEventsService extends DefaultComponent implements
         if (source != null) {
             expressionEvaluator.bindValue(context, "source", source);
             // inject now the adapters
-            for ( AdapterDescriptor ad : documentAdapters ){
-            	Object adapter = null;
-            	try {
-            	    adapter = source.getAdapter(ad.getKlass());
-            	} catch (Exception e) {
-            	    log.debug(String.format("can't get adapter for %s to log extinfo: %s", source.getPathAsString(), e.getMessage()));
+            for (AdapterDescriptor ad : documentAdapters) {
+                Object adapter = null;
+                try {
+                    adapter = source.getAdapter(ad.getKlass());
+                } catch (Exception e) {
+                    log.debug(String.format(
+                            "can't get adapter for %s to log extinfo: %s",
+                            source.getPathAsString(), e.getMessage()));
                 }
-				if ( adapter != null ){
-            		expressionEvaluator.bindValue(context, ad.getName(), adapter);
-            	}
+                if (adapter != null) {
+                    expressionEvaluator.bindValue(context, ad.getName(),
+                            adapter);
+                }
             }
         }
         if (principal != null) {
             expressionEvaluator.bindValue(context, "principal", principal);
         }
-        
-        
+
         Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
         for (ExtendedInfoDescriptor descriptor : extendedInfoDescriptors) {
             Serializable value = expressionEvaluator.evaluateExpression(
