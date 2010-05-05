@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -216,8 +217,8 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doPutExtendedInfos(LogEntry entry,
             EventContext eventContext, DocumentModel source, Principal principal) {
-        if (source instanceof DeletedDocumentModel) { // nothing to log ; it's
-                                                        // a light doc
+        if (source instanceof DeletedDocumentModel) {
+            // nothing to log ; it's a light doc
             return;
         }
 
@@ -717,7 +718,12 @@ public class NXAuditEventsService extends DefaultComponent implements
             log.warn("received event " + eventName + " with null document");
         }
         if (principal != null) {
-            entry.setPrincipalName(principal.getName());
+            String originatingUser = null;
+            if (principal instanceof NuxeoPrincipal) {
+                originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
+            }
+            entry.setPrincipalName(originatingUser == null ? principal.getName()
+                    : originatingUser);
         } else {
             log.warn("received event " + eventName + " with null principal");
         }
@@ -754,7 +760,12 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
         if (principal != null) {
-            entry.setPrincipalName(principal.getName());
+            String originatingUser = null;
+            if (principal instanceof NuxeoPrincipal) {
+                originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
+            }
+            entry.setPrincipalName(originatingUser == null ? principal.getName()
+                    : originatingUser);
         }
         entry.setComment((String) properties.get("comment"));
 
