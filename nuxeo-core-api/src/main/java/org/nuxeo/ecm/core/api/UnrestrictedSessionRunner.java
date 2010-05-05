@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.security.Principal;
+
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -35,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class UnrestrictedSessionRunner {
 
+    protected String originatingUsername;
+
     protected CoreSession session;
 
     protected final boolean sessionIsAlreadyUnrestricted;
@@ -47,6 +51,8 @@ public abstract class UnrestrictedSessionRunner {
     /**
      * Constructs a {@link UnrestrictedSessionRunner} given an existing session
      * (which may or may not be already unrestricted).
+     * <p>
+     * Originating user is taken on given session.
      *
      * @param session the available session
      */
@@ -57,6 +63,10 @@ public abstract class UnrestrictedSessionRunner {
             repositoryName = null;
         } else {
             repositoryName = session.getRepositoryName();
+        }
+        Principal pal = session.getPrincipal();
+        if (pal != null) {
+            originatingUsername = pal.getName();
         }
     }
 
@@ -71,10 +81,31 @@ public abstract class UnrestrictedSessionRunner {
         this.repositoryName = repositoryName;
     }
 
+    /**
+     * Constructs a {@link UnrestrictedSessionRunner} given a repository name
+     * and an originating user name.
+     *
+     * @param repositoryName the repository name
+     * @param originatingUser the user name behind the system user
+     */
+    public UnrestrictedSessionRunner(String repositoryName,
+            String originatingUser) {
+        session = null;
+        sessionIsAlreadyUnrestricted = false;
+        this.repositoryName = repositoryName;
+    }
+
+    public String getOriginatingUsername() {
+        return originatingUsername;
+    }
+
+    public void setOriginatingUsername(String originatingUsername) {
+        this.originatingUsername = originatingUsername;
+    }
+
     protected boolean isUnrestricted(CoreSession session) {
         return SecurityConstants.SYSTEM_USERNAME.equals(session.getPrincipal().getName())
-                || (session.getPrincipal() instanceof NuxeoPrincipal
-                        && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+                || (session.getPrincipal() instanceof NuxeoPrincipal && ((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
     }
 
     /**
@@ -93,7 +124,7 @@ public abstract class UnrestrictedSessionRunner {
 
             LoginContext loginContext;
             try {
-                loginContext = Framework.login();
+                loginContext = Framework.loginAs(originatingUsername);
             } catch (LoginException e) {
                 throw new ClientException(e);
             }
@@ -117,7 +148,7 @@ public abstract class UnrestrictedSessionRunner {
                     run();
                 } finally {
                     try {
-                        repository.close(session);
+                        Repository.close(session);
                     } catch (Exception e) {
                         throw new ClientException(e);
                     } finally {
