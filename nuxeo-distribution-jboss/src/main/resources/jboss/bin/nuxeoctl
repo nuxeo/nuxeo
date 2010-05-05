@@ -1,0 +1,12 @@
+#!/bin/sh
+#####
+#
+# Nuxeo forward compliance startup script
+#
+#####
+
+DIRNAME=`dirname "$0"`
+
+echo WARNING: nuxeoctl works only with Nuxeo 5.3+, please use jbossctl instead or upgrade Nuxeo
+
+"$DIRNAME"/jbossctl $*
