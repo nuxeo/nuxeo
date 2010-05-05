@@ -393,14 +393,17 @@ public class ThemeParser {
                                 inheritedStyle = (Style) FormatFactory.create("style");
                                 inheritedStyle.setName(inheritedName);
                                 themeManager.registerFormat(inheritedStyle);
-                                themeManager.setNamedObject(theme.getName(), "style", inheritedStyle);
+                                themeManager.setNamedObject(themeName, "style",
+                                        inheritedStyle);
                             } catch (ThemeException e) {
                                 throw new ThemeIOException(e);
                             }
                             Utils.loadCss(inheritedStyle, cssSource, "*");
+                            // load presets from bank
+                            PresetManager.loadPresetsUsedInCss(cssSource);
                         }
                     }
-                    
+
                     if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
                         log.debug("Made style " + style + " inherit from "
@@ -415,57 +418,62 @@ public class ThemeParser {
                     continue;
                 }
 
-                for (Node selectorNode : getChildElementsByTagName(n,
-                        "selector")) {
-                    NamedNodeMap attrs = selectorNode.getAttributes();
-                    Node pathAttr = attrs.getNamedItem("path");
-                    if (pathAttr == null) {
-                        log.warn(String.format(
-                                "Style parser: named style '%s' has a selector with no path: ignored",
-                                styleName));
-                        continue;
-                    }
-                    String path = pathAttr.getNodeValue();
+                List<Node> selectorNodes = getChildElementsByTagName(n,
+                        "selector");
 
-                    String viewName = null;
-                    Node viewAttr = attrs.getNamedItem("view");
-                    if (viewAttr != null) {
-                        viewName = viewAttr.getNodeValue();
-                    }
+                if (!selectorNodes.isEmpty()) {
+                    for (Node selectorNode : selectorNodes) {
+                        NamedNodeMap attrs = selectorNode.getAttributes();
+                        Node pathAttr = attrs.getNamedItem("path");
+                        if (pathAttr == null) {
+                            log.warn(String.format(
+                                    "Style parser: named style '%s' has a selector with no path: ignored",
+                                    styleName));
+                            continue;
+                        }
+                        String path = pathAttr.getNodeValue();
 
-                    String selectorDescription = getCommentAssociatedTo(selectorNode);
-                    if (selectorDescription != null) {
-                        style.setSelectorDescription(path, viewName,
-                                selectorDescription);
-                    }
+                        String viewName = null;
+                        Node viewAttr = attrs.getNamedItem("view");
+                        if (viewAttr != null) {
+                            viewName = viewAttr.getNodeValue();
+                        }
 
-                    if (elementXPath != null
-                            && (viewName == null || viewName.equals("*"))) {
-                        log.info("Style parser: trying to guess the view name for: "
-                                + elementXPath);
-                        viewName = guessViewNameFor(doc, elementXPath);
-                        if (viewName == null) {
-                            if (!newStyles.containsKey(style)) {
-                                newStyles.put(style,
-                                        new LinkedHashMap<String, Properties>());
+                        String selectorDescription = getCommentAssociatedTo(selectorNode);
+                        if (selectorDescription != null) {
+                            style.setSelectorDescription(path, viewName,
+                                    selectorDescription);
+                        }
+
+                        if (elementXPath != null
+                                && (viewName == null || viewName.equals("*"))) {
+                            log.info("Style parser: trying to guess the view name for: "
+                                    + elementXPath);
+                            viewName = guessViewNameFor(doc, elementXPath);
+                            if (viewName == null) {
+                                if (!newStyles.containsKey(style)) {
+                                    newStyles.put(
+                                            style,
+                                            new LinkedHashMap<String, Properties>());
+                                }
+                                newStyles.get(style).put(path,
+                                        getPropertiesFromNode(selectorNode));
                             }
-                            newStyles.get(style).put(path,
+                        }
+
+                        if (styleName != null) {
+                            if (viewName != null) {
+                                log.info("Style parser: ignoring view name '"
+                                        + viewName + "' in named style '"
+                                        + styleName + "'.");
+                            }
+                            viewName = "*";
+                        }
+
+                        if (viewName != null) {
+                            style.setPropertiesFor(viewName, path,
                                     getPropertiesFromNode(selectorNode));
                         }
-                    }
-
-                    if (styleName != null) {
-                        if (viewName != null) {
-                            log.info("Style parser: ignoring view name '"
-                                    + viewName + "' in named style '"
-                                    + styleName + "'.");
-                        }
-                        viewName = "*";
-                    }
-
-                    if (viewName != null) {
-                        style.setPropertiesFor(viewName, path,
-                                getPropertiesFromNode(selectorNode));
                     }
                 }
             }

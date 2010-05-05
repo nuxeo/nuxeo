@@ -140,6 +140,24 @@ public class PresetManager {
         sb.append(str.substring(end));
         return sb.toString();
     }
+    
+    public static void loadPresetsUsedInCss(String cssSource) {
+        Matcher m = manyPresetNamePattern.matcher(cssSource.trim());
+        while (m.find()) {
+            String presetStr = String.format("\"%s\"", m.group(1));
+
+            String presetName = extractPresetName(null, presetStr);
+            if (presetName == null) {
+                continue;
+            }
+            PresetType preset = getPresetByName(presetName);
+            if (preset == null) {
+                System.out.println(presetName);
+                continue;
+            }
+            
+        }
+    }
 
     public static void createCustomPreset(String themeName, String presetName,
             String category, String value) {
