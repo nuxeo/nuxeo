@@ -114,7 +114,10 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
         NuxeoGroup grp = super.getGroup(groupName);
         if (activateComputedGroup()
                 && (grp == null || getService().allowGroupOverride())) {
-            grp = getService().getComputedGroup(groupName);
+            NuxeoGroup computed = getService().getComputedGroup(groupName);
+            if (computed != null) {
+                grp = computed;
+            }
         }
         return grp;
     }
@@ -171,13 +174,15 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
     protected DocumentModel getComputedGroupAsDocumentModel(String grpName)
             throws ClientException {
+        NuxeoGroup grp = getService().getComputedGroup(grpName);
+        if (grp == null) {
+            return null;
+        }
 
         String schemaName = super.getGroupSchemaName();
         String id = super.getGroupIdField();
         DocumentModel groupDoc = BaseSession.createEntryModel(null, schemaName,
                 grpName, null);
-
-        NuxeoGroup grp = getService().getComputedGroup(grpName);
 
         groupDoc.setProperty(schemaName, getGroupMembersField(),
                 grp.getMemberUsers());

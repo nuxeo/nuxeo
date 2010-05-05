@@ -40,21 +40,39 @@ public abstract class AbstractGroupComputer implements GroupComputer {
         return Framework.getLocalService(UserManager.class);
     }
 
+    /**
+     * Default implementation that searches on all ids for a match.
+     */
     public List<String> searchGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext) throws Exception {
 
         List<String> result = new ArrayList<String>();
         String grpName = (String) filter.get(getUM().getGroupIdField());
         if (grpName != null) {
-            for (String vGroupName : getAllGroupIds()) {
-                if (vGroupName.startsWith(grpName)) {
-                    if (!result.contains(vGroupName)) {
-                        result.add(vGroupName);
+            List<String> allGroupIds = getAllGroupIds();
+            if (allGroupIds != null) {
+                for (String vGroupName : allGroupIds) {
+                    if (vGroupName.startsWith(grpName)) {
+                        if (!result.contains(vGroupName)) {
+                            result.add(vGroupName);
+                        }
                     }
                 }
             }
         }
         return result;
+    }
+
+    /**
+     * Default implementation that returns true if method
+     * {@link GroupComputer#getAllGroupIds()} contains given group name.
+     */
+    public boolean hasGroup(String name) throws Exception {
+        List<String> allGroupIds = getAllGroupIds();
+        if (allGroupIds != null) {
+            return allGroupIds.contains(name);
+        }
+        return false;
     }
 
 }

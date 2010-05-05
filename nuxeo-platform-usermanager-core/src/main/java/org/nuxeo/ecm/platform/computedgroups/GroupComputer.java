@@ -94,4 +94,11 @@ public interface GroupComputer {
     List<String> searchGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext) throws Exception;
 
+    /**
+     * Returns true if the given group exists.
+     *
+     * @throws Exception
+     */
+    boolean hasGroup(String name) throws Exception;
+
 }

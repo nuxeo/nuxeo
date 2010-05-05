@@ -101,11 +101,21 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
 
     public NuxeoGroup getComputedGroup(String groupName) {
         try {
-            return new NuxeoComputedGroup(groupName);
+            boolean groupExists = false;
+            for (String name : computerNames) {
+                GroupComputerDescriptor desc = computers.get(name);
+                if (desc.getComputer().hasGroup(groupName)) {
+                    groupExists = true;
+                    break;
+                }
+            }
+            if (groupExists) {
+                return new NuxeoComputedGroup(groupName);
+            }
         } catch (Exception e) {
             log.error("Error while getting virtual group " + groupName, e);
-            return null;
         }
+        return null;
     }
 
     public List<String> computeGroupIds() {

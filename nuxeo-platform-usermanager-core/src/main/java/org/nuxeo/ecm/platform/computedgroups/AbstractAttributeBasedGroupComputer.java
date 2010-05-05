@@ -26,12 +26,12 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
  *
- * Base class for {@link GroupComputer} implemenytation that uses User attribute to compute groups
+ * Base class for {@link GroupComputer} implementation that uses User attribute
+ * to compute groups
  *
  * @author Thierry Delprat
  *
@@ -39,17 +39,20 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 public abstract class AbstractAttributeBasedGroupComputer extends
         AbstractGroupComputer implements GroupComputer {
 
-
     protected abstract String getAttributeForGroupComputation();
 
     public List<String> getAllGroupIds() throws Exception {
 
         List<String> companies = new ArrayList<String>();
         for (String userId : getUM().getUserIds()) {
-            NuxeoPrincipal principal = getUM().getPrincipal(userId);
-            String companyName = principal.getCompany();
-            if (!companies.contains(companyName)) {
-                companies.add(companyName);
+            DocumentModel doc = getUM().getUserModel(userId);
+            if (doc != null) {
+                String companyName = (String) doc.getProperty(
+                        getUM().getUserSchemaName(),
+                        NuxeoPrincipalImpl.COMPANY_COLUMN);
+                if (!companies.contains(companyName)) {
+                    companies.add(companyName);
+                }
             }
         }
         return companies;
@@ -73,8 +76,9 @@ public abstract class AbstractAttributeBasedGroupComputer extends
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
             throws Exception {
         List<String> grpNames = new ArrayList<String>();
-        String property = (String) nuxeoPrincipal.getModel().getProperty(getUM().getUserSchemaName(), getAttributeForGroupComputation());
-        if (property!=null && ! "".equals(property.trim())) {
+        String property = (String) nuxeoPrincipal.getModel().getProperty(
+                getUM().getUserSchemaName(), getAttributeForGroupComputation());
+        if (property != null && !"".equals(property.trim())) {
             grpNames.add(property);
         }
         return grpNames;
@@ -99,10 +103,10 @@ public abstract class AbstractAttributeBasedGroupComputer extends
             HashSet<String> gFulltext = new HashSet<String>();
             gFilter.put(getAttributeForGroupComputation(), grpName);
             gFulltext.add(getAttributeForGroupComputation());
-            for (DocumentModel userDoc : getUM()
-                    .searchUsers(gFilter, gFulltext)) {
-                String companyName = (String) userDoc.getProperty(getUM()
-                        .getUserSchemaName(), getAttributeForGroupComputation());
+            for (DocumentModel userDoc : getUM().searchUsers(gFilter, gFulltext)) {
+                String companyName = (String) userDoc.getProperty(
+                        getUM().getUserSchemaName(),
+                        getAttributeForGroupComputation());
                 if (!companies.contains(companyName)) {
                     companies.add(companyName);
                 }

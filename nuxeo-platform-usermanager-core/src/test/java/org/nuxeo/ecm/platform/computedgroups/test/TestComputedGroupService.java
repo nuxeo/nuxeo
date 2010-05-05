@@ -187,9 +187,7 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
             DocumentModelList nxGroups = um.searchGroups(filter, fulltext);
             assertEquals(0, nxGroups.size());
             NuxeoGroup nxGroup = um.getGroup("Nuxeo");
-            assertNotNull(nxGroup); // grp automatically created
-            assertEquals(0, nxGroup.getMemberUsers().size());
-
+            assertNull(nxGroup);
 
             DocumentModel newUser = um.getBareUserModel();
             newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "toto");
