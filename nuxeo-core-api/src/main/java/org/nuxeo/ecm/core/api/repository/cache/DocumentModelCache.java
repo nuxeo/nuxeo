@@ -65,5 +65,5 @@ public interface DocumentModelCache {
     DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
 
-    void setLastModified(long value);
+    void setDirtyUpdateTag(long value);
 }

@@ -63,7 +63,7 @@ implements DocumentModelCache {
     
     protected Principal principal;
     protected String sessionId;
-    protected long lastModified;
+    protected long dirtyUpateTag;
     
     // access to maps should be synchronized
     protected final Map<String, DocumentModel> cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
@@ -105,9 +105,9 @@ implements DocumentModelCache {
     }
 
     // --------------------------- Document Provider API --------------------------------
-    public void setLastModified(long value) {
-        if (lastModified < value) {
-            lastModified = value;
+    public void setDirtyUpdateTag(long value) {
+        if (dirtyUpateTag < value) {
+            dirtyUpateTag = value;
         }
     }
 
@@ -528,7 +528,7 @@ implements DocumentModelCache {
             log.trace("reified lock(" + ref + "," + key + ") into an operation for concurrency detection");
         }
         Operation op = new LockOperation(ref, key);
-        op.setLastModified(this.lastModified); // play cache validation on locks
+        op.setDirtyUpdateTag(this.dirtyUpateTag); // play cache validation on locks
         session.run(op); 
     }
     
@@ -537,7 +537,7 @@ implements DocumentModelCache {
             log.trace("reified unlock(" + ref + ") into an operation for concurrency detection");
         }
         Operation op =new UnlockOperation(ref);
-        op.setLastModified(this.lastModified);
+        op.setDirtyUpdateTag(this.dirtyUpateTag);
         session.run(op);
     }
     
@@ -551,7 +551,7 @@ implements DocumentModelCache {
 
         if (args != null && args[0] instanceof Operation) {
             Operation op = (Operation) args[0];
-            op.setLastModified(lastModified);
+            op.setDirtyUpdateTag(dirtyUpateTag);
         }
 
         return super.invoke(proxy, method, args);

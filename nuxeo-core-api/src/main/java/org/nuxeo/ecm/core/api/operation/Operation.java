@@ -98,7 +98,7 @@ public abstract class Operation<T> implements Serializable {
     protected transient Operation<?> parent;
     protected transient CoreSession session;
 
-    protected long lastModified;
+    protected long dirtyUpdateTag;
 
     protected Operation(String name, int flags) {
         this.name = name;
@@ -247,9 +247,9 @@ public abstract class Operation<T> implements Serializable {
         setFlags(RUNNING);
         parent = operation.get();
         if (parent != null) { // inherits client cache context from parent
-            lastModified = parent.lastModified;
+            dirtyUpdateTag = parent.dirtyUpdateTag;
             startedTime = parent.startedTime;
-        } else {            
+        } else {
             startedTime = Calendar.getInstance().getTimeInMillis();
         }
         operation.set(this);
@@ -261,6 +261,22 @@ public abstract class Operation<T> implements Serializable {
         operation.set(parent);
         setFlags(TERMINATED);
         endedTime = Calendar.getInstance().getTimeInMillis();
+    }
+
+    public Date getStartedDate() {
+        return new Date(startedTime);
+    }
+
+    public Date getEndedDate() {
+        return new Date(endedTime);
+    }
+
+    public long getDuration() {
+        return endedTime - startedTime;
+    }
+
+    public boolean isStartedBefore(long time) {
+        return startedTime <= time;
     }
 
     public List<Operation<?>> getCommandStack() {
@@ -395,12 +411,15 @@ public abstract class Operation<T> implements Serializable {
         }
     }
 
-    public void setLastModified(long lastModified) {
-        this.lastModified = lastModified;
+    public void setDirtyUpdateTag(long lastModified) {
+        this.dirtyUpdateTag = lastModified;
     }
 
-    public void checkLastModified(DocumentModel doc) {
-        if (lastModified == 0) {
+    public long getDirtyUpdateTag() {
+        return dirtyUpdateTag;
+    }
+    public void checkDirtyUpdate(DocumentModel doc) {
+        if (dirtyUpdateTag == 0) {
             return; // invoked on server, no cache
         }
         long docLastModified;
@@ -409,13 +428,13 @@ public abstract class Operation<T> implements Serializable {
         } catch (Exception e) {
             throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
         }
-        if (lastModified >= docLastModified){
+        if (dirtyUpdateTag >= docLastModified){
             return; // client cache is freshest than doc
         }
         if (startedTime <= docLastModified) {
             return; // document is updated by this transaction
         }
-        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(lastModified), new Date(startedTime), new Date(docLastModified));  
+        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(dirtyUpdateTag), new Date(startedTime), new Date(docLastModified));
         throw new ConcurrentModificationException(message);
     }
 

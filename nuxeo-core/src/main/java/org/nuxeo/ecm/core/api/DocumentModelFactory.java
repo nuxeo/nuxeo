@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +34,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -245,17 +245,34 @@ public class DocumentModelFactory {
                     + ". Error: " + e.getMessage());
         }
 
-        checkOperationLastModified(docModel);
+        checkDirtyUpdate(docModel);
 
         return docModel;
     }
 
-    protected static void checkOperationLastModified(DocumentModel doc) {
+    protected static void checkDirtyUpdate(DocumentModel doc) {
         Operation<?> op = Operation.getCurrent();
         if (op == null) {
             return;
         }
-        op.checkLastModified(doc);
+        long tag = op.getDirtyUpdateTag();
+        if (tag == 0) {
+            return; // invoked on server, no cache
+        }
+        long modified;
+        try {
+            modified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
+        } catch (Exception e) {
+            throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
+        }
+        if (tag >= modified){
+            return; // client cache is freshest than doc
+        }
+        if (op.isStartedBefore(modified)) {
+            return;
+        }
+        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(tag), op.getStartedDate(), new Date(modified));
+        throw new ConcurrentModificationException(message);
     }
     /**
      * Creates a new document model using only required information to be used

@@ -45,7 +45,7 @@ public class DefaultOperationEvent implements OperationEvent {
 
     public Object details; // should be serializable
 
-    public long lastModified;
+    public long dirtyUpdateTag;
 
     /**
      *
@@ -73,7 +73,7 @@ public class DefaultOperationEvent implements OperationEvent {
         modifications = modifs;
         this.details = details;
         
-        this.lastModified = extractLastModified(sessionId, modifs);
+        this.dirtyUpdateTag = extractLastModified(sessionId, modifs);
     }
  
     protected static long extractLastModified(String sessionId, ModificationSet modif) {
@@ -105,8 +105,8 @@ public class DefaultOperationEvent implements OperationEvent {
         return sessionId;
     }
 
-    public long getLastModified() {
-        return lastModified;
+    public long getDirtyUpdateTag() {
+        return dirtyUpdateTag;
     }
 
 }
