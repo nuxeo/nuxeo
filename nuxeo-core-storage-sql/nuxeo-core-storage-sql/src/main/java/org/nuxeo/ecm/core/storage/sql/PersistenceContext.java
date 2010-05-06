@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This class mostly delegates all its work to per-fragment {@link Context}s. It
  * also deals with maintaining information about generated ids.
- *
+ * 
  * @author Florent Guillaume
  */
 public class PersistenceContext implements XAResource {
@@ -164,12 +164,12 @@ public class PersistenceContext implements XAResource {
     }
 
     protected Serializable getRootId(Serializable repositoryId)
-            throws StorageException {
+    throws StorageException {
         return mapper.getRootId(repositoryId);
     }
 
     protected void setRootId(Serializable repositoryId, Serializable id)
-            throws StorageException {
+    throws StorageException {
         mapper.setRootId(repositoryId, id);
     }
 
@@ -221,7 +221,7 @@ public class PersistenceContext implements XAResource {
                 // Set the computed full text
                 // On INSERT/UPDATE a trigger will change the actual fulltext
                 String propName = model.FULLTEXT_SIMPLETEXT_PROP
-                        + model.getFulltextIndexSuffix(indexName);
+                + model.getFulltextIndexSuffix(indexName);
                 document.setSingleProperty(propName, strings);
             }
         }
@@ -372,6 +372,12 @@ public class PersistenceContext implements XAResource {
         }
     }
 
+    protected void checkReceivedInvalidations() {
+        for (Context context : contexts.values()) {
+            context.checkReceivedInvalidations();
+        }
+    }
+
     /**
      * Processes invalidations received by another session or cluster node.
      * <p>
@@ -396,7 +402,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Creates a new row in the context, for a new id (not yet saved).
-     *
+     * 
      * @param tableName the table name
      * @param id the new id
      * @param map the fragments map, or {@code null}
@@ -405,7 +411,7 @@ public class PersistenceContext implements XAResource {
      */
     public SimpleFragment createSimpleFragment(String tableName,
             Serializable id, Map<String, Serializable> map)
-            throws StorageException {
+    throws StorageException {
         return getContext(tableName).create(id, map);
     }
 
@@ -414,7 +420,7 @@ public class PersistenceContext implements XAResource {
      * <p>
      * If the fragment is not in the context, fetch it from the mapper. If it's
      * not in the database, returns {@code null} or an absent fragment.
-     *
+     * 
      * @param tableName the fragment table name
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
@@ -424,7 +430,7 @@ public class PersistenceContext implements XAResource {
      * @throws StorageException
      */
     public Fragment get(String tableName, Serializable id, boolean allowAbsent)
-            throws StorageException {
+    throws StorageException {
         return getContext(tableName).get(id, allowAbsent);
     }
 
@@ -433,7 +439,7 @@ public class PersistenceContext implements XAResource {
      * <p>
      * If the fragment is not in the context, fetch it from the mapper. If it's
      * not in the database, uses {@code null} or an absent fragment.
-     *
+     * 
      * @param tableName the fragment table name
      * @param ids the fragment ids (not empty)
      * @param allowAbsent {@code true} to return an absent fragment as an object
@@ -450,7 +456,7 @@ public class PersistenceContext implements XAResource {
     /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
-     *
+     * 
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or real children
@@ -464,7 +470,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Finds all the children given a parent id.
-     *
+     * 
      * @param parentId the parent id
      * @param name the name of the children, or {@code null} for all
      * @param complexProp whether to get complex properties or real children
@@ -483,7 +489,7 @@ public class PersistenceContext implements XAResource {
      * The source node will be placed before the destination one. If destId is
      * {@code null}, the source node will be appended at the end of the children
      * list.
-     *
+     * 
      * @param parentId the parent id
      * @param sourceId the child node id to move
      * @param destId the child node id before which to place the source node
@@ -496,7 +502,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Gets the next pos value for a new child in a folder.
-     *
+     * 
      * @param nodeId the folder node id
      * @param complexProp whether to deal with complex properties or regular
      *            children
@@ -504,26 +510,26 @@ public class PersistenceContext implements XAResource {
      * @throws StorageException
      */
     protected Long getNextPos(Serializable nodeId, boolean complexProp)
-            throws StorageException {
+    throws StorageException {
         return hierContext.getNextPos(nodeId, complexProp);
     }
 
     /**
      * Move a hierarchy fragment to a new parent with a new name.
-     *
+     * 
      * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
      * @throws StorageException
      */
     public void move(Node source, Serializable parentId, String name)
-            throws StorageException {
+    throws StorageException {
         hierContext.moveChild(source, parentId, name);
     }
 
     /**
      * Copy a hierarchy (and its children) to a new parent with a new name.
-     *
+     * 
      * @param source the source of the copy
      * @param parentId the destination parent id
      * @param name the new name
@@ -531,13 +537,13 @@ public class PersistenceContext implements XAResource {
      * @throws StorageException
      */
     public Serializable copy(Node source, Serializable parentId, String name)
-            throws StorageException {
+    throws StorageException {
         return hierContext.copyChild(source, parentId, name);
     }
 
     /**
      * Removes a row.
-     *
+     * 
      * @param row
      * @throws StorageException
      */
@@ -553,7 +559,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Removes the fragments in all contexts for a given id.
-     *
+     * 
      * @param id the fragment id
      * @throws StorageException
      */
@@ -568,7 +574,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Checks in a node.
-     *
+     * 
      * @param node the node to check in
      * @param label the version label
      * @param description the version description
@@ -576,7 +582,7 @@ public class PersistenceContext implements XAResource {
      * @throws StorageException
      */
     public Serializable checkIn(Node node, String label, String description)
-            throws StorageException {
+    throws StorageException {
         Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
         if (Boolean.TRUE.equals(checkedIn)) {
             throw new StorageException("Already checked in");
@@ -614,7 +620,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Checks out a node.
-     *
+     * 
      * @param node the node to check out
      * @throws StorageException
      */
@@ -633,7 +639,7 @@ public class PersistenceContext implements XAResource {
      * Restores a node by label.
      * <p>
      * The restored node is checked in.
-     *
+     * 
      * @param node the node
      * @param label the version label to restore
      * @throws StorageException
@@ -685,7 +691,7 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Gets a version id given a versionable id and a version label.
-     *
+     * 
      * @param versionableId the versionable id
      * @param label the version label
      * @return the version id, or {@code null} if not found
@@ -699,13 +705,13 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Gets the the last version id given a versionable id.
-     *
+     * 
      * @param versionableId the versionabel id
      * @return the version id, or {@code null} if not found
      * @throws StorageException
      */
     public Serializable getLastVersion(Serializable versionableId)
-            throws StorageException {
+    throws StorageException {
         Context versionsContext = getContext(model.VERSION_TABLE_NAME);
 
         SimpleFragment result = mapper.getLastVersion(versionableId,
@@ -715,13 +721,13 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Gets all the versions given a versionable id.
-     *
+     * 
      * @param versionableId the versionable id
      * @return the list of version fragments
      * @throws StorageException
      */
     public List<SimpleFragment> getVersions(Serializable versionableId)
-            throws StorageException {
+    throws StorageException {
         Context versionsContext = getContext(model.VERSION_TABLE_NAME);
         return mapper.getVersions(versionableId, versionsContext);
     }
@@ -735,14 +741,14 @@ public class PersistenceContext implements XAResource {
      * <p>
      * If the document is a proxy, then all similar proxies (pointing to any
      * version of the same versionable) are retrieved.
-     *
+     * 
      * @param document the document
      * @param parent the parent, or {@code null}
      * @return the list of proxies fragments
      * @throws StorageException
      */
     public List<SimpleFragment> getProxies(Node document, Node parent)
-            throws StorageException {
+    throws StorageException {
         /*
          * Find the versionable id.
          */
@@ -772,13 +778,13 @@ public class PersistenceContext implements XAResource {
 
     /**
      * Finds the id of the enclosing non-complex-property node.
-     *
+     * 
      * @param id the id
      * @return the id of the containing document, or {@code null} if there is no
      *         parent or the parent has been deleted.
      */
     protected Serializable getContainingDocument(Serializable id)
-            throws StorageException {
+    throws StorageException {
         return hierContext.getContainingDocument(id);
     }
 

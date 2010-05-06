@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.operation;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -43,6 +44,8 @@ public class DefaultOperationEvent implements OperationEvent {
     public ModificationSet modifications;
 
     public Object details; // should be serializable
+
+    public long lastModified;
 
     /**
      *
@@ -69,8 +72,14 @@ public class DefaultOperationEvent implements OperationEvent {
         this.id = id;
         modifications = modifs;
         this.details = details;
+        
+        this.lastModified = extractLastModified(sessionId, modifs);
     }
-
+ 
+    protected static long extractLastModified(String sessionId, ModificationSet modif) {
+        // TODO navigate modifications and get most recent last modified from documents
+        return Calendar.getInstance().getTimeInMillis();
+    }
 
     public Object getDetails() {
         return details;
@@ -94,6 +103,10 @@ public class DefaultOperationEvent implements OperationEvent {
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    public long getLastModified() {
+        return lastModified;
     }
 
 }
