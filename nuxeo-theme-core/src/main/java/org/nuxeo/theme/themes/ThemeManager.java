@@ -405,7 +405,7 @@ public final class ThemeManager implements Registrable {
     public void fillScratchPage(final String themeName, final Element element)
     throws NodeException, ThemeException {
         String pagePath = String.format("%s/~", themeName);
-        
+
         PageElement scratchPage = getPageByPath(pagePath);
         if (scratchPage != null) {
             destroyDescendants(scratchPage);
@@ -413,18 +413,18 @@ public final class ThemeManager implements Registrable {
             pages.remove(pagePath);
             removeOrphanedFormats();
         }
-        
+
         // create a new scratch page
         scratchPage = (PageElement) ElementFactory.create("page");
         Widget pageWidget = (Widget) FormatFactory.create("widget");
         pageWidget.setName("page frame");
         registerFormat(pageWidget);
         ElementFormatter.setFormat(scratchPage, pageWidget);
-                
+
         UidManager uidManager = Manager.getUidManager();
         uidManager.register(scratchPage);
         pages.put(pagePath, scratchPage);
-      
+
         scratchPage.addChild(element);
     }
 
@@ -809,6 +809,9 @@ public final class ThemeManager implements Registrable {
             String pagePath = String.format("%s/%s", themeName, page.getName());
             pages.put(pagePath, page);
         }
+
+        themeModified(themeName);
+        stylesModified(themeName);
 
         log.debug("Added theme: " + themeName);
     }
