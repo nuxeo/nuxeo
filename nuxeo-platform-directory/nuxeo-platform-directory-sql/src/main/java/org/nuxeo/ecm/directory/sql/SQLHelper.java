@@ -44,6 +44,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.sql.repository.Column;
 import org.nuxeo.ecm.directory.sql.repository.Insert;
 import org.nuxeo.ecm.directory.sql.repository.Table;
+import org.nuxeo.runtime.api.Framework;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -234,8 +235,11 @@ public class SQLHelper {
             InputStream is = getClass().getClassLoader().getResourceAsStream(
                     dataFileName);
             if (is == null) {
-                throw new DirectoryException("data file not found: "
-                        + dataFileName);
+                is = Framework.getResourceLoader().getResourceAsStream(dataFileName);
+                if (is == null) {
+                    throw new DirectoryException("data file not found: "
+                            + dataFileName);
+                }
             }
 
             csvReader = new CSVReader(new InputStreamReader(is,
