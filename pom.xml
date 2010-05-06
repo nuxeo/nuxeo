@@ -21,6 +21,7 @@
     <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.services.version>${pom.version}</nuxeo.services.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
+    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
 
   <modules>
@@ -99,6 +100,12 @@
         <version>${nuxeo.theme.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+     
       <!-- scope test -->
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>

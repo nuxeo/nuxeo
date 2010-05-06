@@ -9,10 +9,10 @@
     <version>5.3.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-theme-core</artifactId>
-  <name>Nuxeo Theme Core</name>
+  <artifactId>nuxeo-theme-bank</artifactId>
+  <name>Nuxeo Theme Bank</name>
   <description>
-    Nuxeo Theme: core module for the Nuxeo ECM platform.
+    Nuxeo Theme Bank: collection of theme resources.
   </description>
 
   <dependencies>
@@ -29,32 +29,10 @@
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>compile</scope>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.cssparser</groupId>
-      <artifactId>cssparser</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.w3c</groupId>
-      <artifactId>sac</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-    </dependency>
-    
-    
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -66,5 +44,36 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>
+              src/main/resources/META-INF/MANIFEST.MF
+            </manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
+    </plugins>
+  </build>
 
 </project>

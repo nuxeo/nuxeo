@@ -42,7 +42,6 @@ import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.resources.ResourceBank;
-import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -104,6 +103,9 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
+            for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
+                registerTheme(themeDescriptor);
+            }
             registerCustomThemes();
         }
         ThemeManager.updateThemeDescriptors();
@@ -343,35 +345,33 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
         for (Object contrib : contribs) {
             ThemeDescriptor themeDescriptor = (ThemeDescriptor) contrib;
-            themeDescriptor.setContext(extension.getContext()); 
+            themeDescriptor.setContext(extension.getContext());
             themeDescriptor.setConfigured(true);
-
-            String src = themeDescriptor.getSrc();
 
             // register the theme descriptor even if the theme fails to load
             typeRegistry.register(themeDescriptor);
-
-            if (src == null) {
-                themeDescriptor.setLoadingFailed(true);
-                log.error("Could not load theme, source not set. ");
-                continue;
-            }
-
-            String themeName;
-            try {
-                themeName = ThemeParser.registerTheme(themeDescriptor);
-            } catch (ThemeIOException e) {
-                themeDescriptor.setLoadingFailed(true);
-                log.error("Could not register theme: " + src + " "
-                        + e.getMessage());
-                continue;
-            }
-
-            // add some meta information to the theme descriptor
-            themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
-            themeDescriptor.setName(themeName);
         }
+    }
+
+    private void registerTheme(ThemeDescriptor themeDescriptor) {
+        String src = themeDescriptor.getSrc();
+        if (src == null) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not load theme, source not set. ");
+            return;
+        }
+        String themeName;
+        try {
+            themeName = ThemeParser.registerTheme(themeDescriptor);
+        } catch (ThemeIOException e) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not register theme: " + src + " " + e.getMessage());
+            return;
+        }
+        // add some meta information to the theme descriptor
+        themeDescriptor.setLoadingFailed(false);
+        themeDescriptor.setLastLoaded(new Date());
+        themeDescriptor.setName(themeName);
     }
 
     private void registerThemeSetExtension(Extension extension) {

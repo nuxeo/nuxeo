@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Themes bank
+Bundle-SymbolicName: org.nuxeo.theme.bank;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Bundle-Localization: bundle
+Bundle-Vendor: Chalmers
+Provide-Package: org.nuxeo.theme.bank
+Require-Bundle: org.nuxeo.ecm.webengine.core
+Nuxeo-Require: org.nuxeo.ecm.webengine.core

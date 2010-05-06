@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.theme.core;singleton:=true
 Bundle-Vendor: Chalmers
 Bundle-Localization: bundle
 Bundle-Category: web
+Provide-Package: org.nuxeo.theme.core
 Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,OSGI-INF/nxthemes-core-contrib.xml
