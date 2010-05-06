@@ -21,7 +21,6 @@ package org.nuxeo.runtime.api;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Properties;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -78,7 +77,7 @@ public final class Framework {
      * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee
      * ${nuxeo_data_dir} is usually ${nuxeo_home}/data
      */
-    protected static URLClassLoader resourceLoader;
+    protected static SharedResourceLoader resourceLoader;
 
     // Utility class.
     private Framework() { }
@@ -117,7 +116,7 @@ public final class Framework {
         return runtime != null;
     }
 
-    public static ClassLoader getResourceLoader() {
+    public static SharedResourceLoader getResourceLoader() {
         return resourceLoader;
     }
 
