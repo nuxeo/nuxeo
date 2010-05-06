@@ -6,10 +6,10 @@
 <body>
   <h1>Nuxeo Theme Bank</h1>
 
-  <h2>Styles</h2>
+  <h2>Style collections</h2>
   <ul>
     <#list styleCollections as collection>
-      <li><a href="${Root.getPath()}/${bank}/${collection}">${collection}</a></li>
+      <li><a href="${Root.getPath()}/${bank}/style/${collection}">${collection}</a></li>
     </#list>
   </ul>
   

@@ -52,13 +52,24 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("{bank}")
-    public Object getBank(@PathParam("bank") String bankName) {
+    public Object displayBank(@PathParam("bank") String bank) {
         return getTemplate("bank.ftl").
-            arg("styleCollections", getStyleCollectionNames(bankName)).
-            arg("bank", bankName);
+            arg("styleCollections", getStyleCollectionNames(bank)).
+            arg("bank", bank);
     }
-            
+
     @GET
+    @Path("{bank}/style/{collection}")
+    public Object displayStylesInCollection(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return getTemplate("styleCollection.ftl").
+        arg("styles", getStylesInCollection(bank, collection)).
+        arg("collection", collection).
+        arg("bank", bank);
+    }
+    
+    @GET
+    @Produces("text/css")
     @Path("{bank}/style/{collection}/{resource}")
     public String getStyle(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
@@ -92,4 +103,12 @@ public class Main extends ModuleRoot {
         return names;
     }
     
+    public List<String> getStylesInCollection(String bankName, String collectionName) {
+        List<String> names = new ArrayList<String>();
+        File file = new File(BANKS_DIR, String.format("%s/style/%s", bankName, collectionName));
+        for (String styleName : file.list()) {
+            names.add(styleName);
+        }
+        return names;
+    }
 }
