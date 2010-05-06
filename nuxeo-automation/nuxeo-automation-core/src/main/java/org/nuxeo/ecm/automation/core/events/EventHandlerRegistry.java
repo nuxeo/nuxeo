@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.core.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +93,40 @@ public class EventHandlerRegistry {
         }
         handlers.add(handler);
         pclookup = null;
+    }
+
+    public synchronized void removePostCommitEventHandler(EventHandler handler) {
+        for (String eventId : handler.getEvents()) {
+            List<EventHandler> handlers = this.pchandlers.get(eventId);
+            if (handlers != null) {
+                Iterator<EventHandler> it = handlers.iterator();
+                while (it.hasNext()) {
+                    EventHandler h = it.next();
+                    if (h.chainId.equals(handler.chainId)) { //TODO chainId is not really an unique ID for the event handler ...
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+        pclookup = null;
+    }
+
+    public synchronized void removeEventHandler(EventHandler handler) {
+        for (String eventId : handler.getEvents()) {
+            List<EventHandler> handlers = this.handlers.get(eventId);
+            if (handlers != null) {
+                Iterator<EventHandler> it = handlers.iterator();
+                while (it.hasNext()) {
+                    EventHandler h = it.next();
+                    if (h.chainId.equals(handler.chainId)) { //TODO chainId is not really an unique ID for the event handler ...
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+        lookup = null;
     }
 
     public synchronized void clear() {

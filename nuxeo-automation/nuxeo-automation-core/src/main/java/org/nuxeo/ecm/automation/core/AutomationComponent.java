@@ -214,7 +214,12 @@ public class AutomationComponent extends DefaultComponent {
             TypeAdapterContribution tac = (TypeAdapterContribution)contribution;
             service.removeTypeAdapter(tac.accept, tac.produce);
         } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
-            //TODO
+            EventHandler eh = (EventHandler)contribution;
+            if (eh.isPostCommit()) {
+                handlers.removePostCommitEventHandler(eh);
+            } else {
+                handlers.removeEventHandler(eh);
+            }
         }
     }
 
