@@ -83,7 +83,7 @@ if [ -r "$NUXEO_CONF" ]; then
 		if [[ "$key" == *.* ]]; then
 			continue
 		fi
-		read -r $key <<< $value
+		eval "$key=\"$value\""
 	done < $NUXEO_CONF
 fi
 
