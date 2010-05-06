@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -42,7 +40,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
      * there will be enough left for the RELEVANT_DOCUMENTS querymodel.
      */
     // Could be a request parameter as well...
-    public static final int RELEVANT_NUMBER = 20;
+    public static final int RELEVANT_NUMBER = 30;
 
     @Override
     protected String getQueryModelName(Request req) {
@@ -53,8 +51,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
     @Override
     protected CoreSession getCoreSession(Request req, Response res,
             String repoName) {
-        repoName = (String) (String) req.getResourceRef().getQueryAsForm().getFirstValue(
-                "repo");
+        repoName = req.getResourceRef().getQueryAsForm().getFirstValue("repo");
         return super.getCoreSession(req, res, repoName);
     }
 
@@ -64,14 +61,13 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
     }
 
     protected String getDomainPath(Request req) {
-        String domain = (String) req.getResourceRef().getQueryAsForm().getFirstValue(
+        String domain = req.getResourceRef().getQueryAsForm().getFirstValue(
                 "domain");
         if (domain == null) {
             domain = "/default-domain/";
-        }
-       else if (domain.equals("*")) {
-                domain = "/";
-       } else {
+        } else if (domain.equals("*")) {
+            domain = "/";
+        } else {
             if (!domain.startsWith("/")) {
                 domain = "/" + domain;
             }
@@ -88,6 +84,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
      * This computes a short list of "relevant" documents for the user.
      */
     // TODO have different HQL queries depending on request params
+    @SuppressWarnings("unchecked")
     protected List<String> getRelevantDocuments(Request req) {
         AuditReader auditReader;
         try {
@@ -103,7 +100,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
 
         String username = getUserPrincipal(req).getName();
         String query = String.format(
-                "from LogEntry log" //
+                "select log.docUUID from LogEntry log" //
                         + " WHERE log.principalName = '%s'" //
                         + "   AND log.eventId IN" //
                         + "     ('%s', '%s')" //
@@ -113,11 +110,8 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
                 username, //
                 DocumentEventTypes.DOCUMENT_CREATED,
                 DocumentEventTypes.DOCUMENT_UPDATED);
-        List<?> logEntries = auditReader.nativeQuery(query, 1, RELEVANT_NUMBER);
-        List<String> ids = new ArrayList<String>(logEntries.size());
-        for (Object logEntry : logEntries) {
-            ids.add(((LogEntry) logEntry).getDocUUID());
-        }
+        List<String> ids = (List) auditReader.nativeQuery(query, 1,
+                RELEVANT_NUMBER);
         if (ids.isEmpty()) {
             // NXQL doesn't do IN (), so add dummy value
             ids.add("00000000-0000-0000-0000-000000000000");
