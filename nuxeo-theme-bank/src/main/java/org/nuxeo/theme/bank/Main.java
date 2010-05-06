@@ -21,6 +21,8 @@ package org.nuxeo.theme.bank;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,16 +47,25 @@ public class Main extends ModuleRoot {
 
     @GET
     public Object getIndex() {
-        return getView("index");
+        return getTemplate("index.ftl");
     }
 
+    @GET
+    @Path("{bank}")
+    public Object getBank(@PathParam("bank") String bankName) {
+        return getTemplate("bank.ftl").
+            arg("styleCollections", getStyleCollectionNames(bankName)).
+            arg("bank", bankName);
+    }
+            
     @GET
     @Path("{bank}/style/{collection}/{resource}")
     public String getStyle(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
 
-        String path = String.format("%s/style/%s/%s", bank, collection, resource);
+        String path = String.format("%s/style/%s/%s", bank, collection,
+                resource);
         File file = new File(BANKS_DIR, path);
         try {
             return FileUtils.readFile(file);
@@ -63,4 +74,22 @@ public class Main extends ModuleRoot {
         }
         return "";
     }
+
+    public List<String> getBankNames() {
+        List<String> names = new ArrayList<String>();
+        for (String bankName : BANKS_DIR.list()) {
+            names.add(bankName);
+        }
+        return names;
+    }
+    
+    public List<String> getStyleCollectionNames(String bankName) {
+        List<String> names = new ArrayList<String>();
+        File file = new File(BANKS_DIR, String.format("%s/style", bankName));
+        for (String collectionName : file.list()) {
+            names.add(collectionName);
+        }
+        return names;
+    }
+    
 }

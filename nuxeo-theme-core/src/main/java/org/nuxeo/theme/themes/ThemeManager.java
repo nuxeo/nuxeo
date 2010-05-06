@@ -811,6 +811,9 @@ public final class ThemeManager implements Registrable {
             pages.put(pagePath, page);
         }
 
+        themeModified(themeName);
+        stylesModified(themeName);
+        
         log.debug("Added theme: " + themeName);
     }
 
