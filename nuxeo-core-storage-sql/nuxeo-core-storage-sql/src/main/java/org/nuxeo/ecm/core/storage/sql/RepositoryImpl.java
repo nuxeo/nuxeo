@@ -219,6 +219,7 @@ public class RepositoryImpl implements Repository {
             }
             clusterMapper = null;
         }
+        model = null;
     }
 
     /*
