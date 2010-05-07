@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.operation.ModificationSet;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -64,6 +63,7 @@ public interface DocumentModelCache {
      */
     DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
+    void setDirtyUpdateTag(Object tag);
 
-    void setDirtyUpdateTag(long value);
+    Object getDirtyUpdateTag();
 }

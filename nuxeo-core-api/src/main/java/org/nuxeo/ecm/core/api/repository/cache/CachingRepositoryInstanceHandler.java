@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.api.repository.cache;
 
-import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +39,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.operation.LockOperation;
-import org.nuxeo.ecm.core.api.operation.Operation;
-import org.nuxeo.ecm.core.api.operation.UnlockOperation;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
@@ -58,13 +54,12 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 @SuppressWarnings("unchecked")
 public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 implements DocumentModelCache {
-    
+
     public static final Log log = LogFactory.getLog(CachingRepositoryInstanceHandler.class);
-    
+
     protected Principal principal;
     protected String sessionId;
-    protected long dirtyUpateTag;
-    
+
     // access to maps should be synchronized
     protected final Map<String, DocumentModel> cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
     protected final Map<String, String> path2Ids = new DualHashBidiMap();
@@ -104,12 +99,6 @@ implements DocumentModelCache {
         return repository.getName();
     }
 
-    // --------------------------- Document Provider API --------------------------------
-    public void setDirtyUpdateTag(long value) {
-        if (dirtyUpateTag < value) {
-            dirtyUpateTag = value;
-        }
-    }
 
     /**
      * The doc
@@ -126,7 +115,7 @@ implements DocumentModelCache {
         if (cache.containsKey(id)) { // doc is already in cache, return cached instance
             return cache.get(id);
         }
-        cache.put(id, doc); 
+        cache.put(id, doc);
         path2Ids.put(doc.getPathAsString(), id);
         childrenCache.remove(id);
         return doc;
@@ -139,7 +128,7 @@ implements DocumentModelCache {
             if (doc != null) {
                 path2Ids.remove(doc.getPathAsString());
             }
-            return doc; 
+            return doc;
         }
         // else assume a path
         String path = ((PathRef) ref).value;
@@ -302,7 +291,7 @@ implements DocumentModelCache {
     }
 
 
-    /** Children Cache 
+    /** Children Cache
      * @throws ClientException */
 
     public String getDocumentId(DocumentRef docRef) {
@@ -522,39 +511,18 @@ implements DocumentModelCache {
         }
     }
 
-    
-    public void setLock(DocumentRef ref, String key) throws ClientException {
-        if (log.isTraceEnabled()) {
-            log.trace("reified lock(" + ref + "," + key + ") into an operation for concurrency detection");
-        }
-        Operation op = new LockOperation(ref, key);
-        op.setDirtyUpdateTag(this.dirtyUpateTag); // play cache validation on locks
-        session.run(op); 
-    }
-    
-    public void unlock(DocumentRef ref) throws ClientException {
-        if (log.isTraceEnabled()) {
-            log.trace("reified unlock(" + ref + ") into an operation for concurrency detection");
-        }
-        Operation op =new UnlockOperation(ref);
-        op.setDirtyUpdateTag(this.dirtyUpateTag);
-        session.run(op);
-    }
-    
+
     public void save() {
         log.warn("filtered save, session is remote and is auto committed");
     }
-    
-    @Override
-    public synchronized Object invoke(Object proxy, Method method, Object[] args)
-    throws Throwable {
 
-        if (args != null && args[0] instanceof Operation) {
-            Operation op = (Operation) args[0];
-            op.setDirtyUpdateTag(dirtyUpateTag);
-        }
+    Object dirtyUpdateTag;
 
-        return super.invoke(proxy, method, args);
+    public Object getDirtyUpdateTag() {
+        return dirtyUpdateTag;
+    }
 
+    public void setDirtyUpdateTag(Object tag) {
+        dirtyUpdateTag = tag;
     }
 }

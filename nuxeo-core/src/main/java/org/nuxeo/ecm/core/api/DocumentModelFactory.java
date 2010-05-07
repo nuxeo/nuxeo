@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +33,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
-import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
@@ -245,35 +243,11 @@ public class DocumentModelFactory {
                     + ". Error: " + e.getMessage());
         }
 
-        checkDirtyUpdate(docModel);
+        DirtyUpdateChecker.check(docModel);
 
         return docModel;
     }
 
-    protected static void checkDirtyUpdate(DocumentModel doc) {
-        Operation<?> op = Operation.getCurrent();
-        if (op == null) {
-            return;
-        }
-        long tag = op.getDirtyUpdateTag();
-        if (tag == 0) {
-            return; // invoked on server, no cache
-        }
-        long modified;
-        try {
-            modified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
-        } catch (Exception e) {
-            throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
-        }
-        if (tag >= modified){
-            return; // client cache is freshest than doc
-        }
-        if (op.isStartedBefore(modified)) {
-            return;
-        }
-        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(tag), op.getStartedDate(), new Date(modified));
-        throw new ConcurrentModificationException(message);
-    }
     /**
      * Creates a new document model using only required information to be used
      * on client side.

@@ -23,13 +23,10 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -97,8 +94,6 @@ public abstract class Operation<T> implements Serializable {
     private ModificationSet modifs;
     protected transient Operation<?> parent;
     protected transient CoreSession session;
-
-    protected long dirtyUpdateTag;
 
     protected Operation(String name, int flags) {
         this.name = name;
@@ -247,7 +242,6 @@ public abstract class Operation<T> implements Serializable {
         setFlags(RUNNING);
         parent = operation.get();
         if (parent != null) { // inherits client cache context from parent
-            dirtyUpdateTag = parent.dirtyUpdateTag;
             startedTime = parent.startedTime;
         } else {
             startedTime = Calendar.getInstance().getTimeInMillis();
@@ -409,33 +403,6 @@ public abstract class Operation<T> implements Serializable {
                 }
             }
         }
-    }
-
-    public void setDirtyUpdateTag(long lastModified) {
-        this.dirtyUpdateTag = lastModified;
-    }
-
-    public long getDirtyUpdateTag() {
-        return dirtyUpdateTag;
-    }
-    public void checkDirtyUpdate(DocumentModel doc) {
-        if (dirtyUpdateTag == 0) {
-            return; // invoked on server, no cache
-        }
-        long docLastModified;
-        try {
-            docLastModified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
-        } catch (Exception e) {
-            throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
-        }
-        if (dirtyUpdateTag >= docLastModified){
-            return; // client cache is freshest than doc
-        }
-        if (startedTime <= docLastModified) {
-            return; // document is updated by this transaction
-        }
-        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(dirtyUpdateTag), new Date(startedTime), new Date(docLastModified));
-        throw new ConcurrentModificationException(message);
     }
 
 }
