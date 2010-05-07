@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,9 +29,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -58,6 +61,16 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                 String value = httpRequest.getParameter(name);
                 parameters.put(name, value);
             }
+            HttpSession session = httpRequest.getSession(false);
+            String requestedUrl = null;
+            if (session != null) {
+                requestedUrl = (String) httpRequest.getSession(false).getAttribute(
+                        NXAuthConstants.START_PAGE_SAVE_KEY);
+            }
+            if (requestedUrl != null && !requestedUrl.equals("")) {
+                parameters.put(NXAuthConstants.REQUESTED_URL,
+                        URLEncoder.encode(requestedUrl, "UTF-8"));
+            }
             String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
             if (loginError != null) {
                 if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
@@ -66,7 +79,6 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                     parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
                 }
             }
-
             // avoid resending the password in clear !!!
             parameters.remove(passwordKey);
             redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,

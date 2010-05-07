@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,8 +76,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoAuthenticationFilter implements Filter {
 
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
-
-    public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
     public static final String DEFAULT_START_PAGE = "nxstartup.faces";
 
@@ -170,11 +170,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (success) {
             eventId = "loginSuccess";
             comment = userName + " successfully logged in using "
-                    + userInfo.getAuthPluginName() + "Authentication";
+            + userInfo.getAuthPluginName() + "Authentication";
         } else {
             eventId = "loginFailed";
             comment = userName + " failed to authenticate using "
-                    + userInfo.getAuthPluginName() + "Authentication";
+            + userInfo.getAuthPluginName() + "Authentication";
         }
 
         return sendAuthenticationEvent(userInfo, eventId, comment);
@@ -556,7 +556,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Unable to get Service "
                     + PluggableAuthenticationService.NAME);
             throw new ServletException(
-                    "Can't initialize Nuxeo Pluggable Authentication Service");
+            "Can't initialize Nuxeo Pluggable Authentication Service");
         }
     }
 
@@ -597,7 +597,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // in the request params
         if (isStartPageValid(requestPage)) {
             if (!requestPageInParams) {
-                session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
+                session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY, requestPage);
             }
             return true;
         }
@@ -625,22 +625,17 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String requestedPage = null;
 
-        String requestedUrl = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
-        if (requestedUrl != null && !"".equals(requestedUrl)) {
-            return requestedUrl;
-        }
-
-        if (httpRequest.getParameter(START_PAGE_SAVE_KEY) == null) {
+        if (httpRequest.getParameter(NXAuthConstants.START_PAGE_SAVE_KEY) == null) {
             HttpSession session = httpRequest.getSession(false);
             if (session != null) {
-                requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
+                requestedPage = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
                 if (requestedPage != null) {
                     // clean up session
-                    session.removeAttribute(START_PAGE_SAVE_KEY);
+                    session.removeAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
                 }
             }
         } else {
-            requestedPage = httpRequest.getParameter(START_PAGE_SAVE_KEY);
+            requestedPage = httpRequest.getParameter(NXAuthConstants.START_PAGE_SAVE_KEY);
         }
 
         // if SSO authentication cookie store the initial URL asked
@@ -655,6 +650,14 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         }
 
+        String requestedUrl = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
+        if (requestedUrl != null && !"".equals(requestedUrl)) {
+            try {
+                return URLDecoder.decode(requestedUrl, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                log.error("Unable to get the requestedUrl parameter" + e);
+            }
+        }
         return requestedPage;
     }
 
@@ -670,7 +673,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected boolean handleLogout(ServletRequest request,
             ServletResponse response,
             CachableUserIdentificationInfo cachedUserInfo)
-            throws ServletException {
+    throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
         // invalidate Session !
