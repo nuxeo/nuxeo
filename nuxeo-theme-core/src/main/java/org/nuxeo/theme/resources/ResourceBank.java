@@ -14,11 +14,7 @@
 
 package org.nuxeo.theme.resources;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,11 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 
 @XObject("bank")
 public class ResourceBank implements Type {
@@ -68,14 +62,16 @@ public class ResourceBank implements Type {
             String collectionName = resourceNameMatcher.group(2);
             String resourceName = resourceNameMatcher.group(1);
 
-            Client client = Client.create();
-            WebResource webResource;
+            if ("style".equals(typeName)) {
+                resourceName = resourceName + ".css";
+            }
+
+            String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
+                    URIUtils.quoteURIPathComponent(collectionName, true),
+                    URIUtils.quoteURIPathComponent(resourceName, true));
+            log.debug("Loading THEME " +  typeName + " from: "  + src);
             try {
-                webResource = client.resource(connectionUrl).path(typeName).path(
-                        URIUtils.quoteURIPathComponent(collectionName, true)).path(
-                        URIUtils.quoteURIPathComponent(resourceName, true));
-                String content = webResource.get(String.class);
-                return content;
+                return Utils.fetchUrl(new URL(src));
             } catch (Exception e) {
                 log.error("Could not retrieve RESOURCE: " + resourceId
                         + " from THEME BANK: " + bankName);

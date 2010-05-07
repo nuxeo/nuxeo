@@ -49,11 +49,6 @@
       <groupId>org.w3c</groupId>
       <artifactId>sac</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-    </dependency>
-    
     
     <!-- test scope -->
     <dependency>
