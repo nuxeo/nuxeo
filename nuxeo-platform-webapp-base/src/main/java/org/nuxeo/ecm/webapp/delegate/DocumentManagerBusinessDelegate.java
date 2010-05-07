@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBAccessException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("documentManager")
 @Scope(CONVERSATION)
 public class DocumentManagerBusinessDelegate implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentManagerBusinessDelegate.class);
@@ -112,8 +114,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                 session = repository.open();
                 log.debug("Opened session for repository " + serverName);
             } catch (Exception e) {
-                throw new ClientException(
-                        "Error opening session for repository " + serverName, e);
+                throw new ClientException("Error opening session for repository " + serverName, e);
             }
             sessions.put(serverLocation, session);
         }
@@ -127,22 +128,29 @@ public class DocumentManagerBusinessDelegate implements Serializable {
             String serverName = entry.getKey().getName();
             CoreSession session = entry.getValue();
             try {
-                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-                Repository repository = repositoryManager.getRepository(serverName);
-                repository.close(session);
+                Repository.close(session);
                 log.debug("Closed session for repository " + serverName);
             } catch (EJBAccessException e) {
-                /*
-                 * CoreInstance.close tries to call coreSession.getSessionId()
-                 * which makes another EJB call; don't log an error for this.
-                 *
-                 * XXX but this means we don't close the session correctly
-                 */
-                log.debug("EJBAccessException while closing session for repository "
-                        + serverName);
+
+                log.debug("EJBAccessException while closing session for repository " + serverName);
+
+                LoginContext lc = null;
+                try {
+                    Framework.login();
+                    Repository.close(session);
+                } catch (LoginException le) {
+                    log.error("Unable to login as System", le);
+                } finally {
+                    if (lc != null) {
+                        try {
+                            lc.logout();
+                        } catch (LoginException lo) {
+                            log.error("Error when loggin out", lo);
+                        }
+                    }
+                }
             } catch (Exception e) {
-                log.error("Error closing session for repository " + serverName,
-                        e);
+                log.error("Error closing session for repository " + serverName, e);
             }
         }
         sessions.clear();
