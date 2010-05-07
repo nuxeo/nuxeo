@@ -161,8 +161,11 @@ public class URLPolicyServiceImpl implements URLPolicyService {
 
     public void setDocumentViewInRequest(HttpServletRequest request,
             DocumentView docView) {
-        request.setAttribute(NXAuthConstants.REQUESTED_URL,
-                NuxeoAuthenticationFilter.getRequestedUrl(request));
+        String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
+        if (requestedUrl == null || requestedUrl.equals("")) {
+            requestedUrl = NuxeoAuthenticationFilter.getRequestedUrl(request);
+        }
+        request.setAttribute(NXAuthConstants.REQUESTED_URL, requestedUrl);
         request.setAttribute(DOCUMENT_VIEW_REQUEST_KEY, docView);
     }
 
@@ -317,7 +320,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                     } catch (Exception e) {
                         log.error(String.format(
                                 "Could not apply request parameter %s "
-                                        + "to expression %s", value, expr));
+                                + "to expression %s", value, expr));
                     }
                 }
             }
