@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "nxthemes-bank")
+@WebObject(type = "theme-banks")
 @Produces("text/html")
 public class Main extends ModuleRoot {
 
