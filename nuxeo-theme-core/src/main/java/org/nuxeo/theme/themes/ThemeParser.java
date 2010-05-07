@@ -76,17 +76,15 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static String registerTheme(final ThemeDescriptor themeDescriptor)
+    public static void registerTheme(final ThemeDescriptor themeDescriptor, final boolean load)
             throws ThemeIOException {
-        return registerTheme(themeDescriptor, null);
+        registerTheme(themeDescriptor, null, load);
     }
 
-    public static String registerTheme(final ThemeDescriptor themeDescriptor,
-            final String xmlSource) throws ThemeIOException {
+    public static void registerTheme(final ThemeDescriptor themeDescriptor,
+            final String xmlSource,  final boolean load) throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
-        String themeName = null;
         InputStream in = null;
-
         try {
             if (xmlSource == null) {
                 URL url = null;
@@ -107,7 +105,7 @@ public class ThemeParser {
             } else {
                 in = new ByteArrayInputStream(xmlSource.getBytes());
             }
-            themeName = registerThemeFromInputStream(themeDescriptor, in);
+            registerThemeFromInputStream(themeDescriptor, in, load);
         } catch (FileNotFoundException e) {
             throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
@@ -125,11 +123,10 @@ public class ThemeParser {
                 }
             }
         }
-        return themeName;
     }
 
-    private static String registerThemeFromInputStream(
-            final ThemeDescriptor themeDescriptor, final InputStream in)
+    private static void registerThemeFromInputStream(
+            final ThemeDescriptor themeDescriptor, final InputStream in, boolean load)
             throws ThemeIOException, ThemeException {
         String themeName = null;
 
@@ -143,7 +140,6 @@ public class ThemeParser {
         } catch (ParserConfigurationException e) {
             log.debug("Could not set DTD non-validation feature");
         }
-        final ThemeManager themeManager = Manager.getThemeManager();
 
         DocumentBuilder db;
         try {
@@ -172,8 +168,16 @@ public class ThemeParser {
                     "Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
                             + themeName);
         }
-
+        themeDescriptor.setName(themeName);
+        if (load) {
+            loadTheme(themeDescriptor, docElem);
+        }
+    }
+    
+    private static void loadTheme(ThemeDescriptor themeDescriptor, org.w3c.dom.Element docElem) throws ThemeException, ThemeIOException {
+        final ThemeManager themeManager = Manager.getThemeManager();
         // remove old theme
+        String themeName = themeDescriptor.getName();
         ThemeElement oldTheme = themeManager.getThemeByName(themeName);
         if (oldTheme != null) {
             try {
@@ -220,7 +224,7 @@ public class ThemeParser {
         parseLayout(theme, baseNode);
 
         themeManager.registerTheme(theme);
-        return themeName;
+        log.info("Loaded THEME: " + themeName);
     }
 
     public static void parseLayout(final Element parent, Node node)

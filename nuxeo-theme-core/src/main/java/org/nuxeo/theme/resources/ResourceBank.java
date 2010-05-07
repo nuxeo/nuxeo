@@ -69,7 +69,8 @@ public class ResourceBank implements Type {
             String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
                     URIUtils.quoteURIPathComponent(collectionName, true),
                     URIUtils.quoteURIPathComponent(resourceName, true));
-            log.debug("Loading THEME " +  typeName + " from: "  + src);
+
+            log.debug("Loading THEME " + typeName + " from: " + src);
             try {
                 return Utils.fetchUrl(new URL(src));
             } catch (Exception e) {

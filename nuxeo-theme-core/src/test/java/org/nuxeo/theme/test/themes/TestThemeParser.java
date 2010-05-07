@@ -45,7 +45,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setSrc("theme.xml");
-        ThemeParser.registerTheme(themeDef);
+        final boolean load = true;
+        ThemeParser.registerTheme(themeDef, load);
 
         themeManager = Manager.getThemeManager();
         theme1 = themeManager.getThemeByName("theme1");

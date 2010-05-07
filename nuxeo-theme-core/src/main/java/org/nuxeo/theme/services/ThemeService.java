@@ -360,18 +360,12 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             log.error("Could not load theme, source not set. ");
             return;
         }
-        String themeName;
         try {
-            themeName = ThemeParser.registerTheme(themeDescriptor);
+            final boolean load = false;
+            ThemeParser.registerTheme(themeDescriptor, load);
         } catch (ThemeIOException e) {
-            themeDescriptor.setLoadingFailed(true);
             log.error("Could not register theme: " + src + " " + e.getMessage());
-            return;
         }
-        // add some meta information to the theme descriptor
-        themeDescriptor.setLoadingFailed(false);
-        themeDescriptor.setLastLoaded(new Date());
-        themeDescriptor.setName(themeName);
     }
 
     private void registerThemeSetExtension(Extension extension) {
@@ -421,19 +415,14 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
             themeDescriptor.setSrc(src);
 
-            String themeName;
             try {
-                themeName = ThemeParser.registerTheme(themeDescriptor);
+                final boolean load = false;
+                ThemeParser.registerTheme(themeDescriptor, load);
             } catch (ThemeIOException e) {
-                themeDescriptor.setLoadingFailed(true);
                 log.error("Could not register theme: " + src + " "
                         + e.getMessage());
                 continue;
             }
-
-            themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
-            themeDescriptor.setName(themeName);
             typeRegistry.register(themeDescriptor);
         }
         log.debug("Registered local themes");

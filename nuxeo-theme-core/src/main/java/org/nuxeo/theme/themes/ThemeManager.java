@@ -813,8 +813,6 @@ public final class ThemeManager implements Registrable {
 
         themeModified(themeName);
         stylesModified(themeName);
-        
-        log.debug("Added theme: " + themeName);
     }
 
     public void registerPage(final ThemeElement theme, final PageElement page)
@@ -849,6 +847,23 @@ public final class ThemeManager implements Registrable {
         log.debug("Removed page: " + pageName + " from theme: " + themeName);
     }
 
+    public static void loadTheme(ThemeDescriptor themeDescriptor) {
+        String src = themeDescriptor.getSrc();
+        if (src == null) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not load theme, source not set. ");
+            return;
+        }
+        try {
+            final boolean load = true;
+            ThemeParser.registerTheme(themeDescriptor, load);
+        } catch (ThemeIOException e) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not register theme: " + src + " " + e.getMessage());
+            return;
+        }
+    }
+
     // Theme management
     public void loadTheme(String src, String xmlSource)
             throws ThemeIOException, ThemeException {
@@ -858,13 +873,11 @@ public final class ThemeManager implements Registrable {
         }
         final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
-        String themeName = ThemeParser.registerTheme(themeDescriptor, xmlSource);
-        if (themeName == null) {
-            throw new ThemeIOException("Could not parse theme: " + src);
-        }
+        final boolean load = true;
+        ThemeParser.registerTheme(themeDescriptor, xmlSource, load);
+        String themeName = themeDescriptor.getName();
         themeDescriptor.setName(themeName);
-        themeDescriptor.setLoadingFailed(false);
-        themeDescriptor.setLastLoaded(new Date());
+
         themeModified(themeName);
         stylesModified(themeName);
         updateThemeDescriptors();
@@ -878,6 +891,10 @@ public final class ThemeManager implements Registrable {
                 }
             }
         }
+        
+        themeDescriptor.setLoadingFailed(false);
+        themeDescriptor.setLastLoaded(new Date());
+        
         log.debug("Loaded theme: " + src);
     }
 
@@ -1309,7 +1326,7 @@ public final class ThemeManager implements Registrable {
         }
         return null;
     }
-    
+
     public List<ResourceBank> getResourceBanks() {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         List<ResourceBank> resourceBanks = new ArrayList<ResourceBank>();
@@ -1318,7 +1335,7 @@ public final class ThemeManager implements Registrable {
         }
         return resourceBanks;
     }
-    
+
     public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
