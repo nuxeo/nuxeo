@@ -34,7 +34,7 @@ import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public abstract class ServerConfigurator {
 
@@ -65,17 +65,17 @@ public abstract class ServerConfigurator {
     /**
      * Generate configuration files from templates and given configuration
      * parameters
-     * 
+     *
      * @param config Properties with configuration parameters for template
      *            replacement
      */
     protected void parseAndCopy(Properties config) throws FileNotFoundException,
             IOException {
                 TextTemplate templateParser = new TextTemplate(config);
-            
+
                 // copy files to nuxeo.ear
                 File outputDirectory = getOutputDirectory();
-            
+
                 // List template directories to copy from (order is: included templates
                 // then chosen template)
                 List<File> inputDirectories = new ArrayList<File>();
@@ -96,11 +96,11 @@ public abstract class ServerConfigurator {
                     addDirectories(new File(generator.getNuxeoDefaultConf().getParent(),
                             includedTemplate).listFiles(filter), inputDirectories);
                 }
-            
+
                 // add chosen template directories
                 addDirectories(generator.getTemplateDefaultConf().getParentFile().listFiles(filter),
                         inputDirectories);
-            
+
                 for (File in : inputDirectories) {
                     templateParser.processDirectory(in, new File(outputDirectory,
                             in.getName()));

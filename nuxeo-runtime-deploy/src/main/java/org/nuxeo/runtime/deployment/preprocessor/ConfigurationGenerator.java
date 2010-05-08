@@ -29,10 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Builder for server configuration and datasource files from templates
+ * and properties.
+ *
  * @author jcarsique
- * 
- *         Builder for server configuration and datasource files from templates
- *         and properties.
  */
 public class ConfigurationGenerator {
 
@@ -112,8 +112,6 @@ public class ConfigurationGenerator {
 
     /**
      * Run the configuration files generation
-     * 
-     * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {
         if (serverConfigurator == null) {
@@ -148,8 +146,6 @@ public class ConfigurationGenerator {
 
     /**
      * @return Properties of configured parameters with user and default values
-     * @throws IOException
-     * @throws FileNotFoundException
      */
     protected Properties getConfiguration() throws FileNotFoundException,
             IOException {

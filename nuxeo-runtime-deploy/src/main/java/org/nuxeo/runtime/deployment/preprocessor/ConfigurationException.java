@@ -21,7 +21,7 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class ConfigurationException extends Exception {
 

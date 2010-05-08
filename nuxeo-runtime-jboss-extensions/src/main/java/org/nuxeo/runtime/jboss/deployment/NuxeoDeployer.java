@@ -317,7 +317,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
     /**
      * Data sources must be deployed first.
-     * 
+     *
      * @param di
      * @throws DeploymentException
      */

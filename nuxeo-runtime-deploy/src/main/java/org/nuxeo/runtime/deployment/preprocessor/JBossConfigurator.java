@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class JBossConfigurator extends ServerConfigurator {
 

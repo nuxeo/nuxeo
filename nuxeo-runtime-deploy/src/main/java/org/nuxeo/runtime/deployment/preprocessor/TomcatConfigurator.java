@@ -24,7 +24,7 @@ import java.io.File;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class TomcatConfigurator extends ServerConfigurator {
 

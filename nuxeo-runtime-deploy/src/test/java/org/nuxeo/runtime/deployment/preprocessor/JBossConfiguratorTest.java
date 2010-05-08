@@ -33,7 +33,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class JBossConfiguratorTest {
 
