@@ -28,6 +28,7 @@
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
     <module>nuxeo-theme-html</module>
+    <module>nuxeo-theme-bank</module>
   </modules>
 
   <organization>

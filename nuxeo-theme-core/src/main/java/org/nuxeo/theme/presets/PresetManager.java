@@ -17,16 +17,19 @@ package org.nuxeo.theme.presets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
 
 public class PresetManager {
 
@@ -41,6 +44,9 @@ public class PresetManager {
 
     private static final Pattern customPresetNamePattern = Pattern.compile(
             "^\"(.*?)\"$", Pattern.DOTALL);
+
+    private static final Pattern remotePresetNamePattern = Pattern.compile(
+            "(.*?)\\s\\((.*?)\\s(\\w*?)\\)$", Pattern.DOTALL);
 
     public static String extractPresetName(final String themeName,
             final String str) {
@@ -140,22 +146,41 @@ public class PresetManager {
         sb.append(str.substring(end));
         return sb.toString();
     }
-    
-    public static void loadPresetsUsedInCss(String cssSource) {
-        Matcher m = manyPresetNamePattern.matcher(cssSource.trim());
-        while (m.find()) {
-            String presetStr = String.format("\"%s\"", m.group(1));
 
-            String presetName = extractPresetName(null, presetStr);
-            if (presetName == null) {
-                continue;
+    public static void loadPresetsUsedInStyle(Style style) {
+        Properties properties = style.getAllProperties();
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (Map.Entry<Object, Object> property : properties.entrySet()) {
+            String propertyValue = (String) property.getValue();
+            Matcher m = manyPresetNamePattern.matcher(propertyValue);
+            while (m.find()) {
+                String presetStr = String.format("\"%s\"", m.group(1));
+                String presetName = extractPresetName(null, presetStr);
+                if (presetName == null) {
+                    continue;
+                }
+                PresetType preset = getPresetByName(presetName);
+                if (preset == null) {
+                    final Matcher resourceNameMatcher = remotePresetNamePattern.matcher(presetName);
+                    if (resourceNameMatcher.find()) {
+                        String collectionName = resourceNameMatcher.group(2);
+                        String category = resourceNameMatcher.group(3);
+                        String resourceId = category;
+                        String content = ResourceManager.findBankResource(
+                                "preset", collectionName, resourceId);
+                        String paletteName = String.format("%s %s",
+                                collectionName, category);
+                        Map<String, String> paletteEntries = PaletteParser.parseCsv(content);
+                        for (Map.Entry<String, String> entry : paletteEntries.entrySet()) {
+                            String value = PresetManager.resolvePresets(null,
+                                    entry.getValue());
+                            preset = new PresetType(entry.getKey(), value,
+                                    paletteName, category);
+                            typeRegistry.register(preset);
+                        }
+                    }
+                }
             }
-            PresetType preset = getPresetByName(presetName);
-            if (preset == null) {
-                System.out.println(presetName);
-                continue;
-            }
-            
         }
     }
 

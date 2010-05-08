@@ -83,8 +83,6 @@ public final class Utils {
     public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$",
             Pattern.DOTALL);
 
-
-
     private static final String CLASS_ATTR_PREFIX = "nxStyle";
 
     private static final String CSS_PROPERTIES_RESOURCE = "/nxthemes/html/styles/css.properties";

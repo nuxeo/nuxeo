@@ -32,9 +32,6 @@ public class ResourceBank implements Type {
 
     private static final Log log = LogFactory.getLog(ResourceBank.class);
 
-    private static final Pattern resourceNamePattern = Pattern.compile(
-            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
-
     @XNode("@name")
     public String bankName;
 
@@ -56,28 +53,18 @@ public class ResourceBank implements Type {
         return TypeFamily.RESOURCE_BANK;
     }
 
-    public String getResourceContent(String typeName, String resourceId) {
-        final Matcher resourceNameMatcher = resourceNamePattern.matcher(resourceId);
-        if (resourceNameMatcher.find()) {
-            String collectionName = resourceNameMatcher.group(2);
-            String resourceName = resourceNameMatcher.group(1);
+    public String getResourceContent(String typeName, String collectionName,
+            String resourceId) {
 
-            if ("style".equals(typeName)) {
-                resourceName = resourceName + ".css";
-            }
-
-            String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
-                    URIUtils.quoteURIPathComponent(collectionName, true),
-                    URIUtils.quoteURIPathComponent(resourceName, true));
-
-            log.debug("Loading THEME " + typeName + " from: " + src);
-            try {
-                return Utils.fetchUrl(new URL(src));
-            } catch (Exception e) {
-                log.error("Could not retrieve RESOURCE: " + resourceId
-                        + " from THEME BANK: " + bankName);
-            }
-
+        String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
+                URIUtils.quoteURIPathComponent(collectionName, true),
+                URIUtils.quoteURIPathComponent(resourceId, true));
+        log.debug("Loading THEME " + typeName + " from: " + src);
+        try {
+            return Utils.fetchUrl(new URL(src));
+        } catch (Exception e) {
+            log.error("Could not retrieve RESOURCE: " + src
+                    + " from THEME BANK: " + bankName);
         }
         return null;
     }

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -58,7 +60,7 @@ import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
-import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.w3c.dom.Document;
@@ -74,15 +76,18 @@ public class ThemeParser {
 
     private static final String DOCROOT_NAME = "theme";
 
+    private static final Pattern styleResourceNamePattern = Pattern.compile(
+            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
+
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static void registerTheme(final ThemeDescriptor themeDescriptor, final boolean load)
-            throws ThemeIOException {
+    public static void registerTheme(final ThemeDescriptor themeDescriptor,
+            final boolean load) throws ThemeIOException {
         registerTheme(themeDescriptor, null, load);
     }
 
     public static void registerTheme(final ThemeDescriptor themeDescriptor,
-            final String xmlSource,  final boolean load) throws ThemeIOException {
+            final String xmlSource, final boolean load) throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
         InputStream in = null;
         try {
@@ -126,8 +131,8 @@ public class ThemeParser {
     }
 
     private static void registerThemeFromInputStream(
-            final ThemeDescriptor themeDescriptor, final InputStream in, boolean load)
-            throws ThemeIOException, ThemeException {
+            final ThemeDescriptor themeDescriptor, final InputStream in,
+            boolean load) throws ThemeIOException, ThemeException {
         String themeName = null;
 
         final InputSource is = new InputSource(in);
@@ -173,8 +178,10 @@ public class ThemeParser {
             loadTheme(themeDescriptor, docElem);
         }
     }
-    
-    private static void loadTheme(ThemeDescriptor themeDescriptor, org.w3c.dom.Element docElem) throws ThemeException, ThemeIOException {
+
+    private static void loadTheme(ThemeDescriptor themeDescriptor,
+            org.w3c.dom.Element docElem) throws ThemeException,
+            ThemeIOException {
         final ThemeManager themeManager = Manager.getThemeManager();
         // remove old theme
         String themeName = themeDescriptor.getName();
@@ -223,6 +230,14 @@ public class ThemeParser {
         // parse layout
         parseLayout(theme, baseNode);
 
+        // Look for presets in remote resources
+        for (Style style : themeManager.getNamedStyles(themeName)) {
+            PresetManager.loadPresetsUsedInStyle(style);
+        }
+        for (Style style : themeManager.getStyles(themeName)) {
+            PresetManager.loadPresetsUsedInStyle(style);
+        }
+        
         themeManager.registerTheme(theme);
         log.info("Loaded THEME: " + themeName);
     }
@@ -356,7 +371,7 @@ public class ThemeParser {
             if (description != null) {
                 format.setDescription(description);
             }
-
+            
             if ("widget".equals(nodeName)) {
                 List<Node> viewNodes = getChildElementsByTagName(n, "view");
                 if (!viewNodes.isEmpty()) {
@@ -369,7 +384,7 @@ public class ThemeParser {
             } else if ("style".equals(nodeName)) {
                 Node nameAttr = attributes.getNamedItem("name");
                 Node inheritedAttr = attributes.getNamedItem("inherit");
-
+                
                 // register the style name
                 String styleName = null;
                 Style style = (Style) format;
@@ -386,9 +401,13 @@ public class ThemeParser {
                     if (inheritedStyle == null) {
                         // Try to retrieve the style from the resource banks
                         String cssSource = null;
-                        for (ResourceBank resourceBank : themeManager.getResourceBanks()) {
-                            cssSource = resourceBank.getResourceContent(
-                                    "style", inheritedName);
+                        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(inheritedName);
+                        if (resourceNameMatcher.find()) {
+                            String collectionName = resourceNameMatcher.group(2);
+                            String resourceId = resourceNameMatcher.group(1)
+                                    + ".css";
+                            cssSource = ResourceManager.findBankResource(
+                                    "style", collectionName, resourceId);
                         }
                         if (cssSource == null) {
                             log.error("Unknown style: " + inheritedName);
@@ -403,8 +422,6 @@ public class ThemeParser {
                                 throw new ThemeIOException(e);
                             }
                             Utils.loadCss(inheritedStyle, cssSource, "*");
-                            // load presets from bank
-                            PresetManager.loadPresetsUsedInCss(cssSource);
                         }
                     }
 

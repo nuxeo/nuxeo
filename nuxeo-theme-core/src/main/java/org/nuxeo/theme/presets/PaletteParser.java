@@ -18,12 +18,17 @@ import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class PaletteParser {
 
@@ -98,10 +103,13 @@ public class PaletteParser {
     public static Map<String, String> parse(InputStream in, String filename)
             throws IOException, PaletteIdentifyException, PaletteParseException {
         DataInputStream dis = new DataInputStream(in);
-
         byte[] bytes = new byte[dis.available()];
         dis.read(bytes);
+        return parse(bytes, filename);
+    }
 
+    public static Map<String, String> parse(byte[] bytes, String filename)
+            throws PaletteIdentifyException, PaletteParseException {
         PaletteFamily paletteFamily = identifyPaletteType(bytes, filename);
         if (paletteFamily == PaletteFamily.PHOTOSHOP) {
             return PhotoshopPaletteParser.parse(bytes);
@@ -114,6 +122,39 @@ public class PaletteParser {
             throw new PaletteParseException();
         }
         return null;
+    }
+
+    public static String renderPaletteAsCsv(byte[] bytes, String fileName) {
+        StringWriter sw = new StringWriter();
+        CSVWriter writer = new CSVWriter(sw, '\t');
+        try {
+            for (Map.Entry<String, String> entry : parse(bytes, fileName).entrySet()) {
+                String[] s = new String[2];
+                s[0] = entry.getKey();
+                s[1] = entry.getValue();
+                writer.writeNext(s);
+            }
+        } catch (PaletteIdentifyException e) {
+            log.warn("Could not identify palette type: " + fileName);
+        } catch (PaletteParseException e) {
+            log.warn("Could not parse palette: " + fileName);
+        }
+        return sw.toString();
+    }
+
+    public static Map<String, String> parseCsv(String text) {
+        Map<String, String> properties = new HashMap<String, String>();
+        StringReader sr = new StringReader(text);
+        CSVReader reader = new CSVReader(sr, '\t');
+        String[] nextLine;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                properties.put(nextLine[0], nextLine[1]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties;
     }
 
 }

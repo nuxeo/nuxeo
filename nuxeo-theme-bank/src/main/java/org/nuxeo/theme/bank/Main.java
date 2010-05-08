@@ -33,6 +33,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.presets.PaletteParser;
 
 @WebObject(type = "theme-banks")
 @Produces("text/html")
@@ -53,21 +54,19 @@ public class Main extends ModuleRoot {
     @GET
     @Path("{bank}")
     public Object displayBank(@PathParam("bank") String bank) {
-        return getTemplate("bank.ftl").
-            arg("styleCollections", getStyleCollectionNames(bank)).
-            arg("bank", bank);
+        return getTemplate("bank.ftl").arg("styleCollections",
+                getStyleCollectionNames(bank)).arg("bank", bank);
     }
 
     @GET
     @Path("{bank}/style/{collection}")
     public Object displayStylesInCollection(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
-        return getTemplate("styleCollection.ftl").
-        arg("styles", getStylesInCollection(bank, collection)).
-        arg("collection", collection).
-        arg("bank", bank);
+        return getTemplate("styleCollection.ftl").arg("styles",
+                getStylesInCollection(bank, collection)).arg("collection",
+                collection).arg("bank", bank);
     }
-    
+
     @GET
     @Produces("text/css")
     @Path("{bank}/style/{collection}/{resource}")
@@ -86,6 +85,30 @@ public class Main extends ModuleRoot {
         return "";
     }
 
+    @GET
+    @Path("{bank}/preset/{collection}/{category}")
+    public String getPreset(@PathParam("bank") String bank,
+            @PathParam("collection") String collection,
+            @PathParam("category") String category) {
+
+        String path = String.format("%s/preset/%s/%s", bank, collection,
+                category);
+        File file = new File(BANKS_DIR, path);
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (File f : file.listFiles()) {
+                String content = FileUtils.readFile(f);
+                content = PaletteParser.renderPaletteAsCsv(content.getBytes(),
+                        f.getName());
+                sb.append(content);
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public List<String> getBankNames() {
         List<String> names = new ArrayList<String>();
         for (String bankName : BANKS_DIR.list()) {
@@ -93,7 +116,7 @@ public class Main extends ModuleRoot {
         }
         return names;
     }
-    
+
     public List<String> getStyleCollectionNames(String bankName) {
         List<String> names = new ArrayList<String>();
         File file = new File(BANKS_DIR, String.format("%s/style", bankName));
@@ -102,10 +125,12 @@ public class Main extends ModuleRoot {
         }
         return names;
     }
-    
-    public List<String> getStylesInCollection(String bankName, String collectionName) {
+
+    public List<String> getStylesInCollection(String bankName,
+            String collectionName) {
         List<String> names = new ArrayList<String>();
-        File file = new File(BANKS_DIR, String.format("%s/style/%s", bankName, collectionName));
+        File file = new File(BANKS_DIR, String.format("%s/style/%s", bankName,
+                collectionName));
         for (String styleName : file.list()) {
             names.add(styleName);
         }

@@ -43,7 +43,7 @@ public class PropertiesPaletteParser extends PaletteParser {
         }
         return entries;
     }
-
+    
     private static Properties getProperties(byte[] bytes) {
         Properties properties = new Properties();
         try {

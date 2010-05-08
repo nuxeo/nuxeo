@@ -745,9 +745,11 @@ public final class ThemeManager implements Registrable {
             Style style = (Style) format;
             if (themeName != null) {
                 ThemeElement theme = getThemeOfFormat(style);
-                // FIXME This shouldn't happen
                 if (theme == null) {
-                    // The style is associated to a non-existing element
+                    if (!style.isNamed()) {
+                        log.warn("THEME inconsistency: " + style
+                                + " is not associated to any element.");
+                    }
                     continue;
                 }
                 if (!themeName.equals(theme.getName())) {
@@ -891,10 +893,10 @@ public final class ThemeManager implements Registrable {
                 }
             }
         }
-        
+
         themeDescriptor.setLoadingFailed(false);
         themeDescriptor.setLastLoaded(new Date());
-        
+
         log.debug("Loaded theme: " + src);
     }
 
@@ -1327,7 +1329,7 @@ public final class ThemeManager implements Registrable {
         return null;
     }
 
-    public List<ResourceBank> getResourceBanks() {
+    public static List<ResourceBank> getResourceBanks() {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         List<ResourceBank> resourceBanks = new ArrayList<ResourceBank>();
         for (Type type : typeRegistry.getTypes(TypeFamily.RESOURCE_BANK)) {
