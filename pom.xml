@@ -10,7 +10,7 @@
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.6.2-NXP-4914-SNAPSHOT</version>
+  <version>1.6.2-SNAPSHOT</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -75,12 +75,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-api</artifactId>
-        <version>1.6.2-NXP-4914-SNAPSHOT</version>
+        <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core</artifactId>
-        <version>1.6.2-NXP-4914-SNAPSHOT</version>
+        <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -95,7 +95,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
-        <version>1.6.2-NXP-4914-SNAPSHOT</version>
+        <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
