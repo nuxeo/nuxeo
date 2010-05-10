@@ -6,6 +6,14 @@
 # Default template to use if not defined in nuxeo.conf
 nuxeo.template=default
 
+# Default IP address binding
+nuxeo.bind.address=0.0.0.0
+
+nuxeo.url=http://localhost:8080/nuxeo
+
+# Not customizable with Tomcat
+org.nuxeo.ecm.contextPath=/nuxeo
+
 # Various other default values
 #nuxeo.db.host=
 #nuxeo.db.port=
@@ -17,4 +25,23 @@ nuxeo.db.max-pool-size=20
 nuxeo.vcs.min-pool-size=0
 nuxeo.vcs.max-pool-size=20
 
-org.nuxeo.ecm.contextPath=/nuxeo
+nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
+
+mail.smtp.host=localhost
+mail.smtp.auth=true
+mail.smtp.username=anonymous
+mail.smtp.password=password
+mail.from=noreply@nuxeo.com
+
+org.nuxeo.ecm.platform.transform.ooo.host.name=127.0.0.1
+org.nuxeo.ecm.platform.transform.ooo.host.port=8100
+org.nuxeo.ecm.platform.transform.ooo.version=2.2.1
+org.nuxeo.ecm.platform.transform.ooo.enableDaemon=true
+
+opensocial.gadgets.host=localhost
+opensocial.gadgets.port=8080
+opensocial.proxy.proxySet=false
+opensocial.proxy.proxyHost=
+opensocial.proxy.proxyPort=
+opensocial.proxy.user=
+opensocial.proxy.password=
