@@ -4,7 +4,7 @@
 </head>
 
 <body>
-  <h1>Style</h1>
+  <h1>${collection} styles</h1>
 
   <ul>
     <#list styles as style>

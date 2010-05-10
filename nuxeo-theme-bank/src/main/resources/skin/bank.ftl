@@ -13,5 +13,12 @@
     </#list>
   </ul>
   
+  <h2>Image collections</h2>
+  <ul>
+    <#list imageCollections as collection>
+      <li><a href="${Root.getPath()}/${bank}/image/${collection}">${collection}</a></li>
+    </#list>
+  </ul>
+  
 </body>
 </html>
