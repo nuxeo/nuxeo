@@ -237,7 +237,7 @@ public class ThemeParser {
         for (Style style : themeManager.getStyles(themeName)) {
             PresetManager.loadPresetsUsedInStyle(style);
         }
-        
+
         themeManager.registerTheme(theme);
         log.info("Loaded THEME: " + themeName);
     }
@@ -371,7 +371,7 @@ public class ThemeParser {
             if (description != null) {
                 format.setDescription(description);
             }
-            
+
             if ("widget".equals(nodeName)) {
                 List<Node> viewNodes = getChildElementsByTagName(n, "view");
                 if (!viewNodes.isEmpty()) {
@@ -384,7 +384,7 @@ public class ThemeParser {
             } else if ("style".equals(nodeName)) {
                 Node nameAttr = attributes.getNamedItem("name");
                 Node inheritedAttr = attributes.getNamedItem("inherit");
-                
+
                 // register the style name
                 String styleName = null;
                 Style style = (Style) format;
@@ -399,32 +399,12 @@ public class ThemeParser {
                     Style inheritedStyle = (Style) themeManager.getNamedObject(
                             themeName, "style", inheritedName);
                     if (inheritedStyle == null) {
-                        // Try to retrieve the style from the resource banks
-                        String cssSource = null;
-                        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(inheritedName);
-                        if (resourceNameMatcher.find()) {
-                            String collectionName = resourceNameMatcher.group(2);
-                            String resourceId = resourceNameMatcher.group(1)
-                                    + ".css";
-                            cssSource = ResourceManager.findBankResource(
-                                    "style", collectionName, resourceId);
-                        }
-                        if (cssSource == null) {
-                            log.error("Unknown style: " + inheritedName);
-                        } else {
-                            try {
-                                inheritedStyle = (Style) FormatFactory.create("style");
-                                inheritedStyle.setName(inheritedName);
-                                themeManager.registerFormat(inheritedStyle);
-                                themeManager.setNamedObject(themeName, "style",
-                                        inheritedStyle);
-                            } catch (ThemeException e) {
-                                throw new ThemeIOException(e);
-                            }
-                            Utils.loadCss(inheritedStyle, cssSource, "*");
-                        }
+                        inheritedStyle = (Style) FormatFactory.create("style");
+                        inheritedStyle.setName(inheritedName);
+                        themeManager.registerFormat(inheritedStyle);
+                        themeManager.setNamedObject(themeName, "style", inheritedStyle);
+                        loadStyle(inheritedStyle);
                     }
-
                     if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
                         log.debug("Made style " + style + " inherit from "
@@ -442,7 +422,14 @@ public class ThemeParser {
                 List<Node> selectorNodes = getChildElementsByTagName(n,
                         "selector");
 
-                if (!selectorNodes.isEmpty()) {
+                if (selectorNodes.isEmpty()) {
+                    if (style.isNamed()) {
+                        // Try to retrieve the style from the resource bank
+                        loadStyle(style);
+                    }
+
+                } else {
+                    // Use the style from the theme
                     for (Node selectorNode : selectorNodes) {
                         NamedNodeMap attrs = selectorNode.getAttributes();
                         Node pathAttr = attrs.getNamedItem("path");
@@ -541,6 +528,27 @@ public class ThemeParser {
         }
     }
 
+    public static void loadStyle(Style style) {
+        if (!style.isNamed()) {
+            return;
+        }
+        String styleName = style.getName();
+        String cssSource = null;
+        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
+        if (resourceNameMatcher.find()) {
+            String collectionName = resourceNameMatcher.group(2);
+            String resourceId = resourceNameMatcher.group(1)
+                    + ".css";
+            cssSource = ResourceManager.findBankResource(
+                    "style", collectionName, resourceId);
+        }
+        if (cssSource == null) {
+            log.error("Unknown style: " + styleName);
+        } else {
+            Utils.loadCss(style, cssSource, "*");
+        }
+    }
+    
     public static void parseProperties(org.w3c.dom.Element doc, Node node)
             throws ThemeIOException {
         NamedNodeMap attributes = node.getAttributes();

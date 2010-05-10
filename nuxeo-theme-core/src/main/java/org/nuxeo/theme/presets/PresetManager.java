@@ -137,6 +137,11 @@ public class PresetManager {
                 continue;
             }
             PresetType preset = getPresetByName(presetName);
+            // load the preset from a remote palette
+            if (preset == null) {
+                loadPaletteOf(presetName);
+            }
+            preset = getPresetByName(presetName);
             if (preset == null) {
                 sb.append(presetStr);
                 continue;
@@ -149,7 +154,6 @@ public class PresetManager {
 
     public static void loadPresetsUsedInStyle(Style style) {
         Properties properties = style.getAllProperties();
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (Map.Entry<Object, Object> property : properties.entrySet()) {
             String propertyValue = (String) property.getValue();
             Matcher m = manyPresetNamePattern.matcher(propertyValue);
@@ -161,25 +165,30 @@ public class PresetManager {
                 }
                 PresetType preset = getPresetByName(presetName);
                 if (preset == null) {
-                    final Matcher resourceNameMatcher = remotePresetNamePattern.matcher(presetName);
-                    if (resourceNameMatcher.find()) {
-                        String collectionName = resourceNameMatcher.group(2);
-                        String category = resourceNameMatcher.group(3);
-                        String resourceId = category;
-                        String content = ResourceManager.findBankResource(
-                                "preset", collectionName, resourceId);
-                        String paletteName = String.format("%s %s",
-                                collectionName, category);
-                        Map<String, String> paletteEntries = PaletteParser.parseCsv(content);
-                        for (Map.Entry<String, String> entry : paletteEntries.entrySet()) {
-                            String value = PresetManager.resolvePresets(null,
-                                    entry.getValue());
-                            preset = new PresetType(entry.getKey(), value,
-                                    paletteName, category);
-                            typeRegistry.register(preset);
-                        }
-                    }
+                    loadPaletteOf(presetName);
                 }
+            }
+        }
+    }
+
+    public static void loadPaletteOf(String presetName) {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final Matcher resourceNameMatcher = remotePresetNamePattern.matcher(presetName);
+        if (resourceNameMatcher.find()) {
+            String collectionName = resourceNameMatcher.group(2);
+            String category = resourceNameMatcher.group(3);
+            String resourceId = category;
+            String content = ResourceManager.findBankResource("preset",
+                    collectionName, resourceId);
+            String paletteName = String.format("%s %s", collectionName,
+                    category);
+            Map<String, String> paletteEntries = PaletteParser.parseCsv(content);
+            for (Map.Entry<String, String> entry : paletteEntries.entrySet()) {
+                String value = PresetManager.resolvePresets(null,
+                        entry.getValue());
+                PresetType preset = new PresetType(entry.getKey(), value,
+                        paletteName, category);
+                typeRegistry.register(preset);
             }
         }
     }
