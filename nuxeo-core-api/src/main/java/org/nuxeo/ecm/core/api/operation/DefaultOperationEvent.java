@@ -72,10 +72,10 @@ public class DefaultOperationEvent implements OperationEvent {
         this.id = id;
         modifications = modifs;
         this.details = details;
-        
+
         this.dirtyUpdateTag = extractLastModified(sessionId, modifs);
     }
- 
+
     protected static long extractLastModified(String sessionId, ModificationSet modif) {
         // TODO navigate modifications and get most recent last modified from documents
         return Calendar.getInstance().getTimeInMillis();
@@ -105,7 +105,7 @@ public class DefaultOperationEvent implements OperationEvent {
         return sessionId;
     }
 
-    public long getDirtyUpdateTag() {
+    public Long getDirtyUpdateTag() {
         return dirtyUpdateTag;
     }
 

@@ -63,7 +63,7 @@ public interface DocumentModelCache {
      */
     DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
-    void setDirtyUpdateTag(Object tag);
+    void handleDirtyUpdateTag(Object tag);
 
     Object getDirtyUpdateTag();
 }

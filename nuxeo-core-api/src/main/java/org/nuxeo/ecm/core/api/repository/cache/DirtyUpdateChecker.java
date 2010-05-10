@@ -21,11 +21,11 @@ public class DirtyUpdateChecker {
         }
     }
 
-    public static void piggyBack(Object tag) {
+    public static void putInThreadContext(Object tag) {
         contextHolder.set(new Context((Long) tag));
     }
 
-    public static void piggyBack() {
+    public static void clearThreadContext() {
         contextHolder.remove();
     }
 
@@ -50,5 +50,8 @@ public class DirtyUpdateChecker {
         throw new ConcurrentModificationException(message);
     }
 
+    public static Object earliestTag(Object tag1, Object tag2) {
+        return Long.class.cast(tag1) > Long.class.cast(tag2) ? tag1 : tag2;
+    }
 
 }

@@ -522,7 +522,7 @@ implements DocumentModelCache {
         return dirtyUpdateTag;
     }
 
-    public void setDirtyUpdateTag(Object tag) {
-        dirtyUpdateTag = tag;
+    public void handleDirtyUpdateTag(Object tag) {
+        dirtyUpdateTag = DirtyUpdateChecker.earliestTag(dirtyUpdateTag, tag);
     }
 }
