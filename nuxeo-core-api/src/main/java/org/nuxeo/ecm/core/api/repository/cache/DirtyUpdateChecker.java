@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 
 public class DirtyUpdateChecker {
 
@@ -36,7 +37,15 @@ public class DirtyUpdateChecker {
         }
         long modified;
         try {
-            modified = doc.getProperty("dc:modified").getValue(Date.class).getTime();
+            Property modifiedProp = doc.getProperty("dc:modified");
+            if (modifiedProp == null) {
+                return;
+            }
+            Date modifiedDate = modifiedProp.getValue(Date.class);
+            if (modifiedDate == null) {
+                return;
+            }
+            modified = modifiedDate.getTime();
         } catch (Exception e) {
             throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
         }
