@@ -46,6 +46,11 @@
       <artifactId>cssparser</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.w3c</groupId>
       <artifactId>sac</artifactId>
     </dependency>

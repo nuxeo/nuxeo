@@ -77,6 +77,7 @@ import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
 import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
@@ -113,6 +114,8 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
+    private final Map<String, byte[]> cachedBinaries = new HashMap<String, byte[]>();
+    
     private List<String> resourceOrdering = new ArrayList<String>();
 
     private static final File CUSTOM_THEME_DIR;
@@ -1280,6 +1283,20 @@ public final class ThemeManager implements Registrable {
         if (resourceOrdering.contains(resourceName)) {
             resourceOrdering.remove(resourceName);
         }
+    }
+
+    public byte[] getImageResource(String path) {
+        String key = String.format("image/%s", path);
+        byte[] data = cachedBinaries.get(key);
+        if (data == null) {
+            String[] parts = path.split("/");
+            String collectionName = parts[0];
+            String resourceName = parts[1];
+            data = ResourceManager.getBinaryBankResource("image", collectionName,
+                    resourceName);
+            cachedBinaries.put(key, data);
+        }
+        return data;
     }
 
     public static List<ViewType> getViewTypesForFragmentType(

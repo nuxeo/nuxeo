@@ -141,8 +141,8 @@ public final class Utils {
         return os;
     }
 
-    public static String fetchUrl(URL url) {
-        String content = null;
+    public static byte[] fetchUrl(URL url) {
+        byte[] data = null;
         try {
             final InputStream in = url.openStream();
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -151,13 +151,13 @@ public final class Utils {
             while ((i = in.read(buffer)) != -1) {
                 os.write(buffer, 0, i);
             }
-            content = os.toString();
+            data = os.toByteArray();
             in.close();
             os.close();
         } catch (IOException e) {
             log.error("Could not retrieve URL: " + url.toString());
         }
-        return content;
+        return data;
     }
     
     public static void writeFile(URL url, String text) throws IOException {

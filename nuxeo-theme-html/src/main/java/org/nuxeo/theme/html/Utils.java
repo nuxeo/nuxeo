@@ -14,9 +14,6 @@
 
 package org.nuxeo.theme.html;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -41,16 +38,6 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.properties.OrderedProperties;
 import org.nuxeo.theme.themes.ThemeManager;
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.css.CSSValue;
-
-import com.steadystate.css.parser.CSSOMParser;
 
 public final class Utils {
 

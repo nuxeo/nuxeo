@@ -15,8 +15,10 @@
 package org.nuxeo.theme.resources;
 
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.json.JSONArray;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,9 +55,8 @@ public class ResourceBank implements Type {
         return TypeFamily.RESOURCE_BANK;
     }
 
-    public String getResourceContent(String typeName, String collectionName,
+    public byte[] getResourceContent(String typeName, String collectionName,
             String resourceId) {
-
         String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
                 URIUtils.quoteURIPathComponent(collectionName, true),
                 URIUtils.quoteURIPathComponent(resourceId, true));
@@ -67,6 +68,23 @@ public class ResourceBank implements Type {
                     + " from THEME BANK: " + bankName);
         }
         return null;
+    }
+
+    public List<String> getImageIndex() {
+        List<String> paths = new ArrayList<String>();
+        String src = String.format("%s/images", connectionUrl);
+        String list = "";
+        try {
+            list = Utils.fetchUrl(new URL(src)).toString();
+        } catch (Exception e) {
+            log.error("Could not retrieve image list: " + src
+                    + " from THEME BANK: " + bankName);
+            return paths;
+        }
+        for (Object path : JSONArray.fromObject(list)) {
+            paths.add((String) path);
+        }
+        return paths;
     }
 
 }

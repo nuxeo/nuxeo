@@ -539,7 +539,7 @@ public class ThemeParser {
             String collectionName = resourceNameMatcher.group(2);
             String resourceId = resourceNameMatcher.group(1)
                     + ".css";
-            cssSource = ResourceManager.findBankResource(
+            cssSource = ResourceManager.getBankResource(
                     "style", collectionName, resourceId);
         }
         if (cssSource == null) {

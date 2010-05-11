@@ -178,7 +178,7 @@ public class PresetManager {
             String collectionName = resourceNameMatcher.group(2);
             String category = resourceNameMatcher.group(3);
             String resourceId = category;
-            String content = ResourceManager.findBankResource("preset",
+            String content = ResourceManager.getBankResource("preset",
                     collectionName, resourceId);
             String paletteName = String.format("%s %s", collectionName,
                     category);

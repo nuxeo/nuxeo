@@ -124,15 +124,27 @@ public final class ResourceManager implements Registrable {
         }
     }
 
-    public static String findBankResource(String typeName, String collectionName, String resourceName) {
-        String content = null;
+    public static byte[] getBinaryBankResource(String typeName,
+            String collectionName, String resourceName) {
+        byte[] data = null;
         for (ResourceBank resourceBank : ThemeManager.getResourceBanks()) {
-            content = resourceBank.getResourceContent(typeName, collectionName, resourceName);
-            if (content != null) {
+            data = resourceBank.getResourceContent(typeName, collectionName,
+                    resourceName);
+            if (data != null) {
                 break;
             }
         }
-        return content;
+        return data;
+    }
+
+    public static String getBankResource(String typeName,
+            String collectionName, String resourceName) {
+        byte[] data = getBinaryBankResource(typeName, collectionName,
+                resourceName);
+        if (data == null) {
+            return null;
+        }
+        return new String(data);
     }
 
     public void clear() {
