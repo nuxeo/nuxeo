@@ -1574,41 +1574,17 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>-Xmx512M</argLine>
-          <systemProperties>
-            <property>
-              <name>net.sourceforge.cobertura.datafile</name>
-              <value>${project.build.directory}/cobertura/cobertura.ser</value>
-            </property>
+          <systemPropertyVariables>
+            <net.sourceforge.cobertura.datafile>${project.build.directory}/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
             <!-- Used by org.nuxeo.ecm.core.storage.sql.DatabaseHelper -->
-            <property>
-              <name>nuxeo.test.vcs.db</name>
-              <value>${nuxeo.test.vcs.db}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.url</name>
-              <value>${nuxeo.test.vcs.url}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.server</name>
-              <value>${nuxeo.test.vcs.server}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.port</name>
-              <value>${nuxeo.test.vcs.port}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.database</name>
-              <value>${nuxeo.test.vcs.database}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.user</name>
-              <value>${nuxeo.test.vcs.user}</value>
-            </property>
-            <property>
-              <name>nuxeo.test.vcs.password</name>
-              <value>${nuxeo.test.vcs.password}</value>
-            </property>
-          </systemProperties>
+            <nuxeo.test.vcs.db>${nuxeo.test.vcs.db}</nuxeo.test.vcs.db>
+            <nuxeo.test.vcs.url>${nuxeo.test.vcs.url}</nuxeo.test.vcs.url>
+            <nuxeo.test.vcs.server>${nuxeo.test.vcs.server}</nuxeo.test.vcs.server>
+            <nuxeo.test.vcs.port>${nuxeo.test.vcs.port}</nuxeo.test.vcs.port>
+            <nuxeo.test.vcs.database>${nuxeo.test.vcs.database}</nuxeo.test.vcs.database>
+            <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
+            <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
+          </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
             <include>**/*Test.java</include>
@@ -1649,7 +1625,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.0-beta-4</version>
+        <version>1.0-beta-3</version>
         <executions>
           <execution>
             <phase>validate</phase>
