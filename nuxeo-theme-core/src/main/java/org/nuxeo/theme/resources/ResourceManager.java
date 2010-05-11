@@ -18,7 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -145,6 +147,14 @@ public final class ResourceManager implements Registrable {
             return null;
         }
         return new String(data);
+    }
+
+    public static List<String> getBankImagePaths() {
+        Set<String> paths = new HashSet<String>();
+        for (ResourceBank resourceBank : ThemeManager.getResourceBanks()) {
+            paths.addAll(resourceBank.getImagePaths());
+        }
+        return new ArrayList<String>(paths);
     }
 
     public void clear() {

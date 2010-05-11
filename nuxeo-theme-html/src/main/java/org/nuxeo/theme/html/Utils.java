@@ -55,7 +55,6 @@ public final class Utils {
     private static final Pattern classAttrPattern = Pattern.compile(
             " class=\"(.*?)\"", Pattern.DOTALL);
 
-
     private static final Pattern hexColorPattern = Pattern.compile(
             ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
 
@@ -77,7 +76,8 @@ public final class Utils {
     private static final Properties cssProperties = new OrderedProperties();
 
     static {
-        org.nuxeo.theme.Utils.loadProperties(cssProperties, CSS_PROPERTIES_RESOURCE);
+        org.nuxeo.theme.Utils.loadProperties(cssProperties,
+                CSS_PROPERTIES_RESOURCE);
     }
 
     private Utils() {
@@ -255,9 +255,9 @@ public final class Utils {
             for (String path : style.getPathsForView(viewName)) {
                 final Properties styleProperties = style.getPropertiesFor(
                         viewName, path);
-//                if (styleProperties.isEmpty()) {
-//                    continue;
-//                }
+                // if (styleProperties.isEmpty()) {
+                // continue;
+                // }
 
                 final String[] splitPaths = path.split(",");
                 final int len = splitPaths.length;
@@ -424,5 +424,17 @@ public final class Utils {
             return true;
         }
         return false;
+    }
+
+    public static String getImageMimeType(String ext) {
+        ext = ext.toLowerCase();
+        if ("png".equals(ext)) {
+            return "image/png";
+        } else if ("gif".equals(ext)) {
+            return "image/gif";
+        } else if ("jpg".equals(ext) || "jpeg".equals(ext) || "jpe".equals(ext)) {
+            return "image/jpeg";
+        }
+        return "application/octet-stream";
     }
 }

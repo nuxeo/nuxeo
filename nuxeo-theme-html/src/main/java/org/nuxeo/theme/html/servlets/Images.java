@@ -17,19 +17,14 @@ package org.nuxeo.theme.html.servlets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.regex.Matcher;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.theme.ApplicationType;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.themes.ThemeManager;
-import org.nuxeo.theme.types.TypeFamily;
 
 public final class Images extends HttpServlet implements Serializable {
 
@@ -44,14 +39,23 @@ public final class Images extends HttpServlet implements Serializable {
     @Override
     protected void doPost(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
-
+        
         final String path = request.getPathInfo().substring(1);
         
-	// XXX
-        response.addHeader("content-type", "image/png");
+        String ext = FileUtils.getFileExtension(path);
+        String mimeType = Utils.getImageMimeType(ext);
+        response.addHeader("content-type", mimeType);
         
-        ThemeManager themeManager = Manager.getThemeManager();
-        byte[] data = themeManager.getImageResource(path);
+        // Cache headers
+        final String lifetime = "604800"; // 1 week
+        final long now = System.currentTimeMillis();
+        response.addHeader("Cache-Control", "max-age=" + lifetime);
+        response.addHeader("Cache-Control", "must-revalidate");
+        response.setDateHeader("Last-Modified", now);
+        response.setDateHeader("Expires", now + new Long(lifetime)
+                * 1000L);
+        
+        byte[] data = Manager.getThemeManager().getImageResource(path);
 
         OutputStream os = response.getOutputStream();
         os.write(data);

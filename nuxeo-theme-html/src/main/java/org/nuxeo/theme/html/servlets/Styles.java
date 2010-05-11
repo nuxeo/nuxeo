@@ -17,6 +17,7 @@ package org.nuxeo.theme.html.servlets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.zip.GZIPOutputStream;
 
@@ -28,6 +29,7 @@ import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -95,10 +97,15 @@ public final class Styles extends HttpServlet implements Serializable {
                         INDENT));
             }
             rendered = sb.toString();
-
+            
             if (basePath != null) {
                 rendered = rendered.replaceAll("\\$\\{basePath\\}",
                         Matcher.quoteReplacement(basePath));
+            }
+
+            // Replace images from resource banks
+            for (String path : ResourceManager.getBankImagePaths()) {
+                rendered = rendered.replace(path, String.format("'/nuxeo/nxthemes-images/%s'", path));
             }
             themeManager.setCachedStyles(themeName, basePath, rendered);
         }

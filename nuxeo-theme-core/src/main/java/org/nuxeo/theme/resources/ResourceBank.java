@@ -70,12 +70,12 @@ public class ResourceBank implements Type {
         return null;
     }
 
-    public List<String> getImageIndex() {
+    public List<String> getImagePaths() {
         List<String> paths = new ArrayList<String>();
         String src = String.format("%s/images", connectionUrl);
         String list = "";
         try {
-            list = Utils.fetchUrl(new URL(src)).toString();
+            list = new String(Utils.fetchUrl(new URL(src)));
         } catch (Exception e) {
             log.error("Could not retrieve image list: " + src
                     + " from THEME BANK: " + bankName);
