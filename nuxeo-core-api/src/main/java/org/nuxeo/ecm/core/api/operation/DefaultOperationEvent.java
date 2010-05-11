@@ -20,9 +20,9 @@
 package org.nuxeo.ecm.core.api.operation;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 
 /**
  * This class is not thread safe
@@ -45,7 +45,7 @@ public class DefaultOperationEvent implements OperationEvent {
 
     public Object details; // should be serializable
 
-    public long dirtyUpdateTag;
+    public Object dirtyUpdateTag;
 
     /**
      *
@@ -73,13 +73,9 @@ public class DefaultOperationEvent implements OperationEvent {
         modifications = modifs;
         this.details = details;
 
-        this.dirtyUpdateTag = extractLastModified(sessionId, modifs);
+        this.dirtyUpdateTag = DirtyUpdateChecker.computeTag(sessionId, modifs);
     }
 
-    protected static long extractLastModified(String sessionId, ModificationSet modif) {
-        // TODO navigate modifications and get most recent last modified from documents
-        return Calendar.getInstance().getTimeInMillis();
-    }
 
     public Object getDetails() {
         return details;
@@ -105,7 +101,7 @@ public class DefaultOperationEvent implements OperationEvent {
         return sessionId;
     }
 
-    public Long getDirtyUpdateTag() {
+    public Object getDirtyUpdateTag() {
         return dirtyUpdateTag;
     }
 
