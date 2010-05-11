@@ -17,11 +17,12 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.util.ConcurrentModificationException;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -160,19 +161,27 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(listener.committed);
     }
 
+    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+
     public void testDirtyUpdateDetection() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             // no pooling conf available
             return;
         }
         // first transaction
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "Note");
+        doc.getProperty("dc:title").setValue("initial");
         doc = session.createDocument(doc);
         // let commit do an implicit save
+        closeSession(session);
         TransactionHelper.commitOrRollbackTransaction(); // release cx
+
+
+        final DocumentRef ref = new PathRef("/doc");
         TransactionHelper.startTransaction();
-        openSession(); // reopen cx and hold open
-        doc.setProperty("dc", "title", "first update");
+        openSession();
+        doc = session.getDocument(ref);
+        doc.getProperty("dc:title").setValue("first");
         session.saveDocument(doc);
         Thread t = new Thread() {
             @Override
@@ -182,12 +191,14 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
                     CoreSession session2;
                     session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
                     try {
-                        DocumentModel doc = session2.getDocument(new PathRef("/doc"));
-                        doc.setProperty("dc", "title", "second update");
-                        session.saveDocument(doc);
+                        DocumentModel doc = session2.getDocument(ref);
+                        doc.getProperty("dc:title").setValue("second update");
+                        session2.saveDocument(doc);
+                    } catch (Exception e) {
+                        log.error("Catched error while setting title", e);
                     } finally {
-                        closeSession(session2);
                         TransactionHelper.commitOrRollbackTransaction();
+                        closeSession(session2);
                     }
                 } catch (Exception e) {
                     fail(e.toString());
@@ -199,7 +210,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         boolean isDirtyUpdateDetected = false;
         try {
             TransactionHelper.commitOrRollbackTransaction(); // release cx
-        } catch (ConcurrentModificationException ex) {
+        } catch (javax.transaction.RollbackException ex) {
             isDirtyUpdateDetected = true;
         }
         if (isDirtyUpdateDetected == false) {
