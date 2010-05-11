@@ -89,14 +89,10 @@
           <excludes>
             <exclude>**/*Test*.java</exclude>
           </excludes>
-
           <!-- This trick allows the JBoss EJB3StandaloneBootstrap to find and deploy our compiled EJBs!! -->
-          <systemProperties>
-            <property>
-              <name>java.class.path</name>
-              <value>build</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <java.class.path>build</java.class.path>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
