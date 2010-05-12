@@ -32,10 +32,10 @@
   </div>
 </#macro>
 
-<#macro viewAdditionnalDoc docsByCat>
+<#macro viewAdditionalDoc docsByCat>
   <#assign categories=docsByCat?keys/>
   <#if ((categories?size)>1)>
-    <div class="additionnalDocs"> Additional documentation <br/>
+    <div class="additionalDocs"> Additional documentation <br/>
     <table>
     <tr>
     <#list categories as category>
@@ -60,7 +60,7 @@
 
     <#list categories as category>
      <#list docsByCat[category] as docItem>
-        <div class="additionnalDocPannel hiddenDocPanel" id="${docItem.id}">
+        <div class="additionalDocPanel hiddenDocPanel" id="${docItem.id}">
         <A name="${docItem.id}"> ${docItem.title} </A>
           <@docContent docItem/>
         </div>

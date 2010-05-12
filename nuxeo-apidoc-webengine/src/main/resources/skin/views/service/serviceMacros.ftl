@@ -25,7 +25,7 @@
 </#if>
     </div>
 
-    <div class="foldablePannel">
+    <div class="foldablePanel">
 
     <span class="componentId">Service Id : ${serviceItem.id}</span> <br/>
 
@@ -40,7 +40,7 @@
 
    </div>
 
-   <@viewAdditionnalDoc docsByCat=serviceDocs.getDocumentationItems(Context.getCoreSession())/>
+   <@viewAdditionalDoc docsByCat=serviceDocs.getDocumentationItems(Context.getCoreSession())/>
 
   </div>
   </div>

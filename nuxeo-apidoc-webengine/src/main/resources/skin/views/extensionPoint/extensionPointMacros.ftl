@@ -26,7 +26,7 @@
 
   </div>
 
-  <div class="foldablePannel">
+  <div class="foldablePanel">
 
   <span class="componentId">ExtensionPoint Id : ${extensionPointItem.id}</span> <br/>
 
@@ -56,7 +56,7 @@
   </ul>
   </p>
 
-  <@viewAdditionnalDoc docsByCat=extensionPointDocs.getDocumentationItems(Context.getCoreSession())/>
+  <@viewAdditionalDoc docsByCat=extensionPointDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

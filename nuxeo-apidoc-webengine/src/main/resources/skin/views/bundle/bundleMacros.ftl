@@ -28,7 +28,7 @@
 
 
   </div>
-  <div class="foldablePannel">
+  <div class="foldablePanel">
 
   <span class="componentId">Bundle Id : ${bundleItem.id}</span><br/>
 
@@ -89,7 +89,7 @@
 
   </#if>
 
-  <@viewAdditionnalDoc docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession())/>
+  <@viewAdditionalDoc docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 

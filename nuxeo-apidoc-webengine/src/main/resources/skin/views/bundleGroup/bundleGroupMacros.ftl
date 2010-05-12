@@ -19,7 +19,7 @@
 
   </div>
 
-  <div class="foldablePannel">
+  <div class="foldablePanel">
   <p><@docContent docItem=bundleGroupDesc /></p>
 
   <#if (subGroups?size>0)>
@@ -63,7 +63,7 @@
    <@viewBundle bundleWO=bundle />
   </#list>
   </span>
-  <@viewAdditionnalDoc docsByCat=bundleGroupDocs.getDocumentationItems(Context.getCoreSession())/>
+  <@viewAdditionalDoc docsByCat=bundleGroupDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
 
