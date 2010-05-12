@@ -678,11 +678,11 @@
       <!-- build zip artifacts with resources -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <!--        <version>2.1</version>-->
         <configuration>
-          <!--          <archiverConfig>-->
-          <!--            <duplicateBehavior>preserve</duplicateBehavior>-->
-          <!--          </archiverConfig>-->
+              <!-- Workaround for MASSEMBLY-285 -->
+<!--          <archiverConfig>-->
+<!--            <duplicateBehavior>help</duplicateBehavior>-->
+<!--          </archiverConfig>-->
           <descriptors>
             <descriptor>src/main/assemble/resources/common.xml</descriptor>
             <descriptor>
@@ -710,7 +710,7 @@
             <id>make-resources</id>
             <phase>process-resources</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>
