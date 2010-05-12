@@ -56,7 +56,7 @@ public class BundleIdReader {
         } catch (FileNotFoundException e) {
             // do nothing - this is the first time the runtime is started
         } catch (IOException e) {
-            log.error("The bundle.ids file is corrupted. reseting bundle ids.");
+            log.error("The bundle.ids file is corrupted. Resetting bundle ids.");
         } finally {
             if (in != null) {
                 try {

@@ -300,7 +300,7 @@ public class DocumentationComponent extends DefaultComponent implements
         return doc.getAdapter(DocumentationItem.class);
     }
 
-    protected DocumentModel updateDocumenModel(DocumentModel doc, DocumentationItem item) throws ClientException{
+    protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) throws ClientException{
 
         doc.setPropertyValue("dc:title", item.getTitle());
         Blob content = new StringBlob(item.getContent());
@@ -314,7 +314,7 @@ public class DocumentationComponent extends DefaultComponent implements
         doc.setPropertyValue("nxdoc:applicableVersions",
                 (Serializable) item.getApplicableVersion());
 
-        ArrayList<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
         Map<String, String> attData = item.getAttachments();
         if (attData!=null && attData.size()>0) {
             for (String fileName : attData.keySet()) {
@@ -367,12 +367,11 @@ public class DocumentationComponent extends DefaultComponent implements
             discardedDoc = session.saveDocument(discardedDoc);
         }
 
-        existingDoc = updateDocumenModel(existingDoc, docItem);
+        existingDoc = updateDocumentModel(existingDoc, docItem);
         existingDoc = session.saveDocument(existingDoc);
         session.save();
         return existingDoc.getAdapter(DocumentationItem.class);
-
-      }
+    }
 
 
     public List<String> getCategoryKeys()  throws Exception {

@@ -148,7 +148,7 @@ public class Distribution extends ModuleRoot{
     @Path(value = "save")
     @Produces("text/html")
     public Object doSave() throws Exception {
-        log.info("Start Snapshoting...");
+        log.info("Start Snapshot...");
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
         if (tx!=null) {
             tx.begin();
@@ -163,7 +163,7 @@ public class Distribution extends ModuleRoot{
             }
             return getView("index");
         }
-        log.info("Snapshoting saved.");
+        log.info("Snapshot saved.");
         if (tx!=null) {
             tx.commit();
         }

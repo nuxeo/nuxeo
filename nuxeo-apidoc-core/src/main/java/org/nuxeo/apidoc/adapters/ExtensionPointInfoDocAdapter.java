@@ -69,7 +69,6 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return new ExtensionPointInfoDocAdapter(doc);
     }
 
-
     public ExtensionPointInfoDocAdapter(DocumentModel doc) {
         super(doc);
     }
@@ -88,18 +87,17 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {
-        String query = "select * from " + ExtensionInfo.TYPE_NAME + " where nxcontribution:extensionPoint='" + this.getId() + "'";
+            String query = "select * from " + ExtensionInfo.TYPE_NAME + " where nxcontribution:extensionPoint='" + this.getId() + "'";
 
-        DocumentModelList docs = getCoreSession().query(query);
+            DocumentModelList docs = getCoreSession().query(query);
 
-        for (DocumentModel contribDoc : docs) {
-            ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
-            if (contrib!=null) {
-                result.add(contrib);
+            for (DocumentModel contribDoc : docs) {
+                ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
+                if (contrib != null) {
+                    result.add(contrib);
+                }
             }
-        }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while fetching contributions", e);
         }
         return result;
@@ -125,7 +123,6 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getVersion() {
-
         BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
         if (parentBundle!=null) {
@@ -136,11 +133,9 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return "?";
     }
 
-
     public String getArtifactType() {
         return ExtensionPointInfo.TYPE_NAME;
     }
-
 
     public String getLabel() {
         return getName() + " (" + getComponent().getId() + ")";
