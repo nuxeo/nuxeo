@@ -54,7 +54,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected URL xmlFileUrl;
 
-    protected String componentClass =null;
+    protected String componentClass;
 
     protected String documentation; //TODO
 

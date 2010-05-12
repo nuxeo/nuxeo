@@ -32,11 +32,11 @@ import org.nuxeo.apidoc.api.BundleGroup;
  */
 public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup{
 
-    protected String key;
-    protected String name;
-    protected List<BundleGroup> subGroups = new ArrayList<BundleGroup>();
-    protected List<String> bundleIds = new ArrayList<String>();
-    protected String version;
+    protected final String key;
+    protected final String name;
+    protected final List<BundleGroup> subGroups = new ArrayList<BundleGroup>();
+    protected final List<String> bundleIds = new ArrayList<String>();
+    protected final String version;
 
     public BundleGroupImpl(String key, String version) {
         this.key=key;

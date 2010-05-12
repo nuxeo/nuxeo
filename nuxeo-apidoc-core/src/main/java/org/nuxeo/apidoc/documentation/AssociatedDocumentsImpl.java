@@ -31,7 +31,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
-public class AssociatedDocumensImpl implements AssociatedDocuments {
+public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
     protected String id;
 
@@ -39,7 +39,7 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
 
     protected CoreSession session;
 
-    public AssociatedDocumensImpl(NuxeoArtifact item, CoreSession session) {
+    public AssociatedDocumentsImpl(NuxeoArtifact item, CoreSession session) {
         this.item = item;
         this.session = session;
     }

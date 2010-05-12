@@ -30,7 +30,7 @@ public class SimpleDocumentationItem implements DocumentationItem {
     protected List<String> applicableVersion = new ArrayList<String>();
 
     protected String content ="";
-    protected String id = null;
+    protected String id;
     protected String renderingType="";
     protected String target="";
     protected String targetType="";

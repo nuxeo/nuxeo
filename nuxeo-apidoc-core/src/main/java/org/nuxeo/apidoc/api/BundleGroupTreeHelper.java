@@ -30,10 +30,10 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  */
 public class BundleGroupTreeHelper {
 
-    protected DistributionSnapshot distrib;
+    protected final DistributionSnapshot distrib;
 
     public BundleGroupTreeHelper(DistributionSnapshot distrib) {
-        this.distrib=distrib;
+        this.distrib = distrib;
     }
 
     protected void browseBundleGroup(BundleGroup group, int level, List<BundleGroupFlatTree> tree) {

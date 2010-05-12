@@ -23,16 +23,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public class FakeNuxeoArtifact implements NuxeoArtifact {
 
-    public String id;
+    public final String id;
 
     public String version;
 
-    public String type;
+    public final String type;
 
     public FakeNuxeoArtifact(NuxeoArtifact artifact) {
-        this.id = artifact.getId();
-        this.version = artifact.getVersion();
-        this.type = artifact.getArtifactType();
+        id = artifact.getId();
+        version = artifact.getVersion();
+        type = artifact.getArtifactType();
     }
 
     public AssociatedDocuments getAssociatedDocuments(CoreSession session) {

@@ -24,11 +24,9 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  *
@@ -37,10 +35,14 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
-    protected DocumentModel doc;
-
-    protected static Log log = LogFactory
+    protected static final Log log = LogFactory
             .getLog(BaseNuxeoArtifactDocAdapter.class);
+
+    protected final DocumentModel doc;
+
+    public BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
+        this.doc = doc;
+    }
 
     protected static String computeDocumentName(String name) {
         return IdUtils.generateId(name, "-", true, 500);
@@ -62,10 +64,6 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
             }
         }
         return null;
-    }
-
-    public BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
-        this.doc = doc;
     }
 
     @Override

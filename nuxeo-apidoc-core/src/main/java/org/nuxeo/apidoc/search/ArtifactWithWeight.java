@@ -21,14 +21,15 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 
 public class ArtifactWithWeight implements Comparable<ArtifactWithWeight> {
 
-    protected NuxeoArtifact artifact;
+    protected final NuxeoArtifact artifact;
 
-    protected int hits=0;
+    protected int hits = 0;
 
     public ArtifactWithWeight(NuxeoArtifact artifact) {
-        this.artifact=artifact;
-        hits=1;
+        this.artifact = artifact;
+        hits = 1;
     }
+
     public NuxeoArtifact getArtifact() {
         return artifact;
     }

@@ -34,12 +34,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -49,19 +44,19 @@ import org.nuxeo.runtime.api.Framework;
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
     protected ServerInfo serverInfo;
-    protected Date created = null;
-    protected List<String> bundlesIds = new ArrayList<String>();
-    protected List<String> javaComponentsIds = new ArrayList<String>();
-    protected Map<String, String> components2Bundles = new HashMap<String, String>();
-    protected Map<String, String> services2Components = new HashMap<String, String>();
-    protected Map<String, ExtensionPointInfo> extensionPoints = new HashMap<String, ExtensionPointInfo>();
-    protected Map<String, ExtensionInfo> contributions = new HashMap<String, ExtensionInfo>();
-    protected Map<String, List<String>> mavenGroups = new HashMap<String, List<String>>();
-    protected Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
-    protected List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
+    protected Date created;
 
+    protected final List<String> bundlesIds = new ArrayList<String>();
+    protected final List<String> javaComponentsIds = new ArrayList<String>();
+    protected final Map<String, String> components2Bundles = new HashMap<String, String>();
+    protected final Map<String, String> services2Components = new HashMap<String, String>();
+    protected final Map<String, ExtensionPointInfo> extensionPoints = new HashMap<String, ExtensionPointInfo>();
+    protected final Map<String, ExtensionInfo> contributions = new HashMap<String, ExtensionInfo>();
+    protected final Map<String, List<String>> mavenGroups = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
+    protected final List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
 
-    protected List<Class> spi = new ArrayList<Class>();
+    protected final List<Class> spi = new ArrayList<Class>();
 
     public RuntimeSnapshot() {
         buildServerInfo();
@@ -74,7 +69,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public String getName() {
         return serverInfo.getName();
     }
-
 
     protected synchronized ServerInfo buildServerInfo() {
         if (serverInfo == null) {
@@ -283,9 +277,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     public List<String> getBundleGroupChildren(String groupId) {
-
-        List<String> res = null;
-        res = mavenSubGroups.get(groupId);
+        List<String> res = mavenSubGroups.get(groupId);
         if (res==null) {
             //String grpId = groupId.substring(4);
             res = mavenGroups.get(groupId);

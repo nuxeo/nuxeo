@@ -23,9 +23,9 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 
 public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
-    protected String serviceClassName;
+    protected final String serviceClassName;
 
-    protected ComponentInfo component;
+    protected final ComponentInfo component;
 
     public ServiceInfoImpl(String serviceClassName, ComponentInfo component) {
         this.serviceClassName = serviceClassName;

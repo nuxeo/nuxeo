@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "apibrowser")
 public class ApiBrowser extends DefaultObject {
 
-    String distributionId = null;
+    String distributionId;
 
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);

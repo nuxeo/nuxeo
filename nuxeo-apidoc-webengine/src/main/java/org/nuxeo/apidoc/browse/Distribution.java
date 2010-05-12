@@ -58,43 +58,42 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @WebObject(type = "distribution")
 public class Distribution extends ModuleRoot{
 
-    protected static Log log = LogFactory.getLog(Distribution.class);
+    protected static final Log log = LogFactory.getLog(Distribution.class);
 
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
     public String getNavigationPoint() {
-
         String currentUrl = getContext().getURL();
         String navPoint = "somewhere";
 
         if (currentUrl.contains("/listBundles")) {
-            navPoint="listBundles";
-        }else if (currentUrl.contains("/listComponents")) {
-            navPoint="listComponents";
-        }else if (currentUrl.contains("/listServices")) {
-            navPoint="listServices";
-        }else if (currentUrl.contains("/listExtensionPoints")) {
-            navPoint="listExtensionPoints";
-        }else if (currentUrl.contains("/listContributions")) {
-            navPoint="listContributions";
-        }else if (currentUrl.contains("/listBundleGroups")) {
-            navPoint="listBundleGroups";
-        }else if (currentUrl.contains("/viewBundleGroup")) {
-            navPoint="viewBundleGroup";
-        }else if (currentUrl.contains("/viewComponent")) {
-            navPoint="viewComponent";
-        }else if (currentUrl.contains("/viewService")) {
-            navPoint="viewService";
-        }else if (currentUrl.contains("/viewExtensionPoint")) {
-            navPoint="viewExtensionPoint";
-        }else if (currentUrl.contains("/viewContribution")) {
-            navPoint="viewContribution";
-        }else if (currentUrl.contains("/viewBundle")) {
-            navPoint="viewBundle";
-        }else if (currentUrl.contains("/doc")) {
-            navPoint="documentation";
+            navPoint = "listBundles";
+        } else if (currentUrl.contains("/listComponents")) {
+            navPoint = "listComponents";
+        } else if (currentUrl.contains("/listServices")) {
+            navPoint = "listServices";
+        } else if (currentUrl.contains("/listExtensionPoints")) {
+            navPoint = "listExtensionPoints";
+        } else if (currentUrl.contains("/listContributions")) {
+            navPoint = "listContributions";
+        } else if (currentUrl.contains("/listBundleGroups")) {
+            navPoint = "listBundleGroups";
+        } else if (currentUrl.contains("/viewBundleGroup")) {
+            navPoint = "viewBundleGroup";
+        } else if (currentUrl.contains("/viewComponent")) {
+            navPoint = "viewComponent";
+        } else if (currentUrl.contains("/viewService")) {
+            navPoint = "viewService";
+        } else if (currentUrl.contains("/viewExtensionPoint")) {
+            navPoint = "viewExtensionPoint";
+        } else if (currentUrl.contains("/viewContribution")) {
+            navPoint = "viewContribution";
+        } else if (currentUrl.contains("/viewBundle")) {
+            navPoint = "viewBundle";
+        } else if (currentUrl.contains("/doc")) {
+            navPoint = "documentation";
         }
 
         return navPoint;
@@ -179,11 +178,9 @@ public class Distribution extends ModuleRoot{
     @GET
     @Path(value = "downloadDoc")
     public Response downloadDoc() throws Exception {
-
-        File tmp= null;
         DocumentationService ds = Framework.getService(DocumentationService.class);
+        File tmp = new File("/tmp/test.zip");
         //tmp = File.createTempFile("export", ".zip");
-        tmp = new File("/tmp/test.zip");
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
         ds.exportDocumentation(getContext().getCoreSession(), out);
@@ -192,16 +189,13 @@ public class Distribution extends ModuleRoot{
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
         return Response.ok(aFile).header("Content-Disposition",
                  "attachment;filename=" + "nuxeo-documentation.zip").type("application/zip").build();
-
     }
 
     @GET
     @Path(value = "download/{distributionId}")
     public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
-
-        File tmp= null;
+        File tmp = new File("/tmp/test.zip");
         //tmp = File.createTempFile("export", ".zip");
-        tmp = new File("/tmp/test.zip");
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
 
@@ -219,9 +213,7 @@ public class Distribution extends ModuleRoot{
     @Path(value = "uploadDistrib")
     @Produces("text/html")
     public Object uploadDistrib() {
-
         Blob blob = getContext().getForm().getFirstBlob();
-
         return getView("index");
     }
 
@@ -248,9 +240,7 @@ public class Distribution extends ModuleRoot{
 
     public boolean isEditor() {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
-        if (principal.getAllGroups().contains(SecurityConstants.Write_Group)) {
-            return true;
-        }
-        return false;
+        return principal.getAllGroups().contains(SecurityConstants.Write_Group);
     }
+
 }

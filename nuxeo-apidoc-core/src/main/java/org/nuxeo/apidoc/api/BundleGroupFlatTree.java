@@ -25,9 +25,9 @@ package org.nuxeo.apidoc.api;
  */
 public class BundleGroupFlatTree {
 
-    protected BundleGroup group;
+    protected final BundleGroup group;
 
-    protected int level;
+    protected final int level;
 
     public BundleGroupFlatTree(BundleGroup group, int level) {
         this.group = group;

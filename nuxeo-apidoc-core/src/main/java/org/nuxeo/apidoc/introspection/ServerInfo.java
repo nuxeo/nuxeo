@@ -102,12 +102,12 @@ import org.osgi.framework.Bundle;
  */
 public class ServerInfo {
 
-    protected String name;
-    protected String version;
-    protected Map<String, BundleInfoImpl> bundles = new HashMap<String, BundleInfoImpl>();
-    protected List<Class> allSpi = new ArrayList<Class>();
+    protected static final Log log = LogFactory.getLog(ServerInfo.class);
 
-    protected static Log log = LogFactory.getLog(ServerInfo.class);
+    protected final String name;
+    protected final String version;
+    protected final Map<String, BundleInfoImpl> bundles = new HashMap<String, BundleInfoImpl>();
+    protected final List<Class> allSpi = new ArrayList<Class>();
 
     public ServerInfo(String name, String version) {
         this.name = name;

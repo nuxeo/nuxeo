@@ -411,38 +411,28 @@ public class DocumentationComponent extends DefaultComponent implements
         return categories;
     }
 
-
     public void exportDocumentation(CoreSession session, OutputStream out) {
-
-         DocumentReader reader = null;
-         DocumentWriter writer = null;
-         try {
-             String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
-             DocumentModelList docList = session.query(query);
-             reader = new DocumentModelListReader(docList);
-             writer = new NuxeoArchiveWriter(out);
-             DocumentPipe pipe = new DocumentPipeImpl(10);
-             pipe.setReader(reader);
-             pipe.setWriter(writer);
-             pipe.run();
-             reader.close();
-             writer.close();
-         }
-         catch (Exception e) {
-             log.error("Error while exporting documentation", e);
-         }
+        try {
+            String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+            DocumentModelList docList = session.query(query);
+            DocumentReader reader = new DocumentModelListReader(docList);
+            DocumentWriter writer = new NuxeoArchiveWriter(out);
+            DocumentPipe pipe = new DocumentPipeImpl(10);
+            pipe.setReader(reader);
+            pipe.setWriter(writer);
+            pipe.run();
+            reader.close();
+            writer.close();
+        } catch (Exception e) {
+            log.error("Error while exporting documentation", e);
+        }
     }
 
-
     public void importDocumentation(CoreSession session, InputStream is ) {
-
-        DocumentReader reader = null;
-        DocumentWriter writer = null;
         try {
-
             String importPath = getDocumentationRoot(session).getPathAsString();
-            reader = new NuxeoArchiveReader(is);
-            writer = new DocumentModelWriter(session, importPath);
+            DocumentReader reader = new NuxeoArchiveReader(is);
+            DocumentWriter writer = new DocumentModelWriter(session, importPath);
 
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);
@@ -457,14 +447,12 @@ public class DocumentationComponent extends DefaultComponent implements
             pipe.run();
             reader.close();
             writer.close();
-
         }
         catch (Exception e) {
             log.error("Error while importing documentation", e);
         }
 
     }
-
 
     public String getDocumentationStats(CoreSession session) {
         String result="";
@@ -479,6 +467,5 @@ public class DocumentationComponent extends DefaultComponent implements
         }
         return result;
     }
-
 
 }

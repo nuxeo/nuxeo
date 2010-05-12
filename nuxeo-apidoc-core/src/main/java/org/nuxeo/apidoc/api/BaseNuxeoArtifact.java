@@ -19,7 +19,7 @@
 
 package org.nuxeo.apidoc.api;
 
-import org.nuxeo.apidoc.documentation.AssociatedDocumensImpl;
+import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -34,7 +34,7 @@ public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
     public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
 
         if (associatedDocuments==null) {
-            associatedDocuments = new AssociatedDocumensImpl(this, session);
+            associatedDocuments = new AssociatedDocumentsImpl(this, session);
         }
         return associatedDocuments;
     }

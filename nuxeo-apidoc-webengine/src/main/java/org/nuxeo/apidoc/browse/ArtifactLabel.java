@@ -22,9 +22,14 @@ import java.util.List;
 
 public class ArtifactLabel implements Comparable<ArtifactLabel>{
 
-    protected String id;
+    protected final String id;
 
-    protected String label;
+    protected final String label;
+
+    public ArtifactLabel(String id, String label) {
+        this.id = id;
+        this.label = label;
+    }
 
     public String getId() {
         return id;
@@ -32,11 +37,6 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
 
     public String getLabel() {
         return label;
-    }
-
-    public ArtifactLabel(String id, String label) {
-        this.id=id;
-        this.label = label;
     }
 
     @Override

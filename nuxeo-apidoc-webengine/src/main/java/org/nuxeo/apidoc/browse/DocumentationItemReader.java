@@ -43,7 +43,8 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
 
     protected static final Log log = LogFactory.getLog(DocumentationItemReader.class);
 
-    protected @Context HttpServletRequest request;
+    @Context
+    protected HttpServletRequest request;
 
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
@@ -68,10 +69,10 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
         if ("on".equals(v)) { //TODO better to use "true" or "false" and use Boolean.parseBoolean(v) to decode it
             item.approved = true;
         }
-        String[] ar = request.getParameterValues("versions");
-        if (ar != null) {
-            for (int i=0; i<ar.length; i++) {
-                item.applicableVersion.add(ar[i]);
+        String[] versions = request.getParameterValues("versions");
+        if (versions != null) {
+            for (String version : versions) {
+                item.applicableVersion.add(version);
             }
         }
 

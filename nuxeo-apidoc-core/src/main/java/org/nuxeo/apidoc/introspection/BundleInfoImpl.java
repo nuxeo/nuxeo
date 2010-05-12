@@ -30,9 +30,10 @@ import org.nuxeo.apidoc.api.ComponentInfo;
  */
 public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
-    protected String bundleId;
+    protected final String bundleId;
+    protected final Collection<ComponentInfo> components;
+
     protected String fileName;
-    protected Collection<ComponentInfo> components;
     protected String manifest; //TODO
     protected String[] requirements;
 

@@ -57,9 +57,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     public static final String RUNTIME="current";
 
-    protected static Log log = LogFactory.getLog(SnapshotManagerComponent.class);
+    protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
 
-    protected SnapshotPersister persister = new SnapshotPersister();
+    protected final SnapshotPersister persister = new SnapshotPersister();
 
     public DistributionSnapshot getRuntimeSnapshot() {
         if (runtimeSnapshot==null) {

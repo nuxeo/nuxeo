@@ -35,12 +35,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocumentationItemDocAdapter implements DocumentationItem {
 
-    protected DocumentModel doc;
-
     public static final String DOC_TYPE = "NXDocumentation";
 
-    protected static Log log = LogFactory
-            .getLog(DocumentationItemDocAdapter.class);
+    protected static final Log log = LogFactory.getLog(DocumentationItemDocAdapter.class);
+
+    protected final DocumentModel doc;
 
     public DocumentationItemDocAdapter(DocumentModel doc) {
         this.doc = doc;

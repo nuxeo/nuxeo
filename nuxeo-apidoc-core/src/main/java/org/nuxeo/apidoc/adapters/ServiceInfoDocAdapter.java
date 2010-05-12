@@ -17,17 +17,12 @@
 
 package org.nuxeo.apidoc.adapters;
 
-import java.io.Serializable;
-
 import org.nuxeo.apidoc.api.BundleInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements ServiceInfo {

@@ -64,7 +64,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
-    public void testBrowse() throws Exception  {;
+    public void testBrowse() throws Exception {
 
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
@@ -101,7 +101,6 @@ public class TestBrowse extends NXRuntimeTestCase {
             System.out.println("extensionPoint : " + epid);
             //System.out.println(ci.getXmlFileContent());
         }
-
     }
 
     protected void dumpBundleGroup(BundleGroup bGroup, int level) {
@@ -144,14 +143,12 @@ public class TestBrowse extends NXRuntimeTestCase {
 
         Collection<ExtensionInfo> contribs = epi.getExtensions();
         assertFalse(contribs.isEmpty());
-
     }
 
     public void testIdGen() {
-
         String service="org.nuxeo.ecm.core.service";
         String[] parts = service.split("\\.");
         String label = parts[parts.length-1];
-
     }
+
 }
