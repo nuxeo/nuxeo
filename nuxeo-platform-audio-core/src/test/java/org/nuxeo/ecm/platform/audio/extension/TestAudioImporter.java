@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.File;
@@ -81,11 +98,9 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
         assertEquals("133", docModelResult.getPropertyValue("aud:duration").toString());
-
     }
 
     public void testImportAudio() throws Exception {
-
         File testFile = getTestFile();
         Blob blob = StreamingBlob.createFromFile(testFile, "audio/wav");
         String rootPath = root.getPathAsString();

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 /**
  * This class will create a Document of type "Audio" from the uploaded file, if the uploaded file
  * matches any of the mime types listed in the filemanager-plugins.xml file.
- *
+ * <p>
  * If an existing document with the same title is found, it will overwrite it and increment the
  * version number if the overwrite flag is set to true;
  * Otherwise, it will generate a new title and create a new Document of type Audio with that title.
@@ -42,54 +42,54 @@ import org.nuxeo.ecm.platform.types.TypeManager;
  */
 public class AudioImporter extends AbstractFileImporter {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AudioImporter.class);
 
-	public static final String AUDIO_TYPE = "Audio";
+    public static final String AUDIO_TYPE = "Audio";
 
-	public DocumentModel create(CoreSession documentManager, Blob content,
-			String path, boolean overwrite, String fullname,
-			TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content,
+            String path, boolean overwrite, String fullname,
+            TypeManager typeService) throws ClientException, IOException {
 
-		String filename = FileManagerUtils.fetchFileName(fullname);
+        String filename = FileManagerUtils.fetchFileName(fullname);
 
-		String title = FileManagerUtils.fetchTitle(filename);
+        String title = FileManagerUtils.fetchTitle(filename);
 
-		// Check to see if an existing Document with the same title exists.
-		DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
+        // Check to see if an existing Document with the same title exists.
+        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
 
-		// if overwrite flag is true and the file already exists, overwrite it
-		if (overwrite && (docModel != null)) {
+        // if overwrite flag is true and the file already exists, overwrite it
+        if (overwrite && (docModel != null)) {
 
-			// update known attributes, format is: schema, attribute, value
-			docModel.setProperty("file", "content", content);
-			docModel.setProperty("dublincore", "title", title);
+            // update known attributes, format is: schema, attribute, value
+            docModel.setProperty("file", "content", content);
+            docModel.setProperty("dublincore", "title", title);
 
-			// now save the uploaded file as another new version
-			docModel = overwriteAndIncrementversion(documentManager, docModel);
+            // now save the uploaded file as another new version
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
 
-		} else {
+        } else {
 
-			// Creating an unique identifier
-			String docId = IdUtils.generateId(title);
+            // Creating an unique identifier
+            String docId = IdUtils.generateId(title);
 
-			docModel = documentManager.createDocumentModel(path, docId, AUDIO_TYPE);
+            docModel = documentManager.createDocumentModel(path, docId, AUDIO_TYPE);
             // update known attributes, format is: schema, attribute, value
             docModel.setProperty("dublincore", "title", title);
             docModel.setProperty("file", "content", content);
             docModel.setProperty("file", "filename", filename);
 
-			// updating icon
-			Type docType = typeService.getType(AUDIO_TYPE);
-			if (docType != null) {
-				String iconPath = docType.getIcon();
-				docModel.setProperty("common", "icon", iconPath);
-			}
-			docModel = documentManager.createDocument(docModel);
-		}
-		return docModel;
-	}
+            // updating icon
+            Type docType = typeService.getType(AUDIO_TYPE);
+            if (docType != null) {
+                String iconPath = docType.getIcon();
+                docModel.setProperty("common", "icon", iconPath);
+            }
+            docModel = documentManager.createDocument(docModel);
+        }
+        return docModel;
+    }
 
 }
