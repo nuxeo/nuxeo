@@ -35,7 +35,7 @@
 <#macro viewAdditionnalDoc docsByCat>
   <#assign categories=docsByCat?keys/>
   <#if ((categories?size)>1)>
-    <div class="additionnalDocs"> Additionnal documentation <br/>
+    <div class="additionnalDocs"> Additional documentation <br/>
     <table>
     <tr>
     <#list categories as category>

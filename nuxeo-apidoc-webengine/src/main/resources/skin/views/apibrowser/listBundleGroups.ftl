@@ -8,7 +8,7 @@
 
 <@block name="right">
 
-<h1> listing all deployed bundle groups </h1>
+<h1>All deployed bundle groups </h1>
 
 <ul>
 <#list tree as bundleGroup>

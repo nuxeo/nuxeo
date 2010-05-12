@@ -41,7 +41,6 @@ public class SimpleDocumentationItem implements DocumentationItem {
     protected Map<String, String> attachements = new LinkedMap();
 
     public SimpleDocumentationItem() {
-
     }
 
     public SimpleDocumentationItem(NuxeoArtifact nxItem) {

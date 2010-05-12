@@ -44,11 +44,9 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         return getLabel();
     }
 
-
     public int compareTo(ArtifactLabel other) {
         return getLabel().compareTo(other.getLabel());
     }
-
 
     public static ArtifactLabel createLabelFromService(String service) {
         String[] parts = service.split("\\.");
@@ -66,7 +64,6 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
     }
 
     public static ArtifactLabel createLabelFromComponent(String component) {
-
         String label = component;
         List<String> prefixes = new ArrayList<String>();
         prefixes.add("org.nuxeo.ecm.platform.");
@@ -78,7 +75,6 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
     }
 
     public static ArtifactLabel createLabelFromExtensionPoint(String extensionPoint) {
-
         String[] parts = extensionPoint.split("--");
         String component = parts[0];
         String ep = parts[1];
@@ -91,6 +87,5 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         String label = parts[parts.length-1];
         return new ArtifactLabel(contribution, label);
     }
-
 
 }

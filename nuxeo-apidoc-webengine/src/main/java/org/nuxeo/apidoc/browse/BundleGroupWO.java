@@ -40,7 +40,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "bundleGroup")
 public class BundleGroupWO extends NuxeoArtifactWebObject {
 
-
     @GET
     @Produces("text/html")
     @Path(value = "introspection")
@@ -89,6 +88,5 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
         }
         return result;
     }
-
 
 }
