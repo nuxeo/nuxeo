@@ -10,11 +10,20 @@
 <@block name="right">
 
 <#if searchFilter??>
-  <h1> listing components with filter '${searchFilter}' </h1>
+  <h1> Components listing (with filter '${searchFilter}') </h1>
 </#if>
 <#if !searchFilter>
-  <h1> listing all components</h1>
+  <h1> Components listing </h1>
 </#if>
+
+<p>
+This screen list the components present in the selected Nuxeo Distribution (${distId}).<br/>
+There are : <br>
+<ul>
+ <li> <A href="#javaComponents">Java components </A>(${javaComponents?size}) </li>
+ <li> <A href="#xmlComponents">XML components </A>(${xmlComponents?size}) </li>
+</ul>
+</p>
 
   <#if !Root.currentDistribution.live>
     <span style="float:right">
@@ -29,14 +38,16 @@
   </#if>
 
 
-<h2> listing all deployed java components (${javaComponents?size})</h2>
+<A name="javaComponents">&nbsp;</A>
+<h2> Java components (${javaComponents?size})</h2>
 <#list javaComponents as component>
 
   <A href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</A><br/>
 
 </#list>
 
-<h2> listing all deployed pure XML components (${xmlComponents?size})</h2>
+<A name="xmlComponents">&nbsp;</A>
+<h2> pure XML components (${xmlComponents?size})</h2>
 <#list xmlComponents as component>
 
   <A href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</A><br/>

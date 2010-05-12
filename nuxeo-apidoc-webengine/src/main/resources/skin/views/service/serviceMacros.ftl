@@ -11,7 +11,18 @@
     <div class="blocTitle bTitle${nestedLevel}" id="Service.${serviceItem.id}">
     <img src="${skinPath}/images/${serviceDesc.targetType}.png" alt="Service"/>
      ${serviceDesc.title}
-    <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/doc"> Edit </A>
+
+<#if Root.isEditor()>
+    <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/doc">
+    <img src="${skinPath}/images/edit.png" alt="Edit"/>
+    </A>
+</#if>
+<#if This.nxArtifact.id!=serviceItem.id>
+&nbsp;&nbsp;
+    <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/">
+    <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+    </A>
+</#if>
     </div>
 
     <div class="foldablePannel">

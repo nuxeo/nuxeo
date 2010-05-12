@@ -12,7 +12,17 @@
   <img src="${skinPath}/images/${contributionDesc.targetType}.png" alt="Contribution"/>
   ${contributionDesc.title}
 
-  <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/doc"> Edit </A>
+<#if Root.isEditor()>
+  <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/doc">
+  <img src="${skinPath}/images/edit.png" alt="Edit"/>
+  </A>
+</#if>
+<#if This.nxArtifact.id!=contributionItem.id>
+&nbsp;&nbsp;
+    <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/">
+    <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+    </A>
+</#if>
 
   </div>
 
@@ -32,8 +42,8 @@
    </pre>
   </div>
   <br/>
-
-  <h4> target ExtensionPoint </h4>
+  <br/>
+  <b> target ExtensionPoint </b>
   <A href="${Root.path}/${distId}/viewExtensionPoint/${contributionItem.extensionPoint}">
   ${contributionItem.extensionPoint}
   </A>

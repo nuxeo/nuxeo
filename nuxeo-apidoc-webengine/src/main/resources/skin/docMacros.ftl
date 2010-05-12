@@ -73,11 +73,15 @@
 
 <#macro filterForm resultSize artifactType>
   <#if searchFilter??>
-    <h1> listing ${artifactType}s with filter '${searchFilter}' (${resultSize}) </h1>
+    <h1> ${artifactType} listing with filter '${searchFilter}' (${resultSize}) </h1>
   </#if>
   <#if !searchFilter>
-    <h1> listing all ${artifactType}s (${resultSize})</h1>
+    <h1> ${artifactType} listing (${resultSize})</h1>
   </#if>
+
+  <p>
+  This screen lists the ${artifactType} present in the selected distribution (${distId}).
+  </p>
 
   <#if !Root.currentDistribution.live>
     <span style="float:right">

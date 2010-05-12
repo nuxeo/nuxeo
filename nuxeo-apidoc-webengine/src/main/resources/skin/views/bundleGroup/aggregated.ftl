@@ -10,7 +10,7 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
+<H1> View Bundle group ${nxItem.id}</H1>
 
 <#include "/views/bundleGroup/bundleGroupMacros.ftl">
 

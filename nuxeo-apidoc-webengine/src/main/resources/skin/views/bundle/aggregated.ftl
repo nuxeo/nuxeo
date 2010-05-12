@@ -10,7 +10,7 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}</H1>
+<H1> View Bundle ${nxItem.id}</H1>
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 
 <#include "/views/bundle/bundleMacros.ftl">

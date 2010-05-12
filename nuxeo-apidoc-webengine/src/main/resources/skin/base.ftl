@@ -29,7 +29,7 @@
     <td class="header">
       <@block name="header">
         <div class="logo">
-          <a href="${Root.path}"><img src="${skinPath}/images/logo_connect_white.png" height="28px" border="0"/></a>
+          <a href="${Root.path}"><img src="${skinPath}/images/logo_nxplorer_white.png" height="28px" border="0"/></a>
         </div>
         <div class="login">
            <#include "nxlogin.ftl">
@@ -117,6 +117,8 @@
     // toggle code viewer
     $(".resourceToggle").click(function() {
      $(this).next().toggleClass('hiddenResource');
+     $(this).toggleClass('resourceToggle');
+     $(this).toggleClass('resourceToggleUp');
     });
 
     // toggle title bars

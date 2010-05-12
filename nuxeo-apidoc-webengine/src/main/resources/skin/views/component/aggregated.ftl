@@ -10,8 +10,9 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}
-<A href="${Root.path}/${distId}/viewBundle/${This.nxArtifact.bundle.id}/aggView"> Up </A>
+<H1> View for Nuxeo Component <span class="componentTitle">${nxItem.id}</span>
+<A href="${Root.path}/${distId}/viewBundle/${This.nxArtifact.bundle.id}/" title="go to parent bundle"> <img src="${skinPath}/images/up.gif"/> </A>
+
 </H1>
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 

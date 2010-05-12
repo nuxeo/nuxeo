@@ -17,6 +17,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
+import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,8 +55,8 @@ public class DocumentationComponent extends DefaultComponent implements
     public static final String Root_PATH = "/";
     public static final String Root_NAME = "nuxeo-api-doc";
 
-    public static final String Read_Grp = "Everyone";
-    public static final String Write_Grp = "members";
+    public static final String Read_Grp = SecurityConstants.Read_Group;
+    public static final String Write_Grp = SecurityConstants.Write_Group;
 
     protected static Log log = LogFactory.getLog(DocumentationComponent.class);
 

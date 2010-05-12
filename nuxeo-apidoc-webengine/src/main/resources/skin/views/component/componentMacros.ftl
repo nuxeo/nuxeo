@@ -26,26 +26,40 @@
 
   ${componentDesc.title}
 
-  <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc"> Edit </A>
+<#if Root.isEditor()>
+  <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc">
+  <img src="${skinPath}/images/edit.png" alt="Edit"/>
+  </A>
+</#if>
+
+<#if This.nxArtifact.id!=componentItem.id>
+&nbsp;&nbsp;
+    <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/">
+    <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+    </A>
+</#if>
 
   </div>
 
   <div class="foldablePannel">
 
-  <span class="componentId">Component Id : ${componentItem.id}</span> <br/>
+  <span class="componentId">Component Id : ${componentItem.id}</span> <br/><br/>
 
+  <span class="builtindoc">
   <#if componentItem.xmlPureComponent>
       ${componentDesc.title} is a pure Xml Component (no java Code).
   </#if>
   <#if !componentItem.xmlPureComponent>
-       ${componentDesc.title} holds a Java component (implementation class : ${componentItem.componentClass})
+       ${componentDesc.title} is a Java component (implementation class : ${componentItem.componentClass})
   </#if>
+  </span>
   <br/>
   <br/>
 
   <p><@docContent docItem=componentDesc /></p>
-
-  Component XML descriptor <span class="resourceToggle"> ${componentItem.xmlFileName} </span>
+  <span class="builtindoc">
+  Component XML descriptor
+  </span><span class="resourceToggle"> ${componentItem.xmlFileName} </span>
     <div class="hiddenResource">
     <pre><code>
     ${componentItem.xmlFileContent?html}
@@ -59,10 +73,14 @@
   <br/>
   <b>Declared services</b>
   <p>
+  <span class="builtindoc">
   ${componentDesc.title} contains ${services?size} services. <br/>
+  </span>
 
   <#if (services?size>1) >
+  <span class="builtindoc">
   Service index : <br/>
+  </span>
   <table class="linkTable">
     <#list services as service>
       <tr>
@@ -84,12 +102,17 @@
   </#if>
 
   <#if (xps?size>0) >
+  <br/>
   <b>Declared extension points</b>
   <p>
+  <span class="builtindoc">
   ${componentDesc.title} exposes ${xps?size} extension points. <br/>
+  </span>
 
   <#if (xps?size>1) >
+  <span class="builtindoc">
   Extension point index : <br/>
+  </span>
   <table class="linkTable">
     <#list xps as xp>
       <tr>
@@ -112,12 +135,17 @@
 
 
  <#if (contribs?size>0) >
+ <br/>
  <b>Declared contributions</b>
   <p>
+  <span class="builtindoc">
   ${componentDesc.title} holds ${contribs?size} contributions.<br/>
+  </span>
 
  <#if (contribs?size>1) >
+ <span class="builtindoc">
   Contribution index : <br/>
+  </span>
   <table class="linkTable">
     <#list contribs as contrib>
       <tr>

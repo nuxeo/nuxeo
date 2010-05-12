@@ -11,7 +11,11 @@
   <div id="BundleGroup.${bundleGroupItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
   <div class="blocTitle bTitle${nestedLevel}" id="${bundleGroupItem.id}"> BundleGroup ${bundleGroupDesc.title}
 
-  <A href="${Root.path}/${distId}/viewBundleGroup/${bundleGroupItem.id}/doc"> Edit </A>
+<#if Root.isEditor()>
+  <A href="${Root.path}/${distId}/viewBundleGroup/${bundleGroupItem.id}/doc">
+  <img src="${skinPath}/images/edit.png" alt="Edit"/>
+  </A>
+</#if>
 
   </div>
 
@@ -39,6 +43,7 @@
   </#list>
   </#if>
 
+  <span class="builtindoc">
   ${bundleGroupDesc.title} is composed of ${bundles?size} bundles.
 
   <table class="linkTable">
@@ -57,7 +62,7 @@
   <#list bundles as bundle>
    <@viewBundle bundleWO=bundle />
   </#list>
-
+  </span>
   <@viewAdditionnalDoc docsByCat=bundleGroupDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>

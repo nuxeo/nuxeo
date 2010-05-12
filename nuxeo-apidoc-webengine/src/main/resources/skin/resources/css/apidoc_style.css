@@ -19,7 +19,7 @@ height:280px;
 }
 
 h1 {
-font:normal 2.0em "Lucida Grande", Verdana, sans-serif;
+font:normal 1.9em "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
 color:black;
 }
@@ -194,12 +194,25 @@ color:#fff;
   border-color:black;
 }
 
+
 .resourceToggle {
   cursor:hand;
-  padding:2px;
+  padding:2 15 2 2;
   margin:2px;
-  background-color:#DDDDDD;
+  color:blue;
+  text-decoration:underline;
+  background:transparent url(../images/down.gif) no-repeat right center;
 }
+
+.resourceToggleUp {
+  cursor:hand;
+  padding:2 15 2 2;
+  margin:2px;
+  color:blue;
+  text-decoration:underline;
+  background:#EEEEFF url(../images/up.gif) no-repeat right center;
+}
+
 
 .blocTitle {
   background-color:#EEEEFF;
@@ -319,7 +332,7 @@ color:#fff;
   }
 
 .currentNavPoint {
-  background-color:#CCCCDD;
+  background-color:#EEEEFF;
 }
 
 .spacerTab {
@@ -331,3 +344,28 @@ color:#fff;
 .currentNavPoint td {
   background-color:#CCCCDD;
 }
+
+.docContent {
+  color:green;
+  //background-color:red;
+}
+.doc p,ul,li{
+  color:black;
+  font-style:italic;
+}
+
+.componentId {
+  color:black;
+  font-family:monospace;
+  padding:4px;
+  margin;4px;
+ }
+
+.builtindoc {
+  color:#444466;
+  font-family:monospace;
+}
+
+.componentTitle {
+  font-size:13pt;
+ }

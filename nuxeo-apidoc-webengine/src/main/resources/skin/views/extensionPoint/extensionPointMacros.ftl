@@ -11,7 +11,19 @@
   <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">
   <img src="${skinPath}/images/${extensionPointDesc.targetType}.png" alt="ExtensionPoint"/>
    ${extensionPointDesc.title} (${extensionPointItem.name})
-  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/doc"> Edit </A>
+
+<#if Root.isEditor()>
+  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/doc">
+  <img src="${skinPath}/images/edit.png" alt="Edit"/>
+  </A>
+</#if>
+  &nbsp;&nbsp;
+<#if This.nxArtifact.id!=extensionPointItem.id>
+  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/">
+  <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+  </A>
+</#if>
+
   </div>
 
   <div class="foldablePannel">
@@ -30,9 +42,13 @@
   </div>
 
   <br/>
-
+<br/>
   <p>
-  <h4> Known contributions </h4>
+  <b> Known contributions </b>
+  <br/>
+ <span class="builtindoc">
+   This extension points has ${extensionPointItem.extensions?size} know contributions.<br/>
+ </span>
   <ul>
   <#list extensionPointItem.extensions as contrib>
     <li><A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>

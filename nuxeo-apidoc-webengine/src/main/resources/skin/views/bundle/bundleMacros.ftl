@@ -13,7 +13,20 @@
   <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">
   <img src="${skinPath}/images/${bundleDesc.targetType}.png" alt="Bundle"/>
   ${bundleDesc.title}
-  <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/doc"> Edit </A>
+<#if Root.isEditor()>
+  <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/doc">
+  <img src="${skinPath}/images/edit.png" alt="Edit"/>
+  </A>
+</#if>
+
+<#if This.nxArtifact.id!=bundleItem.id>
+&nbsp;&nbsp;
+    <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/">
+    <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+    </A>
+</#if>
+
+
   </div>
   <div class="foldablePannel">
 
@@ -49,9 +62,11 @@
   <br/>
   <#if (components?size>0) >
 
+  <span class="builtindoc">
   This bundle contains ${components?size} components.
 
   <#if (components?size>1) >
+  <br/>
   Sub Components index :
   <table class="linkTable">
     <#list components as component>
@@ -65,6 +80,7 @@
       </tr>
     </#list>
   </table>
+  </span>
   </#if>
 
     <#list components as component>

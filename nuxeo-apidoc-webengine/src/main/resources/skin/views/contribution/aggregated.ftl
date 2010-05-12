@@ -10,8 +10,8 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}
-<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.id?split("--")[0]}/aggView"> Up </A>
+<H1> View Contribution <span class="componentTitle">${nxItem.id}</span>
+<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.id?split("--")[0]}/" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
 </H1>
 
 <#include "/views/contribution/contributionMacros.ftl">

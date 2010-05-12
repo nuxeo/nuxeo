@@ -10,10 +10,10 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View for ${nxItem.artifactType} ${nxItem.id}
+<H1> View Extension Point <span class="componentTitle">${nxItem.id}</span>
 
 <#if This.nxArtifact.component??>
-  <A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.component.id}/aggView"> Up </A>
+  <A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.component.id}/" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
 </#if>
 </H1>
 
