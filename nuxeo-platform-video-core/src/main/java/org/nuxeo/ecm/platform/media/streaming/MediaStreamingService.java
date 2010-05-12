@@ -25,13 +25,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface MediaStreamingService {
 
-    public boolean isServiceActivated();
+    boolean isServiceActivated();
 
-    public String getStreamingServerBaseURL();
+    String getStreamingServerBaseURL();
 
-    public String getStreamURLFromDocumentModel(DocumentModel mediaDoc)
+    String getStreamURLFromDocumentModel(DocumentModel mediaDoc)
             throws ClientException;
 
-    public boolean isStreamableMedia(DocumentModel doc);
+    boolean isStreamableMedia(DocumentModel doc);
 
 }
