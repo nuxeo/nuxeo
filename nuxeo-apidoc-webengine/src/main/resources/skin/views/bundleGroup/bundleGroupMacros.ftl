@@ -23,7 +23,7 @@
   <p><@docContent docItem=bundleGroupDesc /></p>
 
   <#if (subGroups?size>0)>
-  ${bundleGroupDesc.title} is contains ${subGroups?size} sub BundleGroups.
+  ${bundleGroupDesc.title} contains ${subGroups?size} sub BundleGroups.
 
   <table class="linkTable">
   <#list subGroups as subGroup>
@@ -66,9 +66,6 @@
   <@viewAdditionalDoc docsByCat=bundleGroupDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>
   </div>
-
-
-
 
   <#assign nestedLevel=nestedLevel-1/>
 </#macro>

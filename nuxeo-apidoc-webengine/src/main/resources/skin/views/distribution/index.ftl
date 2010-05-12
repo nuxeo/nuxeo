@@ -12,17 +12,23 @@
 <h1> Nuxeo Platform Explorer </h1>
 
 <p>
-This application allows you to explore Nuxeo Enterprise Platform.<br/><br/>
-
-You can explorer the current live Nuxeo distribution (i.e. : the one that runs this server) or browse a distribution that has been snapshoted and saved into local Document Repository.<br/>
-
-Keep in mind that only snapshoted distribution (i.e: non live) are store as documents and therefore they are the only one to be searchable.
-
+This application allows you to explore Nuxeo Enterprise Platform.
 </p>
+
+<p>
+You can explore the current live Nuxeo distribution (i.e. the one that runs this server)
+or browse a distribution that has been snapshotted and saved into local Document Repository.
+</p>
+
+<p>
+Keep in mind that only snapshotted distributions (i.e non-live) are stored as documents and
+therefore they are the only one to be searchable.
+</p>
+
 <h2>Nuxeo EP Distributions</h2>
 
 <p>
-Here the distribution currently available.
+Here are the currently available distributions:
 </p>
 
 <#assign rtSnap=Root.runtimeDistribution/>
@@ -95,12 +101,11 @@ Documentation items are associated to the Nuxeo Platform artifacts.<br/>
 Documentation packs can be downloaded or uploaded here.
 </p>
 
+<p>
 Documentation contains currently ${Root.documentationInfo}
-<br/>
+</p>
 
-<A href="${Root.path}/downloadDoc">Export</A> all documentation as a zip.<br/><br/> <br/>
-
-
+<a href="${Root.path}/downloadDoc">Export</a> all documentation as a zip.<br/><br/> <br/>
 
 <br/>
 <#if Root.isEditor()>
