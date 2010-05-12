@@ -932,14 +932,14 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>bouncycastle</groupId>
-        <artifactId>bcmail-jdk14</artifactId>
-        <version>136</version>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcmail-jdk15</artifactId>
+        <version>1.45</version>
       </dependency>
       <dependency>
-        <groupId>bouncycastle</groupId>
-        <artifactId>bcprov-jdk14</artifactId>
-        <version>136</version>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15</artifactId>
+        <version>1.45</version>
       </dependency>
       <dependency>
         <groupId>org.fontbox</groupId>
