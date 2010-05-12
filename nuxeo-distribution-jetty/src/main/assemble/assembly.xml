@@ -48,9 +48,7 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />
     </unzip>
-    <chmod dir="${jetty}/bin"
-           perm="ug+x"
-           includes="*.sh,nuxeoctl,openofficectl" />
+    <chmod dir="${jetty}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
     <!-- Template configuration not yet implemented for Jetty 
     <unzip dest="${jetty}/templates">
@@ -102,7 +100,7 @@
     </unzip>
     <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty/bin"
            perm="ug+x"
-           includes="*.sh,nuxeoctl,openofficectl" />
+           includes="*.sh,*ctl,*.command" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
          includes="nuxeo-ep-${maven.project.version}-jetty/**" />
@@ -147,7 +145,7 @@
     </unzip>
     <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty/bin"
            perm="ug+x"
-           includes="*.sh,nuxeoctl,openofficectl" />
+           includes="*.sh,*ctl,*.command" />
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-jetty/**" />
