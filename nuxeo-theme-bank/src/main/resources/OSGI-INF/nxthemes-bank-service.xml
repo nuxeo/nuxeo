@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.bank.BankService">
+
+  <documentation>
+    Service providing an extension mechanism for Theme Banks .
+    @author Jean-Marc Orliaguet (jmo@chalmers.se)
+  </documentation>
+
+  <implementation class="org.nuxeo.theme.bank.BankService"/>
+
+  <extension-point name="banks">
+    <documentation>
+    Import of bank data
+    </documentation>
+    <object class="org.nuxeo.theme.bank.BankImport"/>
+  </extension-point>
+
+</component>

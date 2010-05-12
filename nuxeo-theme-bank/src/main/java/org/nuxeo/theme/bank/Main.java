@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,21 +42,13 @@ import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.presets.PaletteParser;
 
 @WebObject(type = "theme-banks")
 @Produces(MediaType.TEXT_HTML)
 public class Main extends ModuleRoot {
 
-    private static final File BANKS_DIR;
-
     private static final String SERVER_ID = "Nuxeo/ThemeBank-1.0";
-
-    static {
-        BANKS_DIR = new File(Framework.getRuntime().getHome(), "theme-banks");
-        BANKS_DIR.mkdirs();
-    }
 
     @GET
     public Object getIndex() {
@@ -71,16 +62,8 @@ public class Main extends ModuleRoot {
     @Path("{bank}")
     public Object displayBank(@PathParam("bank") String bank) {
         return getTemplate("bank.ftl").arg("bank", bank).arg(
-                "styleCollections", getCollections(bank, "style")).arg(
-                "imageCollections", getCollections(bank, "image"));
-    }
-
-    public List<String> getBankNames() {
-        List<String> names = new ArrayList<String>();
-        for (String bankName : BANKS_DIR.list()) {
-            names.add(bankName);
-        }
-        return names;
+                "styleCollections", BankManager.getCollections(bank, "style")).arg(
+                "imageCollections", BankManager.getCollections(bank, "image"));
     }
 
     /*
@@ -91,7 +74,7 @@ public class Main extends ModuleRoot {
     public Object displayStylesInCollection(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
         return getTemplate("styleCollection.ftl").arg("styles",
-                getItemsInCollection(bank, "style", collection)).arg(
+                BankManager.getItemsInCollection(bank, "style", collection)).arg(
                 "collection", collection).arg("bank", bank);
     }
 
@@ -104,7 +87,7 @@ public class Main extends ModuleRoot {
 
         String path = String.format("%s/style/%s/%s", bank, collection,
                 resource);
-        File file = new File(BANKS_DIR, path);
+        File file = BankManager.getFile(path);
         if (!file.exists()) {
             return Response.status(404).build();
         }
@@ -124,7 +107,7 @@ public class Main extends ModuleRoot {
             @PathParam("category") String category) {
         String path = String.format("%s/preset/%s/%s", bank, collection,
                 category);
-        File file = new File(BANKS_DIR, path);
+        File file = BankManager.getFile(path);
         String content = "";
         try {
             StringBuilder sb = new StringBuilder();
@@ -150,7 +133,7 @@ public class Main extends ModuleRoot {
     public Object displayImagesInCollection(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
         return getTemplate("imageCollection.ftl").arg("images",
-                getItemsInCollection(bank, "image", collection)).arg(
+                BankManager.getItemsInCollection(bank, "image", collection)).arg(
                 "collection", collection).arg("bank", bank);
     }
 
@@ -161,7 +144,7 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         String path = String.format("%s/image/%s/%s", bank, collection,
                 resource);
-        File file = new File(BANKS_DIR, path);
+        File file = BankManager.getFile(path);
         if (!file.exists()) {
             return Response.status(404).build();
         }
@@ -181,45 +164,35 @@ public class Main extends ModuleRoot {
     @Path("{bank}/images")
     public String listImages(@PathParam("bank") String bank) {
         String path = String.format("%s/image/", bank);
-        JSONArray index=new JSONArray();
-        File file = new File(BANKS_DIR, path);
+        JSONArray index = new JSONArray();
+        File file = BankManager.getFile(path);
         for (File c : file.listFiles()) {
             if (!c.isDirectory()) {
                 continue;
             }
             for (File i : c.listFiles()) {
-                    index.add(String.format("%s/%s", c.getName(), i.getName()));
+                index.add(String.format("%s/%s", c.getName(), i.getName()));
             }
         }
         return index.toString();
     }
 
     /*
-     * Collections
+     * API
      */
-    public List<String> getCollections(String bank, String typeName) {
-        List<String> names = new ArrayList<String>();
-        File file = new File(BANKS_DIR, String.format("%s/%s", bank, typeName));
-        for (String collectionName : file.list()) {
-            names.add(collectionName);
-        }
-        return names;
+    public static List<String> getBankNames() {
+        return BankManager.getBankNames();
     }
 
-    public List<String> getItemsInCollection(String bank, String typeName,
-            String collection) {
-        List<String> names = new ArrayList<String>();
-        File file = new File(BANKS_DIR, String.format("%s/%s/%s", bank,
-                typeName, collection));
-        for (String item : file.list()) {
-            names.add(item);
-        }
-        return names;
+    public static List<String> getCollections(String bank, String typeName) {
+        return BankManager.getCollections(bank, typeName);
     }
 
-    /*
-     * Helpers
-     */
+    public static List<String> getItemsInCollection(String bank,
+            String typeName, String collection) {
+        return BankManager.getItemsInCollection(bank, typeName, collection);
+    }
+
     private static StreamingOutput streamFile(final File file) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException,

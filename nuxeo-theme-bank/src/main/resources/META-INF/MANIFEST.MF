@@ -8,3 +8,4 @@ Bundle-Vendor: Chalmers
 Provide-Package: org.nuxeo.theme.bank
 Require-Bundle: org.nuxeo.ecm.webengine.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
+Nuxeo-Component: OSGI-INF/nxthemes-bank-service.xml, OSGI-INF/nxthemes-bank-contrib.xml
