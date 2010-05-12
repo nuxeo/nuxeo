@@ -1,11 +1,7 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
+<@block name="stylesheets"></@block>
+<@block name="header_scripts"></@block>
 
 <@block name="right">
 
@@ -83,7 +79,7 @@ Here are the currently available distributions:
 
 <br/>
 <#if Root.isEditor()>
-<p> You can use this form to upload a distribution that has been exported as a zip.
+<p> You can use the form below to upload a distribution that has been exported as a zip:
 </p>
 <form method="POST" action="${Root.path}/uploadDistrib" enctype="multipart/form-data" >
   <input type="file" name="archive">
@@ -109,7 +105,7 @@ Documentation contains currently ${Root.documentationInfo}
 
 <br/>
 <#if Root.isEditor()>
-You can use this form to upload a Documentation pack (zip).<br/>
+You can use the form below to upload a documentation pack (zip):<br/>
 <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data" >
   <input type="file" name="archive">
   <input type="submit" value="Upload doc pack">

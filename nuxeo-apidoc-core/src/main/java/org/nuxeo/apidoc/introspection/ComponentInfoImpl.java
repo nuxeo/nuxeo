@@ -60,8 +60,8 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected static Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
-    public ComponentInfoImpl(BundleInfoImpl binfo, String name) {
-        this.bundle = binfo;
+    public ComponentInfoImpl(BundleInfoImpl bundleInfo, String name) {
+        this.bundle = bundleInfo;
         this.name = name;
         extensionPoints = new HashMap<String, ExtensionPointInfo>();
         extensions = new ArrayList<ExtensionInfo>();
@@ -135,8 +135,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     public String getXmlFileName() {
-
-        if (xmlFileUrl==null) {
+        if (xmlFileUrl == null) {
             return "";
         }
         String path = xmlFileUrl.getPath();
@@ -149,8 +148,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     public String getXmlFileContent() {
-
-        if (xmlFileUrl==null) {
+        if (xmlFileUrl == null) {
             return "";
         }
         String path = xmlFileUrl.getPath();

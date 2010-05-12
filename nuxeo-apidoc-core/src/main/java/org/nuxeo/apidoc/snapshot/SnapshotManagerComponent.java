@@ -90,7 +90,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
-        if (persistentSnapshots==null || persistentSnapshots.size()==0) {
+        if (persistentSnapshots == null || persistentSnapshots.isEmpty()) {
             if (session!=null) {
                 readPersistentSnapshots(session);
             } else {
@@ -147,32 +147,27 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
                 if (bg!=null) {
                     version = bg.getVersion();
                 }
-            }
-            else if (BundleInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+            } else if (BundleInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 BundleInfo bi = snap.getBundle(nxItem.getId());
                 if (bi!=null) {
                     version = bi.getVersion();
                 }
-            }
-            else if (ComponentInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+            } else if (ComponentInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ComponentInfo ci = snap.getComponent(nxItem.getId());
                 if (ci!=null) {
                     version = ci.getVersion();
                 }
-            }
-            else if (ExtensionInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+            } else if (ExtensionInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ExtensionInfo ei = snap.getContribution(nxItem.getId());
                 if (ei!=null) {
                     version = ei.getVersion();
                 }
-            }
-            else if (ExtensionPointInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+            } else if (ExtensionPointInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ExtensionPointInfo epi = snap.getExtensionPoint(nxItem.getId());
                 if (epi!=null) {
                     version = epi.getVersion();
                 }
-            }
-            else if (ServiceInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+            } else if (ServiceInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ServiceInfo si = snap.getService(nxItem.getId());
                 if (si!=null) {
                     version = si.getVersion();
@@ -190,7 +185,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
         DistributionSnapshot snap = getSnapshot(key,session);
 
-        if (snap==null) {
+        if (snap == null) {
             throw new Exception("Unable to find Snapshot " + key);
         }
 
@@ -214,14 +209,10 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     public void importSnapshot(CoreSession session, InputStream is)
             throws Exception {
-
-        DocumentReader reader = null;
-        DocumentWriter writer = null;
         try {
-
             String importPath = persister.getDistributionRoot(session).getPathAsString();
-            reader = new NuxeoArchiveReader(is);
-            writer = new DocumentModelWriter(session, importPath);
+            DocumentReader reader = new NuxeoArchiveReader(is);
+            DocumentWriter writer = new DocumentModelWriter(session, importPath);
 
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);
@@ -229,12 +220,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             pipe.run();
             reader.close();
             writer.close();
-
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while importing snapshot", e);
         }
-
     }
 
 }

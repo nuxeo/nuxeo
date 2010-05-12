@@ -1,13 +1,11 @@
 <#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-<@block name="stylesheets">
-</@block>
 
-<@block name="header_scripts">
-</@block>
+<@block name="stylesheets"></@block>
+<@block name="header_scripts"></@block>
 
 <@block name="right">
-<H1> Documentation for ${nxItem.id}</H1>
+<h1> Documentation for ${nxItem.id}</h1>
 <A href="${This.path}/createForm"> Add new </A>
 <br/>
 

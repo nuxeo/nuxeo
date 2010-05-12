@@ -37,7 +37,6 @@ public class BundleGroupTreeHelper {
     }
 
     protected void browseBundleGroup(BundleGroup group, int level, List<BundleGroupFlatTree> tree) {
-
         BundleGroupFlatTree info = new BundleGroupFlatTree(group, level);
         tree.add(info);
 

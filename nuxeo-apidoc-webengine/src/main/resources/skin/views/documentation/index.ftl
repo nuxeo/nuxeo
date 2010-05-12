@@ -1,13 +1,11 @@
 <#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-<@block name="stylesheets">
-</@block>
 
-<@block name="header_scripts">
-</@block>
+<@block name="stylesheets"></@block>
+<@block name="header_scripts"></@block>
 
 <@block name="right">
-<H1> Documentation</H1>
+<h1> Documentation</h1>
 
 <span style="float:right">
 <form method="GET" action="${Root.path}/${distId}/doc/filter" >

@@ -316,9 +316,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     public ServiceInfo getService(String id) {
-
         String cId = services2Components.get(id);
-        if (cId==null) {
+        if (cId == null) {
             return null;
         }
 

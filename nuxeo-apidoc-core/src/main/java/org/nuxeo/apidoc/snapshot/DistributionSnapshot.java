@@ -19,7 +19,6 @@
 
 package org.nuxeo.apidoc.snapshot;
 
-import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -28,8 +27,6 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  *
@@ -38,7 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
-    static final String TYPE_NAME ="NXDistribution";
+    String TYPE_NAME ="NXDistribution";
 
     String getKey();
 

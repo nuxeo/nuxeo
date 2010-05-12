@@ -49,7 +49,6 @@ import javax.xml.namespace.QName;
  */
 public class XMLWriter {
 
-
     protected static String CRLF = System.getProperty("line.separator");
 
     protected int indent;
@@ -555,9 +554,5 @@ public class XMLWriter {
             return null;
         }
     }
-
-
-
-
 
 }

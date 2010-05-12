@@ -20,14 +20,14 @@
 package org.nuxeo.apidoc.api;
 
 import java.util.Collection;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface BundleInfo extends NuxeoArtifact {
 
-    static final String TYPE_NAME ="NXBundle";
+    String TYPE_NAME ="NXBundle";
 
     Collection<ComponentInfo> getComponents();
 

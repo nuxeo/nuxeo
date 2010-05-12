@@ -97,4 +97,5 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     public String getLabel() {
         return getName() + " (" + getComponent().getId() + ")";
     }
+
 }

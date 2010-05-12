@@ -28,11 +28,8 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
-
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface SnapshotManager {
 
@@ -59,4 +56,5 @@ public interface SnapshotManager {
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException;
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException;
+
 }

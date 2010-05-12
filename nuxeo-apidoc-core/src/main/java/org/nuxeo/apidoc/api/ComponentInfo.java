@@ -27,11 +27,10 @@ import java.util.List;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface ComponentInfo extends NuxeoArtifact {
 
-    static final String TYPE_NAME ="NXComponent";
+    String TYPE_NAME ="NXComponent";
 
     String getName();
 

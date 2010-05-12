@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.PathRef;
  */
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
 
-
     public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session, String containerPath) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
@@ -109,13 +108,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return result;
     }
 
-
     protected <T> T getChild(Class<T> adapter, String docType, String idField, String id) {
-        T result = null;
         String query = "select * from " + docType + " where ecm:path startswith '" + doc.getPathAsString() + "' AND " + idField +"= '" + id + "'";
         try {
             DocumentModelList docs = getCoreSession().query(query);
-            if (docs.size()==0) {
+            if (docs.isEmpty()) {
                 log.error("Unable to find " + docType + " for id " + id);
             } else if (docs.size()==1) {
                 return docs.get(0).getAdapter(adapter);
@@ -123,11 +120,10 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 log.error("multiple match for " + docType + " for id " + id);
                 return docs.get(0).getAdapter(adapter);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while executing query " + query ,e);
         }
-        return result;
+        return null;
     }
 
 
@@ -306,7 +302,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             }
         }
         return ids;
-
     }
 
     public List<String> getXmlComponentIds() {

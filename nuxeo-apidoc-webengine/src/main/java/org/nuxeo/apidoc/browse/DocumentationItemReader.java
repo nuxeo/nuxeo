@@ -75,18 +75,18 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             }
         }
 
-        String[] attachementsTitles = request.getParameterValues("attachementsTitle");
-        if (attachementsTitles!=null && attachementsTitles.length>0) {
-            String[] attachementsContents = request.getParameterValues("attachementsContent");
-            Map<String, String> attachements = new LinkedMap();
+        String[] attachmentsTitles = request.getParameterValues("attachmentsTitle");
+        if (attachmentsTitles!=null && attachmentsTitles.length>0) {
+            String[] attachmentsContents = request.getParameterValues("attachmentsContent");
+            Map<String, String> attachments = new LinkedMap();
             int idx=0;
-            for (String attachementsTitle : attachementsTitles) {
-                if (attachementsContents.length>idx) {
-                    attachements.put(attachementsTitle, attachementsContents[idx]);
+            for (String attachmentsTitle : attachmentsTitles) {
+                if (attachmentsContents.length>idx) {
+                    attachments.put(attachmentsTitle, attachmentsContents[idx]);
                 }
                 idx+=1;
             }
-            item.attachements=attachements;
+            item.attachments=attachments;
         }
         return item;
     }

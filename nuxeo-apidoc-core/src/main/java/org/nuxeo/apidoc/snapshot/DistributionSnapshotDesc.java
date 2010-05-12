@@ -28,4 +28,5 @@ public interface DistributionSnapshotDesc {
     Date getCreationDate();
 
     boolean isLive();
+
 }

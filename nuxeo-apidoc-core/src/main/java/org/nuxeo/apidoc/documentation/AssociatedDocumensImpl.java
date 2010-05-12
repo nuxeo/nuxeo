@@ -72,20 +72,15 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
         return result;
     }
 
-
-
     public Map<String, String> getCategories() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
     }
 
-
     public List<String> getCategoryKeys() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategoryKeys();
     }
-
-
 
     public DocumentationItem getDescription(CoreSession session) throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
@@ -155,11 +150,10 @@ public class AssociatedDocumensImpl implements AssociatedDocuments {
                 return null;
             }
 
-            public Map<String, String> getAttachements() {
+            public Map<String, String> getAttachments() {
                 return new HashMap<String, String>();
             }
         };
-
 
     }
 

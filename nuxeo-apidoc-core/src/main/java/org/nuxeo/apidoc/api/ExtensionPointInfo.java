@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public interface ExtensionPointInfo extends NuxeoArtifact {
 
-    static final String TYPE_NAME="NXExtensionPoint";
+    String TYPE_NAME="NXExtensionPoint";
 
     ComponentInfo getComponent();
 

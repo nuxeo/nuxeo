@@ -38,7 +38,7 @@ public class SimpleDocumentationItem implements DocumentationItem {
     protected String type="";
     protected String uuid="";
     protected boolean approved=false;
-    protected Map<String, String> attachements = new LinkedMap();
+    protected Map<String, String> attachments = new LinkedMap();
 
     public SimpleDocumentationItem() {
     }
@@ -92,8 +92,8 @@ public class SimpleDocumentationItem implements DocumentationItem {
         return approved;
     }
 
-    public Map<String, String> getAttachements() {
-        return attachements;
+    public Map<String, String> getAttachments() {
+        return attachments;
     }
 
 }

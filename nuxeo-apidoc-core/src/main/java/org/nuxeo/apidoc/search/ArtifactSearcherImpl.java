@@ -48,7 +48,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ArtifactSearcherImpl implements ArtifactSearcher {
 
-
     protected NuxeoArtifact mapDoc2Artifact(DocumentModel doc) {
         NuxeoArtifact artifact = null;
 
@@ -79,7 +78,6 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         if (fulltext!=null) {
             query= query + " AND ecm:fulltext like '" + fulltext + "'";
         }
-
 
         DocumentModelList docs = session.query(query);
 
@@ -114,7 +112,6 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
         return result;
     }
-
 
     public List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext) throws Exception {
         List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
@@ -154,7 +151,6 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         }
         return result;
     }
-
 
     protected NuxeoArtifact resolveInTree(CoreSession session, String distribId, NuxeoArtifact matchingArtifact, String searchedType) throws Exception {
 

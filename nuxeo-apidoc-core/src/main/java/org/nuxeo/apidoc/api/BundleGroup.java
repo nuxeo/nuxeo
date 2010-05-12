@@ -28,7 +28,7 @@ import java.util.List;
  */
 public interface BundleGroup extends NuxeoArtifact {
 
-    static final String TYPE_NAME ="NXBundleGroup";
+    String TYPE_NAME ="NXBundleGroup";
 
     String getName();
 

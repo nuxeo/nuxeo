@@ -6,8 +6,8 @@
     <#if docItem.renderingType=='wiki'>
         <@wiki>${docItem.content}</@wiki>
     </#if>
-      <#if docItem.applicableVersion??>
-        <#if ((docItem.applicableVersion?size)>0) >
+    <#if docItem.applicableVersion??>
+      <#if ((docItem.applicableVersion?size)>0) >
         <div class="docVersionDisplay">
           <ul>
           <#list docItem.applicableVersion as version>
@@ -15,19 +15,19 @@
           </#list>
           </ul>
         </div>
-        </#if>
       </#if>
+    </#if>
 
-    <#assign attachements=docItem.attachements>
-    <#if attachements??>
-      <#assign attachementKeys=attachements?keys>
-      <#list attachementKeys as attachementName>
-       <div class="attachementTitle">${attachementName}</div>
-       <div class="attachementContent">
-       <pre><code>${attachements[attachementName]?html}</code></pre>
+    <#assign attachments=docItem.attachments>
+    <#if attachments??>
+      <#assign attachmentKeys=attachments?keys>
+      <#list attachmentKeys as attachmentName>
+       <div class="attachmentTitle">${attachmentName}</div>
+       <div class="attachmentContent">
+       <pre><code>${attachments[attachmentName]?html}</code></pre>
        </div>
-    </#list>
-</#if>
+      </#list>
+    </#if>
 
   </div>
 </#macro>
@@ -53,7 +53,7 @@
        </td>
        <td>&nbsp;
        </td>
-   </#if>
+     </#if>
     </#list>
     </tr>
     </table>
@@ -73,14 +73,14 @@
 
 <#macro filterForm resultSize artifactType>
   <#if searchFilter??>
-    <h1> ${artifactType} listing with filter '${searchFilter}' (${resultSize}) </h1>
+    <h1> All ${artifactType}s with filter '${searchFilter}' (${resultSize}) </h1>
   </#if>
   <#if !searchFilter>
-    <h1> ${artifactType} listing (${resultSize})</h1>
+    <h1> All ${artifactType}s (${resultSize})</h1>
   </#if>
 
   <p>
-  This screen lists the ${artifactType} present in the selected distribution (${distId}).
+  Here is the list of the ${artifactType}s present in the selected distribution (${distId}).
   </p>
 
   <#if !Root.currentDistribution.live>

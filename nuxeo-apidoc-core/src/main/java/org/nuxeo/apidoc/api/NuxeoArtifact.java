@@ -34,4 +34,5 @@ public interface NuxeoArtifact {
     String getVersion();
 
     String getArtifactType();
+
 }

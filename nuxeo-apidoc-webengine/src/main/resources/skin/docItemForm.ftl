@@ -105,16 +105,16 @@ enctype="application/x-www-form-urlencoded">
 
 <#if mode=='edit'>
 Attachements [<A href="javascript:addAttachement()"> Add </A>]
-<div class="attachementBox">
-<#assign attachements=docItem.attachements>
-<#if attachements??>
-  <#assign attachementKeys=attachements?keys>
-  <#list attachementKeys as attachementName>
-   <div><input type="text" name="attachementsTitle" value="${attachementName}"/> </div>
-   <div> <textarea name="attachementsContent" cols="80" rows="20">${attachements[attachementName]}</textarea> </div>
+<div class="attachmentBox">
+<#assign attachments=docItem.attachments>
+<#if attachments??>
+  <#assign attachmentKeys=attachments?keys>
+  <#list attachmentKeys as attachmentName>
+   <div><input type="text" name="attachmentsTitle" value="${attachmentName}"/> </div>
+   <div> <textarea name="attachmentsContent" cols="80" rows="20">${attachments[attachmentName]}</textarea> </div>
   </#list>
 </#if>
-   <span id="attachementEnd"></span>
+   <span id="attachmentEnd"></span>
 </div>
 </#if>
 
@@ -137,7 +137,7 @@ Attachements [<A href="javascript:addAttachement()"> Add </A>]
 
 <script>
 function addAttachement() {
- $("<div><input type='text' name='attachementsTitle' /> </div><div> <textarea name='attachementsContent' cols='80' rows='20'></textarea> </div>").insertBefore($("#attachementEnd"));
+ $("<div><input type='text' name='attachmentsTitle' /> </div><div> <textarea name='attachmentsContent' cols='80' rows='20'></textarea> </div>").insertBefore($("#attachmentEnd"));
 }
 
 function launchWikiEditor() {

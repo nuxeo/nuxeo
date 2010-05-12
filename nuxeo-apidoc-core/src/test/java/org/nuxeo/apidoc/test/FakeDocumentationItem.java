@@ -98,7 +98,7 @@ public class FakeDocumentationItem implements DocumentationItem {
         return targetType;
     }
 
-    public Map<String, String> getAttachements() {
+    public Map<String, String> getAttachments() {
         // TODO Auto-generated method stub
         return null;
     }

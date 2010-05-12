@@ -169,9 +169,9 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
-    public Map<String, String> getAttachements() {
+    public Map<String, String> getAttachments() {
 
-        Map<String, String> attachements = new LinkedMap();
+        Map<String, String> attachments = new LinkedMap();
         try {
             List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
             if (atts!=null) {
@@ -180,13 +180,13 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
                     if (attBlob.getEncoding()==null || attBlob.getEncoding()=="") {
                         attBlob.setEncoding("utf-8");
                     }
-                    attachements.put((String)att.get("filename"), attBlob.getString());
+                    attachments.put((String)att.get("filename"), attBlob.getString());
                 }
             }
         }
         catch (Exception e) {
-            log.error("Error while reading Attachements", e);
+            log.error("Error while reading Attachments", e);
         }
-        return attachements;
+        return attachments;
     }
 }

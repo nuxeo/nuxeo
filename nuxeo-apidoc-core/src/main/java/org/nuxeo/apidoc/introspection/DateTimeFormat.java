@@ -32,9 +32,7 @@ public class DateTimeFormat {
 
     /**
      * Create the serialized string form from a java.util.Date
-     *
      */
-
     public static String format(Date date) {
         return abderaFormat(date);
     }
@@ -45,7 +43,6 @@ public class DateTimeFormat {
      * @param value The serialized string form of the date
      * @return The created java.util.Date
      */
-
     public static Date parse(String value) {
         SimpleDateFormat formatter =
             new SimpleDateFormat(value.endsWith("Z") ? "yyyyMMdd'T'hhmmss'Z'" : "yyyyMMdd'T'hhmmssZ");
@@ -65,35 +62,42 @@ public class DateTimeFormat {
         sb.append(c.get(Calendar.YEAR));
         sb.append('-');
         int f = c.get(Calendar.MONTH);
-        if (f < 9)
+        if (f < 9) {
             sb.append('0');
+        }
         sb.append(f + 1);
         sb.append('-');
         f = c.get(Calendar.DATE);
-        if (f < 10)
+        if (f < 10) {
             sb.append('0');
+        }
         sb.append(f);
         sb.append('T');
         f = c.get(Calendar.HOUR_OF_DAY);
-        if (f < 10)
+        if (f < 10) {
             sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.MINUTE);
-        if (f < 10)
+        if (f < 10) {
             sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.SECOND);
-        if (f < 10)
+        if (f < 10) {
             sb.append('0');
+        }
         sb.append(f);
         sb.append('.');
         f = c.get(Calendar.MILLISECOND);
-        if (f < 100)
+        if (f < 100) {
             sb.append('0');
-        if (f < 10)
+        }
+        if (f < 10) {
             sb.append('0');
+        }
         sb.append(f);
         sb.append('Z');
         return sb.toString();
@@ -121,6 +125,5 @@ public class DateTimeFormat {
             throw new IllegalArgumentException("Invalid Date Format");
         }
     }
-
 
 }

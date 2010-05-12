@@ -1,9 +1,7 @@
 <@extends src="base.ftl">
 <#setting url_escaping_charset="UTF-8">
 
-<@block name="stylesheets">
-</@block>
-
+<@block name="stylesheets"></@block>
 
 <@block name="header_scripts">
   <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.base.js"></script>
@@ -18,7 +16,7 @@ Xml  Component
 </#if>
 
 <#if !component.xmlPureComponent>
-Implementation class : ${component.componentClass}
+Implementation class: ${component.componentClass}
 </#if>
 <br/>
 

@@ -23,82 +23,63 @@ import java.util.Map;
 public interface DocumentationItem {
 
     /**
-     * get Title of the Documentation
-     *
-     * @return
+     * Gets Title of the Documentation
      */
     String getTitle();
 
     /**
-     * get the main content of the Documentation
-     *
-     * @return
+     * Gets the main content of the Documentation
      */
     String getContent();
 
     /**
-     * get the type of the documentation (description, how-to, samples ...)
-     *
-     * @return
+     * Gets the type of the documentation (description, how-to, samples ...)
      */
     String getType();
 
     /**
-     * get the output rendering format for the content (wiki, html ...)
-     * @return
+     * Gets the output rendering format for the content (wiki, html ...)
      */
     String getRenderingType();
 
     /**
-     * get label for the documentation type
-     * @return
+     * Gets label for the documentation type
      */
     String getTypeLabel();
 
     /**
-     * get versions
-     * @return
+     * Gets versions
      */
     List<String> getApplicableVersion();
 
     /**
-     * get identifier of the target documented artifact
-     *
-     * @return
+     * Gets identifier of the target documented artifact
      */
     String getTarget();
 
     /**
-     * get the Type of the target documented artifact (NXBundle, NXComponent ...)
-     * @return
+     * Gets the Type of the target documented artifact (NXBundle, NXComponent ...)
      */
     String getTargetType();
 
     /**
      * Indicates if documentation has been validated by Nuxeo
-     *
-     * @return
      */
     boolean isApproved();
 
     /**
      * Local documentation identifier
-     *
-     * @return
      */
     String getId();
 
     /**
      * UUID of the underlying DocumentModel
-     *
-     * @return
      */
     String getUUID();
 
     /**
-     * returns attachements
-     * @return
+     * Returns attachments
      */
-    Map<String, String> getAttachements();
+    Map<String, String> getAttachments();
 
 }

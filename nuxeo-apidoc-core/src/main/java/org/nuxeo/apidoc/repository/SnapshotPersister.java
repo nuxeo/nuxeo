@@ -62,18 +62,18 @@ public class SnapshotPersister {
 
     public static final String Write_Grp = "members";
 
-    protected static Log log = LogFactory.getLog(SnapshotPersister.class);
+    protected static final Log log = LogFactory.getLog(SnapshotPersister.class);
 
     class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
 
         protected DocumentRef rootRef;
 
-        public DocumentRef getRootRef() {
-            return rootRef;
-        }
-
         public UnrestrictedRootCreator(CoreSession session) {
             super(session);
+        }
+
+        public DocumentRef getRootRef() {
+            return rootRef;
         }
 
         @Override
@@ -98,7 +98,6 @@ public class SnapshotPersister {
     }
 
     public DocumentModel getDistributionRoot(CoreSession session) throws ClientException {
-
         DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
 
         if (session.exists(rootRef)) {
@@ -116,7 +115,6 @@ public class SnapshotPersister {
 
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label) throws ClientException {
-
         if (label==null || "".equals(label.trim()))  {
             label = snapshot.getName() + "-" + snapshot.getVersion();
         }
@@ -133,8 +131,7 @@ public class SnapshotPersister {
 
 
     public void persistBundleGroup(DistributionSnapshot snapshot, BundleGroup bundleGroup, CoreSession session, String label,  DocumentModel parent) throws ClientException {
-
-       log.info("Persit bundle group " + bundleGroup.getId());
+       log.info("Persist bundle group " + bundleGroup.getId());
        DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup, session, label, parent);
 
        for (String bundleId : bundleGroup.getBundleIds()) {
@@ -145,20 +142,17 @@ public class SnapshotPersister {
        for (BundleGroup subGroup : bundleGroup.getSubGroups()) {
            persistBundleGroup(snapshot, subGroup, session, label, bundleGroupDoc);
        }
-
     }
 
 
     public void persistBundle(DistributionSnapshot snapshot, BundleInfo bundleInfo, CoreSession session, String label, DocumentModel parent) throws ClientException {
-
-        log.info("Persit bundle " + bundleInfo.getId());
+        log.info("Persist bundle " + bundleInfo.getId());
 
         DocumentModel bundleDoc = createBundleDoc(snapshot, session, label, bundleInfo, parent);
 
         for (ComponentInfo ci : bundleInfo.getComponents()) {
             persistComponent(snapshot, ci, session, label, bundleDoc);
         }
-
     }
 
     public void persistComponent(DistributionSnapshot snapshot, ComponentInfo ci, CoreSession session, String label, DocumentModel parent) throws ClientException {

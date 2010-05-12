@@ -28,7 +28,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface ExtensionInfo extends NuxeoArtifact {
 
-    static final String TYPE_NAME ="NXContribution";
+    String TYPE_NAME ="NXContribution";
 
     String getExtensionPoint();
 

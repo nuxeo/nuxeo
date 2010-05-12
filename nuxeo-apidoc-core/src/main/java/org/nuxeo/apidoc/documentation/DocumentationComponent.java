@@ -315,7 +315,7 @@ public class DocumentationComponent extends DefaultComponent implements
                 (Serializable) item.getApplicableVersion());
 
         ArrayList<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
-        Map<String, String> attData = item.getAttachements();
+        Map<String, String> attData = item.getAttachments();
         if (attData!=null && attData.size()>0) {
             for (String fileName : attData.keySet()) {
                 Map<String, Serializable> fileItem = new HashMap<String, Serializable>();
