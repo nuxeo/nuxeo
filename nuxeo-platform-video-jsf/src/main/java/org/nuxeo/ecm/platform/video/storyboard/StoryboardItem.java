@@ -35,7 +35,7 @@ public class StoryboardItem {
 
     protected final String blobPropertyName;
 
-    protected String filename;
+    protected final String filename;
 
     protected String timecode = "0";
 

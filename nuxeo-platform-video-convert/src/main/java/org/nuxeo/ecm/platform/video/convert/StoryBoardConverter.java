@@ -144,8 +144,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
                     outFolder.getAbsolutePath());
             params.addNamedParameter(RATE_PARAM, rateParam);
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
-            params.addNamedParameter(HEIGHT_PARAM,
-                    commonParams.get(HEIGHT_PARAM));
+            params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
             result = cleService.execCommand(FFMPEG_STORYBOARD_COMMAND, params);
             if (!result.isSuccessful()) {
                 Exception error = result.getError();

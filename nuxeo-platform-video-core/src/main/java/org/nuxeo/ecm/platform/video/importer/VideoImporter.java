@@ -37,12 +37,11 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
  * This class will create a Document of type "Video" from the uploaded file, if
  * the uploaded file matches any of the mime types listed in the
  * filemanager-plugins.xml file.
- *
+ * <p>
  * If an existing document with the same title is found, it will overwrite it
  * and increment the version number if the overwrite flag is set to true;
  * Otherwise, it will generate a new title and create a new Document of type
  * Video with that title.
- *
  */
 public class VideoImporter extends AbstractFileImporter {
 

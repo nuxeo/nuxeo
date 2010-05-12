@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Helper class to factorize logic than can be either called from the UI or from
  * core event listener.
- *
+ * <p>
  * If the need to evolve to make this further configurable (not just using the
  * existing converter / commandline extensions points), we might want to turn
  * this class into a full blown nuxeo service.
@@ -60,6 +60,11 @@ public class VideoHelper {
     // TODO: make this configurable somehow though an extension point. The
     // imaging package need a similar refactoring, try to make both consistent
     public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<Map<String, Object>>();
+
+    // Utility class.
+    private VideoHelper() {
+    }
+
     static {
         Map<String, Object> thumbnailView = new LinkedHashMap<String, Object>();
         thumbnailView.put("title", "Thumbnail");

@@ -23,4 +23,8 @@ public class MediaStreamingConstants {
 
     public static final String STREAM_MEDIA_FIELD = "strm:streamable";
 
+    // Constant utility class.
+    private MediaStreamingConstants() {
+    }
+
 }

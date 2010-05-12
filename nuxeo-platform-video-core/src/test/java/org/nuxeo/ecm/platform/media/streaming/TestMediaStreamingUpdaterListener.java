@@ -17,17 +17,13 @@
 package org.nuxeo.ecm.platform.media.streaming;
 
 import java.io.File;
-import java.util.GregorianCalendar;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 
 /**
  * @author "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
- *
  */
 public class TestMediaStreamingUpdaterListener extends SQLRepositoryTestCase {
 

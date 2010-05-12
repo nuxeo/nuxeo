@@ -36,14 +36,17 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import static org.nuxeo.ecm.platform.media.streaming.MediaStreamingConstants.STREAM_MEDIA_FIELD;
+import static org.nuxeo.ecm.platform.media.streaming.MediaStreamingConstants.STREAM_MEDIA_SCHEMA;
+
 public class MediaStreamingServiceImpl extends DefaultComponent implements
         MediaStreamingService {
 
-    protected static Log log = LogFactory.getLog(MediaStreamingServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(MediaStreamingServiceImpl.class);
 
     protected boolean isServiceActivated = false;
 
-    protected String streamingServerBaseURL = null;
+    protected String streamingServerBaseURL;
 
     @Override
     public void registerContribution(Object contribution,
@@ -79,17 +82,17 @@ public class MediaStreamingServiceImpl extends DefaultComponent implements
     public String getStreamURLFromDocumentModel(DocumentModel mediaDoc)
             throws ClientException {
 
-        if (!mediaDoc.hasSchema(MediaStreamingConstants.STREAM_MEDIA_SCHEMA)) {
+        if (!mediaDoc.hasSchema(STREAM_MEDIA_SCHEMA)) {
             log.error("DocId " + mediaDoc.getId()
                     + " is not a streamable document");
             throw new ClientException("Can't get stream from "
                     + mediaDoc.getType() + " document type. Schema \""
-                    + MediaStreamingConstants.STREAM_MEDIA_SCHEMA
+                    + STREAM_MEDIA_SCHEMA
                     + "\" not present");
         }
 
-        Blob blob = (Blob) mediaDoc.getPropertyValue(MediaStreamingConstants.STREAM_MEDIA_FIELD);
-        if ((!isServiceActivated()) || blob == null) {
+        Blob blob = (Blob) mediaDoc.getPropertyValue(STREAM_MEDIA_FIELD);
+        if (!isServiceActivated || blob == null) {
             return null;
         }
 
@@ -114,12 +117,11 @@ public class MediaStreamingServiceImpl extends DefaultComponent implements
                             + absolutePath);
         }
 
-        StringBuffer url = new StringBuffer(getStreamingServerBaseURL());
+        StringBuilder url = new StringBuilder(streamingServerBaseURL);
         url.append(absolutePath.substring(getBlobStorageDirRootPath(
                 repositoryName).length()).replace("\\", "/"));
 
         return url.toString();
-
     }
 
     protected DefaultBinaryManager getBinaryManager(String repositoryName)
@@ -154,7 +156,7 @@ public class MediaStreamingServiceImpl extends DefaultComponent implements
     }
 
     public boolean isStreamableMedia(DocumentModel doc) {
-        return doc.hasSchema(MediaStreamingConstants.STREAM_MEDIA_SCHEMA);
+        return doc.hasSchema(STREAM_MEDIA_SCHEMA);
     }
 
 }

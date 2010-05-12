@@ -39,6 +39,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
+
 /**
  * Extract a JPEG screenshot of the video at a given time offset (position).
  *
@@ -58,7 +60,6 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             cleService = Framework.getService(CommandLineExecutorService.class);
         } catch (Exception e) {
             log.error(e, e);
-            return;
         }
     }
 
@@ -80,13 +81,13 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
-                position = (Double) parameters.get(Constants.POSITION_PARAMETER);
+                position = (Double) parameters.get(POSITION_PARAMETER);
                 if (position == null) {
                     position = 0.0;
                 }
             }
             long positionParam = Math.round(position);
-            params.addNamedParameter(Constants.POSITION_PARAMETER,
+            params.addNamedParameter(POSITION_PARAMETER,
                     String.valueOf(positionParam));
             ExecResult result = cleService.execCommand(
                     FFMPEG_SCREENSHOT_COMMAND, params);

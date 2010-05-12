@@ -41,6 +41,9 @@ import org.nuxeo.ecm.platform.video.convert.BaseVideoConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import static org.nuxeo.ecm.platform.media.convert.ConverterConstants.HANDBRAKE_CONVERT_MP4;
+import static org.nuxeo.ecm.platform.media.convert.ConverterConstants.MP4BOX_HINT_MEDIA;
+
 /**
  * Generate a hinted video for streaming. Hinted track added are used by the
  * streaming server to optimize the flow.
@@ -59,16 +62,11 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
             cleService = Framework.getService(CommandLineExecutorService.class);
         } catch (Exception e) {
             log.error(e, e);
-            return;
         }
     }
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-
-        File outFile = null;
-        Blob blob = null;
-        InputFile inputFile = null;
 
         boolean transactionWasActive = TransactionHelper.isTransactionActive();
         if (transactionWasActive) {
@@ -76,6 +74,9 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
             TransactionHelper.commitOrRollbackTransaction();
         }
 
+        File outFile = null;
+        Blob blob = null;
+        InputFile inputFile = null;
         try {
             blob = blobHolder.getBlob();
             inputFile = new InputFile(blob);
@@ -89,7 +90,7 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
             paramsForStreamable.addNamedParameter("outFilePath",
                     outFile.getAbsolutePath());
             ExecResult resultMp4 = cleService.execCommand(
-                    ConverterConstants.HANDBRAKE_CONVERT_MP4,
+                    HANDBRAKE_CONVERT_MP4,
                     paramsForStreamable);
             if (!resultMp4.isSuccessful()) {
                 throw new ConversionException("Failed to build mp4 version of "
@@ -108,7 +109,7 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
             paramsForHint.addNamedParameter("filePath",
                     outFile.getAbsolutePath());
             ExecResult resultHint = cleService.execCommand(
-                    ConverterConstants.MP4BOX_HINT_MEDIA, paramsForHint);
+                    MP4BOX_HINT_MEDIA, paramsForHint);
             if (!resultHint.isSuccessful()) {
                 throw new ConversionException("Failed to hint mp4 version of "
                         + blob.getFilename() + ": "
@@ -147,4 +148,5 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
             }
         }
     }
+
 }

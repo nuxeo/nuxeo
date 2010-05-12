@@ -23,10 +23,11 @@ import org.jboss.seam.annotations.Name;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.platform.media.streaming.MediaStreamingConstants;
 import org.nuxeo.ecm.platform.media.streaming.MediaStreamingService;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.platform.media.streaming.MediaStreamingConstants.STREAM_MEDIA_FIELD;
 
 /**
  * @author "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
@@ -36,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = Install.FRAMEWORK)
 public class VideoActionsBean {
 
-    protected MediaStreamingService mediaStreamingService = null;
+    protected MediaStreamingService mediaStreamingService;
 
     protected MediaStreamingService getMediaStreamingService() throws Exception {
         if (mediaStreamingService == null) {
@@ -74,11 +75,10 @@ public class VideoActionsBean {
 
     public boolean isPreviewReady(DocumentModel videoDoc)
             throws PropertyException, ClientException, Exception {
-        return (isDocumentStreamable(videoDoc) && isStreamReady(videoDoc));
+        return isDocumentStreamable(videoDoc) && isStreamReady(videoDoc);
     }
 
     public boolean isDocumentStreamable(DocumentModel doc) throws Exception {
-
         boolean isStreamingServerActivated = getMediaStreamingService().isServiceActivated();
         boolean isCurrentDocumentStreamable = getMediaStreamingService().isStreamableMedia(
                 doc);
@@ -88,7 +88,6 @@ public class VideoActionsBean {
 
     public boolean isStreamReady(DocumentModel doc) throws PropertyException,
             ClientException {
-        boolean isStreamReady = doc.getPropertyValue(MediaStreamingConstants.STREAM_MEDIA_FIELD) != null;
-        return isStreamReady;
+        return doc.getPropertyValue(STREAM_MEDIA_FIELD) != null;
     }
 }

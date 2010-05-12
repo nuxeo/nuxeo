@@ -32,5 +32,8 @@ public class ConverterConstants {
 
     public static final String STREAMABLE_MEDIA_CONVERTER_NAME = "streamableMedia";
 
+    // Constant utility class
+    private ConverterConstants() {
+    }
 
 }

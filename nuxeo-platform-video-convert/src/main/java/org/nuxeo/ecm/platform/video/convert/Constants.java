@@ -25,4 +25,9 @@ public class Constants {
     public static final String SCREENSHOT_CONVERTER = "videoScreenshot";
 
     public static final String POSITION_PARAMETER = "position";
+
+    // Constant utility class.
+    private Constants() {
+    }
+
 }
