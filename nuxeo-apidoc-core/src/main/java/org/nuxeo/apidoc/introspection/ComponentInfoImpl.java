@@ -41,7 +41,6 @@ import org.nuxeo.common.utils.Path;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
 
@@ -104,9 +103,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     public void addService(String serviceName) {
-        this.serviceNames.add(serviceName);
+        serviceNames.add(serviceName);
         ServiceInfo si = new ServiceInfoImpl(serviceName, this);
-        this.services.add(si);
+        services.add(si);
     }
 
     public List<String> getServiceNames() {
@@ -184,7 +183,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     @Override
     public String getId() {
-        return getName();
+        return name;
     }
 
     public String getVersion() {
@@ -192,10 +191,11 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     public String getArtifactType() {
-        return ComponentInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public List<ServiceInfo> getServices() {
         return services;
     }
+
 }

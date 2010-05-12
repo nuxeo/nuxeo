@@ -32,17 +32,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- *
- * Factory for DocumentModelAdapters
+ * Factory for DocumentModelAdapters.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class AdapterFactory implements DocumentAdapterFactory {
 
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
 
-        if (doc==null) {
+        if (doc == null) {
             return null;
         }
 

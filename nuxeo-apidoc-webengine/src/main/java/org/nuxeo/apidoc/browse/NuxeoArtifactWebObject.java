@@ -119,16 +119,12 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return targetUrl;
     }
 
-
     @POST
     @Produces("text/html")
     @Path(value = "createDocumentation")
     public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
-
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-
         ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(), docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
-
         return redirect(getDocUrl());
     }
 
@@ -138,7 +134,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","docView");
+        return getView("../documentation")
+                .arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","docView");
     }
 
     @GET
@@ -147,7 +144,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView");
+        return getView("aggregated")
+                .arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab","aggView");
     }
 
     @GET
@@ -157,7 +155,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
+        return getView("../docForm")
+                .arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
 
     @GET
@@ -168,14 +167,13 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
         DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
+        return getView("../docForm")
+                .arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
-
 
     public Map<String, String> getCategories() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
     }
-
 
 }

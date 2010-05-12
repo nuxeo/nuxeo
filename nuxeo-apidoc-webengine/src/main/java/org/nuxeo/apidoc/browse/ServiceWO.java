@@ -29,7 +29,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 @WebObject(type = "service")
 public class ServiceWO  extends NuxeoArtifactWebObject {
@@ -43,7 +42,7 @@ public class ServiceWO  extends NuxeoArtifactWebObject {
     }
 
     public ServiceInfo getServiceInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getService(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getService(nxArtifactId);
     }
 
     @Override

@@ -36,7 +36,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 @WebObject(type = "bundle")
 public class BundleWO extends NuxeoArtifactWebObject {

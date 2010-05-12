@@ -22,4 +22,8 @@ public class SecurityConstants {
     public static final String Read_Group = "Everyone";
     public static final String Write_Group = "members";
 
+    // Constant utility class
+    private SecurityConstants() {
+    }
+
 }

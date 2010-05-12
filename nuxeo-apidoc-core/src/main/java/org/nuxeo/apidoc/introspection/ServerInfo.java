@@ -16,11 +16,7 @@
  */
 package org.nuxeo.apidoc.introspection;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -123,11 +119,11 @@ public class ServerInfo {
     }
 
     public Collection<BundleInfoImpl> getBundles() {
-        return this.bundles.values();
+        return bundles.values();
     }
 
     public void addBundle(BundleInfoImpl bundle) {
-        this.bundles.put(bundle.getId(), bundle);
+        bundles.put(bundle.getId(), bundle);
     }
 
     public void addBundle(Collection<BundleInfoImpl> bundles) {
@@ -320,7 +316,6 @@ public class ServerInfo {
         return server;
     }
 
-
     public void toXML(Writer writer) throws Exception {
         XMLWriter xw = new XMLWriter(writer, 4);
         xw.start();
@@ -346,7 +341,7 @@ public class ServerInfo {
     }
 
     public static ServerInfo fromXML(File file) throws Exception {
-        FileReader reader = new FileReader(file);
+        InputStreamReader reader = new FileReader(file);
         try {
             return fromXML(reader);
         } finally {

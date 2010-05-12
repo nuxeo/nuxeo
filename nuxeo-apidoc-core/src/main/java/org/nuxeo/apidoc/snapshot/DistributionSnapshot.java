@@ -71,5 +71,4 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     List<Class> getSpi();
 
-
 }

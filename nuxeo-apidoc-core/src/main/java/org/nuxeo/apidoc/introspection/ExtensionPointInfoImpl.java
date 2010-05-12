@@ -27,7 +27,6 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements ExtensionPointInfo {
 
@@ -66,7 +65,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     }
 
     public void addExtension(ExtensionInfoImpl xt) {
-        this.extensions.add(xt);
+        extensions.add(xt);
     }
 
     public void setDocumentation(String documentation) {
@@ -83,7 +82,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     @Override
     public String getId() {
-        return getComponent().getId() + "--" +  getName();
+        return component.getId() + "--" + name;
     }
 
     public String getVersion() {
@@ -91,11 +90,11 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     }
 
     public String getArtifactType() {
-        return ExtensionPointInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public String getLabel() {
-        return getName() + " (" + getComponent().getId() + ")";
+        return name + " (" + component.getId() + ")";
     }
 
 }

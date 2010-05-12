@@ -28,19 +28,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
+import java.util.List;
+
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
-    protected static final Log log = LogFactory
-            .getLog(BaseNuxeoArtifactDocAdapter.class);
+    protected static final Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
 
     protected final DocumentModel doc;
 
-    public BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
+    protected BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
         this.doc = doc;
     }
 
@@ -83,11 +82,9 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     }
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
-
         try {
-            for (DocumentModel parent : getCoreSession().getParentDocuments(
-                    doc.getRef())) {
-
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+            for (DocumentModel parent : parents) {
                 T result = parent.getAdapter(artifactClass);
                 if (result != null) {
                     return result;
@@ -111,13 +108,12 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     @SuppressWarnings("unchecked")
     protected <T> T safeGet(Class<T> typ, String xPath, Object defaultValue) {
-
         try {
             T value = (T) doc.getPropertyValue(xPath);
             return value;
         } catch (Exception e) {
             log.error("Error while getting property " + xPath, e);
-            if (defaultValue==null) {
+            if (defaultValue == null) {
                 return null;
             }
             return (T) defaultValue;

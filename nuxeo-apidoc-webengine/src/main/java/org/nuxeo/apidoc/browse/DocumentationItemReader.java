@@ -87,7 +87,7 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
                 }
                 idx+=1;
             }
-            item.attachments=attachments;
+            item.attachments = attachments;
         }
         return item;
     }

@@ -34,9 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements ExtensionPointInfo {
@@ -134,7 +132,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getArtifactType() {
-        return ExtensionPointInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public String getLabel() {

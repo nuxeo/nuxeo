@@ -169,14 +169,13 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     }
 
     public Map<String, String> getAttachments() {
-
         Map<String, String> attachments = new LinkedMap();
         try {
             List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
             if (atts!=null) {
                 for (Map<String, Serializable> att : atts) {
                     Blob attBlob = (Blob) att.get("file");
-                    if (attBlob.getEncoding()==null || attBlob.getEncoding()=="") {
+                    if (attBlob.getEncoding() == null || attBlob.getEncoding().equals("")) {
                         attBlob.setEncoding("utf-8");
                     }
                     attachments.put((String)att.get("filename"), attBlob.getString());
@@ -188,4 +187,5 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
         return attachments;
     }
+
 }

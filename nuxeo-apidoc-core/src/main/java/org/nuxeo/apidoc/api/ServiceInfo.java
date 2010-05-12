@@ -19,6 +19,6 @@ package org.nuxeo.apidoc.api;
 
 public interface ServiceInfo extends NuxeoArtifact {
 
-    String TYPE_NAME ="NXService";
+    String TYPE_NAME = "NXService";
 
 }

@@ -51,7 +51,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
-    protected DistributionSnapshot runtimeSnapshot = null;
+    protected DistributionSnapshot runtimeSnapshot;
 
     protected Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
 
@@ -62,7 +62,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     protected final SnapshotPersister persister = new SnapshotPersister();
 
     public DistributionSnapshot getRuntimeSnapshot() {
-        if (runtimeSnapshot==null) {
+        if (runtimeSnapshot == null) {
             runtimeSnapshot = new RuntimeSnapshot();
         }
         return runtimeSnapshot;
@@ -73,7 +73,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
-        if (key==null || RUNTIME.equals(key)) {
+        if (key == null || RUNTIME.equals(key)) {
             return getRuntimeSnapshot();
         }
         readPersistentSnapshots(session);
@@ -118,16 +118,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException {
-
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-
         DistributionSnapshot snap =  persister.persist(liveSnapshot, session, name);
-
         addPersistentSnapshot(snap.getKey(), snap);
-
         return snap;
     }
-
 
     public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
         List<String> versions = new ArrayList<String>();
@@ -204,7 +199,6 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         pipe.run();
         reader.close();
         writer.close();
-
     }
 
     public void importSnapshot(CoreSession session, InputStream is)

@@ -73,7 +73,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected synchronized ServerInfo buildServerInfo() {
         if (serverInfo == null) {
             serverInfo = ServerInfo.build();
-            created=new Date();
+            created = new Date();
             spi.addAll(serverInfo.getAllSpi());
             for (BundleInfoImpl bInfo : serverInfo.getBundles()) {
                 bundlesIds.add(bInfo.getId());
@@ -89,8 +89,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 }
 
                 for (ComponentInfo cInfo : bInfo.getComponents()) {
-                    components2Bundles
-                            .put(cInfo.getId(), bInfo.getId());
+                    components2Bundles.put(cInfo.getId(), bInfo.getId());
                     if (!cInfo.isXmlPureComponent()) {
                         javaComponentsIds.add(cInfo.getId());
                     }
@@ -160,7 +159,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             bundleGroups.add(bGroup);
         }
         return serverInfo;
-
     }
 
     protected BundleGroupImpl buildBundleGroup(String id, String version) {
@@ -180,13 +178,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     public BundleGroup getBundleGroup(String groupId) {
-
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(this);
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
 
         for (BundleGroupFlatTree info : tree) {
-
-            if (info.getGroup().getId().equals(groupId) || info.getGroup().getId().equals(groupId)) {
+            if (info.getGroup().getId().equals(groupId)) {
                 return info.getGroup();
             }
         }
@@ -197,7 +193,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     protected void browseBundleGroup(BundleGroup group, int level, List<BundleGroupFlatTree> tree) {
-
         BundleGroupFlatTree info = new BundleGroupFlatTree(group, level);
         tree.add(info);
 
@@ -278,12 +273,12 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     public List<String> getBundleGroupChildren(String groupId) {
         List<String> res = mavenSubGroups.get(groupId);
-        if (res==null) {
+        if (res == null) {
             //String grpId = groupId.substring(4);
             res = mavenGroups.get(groupId);
         }
 
-        if (res!=null) {
+        if (res != null) {
             return res;
         } else {
             return new ArrayList<String>();
@@ -304,7 +299,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     public String getArtifactType() {
-        return DistributionSnapshot.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public ServiceInfo getService(String id) {

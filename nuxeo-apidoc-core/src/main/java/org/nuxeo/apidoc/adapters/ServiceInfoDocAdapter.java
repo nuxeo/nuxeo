@@ -24,16 +24,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements ServiceInfo {
+public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ServiceInfo {
 
+    public ServiceInfoDocAdapter(DocumentModel doc) {
+        super(doc);
+    }
 
-    public static ServiceInfoDocAdapter create(ServiceInfo si,
-            CoreSession session, String containerPath) throws Exception {
+    public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName("service-"+si.getId());
+        String name = computeDocumentName("service-" + si.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
@@ -54,29 +55,24 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return new ServiceInfoDocAdapter(doc);
     }
 
-
-    public ServiceInfoDocAdapter(DocumentModel doc) {
-        super(doc);
-    }
-
     @Override
     public String getId() {
         return safeGet("nxservice:className", "unknown_service");
     }
 
     public String getArtifactType() {
-        return ServiceInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public String getVersion() {
-          BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
+        BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
-          if (parentBundle!=null) {
-              return parentBundle.getVersion();
-          }
+        if (parentBundle != null) {
+            return parentBundle.getVersion();
+        }
 
-          log.error("Unable to determine version for Service " + getId());
-          return "?";
+        log.error("Unable to determine version for Service " + getId());
+        return "?";
     }
 
 }

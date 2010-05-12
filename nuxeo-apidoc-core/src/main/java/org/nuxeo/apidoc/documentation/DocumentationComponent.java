@@ -17,7 +17,6 @@
 
 package org.nuxeo.apidoc.documentation;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -75,7 +74,7 @@ public class DocumentationComponent extends DefaultComponent implements
     public static final String Read_Grp = SecurityConstants.Read_Group;
     public static final String Write_Grp = SecurityConstants.Write_Group;
 
-    protected static Log log = LogFactory.getLog(DocumentationComponent.class);
+    protected static final Log log = LogFactory.getLog(DocumentationComponent.class);
 
     protected ArtifactSearcher searcher = new ArtifactSearcherImpl();
 
@@ -87,13 +86,12 @@ public class DocumentationComponent extends DefaultComponent implements
             return rootRef;
         }
 
-        public UnrestrictedRootCreator(CoreSession session) {
+        UnrestrictedRootCreator(CoreSession session) {
             super(session);
         }
 
         @Override
         public void run() throws ClientException {
-
             DocumentModel root = session.createDocumentModel(Root_PATH,Root_NAME,"Folder");
             root.setProperty("dublincore", "title", Root_NAME);
             root = session.createDocument(root);
@@ -130,7 +128,6 @@ public class DocumentationComponent extends DefaultComponent implements
         return session.getDocument(creator.getRootRef());
     }
 
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
@@ -144,57 +141,57 @@ public class DocumentationComponent extends DefaultComponent implements
 
     public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category) throws Exception {
 
-           String query = "select * from NXDocumentation where ";
+        String query = "select * from NXDocumentation where ";
 
-           if (category==null) {
-               query = query + " nxdoc:targetType!='description' ";
-           } else {
-               query = query + " nxdoc:targetType in ('" + category + "') ";
-           }
+        if (category == null) {
+            query += " nxdoc:targetType!='description' ";
+        } else {
+            query += " nxdoc:targetType in ('" + category + "') ";
+        }
 
-           query = query + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
-           List<DocumentModel> docs =  session.query(query);
+        query += " AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
+        List<DocumentModel> docs = session.query(query);
 
-           Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
-           for (DocumentModel doc : docs) {
-               DocumentationItem item = doc.getAdapter(DocumentationItem.class);
+        Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
+        for (DocumentModel doc : docs) {
+            DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
-               List<DocumentationItem> alternatives = sortMap.get(item.getId());
-               if (alternatives==null) {
-                   alternatives = new ArrayList<DocumentationItem>();
-                   alternatives.add(item);
-                   sortMap.put(item.getId(), alternatives);
-               } else {
-                   alternatives.add(item);
-               }
-           }
+            List<DocumentationItem> alternatives = sortMap.get(item.getId());
+            if (alternatives == null) {
+                alternatives = new ArrayList<DocumentationItem>();
+                alternatives.add(item);
+                sortMap.put(item.getId(), alternatives);
+            } else {
+                alternatives.add(item);
+            }
+        }
 
-           List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
 
-           for (String documentationId : sortMap.keySet()) {
-               DocumentationItem bestDoc = sortMap.get(documentationId).get(0);
-               result.add(bestDoc);
-           }
+        for (String documentationId : sortMap.keySet()) {
+            DocumentationItem bestDoc = sortMap.get(documentationId).get(0);
+            result.add(bestDoc);
+        }
 
-           Map<String, List<DocumentationItem>> sortedResult = new HashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> sortedResult = new HashMap<String, List<DocumentationItem>>();
 
-           Map<String, String> categories = getCategories();
+        Map<String, String> categories = getCategories();
 
-           for (DocumentationItem item : result) {
+        for (DocumentationItem item : result) {
 
-               String key = item.getType();
-               String label = categories.get(key);
+            String key = item.getType();
+            String label = categories.get(key);
 
-               if (sortedResult.containsKey(label)) {
-                   sortedResult.get(label).add(item);
-               } else {
-                   List<DocumentationItem> items = new ArrayList<DocumentationItem>();
-                   items.add(item);
-                   sortedResult.put(label, items);
-               }
-           }
+            if (sortedResult.containsKey(label)) {
+                sortedResult.get(label).add(item);
+            } else {
+                List<DocumentationItem> items = new ArrayList<DocumentationItem>();
+                items.add(item);
+                sortedResult.put(label, items);
+            }
+        }
 
-           return sortedResult;
+        return sortedResult;
     }
 
     public List<DocumentationItem> findDocumentItems(CoreSession session,
@@ -210,7 +207,7 @@ public class DocumentationComponent extends DefaultComponent implements
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
             List<DocumentationItem> alternatives = sortMap.get(item.getId());
-            if (alternatives==null) {
+            if (alternatives == null) {
                 alternatives = new ArrayList<DocumentationItem>();
                 alternatives.add(item);
                 sortMap.put(item.getId(), alternatives);
@@ -227,7 +224,6 @@ public class DocumentationComponent extends DefaultComponent implements
         }
         return result;
     }
-
 
     protected DocumentationItem findBestMatch(NuxeoArtifact nxItem, List<DocumentationItem> docItems) {
         for (DocumentationItem docItem : docItems) {
@@ -257,12 +253,10 @@ public class DocumentationComponent extends DefaultComponent implements
 
     public List<DocumentModel> findDocumentModelVariants(
             CoreSession session, DocumentationItem item) throws ClientException {
-
         String id = item.getId();
         String type = item.getTargetType();
         String query = "select * from NXDocumentation where nxdoc:documentationId='" + id + "' AND nxdoc:targetType='" + type + "'AND ecm:currentLifeCycleState != 'deleted'";
         return session.query(query);
-
     }
 
     public DocumentationItem createDocumentationItem(CoreSession session,
@@ -392,7 +386,6 @@ public class DocumentationComponent extends DefaultComponent implements
     }
 
     public Map<String, String> getCategories()  throws Exception {
-
         Map<String, String> categories = new HashMap<String, String>();
 
         DirectoryService dm = Framework.getService(DirectoryService.class);
@@ -400,7 +393,6 @@ public class DocumentationComponent extends DefaultComponent implements
         try {
             DocumentModelList entries = session.getEntries();
             for (DocumentModel entry : entries) {
-
                 String value = (String) entry.getProperty("vocabulary", "label");
                 categories.put(entry.getId(), value);
             }
@@ -437,7 +429,7 @@ public class DocumentationComponent extends DefaultComponent implements
             pipe.setReader(reader);
             pipe.setWriter(writer);
             DocumentTransformer rootCutter = new DocumentTransformer() {
-                public boolean transform(ExportedDocument doc) throws IOException {
+                public boolean transform(ExportedDocument doc) {
                     doc.setPath(doc.getPath().removeFirstSegments(1));
                     return true;
                 }
@@ -450,7 +442,6 @@ public class DocumentationComponent extends DefaultComponent implements
         catch (Exception e) {
             log.error("Error while importing documentation", e);
         }
-
     }
 
     public String getDocumentationStats(CoreSession session) {

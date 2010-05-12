@@ -23,9 +23,7 @@ import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
 

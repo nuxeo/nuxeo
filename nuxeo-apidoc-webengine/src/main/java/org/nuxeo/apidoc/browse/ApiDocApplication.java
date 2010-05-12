@@ -28,7 +28,7 @@ public class ApiDocApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(DocumentationItemReader.class);
         result.add(ArchiveFileWriter.class);
         return result;

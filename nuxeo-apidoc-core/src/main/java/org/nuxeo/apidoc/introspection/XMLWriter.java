@@ -45,7 +45,6 @@ import javax.xml.namespace.QName;
  * This file contains code from org.apache.commons.betwixt.XMLUtils
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XMLWriter {
 
@@ -63,11 +62,11 @@ public class XMLWriter {
 
 
     public XMLWriter(Writer writer) {
-        this (writer, 0);
+        this(writer, 0);
     }
 
     public XMLWriter(Writer writer, int indent) {
-        this (writer, indent, CRLF);
+        this(writer, indent, CRLF);
     }
 
     public XMLWriter(Writer writer, int indent, String crlf) {
@@ -401,33 +400,46 @@ public class XMLWriter {
         sb.append(c.get(Calendar.YEAR));
         sb.append('-');
         int f = c.get(Calendar.MONTH);
-        if (f < 9) sb.append('0');
-        sb.append(f+1);
+        if (f < 9) {
+            sb.append('0');
+        }
+        sb.append(f + 1);
         sb.append('-');
         f = c.get(Calendar.DATE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('T');
         f = c.get(Calendar.HOUR_OF_DAY);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.MINUTE);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append(':');
         f = c.get(Calendar.SECOND);
-        if (f < 10) sb.append('0');
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('.');
         f = c.get(Calendar.MILLISECOND);
-        if (f < 100) sb.append('0');
-        if (f < 10) sb.append('0');
+        if (f < 100) {
+            sb.append('0');
+        }
+        if (f < 10) {
+            sb.append('0');
+        }
         sb.append(f);
         sb.append('Z');
         return sb.toString();
-      }
-
+    }
 
     public static final String LESS_THAN_ENTITY = "&lt;";
     public static final String GREATER_THAN_ENTITY = "&gt;";

@@ -29,15 +29,15 @@ public class SimpleDocumentationItem implements DocumentationItem {
 
     protected List<String> applicableVersion = new ArrayList<String>();
 
-    protected String content ="";
+    protected String content = "";
     protected String id;
-    protected String renderingType="";
-    protected String target="";
-    protected String targetType="";
-    protected String title="";
-    protected String type="";
-    protected String uuid="";
-    protected boolean approved=false;
+    protected String renderingType = "";
+    protected String target = "";
+    protected String targetType = "";
+    protected String title = "";
+    protected String type = "";
+    protected String uuid = "";
+    protected boolean approved = false;
     protected Map<String, String> attachments = new LinkedMap();
 
     public SimpleDocumentationItem() {

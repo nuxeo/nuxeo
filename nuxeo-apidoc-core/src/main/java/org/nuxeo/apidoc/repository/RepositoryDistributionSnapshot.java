@@ -49,16 +49,19 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
         String targetPath = new Path(containerPath).append(name).toString();
+
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
             exist = true;
             doc = session.getDocument(new PathRef(targetPath));
         }
+
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", distrib.getKey());
         doc.setPropertyValue("nxdistribution:name", distrib.getName());
         doc.setPropertyValue("nxdistribution:version", distrib.getVersion());
         doc.setPropertyValue("nxdistribution:key", distrib.getKey());
+
         if (exist) {
             doc = session.saveDocument(doc);
         } else {
@@ -71,7 +74,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
         String query = "select * from " + TYPE_NAME ;
         try {
-
             DocumentModelList docs = session.query(query);
             for (DocumentModel child : docs) {
                 DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
@@ -125,7 +127,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         }
         return null;
     }
-
 
     public BundleInfo getBundle(String id) {
         return getChild(BundleInfo.class, BundleInfo.TYPE_NAME, "nxbundle:bundleId", id);
@@ -270,7 +271,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     }
 
     public String getArtifactType() {
-        return DistributionSnapshot.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public ServiceInfo getService(String id) {
@@ -281,7 +282,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
-            if (docs.size()==1) {
+            if (docs.size() == 1) {
                 return docs.get(0).getAdapter(ServiceInfo.class);
             } else {
                 log.error("Multiple services found");

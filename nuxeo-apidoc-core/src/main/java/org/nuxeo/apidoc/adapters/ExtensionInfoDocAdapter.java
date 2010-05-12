@@ -33,9 +33,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements ExtensionInfo {
@@ -74,7 +72,6 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             doc = session.createDocument(doc);
         }
 
-
         return new ExtensionInfoDocAdapter(doc);
     }
 
@@ -90,6 +87,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return safeGet("nxcontribution:extensionPoint");
     }
 
+    @Override
     public String getId() {
         return safeGet("nxcontribution:contribId");
     }
@@ -121,7 +119,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getArtifactType() {
-        return ExtensionInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
 }

@@ -29,11 +29,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 @WebObject(type = "extensionPoint")
 public class ExtensionPointWO extends NuxeoArtifactWebObject {
-
 
     @GET
     @Produces("text/html")
@@ -44,12 +42,12 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionPointInfo getTargetExtensionPointInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
     }
+
     @Override
     public NuxeoArtifact getNxArtifact() {
         return getTargetExtensionPointInfo();
     }
-
 
 }

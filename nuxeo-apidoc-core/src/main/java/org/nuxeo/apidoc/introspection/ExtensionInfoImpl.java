@@ -20,11 +20,9 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.runtime.model.ComponentName;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
 
@@ -58,6 +56,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         return component;
     }
 
+    @Override
     public String getId() {
         return id;
     }

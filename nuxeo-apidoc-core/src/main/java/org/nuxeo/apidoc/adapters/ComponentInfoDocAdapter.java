@@ -39,11 +39,13 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
+
+    public ComponentInfoDocAdapter(DocumentModel doc) {
+        super(doc);
+    }
 
     public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath) throws Exception {
 
@@ -80,11 +82,6 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             doc = session.createDocument(doc);
         }
         return new ComponentInfoDocAdapter(doc);
-    }
-
-
-    public ComponentInfoDocAdapter(DocumentModel doc) {
-        super(doc);
     }
 
     public BundleInfo getBundle() {
@@ -207,7 +204,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
 
     public String getArtifactType() {
-        return ComponentInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
 

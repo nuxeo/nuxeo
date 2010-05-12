@@ -48,7 +48,6 @@ public class DocumentationWO extends DefaultObject {
         return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
     }
 
-
     @GET
     @Produces("text/html")
     @Path(value = "filter")
@@ -74,15 +73,14 @@ public class DocumentationWO extends DefaultObject {
                 docs.put(catLabel, itemList);
             }
         }
-        return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs).arg("searchFilter", fulltext);
+        return getView("index")
+                .arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs).arg("searchFilter", fulltext);
     }
-
 
     @GET
     @Produces("text/html")
     @Path(value = "view/{docUUID}")
     public Object viewDoc(@PathParam("docUUID") String docUUID) throws Exception {
-
         DocumentRef docRef = new IdRef(docUUID);
         DocumentModel docModel = getContext().getCoreSession().getDocument(docRef);
         DocumentationItem doc=docModel.getAdapter(DocumentationItem.class);

@@ -75,16 +75,15 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
 
         String query = "select * from Document where ecm:primaryType IN ('NXDistribution','NXBundleGroup', 'NXBundle', 'NXComponent', 'NXExtensionPoint', 'NXContribution', 'NXService') ";
-        if (fulltext!=null) {
-            query= query + " AND ecm:fulltext like '" + fulltext + "'";
+        if (fulltext != null) {
+            query += " AND ecm:fulltext like '" + fulltext + "'";
         }
 
         DocumentModelList docs = session.query(query);
 
         for (DocumentModel doc : docs) {
-
             NuxeoArtifact artifact = mapDoc2Artifact(doc);
-            if (artifact!=null) {
+            if (artifact != null) {
                 result.add(artifact);
             }
         }
@@ -96,9 +95,8 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
 
         String query = "select * from NXDocumentation where ecm:fulltext like '" + fulltext + "'";
-
-        if (targetType!=null) {
-            query = query + " AND nxdoc.targetType='" + targetType + "'";
+        if (targetType != null) {
+            query += " AND nxdoc.targetType='" + targetType + "'";
         }
 
         DocumentModelList docs = session.query(query);

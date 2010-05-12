@@ -36,9 +36,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         BundleInfo {
@@ -72,7 +70,6 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
 
         return new BundleInfoDocAdapter(doc);
-
     }
 
     public BundleInfoDocAdapter(DocumentModel doc) {
@@ -147,6 +144,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     public String getArtifactType() {
-        return BundleInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
+
 }

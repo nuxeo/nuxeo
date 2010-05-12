@@ -55,13 +55,12 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
         Map<String, String> categories = getCategories();
 
         for (DocumentationItem docItem : docItems) {
-
             String cat = docItem.getType();
             String catLabel = categories.get(cat);
 
             List<DocumentationItem> itemList = result.get(catLabel);
 
-            if (itemList!=null) {
+            if (itemList != null) {
                 itemList.add(docItem);
             } else {
                 itemList = new ArrayList<DocumentationItem>();

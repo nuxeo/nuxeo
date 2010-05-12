@@ -50,14 +50,13 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     }
 
     public ComponentInfo getTargetComponentInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getComponent(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getComponent(nxArtifactId);
     }
 
     @Override
     public NuxeoArtifact getNxArtifact() {
         return getTargetComponentInfo();
     }
-
 
     public List<ServiceWO> getServices() {
         List<ServiceWO> result = new ArrayList<ServiceWO>();

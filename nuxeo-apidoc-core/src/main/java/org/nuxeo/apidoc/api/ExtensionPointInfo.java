@@ -24,11 +24,10 @@ import java.util.Collection;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface ExtensionPointInfo extends NuxeoArtifact {
 
-    String TYPE_NAME="NXExtensionPoint";
+    String TYPE_NAME = "NXExtensionPoint";
 
     ComponentInfo getComponent();
 

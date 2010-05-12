@@ -26,7 +26,6 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
@@ -118,15 +117,15 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     @Override
     public String getId() {
-        return getBundleId();
+        return bundleId;
     }
 
     public String getVersion() {
-        return getArtifactVersion();
+        return artifactVersion;
     }
 
     public String getArtifactType() {
-        return BundleInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
 }

@@ -29,7 +29,7 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     public ServiceInfoImpl(String serviceClassName, ComponentInfo component) {
         this.serviceClassName = serviceClassName;
-        this.component=component;
+        this.component = component;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
     }
 
     public String getArtifactType() {
-        return ServiceInfo.TYPE_NAME;
+        return TYPE_NAME;
     }
 
     public String getVersion() {

@@ -24,9 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface AssociatedDocuments {
 

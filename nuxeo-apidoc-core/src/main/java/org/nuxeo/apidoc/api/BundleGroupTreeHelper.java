@@ -26,7 +26,6 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class BundleGroupTreeHelper {
 

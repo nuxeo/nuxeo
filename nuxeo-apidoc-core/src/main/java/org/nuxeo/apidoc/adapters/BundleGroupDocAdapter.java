@@ -32,9 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
- *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements BundleGroup {
@@ -73,7 +71,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
              DocumentModelList docs = getCoreSession().query(query);
              for(DocumentModel child : docs) {
                  BundleInfo bi = child.getAdapter(BundleInfo.class);
-                 if (bi!=null && !bi.getId().equals(this.getId())) {
+                 if (bi != null && !bi.getId().equals(this.getId())) {
                      bundles.add(bi.getId());
                  }
              }
@@ -93,22 +91,20 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public List<BundleGroup> getSubGroups() {
-
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
 
         String query = "select * from NXBundleGroup where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
-         try {
-             DocumentModelList docs = getCoreSession().query(query);
-             for(DocumentModel child : docs) {
-                 BundleGroup grp = child.getAdapter(BundleGroup.class);
-                 if (grp!=null) {
-                     grps.add(grp);
-                 }
-                 }
-         }
-         catch (Exception e) {
-             log.error("Error while getting subGroups",e);
-         }
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+            for (DocumentModel child : docs) {
+                BundleGroup grp = child.getAdapter(BundleGroup.class);
+                if (grp != null) {
+                    grps.add(grp);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while getting subGroups", e);
+        }
         return grps;
     }
 
@@ -118,19 +114,18 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public String getVersion() {
-
         DistributionSnapshot parentSnapshot = getParentNuxeoArtifact(DistributionSnapshot.class);
 
-        if (parentSnapshot!=null) {
-            return parentSnapshot.getVersion();
+        if (parentSnapshot == null) {
+            log.error("Unable to determine version for bundleGroup " + getId());
+            return "?";
         }
 
-        log.error("Unable to determine version for bundleGroup " + getId());
-        return "?";
+        return parentSnapshot.getVersion();
     }
 
     public String getArtifactType() {
-        return BundleGroup.TYPE_NAME;
+        return TYPE_NAME;
     }
 
 }

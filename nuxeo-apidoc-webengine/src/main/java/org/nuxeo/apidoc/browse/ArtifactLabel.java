@@ -41,11 +41,11 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
 
     @Override
     public String toString() {
-        return getLabel();
+        return label;
     }
 
     public int compareTo(ArtifactLabel other) {
-        return getLabel().compareTo(other.getLabel());
+        return label.compareTo(other.label);
     }
 
     public static ArtifactLabel createLabelFromService(String service) {
