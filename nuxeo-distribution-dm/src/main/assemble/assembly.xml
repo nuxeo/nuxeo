@@ -318,8 +318,8 @@
       <artifact:resolveFile key="org.jboss.seam:jboss-seam-mail" />
       <artifact:resolveFile key="org.jboss.seam:jboss-seam-debug" />
       <artifact:resolveFile key="jboss:jgroups" />
-      <artifact:resolveFile key="bouncycastle:bcmail-jdk14" />
-      <artifact:resolveFile key="bouncycastle:bcprov-jdk14" />
+      <artifact:resolveFile key="org.bouncycastle:bcmail-jdk15" />
+      <artifact:resolveFile key="org.bouncycastle:bcprov-jdk15" />
       <artifact:resolveFile key="org.slf4j:slf4j-api" />
       <artifact:resolveFile key="org.slf4j:slf4j-log4j12" />
       <artifact:resolveFile key="org.apache.directory.server:apacheds-protocol-shared" />
