@@ -31,32 +31,32 @@ import java.util.List;
  */
 public interface ComponentInfo extends NuxeoArtifact {
 
-    public static final String TYPE_NAME ="NXComponent";
+    static final String TYPE_NAME ="NXComponent";
 
-    public String getName();
+    String getName();
 
-    public BundleInfo getBundle();
+    BundleInfo getBundle();
 
-    public Collection<ExtensionPointInfo> getExtensionPoints();
+    Collection<ExtensionPointInfo> getExtensionPoints();
 
-    public Collection<ExtensionInfo> getExtensions();
+    Collection<ExtensionInfo> getExtensions();
 
-    public ExtensionPointInfo getExtensionPoint(String name);
+    ExtensionPointInfo getExtensionPoint(String name);
 
-    public String getDocumentation();
+    String getDocumentation();
 
-    public List<String> getServiceNames();
+    List<String> getServiceNames();
 
-    public List<ServiceInfo> getServices();
+    List<ServiceInfo> getServices();
 
-    public String getComponentClass();
+    String getComponentClass();
 
-    public boolean isXmlPureComponent();
+    boolean isXmlPureComponent();
 
-    public URL getXmlFileUrl();
+    URL getXmlFileUrl();
 
-    public String getXmlFileName();
+    String getXmlFileName();
 
-    public String getXmlFileContent() throws IOException;
+    String getXmlFileContent() throws IOException;
 
 }

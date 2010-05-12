@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
-    public static final String TYPE_NAME ="NXDistribution";
+    static final String TYPE_NAME ="NXDistribution";
 
     String getKey();
 

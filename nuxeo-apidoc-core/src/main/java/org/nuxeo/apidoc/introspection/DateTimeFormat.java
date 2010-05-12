@@ -26,28 +26,28 @@ import java.util.regex.Pattern;
 
 /**
  * Contains code from abdera to format dates.
- * 
+ *
  */
 public class DateTimeFormat {
 
     /**
      * Create the serialized string form from a java.util.Date
-     * 
+     *
      */
-    
+
     public static String format(Date date) {
         return abderaFormat(date);
     }
 
     /**
      * Parse the serialized string form into a java.util.Date
-     * 
+     *
      * @param value The serialized string form of the date
      * @return The created java.util.Date
      */
-    
+
     public static Date parse(String value) {
-        SimpleDateFormat formatter = 
+        SimpleDateFormat formatter =
             new SimpleDateFormat(value.endsWith("Z") ? "yyyyMMdd'T'hhmmss'Z'" : "yyyyMMdd'T'hhmmssZ");
         try {
             return formatter.parse(value);
@@ -55,7 +55,7 @@ public class DateTimeFormat {
             return abderaParse(value);
         }
     }
-    
+
     private static final Pattern PATTERN = Pattern.compile("(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
 
     public static String abderaFormat(Date date) {
@@ -98,7 +98,7 @@ public class DateTimeFormat {
         sb.append('Z');
         return sb.toString();
     }
-    
+
     public static Date abderaParse(String value) {
         Matcher m = PATTERN.matcher(value);
         if (m.find()) {
@@ -122,5 +122,5 @@ public class DateTimeFormat {
         }
     }
 
-  
+
 }

@@ -27,24 +27,24 @@ import java.util.Collection;
  */
 public interface BundleInfo extends NuxeoArtifact {
 
-    public static final String TYPE_NAME ="NXBundle";
+    static final String TYPE_NAME ="NXBundle";
 
-    public Collection<ComponentInfo> getComponents();
+    Collection<ComponentInfo> getComponents();
 
-    public String getFileName();
+    String getFileName();
 
-    public String getBundleId();
+    String getBundleId();
 
-    public String[] getRequirements();
+    String[] getRequirements();
 
-    public String getManifest();
+    String getManifest();
 
-    public String getLocation();
+    String getLocation();
 
-    public String getArtifactGroupId();
+    String getArtifactGroupId();
 
-    public String getArtifactId();
+    String getArtifactId();
 
-    public String getArtifactVersion();
+    String getArtifactVersion();
 
 }

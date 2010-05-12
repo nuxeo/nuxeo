@@ -28,12 +28,12 @@ import java.util.List;
  */
 public interface BundleGroup extends NuxeoArtifact {
 
-    public static final String TYPE_NAME ="NXBundleGroup";
+    static final String TYPE_NAME ="NXBundleGroup";
 
-    public String getName();
+    String getName();
 
-    public List<BundleGroup> getSubGroups();
+    List<BundleGroup> getSubGroups();
 
-    public List<String> getBundleIds();
+    List<String> getBundleIds();
 
 }

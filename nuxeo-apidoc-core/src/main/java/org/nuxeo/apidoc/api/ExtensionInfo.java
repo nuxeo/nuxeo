@@ -28,16 +28,16 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface ExtensionInfo extends NuxeoArtifact {
 
-    public static final String TYPE_NAME ="NXContribution";
+    static final String TYPE_NAME ="NXContribution";
 
-    public String getExtensionPoint();
+    String getExtensionPoint();
 
-    public String getId();
+    String getId();
 
-    public String getDocumentation();
+    String getDocumentation();
 
-    public ComponentName getTargetComponentName();
+    ComponentName getTargetComponentName();
 
-    public String getXml();
+    String getXml();
 
 }
