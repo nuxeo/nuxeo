@@ -72,7 +72,7 @@ public class ResourceBank implements Type {
 
     public List<String> getImagePaths() {
         List<String> paths = new ArrayList<String>();
-        String src = String.format("%s/images", connectionUrl);
+        String src = String.format("%s/json/images", connectionUrl);
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));

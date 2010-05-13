@@ -1,16 +1,6 @@
-<html>
-<head>
-  <title>Nuxeo Theme Bank</title>
-</head>
 
-<body>
-  <h1>${collection} images</h1>
-
-  <ul>
     <#list images as image>
-      <li><a href="${Root.getPath()}/${bank}/image/${collection}/${image}">${image}</a></li>
+      <h2>${image}</h2>
+      <img src="${Root.getPath()}/${bank}/image/${collection}/${image}" />
     </#list>
-  </ul>
   
-</body>
-</html>

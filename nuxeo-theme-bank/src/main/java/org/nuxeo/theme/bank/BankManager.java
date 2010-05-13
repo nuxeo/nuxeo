@@ -77,6 +77,23 @@ public class BankManager {
         return names;
     }
 
+    public static File getStyleFile(String bank, String collection,
+            String resource) {
+        String path = String.format("%s/style/%s/%s", bank, collection,
+                resource);
+        File file = BankManager.getFile(path);
+        return file;
+    }
+
+
+    public static File getImageFile(String bank, String collection,
+            String resource) {
+        String path = String.format("%s/image/%s/%s", bank, collection,
+                resource);
+        File file = BankManager.getFile(path);
+        return file;
+    }
+
     /*
      * I/O
      */

@@ -1,0 +1,22 @@
+.screen {
+  width: 100%;
+}
+
+.navtree {
+  width: 25%; 
+  vertical-align: top;
+}
+
+.main {
+  width: 75%; 
+  vertical-align: top;
+}
+
+.navtree, .main {
+  font: 12px verdana;
+  letter-spacing: -0.04em;
+}
+
+.main pre {
+
+}

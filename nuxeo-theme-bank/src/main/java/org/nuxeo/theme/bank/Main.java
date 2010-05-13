@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import org.nuxeo.theme.presets.PaletteParseException;
+import org.nuxeo.theme.presets.PaletteIdentifyException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,6 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
@@ -70,8 +74,8 @@ public class Main extends ModuleRoot {
      * Styles
      */
     @GET
-    @Path("{bank}/style/{collection}")
-    public Object displayStylesInCollection(@PathParam("bank") String bank,
+    @Path("{bank}/style/{collection}/view")
+    public Object getStyleCollectionView(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
         return getTemplate("styleCollection.ftl").arg("styles",
                 BankManager.getItemsInCollection(bank, "style", collection)).arg(
@@ -84,21 +88,34 @@ public class Main extends ModuleRoot {
     public Response getStyle(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
-
-        String path = String.format("%s/style/%s/%s", bank, collection,
-                resource);
-        File file = BankManager.getFile(path);
-        if (!file.exists()) {
-            return Response.status(404).build();
-        }
+        File file = BankManager.getStyleFile(bank, collection, resource);
         return Response.ok().entity(streamFile(file)).lastModified(
                 new Date(file.lastModified())).header("Cache-Control", "public").header(
                 "Server", SERVER_ID).build();
     }
 
+    @GET
+    @Path("{bank}/style/{collection}/{resource}/view")
+    public Object renderStyleView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection,
+            @PathParam("resource") String resource) {
+        File file = BankManager.getStyleFile(bank, collection, resource);
+        String content = BankUtils.getFileContent(file);
+        return getTemplate("style.ftl").arg("content", content);
+    }
+
     /*
      * Presets
      */
+    @GET
+    @Path("{bank}/preset/{collection}/view")
+    public Object getPresetCollectionView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return getTemplate("presetCollection.ftl").arg("presets",
+                BankManager.getItemsInCollection(bank, "preset", collection)).arg(
+                "collection", collection).arg("bank", bank);
+    }
+    
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("{bank}/preset/{collection}/{category}")
@@ -109,28 +126,49 @@ public class Main extends ModuleRoot {
                 category);
         File file = BankManager.getFile(path);
         String content = "";
-        try {
-            StringBuilder sb = new StringBuilder();
-            for (File f : file.listFiles()) {
-                content = FileUtils.readFile(f);
-                content = PaletteParser.renderPaletteAsCsv(content.getBytes(),
-                        f.getName());
-                sb.append(content);
-            }
-            content = sb.toString();
-        } catch (IOException e) {
-            return Response.status(404).build();
+        StringBuilder sb = new StringBuilder();
+        for (File f : file.listFiles()) {
+            content = BankUtils.getFileContent(f);
+            content = PaletteParser.renderPaletteAsCsv(content.getBytes(),
+                    f.getName());
+            sb.append(content);
         }
+        content = sb.toString();
+
         return Response.ok(content).lastModified(new Date(file.lastModified())).header(
                 "Cache-Control", "public").header("Server", SERVER_ID).build();
+    }
+
+    @GET
+    @Path("{bank}/preset/{collection}/{category}/view")
+    public Object getPresetView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection,
+            @PathParam("category") String category) {
+        String path = String.format("%s/preset/%s/%s", bank, collection,
+                category);
+        File file = BankManager.getFile(path);
+        Properties properties = new Properties();
+        for (File f : file.listFiles()) {
+            String content = BankUtils.getFileContent(f);
+            try {
+                properties.putAll(PaletteParser.parse(content.getBytes(), f.getName()));
+            } catch (PaletteIdentifyException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (PaletteParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return getTemplate("preset.ftl").arg("properties", properties);
     }
 
     /*
      * Images
      */
     @GET
-    @Path("{bank}/image/{collection}")
-    public Object displayImagesInCollection(@PathParam("bank") String bank,
+    @Path("{bank}/image/{collection}/view")
+    public Object getImageCollectionView(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
         return getTemplate("imageCollection.ftl").arg("images",
                 BankManager.getItemsInCollection(bank, "image", collection)).arg(
@@ -142,13 +180,10 @@ public class Main extends ModuleRoot {
     public Response getImage(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
-        String path = String.format("%s/image/%s/%s", bank, collection,
-                resource);
-        File file = BankManager.getFile(path);
+        File file = BankManager.getImageFile(bank, collection, resource);
         if (!file.exists()) {
             return Response.status(404).build();
         }
-
         String ext = FileUtils.getFileExtension(path);
         String mimeType = ctx.getEngine().getMimeType(ext);
         if (mimeType == null) {
@@ -160,8 +195,18 @@ public class Main extends ModuleRoot {
     }
 
     @GET
+    @Path("{bank}/image/{collection}/{resource}/view")
+    public Object getImageView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection,
+            @PathParam("resource") String resource) {
+        String path = String.format("%s/image/%s/%s", bank, collection,
+                resource);
+        return getTemplate("image.ftl").arg("path", path);
+    }
+
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{bank}/images")
+    @Path("{bank}/json/images")
     public String listImages(@PathParam("bank") String bank) {
         String path = String.format("%s/image/", bank);
         JSONArray index = new JSONArray();
@@ -175,6 +220,85 @@ public class Main extends ModuleRoot {
             }
         }
         return index.toString();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{bank}/json/tree")
+    public String getTree(@PathParam("bank") String bankName) {
+        JSONArray tree = new JSONArray();
+
+        JSONObject bankNode = new JSONObject();
+        bankNode.put("state", "open");
+
+        JSONObject bankMap = new JSONObject();
+        bankMap.put("title", bankName);
+
+        JSONObject bankAttributes = new JSONObject();
+        bankAttributes.put("rel", "bank");
+        bankNode.put("attributes", bankAttributes);
+        bankNode.put("data", bankMap);
+
+        JSONArray folderTypes = new JSONArray();
+        folderTypes.add(getNavTreeNode(bankName, "style"));
+        folderTypes.add(getNavTreeNode(bankName, "preset"));
+        folderTypes.add(getNavTreeNode(bankName, "image"));
+        bankNode.put("children", folderTypes);
+
+        tree.add(bankNode);
+        return tree.toString();
+    }
+
+    private JSONObject getNavTreeNode(String bankName, String typeName) {
+
+        JSONObject folderTypeNode = new JSONObject();
+
+        JSONObject folderTypeMap = new JSONObject();
+        folderTypeMap.put("title", typeName);
+
+        JSONObject folderTypeAttributes = new JSONObject();
+        folderTypeAttributes.put("rel", "folder");
+        folderTypeAttributes.put("path", String.format("/%s/%s", bankName,
+                typeName));
+        folderTypeNode.put("attributes", folderTypeAttributes);
+        folderTypeNode.put("data", folderTypeMap);
+
+        JSONArray collections = new JSONArray();
+        for (String c : getCollections(bankName, typeName)) {
+            JSONArray items = new JSONArray();
+
+            JSONObject collectionNode = new JSONObject();
+            JSONObject collectionMap = new JSONObject();
+            collectionMap.put("title", c);
+
+            JSONObject collectionAttributes = new JSONObject();
+            collectionAttributes.put("rel", "collection");
+            collectionAttributes.put("path", String.format("/%s/%s/%s",
+                    bankName, typeName, c));
+            collectionNode.put("attributes", collectionAttributes);
+            collectionNode.put("data", collectionMap);
+
+            for (String item : getItemsInCollection(bankName, typeName, c)) {
+
+                JSONObject itemNode = new JSONObject();
+
+                JSONObject itemMap = new JSONObject();
+                itemMap.put("title", item);
+
+                JSONObject itemAttributes = new JSONObject();
+                itemAttributes.put("rel", typeName);
+                itemAttributes.put("path", String.format("/%s/%s/%s/%s",
+                        bankName, typeName, c, item));
+
+                itemNode.put("attributes", itemAttributes);
+                itemNode.put("data", itemMap);
+                items.add(itemNode);
+            }
+            collectionNode.put("children", items);
+            collections.add(collectionNode);
+        }
+        folderTypeNode.put("children", collections);
+        return folderTypeNode;
     }
 
     /*

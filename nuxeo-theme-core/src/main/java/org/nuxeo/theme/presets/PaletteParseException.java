@@ -14,7 +14,7 @@
 
 package org.nuxeo.theme.presets;
 
-class PaletteParseException extends Exception {
+public class PaletteParseException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
