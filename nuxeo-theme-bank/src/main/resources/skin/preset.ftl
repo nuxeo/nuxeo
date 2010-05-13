@@ -1,6 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${resource}</title>
+    <link type="text/css" rel="stylesheet" href="${skinPath}/styles/ui.css" />
+</head>
+<body>
 
-<table>
+<h1>${resource}</h1>
+
+<table style="width: 100%" cellpadding="1">
 <#list properties?keys as key>
-<tr><td>${key}</td><td>${properties[key]}</td></tr> 
+<tr>
+  <td style="width: 25%">${key}</td>
+  <td style="width: 75%">${properties[key]}</td>
+</tr> 
 </#list>
 </table>
+
+</body>
+</html>

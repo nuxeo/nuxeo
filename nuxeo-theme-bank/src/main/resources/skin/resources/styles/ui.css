@@ -1,22 +1,21 @@
-.screen {
-  width: 100%;
+
+body {
+  font: 12px Arial, sans-serif;
 }
 
-.navtree {
-  width: 25%; 
-  vertical-align: top;
+h1 {
+  font: bold 15px Arial, sans-serif;
 }
 
-.main {
-  width: 75%; 
-  vertical-align: top;
+ul {
+  margin: 0;
+  paddig: 0;
+  list-style-position: inside;
+  list-style: square;
 }
 
-.navtree, .main {
-  font: 12px verdana;
-  letter-spacing: -0.04em;
+a {
+  color: #009;
+  text-decoration: none:
 }
 
-.main pre {
-
-}

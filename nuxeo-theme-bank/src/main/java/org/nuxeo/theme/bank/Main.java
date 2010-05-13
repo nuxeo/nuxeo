@@ -70,6 +70,12 @@ public class Main extends ModuleRoot {
                 "imageCollections", BankManager.getCollections(bank, "image"));
     }
 
+    @GET
+    @Path("{bank}/navtree")
+    public Object getNavtreeView(@PathParam("bank") String bank) {
+        return getTemplate("navtree.ftl").arg("bank", bank);
+    }
+    
     /*
      * Styles
      */

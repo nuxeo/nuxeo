@@ -1,8 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>${bank}</title>
+    <title>Nuxeo Theme Bank</title>
 
     <link type="text/css" rel="stylesheet" href="${skinPath}/styles/ui.css" />
         
@@ -27,10 +25,8 @@
             callback : {
                 onselect: function(node, tree_obj) { 
                     tree_obj.open_branch.call(tree_obj, node);
-                    console.log(tree_obj.get_text(node));
-                    console.log(tree_obj.get_type(node));
                     var path = $(node).attr('path');
-                    $("#main").load("${Root.getPath()}" + path.replace(/\s/g, '%20') + '/view');
+                    parent.frames['main'].location='${Root.getPath()}' + path + '/view';
                 }
             },
             types : {
@@ -81,13 +77,12 @@
         
     });
     </script>
-    
-  
+      
 </head>
 
-<frameset cols="20%, *" frameborder="no" framespacing="10">
-  <frame name="navtree" src="${Root.getPath()}/${bank}/navtree" >
-  <frame name="main" src="">
-</frameset>
+<body>
 
+<div id="navtree"></div>
+
+</body>
 </html>
