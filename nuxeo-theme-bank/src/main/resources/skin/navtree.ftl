@@ -5,15 +5,15 @@
   </@block>
 
   <@block name="stylesheets">
-    <link type="text/css" rel="stylesheet" href="${skinPath}/scripts/syntaxHighlighter/shCore.css"/>
-    <link type="text/css" rel="stylesheet" href="${skinPath}/scripts/syntaxHighlighter/shThemeDefault.css"/>
+    <link type="text/css" rel="stylesheet" href="${basePath}/theme-banks/skin/scripts/syntaxHighlighter/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="${basePath}/theme-banks/skin/scripts/syntaxHighlighter/shThemeDefault.css"/>
   </@block>
   
   <@block name="header_scripts">
-    <script type="text/javascript" src="${skinPath}/scripts/jquery.js"></script>
-    <script type="text/javascript" src="${skinPath}/scripts/jquery.cookie.js"></script>
-    <script type="text/javascript" src="${skinPath}/scripts/sarissa.js"></script>
-    <script type="text/javascript" src="${skinPath}/scripts/jsTree/jquery.tree.js"></script>
+    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jquery.js"></script>
+    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jquery.cookie.js"></script>
+    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/sarissa.js"></script>
+    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jsTree/jquery.tree.js"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {
@@ -45,37 +45,37 @@
                 "bank" : {
                     valid_children: ["folder"],
                     icon: {
-                        image: "${skinPath}/img/bank.png"
+                        image: "${basePath}/theme-banks/skin/img/bank.png"
                     }
                 },
                 "folder" : {
                     valid_children: ["collection"],                
                     icon: {
-                        image: "${skinPath}/img/folder.png"
+                        image: "${basePath}/theme-banks/skin/img/folder.png"
                     }
                 },                
                 "collection" : {
                     valid_children: ["style", "image", "preset"],                 
                     icon: {
-                        image: "${skinPath}/img/collection.png"
+                        image: "${basePath}/theme-banks/skin/img/collection.png"
                     }
                 },
                 "style" : {
                     valid_children : "none",
                     icon: {
-                        image: "${skinPath}/img/style.png"
+                        image: "${basePath}/theme-banks/skin/img/style.png"
                     }
                 },
                 "image" : {
                     valid_children : "none",
                     icon: {
-                        image: "${skinPath}/img/image.png"
+                        image: "${basePath}/theme-banks/skin/img/image.png"
                     }
                 },
                 "preset" : {
                     valid_children : "none",
                     icon: {
-                        image: "${skinPath}/img/preset.png"
+                        image: "${basePath}/theme-banks/skin/img/preset.png"
                     }
                 }
             }

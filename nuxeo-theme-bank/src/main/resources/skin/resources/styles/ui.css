@@ -91,7 +91,8 @@ table.properties td.key {
 
 .album .imageSingle img {
   max-width: 200px; 
-  max-height: 135px
+  max-height: 135px;
+  border: none;
 }
 
 .imageFrame {
