@@ -6,11 +6,17 @@
 
   <@block name="content">
     <h1>Nuxeo Theme Bank</h1>
-    <ul>
-    <#list Root.getBankNames() as bank>
-      <li><a href="${Root.getPath()}/${bank}">${bank}</a></li>
-    </#list>
-    </ul>
+
+    <div class="album">
+        <#list Root.getBankNames() as bank>
+         <a href="${Root.getPath()}/${bank}">
+         <div class="imageSingle">   
+           <div class="image"><img src="${Root.getPath()}/${bank}/logo" /></div>
+           <div class="footer">${bank}</div>
+        </div></a>     
+        </#list>
+    </div>
+
   </@block>
 
 </@extends>

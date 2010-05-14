@@ -65,9 +65,24 @@ public class Main extends ModuleRoot {
     @GET
     @Path("{bank}")
     public Object displayBank(@PathParam("bank") String bank) {
-        return getTemplate("bank.ftl").arg("bank", bank).arg(
-                "styleCollections", BankManager.getCollections(bank, "style")).arg(
-                "imageCollections", BankManager.getCollections(bank, "image"));
+        return getTemplate("bank.ftl").arg("bank", bank);
+    }
+    
+    @GET
+    @Path("{bank}/logo")
+    public Object displayBankThumbnail(@PathParam("bank") String bank) {
+        File file = BankManager.getBankLogoFile(bank);
+        if (!file.exists()) {
+            return Response.status(404).build();
+        }
+        String ext = FileUtils.getFileExtension(path);
+        String mimeType = ctx.getEngine().getMimeType(ext);
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        return Response.ok().entity(streamFile(file)).lastModified(
+                new Date(file.lastModified())).header("Cache-Control", "public").header(
+                "Server", SERVER_ID).type(mimeType).build();
     }
 
     @GET

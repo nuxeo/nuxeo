@@ -11,8 +11,7 @@
     <div class="album">
         <#list images as image>
          <div class="imageSingle">   
-           <div class="image"><img src="${Root.getPath()}/${bank}/image/${collection}/${image}"
-            style="border: 1px inset #999; max-width: 100px; max-height: 100px" /></div>
+           <div class="image"><img src="${Root.getPath()}/${bank}/image/${collection}/${image}"></div>
            <div class="footer">${image}</div>
         </div>      
         </#list>

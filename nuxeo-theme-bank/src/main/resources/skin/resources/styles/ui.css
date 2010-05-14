@@ -4,16 +4,17 @@ body {
 }
 
 h1 {
-  font: bold 12px Tahoma, sans-serif;
-  background-color: #eee;
-  padding: 1px 7px;
-  border: 1px solid #ccc;
-  -moz-border-radius: 3px;
+  font: bold 11px Tahoma, sans-serif;
+  background-color: #666;
+  padding: 3px 7px;
+  border: 1px solid #000;
+  color: #fff;
+  -moz-border-radius: 4px;
 }
 
 ul {
   margin: 0;
-  paddig: 0;
+  padding: 0;
   list-style-position: inside;
   list-style: square;
 }
@@ -31,7 +32,7 @@ table.properties {
 }
 
 table.properties td {
-  border: 1px solid #ddd;
+  borer: 1px solid #ddd;
   padding: 3px 7px;
   font: 11px Tahoma, Arial;
 }
@@ -52,39 +53,46 @@ table.properties td.key {
   width: 100%;
   padding: 0; 
   float: left;
+  background-color: #f6f6f6;
+  -moz-border-radius: 8px;
 }
 
 .album .imageSingle {
   float: left; 
-  margin: 4px; 
-  width: 112px; 
+  margin: 10px; 
+  width: 212px; 
   text-align: center; 
-  border: 1px solid #eee;
-  -moz-border-radius: 3px;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  background-color: #fff;
 }
 
 .album .imageSingle .image {
-  width: 100px; 
-  height: 100px; 
+  width: 200px; 
+  height: 135px; 
   margin: 5px;
  }
 
 .album .imageSingle:hover {
-  border: 1px solid #fc0;
-  background-color: #ffc;
+  border: 1px solid #666;
   cursor: pointer;
 }
 
 .album .imageSingle:hover .footer {
-  color: #900;
+  color: #666;
 }
 
 .album .footer {
   text-align: center;
   color: #999; 
   padding-bottom: 2px; 
-  font:11px tahoma;
+  font: bold 11px tahoma;
 } 
+
+.album .imageSingle img {
+  max-width: 200px; 
+  max-height: 135px
+}
 
 .imageFrame {
   margin: 15px 0;

@@ -93,6 +93,12 @@ public class BankManager {
         File file = BankManager.getFile(path);
         return file;
     }
+    
+    public static File getBankLogoFile(String bank) {
+        String path = String.format("%s/logo.png", bank);
+        File file = BankManager.getFile(path);
+        return file;
+    }
 
     /*
      * I/O
