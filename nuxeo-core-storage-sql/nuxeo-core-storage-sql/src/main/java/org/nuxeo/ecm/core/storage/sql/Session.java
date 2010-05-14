@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -35,6 +35,13 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * @author Florent Guillaume
  */
 public interface Session extends Connection {
+
+    /**
+     * Gets the low-level Mapper for this session.
+     *
+     * @return the mapper
+     */
+    Mapper getMapper() throws StorageException;
 
     /**
      * Checks if the session is live (not closed).
@@ -87,7 +94,8 @@ public interface Session extends Connection {
      * Gets several nodes given their ids.
      *
      * @param ids the ids
-     * @return the nodes, with elements being {@code null} if not found
+     * @return the nodes, in the same order as the ids, with elements being
+     *         {@code null} if not found
      * @throws StorageException
      */
     List<Node> getNodesByIds(List<Serializable> ids) throws StorageException;
@@ -103,6 +111,20 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     Node getNodeByPath(String path, Node node) throws StorageException;
+
+    /**
+     * Interface for a class that knows how to resolve a node path into a node
+     * id.
+     */
+    interface PathResolver {
+        /**
+         * Returns the node id for a given path.
+         *
+         * @param path the node path
+         * @return the node id, or {@code null}
+         */
+        Serializable getIdForPath(String path) throws StorageException;
+    }
 
     /**
      * Gets the parent of a node.

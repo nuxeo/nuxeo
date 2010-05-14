@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,8 +26,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * A {@code Node} implementation. The actual data is stored in contained objects
  * that are {@link Fragment}s.
- *
- * @author Florent Guillaume
  */
 public class Node {
 
@@ -36,13 +34,10 @@ public class Node {
 
     private final Model model;
 
-    /** The main row. */
-    protected final SimpleFragment mainFragment;
+    /** The hierarchy/main fragment. */
+    protected final SimpleFragment hierFragment;
 
-    /** The hierarchy row, if applicable. */
-    private final SimpleFragment hierFragment;
-
-    /** Fragment information for each additional mixin or inherited row. */
+    /** Fragment information for each additional mixin or inherited fragment. */
     private final FragmentsMap fragments;
 
     /**
@@ -56,22 +51,19 @@ public class Node {
     /**
      * Creates a Node.
      *
-     * @param session the session
      * @param context the persistence context
-     * @param rowGroup the group of rows for the node
-     * @throws StorageException
+     * @param fragmentGroup the group of fragments for the node
      */
     @SuppressWarnings("unchecked")
-    protected Node(Session session, PersistenceContext context,
-            FragmentGroup rowGroup) throws StorageException {
+    protected Node(PersistenceContext context, FragmentGroup fragmentGroup)
+            throws StorageException {
         this.context = context;
-        model = session.getModel();
-        mainFragment = rowGroup.main;
-        hierFragment = rowGroup.hier; // may be null
-        if (rowGroup.fragments == null) {
+        model = context.model;
+        hierFragment = fragmentGroup.hier;
+        if (fragmentGroup.fragments == null) {
             fragments = new FragmentsMap();
         } else {
-            fragments = rowGroup.fragments;
+            fragments = fragmentGroup.fragments;
         }
         // memory-sensitive
         propertyCache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
@@ -89,7 +81,7 @@ public class Node {
          * We don't cache the id as it changes between the initial creation and
          * the first save.
          */
-        return mainFragment.getId();
+        return hierFragment.getId();
     }
 
     public String getName() {
@@ -103,7 +95,7 @@ public class Node {
 
     public String getPrimaryType() {
         try {
-            return mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
+            return hierFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
         } catch (StorageException e) {
             // do not propagate this unlikely exception as a checked one
             throw new RuntimeException(e);
@@ -120,7 +112,7 @@ public class Node {
     }
 
     protected SimpleFragment getHierFragment() {
-        return hierFragment == null ? mainFragment : hierFragment;
+        return hierFragment;
     }
 
     // cache the isVersion computation
@@ -145,17 +137,6 @@ public class Node {
         return getPrimaryType().equals(model.PROXY_TYPE);
     }
 
-    // ----- modification -----
-
-    /**
-     * Removes this node. Called by the session.
-     *
-     * @throws StorageException
-     */
-    protected void remove() throws StorageException {
-        context.remove(getId());
-    }
-
     // ----- properties -----
 
     /**
@@ -164,26 +145,26 @@ public class Node {
      * @param name the property name
      * @return the property
      * @throws IllegalArgumentException if the name is invalid
-     * @throws StorageException
      */
     public SimpleProperty getSimpleProperty(String name)
             throws StorageException {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
-            ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
-                    name);
+            ModelProperty propertyInfo = model.getPropertyInfo(
+                    getPrimaryType(), name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
             String fragmentName = propertyInfo.fragmentName;
-            Fragment row = fragments.get(fragmentName);
-            if (row == null) {
-                // lazy fragment, fetch from context
-                row = context.get(fragmentName, getId(), true);
-                fragments.put(fragmentName, row);
+            Fragment fragment = fragments.get(fragmentName);
+            if (fragment == null) {
+                // lazy fragment, fetch from session
+                RowId rowId = new RowId(fragmentName, getId());
+                fragment = context.get(rowId, true);
+                fragments.put(fragmentName, fragment);
             }
             property = new SimpleProperty(name, propertyInfo.propertyType,
-                    propertyInfo.readonly, (SimpleFragment) row,
+                    propertyInfo.readonly, (SimpleFragment) fragment,
                     propertyInfo.fragmentKey);
             propertyCache.put(name, property);
         }
@@ -196,19 +177,19 @@ public class Node {
      * @param name the property name
      * @return the property
      * @throws IllegalArgumentException if the name is invalid
-     * @throws StorageException
      */
     public CollectionProperty getCollectionProperty(String name)
             throws StorageException {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
-            ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
-                    name);
+            ModelProperty propertyInfo = model.getPropertyInfo(
+                    getPrimaryType(), name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
             String fragmentName = propertyInfo.fragmentName;
-            Fragment fragment = context.get(fragmentName, getId(), true);
+            RowId rowId = new RowId(fragmentName, getId());
+            Fragment fragment = context.get(rowId, true);
             property = new CollectionProperty(name, propertyInfo.propertyType,
                     false, (CollectionFragment) fragment);
             propertyCache.put(name, property);

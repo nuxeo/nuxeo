@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -39,23 +39,21 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * Information about children in the database may be complete, or just partial
  * if only individual children have been retrieved from the database.
  * <p>
+ * Children are stored in no particular order.
+ * <p>
  * When this structure holds information all flushed to the database, then it
  * can safely be GC'ed, so it lives in a memory-sensitive map (softMap),
  * otherwise it's moved to a normal map (hardMap).
  * <p>
  * This class is not thread-safe and should be used only from a single-threaded
  * session.
- * <p>
- * TODO unordered for now
- *
- * @author Florent Guillaume
  */
 public class Children {
 
     private static final Log log = LogFactory.getLog(Children.class);
 
-    /** The context from which to fetch fragments. */
-    protected final Context context;
+    /** The context from which to fetch hierarchy fragments. */
+    protected final HierarchyContext hierContext;
 
     /** The key to use to filter on names. */
     protected final String filterKey;
@@ -95,14 +93,18 @@ public class Children {
      * <p>
      * It is automatically put in the soft map.
      *
-     * @param context the context from which to fetch fragments
+     * @param hierContext the context from which to fetch hierarchy fragments
      * @param filterKey the key to use to filter on names
      * @param empty if the new instance is created empty
+     * @param mapKey the key to use in the following maps
+     * @param softMap the soft map, when the children are pristine
+     * @param hardMap the hard map, when there are modifications to flush
      */
-    public Children(Context context, String filterKey, boolean empty,
-            Serializable mapKey, Map<Serializable, Children> softMap,
+    public Children(HierarchyContext hierContext, String filterKey,
+            boolean empty, Serializable mapKey,
+            Map<Serializable, Children> softMap,
             Map<Serializable, Children> hardMap) {
-        this.context = context;
+        this.hierContext = hierContext;
         this.filterKey = filterKey;
         complete = empty;
         this.mapKey = mapKey;
@@ -243,7 +245,7 @@ public class Children {
             for (Serializable id : existing) {
                 SimpleFragment fragment;
                 try {
-                    fragment = (SimpleFragment) context.get(id, false);
+                    fragment = hierContext.getHier(id, false);
                 } catch (StorageException e) {
                     log.warn("Failed refetch for: " + id, e);
                     continue;
@@ -259,7 +261,7 @@ public class Children {
         }
         if (created != null) {
             for (Serializable id : created) {
-                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                SimpleFragment fragment = hierContext.getHierIfPresent(id);
                 if (fragment == null) {
                     log.warn("Created fragment missing: " + id);
                     continue;
@@ -271,7 +273,7 @@ public class Children {
         }
         if (deleted != null) {
             for (Serializable id : deleted) {
-                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                SimpleFragment fragment = hierContext.getHierIfPresent(id);
                 if (fragment == null) {
                     log.warn("Deleted fragment missing: " + id);
                     continue;
@@ -301,7 +303,7 @@ public class Children {
             for (Serializable id : existing) {
                 SimpleFragment fragment;
                 try {
-                    fragment = (SimpleFragment) context.get(id, false);
+                    fragment = hierContext.getHier(id, false);
                 } catch (StorageException e) {
                     log.warn("Failed refetch for: " + id, e);
                     continue;
@@ -317,7 +319,7 @@ public class Children {
         }
         if (created != null) {
             for (Serializable id : created) {
-                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                SimpleFragment fragment = hierContext.getHierIfPresent(id);
                 if (fragment == null) {
                     log.warn("Created fragment missing: " + id);
                     continue;

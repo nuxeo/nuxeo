@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.query;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,12 +36,15 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  *
  * @author Florent Guillaume
  */
-public class QueryFilter {
+public class QueryFilter implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final QueryFilter EMPTY = new QueryFilter(null, null,
             new String[0], null,
             Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
 
+    /** The principal. Note that this MUST be {@link Serializable}. */
     protected final Principal principal;
 
     protected final String[] principals;
@@ -55,6 +59,11 @@ public class QueryFilter {
 
     protected final long offset;
 
+    /**
+     * Constructs a query filter.
+     * <p>
+     * Note that the principal MUST be {@link Serializable}.
+     */
     public QueryFilter(Principal principal, String[] principals,
             String[] permissions, FacetFilter facetFilter,
             Collection<SQLQuery.Transformer> queryTransformers, long limit,

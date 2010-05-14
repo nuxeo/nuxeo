@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,20 +41,25 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
+import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The session is the main high level access point to data from the underlying
  * database.
- *
- * @author Florent Guillaume
  */
 public class SessionImpl implements Session, XAResource {
 
@@ -63,9 +67,14 @@ public class SessionImpl implements Session, XAResource {
 
     private final RepositoryImpl repository;
 
+    private final Mapper mapper;
+
     private final Model model;
 
-    private final PersistenceContext context;
+    private final EventProducer eventProducer;
+
+    // public because used by unit tests
+    public final PersistenceContext context;
 
     private boolean live;
 
@@ -82,12 +91,30 @@ public class SessionImpl implements Session, XAResource {
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
+        this.mapper = mapper;
         // this.credentials = credentials;
         this.model = model;
-        context = new PersistenceContext(model, mapper);
+        context = new PersistenceContext(model, mapper, this);
         live = true;
         readAclsChanged = false;
+
+        try {
+            eventProducer = Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new StorageException("Unable to find EventProducer", e);
+        }
+
         computeRootNode();
+    }
+
+    private void checkLive() {
+        if (!live) {
+            throw new IllegalStateException("Session is not live");
+        }
+    }
+
+    public Mapper getMapper() {
+        return mapper;
     }
 
     /**
@@ -106,9 +133,12 @@ public class SessionImpl implements Session, XAResource {
             // avoid potential multi-threaded access to active session
             return 0;
         }
-        int n = context.clearCaches();
         checkThreadEnd();
-        return n;
+        return context.clearCaches();
+    }
+
+    protected void rollback() {
+        context.clearCaches();
     }
 
     protected void checkThread() {
@@ -136,6 +166,17 @@ public class SessionImpl implements Session, XAResource {
         threadId = 0;
     }
 
+    /**
+     * Generates a new id, or used a pre-generated one (import).
+     */
+    protected Serializable generateNewId(Serializable id) {
+        return context.generateNewId(id);
+    }
+
+    protected boolean isIdNew(Serializable id) {
+        return context.isIdNew(id);
+    }
+
     /*
      * ----- javax.resource.cci.Connection -----
      */
@@ -147,8 +188,9 @@ public class SessionImpl implements Session, XAResource {
 
     protected void closeSession() {
         live = false;
-        // this closes the mapper and therefore the connection
-        context.close();
+        // close the mapper and therefore the connection
+        mapper.close();
+        // don't clean the caches, we keep the pristine cache around
     }
 
     public Interaction createInteraction() throws ResourceException {
@@ -212,23 +254,168 @@ public class SessionImpl implements Session, XAResource {
     protected void flush() throws StorageException {
         checkThread();
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
-            context.updateFulltext(this);
+            updateFulltext();
         }
-        context.save();
+        log.debug("Saving session");
+        RowBatch batch = context.getSaveBatch();
+        if (!batch.isEmpty()) {
+            // execute the batch
+            mapper.write(batch);
+        }
+        log.debug("End of save");
         if (readAclsChanged) {
             updateReadAcls();
         }
     }
 
     /**
-     * Post-transaction invalidations notification.
+     * Update fulltext. Called at save() time.
      */
-    protected void sendInvalidationsToOthers() throws StorageException {
-        repository.invalidate(context.gatherInvalidations(), this);
+    protected void updateFulltext() throws StorageException {
+        Set<Serializable> dirtyStrings = new HashSet<Serializable>();
+        Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
+        context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
+        if (dirtyStrings.isEmpty() && dirtyBinaries.isEmpty()) {
+            return;
+        }
+
+        // update simpletext on documents with dirty strings
+        for (Serializable docId : dirtyStrings) {
+            if (docId == null) {
+                // cannot happen, but has been observed :(
+                log.error("Got null doc id in fulltext update, cannot happen");
+                continue;
+            }
+            Node document = getNodeById(docId);
+            if (document == null) {
+                // cannot happen
+                continue;
+            }
+
+            for (String indexName : model.getFulltextInfo().indexNames) {
+                Set<String> paths;
+                if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
+                    // index all string fields, minus excluded ones
+                    // TODO XXX excluded ones...
+                    paths = model.getTypeSimpleTextPropertyPaths(document.getPrimaryType());
+                } else {
+                    // index configured fields
+                    paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
+                }
+                String strings = findFulltext(document, paths);
+                // Set the computed full text
+                // On INSERT/UPDATE a trigger will change the actual fulltext
+                String propName = model.FULLTEXT_SIMPLETEXT_PROP
+                        + model.getFulltextIndexSuffix(indexName);
+                document.setSingleProperty(propName, strings);
+            }
+        }
+
+        if (!dirtyBinaries.isEmpty()) {
+            log.debug("Queued documents for asynchronous fulltext extraction: "
+                    + dirtyBinaries.size());
+            EventContext eventContext = new EventContextImpl(dirtyBinaries,
+                    model.getFulltextInfo());
+            eventContext.setRepositoryName(getRepositoryName());
+            Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
+            try {
+                eventProducer.fireEvent(event);
+            } catch (ClientException e) {
+                throw new StorageException(e);
+            }
+        }
+    }
+
+    protected String findFulltext(Node document, Set<String> paths)
+            throws StorageException {
+        if (paths == null) {
+            return "";
+        }
+
+        String documentType = document.getPrimaryType();
+        List<String> strings = new LinkedList<String>();
+
+        for (String path : paths) {
+            ModelProperty pi = model.getPathPropertyInfo(documentType, path);
+            if (pi == null) {
+                continue; // doc type doesn't have this property
+            }
+            if (pi.propertyType != PropertyType.STRING
+                    && pi.propertyType != PropertyType.ARRAY_STRING) {
+                continue;
+            }
+            List<Node> nodes = new ArrayList<Node>(
+                    Collections.singleton(document));
+            String[] names = path.split("/");
+            for (int i = 0; i < names.length; i++) {
+                String name = names[i];
+                List<Node> newNodes;
+                if (i + 1 < names.length && "*".equals(names[i + 1])) {
+                    // traverse complex list
+                    i++;
+                    newNodes = new ArrayList<Node>();
+                    for (Node node : nodes) {
+                        newNodes.addAll(getChildren(node, name, true));
+                    }
+                } else {
+                    if (i == names.length - 1) {
+                        // last path component: get value
+                        for (Node node : nodes) {
+                            if (pi.propertyType == PropertyType.STRING) {
+                                String v = node.getSimpleProperty(name).getString();
+                                if (v != null) {
+                                    strings.add(v);
+                                }
+                            } else /* ARRAY_STRING */{
+                                for (Serializable v : node.getCollectionProperty(
+                                        name).getValue()) {
+                                    if (v != null) {
+                                        strings.add((String) v);
+                                    }
+                                }
+                            }
+                        }
+                        newNodes = Collections.emptyList();
+                    } else {
+                        // traverse
+                        newNodes = new ArrayList<Node>(nodes.size());
+                        for (Node node : nodes) {
+                            node = getChildNode(node, name, true);
+                            if (node != null) {
+                                newNodes.add(node);
+                            }
+                        }
+                    }
+                }
+                nodes = newNodes;
+            }
+
+        }
+        return StringUtils.join(strings, " ");
     }
 
     /**
-     * Pre-transaction invalidations processing.
+     * Marks locally all the invalidations gathered by a {@link Mapper}
+     * operation (like a version restore).
+     */
+    private void markInvalidated(Invalidations invalidations) {
+        context.markInvalidated(invalidations);
+    }
+
+    /**
+     * Post-transaction invalidations notification.
+     * <p>
+     * Called post-transaction by commit/rollback or transactionless save.
+     */
+    protected void sendInvalidationsToOthers() throws StorageException {
+        Invalidations invalidations = context.gatherInvalidations();
+        repository.invalidate(invalidations, this);
+    }
+
+    /**
+     * Processes all invalidations accumulated.
+     * <p>
+     * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
         repository.receiveClusterInvalidations();
@@ -246,28 +433,11 @@ public class SessionImpl implements Session, XAResource {
         context.invalidate(invalidations);
     }
 
-    protected void rollback() {
-        context.rollback();
-    }
-
-    /**
-     * Recursively checks if any of a fragment's parents has been deleted.
+    /*
+     * -------------------------------------------------------------
+     * -------------------------------------------------------------
+     * -------------------------------------------------------------
      */
-    protected boolean isDeleted(Serializable id) throws StorageException {
-        while (id != null) {
-            SimpleFragment fragment = (SimpleFragment) context.get(
-                    model.mainTableName, id, false);
-            State state;
-            if (fragment == null
-                    || (state = fragment.getState()) == State.ABSENT
-                    || state == State.DELETED
-                    || state == State.INVALIDATED_DELETED) {
-                return true;
-            }
-            id = fragment.get(model.HIER_PARENT_KEY);
-        }
-        return false;
-    }
 
     public Node getNodeById(Serializable id) throws StorageException {
         checkThread();
@@ -275,49 +445,11 @@ public class SessionImpl implements Session, XAResource {
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
         }
-        if (isDeleted(id)) {
+        if (context.isDeleted(id)) {
             return null;
         }
-
-        // get main row
-        SimpleFragment childMain = (SimpleFragment) context.get(
-                model.mainTableName, id, false);
-        if (childMain == null) {
-            // HACK try old id
-            id = context.getOldId(id);
-            if (id == null) {
-                return null;
-            }
-            childMain = (SimpleFragment) context.get(model.mainTableName, id,
-                    false);
-            if (childMain == null) {
-                return null;
-            }
-        }
-        String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
-
-        // find hier row if separate
-        SimpleFragment childHier;
-        Serializable parentId;
-        String name;
-        if (model.separateMainTable) {
-            childHier = (SimpleFragment) context.get(model.hierTableName, id,
-                    false);
-            parentId = childHier.get(model.HIER_PARENT_KEY);
-            name = childHier.getString(model.HIER_CHILD_NAME_KEY);
-        } else {
-            childHier = null;
-            parentId = childMain.get(model.HIER_PARENT_KEY);
-            name = childMain.getString(model.HIER_CHILD_NAME_KEY);
-        }
-
-        FragmentsMap childFragments = getFragments(id, childTypeName, parentId,
-                name);
-
-        FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
-                childFragments);
-
-        return new Node(this, context, childGroup);
+        List<Node> nodes = getNodesByIds(Collections.singletonList(id));
+        return nodes.get(0);
     }
 
     public List<Node> getNodesByIds(List<Serializable> ids)
@@ -326,80 +458,70 @@ public class SessionImpl implements Session, XAResource {
         checkLive();
 
         // get main fragments
-        List<Fragment> mainFragments = context.getMulti(model.mainTableName,
-                ids, false);
+        // TODO ctx: order of fragments
+        List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
+        for (Serializable id : ids) {
+            hierRowIds.add(new RowId(model.mainTableName, id));
+        }
+
+        List<Fragment> hierFragments = context.getMulti(hierRowIds, false);
         // the ids usually come from a query, in which case we don't need to
         // check if they are removed using isDeleted()
 
-        // find what type names we have and the associated fragments
-        Set<String> fragmentNames = new HashSet<String>();
-        Set<String> typesDone = new HashSet<String>();
-        List<FragmentsMap> maps = new ArrayList<FragmentsMap>(ids.size());
-        for (Fragment fragment : mainFragments) {
-            if (fragment == null) {
-                maps.add(null);
-                continue;
-            }
-            FragmentsMap fragmentsMap = new FragmentsMap();
-            fragmentsMap.put(model.mainTableName, fragment);
-            maps.add(fragmentsMap);
+        // find what types we have and the associated rows to fetch
+        List<RowId> rowIds = new ArrayList<RowId>();
+        Map<Serializable, FragmentGroup> groups = new HashMap<Serializable, FragmentGroup>(
+                ids.size());
+        for (Fragment fragment : hierFragments) {
+            Serializable id = fragment.row.id;
+            // prepare fragment groups
+            groups.put(id, new FragmentGroup((SimpleFragment) fragment,
+                    new FragmentsMap()));
 
-            String typeName = (String) ((SimpleFragment) fragment).get(model.MAIN_PRIMARY_TYPE_KEY);
-            if (typesDone.add(typeName)) {
-                Set<String> f = model.getTypePrefetchedFragments(typeName);
-                if (f != null) {
-                    fragmentNames.addAll(f);
-                }
+            // find type and table names
+            SimpleFragment hierFragment = (SimpleFragment) fragment;
+            String typeName = (String) hierFragment.get(model.MAIN_PRIMARY_TYPE_KEY);
+            Serializable parentId = hierFragment.get(model.HIER_PARENT_KEY);
+            Set<String> tableNames = model.getTypePrefetchedFragments(typeName);
+            if (tableNames == null) {
+                continue; // unknown (obsolete) type
             }
-        }
-        fragmentNames.remove(model.mainTableName);
-
-        // fetch all the fragments, in bulk for each table
-        for (String fragmentName : fragmentNames) {
-            List<Fragment> fragments = context.getMulti(fragmentName, ids, true);
-            Iterator<FragmentsMap> mapsit = maps.iterator();
-            for (Fragment fragment : fragments) {
-                FragmentsMap fragmentsMap = mapsit.next();
-                if (fragment != null && fragmentsMap != null) {
-                    fragmentsMap.put(fragmentName, fragment);
+            // add row id for each table name
+            for (String tableName : tableNames) {
+                if (tableName.equals(model.mainTableName)) {
+                    continue; // already fetched
                 }
+                if (parentId != null
+                        && tableName.equals(model.VERSION_TABLE_NAME)) {
+                    continue; // not a version, don't fetch this table
+                }
+                rowIds.add(new RowId(tableName, id));
             }
         }
 
-        // assemble nodes from the fragments fetched
+        List<Fragment> fragments = context.getMulti(rowIds, true);
+
+        // put fragment in map of proper group
+        for (Fragment fragment : fragments) {
+            // always in groups because id is of a requested row
+            FragmentsMap fragmentsMap = groups.get(fragment.row.id).fragments;
+            fragmentsMap.put(fragment.row.tableName, fragment);
+        }
+
+        // assemble nodes from the groups
         List<Node> nodes = new ArrayList<Node>(ids.size());
-        Iterator<FragmentsMap> mapsit = maps.iterator();
-        for (Fragment main : mainFragments) {
-            FragmentsMap fragmentsMap = mapsit.next();
+        for (Serializable id : ids) {
+            FragmentGroup fragmentGroup = groups.get(id);
             Node node;
-            if (main == null) {
-                node = null;
+            if (fragmentGroup == null) {
+                node = null; // deleted/absent
             } else {
-                FragmentGroup childGroup = new FragmentGroup(
-                        (SimpleFragment) main, null, fragmentsMap);
-                node = new Node(this, context, childGroup);
+                node = new Node(context, fragmentGroup);
             }
             nodes.add(node);
         }
 
         return nodes;
-    }
-
-    protected FragmentsMap getFragments(Serializable id, String typeName,
-            Serializable parentId, String name) throws StorageException {
-        // TODO get all non-cached fragments at once using join / union
-        FragmentsMap fragments = new FragmentsMap();
-        Set<String> fragmentNames = model.getTypePrefetchedFragments(typeName);
-        if (fragmentNames != null) {
-            if (parentId != null) {
-                // not a version
-                fragmentNames.remove(model.VERSION_TABLE_NAME);
-            }
-            for (String fragmentName : fragmentNames) {
-                fragments.put(fragmentName, context.get(fragmentName, id, true));
-            }
-        }
-        return fragments;
     }
 
     public Node getParentNode(Node node) throws StorageException {
@@ -408,11 +530,7 @@ public class SessionImpl implements Session, XAResource {
             throw new IllegalArgumentException("Illegal null node");
         }
         Serializable id = node.getHierFragment().get(model.HIER_PARENT_KEY);
-        if (id == null) {
-            // root or version
-            return null;
-        }
-        return getNodeById(id);
+        return id == null ? null : getNodeById(id);
     }
 
     public String getPath(Node node) throws StorageException {
@@ -486,58 +604,31 @@ public class SessionImpl implements Session, XAResource {
             throw new IllegalArgumentException("Unknown type: " + typeName);
         }
 
-        id = context.generateNewId(id);
+        id = generateNewId(id);
         Serializable parentId = parent == null ? null
-                : parent.mainFragment.getId();
+                : parent.hierFragment.getId();
 
         // main info
-        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
-        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
-
-        // hierarchy info
+        Row hierRow = new Row(model.mainTableName, id);
+        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
         // TODO if folder is ordered, we have to compute the pos as max+1...
-        Map<String, Serializable> hierMap;
-        if (model.separateMainTable) {
-            hierMap = new HashMap<String, Serializable>();
-        } else {
-            hierMap = mainMap;
-        }
-        hierMap.put(model.HIER_PARENT_KEY, parentId);
-        hierMap.put(model.HIER_CHILD_POS_KEY, pos);
-        hierMap.put(model.HIER_CHILD_NAME_KEY, name);
-        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+        hierRow.putNew(model.HIER_PARENT_KEY, parentId);
+        hierRow.putNew(model.HIER_CHILD_POS_KEY, pos);
+        hierRow.putNew(model.HIER_CHILD_NAME_KEY, name);
+        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = context.createSimpleFragment(
-                model.mainTableName, id, mainMap);
-
-        SimpleFragment hierRow;
-        if (model.separateMainTable) {
-            // TODO put it in a collection context instead
-            hierRow = context.createSimpleFragment(model.hierTableName, id,
-                    hierMap);
-        } else {
-            hierRow = null;
-        }
+        SimpleFragment hierFragment = context.createSimpleFragment(hierRow);
 
         FragmentsMap fragments = new FragmentsMap();
-        if (false) {
-            // TODO if non-lazy creation of some fragments, create them here
-            for (String schemaName : model.getTypeSimpleFragments(typeName)) {
-                // TODO XXX fill in default values
-                // TODO fill data instead of null XXX or just have fragments
-                // empty
-                Fragment fragment = context.createSimpleFragment(schemaName,
-                        id, null);
-                fragments.put(schemaName, fragment);
-            }
-        }
+        // TODO if non-lazy creation of some fragments, create them here
+        // for (String tableName : model.getTypeSimpleFragments(typeName)) {
 
-        FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
+        FragmentGroup fragmentGroup = new FragmentGroup(hierFragment, fragments);
 
         requireReadAclsUpdate();
 
-        return new Node(this, context, rowGroup);
+        return new Node(context, fragmentGroup);
     }
 
     public Node addProxy(Serializable targetId, Serializable versionableId,
@@ -552,7 +643,9 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
-        return context.getChildByName(parent.getId(), name, complexProp) != null;
+        SimpleFragment fragment = context.getChildHierByName(parent.getId(),
+                name, complexProp);
+        return fragment != null;
     }
 
     public Node getChildNode(Node parent, String name, boolean complexProp)
@@ -560,47 +653,20 @@ public class SessionImpl implements Session, XAResource {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".")
                 || name.equals("..")) {
-            // XXX real parsing
             throw new IllegalArgumentException("Illegal name: " + name);
         }
-
-        // XXX namespace transformations
-
-        // find child hier row
-        Serializable parentId = parent.getId();
-        SimpleFragment childHier = context.getChildByName(parentId, name,
-                complexProp);
-        if (childHier == null) {
-            // not found
-            return null;
-        }
-        Serializable childId = childHier.getId();
-
-        // get main row
-        SimpleFragment childMain;
-        if (model.separateMainTable) {
-            childMain = (SimpleFragment) context.get(model.mainTableName,
-                    childId, false);
-        } else {
-            childMain = childHier;
-            childHier = null;
-        }
-        String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
-
-        FragmentsMap childFragments = getFragments(childId, childTypeName,
-                parentId, name);
-
-        FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
-                childFragments);
-
-        return new Node(this, context, childGroup);
+        SimpleFragment fragment = context.getChildHierByName(parent.getId(),
+                name, complexProp);
+        return fragment == null ? null : getNodeById(fragment.getId());
     }
 
     // TODO optimize with dedicated backend call
     public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
         checkLive();
-        return context.getChildren(parent.getId(), null, complexProp).size() > 0;
+        List<SimpleFragment> children = context.getChildren(parent.getId(),
+                null, complexProp);
+        return children.size() > 0;
     }
 
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
@@ -631,7 +697,7 @@ public class SessionImpl implements Session, XAResource {
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
-        context.save();
+        flush(); // needed when doing many moves for circular stuff
         context.move(source, parent.getId(), name);
         requireReadAclsUpdate();
         return source;
@@ -640,7 +706,7 @@ public class SessionImpl implements Session, XAResource {
     public Node copy(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
-        context.save();
+        flush();
         Serializable id = context.copy(source, parent.getId(), name);
         requireReadAclsUpdate();
         return getNodeById(id);
@@ -648,28 +714,17 @@ public class SessionImpl implements Session, XAResource {
 
     public void removeNode(Node node) throws StorageException {
         checkLive();
-        if (node.mainFragment.getState() == State.CREATED) {
-            // recurse in children, safe to do as they're in memory as well
-            for (Node n : getChildren(node, null, true)) {
-                removeNode(n);
-            }
-            for (Node n : getChildren(node, null, false)) {
-                removeNode(n);
-            }
-        }
-        node.remove();
-        // We cannot recursively delete the children from the cache as we don't
-        // know all their ids and it would be costly to obtain them. Instead we
-        // do a check on getNodeById using isDeleted() to see if there's a
-        // deleted parent.
+        context.removeNode(node.getHierFragment());
     }
 
     public Node checkIn(Node node, String label, String description)
             throws StorageException {
         checkLive();
-        context.save();
+        flush();
         Serializable id = context.checkIn(node, label, description);
         requireReadAclsUpdate();
+        // save to reflect changes immediately in database
+        flush();
         return getNodeById(id);
     }
 
@@ -689,30 +744,25 @@ public class SessionImpl implements Session, XAResource {
     public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
         checkLive();
-        Serializable id = context.getVersionByLabel(versionableId, label);
-        if (id == null) {
-            return null;
-        }
-        return getNodeById(id);
+        flush();
+        Serializable id = mapper.getVersionIdByLabel(versionableId, label);
+        return id == null ? null : getNodeById(id);
     }
 
     public Node getLastVersion(Node node) throws StorageException {
         checkLive();
-        context.save();
-        Serializable id = context.getLastVersion(node.getId());
-        if (id == null) {
-            return null;
-        }
-        return getNodeById(id);
+        flush();
+        Serializable id = mapper.getLastVersionId(node.getId());
+        return id == null ? null : getNodeById(id);
     }
 
     public List<Node> getVersions(Node versionableNode) throws StorageException {
         checkLive();
-        context.save();
-        List<SimpleFragment> fragments = context.getVersions(versionableNode.getId());
-        List<Node> nodes = new ArrayList<Node>(fragments.size());
-        for (SimpleFragment fragment : fragments) {
-            nodes.add(getNodeById(fragment.getId()));
+        flush();
+        List<Serializable> ids = context.getVersionIds(versionableNode.getId());
+        List<Node> nodes = new ArrayList<Node>(ids.size());
+        for (Serializable id : ids) {
+            nodes.add(getNodeById(id));
         }
         return nodes;
     }
@@ -720,11 +770,30 @@ public class SessionImpl implements Session, XAResource {
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
-        context.save();
-        List<SimpleFragment> fragments = context.getProxies(document, parent);
-        List<Node> nodes = new ArrayList<Node>(fragments.size());
-        for (SimpleFragment fragment : fragments) {
-            nodes.add(getNodeById(fragment.getId()));
+        flush();
+
+        // find the versionable id
+        boolean byTarget;
+        Serializable searchId;
+        if (document.isVersion()) {
+            byTarget = true;
+            searchId = document.getId();
+        } else {
+            byTarget = false;
+            if (document.isProxy()) {
+                searchId = document.getSimpleProperty(
+                        model.PROXY_VERSIONABLE_PROP).getString();
+            } else {
+                searchId = document.getId();
+            }
+        }
+        Serializable parentId = parent == null ? null : parent.getId();
+
+        List<Serializable> ids = context.getProxyIds(searchId, byTarget,
+                parentId);
+        List<Node> nodes = new ArrayList<Node>(ids.size());
+        for (Serializable id : ids) {
+            nodes.add(getNodeById(id));
         }
         return nodes;
     }
@@ -732,13 +801,12 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return context.query(query, queryFilter, countTotal, this);
+        return mapper.query(query, queryFilter, countTotal);
     }
 
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        return context.queryAndFetch(query, queryType, queryFilter, this,
-                params);
+        return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
     public void requireReadAclsUpdate() {
@@ -746,36 +814,25 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void updateReadAcls() throws StorageException {
-        context.updateReadAcls();
+        mapper.updateReadAcls();
         readAclsChanged = false;
     }
 
     public void rebuildReadAcls() throws StorageException {
-        context.rebuildReadAcls();
+        mapper.rebuildReadAcls();
         readAclsChanged = false;
-    }
-
-    // returns context or null if missing
-    protected Context getContext(String tableName) {
-        return context.getContextOrNull(tableName);
-    }
-
-    private void checkLive() {
-        if (!live) {
-            throw new IllegalStateException("Session is not live");
-        }
     }
 
     private void computeRootNode() throws StorageException {
         String repositoryId = "default"; // TODO use repo name
-        Serializable rootId = context.getRootId(repositoryId);
+        Serializable rootId = mapper.getRootId(repositoryId);
         if (rootId == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
             addRootACP();
             save();
             // record information about the root id
-            context.setRootId(repositoryId, rootNode.getId());
+            mapper.setRootId(repositoryId, rootNode.getId());
         } else {
             rootNode = getNodeById(rootId);
         }
@@ -784,38 +841,19 @@ public class SessionImpl implements Session, XAResource {
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
         requireReadAclsUpdate();
-        Serializable id = context.generateNewId(null);
+        Serializable id = generateNewId(null);
 
-        // main info
-        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
-        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
+        Row hierRow = new Row(model.mainTableName, id);
+        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
+        hierRow.putNew(model.HIER_PARENT_KEY, null);
+        hierRow.putNew(model.HIER_CHILD_POS_KEY, null);
+        hierRow.putNew(model.HIER_CHILD_NAME_KEY, "");
+        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        // hierarchy info
-        Map<String, Serializable> hierMap;
-        if (model.separateMainTable) {
-            hierMap = new HashMap<String, Serializable>();
-        } else {
-            hierMap = mainMap;
-        }
-        hierMap.put(model.HIER_PARENT_KEY, null);
-        hierMap.put(model.HIER_CHILD_POS_KEY, null);
-        hierMap.put(model.HIER_CHILD_NAME_KEY, "");
-        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
-
-        SimpleFragment mainRow = context.createSimpleFragment(
-                model.mainTableName, id, mainMap);
-
-        SimpleFragment hierRow;
-        if (model.separateMainTable) {
-            hierRow = context.createSimpleFragment(model.hierTableName, id,
-                    hierMap);
-        } else {
-            hierRow = null;
-        }
-
-        FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);
-
-        return new Node(this, context, rowGroup);
+        SimpleFragment hierFragment = context.createSimpleFragment(hierRow);
+        FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
+                new FragmentsMap());
+        return new Node(context, fragmentGroup);
     }
 
     private void addRootACP() throws StorageException {
@@ -867,7 +905,7 @@ public class SessionImpl implements Session, XAResource {
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
         }
-        context.start(xid, flags);
+        mapper.start(xid, flags);
         inTransaction = true;
         checkThreadStart();
     }
@@ -884,11 +922,11 @@ public class SessionImpl implements Session, XAResource {
                 }
             }
             failed = false;
-            context.end(xid, flags);
+            mapper.end(xid, flags);
         } finally {
             if (failed) {
                 try {
-                    context.end(xid, TMFAIL);
+                    mapper.end(xid, TMFAIL);
                 } finally {
                     rollback(xid);
                 }
@@ -897,12 +935,12 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public int prepare(Xid xid) throws XAException {
-        return context.prepare(xid);
+        return mapper.prepare(xid);
     }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {
         try {
-            context.commit(xid, onePhase);
+            mapper.commit(xid, onePhase);
         } finally {
             inTransaction = false;
             try {
@@ -921,7 +959,7 @@ public class SessionImpl implements Session, XAResource {
     public void rollback(Xid xid) throws XAException {
         try {
             try {
-                context.rollback(xid);
+                mapper.rollback(xid);
             } finally {
                 rollback();
             }
@@ -941,19 +979,19 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void forget(Xid xid) throws XAException {
-        context.forget(xid);
+        mapper.forget(xid);
     }
 
     public Xid[] recover(int flag) throws XAException {
-        return context.recover(flag);
+        return mapper.recover(flag);
     }
 
     public boolean setTransactionTimeout(int seconds) throws XAException {
-        return context.setTransactionTimeout(seconds);
+        return mapper.setTransactionTimeout(seconds);
     }
 
     public int getTransactionTimeout() throws XAException {
-        return context.getTransactionTimeout();
+        return mapper.getTransactionTimeout();
     }
 
 }

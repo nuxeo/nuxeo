@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,13 +14,12 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,24 +29,34 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyHierarchyResult;
+import org.nuxeo.ecm.core.storage.sql.SimpleFragment.PositionComparator;
 
 /**
- * This class holds persistence context information for the hierarchy table, and
- * adds specialized methods over {@link Context}.
- *
- * @author Florent Guillaume
+ * This class holds cached information for children relationships in the
+ * hierarchy table.
  */
-public class HierarchyContext extends Context {
+public class HierarchyContext {
 
-    protected static final String INVAL_PARENT = "__PARENT__";
+    private final Model model;
 
-    protected final Map<Serializable, Children> childrenRegularSoft;
+    private final Mapper mapper;
 
-    protected final Map<Serializable, Children> childrenRegularHard;
+    private final SessionImpl session;
 
-    protected final Map<Serializable, Children> childrenComplexPropSoft;
+    private final PersistenceContext context;
 
-    protected final Map<Serializable, Children> childrenComplexPropHard;
+    private final Map<Serializable, Children> childrenRegularSoft;
+
+    // public because used from unit tests
+    public final Map<Serializable, Children> childrenRegularHard;
+
+    private final Map<Serializable, Children> childrenComplexPropSoft;
+
+    private final Map<Serializable, Children> childrenComplexPropHard;
+
+    private final Map<Serializable, Children>[] childrenAllMaps;
 
     /**
      * The parents modified in the transaction.
@@ -56,74 +65,45 @@ public class HierarchyContext extends Context {
 
     /**
      * The set of parents that have to be invalidated in this session at
-     * post-commit time.
+     * post-commit time. Usage must be synchronized.
      */
     private final Set<Serializable> modifiedParentsInvalidations;
 
     private final PositionComparator posComparator;
 
-    public HierarchyContext(Model model, Mapper mapper, PersistenceContext persistenceContext) {
-        super(model.hierTableName, model, mapper, persistenceContext);
+    public HierarchyContext(Model model, Mapper mapper, SessionImpl session,
+            PersistenceContext context) {
+        this.model = model;
+        this.mapper = mapper;
+        this.session = session;
+        this.context = context;
+
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
         childrenRegularHard = new HashMap<Serializable, Children>();
         childrenComplexPropSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
         childrenComplexPropHard = new HashMap<Serializable, Children>();
+        childrenAllMaps = new Map[] { childrenRegularSoft, childrenRegularHard,
+                childrenComplexPropSoft, childrenComplexPropHard };
+
         modifiedParentsInTransaction = new HashSet<Serializable>();
         modifiedParentsInvalidations = new HashSet<Serializable>();
+
         posComparator = new PositionComparator(model.HIER_CHILD_POS_KEY);
     }
 
-    /**
-     * Comparator of {@link SimpleFragment}s according to their pos field.
-     */
-    public static class PositionComparator implements
-            Comparator<SimpleFragment> {
-
-        protected final String posKey;
-
-        public PositionComparator(String posKey) {
-            this.posKey = posKey;
-        }
-
-        public int compare(SimpleFragment frag1, SimpleFragment frag2) {
-            try {
-                Long pos1 = (Long) frag1.get(posKey);
-                Long pos2 = (Long) frag2.get(posKey);
-                if (pos1 == null && pos2 == null) {
-                    // coherent sort
-                    return frag1.hashCode() - frag2.hashCode();
-                }
-                if (pos1 == null) {
-                    return 1;
-                }
-                if (pos2 == null) {
-                    return -1;
-                }
-                return pos1.compareTo(pos2);
-            } catch (StorageException e) {
-                // shouldn't happen
-                return frag1.hashCode() - frag2.hashCode();
-            }
-        }
-    }
-
-    @Override
-    protected int clearCaches() {
-        // flush allowable children caches
-        int n = super.clearCaches() + childrenRegularSoft.size()
-                + childrenComplexPropSoft.size();
+    public int clearCaches() {
+        // only the soft children are caches, the others hold info
+        int n = childrenRegularSoft.size() + childrenComplexPropSoft.size();
         childrenRegularSoft.clear();
         childrenComplexPropSoft.clear();
+        modifiedParentsInTransaction.clear();
         return n;
     }
 
-    /**
-     * Gets the proper children cache. Creates one if missing.
-     */
-    protected Children getChildrenCache(Serializable parentId,
-            boolean complexProp) {
+    /** Gets the proper children cache. Creates one if missing. */
+    protected Children childrenCache(Serializable parentId, boolean complexProp) {
         Map<Serializable, Children> softMap;
         Map<Serializable, Children> hardMap;
         if (complexProp) {
@@ -144,101 +124,79 @@ public class HierarchyContext extends Context {
         return children;
     }
 
-    protected boolean complexProp(SimpleFragment row) throws StorageException {
-        return ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+    protected boolean complexProp(SimpleFragment fragment)
+            throws StorageException {
+        return ((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
     }
 
-    protected void addExistingChild(SimpleFragment row, boolean complexProp)
+    protected void addExistingChild(SimpleFragment fragment, boolean complexProp)
             throws StorageException {
-        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        Serializable parentId = fragment.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             return;
         }
-        getChildrenCache(parentId, complexProp).addExisting(row.getId());
+        childrenCache(parentId, complexProp).addExisting(fragment.getId());
         modifiedParentsInTransaction.add(parentId);
     }
 
-    protected void addCreatedChild(SimpleFragment row, boolean complexProp)
+    protected void addCreatedChild(SimpleFragment fragment, boolean complexProp)
             throws StorageException {
-        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        Serializable parentId = fragment.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             return;
         }
-        getChildrenCache(parentId, complexProp).addCreated(row.getId());
+        childrenCache(parentId, complexProp).addCreated(fragment.getId());
         modifiedParentsInTransaction.add(parentId);
     }
 
-    protected void removeChild(SimpleFragment row, boolean complexProp)
+    protected void removeChild(SimpleFragment fragment, boolean complexProp)
             throws StorageException {
-        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        Serializable parentId = fragment.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             return;
         }
-        getChildrenCache(parentId, complexProp).remove(row.getId());
+        childrenCache(parentId, complexProp).remove(fragment.getId());
         modifiedParentsInTransaction.add(parentId);
     }
 
-    @Override
-    public SimpleFragment create(Serializable id, Map<String, Serializable> map)
+    public void createdSimpleFragment(SimpleFragment fragment)
             throws StorageException {
-        SimpleFragment fragment = super.create(id, map);
+        if (!model.hierTableName.equals(fragment.row.tableName)) {
+            return;
+        }
         // add as a child of its parent
         addCreatedChild(fragment, complexProp(fragment));
         // note that this new row doesn't have children
-        addNewParent(id);
-        return fragment;
-    }
-
-    /**
-     * Notes the fact that a new row was created without children.
-     */
-    protected void addNewParent(Serializable parentId) {
+        Serializable parentId = fragment.getId();
         new Children(this, model.HIER_CHILD_NAME_KEY, true, parentId,
                 childrenRegularSoft, childrenRegularHard);
         new Children(this, model.HIER_CHILD_NAME_KEY, true, parentId,
                 childrenComplexPropSoft, childrenComplexPropHard);
     }
 
-    @Override
-    protected Fragment getFromMapper(Serializable id, boolean allowAbsent)
-            throws StorageException {
-        SimpleFragment fragment = (SimpleFragment) super.getFromMapper(id,
-                allowAbsent);
-        if (fragment != null) {
-            // add as a child of its parent
-            addExistingChild(fragment, complexProp(fragment));
-        }
-        return fragment;
-    }
-
     /**
-     * Find a row in the hierarchy schema given its parent id and name. If the
-     * row is not in the context, fetch it from the mapper.
+     * Find a fragment in the hierarchy schema given its parent id and name. If
+     * the fragment is not in the context, fetch it from the mapper.
      *
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or regular children
-     * @return the fragment, or {@code null} if none is found
-     * @throws StorageException
+     * @return the fragment, or {@code null} if not found
      */
-    public SimpleFragment getChildByName(Serializable parentId, String name,
-            boolean complexProp) throws StorageException {
-        SimpleFragment fragment = getChildrenCache(parentId, complexProp).getFragmentByValue(
+    public SimpleFragment getChildHierByName(Serializable parentId,
+            String name, boolean complexProp) throws StorageException {
+        SimpleFragment fragment = childrenCache(parentId, complexProp).getFragmentByValue(
                 name);
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
-            fragment = mapper.readChildHierRow(parentId, name, complexProp,
-                    this);
-            if (fragment != null) {
-                // add as know child
-                addExistingChild(fragment, complexProp);
-            }
+            Row row = mapper.readChildHierRow(parentId, name, complexProp);
+            fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row, false);
         }
         return fragment;
     }
 
     /**
-     * Gets the list of children for a given parent id.
+     * Gets the list of children main fragments for a given parent id.
      * <p>
      * Complex properties and children of ordered folders are returned in the
      * proper order.
@@ -246,24 +204,27 @@ public class HierarchyContext extends Context {
      * @param parentId the parent id
      * @param name the name of the children, or {@code null} for all
      * @param complexProp whether to get complex properties or regular children
-     * @return the list of children
-     * @throws StorageException
+     * @return the list of children main fragments
      */
     public List<SimpleFragment> getChildren(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        Children children = getChildrenCache(parentId, complexProp);
+        Children children = childrenCache(parentId, complexProp);
         List<SimpleFragment> fragments = children.getFragmentsByValue(name);
         if (fragments == null) {
+            // no complete list is known
             // ask the actual children to the mapper
-            fragments = mapper.readChildHierRows(parentId, complexProp, this);
-            List<Serializable> ids = new ArrayList<Serializable>(
-                    fragments.size());
-            for (Fragment fragment : fragments) {
+            List<Row> rows = mapper.readChildHierRows(parentId, complexProp);
+            List<Fragment> frags = context.getFragmentsFromFetchedRows(rows, false);
+            fragments = new ArrayList<SimpleFragment>(frags.size());
+            List<Serializable> ids = new ArrayList<Serializable>(frags.size());
+            for (Fragment fragment : frags) {
+                fragments.add((SimpleFragment) fragment);
                 ids.add(fragment.getId());
             }
             children.addExistingComplete(ids);
 
-            // the children may include newly-created ones, and filter by name
+            // redo the query, as the children may include newly-created ones,
+            // and we also filter by name
             fragments = children.getFragmentsByValue(name);
         }
         if (isOrderable(parentId, complexProp)) {
@@ -273,12 +234,12 @@ public class HierarchyContext extends Context {
         return fragments;
     }
 
-    private boolean isOrderable(Serializable parentId, boolean complexProp)
+    protected boolean isOrderable(Serializable parentId, boolean complexProp)
             throws StorageException {
         if (complexProp) {
             return true;
         }
-        SimpleFragment parent = (SimpleFragment) get(parentId, true);
+        SimpleFragment parent = getHier(parentId, true);
         String typeName = parent.getString(model.MAIN_PRIMARY_TYPE_KEY);
         return model.getDocumentTypeFacets(typeName).contains(
                 FacetNames.ORDERABLE);
@@ -291,7 +252,7 @@ public class HierarchyContext extends Context {
      * @return the id of the containing document, or {@code null} if there is no
      *         parent or the parent has been deleted.
      */
-    protected Serializable getContainingDocument(Serializable id)
+    public Serializable getContainingDocument(Serializable id)
             throws StorageException {
         Serializable pid = id;
         while (true) {
@@ -299,7 +260,7 @@ public class HierarchyContext extends Context {
                 // no parent
                 return null;
             }
-            SimpleFragment p = (SimpleFragment) get(pid, false);
+            SimpleFragment p = getHier(pid, false);
             if (p == null) {
                 // can happen if the fragment has been deleted
                 return null;
@@ -311,9 +272,7 @@ public class HierarchyContext extends Context {
         }
     }
 
-    /**
-     * Checks that we don't move/copy under ourselves.
-     */
+    /** Checks that we don't move/copy under ourselves. */
     protected void checkNotUnder(Serializable parentId, Serializable id,
             String op) throws StorageException {
         Serializable pid = parentId;
@@ -323,7 +282,7 @@ public class HierarchyContext extends Context {
                         + " a node under itself: " + parentId + " is under "
                         + id);
             }
-            SimpleFragment p = (SimpleFragment) get(pid, false);
+            SimpleFragment p = getHier(pid, false);
             if (p == null) {
                 // cannot happen
                 throw new StorageException("No parent: " + pid);
@@ -332,13 +291,11 @@ public class HierarchyContext extends Context {
         } while (pid != null);
     }
 
-    /**
-     * Checks that a name is free.
-     */
-    protected void checkFreeName(SimpleFragment row, Serializable parentId,
-            String name, boolean complexProp) throws StorageException {
-        Fragment prev = getChildByName(parentId, name, complexProp);
-        if (prev != null) {
+    /** Checks that a name is free. Cannot check concurrent sessions though. */
+    protected void checkFreeName(Serializable parentId, String name,
+            boolean complexProp) throws StorageException {
+        Fragment fragment = getChildHierByName(parentId, name, complexProp);
+        if (fragment != null) {
             throw new StorageException("Destination name already exists: "
                     + name);
         }
@@ -351,7 +308,6 @@ public class HierarchyContext extends Context {
      * @param sourceId the node id to move
      * @param destId the node id before which to place the source node, if
      *            {@code null} then move the source to the end
-     * @throws StorageException
      */
     public void orderBefore(Serializable parentId, Serializable sourceId,
             Serializable destId) throws StorageException {
@@ -411,9 +367,8 @@ public class HierarchyContext extends Context {
      * @param complexProp whether to deal with complex properties or regular
      *            children
      * @return the next pos, or {@code null} if not orderable
-     * @throws StorageException
      */
-    protected Long getNextPos(Serializable nodeId, boolean complexProp)
+    public Long getNextPos(Serializable nodeId, boolean complexProp)
             throws StorageException {
         if (!isOrderable(nodeId, complexProp)) {
             return null;
@@ -436,7 +391,7 @@ public class HierarchyContext extends Context {
      * @param name the new name
      * @throws StorageException
      */
-    public void moveChild(Node source, Serializable parentId, String name)
+    public void move(Node source, Serializable parentId, String name)
             throws StorageException {
         // a save() has already been done by the caller
         Serializable id = source.getId();
@@ -450,7 +405,7 @@ public class HierarchyContext extends Context {
             return;
         }
         boolean complexProp = complexProp(hierFragment);
-        checkFreeName(hierFragment, parentId, name, complexProp);
+        checkFreeName(parentId, name, complexProp);
         /*
          * Do the move.
          */
@@ -469,102 +424,55 @@ public class HierarchyContext extends Context {
      * @param parentId the destination parent id
      * @param name the new name
      * @return the id of the copy
-     * @throws StorageException
      */
-    public Serializable copyChild(Node source, Serializable parentId,
-            String name) throws StorageException {
+    public Serializable copy(Node source, Serializable parentId, String name)
+            throws StorageException {
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
         if (!oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "copy");
         }
-        checkFreeName(hierFragment, parentId, name, complexProp(hierFragment));
-        /*
-         * Do the copy.
-         */
+        checkFreeName(parentId, name, complexProp(hierFragment));
+        // do the copy
         String typeName = source.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name,
-                null, null, persistenceContext);
-        get(newId, false); // adds it as a new child of its parent
+        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, parentId,
+                name, null);
+        Serializable newId = res.copyId;
+        context.markInvalidated(res.invalidations);
+        // adds it as a new child of its parent:
+        getHier(newId, false);
         return newId;
     }
 
-    @Override
-    public void remove(Fragment fragment) throws StorageException {
+    public void removeNode(Fragment hierFragment) throws StorageException {
+        if (hierFragment.getState() == State.CREATED) {
+            // only case where we can recurse in children,
+            // it's safe to do as they're in memory as well
+            Serializable id = hierFragment.getId();
+            for (SimpleFragment f : getChildren(id, null, true)) {
+                context.removeNode(f);
+            }
+            for (SimpleFragment f : getChildren(id, null, false)) {
+                context.removeNode(f);
+            }
+        }
+        // We cannot recursively delete the children from the cache as we don't
+        // know all their ids and it would be costly to obtain them. Instead we
+        // do a check on getNodeById using isDeleted() to see if there's a
+        // deleted parent.
+    }
+
+    /** Deletes a fragment from the context. */
+    public void removeFragment(Fragment fragment) throws StorageException {
+        if (!model.hierTableName.equals(fragment.row.tableName)) {
+            return;
+        }
         removeChild((SimpleFragment) fragment,
                 complexProp((SimpleFragment) fragment));
-        super.remove(fragment);
     }
 
-    @Override
-    protected void remapFragmentOnSave(Fragment fragment,
-            Map<Serializable, Serializable> idMap) throws StorageException {
-        SimpleFragment row = (SimpleFragment) fragment;
-        // map hierarchy parent column
-        Serializable newParentId = idMap.get(row.get(model.HIER_PARENT_KEY));
-        if (newParentId != null) {
-            row.put(model.HIER_PARENT_KEY, newParentId);
-        }
-    }
-
-    /**
-     * Saves the created main rows, and returns the map of temporary ids to
-     * final ids.
-     * <p>
-     * The parent ids of created children have to be mapped on the fly from
-     * previously generated parent ids. This means that parents have to be
-     * created before children, which is the case because "modified" is a linked
-     * hashmap.
-     *
-     * @param createdIds the created ids to save
-     * @return the map of created ids to final ids (when different)
-     * @throws StorageException
-     */
-    public Map<Serializable, Serializable> saveCreated(
-            Set<Serializable> createdIds) throws StorageException {
-        Map<Serializable, Serializable> idMap = null;
-        for (Serializable id : createdIds) {
-            SimpleFragment row = (SimpleFragment) modified.remove(id);
-            if (row == null) {
-                // was created and deleted before save
-                continue;
-            }
-            if (idMap != null) {
-                remapFragmentOnSave(row, idMap);
-            }
-            Serializable newId = mapper.insertSingleRow(row);
-            row.setPristine();
-            pristine.put(id, row);
-            // save in translation map, if different
-            // only happens for DB_IDENTITY id generation policy
-            if (!newId.equals(id)) {
-                if (idMap == null) {
-                    idMap = new HashMap<Serializable, Serializable>();
-                }
-                idMap.put(id, newId);
-            }
-        }
-        return idMap == null ? Collections.<Serializable, Serializable> emptyMap()
-                : idMap;
-    }
-
-    @Override
-    public void save(Map<Serializable, Serializable> idMap)
-            throws StorageException {
-        super.save(idMap);
-        // map temporary parent ids for created parents
-        for (Serializable id : idMap.keySet()) {
-            Serializable newId = idMap.get(id);
-            for (Map<Serializable, Children> map : new Map[] {
-                    childrenRegularSoft, childrenRegularHard,
-                    childrenComplexPropSoft, childrenComplexPropHard }) {
-                Children children = map.remove(id);
-                if (children != null) {
-                    map.put(newId, children);
-                }
-            }
-        }
+    public void postSave() {
         // flush children caches (moves from hard to soft)
         for (Children children : childrenRegularHard.values()) {
             children.flush(); // added to soft map
@@ -576,50 +484,218 @@ public class HierarchyContext extends Context {
         childrenComplexPropHard.clear();
     }
 
-    /**
-     * Called by the mapper when it has added new children (of unknown ids) to a
-     * node.
-     */
-    public void markChildrenAdded(Serializable parentId) {
-        for (Map<Serializable, Children> map : new Map[] { childrenRegularSoft,
-                childrenRegularHard, childrenComplexPropSoft,
-                childrenComplexPropHard }) {
-            Children children = map.get(parentId);
-            if (children != null) {
-                children.setIncomplete();
-            }
-        }
-        modifiedParentsInTransaction.add(parentId);
+    // called by Children
+    public SimpleFragment getHierIfPresent(Serializable id) {
+        RowId rowId = new RowId(model.hierTableName, id);
+        return (SimpleFragment) context.getIfPresent(rowId);
     }
 
-    @Override
-    protected void gatherInvalidations(Invalidations invalidations) {
-        super.gatherInvalidations(invalidations);
-        invalidations.addModified(INVAL_PARENT, modifiedParentsInTransaction);
+    // also called by Children
+    public SimpleFragment getHier(Serializable id, boolean allowAbsent)
+            throws StorageException {
+        RowId rowId = new RowId(model.hierTableName, id);
+        return (SimpleFragment) context.get(rowId, allowAbsent);
+    }
+
+    public void recordFragment(Fragment fragment) throws StorageException {
+        if (!model.hierTableName.equals(fragment.row.tableName)) {
+            return;
+        }
+        // add as a child of its parent
+        addExistingChild((SimpleFragment) fragment,
+                complexProp((SimpleFragment) fragment));
+    }
+
+    /** Recursively checks if any of a fragment's parents has been deleted. */
+    // needed because we don't recursively clear caches when doing a delete
+    public boolean isDeleted(Serializable id) throws StorageException {
+        while (id != null) {
+            SimpleFragment fragment = getHier(id, false);
+            State state;
+            if (fragment == null
+                    || (state = fragment.getState()) == State.ABSENT
+                    || state == State.DELETED
+                    || state == State.INVALIDATED_DELETED) {
+                return true;
+            }
+            id = fragment.get(model.HIER_PARENT_KEY);
+        }
+        return false;
+    }
+
+    /**
+     * Checks in a node.
+     *
+     * @param node the node to check in
+     * @param label the version label
+     * @param description the version description
+     * @return the created version id
+     */
+    public Serializable checkIn(Node node, String label, String description)
+            throws StorageException {
+        Boolean checkedIn = (Boolean) node.hierFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked in");
+        }
+        /*
+         * Do the copy without non-complex children, with null parent.
+         */
+        Serializable id = node.getId();
+        String typeName = node.getPrimaryType();
+        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, null,
+                null, null);
+        Serializable newId = res.copyId;
+        context.markInvalidated(res.invalidations);
+        // add version as a new child of its parent
+        getHier(newId, false);
+
+        // create a "version" row for our new version
+        Row row = new Row(model.VERSION_TABLE_NAME, newId);
+        row.putNew(model.VERSION_VERSIONABLE_KEY, id);
+        row.putNew(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
+        row.putNew(model.VERSION_LABEL_KEY, label);
+        row.putNew(model.VERSION_DESCRIPTION_KEY, description);
+        SimpleFragment versionRow = context.createSimpleFragment(row);
+        // update the original node to reflect that it's checked in
+        node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        node.hierFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
+        return newId;
+    }
+
+    /**
+     * Checks out a node.
+     *
+     * @param node the node to check out
+     */
+    public void checkOut(Node node) throws StorageException {
+        Boolean checkedIn = (Boolean) node.hierFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (!Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked out");
+        }
+        // update the node to reflect that it's checked out
+        node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
+    }
+
+    /**
+     * Restores a node by label.
+     * <p>
+     * The restored node is checked in.
+     *
+     * @param node the node
+     * @param label the version label to restore
+     */
+    public void restoreByLabel(Node node, String label) throws StorageException {
+        String typeName = node.getPrimaryType();
+
+        // find the version
+        Serializable versionableId = node.getId();
+        Serializable versionId = mapper.getVersionIdByLabel(versionableId,
+                label);
+        if (versionId == null) {
+            throw new StorageException("Unknown version: " + label);
+        }
+        // clear complex properties
+        List<SimpleFragment> children = getChildren(versionableId, null, true);
+        // copy to avoid concurrent modifications
+        for (Fragment child : children.toArray(new Fragment[children.size()])) {
+            context.removeFragment(child); // will cascade deletes
+        }
+        session.flush(); // flush deletes
+
+        // copy the version values
+        Row overwriteRow = new Row(model.hierTableName, versionableId);
+        SimpleFragment versionHier = getHier(versionId, false);
+        for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
+            if (key.equals(model.HIER_PARENT_KEY)
+                    || key.equals(model.HIER_CHILD_NAME_KEY)
+                    || key.equals(model.HIER_CHILD_POS_KEY)
+                    || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
+                    || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
+                    || key.equals(model.MAIN_CHECKED_IN_KEY)
+                    || key.equals(model.MAIN_BASE_VERSION_KEY)) {
+                continue;
+            }
+            overwriteRow.putNew(key, versionHier.get(key));
+        }
+        overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
+        CopyHierarchyResult res = mapper.copyHierarchy(versionId, typeName,
+                node.getParentId(), null, overwriteRow);
+        context.markInvalidated(res.invalidations);
+    }
+
+    /**
+     * Marks locally all the invalidations gathered by a {@link Mapper}
+     * operation (like a version restore).
+     */
+    public void markInvalidated(Invalidations invalidations) {
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                if (Invalidations.PARENT.equals(rowId.tableName)) {
+                    Serializable parentId = rowId.id;
+                    for (Map<Serializable, Children> map : childrenAllMaps) {
+                        Children children = map.get(parentId);
+                        if (children != null) {
+                            children.setIncomplete();
+                        }
+                    }
+                    modifiedParentsInTransaction.add(parentId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Gathers invalidations from this session.
+     * <p>
+     * Called post-transaction to gathers invalidations to be sent to others.
+     */
+    public void gatherInvalidations(Invalidations invalidations) {
+        for (Serializable id : modifiedParentsInTransaction) {
+            RowId rowId = new RowId(Invalidations.PARENT, id);
+            invalidations.addModified(Collections.singleton(rowId));
+        }
         modifiedParentsInTransaction.clear();
     }
 
-    @Override
-    protected void processReceivedInvalidations() {
-        super.processReceivedInvalidations();
+    /**
+     * Processes all invalidations accumulated.
+     * <p>
+     * Called pre-transaction.
+     */
+    public void processReceivedInvalidations() throws StorageException {
         synchronized (modifiedParentsInvalidations) {
             for (Serializable parentId : modifiedParentsInvalidations) {
-                childrenRegularSoft.remove(parentId);
-                childrenRegularHard.remove(parentId);
-                childrenComplexPropSoft.remove(parentId);
-                childrenComplexPropHard.remove(parentId);
+                for (Map<Serializable, Children> map : childrenAllMaps) {
+                    map.remove(parentId);
+                }
             }
             modifiedParentsInvalidations.clear();
         }
     }
 
-    @Override
-    protected void invalidate(Invalidations invalidations) {
-        super.invalidate(invalidations);
-        Set<Serializable> set = invalidations.modified.get(INVAL_PARENT);
-        if (set != null) {
-            synchronized (modifiedParentsInvalidations) {
-                modifiedParentsInvalidations.addAll(set);
+    /**
+     * Processes invalidations received by another session or cluster node.
+     * <p>
+     * Invalidations from other local session can happen asynchronously at any
+     * time (when the other session commits). Invalidations from another cluster
+     * node happen when the transaction starts.
+     */
+    public void invalidate(Invalidations invalidations) {
+        if (invalidations.modified != null) {
+            Set<Serializable> set = null;
+            for (RowId rowId : invalidations.modified) {
+                if (Invalidations.PARENT.equals(rowId.tableName)) {
+                    if (set == null) {
+                        set = new HashSet<Serializable>();
+                    }
+                    set.add(rowId.id);
+                }
+            }
+            if (set != null) {
+                synchronized (modifiedParentsInvalidations) {
+                    modifiedParentsInvalidations.addAll(set);
+                }
             }
         }
     }

@@ -79,8 +79,35 @@ public class RepositoryDescriptor {
         }
     }
 
+    @XObject(value = "server")
+    public static class ServerDescriptor {
+        @XNode("@disabled")
+        public boolean disabled;
+
+        @XNode("host")
+        public String host = "localhost";
+
+        @XNode("port")
+        public int port = 8181;
+
+        @XNode("path")
+        public String path = "/nuxeo";
+
+        @Override
+        public String toString() {
+            return this.getClass().getSimpleName() + "(http://" + host + ":"
+                    + port + (path.startsWith("/") ? "" : "/") + path + ")";
+        }
+    }
+
     @XNode("@name")
     public String name;
+
+    @XNode("listen")
+    public ServerDescriptor listen;
+
+    @XNodeList(value = "connect", type = ArrayList.class, componentType = ServerDescriptor.class)
+    public List<ServerDescriptor> connect = Collections.emptyList();
 
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
