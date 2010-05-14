@@ -1,7 +1,7 @@
 <@extends src="base.ftl">
 
   <@block name="title">
-      <title>${resource}</title>
+      ${collection} ${resource}
   </@block>
 
   <@block name="stylesheets">
@@ -19,7 +19,7 @@
     
   <@block name="content">
 
-    <h1>${resource}</h1>
+    <h1>${collection} ${resource}</h1>
     <pre style="visibility: hidden" class="brush: css; toolbar: false">
     ${content}
     </pre>

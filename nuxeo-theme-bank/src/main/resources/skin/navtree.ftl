@@ -1,7 +1,7 @@
 <@extends src="base.ftl">
 
   <@block name="title">
-      <title>${resource}</title>
+      ${resource}
   </@block>
 
   <@block name="stylesheets">

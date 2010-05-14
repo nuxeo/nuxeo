@@ -1,16 +1,16 @@
 <@extends src="base.ftl">
 
   <@block name="title">
-      <title>${resource}</title>
+      ${collection} ${category}
   </@block>
 
   <@block name="content">
-    <h1>${resource}</h1>
-    <table style="width: 100%" cellpadding="1">
+    <h1>${collection} ${category}</h1>
+    <table class="properties">
     <#list properties?keys as key>
-      <tr>
-        <td style="width: 25%">${key}</td>
-        <td style="width: 75%">${properties[key]}</td>
+      <tr<#if key_index%2=1> class="odd"</#if>>
+        <td class="key">${key}</td>
+        <td class="value">${properties[key]}</td>
       </tr> 
     </#list>
     </table>

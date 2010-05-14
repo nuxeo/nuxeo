@@ -107,7 +107,7 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         File file = BankManager.getStyleFile(bank, collection, resource);
         String content = BankUtils.getFileContent(file);
-        return getTemplate("style.ftl").arg("content", content);
+        return getTemplate("style.ftl").arg("content", content).arg("resource", resource).arg("collection", collection);
     }
 
     /*
@@ -166,7 +166,7 @@ public class Main extends ModuleRoot {
                 e.printStackTrace();
             }
         }
-        return getTemplate("preset.ftl").arg("properties", properties);
+        return getTemplate("preset.ftl").arg("properties", properties).arg("collection", collection).arg("category", category);
     }
 
     /*
@@ -207,7 +207,7 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         String path = String.format("%s/image/%s/%s", bank, collection,
                 resource);
-        return getTemplate("image.ftl").arg("path", path);
+        return getTemplate("image.ftl").arg("path", path).arg("resource", resource).arg("collection", collection);
     }
 
     @GET

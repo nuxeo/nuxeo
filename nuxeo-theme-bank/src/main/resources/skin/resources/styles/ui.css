@@ -4,7 +4,11 @@ body {
 }
 
 h1 {
-  font: bold 15px Arial, sans-serif;
+  font: bold 12px Tahoma, sans-serif;
+  background-color: #eee;
+  padding: 1px 7px;
+  border: 1px solid #ccc;
+  -moz-border-radius: 3px;
 }
 
 ul {
@@ -19,3 +23,72 @@ a {
   text-decoration: none:
 }
 
+table.properties {
+  width: 100%;
+  margin: 0;
+  padding. 0;
+  border-collapse: collapse;
+}
+
+table.properties td {
+  border: 1px solid #ddd;
+  padding: 3px 7px;
+  font: 11px Tahoma, Arial;
+}
+
+table.properties tr.odd td {
+  background-color: #fcfcfc;
+}
+
+table.properties td.key {
+  text-align: right;
+  font-weight: bold;
+  width: 15%;
+}
+
+
+/* Image browser */
+.album {
+  width: 100%;
+  padding: 0; 
+  float: left;
+}
+
+.album .imageSingle {
+  float: left; 
+  margin: 4px; 
+  width: 112px; 
+  text-align: center; 
+  border: 1px solid #eee;
+  -moz-border-radius: 3px;
+}
+
+.album .imageSingle .image {
+  width: 100px; 
+  height: 100px; 
+  margin: 5px;
+ }
+
+.album .imageSingle:hover {
+  border: 1px solid #fc0;
+  background-color: #ffc;
+  cursor: pointer;
+}
+
+.album .imageSingle:hover .footer {
+  color: #900;
+}
+
+.album .footer {
+  text-align: center;
+  color: #999; 
+  padding-bottom: 2px; 
+  font:11px tahoma;
+} 
+
+.imageFrame {
+  margin: 15px 0;
+  text-align: center; 
+  border: 1px solid #eee; 
+  padding: 20px;
+}

@@ -1,7 +1,7 @@
 <@extends src="base.ftl">
 
   <@block name="title">
-      <title>Nuxeo Theme Bank</title>
+      Nuxeo Theme Bank
   </@block>
 
   <@block name="content">

@@ -1,12 +1,14 @@
 <@extends src="base.ftl">
 
   <@block name="title">
-      <title>${resource}</title>
+      ${collection}/${resource}
   </@block>
 
   <@block name="content">
-    <h1>${resource}</h1>
-    <img src="${Root.getPath()}/${path}" />
+    <h1>${collection}/${resource}</h1>
+    <div class="imageFrame">
+      <img src="${Root.getPath()}/${path}" />
+    </div>
   </@block>
 
 </@extends>
