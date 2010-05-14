@@ -1,16 +1,16 @@
-<html>
-<head>
-  <title>Nuxeo Theme Bank</title>
-</head>
+<@extends src="base.ftl">
 
-<body>
-  <h1>Nuxeo Theme Bank</h1>
+  <@block name="title">
+      <title>Nuxeo Theme Bank</title>
+  </@block>
 
-  <ul>
+  <@block name="content">
+    <h1>Nuxeo Theme Bank</h1>
+    <ul>
     <#list Root.getBankNames() as bank>
       <li><a href="${Root.getPath()}/${bank}">${bank}</a></li>
     </#list>
-  </ul>
+    </ul>
+  </@block>
 
-</body>
-</html>
+</@extends>

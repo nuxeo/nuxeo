@@ -1,9 +1,15 @@
-<html>
-<head>
-    <title>Nuxeo Theme Bank</title>
+<@extends src="base.ftl">
 
-    <link type="text/css" rel="stylesheet" href="${skinPath}/styles/ui.css" />
-        
+  <@block name="title">
+      <title>${resource}</title>
+  </@block>
+
+  <@block name="stylesheets">
+    <link type="text/css" rel="stylesheet" href="${skinPath}/scripts/syntaxHighlighter/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="${skinPath}/scripts/syntaxHighlighter/shThemeDefault.css"/>
+  </@block>
+  
+  <@block name="header_scripts">
     <script type="text/javascript" src="${skinPath}/scripts/jquery.js"></script>
     <script type="text/javascript" src="${skinPath}/scripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="${skinPath}/scripts/sarissa.js"></script>
@@ -77,12 +83,10 @@
         
     });
     </script>
-      
-</head>
+  </@block>
+  
+  <@block name="content">
+    <div id="navtree"></div>  
+  </@block>
 
-<body>
-
-<div id="navtree"></div>
-
-</body>
-</html>
+</@extends>

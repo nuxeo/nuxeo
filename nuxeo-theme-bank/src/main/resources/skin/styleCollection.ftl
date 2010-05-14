@@ -1,15 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>${collection}</title>
-</head>
-<body>
-  <h1>${collection}</h1>
-  <ul>
+<@extends src="base.ftl">
+
+  <@block name="title">
+      <title>${collection}</title>
+  </@block>
+
+  <@block name="content">
+    <h1>${collection}</h1>
+    <ul>
     <#list styles as style>
       <li><a href="${Root.getPath()}/${bank}/style/${collection}/${style}">${style}</a></li>
     </#list>
-  </ul>
-</body>
-</html>
+    </ul>
+  </@block>
+
+</@extends>
