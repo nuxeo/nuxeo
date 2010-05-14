@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
 /**
  * A type of fragment corresponding to several rows with the same id.
@@ -81,6 +82,13 @@ public class CollectionFragment extends Fragment {
     @Override
     protected State refetch() throws StorageException {
         row.values = context.mapper.readCollectionRowArray(row);
+        clearDirty();
+        return State.PRISTINE;
+    }
+
+    @Override
+    protected State refetchDeleted() throws StorageException {
+        row.values = context.model.getCollectionFragmentType(row.tableName).getEmptyArray();
         clearDirty();
         return State.PRISTINE;
     }

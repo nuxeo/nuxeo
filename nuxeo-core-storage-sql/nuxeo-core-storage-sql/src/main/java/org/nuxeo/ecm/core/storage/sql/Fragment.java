@@ -197,6 +197,14 @@ public abstract class Fragment implements Serializable {
     protected abstract State refetch() throws StorageException;
 
     /**
+     * Resets the data for a fragment that was invalidated by deletion.
+     *
+     * @return the new state, {@link State#PRISTINE} or {@link State#ABSENT}
+     * @throws StorageException
+     */
+    protected abstract State refetchDeleted() throws StorageException;
+
+    /**
      * Checks that access to the fragment is possible. Called internally before
      * a get, so that invalidated fragments can be refetched.
      *
@@ -215,8 +223,7 @@ public abstract class Fragment implements Serializable {
             state = refetch();
             break;
         case INVALIDATED_DELETED:
-            throw new ConcurrentModificationException(
-                    "Accessing a concurrently deleted value");
+            state = refetchDeleted();
         }
     }
 

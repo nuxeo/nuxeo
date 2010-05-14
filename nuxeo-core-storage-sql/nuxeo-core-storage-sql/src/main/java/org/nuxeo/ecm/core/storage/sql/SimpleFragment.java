@@ -63,6 +63,12 @@ public final class SimpleFragment extends Fragment {
         }
     }
 
+    @Override
+    protected State refetchDeleted() throws StorageException {
+        row.size = 0;
+        return State.ABSENT;
+    }
+
     /**
      * Gets a value by key.
      *
