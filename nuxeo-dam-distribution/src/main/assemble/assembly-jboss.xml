@@ -50,7 +50,8 @@
     <nx:rename from="${stagedir}/nuxeo-dm*" to="${jbossdir}" />
     <delete dir="${jbossdir}/server/default/deploy/nuxeo.ear" />
     <unzip dest="${jbossdir}/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.dam:nuxeo-dam-ear:${maven.project.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.dam.distribution:nuxeo-dam-distribution:${maven.project.version}:zip"
+                            classifier="ear"/>
     </unzip>
     <chmod dir="${jbossdir}/bin" perm="750" includes="*.sh,*ctl" />
 
