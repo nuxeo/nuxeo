@@ -113,6 +113,20 @@ public interface Session extends Connection {
     Node getNodeByPath(String path, Node node) throws StorageException;
 
     /**
+     * Interface for a class that knows how to resolve a node path into a node
+     * id.
+     */
+    interface PathResolver {
+        /**
+         * Returns the node id for a given path.
+         *
+         * @param path the node path
+         * @return the node id, or {@code null}
+         */
+        Serializable getIdForPath(String path) throws StorageException;
+    }
+
+    /**
      * Gets the parent of a node.
      * <p>
      * The root has a {@code null} parent.

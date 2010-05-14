@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.net;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -136,41 +135,29 @@ public class NetServlet extends HttpServlet {
             ObjectOutputStream oos = new ObjectOutputStream(
                     new OutputStreamToWriter(writer));
 
-            // read method and args, and invoke it
-            Object res = null;
+            // read method and args
             ObjectInputStream ois = new ObjectInputStream(is);
+            String methodName = (String) ois.readObject();
+            List<Object> args = new LinkedList<Object>();
             while (true) {
-                String methodName;
-                try {
-                    methodName = (String) ois.readObject();
-                } catch (EOFException e) {
+                Object object = ois.readObject();
+                if (object == NetMapper.EOF) {
                     break;
                 }
-                List<Object> args = new LinkedList<Object>();
-                try {
-                    while (true) {
-                        Object object = ois.readObject();
-                        if (object == NetMapper.BARRIER) {
-                            break;
-                        }
-                        args.add(object);
-                    }
-                } catch (EOFException e) {
-                    // shouldn't happen, missing BARRIER
-                    throw new RuntimeException("Unexpected EOF");
-                }
-
-                // invoke method, special case for close
-                if ("close".equals(methodName)) {
-                    session.close();
-                    sessions.remove(sid);
-                    res = null;
-                } else {
-                    res = invoke(session, methodName, args.toArray());
-                }
+                args.add(object);
             }
 
-            // write last result
+            // invoke method, special case for close
+            Object res;
+            if ("close".equals(methodName)) {
+                session.close();
+                sessions.remove(sid);
+                res = null;
+            } else {
+                res = invoke(session, methodName, args.toArray());
+            }
+
+            // write result
             oos.writeObject(res);
             oos.flush();
             oos.close();

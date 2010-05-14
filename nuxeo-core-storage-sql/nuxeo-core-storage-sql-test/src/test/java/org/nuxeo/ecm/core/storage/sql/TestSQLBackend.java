@@ -642,6 +642,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testClustering() throws Exception {
+        if (this instanceof TestSQLBackendNet) {
+            return;
+        }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
@@ -1382,6 +1385,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testFulltextDisabled() throws Exception {
+        if (this instanceof TestSQLBackendNet) {
+            return;
+        }
         // reconfigure repository with fulltext disabled
         repository.close();
         boolean fulltextDisabled = true;

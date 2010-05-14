@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelSetup;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
  * Network client backend for a repository.
@@ -54,7 +55,8 @@ public class NetBackend implements RepositoryBackend {
     public void initializeModel(Model model) throws StorageException {
     }
 
-    public Mapper newMapper(Model model) throws StorageException {
+    public Mapper newMapper(Model model, PathResolver pathResolver)
+            throws StorageException {
         return NetMapper.getMapper(repository, httpClient);
     }
 

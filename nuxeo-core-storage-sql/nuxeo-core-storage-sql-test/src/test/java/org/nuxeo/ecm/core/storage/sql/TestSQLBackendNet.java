@@ -18,14 +18,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Collections;
 
-import org.junit.Ignore;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
 /**
  * Tests for NetBackend.
  */
-@Ignore
 public class TestSQLBackendNet extends TestSQLBackend {
 
     protected Thread remoteVCS;

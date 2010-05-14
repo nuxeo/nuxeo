@@ -801,12 +801,12 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, queryFilter, countTotal, this);
+        return mapper.query(query, queryFilter, countTotal);
     }
 
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        return mapper.queryAndFetch(query, queryType, queryFilter, this, params);
+        return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
     public void requireReadAclsUpdate() {

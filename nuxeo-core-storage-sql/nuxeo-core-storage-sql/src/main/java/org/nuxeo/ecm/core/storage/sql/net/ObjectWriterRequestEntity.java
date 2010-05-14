@@ -42,7 +42,7 @@ public class ObjectWriterRequestEntity implements RequestEntity {
         if (objects != null) {
             queue.addAll(Arrays.asList(objects));
         }
-        queue.add(NetMapper.BARRIER);
+        queue.add(NetMapper.EOF);
     }
 
     public boolean isRepeatable() {

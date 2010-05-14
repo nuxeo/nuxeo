@@ -18,8 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 import javax.transaction.xa.XAResource;
 
@@ -27,6 +25,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
  * A {@link Mapper} maps {@link Row}s to and from the database.
@@ -113,11 +112,10 @@ public interface Mapper extends RowMapper, XAResource {
      * @param queryFilter the query filter
      * @param countTotal if {@code true}, count the total size without
      *            limit/offset
-     * @param session the current session (to resolve paths)
      * @return the list of matching document ids
      */
     PartialList<Serializable> query(String query, QueryFilter queryFilter,
-            boolean countTotal, Session session) throws StorageException;
+            boolean countTotal) throws StorageException;
 
     /**
      * Makes a query to the database and returns an iterable (which must be
@@ -126,14 +124,12 @@ public interface Mapper extends RowMapper, XAResource {
      * @param query the query
      * @param queryType the query type
      * @param queryFilter the query filter
-     * @param session the current session (to resolve paths)
      * @param params optional query-type-dependent parameters
      * @return an iterable, which <b>must</b> be closed when done
      */
     // queryFilter used for principals and permissions
     public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Session session, Object... params)
-            throws StorageException;
+            QueryFilter queryFilter, Object... params) throws StorageException;
 
     /*
      * ----- ACLs -----

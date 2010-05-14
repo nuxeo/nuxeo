@@ -31,7 +31,7 @@ import java.util.NoSuchElementException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
  * Iterable query result implemented as a cursor on a SQL {@link ResultSet}.
@@ -56,11 +56,12 @@ public class ResultSetQueryResult implements IterableQueryResult,
     private final JDBCMapperLogger logger;
 
     public ResultSetQueryResult(QueryMaker queryMaker, String query,
-            QueryFilter queryFilter, Session session, JDBCMapper mapper,
-            Object... params) throws StorageException, SQLException {
+            QueryFilter queryFilter, PathResolver pathResolver,
+            JDBCMapper mapper, Object... params) throws StorageException,
+            SQLException {
         logger = mapper.logger;
-        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, session, query,
-                queryFilter, params);
+        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver,
+                query, queryFilter, params);
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
             ps = null;

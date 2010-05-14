@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
@@ -171,7 +173,8 @@ public class RepositoryImpl implements Repository {
             backend.initializeModel(model);
         }
 
-        Mapper mapper = backend.newMapper(model);
+        SessionPathResolver pathResolver = new SessionPathResolver();
+        Mapper mapper = backend.newMapper(model, pathResolver);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -184,11 +187,12 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = backend.newMapper(model);
+                mapper = backend.newMapper(model, pathResolver);
             }
         }
 
         SessionImpl session = newSession(mapper, credentials);
+        pathResolver.setSession(session);
         sessions.add(session);
         return session;
     }
@@ -196,6 +200,20 @@ public class RepositoryImpl implements Repository {
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
         return new SessionImpl(this, model, mapper, credentials);
+    }
+
+    public static class SessionPathResolver implements PathResolver {
+
+        private Session session;
+
+        protected void setSession(Session session) {
+            this.session = session;
+        }
+
+        public Serializable getIdForPath(String path) throws StorageException {
+            Node node = session.getNodeByPath(path, null);
+            return node == null ? null : node.getId();
+        }
     }
 
     /*

@@ -22,9 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -50,37 +47,17 @@ public class NetMapper implements InvocationHandler {
         return mapper;
     }
 
-    private enum Barrier {
-        BARRIER_VALUE;
+    private enum Eof {
+        VALUE; // used as singleton
     }
 
-    public static final Object BARRIER = Barrier.BARRIER_VALUE;
+    public static final Object EOF = Eof.VALUE;
 
     protected String mapperId;
 
     protected final String url;
 
     protected final HttpClient httpClient;
-
-    protected boolean inBatch;
-
-    protected List<Op> batch;
-
-    protected static final class Op {
-        String methodName;
-
-        Object[] args;
-
-        public Op(String methodName, Object[] args) {
-            this.methodName = methodName;
-            this.args = args;
-        }
-
-        @Override
-        public String toString() {
-            return "Op(" + methodName + ")";
-        }
-    }
 
     protected NetMapper(RepositoryImpl repository, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -113,44 +90,21 @@ public class NetMapper implements InvocationHandler {
 
     protected Object invoke(String methodName, Object[] args) throws Throwable {
         // special cases
-        if (methodName.equals("getMapperId")) {
+        if ("getMapperId".equals(methodName)) {
             if (mapperId != null) {
                 return mapperId;
             }
             // else fall through (send to remote)
-        } else if (methodName.equals("getTableSize")) {
+        } else if ("getTableSize".equals(methodName)) {
             return Integer.valueOf(getTableSize((String) args[0]));
-        } else if (methodName.equals("beginBatch")) {
-            beginBatch();
-            return null;
-        } else if (methodName.equals("endBatch")) {
-            endBatch();
-            return null;
-        } else if (methodName.equals("createDatabase")) {
+        } else if ("createDatabase".equals(methodName)) {
             createDatabase();
             return null;
         }
 
-        if (inBatch) {
-            addBatch(methodName, args);
-            return null;
-        } else {
-            return invokeOne(methodName, args);
-        }
-    }
+        // send through network
+        // this is decoded by NetServlet
 
-    // send through network
-    // this is decoded by NetServlet
-    protected Object invokeOne(String methodName, Object[] args)
-            throws StorageException {
-        return invokeMany(Collections.singletonList(new Op(methodName, args)));
-    }
-
-    protected Object invokeMany(List<Op> batch) throws StorageException {
-        if (batch.isEmpty()) {
-            return null;
-        }
-        // System.out.println(batch); // debug
         String postUrl = url;
         if (mapperId != null) {
             postUrl += "?sid=" + mapperId;
@@ -158,9 +112,7 @@ public class NetMapper implements InvocationHandler {
         PostMethod m = new PostMethod(postUrl);
         try {
             ObjectWriterRequestEntity writer = new ObjectWriterRequestEntity();
-            for (Op op : batch) {
-                writer.add(op.methodName, op.args);
-            }
+            writer.add(methodName, args);
             m.setRequestEntity(writer);
             int status = httpClient.executeMethod(m);
             if (status != HttpStatus.SC_OK) {
@@ -175,24 +127,6 @@ public class NetMapper implements InvocationHandler {
             throw new StorageException(e);
         } finally {
             m.releaseConnection();
-        }
-    }
-
-    public void beginBatch() {
-        batch = new ArrayList<Op>();
-        inBatch = true;
-    }
-
-    protected void addBatch(String methodName, Object[] args) {
-        batch.add(new Op(methodName, args));
-    }
-
-    public void endBatch() throws StorageException {
-        try {
-            invokeMany(batch);
-        } finally {
-            batch = null;
-            inBatch = false;
         }
     }
 

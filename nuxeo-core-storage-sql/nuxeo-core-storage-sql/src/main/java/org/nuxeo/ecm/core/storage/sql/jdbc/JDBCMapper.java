@@ -56,7 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -80,6 +80,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final QueryMakerService queryMakerService;
 
+    private final PathResolver pathResolver;
+
     /**
      * Creates a new Mapper.
      *
@@ -87,9 +89,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      */
-    public JDBCMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
-            throws StorageException {
+    public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo,
+            XADataSource xadatasource) throws StorageException {
         super(model, sqlInfo, xadatasource);
+        this.pathResolver = pathResolver;
         resetConnection();
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);
@@ -586,14 +589,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     public PartialList<Serializable> query(String query,
-            QueryFilter queryFilter, boolean countTotal, Session session)
+            QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         QueryMaker queryMaker = findQueryMaker(query);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: " + query);
         }
-        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, session,
-                query, queryFilter);
+        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model,
+                pathResolver, query, queryFilter);
 
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
@@ -705,8 +708,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     // queryFilter used for principals and permissions
     public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Session session, Object... params)
-            throws StorageException {
+            QueryFilter queryFilter, Object... params) throws StorageException {
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: "
@@ -714,7 +716,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
         try {
             return new ResultSetQueryResult(queryMaker, query, queryFilter,
-                    session, this, params);
+                    pathResolver, this, params);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Invalid query: " + queryType + ": "
