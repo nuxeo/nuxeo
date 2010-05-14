@@ -53,6 +53,19 @@ public final class Row extends RowId implements Serializable {
      */
     protected int size;
 
+    /** Copy constructor. */
+    private Row(Row row) {
+        super(row);
+        keys = row.keys;
+        values = row.values;
+        size = row.size;
+    }
+
+    @Override
+    public Row clone() {
+        return new Row(this);
+    }
+
     /**
      * Constructs an empty {@link Row} for the given table with the given id
      * (may be {@code null}).

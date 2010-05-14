@@ -118,10 +118,10 @@ public class PersistenceContext {
     private final Set<RowId> deletedInvalidations;
 
     @SuppressWarnings("unchecked")
-    public PersistenceContext(Model model, Mapper mapper, SessionImpl session)
+    public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
             throws StorageException {
         this.model = model;
-        this.mapper = mapper; // only RowMapper needed
+        this.mapper = mapper;
         hierContext = new HierarchyContext(model, mapper, session, this);
 
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
@@ -772,9 +772,9 @@ public class PersistenceContext {
         hierContext.checkOut(node);
     }
 
-    protected void restoreByLabel(Node node, String label)
+    protected void restoreVersion(Node node, Serializable versionId)
             throws StorageException {
-        hierContext.restoreByLabel(node, label);
+        hierContext.restoreVersion(node, versionId);
     }
 
 }

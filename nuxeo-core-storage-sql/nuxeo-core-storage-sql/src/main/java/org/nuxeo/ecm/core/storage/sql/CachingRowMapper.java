@@ -1,0 +1,217 @@
+/*
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Florent Guillaume
+ */
+package org.nuxeo.ecm.core.storage.sql;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.map.ReferenceMap;
+import org.nuxeo.ecm.core.storage.StorageException;
+
+/**
+ * A {@link RowMapper} that has an internal cache.
+ * <p>
+ * The cache only holds {@link Row}s that are known to be identical to what's in
+ * the underlying {@link RowMapper}.
+ */
+// TODO deal with received invalidations to clear the cache
+public class CachingRowMapper implements RowMapper {
+
+    private static final String ABSENT = "__ABSENT__\0\0\0";
+
+    /**
+     * The cached rows. All held data is identical to what is present in the
+     * underlying {@link RowMapper} and could be refetched if needed.
+     * <p>
+     * The values are either {@link Row} for fragments present in the database,
+     * or a row with tableName {@link #ABSENT} to denote a fragment known to be
+     * absent from the database.
+     * <p>
+     * This cache is memory-sensitive, a fragment can always be refetched if the
+     * GC collects it.
+     */
+    protected final Map<RowId, Row> cache;
+
+    /**
+     * The {@link RowMapper} to which operations that cannot be processed from
+     * the cache are delegated.
+     */
+    protected final RowMapper mapper;
+
+    @SuppressWarnings("unchecked")
+    public CachingRowMapper(RowMapper rowMapper) {
+        this.mapper = rowMapper;
+        cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+    }
+
+    protected void cachePut(Row row) {
+        cache.put(new RowId(row), row.clone());
+    }
+
+    protected void cachePutAbsent(RowId rowId) {
+        cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null));
+    }
+
+    protected void cachePutAbsentIfNull(RowId rowId, Row row) {
+        if (row != null) {
+            cachePut(row);
+        } else {
+            cachePutAbsent(rowId);
+        }
+    }
+
+    protected void cachePutAbsentIfRowId(RowId rowId) {
+        if (rowId instanceof Row) {
+            cachePut((Row) rowId);
+        } else {
+            cachePutAbsent(rowId);
+        }
+    }
+
+    protected boolean isAbsent(Row row) {
+        return row.tableName == ABSENT; // == is ok
+    }
+
+    protected Row cacheGet(RowId rowId) {
+        Row row = cache.get(rowId);
+        if (row != null && !isAbsent(row)) {
+            row = row.clone();
+        }
+        return row;
+    }
+
+    /*
+     * ----- Batch -----
+     */
+
+    /*
+     * Use those from the cache if available, read from the mapper for the rest.
+     */
+    public List<? extends RowId> read(Collection<RowId> rowIds)
+            throws StorageException {
+        List<RowId> res = new ArrayList<RowId>(rowIds.size());
+        // find which are in cache, and which not
+        List<RowId> todo = new LinkedList<RowId>();
+        for (RowId rowId : rowIds) {
+            Row row = cacheGet(rowId);
+            if (row == null) {
+                todo.add(rowId);
+            } else if (isAbsent(row)) {
+                res.add(new RowId(rowId));
+            } else {
+                res.add(row);
+            }
+        }
+        // ask missing ones to underlying row mapper
+        List<? extends RowId> fetched = mapper.read(todo);
+        // add them to the cache
+        for (RowId rowId : fetched) {
+            cachePutAbsentIfRowId(rowId);
+        }
+        // merge results
+        res.addAll(fetched);
+        return res;
+    }
+
+    /*
+     * Save in the cache then pass all the writes to the mapper.
+     */
+    public void write(RowBatch batch) throws StorageException {
+        for (Row row : batch.creates) {
+            cachePut(row);
+        }
+        for (RowUpdate rowu : batch.updates) {
+            cachePut(rowu.row);
+        }
+        for (RowId rowId : batch.deletes) {
+            assert !(rowId instanceof Row);
+            cachePutAbsent(rowId);
+        }
+        mapper.write(batch);
+    }
+
+    /*
+     * ----- Read -----
+     */
+
+    public Row readSimpleRow(RowId rowId) throws StorageException {
+        Row row = cacheGet(rowId);
+        if (row == null) {
+            row = mapper.readSimpleRow(rowId);
+            cachePutAbsentIfNull(rowId, row);
+            return row;
+        } else if (isAbsent(row)) {
+            return null;
+        } else {
+            return row;
+        }
+    }
+
+    public Serializable[] readCollectionRowArray(RowId rowId)
+            throws StorageException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    // TODO this API isn't cached well...
+    public Row readChildHierRow(Serializable parentId, String childName,
+            boolean complexProp) throws StorageException {
+        Row row = mapper.readChildHierRow(parentId, childName, complexProp);
+        if (row != null) {
+            cachePut(row);
+        }
+        return row;
+    }
+
+    // TODO this API isn't cached well...
+    public List<Row> readChildHierRows(Serializable parentId,
+            boolean complexProp) throws StorageException {
+        List<Row> rows = mapper.readChildHierRows(parentId, complexProp);
+        for (Row row : rows) {
+            cachePut(row);
+        }
+        return rows;
+    }
+
+    public List<Row> getVersionRows(Serializable versionableId)
+            throws StorageException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
+            Serializable parentId) throws StorageException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- Copy -----
+     */
+
+    public CopyHierarchyResult copyHierarchy(Serializable sourceId,
+            String typeName, Serializable destParentId, String destName,
+            Row overwriteRow) throws StorageException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+}

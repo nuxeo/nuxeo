@@ -33,6 +33,11 @@ public class RowId implements Serializable {
 
     public Serializable id;
 
+    public RowId(RowId rowId) {
+        tableName = rowId.tableName;
+        id = rowId.id;
+    }
+
     public RowId(String tableName, Serializable id) {
         this.tableName = tableName;
         this.id = id;

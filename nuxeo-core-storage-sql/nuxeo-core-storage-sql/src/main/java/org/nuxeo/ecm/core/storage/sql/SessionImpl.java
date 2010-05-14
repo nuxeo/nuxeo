@@ -94,6 +94,7 @@ public class SessionImpl implements Session, XAResource {
         this.mapper = mapper;
         // this.credentials = credentials;
         this.model = model;
+        // context = new PersistenceContext(model, new CachingRowMapper(mapper), this);
         context = new PersistenceContext(model, mapper, this);
         live = true;
         readAclsChanged = false;
@@ -736,8 +737,13 @@ public class SessionImpl implements Session, XAResource {
 
     public void restoreByLabel(Node node, String label) throws StorageException {
         checkLive();
+        // find the version
+        Serializable versionId = mapper.getVersionIdByLabel(node.getId(), label);
+        if (versionId == null) {
+            throw new StorageException("Unknown version: " + label);
+        }
         // save done inside method
-        context.restoreByLabel(node, label);
+        context.restoreVersion(node, versionId);
         requireReadAclsUpdate();
     }
 

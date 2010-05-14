@@ -180,7 +180,7 @@ public interface RowMapper {
      * @param parentId the parent id
      * @param complexProp whether to get complex properties ({@code true}) or
      *            regular children({@code false})
-     * @return the child hierarchy rows, or {@code null}
+     * @return the child hierarchy rows
      */
     List<Row> readChildHierRows(Serializable parentId, boolean complexProp)
             throws StorageException;

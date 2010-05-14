@@ -41,7 +41,7 @@ public class HierarchyContext {
 
     private final Model model;
 
-    private final Mapper mapper;
+    private final RowMapper mapper;
 
     private final SessionImpl session;
 
@@ -71,7 +71,7 @@ public class HierarchyContext {
 
     private final PositionComparator posComparator;
 
-    public HierarchyContext(Model model, Mapper mapper, SessionImpl session,
+    public HierarchyContext(Model model, RowMapper mapper, SessionImpl session,
             PersistenceContext context) {
         this.model = model;
         this.mapper = mapper;
@@ -190,7 +190,8 @@ public class HierarchyContext {
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
             Row row = mapper.readChildHierRow(parentId, name, complexProp);
-            fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row, false);
+            fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row,
+                    false);
         }
         return fragment;
     }
@@ -214,7 +215,8 @@ public class HierarchyContext {
             // no complete list is known
             // ask the actual children to the mapper
             List<Row> rows = mapper.readChildHierRows(parentId, complexProp);
-            List<Fragment> frags = context.getFragmentsFromFetchedRows(rows, false);
+            List<Fragment> frags = context.getFragmentsFromFetchedRows(rows,
+                    false);
             fragments = new ArrayList<SimpleFragment>(frags.size());
             List<Serializable> ids = new ArrayList<Serializable>(frags.size());
             for (Fragment fragment : frags) {
@@ -577,23 +579,18 @@ public class HierarchyContext {
     }
 
     /**
-     * Restores a node by label.
+     * Restores a node to a given version.
      * <p>
      * The restored node is checked in.
      *
      * @param node the node
-     * @param label the version label to restore
+     * @param versionId the version id to restore on this node
      */
-    public void restoreByLabel(Node node, String label) throws StorageException {
+    public void restoreVersion(Node node, Serializable versionId)
+            throws StorageException {
         String typeName = node.getPrimaryType();
-
-        // find the version
         Serializable versionableId = node.getId();
-        Serializable versionId = mapper.getVersionIdByLabel(versionableId,
-                label);
-        if (versionId == null) {
-            throw new StorageException("Unknown version: " + label);
-        }
+
         // clear complex properties
         List<SimpleFragment> children = getChildren(versionableId, null, true);
         // copy to avoid concurrent modifications
