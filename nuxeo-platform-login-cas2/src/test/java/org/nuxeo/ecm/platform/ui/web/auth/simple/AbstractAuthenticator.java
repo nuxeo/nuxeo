@@ -59,9 +59,7 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
         initStandardPlugins();
-
     }
 
     protected PluggableAuthenticationService getAuthService() {
@@ -87,7 +85,6 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
 
         request = new MockHttpRequest(session);
         response = new MockHttpResponse();
-
     }
 
     protected void initCookieList() {
@@ -98,9 +95,8 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
             MockHttpRequest request) {
         BASE64Encoder encoder = new BASE64Encoder();
         String b64userpassword = encoder.encodeBuffer((login + ":" + password).getBytes());
-        request.setHeaderParam("authorization", new String[] { "basic "
-                + b64userpassword, });
-
+        request.setHeaderParam("authorization",
+                new String[] { "basic " + b64userpassword, });
     }
 
     protected void initStandardPlugins() throws Exception {
@@ -116,6 +112,6 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
         
         deployBundle("org.nuxeo.ecm.platform.login");
         deployBundle("org.nuxeo.ecm.platform.web.common");
-
     }
+
 }

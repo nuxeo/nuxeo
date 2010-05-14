@@ -4,44 +4,34 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.seam.mock.MockHttpServletRequest;
 import org.jboss.seam.util.IteratorEnumeration;
 
-public class MockHttpRequest extends MockHttpServletRequest implements
-        HttpServletRequest {
+public class MockHttpRequest extends MockHttpServletRequest {
 
-    protected Map<String, String[]> headers = new HashMap<String, String[]>();
+    protected final Map<String, String[]> headers = new HashMap<String, String[]>();
 
     public MockHttpRequest(HttpSession session) {
         super(session);
     }
 
     protected void setHeaderParam(String key, String[] value) {
-        if (value==null)
-        {
-           headers.remove(value);
-        }
-        else
-        {
+        if (value == null) {
+            headers.remove(value);
+        } else {
             headers.put(key, value);
         }
-
     }
 
     @SuppressWarnings("unchecked")
     public void setParameter(String key, String[] value) {
-        if (value==null)
-        {
-           super.getParameterMap().remove(key);
+        if (value == null) {
+            getParameterMap().remove(key);
+        } else {
+            getParameterMap().put(key, value);
         }
-        else
-        {
-            super.getParameterMap().put(key, value);
-        }
-
     }
 
     @Override
@@ -70,5 +60,5 @@ public class MockHttpRequest extends MockHttpServletRequest implements
     public Map<String, String[]> getHeaders() {
         return headers;
     }
-    
+
 }

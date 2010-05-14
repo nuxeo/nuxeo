@@ -3,7 +3,7 @@
 <p>
 <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") 
        != null) { %>
-<font color="red">Désolé, vous avez rentré un identifiant ou un mot de passe invalise. <br />Reessayer s'il vous plait.</font> 
+<font color="red">Désolé, vous avez rentré un identifiant ou un mot de passe invalide. <br />Reessayer s'il vous plait.</font> 
   <% } else if (request.getAttribute("edu.yale.its.tp.cas.service") == null) { %>
   Vous devez vous identifier maintenant &agrave; CAS avant d'acc&egrave;der 
   aux diff&eacute;rentes applications. 

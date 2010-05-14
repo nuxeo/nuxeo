@@ -7,12 +7,11 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  * Callback implemented for an unit test or integration test called during
  * 
  * @author bjalon
- *
  */
 public interface CallBackCheckTicketValidatorState {
     
-    public boolean checkTicketValidatorState(ServiceTicketValidator stv);
+    boolean checkTicketValidatorState(ServiceTicketValidator stv);
 
-    public boolean checkProxyTicketValidatorState(ProxyTicketValidator stv);
+    boolean checkProxyTicketValidatorState(ProxyTicketValidator stv);
 
 }

@@ -23,9 +23,10 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
+
+import java.security.Principal;
 
 /**
  * @author Benjamin JALON
@@ -34,13 +35,8 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
 
-    protected String TICKET_KEY = "ticket";
+    protected final String TICKET_KEY = "ticket";
     
-    public TestCASAndAnonymousAuthenticator() {
-        super();
-    }
-
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -52,10 +48,10 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
                 "OSGI-INF/login-cas-and-anonymous-contrib.xml");
     }
 
-    public void testAuthentifiedToCAS() throws Exception {
+    public void testAuthenticatedToCAS() throws Exception {
 
         initRequest();
-        doAuthentificationToCasServer(CAS_USER);
+        doAuthenticationToCasServer(CAS_USER);
 
         naf.doFilter(request, response, chain);
 
@@ -65,11 +61,10 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         assertNotNull(loginContext);
         assertEquals(
                 CAS_USER,
-                ((UserPrincipal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
-    public void testNotAuthentifiedToCAS() throws Exception {
-
+    public void testNotAuthenticatedToCAS() throws Exception {
         initRequest();
 
         naf.doFilter(request, response, chain);
@@ -80,7 +75,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         assertNotNull(loginContext);
         assertEquals(
                 "Anonymous",
-                ((UserPrincipal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     /**
@@ -89,7 +84,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
      * 
      * @throws ServletException
      */
-    protected void doAuthentificationToCasServer(String username)
+    protected void doAuthenticationToCasServer(String username)
             throws ServletException {
         String casTicket = username;
 

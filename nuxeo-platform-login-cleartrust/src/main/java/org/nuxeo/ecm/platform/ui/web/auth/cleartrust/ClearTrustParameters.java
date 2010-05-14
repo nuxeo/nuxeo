@@ -24,11 +24,11 @@ package org.nuxeo.ecm.platform.ui.web.auth.cleartrust;
  */
 public final class ClearTrustParameters {
 
-    public final static String COOKIE_DOMAIN = "cookieDomain";
+    public static final String COOKIE_DOMAIN = "cookieDomain";
 
-    public final static String CLEARTRUST_LOGIN_URL = "cleartrustLoginUrl";
+    public static final String CLEARTRUST_LOGIN_URL = "cleartrustLoginUrl";
 
-    public final static String CLEARTRUST_LOGOUT_URL = "cleartrustLogoutUrl";
+    public static final String CLEARTRUST_LOGOUT_URL = "cleartrustLogoutUrl";
 
     // Constant utility class
     private ClearTrustParameters() {

@@ -50,6 +50,20 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
+    protected static final String CAS_SERVER_HEADER_KEY = "CasServer";
+
+    protected static final String CAS_SERVER_PATTERN_KEY = "$CASSERVER";
+
+    protected static final String NUXEO_SERVER_PATTERN_KEY = "$NUXEO";
+
+    protected static final String LOGIN_ACTION = "Login";
+
+    protected static final String LOGOUT_ACTION = "Logout";
+
+    protected static final String VALIDATE_ACTION = "Valid";
+
+    protected static final String PROXY_VALIDATE_ACTION = "ProxyValid";
+
     protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     protected static final String EXCLUDE_PROMPT_KEY = "excludePromptURL";
@@ -88,20 +102,6 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     protected boolean promptLogin = true;
 
-    protected final static String CAS_SERVER_HEADER_KEY = "CasServer";
-
-    protected final static String CAS_SERVER_PATTERN_KEY = "$CASSERVER";
-
-    protected final static String NUXEO_SERVER_PATTERN_KEY = "$NUXEO";
-
-    protected final static String LOGIN_ACTION = "Login";
-
-    protected final static String LOGOUT_ACTION = "Logout";
-
-    protected final static String VALIDATE_ACTION = "Valid";
-
-    protected final static String PROXY_VALIDATE_ACTION = "ProxyValid";
-
     protected List<String> excludePromptURLs;
 
     public List<String> getUnAuthenticatedURLPrefix() {
@@ -123,9 +123,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
         if (url.contains(CAS_SERVER_PATTERN_KEY)) {
             String serverURL = httpRequest.getHeader(CAS_SERVER_HEADER_KEY);
-            if (serverURL != null)
+            if (serverURL != null) {
                 url = url.replace(CAS_SERVER_PATTERN_KEY, serverURL);
-            else {
+            } else {
                 if (url.contains(CAS_SERVER_PATTERN_KEY)) {
                     url = url.replace(CAS_SERVER_PATTERN_KEY, defaultCasServer);
                 }
@@ -138,7 +138,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         // Redirect to CAS Login screen
-        // assing our application URL as service name
+        // passing our application URL as service name
         String location = null;
         try {
             // httpResponse.sendRedirect(serviceLoginURL + "?" + serviceKey +
@@ -155,14 +155,15 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     }
 
     protected String getAppURL(HttpServletRequest httpRequest) {
-        if ((appURL == null) || (appURL.equals(""))) {
+        if (appURL == null || appURL.equals("")) {
             appURL = NUXEO_SERVER_PATTERN_KEY;
         }
         if (appURL.contains(NUXEO_SERVER_PATTERN_KEY)) {
             String nxurl = BaseURL.getBaseURL(httpRequest);
             return appURL.replace(NUXEO_SERVER_PATTERN_KEY, nxurl);
-        } else
+        } else {
             return appURL;
+        }
     }
 
     public UserIdentificationInfo handleRetrieveIdentity(

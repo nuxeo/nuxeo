@@ -41,11 +41,11 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLo
 public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
-    protected final static String CLEARTRUST_HEADER_UID = "REMOTE_USER";
+    protected static final String CLEARTRUST_HEADER_UID = "REMOTE_USER";
 
-    protected final static String CLEARTRUST_COOKIE_SESSION_A = "ACTSESSION";
+    protected static final String CLEARTRUST_COOKIE_SESSION_A = "ACTSESSION";
 
-    protected final static String CLEARTRUST_COOKIE_SESSION = "CTSESSION";
+    protected static final String CLEARTRUST_COOKIE_SESSION = "CTSESSION";
 
     protected String cookieDomain = "";
 

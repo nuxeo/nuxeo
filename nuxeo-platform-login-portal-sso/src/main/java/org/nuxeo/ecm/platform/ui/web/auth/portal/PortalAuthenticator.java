@@ -122,11 +122,8 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         // check time stamp
         long portalTS = Long.parseLong(ts);
         long currentTS = (new Date()).getTime();
-        if (((currentTS - portalTS) / 1000) > maxAge) {
-            return false;
-        }
 
-        return true;
+        return (currentTS - portalTS) / 1000 <= maxAge;
     }
 
 }

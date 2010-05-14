@@ -14,8 +14,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
-import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
-import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 public class MockUserManager implements UserManager {
 
@@ -35,7 +33,7 @@ public class MockUserManager implements UserManager {
     }
 
     public DocumentModel createGroup(DocumentModel groupModel)
-            throws ClientException, GroupAlreadyExistsException {
+            throws ClientException {
         return null;
     }
 
@@ -47,7 +45,7 @@ public class MockUserManager implements UserManager {
     }
 
     public DocumentModel createUser(DocumentModel userModel)
-            throws ClientException, UserAlreadyExistsException {
+            throws ClientException {
         return null;
     }
 

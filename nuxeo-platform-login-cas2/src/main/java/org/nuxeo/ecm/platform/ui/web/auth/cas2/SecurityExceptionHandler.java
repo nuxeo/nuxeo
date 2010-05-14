@@ -23,10 +23,9 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     public static final String COOKIE_NAME_LOGOUT_URL = "cookie.name.logout.url";
 
-    Cas2Authenticator cas2Authenticator = null;
+    Cas2Authenticator cas2Authenticator;
 
     public SecurityExceptionHandler() throws Exception {
-        super();
     }
 
     @Override
@@ -36,8 +35,8 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
         Throwable unwrappedException = unwrapException(t);
 
-        if ((!ExceptionHelper.isSecurityError(unwrappedException))
-                && (!response.containsHeader(NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY))) {
+        if (!ExceptionHelper.isSecurityError(unwrappedException)
+                && !response.containsHeader(NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY)) {
             super.handleException(request, response, t);
             return;
         }
@@ -56,7 +55,6 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                     response);
         }
         FacesContext.getCurrentInstance().responseComplete();
-
     }
 
     protected Cas2Authenticator getCasAuthenticator() throws ClientException {
@@ -96,7 +94,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                 + request.getQueryString();
     }
 
-    protected URLPolicyService urlService = null;
+    protected URLPolicyService urlService;
 
     protected URLPolicyService getURLPolicyService() {
         if (urlService == null) {

@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
 
-    protected Log log = LogFactory.getLog(AnonymousAuthenticatorForCAS2.class);
+    protected static final Log log = LogFactory.getLog(AnonymousAuthenticatorForCAS2.class);
 
     @Override
     public Boolean handleLogout(HttpServletRequest httpRequest,
@@ -59,7 +59,6 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
         }
 
         if (isRedirectionToCas) {
-
             String authURL = getCas2Authenticator().getServiceURL(httpRequest,
                     Cas2Authenticator.LOGIN_ACTION);
             String appURL = getCas2Authenticator().getAppURL(httpRequest);
@@ -77,7 +76,7 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
         return super.handleLogout(httpRequest, httpResponse);
     }
 
-    protected Cas2Authenticator casAuthenticator = null;
+    protected Cas2Authenticator casAuthenticator;
 
     public Cas2Authenticator getCas2Authenticator() {
 

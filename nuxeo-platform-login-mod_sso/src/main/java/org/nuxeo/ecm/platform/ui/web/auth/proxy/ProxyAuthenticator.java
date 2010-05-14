@@ -45,15 +45,15 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final Log log = LogFactory.getLog(ProxyAuthenticator.class);
 
-    private static String HEADER_NAME_KEY = "ssoHeaderName";
+    private static final String HEADER_NAME_KEY = "ssoHeaderName";
 
-    private static String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
+    private static final String HEADER_NOREDIRECT_KEY = "ssoNeverRedirect";
 
     protected String userIdHeaderName = "remote_user";
 
     protected boolean noRedirect;
 
-    public final static String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
+    public static final String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;

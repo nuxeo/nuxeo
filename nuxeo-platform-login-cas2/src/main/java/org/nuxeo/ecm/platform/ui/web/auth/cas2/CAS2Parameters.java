@@ -27,29 +27,29 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
  */
 public final class CAS2Parameters {
     
-    public final static String TICKET_NAME_KEY = "ticketKey";
+    public static final String TICKET_NAME_KEY = "ticketKey";
 
-    public final static String PROXY_NAME_KEY = "proxyKey";
+    public static final String PROXY_NAME_KEY = "proxyKey";
 
-    public final static String NUXEO_APP_URL_KEY = "appURL";
+    public static final String NUXEO_APP_URL_KEY = "appURL";
 
-    public final static String SERVICE_LOGIN_URL_KEY = "serviceLoginURL";
+    public static final String SERVICE_LOGIN_URL_KEY = "serviceLoginURL";
 
-    public final static String SERVICE_VALIDATE_URL_KEY = "serviceValidateURL";
+    public static final String SERVICE_VALIDATE_URL_KEY = "serviceValidateURL";
 
-    public final static String PROXY_VALIDATE_URL_KEY = "proxyValidateURL";
+    public static final String PROXY_VALIDATE_URL_KEY = "proxyValidateURL";
 
-    public final static String SERVICE_NAME_KEY = "serviceKey";
+    public static final String SERVICE_NAME_KEY = "serviceKey";
 
-    public final static String LOGOUT_URL_KEY = "logoutURL";
+    public static final String LOGOUT_URL_KEY = "logoutURL";
 
-    public final static String DEFAULT_CAS_SERVER_KEY = "defaultCasServer";
+    public static final String DEFAULT_CAS_SERVER_KEY = "defaultCasServer";
 
-    public final static String SERVICE_VALIDATOR_CLASS = "serviceValidatorClass";
+    public static final String SERVICE_VALIDATOR_CLASS = "serviceValidatorClass";
 
-    public final static String PROXY_VALIDATOR_CLASS = "proxyValidatorClass";
+    public static final String PROXY_VALIDATOR_CLASS = "proxyValidatorClass";
 
-    public final static String PROMPT_LOGIN = "promptLogin";
+    public static final String PROMPT_LOGIN = "promptLogin";
 
     // Constant utility class.
     protected CAS2Parameters() {

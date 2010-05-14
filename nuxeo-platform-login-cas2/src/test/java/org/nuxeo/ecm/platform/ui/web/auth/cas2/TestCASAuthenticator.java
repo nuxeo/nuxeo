@@ -23,9 +23,10 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
+
+import java.security.Principal;
 
 /**
  * @author Benjamin JALON
@@ -33,13 +34,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.simple.AbstractAuthenticator;
 public class TestCASAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
-
-    protected String TICKET_KEY = "ticket";
+    protected static final String TICKET_KEY = "ticket";
     
-    public TestCASAuthenticator() {
-        super();
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -52,9 +48,8 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
     }
 
     public void testCASAuthentication() throws Exception {
-
         initRequest();
-        doAuthentificationToCasServer(CAS_USER);
+        doAuthenticationToCasServer(CAS_USER);
 
         naf.doFilter(request, response, chain);
 
@@ -64,16 +59,14 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
         assertNotNull(loginContext);
         assertEquals(
                 CAS_USER,
-                ((UserPrincipal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+                ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     /**
      * TODO : create a random number for the ticket, add it to the
      * MockServiceValidators and associate this ticket to the username
-     * 
-     * @throws ServletException
      */
-    protected void doAuthentificationToCasServer(String username)
+    protected void doAuthenticationToCasServer(String username)
             throws ServletException {
         String casTicket = username;
         request.setParameter(TICKET_KEY, new String[] { casTicket, });

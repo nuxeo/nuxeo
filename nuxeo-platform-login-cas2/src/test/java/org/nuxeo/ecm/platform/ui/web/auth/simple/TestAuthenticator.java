@@ -22,24 +22,14 @@ package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
 import javax.security.auth.login.LoginContext;
 
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+
+import java.security.Principal;
 
 /**
  * @author Benjamin JALON
  */
 public class TestAuthenticator extends AbstractAuthenticator {
-
-
-    public TestAuthenticator() {
-        super();
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-    }
 
     public void testAuthentication() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
@@ -54,7 +44,7 @@ public class TestAuthenticator extends AbstractAuthenticator {
         LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
         assertNull(loginError);
         assertNotNull(loginContext);
-        assertEquals("Administrator", ((UserPrincipal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
+        assertEquals("Administrator", ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
     }
 
     public void testNoAuthentication() throws Exception {
