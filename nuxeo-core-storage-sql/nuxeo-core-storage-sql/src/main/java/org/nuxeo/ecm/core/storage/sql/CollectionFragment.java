@@ -30,48 +30,19 @@ public class CollectionFragment extends Fragment {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The id. If the fragment was just created, and database id generation is
-     * used, the initial temporary id will be changed at save time to its final
-     * value.
-     */
-    private Serializable id;
-
-    /** The collection actually holding the data. */
-    public Serializable[] array;
-
-    protected boolean dirty;
-
-    /**
-     * Constructs an empty {@link CollectionFragment} of the given table with
-     * the given id (which may be a temporary one).
+     * Constructs a {@link CollectionFragment} from a {@link Row}.
      *
-     * @param id the id
+     * @param row the row
      * @param state the initial state for the fragment
-     * @param context the persistence context to which the row is tied, or
+     * @param context the persistence context to which the fragment is tied, or
      *            {@code null}
-     * @param array the initial collection data to use, or {@code null}
      */
-    public CollectionFragment(Serializable id, State state, Context context,
-            Serializable[] array) {
-        super(id, state, context);
-        assert array != null; // for now
-        this.id = id;
-        this.array = array;
-    }
-
-    @Override
-    public void setId(Serializable id) {
-        assert id != null;
-        this.id = id;
-    }
-
-    @Override
-    public Serializable getId() {
-        return id;
+    public CollectionFragment(Row row, State state, PersistenceContext context) {
+        super(row, state, context);
     }
 
     /**
-     * Sets a value.
+     * Sets a collection value.
      *
      * @param value the value
      */
@@ -80,77 +51,38 @@ public class CollectionFragment extends Fragment {
         // to compare state), don't mark modified or dirty if there is no change
         if (getState() != State.INVALIDATED_MODIFIED) {
             // not invalidated, so no need to call accessed()
-            if (Arrays.equals(array, value)) {
+            if (Arrays.equals(row.values, value)) {
                 return;
             }
         }
-        array = value.clone();
+        row.values = value.clone();
         markModified();
-        setDirty(true);
     }
 
     /**
-     * Gets the value.
+     * Gets the collection value.
      *
      * @return the value
-     * @throws StorageException
      */
     public Serializable[] get() throws StorageException {
         accessed();
-        return array.clone();
+        return row.values.clone();
+    }
+
+    /**
+     * Checks if the array is dirty (values changed since last clear).
+     *
+     * @return {@code true} if the array changed
+     */
+    public boolean isDirty() {
+        return !Arrays.equals(row.values, oldvalues);
     }
 
     @Override
     protected State refetch() throws StorageException {
-        Context context = getContext();
-        array = context.mapper.readCollectionArray(context.getTableName(),
-                getId());
+        row.values = context.mapper.readCollectionRowArray(row);
+        clearDirty();
         return State.PRISTINE;
-    }
-
-    /**
-     * Checks if the fragment is dirty (value changed since last clear).
-     */
-    public boolean isDirty() {
-        return dirty;
-    }
-
-    /**
-     * Sets the fragment's dirty state;
-     */
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
-        buf.append(getTableName());
-        buf.append(", id=");
-        buf.append(getId());
-        buf.append(", state=");
-        buf.append(getState());
-        buf.append(", ");
-        buf.append('[');
-        for (int i = 0; i < array.length; i++) {
-            if (i > 0) {
-                buf.append(", ");
-            }
-            Serializable value = array[i];
-            boolean truncated = false;
-            if (value instanceof String && ((String) value).length() > 100) {
-                value = ((String) value).substring(0, 100);
-                truncated = true;
-            }
-            buf.append(value);
-            if (truncated) {
-                buf.append("...");
-            }
-        }
-        buf.append("])");
-        return buf.toString();
     }
 
 }

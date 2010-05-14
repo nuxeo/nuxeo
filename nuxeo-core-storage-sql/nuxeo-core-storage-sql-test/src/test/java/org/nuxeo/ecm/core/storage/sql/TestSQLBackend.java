@@ -76,8 +76,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected int getChildrenHardSize(Session session) {
-        Context context = ((SessionImpl) session).getContext("hierarchy");
-        return ((HierarchyContext) context).childrenRegularHard.size();
+        return ((SessionImpl) session).context.hierContext.childrenRegularHard.size();
     }
 
     public void testChildren() throws Exception {

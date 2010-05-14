@@ -94,7 +94,8 @@ public interface Session extends Connection {
      * Gets several nodes given their ids.
      *
      * @param ids the ids
-     * @return the nodes, with elements being {@code null} if not found
+     * @return the nodes, in the same order as the ids, with elements being
+     *         {@code null} if not found
      * @throws StorageException
      */
     List<Node> getNodesByIds(List<Serializable> ids) throws StorageException;

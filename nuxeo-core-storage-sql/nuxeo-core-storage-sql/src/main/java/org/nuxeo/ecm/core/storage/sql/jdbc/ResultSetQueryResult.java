@@ -93,11 +93,21 @@ public class ResultSetQueryResult implements IterableQueryResult,
         // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
     }
 
+    protected static void closePreparedStatement(PreparedStatement ps)
+            throws SQLException {
+        try {
+            ps.close();
+        } catch (IllegalArgumentException e) {
+            // ignore
+            // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
+        }
+    }
+
     public void close() {
         if (rs != null) {
             try {
                 rs.close();
-                JDBCMapper.closePreparedStatement(ps);
+                closePreparedStatement(ps);
             } catch (SQLException e) {
                 logger.error("Error closing statement: " + e.getMessage(), e);
             } finally {

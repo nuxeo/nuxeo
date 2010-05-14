@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +124,7 @@ public class JDBCMapperLogger {
         logSQL(sql, values);
     }
 
-    public void logSQL(String sql, List<Serializable> values) {
+    public void logSQL(String sql, Collection<Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
         for (Serializable v : values) {

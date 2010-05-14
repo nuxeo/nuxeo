@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
@@ -122,9 +124,8 @@ public class NetServlet extends HttpServlet {
                             "Unknown session id (maybe timed out): " + sid);
                 }
             }
-            Mapper mapper = session.getMapper();
             if (sid == null) {
-                sid = mapper.getMapperId();
+                sid = session.getMapper().getMapperId();
                 sessions.put(sid, session);
             }
 
@@ -165,7 +166,7 @@ public class NetServlet extends HttpServlet {
                     sessions.remove(sid);
                     res = null;
                 } else {
-                    res = invoke(mapper, methodName, args.toArray());
+                    res = invoke(session, methodName, args.toArray());
                 }
             }
 
@@ -187,20 +188,35 @@ public class NetServlet extends HttpServlet {
         }
     }
 
-    protected static Object invoke(Mapper mapper, String methodName,
-            Object[] args) throws Exception {
+    protected Object invoke(Session session, String methodName, Object[] args)
+            throws Exception {
+        if ("readSingleRow".equals(methodName)) {
+            String tableName = (String) args[0];
+            Serializable id = (Serializable) args[1];
+            return readSingleRow(session, tableName, id);
+        }
         Method method = mapperMethods.get(methodName);
         if (method == null) {
             throw new StorageException("Unknown Mapper method: " + methodName);
         }
         try {
-            return method.invoke(mapper, args);
+            return method.invoke(session.getMapper(), args);
         } catch (Exception e) {
             if (e instanceof InvocationTargetException) {
                 throw new StorageException(e.getCause());
             }
             throw new StorageException(e);
         }
+    }
+
+    /*
+     * ----- Methods that can check the cache before the database -----
+     */
+
+    public Row readSingleRow(Session session, String tableName, Serializable id)
+            throws StorageException {
+        // return session.readSingleRow(tableName, id);
+        throw new UnsupportedOperationException();
     }
 
 }

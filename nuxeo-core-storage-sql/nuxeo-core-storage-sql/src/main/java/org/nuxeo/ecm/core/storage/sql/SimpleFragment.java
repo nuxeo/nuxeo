@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,125 +33,92 @@ public final class SimpleFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Row UNKNOWN_ROW = new Row((Serializable) null);
+    private static final Row UNKNOWN_ROW = new Row(null, (Serializable) null);
 
     public static final SimpleFragment UNKNOWN = new SimpleFragment(
             UNKNOWN_ROW, State.DETACHED, null);
 
     /**
-     * The row data.
-     */
-    private Row row;
-
-    /**
-     * The fragment old data, from the time of construction / refetch. The size
-     * of the allocated part of the array is following {@link #row.size}.
-     */
-    private Serializable[] olddata;
-
-    /**
-     * Constructs an empty {@link SimpleFragment} of the given table with the
-     * given id (which may be a temporary one).
-     *
-     * @param id the id
-     * @param state the initial state for the fragment
-     * @param context the persistence context to which the row is tied, or
-     *            {@code null}
-     */
-    public SimpleFragment(Serializable id, State state, Context context) {
-        super(id, state, context);
-        setRow(new Row(id));
-    }
-
-    /**
-     * Constructs a {@link SimpleFragment} of the given table from a {@link Row}
-     * .
+     * Constructs a {@link SimpleFragment} from a {@link Row}.
      *
      * @param row the row, or {@code null}
      * @param state the initial state for the fragment
-     * @param context the persistence context to which the row is tied, or
+     * @param context the persistence context to which the fragment is tied, or
      *            {@code null}
      */
-    public SimpleFragment(Row row, State state, Context context) {
-        super(row.id, state, context);
-        setRow(row);
-    }
-
-    private void setRow(Row row) {
-        this.row = row;
-        olddata = new Serializable[row.data.length / 2];
-        clearDirty();
-    }
-
-    @Override
-    public Serializable getId() {
-        return row.id;
-    }
-
-    @Override
-    public void setId(Serializable id) {
-        row.id = id;
-    }
-
-    public Row getRow() {
-        return row;
+    public SimpleFragment(Row row, State state, PersistenceContext context) {
+        super(row, state, context);
     }
 
     @Override
     protected State refetch() throws StorageException {
-        Context context = getContext();
-        Row row = context.mapper.readSingleRow(context.getTableName(), getId());
-        if (row == null) {
-            this.row.size = 0;
+        Row newrow = context.mapper.readSimpleRow(row);
+        if (newrow == null) {
+            row.size = 0;
             return State.ABSENT;
         } else {
-            setRow(row);
+            row = newrow;
+            clearDirty();
             return State.PRISTINE;
         }
     }
 
     /**
-     * Puts a value.
+     * Gets a value by key.
+     *
+     * @param key the key
+     * @return the value
+     */
+    public Serializable get(String key) throws StorageException {
+        accessed();
+        return row.get(key);
+    }
+
+    /**
+     * Puts a value by key.
      *
      * @param key the key
      * @param value the value
-     * @throws StorageException
      */
     public void put(String key, Serializable value) throws StorageException {
         accessed(); // maybe refetch other values
         row.put(key, value);
-        markModified();
         // resize olddata to follow row if needed
-        if (olddata.length < row.data.length / 2) {
-            Serializable[] tmp = olddata;
-            olddata = new Serializable[row.data.length / 2];
-            System.arraycopy(tmp, 0, olddata, 0, tmp.length);
+        if (oldvalues.length < row.values.length) {
+            Serializable[] tmp = oldvalues;
+            oldvalues = new Serializable[row.values.length];
+            System.arraycopy(tmp, 0, oldvalues, 0, tmp.length);
         }
-
+        markModified();
     }
 
     /**
-     * Gets the dirty fields (fields changed since last clear).
+     * Returns a {@code String} value.
      *
-     * @return the dirty fields
+     * @param key the key
+     * @return the value as a {@code String}
+     * @throws ClassCastException if the value is not a {@code String}
      */
-    public List<String> getDirty() {
-        List<String> dirty = new LinkedList<String>();
-        for (int i = 0, r = 0; r < row.size; i++, r += 2) {
-            if (!same(olddata[i], row.data[r + 1])) {
-                dirty.add((String) row.data[r]);
+    public String getString(String key) throws StorageException {
+        return (String) get(key);
+    }
+
+    /**
+     * Gets the dirty keys (keys of values changed since last clear).
+     *
+     * @return the dirty keys
+     */
+    public List<String> getDirtyKeys() {
+        List<String> keys = null;
+        for (int i = 0; i < row.size; i++) {
+            if (!same(oldvalues[i], row.values[i])) {
+                if (keys == null) {
+                    keys = new LinkedList<String>();
+                }
+                keys.add(row.keys[i]);
             }
         }
-        return dirty;
-    }
-
-    /**
-     * Clears the dirty fields.
-     */
-    public void clearDirty() {
-        for (int i = 0, r = 0; r < row.size; i++, r += 2) {
-            olddata[i] = row.data[r + 1];
-        }
+        return keys == null ? Collections.<String> emptyList() : keys;
     }
 
     private static final boolean same(Object a, Object b) {
@@ -161,43 +130,37 @@ public final class SimpleFragment extends Fragment {
     }
 
     /**
-     * Gets a value.
-     *
-     * @param key the key
-     * @return the value
-     * @throws StorageException
+     * Comparator of {@link SimpleFragment}s according to their pos field.
      */
-    public Serializable get(String key) throws StorageException {
-        accessed();
-        return row.get(key);
-    }
+    public static class PositionComparator implements
+            Comparator<SimpleFragment> {
 
-    /**
-     * Returns a {@code String} value.
-     *
-     * @param key the key
-     * @return the value as a {@code String}
-     * @throws StorageException
-     * @throws ClassCastException if the value is not a {@code String}
-     */
-    public String getString(String key) throws StorageException {
-        return (String) get(key);
-    }
+        protected final String posKey;
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
-        buf.append(getTableName());
-        buf.append(", id=");
-        buf.append(getId());
-        buf.append(", state=");
-        buf.append(getState());
-        buf.append(", row=");
-        buf.append(row.toString());
-        buf.append(')');
-        return buf.toString();
+        public PositionComparator(String posKey) {
+            this.posKey = posKey;
+        }
+
+        public int compare(SimpleFragment frag1, SimpleFragment frag2) {
+            try {
+                Long pos1 = (Long) frag1.get(posKey);
+                Long pos2 = (Long) frag2.get(posKey);
+                if (pos1 == null && pos2 == null) {
+                    // coherent sort
+                    return frag1.hashCode() - frag2.hashCode();
+                }
+                if (pos1 == null) {
+                    return 1;
+                }
+                if (pos2 == null) {
+                    return -1;
+                }
+                return pos1.compareTo(pos2);
+            } catch (StorageException e) {
+                // shouldn't happen
+                return frag1.hashCode() - frag2.hashCode();
+            }
+        }
     }
 
 }

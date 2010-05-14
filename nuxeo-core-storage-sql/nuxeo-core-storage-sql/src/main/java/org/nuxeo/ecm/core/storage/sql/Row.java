@@ -25,47 +25,42 @@ import java.util.Map.Entry;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * The data of a single row in a table.
+ * The data of a single row in a table (keys/values form a map), or of multiple
+ * rows with the same id (values is an array of Serializable).
  * <p>
- * The content of the row is a mapping between keys and other values. The keys
- * correspond to schema fields, the values are scalars.
+ * The id of the row is distinguished internally from other columns. For
+ * fragments corresponding to created data, the initial id is a temporary one,
+ * and it will be changed after database insert.
  */
-public final class Row implements Serializable {
+public final class Row extends RowId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final int DEFAULT = 5;
 
     /**
-     * The id.
+     * The row keys, for single row.
      */
-    public Serializable id;
+    protected String[] keys;
 
     /**
-     * The row data. The array contains a sequence of:
-     * <ul>
-     * <li>key 1</li>
-     * <li>value 1</li>
-     * <li>key 2</li>
-     * <li>value 2</li>
-     * <li>...</li>
-     * </ul>
-     * The key is always a String (never {@code null}), the values are
-     * {@link Serializable}.
+     * The row values.
      */
-    protected Serializable[] data;
+    public Serializable[] values;
 
     /**
-     * The size of the allocated part of {@link #data}.
+     * The size of the allocated part of {@link #values}, for single rows.
      */
     protected int size;
 
     /**
-     * Constructs an empty {@link Row} with the given id (may be {@code null}).
+     * Constructs an empty {@link Row} for the given table with the given id
+     * (may be {@code null}).
      */
-    public Row(Serializable id) {
-        this.id = id;
-        data = new Serializable[2 * DEFAULT];
+    public Row(String tableName, Serializable id) {
+        super(tableName, id);
+        keys = new String[DEFAULT];
+        values = new Serializable[DEFAULT];
         // size = 0;
     }
 
@@ -74,22 +69,44 @@ public final class Row implements Serializable {
      *
      * @param map the initial data to use
      */
-    public Row(Map<String, Serializable> map) {
-        data = new Serializable[2 * map.size()];
+    public Row(String tableName, Map<String, Serializable> map) {
+        super(tableName, null); // id set through map
+        keys = new String[map.size()];
+        values = new Serializable[map.size()];
+        // size = 0;
         for (Entry<String, Serializable> entry : map.entrySet()) {
             putNew(entry.getKey(), entry.getValue());
         }
     }
 
+    /**
+     * Constructs a new {@link Row} from an array of values.
+     *
+     * @param array the initial data to use
+     */
+    public Row(String tableName, Serializable id, Serializable[] array) {
+        super(tableName, id);
+        values = array.clone();
+        keys = null;
+        size = -1;
+    }
+
+    public boolean isCollection() {
+        return size == -1;
+    }
+
     private void ensureCapacity(int minCapacity) {
-        if (minCapacity > data.length) {
-            Serializable[] old = data;
-            int newCapacity = (data.length * 3) / 2 + 1;
+        if (minCapacity > values.length) {
+            Serializable[] k = keys;
+            Serializable[] d = values;
+            int newCapacity = (values.length * 3) / 2 + 1;
             if (newCapacity < minCapacity) {
                 newCapacity = minCapacity;
             }
-            data = new Serializable[newCapacity];
-            System.arraycopy(old, 0, data, 0, size);
+            keys = new String[newCapacity];
+            values = new Serializable[newCapacity];
+            System.arraycopy(d, 0, values, 0, size);
+            System.arraycopy(k, 0, keys, 0, size);
         }
     }
 
@@ -107,15 +124,15 @@ public final class Row implements Serializable {
             return;
         }
         // linear search but the array is small
-        for (int i = 0; i < size; i += 2) {
-            if (key.equals(data[i])) {
-                data[i + 1] = value;
+        for (int i = 0; i < size; i++) {
+            if (key.equals(keys[i])) {
+                values[i] = value;
                 return;
             }
         }
-        ensureCapacity(size + 2);
-        data[size++] = key;
-        data[size++] = value;
+        ensureCapacity(size + 1);
+        keys[size] = key;
+        values[size++] = value;
     }
 
     /**
@@ -130,13 +147,13 @@ public final class Row implements Serializable {
             id = value;
             return;
         }
-        ensureCapacity(size + 2);
-        data[size++] = key;
-        data[size++] = value;
+        ensureCapacity(size + 1);
+        keys[size] = key;
+        values[size++] = value;
     }
 
     /**
-     * Gets a value.
+     * Gets a value from a key.
      *
      * @param key the key
      * @return the value
@@ -147,9 +164,9 @@ public final class Row implements Serializable {
             return id;
         }
         // linear search but the array is small
-        for (int i = 0; i < size; i += 2) {
-            if (key.equals(data[i])) {
-                return data[i + 1];
+        for (int i = 0; i < size; i++) {
+            if (key.equals(keys[i])) {
+                return values[i];
             }
         }
         return null;
@@ -159,9 +176,9 @@ public final class Row implements Serializable {
      * Gets the list of keys. The id is not included.
      */
     public List<String> getKeys() {
-        List<String> list = new ArrayList<String>(size / 2);
-        for (int i = 0; i < size; i += 2) {
-            list.add((String) data[i]);
+        List<String> list = new ArrayList<String>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(keys[i]);
         }
         return list;
     }
@@ -170,47 +187,61 @@ public final class Row implements Serializable {
      * Gets the list of values. The id is not included.
      */
     public List<Serializable> getValues() {
-        List<Serializable> list = new ArrayList<Serializable>(size / 2);
-        for (int i = 0; i < size; i += 2) {
-            list.add(data[i + 1]);
+        List<Serializable> list = new ArrayList<Serializable>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(values[i]);
         }
         return list;
-    }
-
-    /**
-     * Gets the data array. Only to be used read-only.
-     */
-    public Serializable[] getData() {
-        return data;
-    }
-
-    /**
-     * Gets the size of the allocated part of the data array.
-     */
-    public int getDataSize() {
-        return size;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getSimpleName());
-        buf.append("(id=");
+        buf.append('(');
+        buf.append(tableName);
+        buf.append(", ");
         buf.append(id);
-        for (int i = 0; i < size; i += 2) {
-            buf.append(", ");
-            buf.append(data[i]);
-            buf.append('=');
-            Serializable value = data[i + 1];
-            boolean truncated = false;
-            if (value instanceof String && ((String) value).length() > 100) {
-                value = ((String) value).substring(0, 100);
-                truncated = true;
+        if (size != -1) {
+            // single row
+            buf.append(", {");
+            for (int i = 0; i < size; i++) {
+                if (i > 0) {
+                    buf.append(", ");
+                }
+                buf.append(keys[i]);
+                buf.append('=');
+                Serializable value = values[i];
+                boolean truncated = false;
+                if (value instanceof String && ((String) value).length() > 100) {
+                    value = ((String) value).substring(0, 100);
+                    truncated = true;
+                }
+                buf.append(value);
+                if (truncated) {
+                    buf.append("...");
+                }
+                buf.append('}');
             }
-            buf.append(value);
-            if (truncated) {
-                buf.append("...");
+        } else {
+            // multiple rows
+            buf.append(", [");
+            for (int i = 0; i < values.length; i++) {
+                if (i > 0) {
+                    buf.append(", ");
+                }
+                Serializable value = values[i];
+                boolean truncated = false;
+                if (value instanceof String && ((String) value).length() > 100) {
+                    value = ((String) value).substring(0, 100);
+                    truncated = true;
+                }
+                buf.append(value);
+                if (truncated) {
+                    buf.append("...");
+                }
             }
+            buf.append(']');
         }
         buf.append(')');
         return buf.toString();

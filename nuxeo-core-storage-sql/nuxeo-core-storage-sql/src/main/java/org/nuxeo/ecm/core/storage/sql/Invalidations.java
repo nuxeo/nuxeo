@@ -17,9 +17,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,54 +37,54 @@ public class Invalidations implements Serializable {
 
     public static final int DELETED = 2;
 
-    public final Map<String, Set<Serializable>> modified = new HashMap<String, Set<Serializable>>();
+    /** null when empty */
+    public Set<RowId> modified;
 
-    public final Map<String, Set<Serializable>> deleted = new HashMap<String, Set<Serializable>>();
+    /** null when empty */
+    public Set<RowId> deleted;
 
     public boolean isEmpty() {
-        return modified.isEmpty() && deleted.isEmpty();
+        return modified == null && deleted == null;
     }
 
-    public Map<String, Set<Serializable>> getKindMap(int kind) {
+    /** only call this if it's to add at least one element in the set */
+    public Set<RowId> getKindSet(int kind) {
         switch (kind) {
         case MODIFIED:
+            if (modified == null) {
+                modified = new HashSet<RowId>();
+            }
             return modified;
         case DELETED:
+            if (deleted == null) {
+                deleted = new HashSet<RowId>();
+            }
             return deleted;
         }
         throw new AssertionError();
     }
 
-    public void addModified(String tableName, Set<Serializable> ids) {
-        if (ids.isEmpty()) {
-            return;
+    public void addModified(Set<RowId> rowIds) {
+        if (modified == null) {
+            modified = new HashSet<RowId>();
         }
-        Set<Serializable> set = modified.get(tableName);
-        if (set == null) {
-            modified.put(tableName, set = new HashSet<Serializable>());
-        }
-        set.addAll(ids);
+        modified.addAll(rowIds);
     }
 
-    public void addDeleted(String tableName, Set<Serializable> ids) {
-        if (ids.isEmpty()) {
-            return;
+    public void addDeleted(Set<RowId> rowIds) {
+        if (deleted == null) {
+            deleted = new HashSet<RowId>();
         }
-        Set<Serializable> set = deleted.get(tableName);
-        if (set == null) {
-            deleted.put(tableName, set = new HashSet<Serializable>());
-        }
-        set.addAll(ids);
+        deleted.addAll(rowIds);
     }
 
     public void add(Serializable id, String[] tableNames, int kind) {
-        Map<String, Set<Serializable>> map = getKindMap(kind);
+        if (tableNames.length == 0) {
+            return;
+        }
+        Set<RowId> set = getKindSet(kind);
         for (String tableName : tableNames) {
-            Set<Serializable> set = map.get(tableName);
-            if (set == null) {
-                map.put(tableName, set = new HashSet<Serializable>());
-            }
-            set.add(id);
+            set.add(new RowId(tableName, id));
         }
     }
 
@@ -94,16 +92,16 @@ public class Invalidations implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder(
                 this.getClass().getSimpleName() + '(');
-        if (!modified.isEmpty()) {
+        if (modified != null) {
             sb.append("modified=");
-            sb.append(modified.toString());
-            if (!deleted.isEmpty()) {
+            sb.append(modified);
+            if (deleted != null) {
                 sb.append(',');
             }
         }
-        if (!deleted.isEmpty()) {
+        if (deleted != null) {
             sb.append("deleted=");
-            sb.append(deleted.toString());
+            sb.append(deleted);
         }
         sb.append(')');
         return sb.toString();
