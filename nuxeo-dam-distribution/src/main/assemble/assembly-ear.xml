@@ -41,7 +41,8 @@
     <unzip dest="${nuxeo.ear}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
-        <exclude name="**/nuxeo-platform-webapp*" />
+        <exclude name="**/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
+        <exclude name="**/nuxeo-platform-webapp-core*" />
 
         <exclude name="**/system/nuxeo-platform-virtualnavigation-web*" />
         <exclude name="**/system/nuxeo-platform-forum*" />
