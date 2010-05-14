@@ -35,7 +35,7 @@ public class TestCASAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
     protected static final String TICKET_KEY = "ticket";
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

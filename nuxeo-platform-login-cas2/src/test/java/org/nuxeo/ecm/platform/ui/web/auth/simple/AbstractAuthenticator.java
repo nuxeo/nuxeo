@@ -109,7 +109,7 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
         "OSGI-INF/mock-event-framework.xml");
 
-        
+
         deployBundle("org.nuxeo.ecm.platform.login");
         deployBundle("org.nuxeo.ecm.platform.web.common");
     }

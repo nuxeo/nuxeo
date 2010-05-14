@@ -63,7 +63,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     /**
      * Redirects to the ClearTrust login page if the request doesn't contain
      * cookies indicating that a positive authentication occurred.
-     * 
+     *
      * @return true if AuthFilter must stop execution (ie: login prompt
      *         generated a redirect), false otherwise
      */

@@ -50,7 +50,7 @@ public class TestAuthenticator extends AbstractAuthenticator {
     public void testNoAuthentication() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.login.cas2.test",
                 "OSGI-INF/login-no-contrib.xml");
-        
+
         initRequest();
         setLoginPasswordInHeader("Administrator", "Administrator", request);
 

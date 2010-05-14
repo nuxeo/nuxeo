@@ -26,7 +26,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
  * @author M.-A. Darche
  */
 public final class CAS2Parameters {
-    
+
     public static final String TICKET_NAME_KEY = "ticketKey";
 
     public static final String PROXY_NAME_KEY = "proxyKey";

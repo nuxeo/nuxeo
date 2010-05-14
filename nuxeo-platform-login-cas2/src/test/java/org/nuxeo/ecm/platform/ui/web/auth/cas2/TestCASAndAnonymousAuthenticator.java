@@ -35,8 +35,8 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
 
     protected static final String CAS_USER = "CasUser";
 
-    protected final String TICKET_KEY = "ticket";
-    
+    protected static final String TICKET_KEY = "ticket";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -81,7 +81,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
     /**
      * TODO : create a random number for the ticket, add to the
      * MockServiceValidators and associate it to the username
-     * 
+     *
      * @throws ServletException
      */
     protected void doAuthenticationToCasServer(String username)

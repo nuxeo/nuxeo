@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
 import java.security.Principal;
@@ -24,22 +41,20 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
     }
 
     public boolean commit() throws LoginException {
-        
         Set<Principal> principals = subject.getPrincipals();
         Principal identity = getIdentity();
         principals.add(identity);
-        
+
         return true;
     }
 
     public void initialize(Subject subject, CallbackHandler callbackHandler,
             Map<String, ?> sharedState, Map<String, ?> options) {
-        
+
         super.initialize(subject, callbackHandler, sharedState, options);
     }
 
     public boolean login() throws LoginException {
-        
         NameCallback nc = new NameCallback("Username: ",
                 SecurityConstants.ANONYMOUS);
 
@@ -52,19 +67,18 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
             le.initCause(e);
             throw le;
         }
-        
-        
+
         return true;
     }
 
     public boolean logout() throws LoginException {
         Principal identity = getIdentity();
-        Set<Principal>principals = subject.getPrincipals();
+        Set<Principal> principals = subject.getPrincipals();
         principals.remove(identity);
 
         return true;
     }
-    
+
     @Override
     protected Principal getIdentity() {
         return identity;
@@ -77,9 +91,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
 
     @Override
     protected Principal createIdentity(String username) throws Exception {
-        Principal result = new UserPrincipal(username);
-        
-        return result;
+        return new UserPrincipal(username);
     }
 
 }
