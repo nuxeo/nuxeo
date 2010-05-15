@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * the fields that contain the blob which filename was updated.
  *
  * @author btatar
- *
  */
 public class ImageFilenameUpdater implements EventListener {
 
@@ -83,13 +82,12 @@ public class ImageFilenameUpdater implements EventListener {
             return;
         }
         String title = (String) viewsList.get(0).get(TITLE);
-        Blob fileBlob = null;
         for (Map<String, Object> view : viewsList) {
             view.put(FILENAME, filenameUpdated);
-            fileBlob = (Blob) view.get("content");
+            Blob fileBlob = (Blob) view.get("content");
             fileBlob.setFilename(title + "_" + filenameUpdated);
         }
 
-        doc.getDataModel((PICTURE_SCHEMA)).setMap(pictureMap);
+        doc.getDataModel(PICTURE_SCHEMA).setMap(pictureMap);
     }
 }

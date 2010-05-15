@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.dam.core.watermark.WatermarkService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -52,18 +51,16 @@ public class WatermarkServiceImpl implements WatermarkService {
     public File performWatermarkOnFile(String watermarkFilePath,
             Integer watermarkWidth, Integer watermarkHeight,
             String inputFilePath, String outputFilePath) throws Exception {
-        File wtmkdFile = null;
 
-        wtmkdFile = ImageWatermarker.watermark(getDefaultWatermarkFile()
-                .getPath(), watermarkWidth, watermarkHeight, inputFilePath,
-                outputFilePath);
+        File wtmkdFile = ImageWatermarker.watermark(getDefaultWatermarkFile().getPath(),
+                watermarkWidth, watermarkHeight, inputFilePath, outputFilePath);
         return wtmkdFile;
     }
 
     public File getDefaultWatermarkFile() throws IOException {
         if (defaultWatermarkFile == null) {
-            defaultWatermarkFile = new File(System.getProperty("java.io.tmpdir"), UUID
-                    .randomUUID().toString());
+            defaultWatermarkFile = new File(System.getProperty("java.io.tmpdir"),
+                    UUID.randomUUID().toString());
             InputStream is = getClass().getClassLoader().getResourceAsStream(
                     "watermark/image/dam_watermark.png");
             FileUtils.copyToFile(is, defaultWatermarkFile);

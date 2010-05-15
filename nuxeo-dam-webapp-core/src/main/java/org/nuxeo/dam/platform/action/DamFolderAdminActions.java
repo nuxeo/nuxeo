@@ -82,9 +82,9 @@ public class DamFolderAdminActions implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    protected Map<String, List<String>> userPermissions = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> userPermissions = new HashMap<String, List<String>>();
 
-    protected Map<String, List<String>> groupPermissions = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> groupPermissions = new HashMap<String, List<String>>();
 
     protected List<String> visiblePermissions;
 

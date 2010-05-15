@@ -166,13 +166,13 @@ public class DocumentActions implements Serializable {
      * maximum of maxLength characters. If the Title is more than maxLength
      * characters it will return the Beginning of the title, followed by 3
      * ellipses (...) followed by the End of the title.
-     *
+     * <p>
      * A minimum of 6 characters is needed before cropping takes effect. If you
      * specify a maxLength of less than 5, it is ignored - in this case
      * maxLength will be set to begin at 5.
      *
-     * @param DocumentModel document to extract the title from
-     * @param int maxLength the maximum length of the title before cropping will
+     * @param document to extract the title from
+     * @param maxLength the maximum length of the title before cropping will
      *        occur
      * @return String with the cropped title restricted to maximum of maxLength
      *         characters
@@ -217,9 +217,7 @@ public class DocumentActions implements Serializable {
         int nbrEndChars = maxLength - nbrBeginningChars - nbrEllipses;
         String endChars = title.substring(length - nbrEndChars, length);
 
-        String croppedTitle = beginningChars + "..." + endChars;
-        return croppedTitle;
-
+        return beginningChars + "..." + endChars;
     }
 
     public void download(DocumentView docView) throws ClientException {

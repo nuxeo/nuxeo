@@ -83,7 +83,6 @@ public class RestHelper implements Serializable {
     /**
      * Adds current conversation request parameters to the given url.
      *
-     * @param url
      * @return the url with additional conversation request parameters
      */
     public static String addCurrentConversationParameters(String url) {

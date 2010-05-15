@@ -26,7 +26,7 @@ public interface WatermarkService {
      * Method used to return the default image file that is used to watermark other
      * images files.
      *
-     * @return - return the watermark image file
+     * @return the watermark image file
      * @throws IOException
      */
     File getDefaultWatermarkFile() throws IOException;
@@ -66,4 +66,5 @@ public interface WatermarkService {
      * @throws Exception
      */
     File performWatermarkOnFile(File inputFilePath) throws Exception;
+
 }

@@ -84,7 +84,6 @@ public class StartupHelper implements Serializable {
      * If several servers are available, let the user choose.
      *
      * @return the view id of the contextually computed startup page
-     * @throws ClientException
      */
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public String initDomainAndFindStartupPage() {

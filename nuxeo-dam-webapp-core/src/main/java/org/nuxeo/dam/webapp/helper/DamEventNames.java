@@ -6,4 +6,7 @@ public class DamEventNames {
 
     public static final String FOLDERLIST_CHANGED = "folderListChanged";
 
+    private DamEventNames() {
+    }
+
 }

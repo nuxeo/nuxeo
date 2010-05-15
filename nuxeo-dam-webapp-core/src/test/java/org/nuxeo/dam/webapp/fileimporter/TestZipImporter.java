@@ -108,8 +108,6 @@ public class TestZipImporter {
         child = session.getChild(doc.getRef(), "samplewav");
         assertNotNull(child);
         assertEquals("Audio", child.getType());
-
-
     }
 
     @Test
@@ -136,10 +134,11 @@ public class TestZipImporter {
 
         importSet = session.getDocument(importSet.getRef());
         assertNotNull(importSet);
+
         String title = (String) importSet.getProperty("dublincore", "title");
         String type = importSet.getType();
-        assertEquals(title, "myimportset");
-        assertEquals(type, Constants.IMPORT_SET_TYPE);
+        assertEquals("myimportset", title);
+        assertEquals(Constants.IMPORT_SET_TYPE, type);
 
         DocumentModelList children = session.getChildren(importSet.getRef());
         assertNotNull(children);

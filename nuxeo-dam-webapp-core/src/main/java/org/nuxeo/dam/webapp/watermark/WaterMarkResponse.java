@@ -37,10 +37,10 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
 
     private final Logger log = Logger.getLogger(WaterMarkResponse.class);
 
-    protected File tmpFile = new File(System.getProperty("java.io.tmpdir"),
+    protected final File tmpFile = new File(System.getProperty("java.io.tmpdir"),
             UUID.randomUUID().toString());
 
-    protected ServletOutputStream out = null;
+    protected ServletOutputStream out;
 
     private static WatermarkService watermarkService;
 
@@ -65,7 +65,6 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
         }
         File wtmkdFile = null;
         try {
-
             wtmkdFile = getWatermarkService().performWatermarkOnFile(tmpFile);
             if (wtmkdFile == null) {
                 throw new IOException("Watermark failed.");
@@ -77,16 +76,11 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
             fis.close();
             os.close();
             super.flushBuffer();
-        }
-
-        catch (Exception e) {
-            if (e instanceof IOException) {
-                throw (IOException) e;
-            }
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
             throw new IOException(e.getMessage());
-        }
-
-        finally {
+        } finally {
             tmpFile.delete();
             if (wtmkdFile != null) {
                 wtmkdFile.delete();
@@ -107,4 +101,5 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
         }
         return watermarkService;
     }
+
 }

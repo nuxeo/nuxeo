@@ -41,13 +41,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-
 /**
  * @author btatar
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -149,11 +148,10 @@ public class TestImageFilenameUpdater {
         picture = session.getChildren(importSet.getRef()).get(0);
         viewsList = (List<Map<String, Object>>) picture.getPropertyValue("picture:views");
         String title = (String) viewsList.get(0).get("title");
-        Blob fileBlob;
         for (Map<String, Object> el : viewsList) {
-            assertTrue("big_nuxeo_logo edit.jpg".equals(el.get("filename")));
-            fileBlob = (Blob) el.get("content");
-            assertTrue((title + "_" + "big_nuxeo_logo edit.jpg").equals(fileBlob.getFilename()));
+            assertEquals("big_nuxeo_logo edit.jpg", el.get("filename"));
+            Blob fileBlob = (Blob) el.get("content");
+            assertEquals((title + "_" + "big_nuxeo_logo edit.jpg"), fileBlob.getFilename());
         }
     }
 

@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DownloadHelper {
 
-    private static Log log = LogFactory.getLog(DownloadHelper.class);
+    private static final Log log = LogFactory.getLog(DownloadHelper.class);
 
     private DownloadHelper() {
         // Helper class

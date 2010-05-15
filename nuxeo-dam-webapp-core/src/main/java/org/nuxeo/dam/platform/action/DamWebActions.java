@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -43,9 +42,7 @@ import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 @Name("webActions")
 @Scope(CONVERSATION)
@@ -155,7 +152,7 @@ public class DamWebActions extends WebActionsBean {
         return navigationContext.goHome();
     }
 
-    @Factory(value = "isInsideAdministration", scope = ScopeType.EVENT)
+    @Factory(value = "isInsideAdministration", scope = EVENT)
     public boolean showAdministration() {
         return showAdministration;
     }
@@ -164,16 +161,16 @@ public class DamWebActions extends WebActionsBean {
         if (showList) {
             return;
         }
-        this.showList = !this.showList;
-        this.showThumbnail = !this.showThumbnail;
+        showList = !showList;
+        showThumbnail = !showThumbnail;
     }
 
     public void showThumbnailLink() {
         if (showThumbnail) {
             return;
         }
-        this.showThumbnail = !this.showThumbnail;
-        this.showList = !this.showList;
+        showThumbnail = !showThumbnail;
+        showList = !showList;
     }
 
     public boolean getShowList() {

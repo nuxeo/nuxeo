@@ -25,12 +25,13 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 
 /**
- * Unit command to watermark a picture using ImageMagick
+ * Unit command to watermark a picture using ImageMagick.
  *
  * @author btatar
  */
 public class ImageWatermarker extends MagickExecutor {
-    private static Logger log = Logger.getLogger(ImageWatermarker.class);
+
+    private static final Logger log = Logger.getLogger(ImageWatermarker.class);
 
     public static File watermark(String watermarkFilePath,
             Integer watermarkWidth, Integer watermarkHeight,
@@ -48,4 +49,5 @@ public class ImageWatermarker extends MagickExecutor {
         ExecResult result = execCommand("watermark", params);
         return result.isSuccessful() ? new File(outputFilePath) : null;
     }
+
 }

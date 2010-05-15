@@ -53,8 +53,7 @@ public class URLPatternHelper implements Serializable {
     private DocumentView docView;
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String initContextFromRestRequest(DocumentView docView)
-            throws ClientException {
+    public String initContextFromRestRequest(DocumentView docView) {
         return null;
     }
 

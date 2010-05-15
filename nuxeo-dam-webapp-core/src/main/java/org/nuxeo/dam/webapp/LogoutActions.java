@@ -18,6 +18,8 @@
 package org.nuxeo.dam.webapp;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 
 import java.io.IOException;
 
@@ -30,7 +32,6 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
@@ -46,7 +47,6 @@ public class LogoutActions {
      * anymore.
      *
      * @return the next page that is going to be displayed
-     * @throws java.io.IOException
      */
     public static String logout() throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -65,9 +65,8 @@ public class LogoutActions {
         if (response != null && request != null
                 && !context.getResponseComplete()) {
             String baseURL = BaseURL.getBaseURL(request);
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
-            response.sendRedirect(baseURL + NXAuthConstants.LOGOUT_PAGE);
+            request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
+            response.sendRedirect(baseURL + LOGOUT_PAGE);
             context.responseComplete();
         }
         return null;

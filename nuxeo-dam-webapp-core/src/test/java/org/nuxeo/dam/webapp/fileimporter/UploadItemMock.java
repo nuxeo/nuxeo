@@ -33,7 +33,7 @@ public class UploadItemMock extends UploadItem {
 
     private static final long serialVersionUID = 1L;
 
-    protected Blob blob;
+    protected final Blob blob;
 
     public UploadItemMock(String fileName, String contentType, Object object) {
         super(fileName, 1, contentType, object);
@@ -44,7 +44,6 @@ public class UploadItemMock extends UploadItem {
         blob.setFilename(file.getName());
     }
 
-
     public static UploadEvent getUploadEvent(File file) {
         UploadItem item = new UploadItem(file.getName(), 1, null, file);
         UIComponent component = new UIData();
@@ -52,5 +51,6 @@ public class UploadItemMock extends UploadItem {
         items.add(item);
         return new UploadEvent(component, items);
     }
+
 }
 

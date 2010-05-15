@@ -76,6 +76,7 @@ public class TestInitPropertiesListener {
                 importSet.getPathAsString(), "fileTest", "File");
         file = session.createDocument(file);
         assertNotNull(file);
+
         session.saveDocument(file);
         session.save();
         assertTrue(file.hasSchema("dam_common"));
@@ -91,6 +92,7 @@ public class TestInitPropertiesListener {
                 importSet.getPathAsString(), "pictureTest", "Picture");
         picture = session.createDocument(picture);
         assertNotNull(picture);
+
         session.saveDocument(picture);
         session.save();
         assertTrue(picture.hasSchema("dam_common"));

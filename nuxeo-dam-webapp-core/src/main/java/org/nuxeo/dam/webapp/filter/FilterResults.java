@@ -60,7 +60,7 @@ public class FilterResults implements SelectDataModelListener, Serializable {
     protected transient PagedDocumentsProvider provider;
 
 
-  @Factory(value = FILTER_SELECT_MODEL_NAME, scope = ScopeType.EVENT)
+    @Factory(value = FILTER_SELECT_MODEL_NAME, scope = ScopeType.EVENT)
     public SelectDataModel getResultsSelectModelFiltered() throws ClientException {
         return getResultsSelectModel(FILTERED_DOCUMENT_PROVIDER_NAME);
     }

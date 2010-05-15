@@ -26,11 +26,15 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.Context;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
@@ -105,7 +109,8 @@ public class PictureActions implements Serializable {
         }
     }
 
-    protected CoreSession getOrCreateDocumentManager(RepositoryLocation repositoryLocation) throws ClientException {
+    protected CoreSession getOrCreateDocumentManager(RepositoryLocation repositoryLocation)
+            throws ClientException {
         if (documentManager != null) {
             return documentManager;
         }

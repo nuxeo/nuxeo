@@ -17,11 +17,6 @@
 
 package org.nuxeo.dam.core.listener;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.dam.core.Constants;
@@ -45,14 +40,14 @@ public class InitPropertiesListener implements EventListener {
      */
     protected static class AccessibleParentFinder extends UnrestrictedSessionRunner {
 
-        protected CoreSession userSession;
+        protected final CoreSession userSession;
 
-        public DocumentModel doc = null;
-        public DocumentModel parent = null;
+        public final DocumentModel doc;
+        public DocumentModel parent;
 
         public AccessibleParentFinder(CoreSession session, DocumentModel doc) {
             super(session);
-            this.userSession = session;
+            userSession = session;
             this.doc = doc;
         }
 
@@ -109,8 +104,6 @@ public class InitPropertiesListener implements EventListener {
     /**
      * Returns the first {@code ImportSet} parent, or {@code null} if no parent
      * is accessible.
-     *
-     * @param doc
      */
     protected DocumentModel getImportSet(CoreSession session, DocumentModel doc) throws ClientException {
         if (Constants.IMPORT_SET_TYPE.equals(doc.getType())) {

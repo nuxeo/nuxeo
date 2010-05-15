@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 public class WaterMarkRequest extends HttpServletRequestWrapper {
+
     private String requestUri;
 
     public WaterMarkRequest(HttpServletRequest request) {
@@ -35,4 +36,5 @@ public class WaterMarkRequest extends HttpServletRequestWrapper {
 
         return requestUri;
     }
+
 }

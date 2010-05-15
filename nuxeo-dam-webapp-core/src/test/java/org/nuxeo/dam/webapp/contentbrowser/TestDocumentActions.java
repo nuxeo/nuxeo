@@ -23,13 +23,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+
+import com.google.inject.Inject;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,7 +46,7 @@ public class TestDocumentActions {
 
     @Test
     public void testGetTitleCropped() throws Exception {
-        String croppedTitle = null;
+        String croppedTitle;
         assertNotNull("session is null ?", session);
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         assertNotNull("doc is null", doc);

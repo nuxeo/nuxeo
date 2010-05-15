@@ -23,7 +23,6 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescriptor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

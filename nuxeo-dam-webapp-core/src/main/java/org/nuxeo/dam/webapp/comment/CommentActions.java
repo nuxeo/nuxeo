@@ -50,11 +50,9 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- *
  * Comments related actions on DAM.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 @Name("commentActions")
 @Scope(CONVERSATION)
