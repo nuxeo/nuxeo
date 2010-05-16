@@ -67,7 +67,7 @@ public class Main extends ModuleRoot {
     public Object displayBank(@PathParam("bank") String bank) {
         return getTemplate("bank.ftl").arg("bank", bank);
     }
-    
+
     @GET
     @Path("{bank}/logo")
     public Object displayBankThumbnail(@PathParam("bank") String bank) {
@@ -90,10 +90,19 @@ public class Main extends ModuleRoot {
     public Object getNavtreeView(@PathParam("bank") String bank) {
         return getTemplate("navtree.ftl").arg("bank", bank);
     }
-    
+
     /*
      * Styles
      */
+    @GET
+    @Path("{bank}/style/view")
+    public Object getStyleCollectionsView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return getTemplate("styleCollections.ftl").arg("collections",
+                getCollections(bank, "style")).arg("collection", collection).arg(
+                "bank", bank);
+    }
+    
     @GET
     @Path("{bank}/style/{collection}/view")
     public Object getStyleCollectionView(@PathParam("bank") String bank,
@@ -122,12 +131,41 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         File file = BankManager.getStyleFile(bank, collection, resource);
         String content = BankUtils.getFileContent(file);
-        return getTemplate("style.ftl").arg("content", content).arg("resource", resource).arg("collection", collection);
+        return getTemplate("style.ftl").arg("content", content).arg("bank", bank).arg("resource",
+                resource).arg("collection", collection);
+    }
+
+    @GET
+    @Path("{bank}/style/{collection}/{resource}/preview")
+    public Object displayrStylePreview(@PathParam("bank") String bank,
+            @PathParam("collection") String collection,
+            @PathParam("resource") String resource) {
+        File file = BankManager.getStylePreviewFile(bank, collection, resource);
+        if (!file.exists()) {
+            return Response.status(404).build();
+        }
+        String ext = FileUtils.getFileExtension(path);
+        String mimeType = ctx.getEngine().getMimeType(ext);
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+        return Response.ok().entity(streamFile(file)).lastModified(
+                new Date(file.lastModified())).header("Cache-Control", "public").header(
+                "Server", SERVER_ID).type(mimeType).build();
     }
 
     /*
      * Presets
      */
+    @GET
+    @Path("{bank}/preset/view")
+    public Object getPresetCollectionsView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return getTemplate("presetCollections.ftl").arg("collections",
+                getCollections(bank, "preset")).arg("collection", collection).arg(
+                "bank", bank);
+    }
+    
     @GET
     @Path("{bank}/preset/{collection}/view")
     public Object getPresetCollectionView(@PathParam("bank") String bank,
@@ -136,7 +174,7 @@ public class Main extends ModuleRoot {
                 BankManager.getItemsInCollection(bank, "preset", collection)).arg(
                 "collection", collection).arg("bank", bank);
     }
-    
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("{bank}/preset/{collection}/{category}")
@@ -172,7 +210,8 @@ public class Main extends ModuleRoot {
         for (File f : file.listFiles()) {
             String content = BankUtils.getFileContent(f);
             try {
-                properties.putAll(PaletteParser.parse(content.getBytes(), f.getName()));
+                properties.putAll(PaletteParser.parse(content.getBytes(),
+                        f.getName()));
             } catch (PaletteIdentifyException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -181,12 +220,23 @@ public class Main extends ModuleRoot {
                 e.printStackTrace();
             }
         }
-        return getTemplate("preset.ftl").arg("properties", properties).arg("collection", collection).arg("category", category);
+        return getTemplate("preset.ftl").arg("properties", properties).arg(
+                "bank", bank).arg("collection", collection).arg("category",
+                category);
     }
 
     /*
      * Images
      */
+    @GET
+    @Path("{bank}/image/view")
+    public Object getImageCollectionsView(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return getTemplate("imageCollections.ftl").arg("collections",
+                getCollections(bank, "image")).arg("collection", collection).arg(
+                "bank", bank);
+    }
+
     @GET
     @Path("{bank}/image/{collection}/view")
     public Object getImageCollectionView(@PathParam("bank") String bank,
@@ -222,7 +272,8 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         String path = String.format("%s/image/%s/%s", bank, collection,
                 resource);
-        return getTemplate("image.ftl").arg("path", path).arg("resource", resource).arg("collection", collection);
+        return getTemplate("image.ftl").arg("path", path).arg("bank", bank).arg(
+                "resource", resource).arg("collection", collection);
     }
 
     @GET

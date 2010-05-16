@@ -18,12 +18,10 @@
   </@block>
     
   <@block name="content">
-
-    <h1>${collection} ${resource}</h1>
+    <h1><a href="${Root.getPath()}/${bank}/style/view">style</a> &gt; <a href="${Root.getPath()}/${bank}/style/${collection}/view">${collection}</a> ${resource?replace('.css', '')}</h1>
     <pre style="visibility: hidden" class="brush: css; toolbar: false">
     ${content}
     </pre>
-
   </@block>
 
 </@extends>

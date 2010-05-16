@@ -85,7 +85,6 @@ public class BankManager {
         return file;
     }
 
-
     public static File getImageFile(String bank, String collection,
             String resource) {
         String path = String.format("%s/image/%s/%s", bank, collection,
@@ -93,9 +92,17 @@ public class BankManager {
         File file = BankManager.getFile(path);
         return file;
     }
-    
+
     public static File getBankLogoFile(String bank) {
         String path = String.format("%s/logo.png", bank);
+        File file = BankManager.getFile(path);
+        return file;
+    }
+
+    public static File getStylePreviewFile(String bank, String collection,
+            String resource) {
+        String path = String.format("%s/style/%s/preview/%s", bank, collection,
+                resource.replace(".css", ".png"));
         File file = BankManager.getFile(path);
         return file;
     }

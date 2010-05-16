@@ -4,12 +4,16 @@ body {
 }
 
 h1 {
-  font: bold 11px Tahoma, sans-serif;
+  font: bold 12px Tahoma, sans-serif;
   background-color: #666;
   padding: 3px 7px;
   border: 1px solid #000;
   color: #fff;
   -moz-border-radius: 4px;
+}
+
+h1 a {
+  color: #fff;
 }
 
 ul {
@@ -32,9 +36,8 @@ table.properties {
 }
 
 table.properties td {
-  borer: 1px solid #ddd;
   padding: 3px 7px;
-  font: 11px Tahoma, Arial;
+  font: 12px monospace;
 }
 
 table.properties tr.odd td {
@@ -98,6 +101,7 @@ table.properties td.key {
 .imageFrame {
   margin: 15px 0;
   text-align: center; 
-  border: 1px solid #eee; 
+  border: 1px solid #eee;
+  -moz-border-radius: 4px;
   padding: 20px;
 }
