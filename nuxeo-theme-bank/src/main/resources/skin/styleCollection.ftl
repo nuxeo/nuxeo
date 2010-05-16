@@ -5,7 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="${Root.getPath()}/${bank}/style/view">style</a> &gt; ${collection}</h1>    
+    <h1><a href="${Root.getPath()}/${bank}/style/view">style</a> &rarr; ${collection}</h1>    
     <div class="album">
       <#list styles as style>
         <a href="${Root.getPath()}/${bank}/style/${collection}/${style}/view">

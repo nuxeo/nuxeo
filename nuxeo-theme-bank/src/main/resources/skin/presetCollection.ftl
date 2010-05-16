@@ -5,7 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="${Root.getPath()}/${bank}/preset/view">preset</a> ${collection}</h1>
+    <h1><a href="${Root.getPath()}/${bank}/preset/view">preset</a> &rarr; ${collection}</h1>
     <div class="album">
       <#list presets as preset>
         <a href="${Root.getPath()}/${bank}/preset/${collection}/${preset}/view">

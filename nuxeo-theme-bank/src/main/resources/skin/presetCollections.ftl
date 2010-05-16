@@ -7,7 +7,6 @@
   <@block name="content">
 
     <h1>preset</h1>
-
     <div class="album">
       <#list collections as collection>
         <a href="${Root.getPath()}/${bank}/preset/${collection}/view">  

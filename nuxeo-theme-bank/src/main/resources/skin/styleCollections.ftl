@@ -5,7 +5,6 @@
   </@block>
 
   <@block name="content">
-
     <h1>style</h1>
     <div class="album">
       <#list collections as collection>
