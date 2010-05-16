@@ -300,13 +300,14 @@ public class ThemeParser {
                 throw new ThemeIOException("Could not parse node: " + nodeName);
             }
 
-            if (elem instanceof PageElement) {
-                String pageName = attributes.getNamedItem("name").getNodeValue();
-                if (!pageName.matches("[a-z0-9_\\-]+")) {
+            Node nameAttr = attributes.getNamedItem("name");
+            if (nameAttr != null) {
+                String elementName = nameAttr.getNodeValue();
+                if (!elementName.matches("[a-z0-9_\\-]+")) {
                     throw new ThemeIOException(
-                            "Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
+                            "Element names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
                 }
-                elem.setName(pageName);
+                elem.setName(elementName);
             }
 
             String description = getCommentAssociatedTo(n);
@@ -402,7 +403,8 @@ public class ThemeParser {
                         inheritedStyle = (Style) FormatFactory.create("style");
                         inheritedStyle.setName(inheritedName);
                         themeManager.registerFormat(inheritedStyle);
-                        themeManager.setNamedObject(themeName, "style", inheritedStyle);
+                        themeManager.setNamedObject(themeName, "style",
+                                inheritedStyle);
                         loadStyle(inheritedStyle);
                     }
                     if (inheritedStyle != null) {
@@ -537,10 +539,9 @@ public class ThemeParser {
         final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
         if (resourceNameMatcher.find()) {
             String collectionName = resourceNameMatcher.group(2);
-            String resourceId = resourceNameMatcher.group(1)
-                    + ".css";
-            cssSource = ResourceManager.getBankResource(
-                    "style", collectionName, resourceId);
+            String resourceId = resourceNameMatcher.group(1) + ".css";
+            cssSource = ResourceManager.getBankResource("style",
+                    collectionName, resourceId);
         }
         if (cssSource == null) {
             log.error("Unknown style: " + styleName);
@@ -548,7 +549,7 @@ public class ThemeParser {
             Utils.loadCss(style, cssSource, "*");
         }
     }
-    
+
     public static void parseProperties(org.w3c.dom.Element doc, Node node)
             throws ThemeIOException {
         NamedNodeMap attributes = node.getAttributes();

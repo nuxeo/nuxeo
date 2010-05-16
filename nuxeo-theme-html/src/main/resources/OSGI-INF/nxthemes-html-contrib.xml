@@ -182,12 +182,14 @@
 
       <renderer element="section">
         <filter>add widget</filter>
+        <filter>set element name</filter>
         <filter>set layout</filter>
         <filter>set style</filter>
       </renderer>
 
       <renderer element="cell">
         <filter>add widget</filter>
+        <filter>set element name</filter>
         <filter>set layout</filter>
         <filter>set style</filter>
       </renderer>
