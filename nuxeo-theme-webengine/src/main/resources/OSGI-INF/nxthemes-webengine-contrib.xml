@@ -76,13 +76,6 @@
       </class>
     </standalone-filter>
     
-    <standalone-filter name="set element name" template-engine="freemarker">
-      <class>
-        org.nuxeo.theme.html.filters.standalone.ElementName
-      </class>
-    </standalone-filter>
-    
-
   </extension>
   
 
