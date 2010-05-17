@@ -59,8 +59,8 @@
       <artifact group="org.jboss.el" name="jboss-el" />
       <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
-      <artifact group="bouncycastle" name="bcmail-jdk14" />
-      <artifact group="bouncycastle" name="bcprov-jdk14" />
+      <artifact group="org.bouncycastle" name="bcmail-jdk15" />
+      <artifact group="org.bouncycastle" name="bcprov-jdk15" />
       <!--
         version required because maven-nuxeo-plugin don't manage classifier here
       -->

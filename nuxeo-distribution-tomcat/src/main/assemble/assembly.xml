@@ -9,7 +9,8 @@
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="tomcat" value="nuxeo-dm-${maven.project.version}-tomcat" />
-    <property name="coreserver" value="nuxeo-coreserver-${maven.project.version}-tomcat" />
+    <property name="coreserver"
+              value="nuxeo-coreserver-${maven.project.version}-tomcat" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
   </target>
@@ -18,7 +19,7 @@
     <artifact:expand depth="2" />
   </target>
 
-  <target name="build" depends="init" unless="no.build" >
+  <target name="build" depends="init" unless="no.build">
     <echo>Building Tomcat standard distribution...</echo>
     <antcall target="prepare-tomcat" />
 
@@ -59,7 +60,7 @@
     </unzip>
     <chmod dir="${outdir}/${tomcat}/bin"
            perm="ug+x"
-           includes="*.sh,nuxeoctl,openofficectl" />
+           includes="*.sh,*ctl,*.command" />
 
     <copy todir="${outdir}/${tomcat}/nxserver/bundles">
       <!-- Setting transaction management and pooling support... -->
