@@ -3,6 +3,7 @@
 <#assign navPoint=Root.getNavigationPoint()/>
 
 <h3>Browse distributions</h3>
+<b> Browse by category </b>
 <table border=0 style="padding:0px;margin:0px">
 <tr>
       <td colspan="5" style="font-weight:bold">
@@ -141,6 +142,27 @@
     </td>
 </tr>
 </table>
+<br/>
+<b> Browse by hierarchy </b>
+
+<#macro tree id url="${Root.path}/${distId}/tree" root="/">
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("#${id}").treeview({
+      url: "${url}",
+      root: "${root}",
+      animated: "fast",
+      unique: true
+    });
+  });
+  </script>
+
+  <ul id="${id}" class="filetree">
+  </ul>
+
+</#macro>
+<@tree id="myTree" root="/"/>
+
 <br/>
 <h3>Browse documentation</h3>
 <table border=0>

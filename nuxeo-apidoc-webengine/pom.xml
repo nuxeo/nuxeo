@@ -73,6 +73,11 @@
 			<groupId>org.nuxeo.ecm.webengine</groupId>
 			<artifactId>nuxeo-webengine-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.nuxeo.ecm.webengine</groupId>
+			<artifactId>nuxeo-webengine-ui</artifactId>
+                        <version>5.3.2-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.seam</groupId>
@@ -90,6 +95,12 @@
 			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
+
+ <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
 
 
 	</dependencies>

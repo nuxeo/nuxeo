@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,7 +37,9 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.apidoc.tree.NuxeoArtifactTree;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -64,6 +67,30 @@ public class ApiBrowser extends DefaultObject {
         distributionId = (String) args[0];
     }
 
+    @GET
+    @Produces("text/plain")
+    @Path(value = "tree")
+    public Object tree() {
+
+        HttpSession httpSession = getContext().getRequest().getSession(true);
+
+        NuxeoArtifactTree tree = (NuxeoArtifactTree) httpSession.getAttribute("tree--" + ctx.getProperty("distId"));
+        if (tree==null) {
+            SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
+            DistributionSnapshot ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
+            tree = new NuxeoArtifactTree(ctx, ds);
+            httpSession.setAttribute("tree--" + ctx.getProperty("distId"), tree);
+        }
+
+        return tree.updateSelection(ctx);
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "treeView")
+    public Object treeView() {
+        return getView("tree").arg("distId", ctx.getProperty("distId"));
+    }
 
     @GET
     @Produces("text/html")

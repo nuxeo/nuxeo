@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8" />
   <link rel="stylesheet" href="${skinPath}/css/code.css" type="text/css" media="screen" charset="utf-8" />
 
+  <link rel="stylesheet" href="${skinPath}/script/jquery//treeview/jquery.treeview.css" type="text/css" media="screen" charset="utf-8">
+
+
   <@block name="stylesheets" />
 
    <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
@@ -17,6 +20,9 @@
    <script type="text/javascript" src="${skinPath}/script/java.js"></script>
    <script type="text/javascript" src="${skinPath}/script/html-xml.js"></script>
    <script type="text/javascript" src="${skinPath}/script/manifest.js"></script>
+
+   <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.async.js"></script>
 
    <@block name="header_scripts" />
 

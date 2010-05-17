@@ -369,3 +369,8 @@ color:#fff;
 .componentTitle {
   font-size:13pt;
  }
+
+ .folder {
+  color:red;
+  background-color:green;
+ }
