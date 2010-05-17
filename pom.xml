@@ -671,7 +671,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604</version>
+        <version>3.2.4.SP1_CP01-brew_NXP-5104</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
