@@ -25,7 +25,7 @@
         classifier="nuxeo-ep" />
     </unzip>
     <rename dest="${jboss}" src="${integration.dir}/nuxeo-ep-${nuxeo.version}-jboss"/>
-    <chmod dir="${jboss}/bin" perm="u+x" includes="*.sh,jbossctl" />
+    <chmod dir="${jboss}/bin" perm="u+x" includes="*.sh,*ctl" />
 
     <copy todir="${jboss}/server/default/lib">
       <!-- copy jdbc drivers -->
