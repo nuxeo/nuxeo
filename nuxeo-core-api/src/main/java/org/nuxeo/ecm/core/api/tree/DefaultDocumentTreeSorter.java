@@ -61,6 +61,14 @@ public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
             return 0;
         }
 
+        if (doc1 == null && doc2 == null) {
+            return 0;
+        } else if (doc1 == null) {
+            return -1;
+        } else if (doc2 == null) {
+            return 1;
+        }
+
         Object v1;
         try {
             v1 = doc1.getPropertyValue(sortPropertyPath);
@@ -81,14 +89,18 @@ public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
         } else if (v2 == null) {
             return 1;
         }
+
         final int cmp;
         if (v1 instanceof Long && v2 instanceof Long) {
             cmp = ((Long) v1).compareTo((Long) v2);
         } else if (v1 instanceof Integer && v2 instanceof Integer) {
             cmp = ((Integer) v1).compareTo((Integer) v2);
-        } else {
+        } else if (!useHash) { // avoid NPE
             cmp = collator.compare(v1.toString(), v2.toString());
+        } else {
+            cmp = 0;
         }
+
         if (cmp == 0) {
             useHash = true;
         }
