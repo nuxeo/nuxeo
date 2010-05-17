@@ -74,8 +74,8 @@
       <class>
         org.nuxeo.theme.html.filters.standalone.FragmentVisibility
       </class>
-    </standalone-filter>       
-
+    </standalone-filter>
+    
   </extension>
   
 
