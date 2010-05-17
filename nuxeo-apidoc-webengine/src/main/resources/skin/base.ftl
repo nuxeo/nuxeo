@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>
-    <@block name="title">Nuxeo Connect</@block>
+    <@block name="title">Nuxeo Platform Explorer</@block>
   </title>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 

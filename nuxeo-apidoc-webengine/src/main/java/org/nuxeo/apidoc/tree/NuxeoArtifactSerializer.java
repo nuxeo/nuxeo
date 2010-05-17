@@ -62,11 +62,13 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
         if (url!=null) {
             String distId;
-            try {
-                distId = URLEncoder.encode(ds.getKey(), "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                distId = ds.getKey();
-            }
+            distId = ds.getKey().replace(" ", "%20");
+            //try {
+            //    distId = URLEncoder.encode(ds.getKey(), "utf-8");
+            //
+            //} catch (UnsupportedEncodingException e) {
+            //    distId = ds.getKey();
+            //}
             if (ds.isLive()) {
                 distId="current";
             }

@@ -145,6 +145,8 @@
 <br/>
 <b> Browse by hierarchy </b>
 
+<div id="treeControler"></div>
+
 <#macro tree id url="${Root.path}/${distId}/tree" root="/">
   <script type="text/javascript">
   $(document).ready(function(){
@@ -152,7 +154,10 @@
       url: "${url}",
       root: "${root}",
       animated: "fast",
-      unique: true
+      unique: true,
+      control: "#treeControler",
+      collapsed: true,
+      persist: "cookie"
     });
   });
   </script>
