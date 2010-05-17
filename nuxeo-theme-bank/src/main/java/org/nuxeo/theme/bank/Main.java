@@ -65,6 +65,12 @@ public class Main extends ModuleRoot {
     @GET
     @Path("{bank}")
     public Object displayBank(@PathParam("bank") String bank) {
+        return getTemplate("ui.ftl").arg("bank", bank);
+    }
+
+    @GET
+    @Path("{bank}/view")
+    public Object displayBankView(@PathParam("bank") String bank) {
         return getTemplate("bank.ftl").arg("bank", bank);
     }
 
@@ -102,7 +108,7 @@ public class Main extends ModuleRoot {
                 getCollections(bank, "style")).arg("collection", collection).arg(
                 "bank", bank);
     }
-    
+
     @GET
     @Path("{bank}/style/{collection}/view")
     public Object getStyleCollectionView(@PathParam("bank") String bank,
@@ -131,8 +137,8 @@ public class Main extends ModuleRoot {
             @PathParam("resource") String resource) {
         File file = BankManager.getStyleFile(bank, collection, resource);
         String content = BankUtils.getFileContent(file);
-        return getTemplate("style.ftl").arg("content", content).arg("bank", bank).arg("resource",
-                resource).arg("collection", collection);
+        return getTemplate("style.ftl").arg("content", content).arg("bank",
+                bank).arg("resource", resource).arg("collection", collection);
     }
 
     @GET
@@ -165,7 +171,7 @@ public class Main extends ModuleRoot {
                 getCollections(bank, "preset")).arg("collection", collection).arg(
                 "bank", bank);
     }
-    
+
     @GET
     @Path("{bank}/preset/{collection}/view")
     public Object getPresetCollectionView(@PathParam("bank") String bank,
@@ -308,6 +314,7 @@ public class Main extends ModuleRoot {
 
         JSONObject bankAttributes = new JSONObject();
         bankAttributes.put("rel", "bank");
+        bankAttributes.put("path", String.format("/%s", bankName));
         bankNode.put("attributes", bankAttributes);
         bankNode.put("data", bankMap);
 
