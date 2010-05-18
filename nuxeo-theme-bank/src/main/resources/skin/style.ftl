@@ -18,8 +18,10 @@
   </@block>
     
   <@block name="content">
-    <h1><a href="${Root.getPath()}/${bank}/view">${bank}</a> &gt; <a href="${Root.getPath()}/${bank}/style/view">style</a> &gt; <a href="${Root.getPath()}/${bank}/style/${collection}/view">${collection}</a> ${resource?replace('.css', '')}</h1>
-    <pre style="visibility: hidden" class="brush: css; toolbar: false">
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-style')">style</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-style-${collection}')">${collection}</a> <span>${resource?replace('.css', '')}</span></h1>
+    <pre class="brush: css; toolbar: false">
     ${content}
     </pre>
   </@block>

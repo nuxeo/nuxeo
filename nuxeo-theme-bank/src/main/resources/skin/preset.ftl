@@ -5,7 +5,10 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="${Root.getPath()}/${bank}/view">${bank}</a> &gt; <a href="${Root.getPath()}/${bank}/preset/view">preset</a> &gt; <a href="${Root.getPath()}/${bank}/preset/${collection}/view">${collection}</a> ${category}</h1>
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset')">preset</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset-${collection}')">${collection}</a> 
+        <span>${category}</span></h1>
     <table class="properties">
     <#list properties?keys as key>
       <tr<#if key_index%2=1> class="odd"</#if>>

@@ -5,7 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1>${bank}</h1>
+    <h1><span>${bank}</span></h1>
     <p>description ...</p>
     
       <div class="album">

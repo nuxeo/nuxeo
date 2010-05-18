@@ -315,6 +315,7 @@ public class Main extends ModuleRoot {
         JSONObject bankAttributes = new JSONObject();
         bankAttributes.put("rel", "bank");
         bankAttributes.put("path", String.format("/%s", bankName));
+        bankAttributes.put("id", BankUtils.getDomId(bankName));
         bankNode.put("attributes", bankAttributes);
         bankNode.put("data", bankMap);
 
@@ -339,6 +340,8 @@ public class Main extends ModuleRoot {
         folderTypeAttributes.put("rel", "folder");
         folderTypeAttributes.put("path", String.format("/%s/%s", bankName,
                 typeName));
+        folderTypeAttributes.put("id", BankUtils.getDomId(String.format("%s-%s", bankName,
+                typeName)));
         folderTypeNode.put("attributes", folderTypeAttributes);
         folderTypeNode.put("data", folderTypeMap);
 
@@ -354,6 +357,8 @@ public class Main extends ModuleRoot {
             collectionAttributes.put("rel", "collection");
             collectionAttributes.put("path", String.format("/%s/%s/%s",
                     bankName, typeName, c));
+            collectionAttributes.put("id", BankUtils.getDomId(String.format("%s-%s-%s",
+                    bankName, typeName, c)));
             collectionNode.put("attributes", collectionAttributes);
             collectionNode.put("data", collectionMap);
 
@@ -368,7 +373,8 @@ public class Main extends ModuleRoot {
                 itemAttributes.put("rel", typeName);
                 itemAttributes.put("path", String.format("/%s/%s/%s/%s",
                         bankName, typeName, c, item));
-
+                itemAttributes.put("id", BankUtils.getDomId(String.format("%s-%s-%s-%s",
+                        bankName, typeName, c, item)));
                 itemNode.put("attributes", itemAttributes);
                 itemNode.put("data", itemMap);
                 items.add(itemNode);

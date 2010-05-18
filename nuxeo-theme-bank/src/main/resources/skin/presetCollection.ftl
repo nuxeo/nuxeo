@@ -5,10 +5,12 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="${Root.getPath()}/${bank}/view">${bank}</a> &gt; <a href="${Root.getPath()}/${bank}/preset/view">preset</a> &gt; ${collection}</h1>
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset')">preset</a> &gt; 
+        <span>${collection}</span></h1>
     <div class="album">
       <#list presets as preset>
-        <a href="${Root.getPath()}/${bank}/preset/${collection}/${preset}/view">
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset-${collection}-${preset}')">
           <div class="imageSingle">   
             <div class="image"><img src="${Root.getPath()}/${bank}/preset/${collection}/${preset}/preview"></div>
             <div class="footer">${preset}</div>

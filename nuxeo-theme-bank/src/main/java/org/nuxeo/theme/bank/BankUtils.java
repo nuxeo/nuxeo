@@ -16,4 +16,8 @@ public class BankUtils {
         }
         return content;
     }
+
+    public static String getDomId(String id) {
+        return id.replaceAll("[\\s\\.]+", "-");
+    }
 }

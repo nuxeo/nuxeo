@@ -20,7 +20,7 @@
     
           $("#navtree").tree({
             ui : {
-              theme_name : "classic"
+              theme_name: "classic" 
             },
             data : { 
                 type : "json",
@@ -82,6 +82,12 @@
         });
         
     });
+    
+        
+    var openBranch = function(id) {
+      id = id.replace(/[\s\.]+/g, '-');
+      $.tree.focused().select_branch('#' + id);
+    }    
     </script>
   </@block>
   

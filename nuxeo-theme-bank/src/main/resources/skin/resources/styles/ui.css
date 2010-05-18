@@ -12,6 +12,13 @@ h1 {
   -moz-border-radius: 4px;
 }
 
+h1 span {
+  color: #000;
+  background-color: #ffc;
+  -moz-border-radius: 3px;
+  padding: 0 4px;
+  text-decoration: none;
+}
 
 h1 a {
   color: #000;

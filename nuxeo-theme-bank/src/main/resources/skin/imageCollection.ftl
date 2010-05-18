@@ -6,10 +6,12 @@
 
   <@block name="content">
 
-    <h1><a href="${Root.getPath()}/${bank}/view">${bank}</a> &gt; <a href="${Root.getPath()}/${bank}/image/view">image</a> &gt; ${collection}</h1>
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image')">image</a> &gt; 
+        <span>${collection}</span></h1>
     <div class="album">
       <#list images as image>
-        <a href="${Root.getPath()}/${bank}/image/${collection}/${image}/view">  
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image-${collection}-${image}')">
           <div class="imageSingle">
             <div class="image"><img src="${Root.getPath()}/${bank}/image/${collection}/${image}"></div>
             <div class="footer">${image}</div>
