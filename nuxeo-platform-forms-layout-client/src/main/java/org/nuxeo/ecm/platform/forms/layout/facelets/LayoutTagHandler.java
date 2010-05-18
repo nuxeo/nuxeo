@@ -27,6 +27,7 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlOutputText;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,10 +40,12 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
  * Layout tag handler.
@@ -115,9 +118,23 @@ public class LayoutTagHandler extends TagHandler {
         // mode as alias to layoutMode
         vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
 
-        Layout layout = layoutService.getLayout(ctx, layoutName, modeValue, valueName);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+
+        Layout layout = layoutService.getLayout(ctx, layoutName, modeValue,
+                valueName);
         if (layout == null) {
-            log.error(String.format("Layout %s not found", layoutName));
+            String errMsg = String.format("Layout '%s' not found", layoutName);
+            log.error(errMsg);
+            // display an error message on interface
+            FaceletHandler leaf = new LeafFaceletHandler();
+            TagAttribute valueAttr = helper.createAttribute("value",
+                    "<span style=\"color:red;font-weight:bold;\">ERROR: "
+                            + errMsg + "</span><br />");
+            TagAttribute escapeAttr = helper.createAttribute("escape", "false");
+            ComponentHandler output = helper.getHtmlComponentHandler(
+                    FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr),
+                    leaf, HtmlOutputText.COMPONENT_TYPE, null);
+            output.apply(ctx, parent);
             return;
         }
 
@@ -127,7 +144,6 @@ public class LayoutTagHandler extends TagHandler {
         vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
 
         // set unique id on layout
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         layout.setId(helper.generateLayoutId(layout.getName()));
         String template = layout.getTemplate();
         try {

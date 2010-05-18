@@ -388,8 +388,9 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             String valueName) throws LayoutException {
         LayoutDefinition lDef = getLayoutDefinition(layoutName);
         if (lDef == null) {
-            throw new LayoutException(String.format("Layout %s not found",
+            log.debug(String.format("Layout %s not found",
                     layoutName));
+            return null;
         }
         if (ctx == null) {
             log.warn("Layout creation computed in a null facelet context: expressions "
