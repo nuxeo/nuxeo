@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.repository.cache;
 
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.DirtyUpdateInvokeBridge;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -516,13 +518,20 @@ implements DocumentModelCache {
         log.warn("filtered save, session is remote and is auto committed");
     }
 
-    Object dirtyUpdateTag;
-
-    public Object getDirtyUpdateTag() {
-        return dirtyUpdateTag;
-    }
+    protected Object dirtyUpdateTag;
 
     public void handleDirtyUpdateTag(Object tag) {
         dirtyUpdateTag = DirtyUpdateChecker.earliestTag(dirtyUpdateTag, tag);
     }
+
+    @Override
+    public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+            DirtyUpdateInvokeBridge.putTagInThreadContext(dirtyUpdateTag);
+            return super.invoke(proxy, method, args);
+        } finally {
+            DirtyUpdateInvokeBridge.clearThreadContext();
+        }
+    }
+
 }

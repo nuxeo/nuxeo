@@ -65,5 +65,4 @@ public interface DocumentModelCache {
 
     void handleDirtyUpdateTag(Object tag);
 
-    Object getDirtyUpdateTag();
 }

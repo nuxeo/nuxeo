@@ -22,6 +22,7 @@
     <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
     <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.platform.version>5.3.2-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <modules>
@@ -38,6 +39,7 @@
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
+    <module>nuxeo-core-jboss-interceptors</module>
     <module>nuxeo-core-event</module>
     <module>nuxeo-core-event-compat</module>
     <module>nuxeo-core-event-jms</module>
@@ -85,6 +87,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-facade</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-jboss-interceptors</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
