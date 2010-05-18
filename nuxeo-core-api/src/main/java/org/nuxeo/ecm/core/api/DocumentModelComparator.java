@@ -94,6 +94,14 @@ public class DocumentModelComparator implements Sorter {
     }
 
     public int compare(DocumentModel doc1, DocumentModel doc2) {
+        if (doc1 == null && doc2 == null) {
+            return 0;
+        } else if (doc1 == null) {
+            return -1;
+        } else if (doc2 == null) {
+            return 1;
+        }
+
         int cmp = 0;
         if (schemaName != null) {
             DataModel d1 = null;
@@ -102,7 +110,7 @@ public class DocumentModelComparator implements Sorter {
                 d1 = doc1.getDataModel(schemaName);
                 d2 = doc2.getDataModel(schemaName);
             } catch (ClientException e1) {
-                 throw new ClientRuntimeException(e1);
+                throw new ClientRuntimeException(e1);
             }
             for (Entry<String, String> e : orderBy.entrySet()) {
                 final String fieldName = e.getKey();
