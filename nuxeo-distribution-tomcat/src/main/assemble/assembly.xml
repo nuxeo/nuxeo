@@ -33,6 +33,9 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip"
                             classifier="nuxeo-dm" />
       <patternset>
+        <exclude name="**/bin" />
+        <exclude name="**/bin/*.*" />
+        <exclude name="**/bin/*" />
         <exclude name="**/nxserver*.*" />
         <exclude name="**/readme.html" />
         <exclude name="**/config/log4j.xml" />
