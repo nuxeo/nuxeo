@@ -12,9 +12,19 @@ h1 {
   -moz-border-radius: 4px;
 }
 
+
 h1 a {
-  color: #fff;
+  color: #000;
+  background-color: #eee;
+  -moz-border-radius: 3px;
+  padding: 0 4px;
+  text-decoration: none;
 }
+
+h1 a:hover {
+  background-color: #fff;
+}
+
 
 ul {
   margin: 0;

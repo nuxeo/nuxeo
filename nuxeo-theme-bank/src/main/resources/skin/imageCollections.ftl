@@ -6,7 +6,7 @@
 
   <@block name="content">
 
-    <h1>image</h1>
+    <h1><a href="${Root.getPath()}/${bank}/view">${bank}</a> &gt; image</h1>
 
     <div class="album">
       <#list collections as collection>
