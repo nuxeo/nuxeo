@@ -10,8 +10,8 @@
 
   <groupId>org.nuxeo.dam.distribution</groupId>
   <artifactId>nuxeo-dam-distribution</artifactId>
-  <packaging>zip</packaging>
-  <name>Nuxeo DAM Distribution Parent</name>
+  <packaging>pom</packaging>
+  <name>Nuxeo DAM Distribution</name>
   <description>Build package distributions of Nuxeo DAM applications</description>
 
   <properties>
@@ -115,6 +115,15 @@
             <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
           </buildFiles>
         </configuration>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
