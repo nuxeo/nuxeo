@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -64,6 +65,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
@@ -86,6 +88,7 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation for the navigationContext component available on the session.
@@ -136,6 +139,8 @@ public class NavigationContextBean implements NavigationContextLocal,
     private DocumentModel changeableDocument;
 
     private List<PathElement> parents;
+
+    private SchemaManager schemaManager;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -582,16 +587,16 @@ public class NavigationContextBean implements NavigationContextLocal,
                 DocumentModel docModel = currentDocumentParents.get(i);
                 docType = docModel.getType();
 
-                if (docType != null && docType.equals("Workspace")) {
+                if (docType != null && hasSuperType(docType, "Workspace")) {
                     setCurrentWorkspace(docModel);
                 }
 
-                if (null == docType || docType.equals("WorkspaceRoot")
-                        || docType.equals("SectionRoot")) {
+                if (null == docType || hasSuperType(docType, "WorkspaceRoot")
+                        || hasSuperType(docType, "SectionRoot")) {
                     setCurrentContentRoot(docModel);
                 }
 
-                if (docType != null && docType.equals("Domain")) {
+                if (docType != null && hasSuperType(docType, "Domain")) {
                     setCurrentDomain(docModel);
                 }
             }
@@ -602,16 +607,46 @@ public class NavigationContextBean implements NavigationContextLocal,
             setCurrentDomain(null);
             setCurrentContentRoot(null);
             setCurrentWorkspace(null);
-        } else if (docType.equals("Domain")) {
+        } else if (hasSuperType(docType, "Domain")) {
             setCurrentDomain(currentDocument);
             setCurrentContentRoot(null);
             setCurrentWorkspace(null);
-        } else if (docType.equals("WorkspaceRoot")
-                || docType.equals("SectionRoot")) {
+        } else if (hasSuperType(docType, "WorkspaceRoot")
+                || hasSuperType(docType, "SectionRoot")) {
             setCurrentContentRoot(currentDocument);
             setCurrentWorkspace(null);
-        } else if (docType.equals("Workspace")) {
+        } else if (hasSuperType(docType, "Workspace")) {
             setCurrentWorkspace(currentDocument);
+        }
+    }
+
+    private SchemaManager getSchemaManager() throws Exception {
+        if (schemaManager == null) {
+            schemaManager = Framework.getService(SchemaManager.class);
+            if (schemaManager == null) {
+                throw new ClientException(
+                        "Could not find SchemaManager service");
+            }
+        }
+        return schemaManager;
+    }
+
+    private Boolean hasSuperType(String targetDocType, String superType)
+            throws ClientException {
+        if (targetDocType == null) {
+            return false;
+        }
+        try {
+            Set<String> typeNames = getSchemaManager().getDocumentTypeNamesExtending(
+                    superType);
+            for (String type : typeNames) {
+                if (type.equals(targetDocType)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            throw new ClientException("Could not extending types", e);
         }
     }
 
