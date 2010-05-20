@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -37,10 +41,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Implementation of the {@link PublicationNode} for Simple Core Folders.
@@ -132,6 +132,23 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     public List<PublicationNode> getChildrenNodes() throws ClientException {
+        DocumentModelList children;
+        if (folder.hasFacet(FacetNames.ORDERABLE)) {
+            children = getCoreSession().getChildren(folder.getRef());
+        } else {
+            children = getChildrenSortedByTitle();
+        }
+
+        List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
+        for (DocumentModel child : children) {
+            childrenNodes.add(new CoreFolderPublicationNode(child,
+                    treeConfigName, sid, this, factory));
+        }
+        return childrenNodes;
+    }
+
+    protected DocumentModelList getChildrenSortedByTitle()
+            throws ClientException {
         DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
         sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
         FacetFilter facetFilter = new FacetFilter(
@@ -139,17 +156,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
                 Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
         LifeCycleFilter lfFilter = new LifeCycleFilter(
                 LifeCycleConstants.DELETED_STATE, false);
-        DocumentModelList children = getCoreSession().getChildren(
-                folder.getRef(), null, null,
+        return getCoreSession().getChildren(folder.getRef(), null, null,
                 new CompoundFilter(facetFilter, lfFilter), sorter);
-
-        List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
-
-        for (DocumentModel child : children) {
-            childrenNodes.add(new CoreFolderPublicationNode(child,
-                    treeConfigName, sid, this, factory));
-        }
-        return childrenNodes;
     }
 
     public String getTitle() throws ClientException {

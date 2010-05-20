@@ -82,8 +82,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     protected UserManager userManager;
 
-    protected EventProducer eventProducer;
-
     @Override
     public PublishedDocument publishDocument(DocumentModel doc,
             PublicationNode targetNode, Map<String, String> params)
@@ -205,66 +203,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
             }
         }
         return jbpmService;
-    }
-
-    protected EventProducer getEventProducer() throws ClientException {
-        if (eventProducer == null) {
-            try {
-                eventProducer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        return eventProducer;
-    }
-
-    protected void notifyEvent(PublishingEvent event, DocumentModel doc,
-            CoreSession coreSession) throws PublishingException {
-        try {
-            notifyEvent(event.name(), null, null, null, doc, coreSession);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
-    }
-
-    protected void notifyEvent(String eventId,
-            Map<String, Serializable> properties, String comment,
-            String category, DocumentModel dm, CoreSession coreSession)
-            throws ClientException {
-        // Default category
-        if (category == null) {
-            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
-        }
-        if (properties == null) {
-            properties = new HashMap<String, Serializable>();
-        }
-        properties.put(CoreEventConstants.REPOSITORY_NAME,
-                dm.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID,
-                coreSession.getSessionId());
-        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                dm.getCurrentLifeCycleState());
-
-        DocumentEventContext ctx = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), dm);
-        ctx.setProperties(properties);
-        ctx.setComment(comment);
-        ctx.setCategory(category);
-
-        Event event = ctx.newEvent(eventId);
-
-        EventProducer evtProducer;
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-
-        try {
-            evtProducer.fireEvent(event);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
     }
 
     @Override
@@ -601,4 +539,5 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         }
 
     }
+
 }

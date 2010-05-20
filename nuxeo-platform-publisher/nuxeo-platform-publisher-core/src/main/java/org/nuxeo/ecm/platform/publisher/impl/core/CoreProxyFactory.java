@@ -24,6 +24,7 @@ import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 
 import java.util.Map;
 
@@ -58,6 +59,8 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
             proxy = coreSession.publishDocument(doc, targetDocModel);
         }
         coreSession.save();
+        notifyEvent(PublishingEvent.documentPublished, proxy,
+                            coreSession);
         return new SimpleCorePublishedDocument(proxy);
     }
 
