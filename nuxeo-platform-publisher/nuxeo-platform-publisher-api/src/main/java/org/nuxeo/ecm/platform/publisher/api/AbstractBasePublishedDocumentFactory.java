@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,23 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractBasePublishedDocumentFactory implements
         PublishedDocumentFactory {
+
+    public static final String ENABLE_SNAPSHOT = "enableSnapshot";
+
+    public static final String TARGET_PUBLISHED_DOCUMENT_STATE = "targetPublishedDocumentState";
 
     protected CoreSession coreSession;
 
@@ -41,9 +52,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
 
     protected ValidatorsRule validatorsRule;
 
-    public static final String ENABLE_SNAPSHOT = "enableSnapshot";
-
-    public static final String TARGET_PUBLISHED_DOCUMENT_STATE = "targetPublishedDocumentState";
+    protected EventProducer eventProducer;
 
     public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
             throws ClientException {
@@ -102,7 +111,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
             doc.putContextData(ScopeType.REQUEST,
                     VersioningActions.KEY_FOR_INC_OPTION,
                     VersioningActions.ACTION_INCREMENT_MINOR);
-            DocumentModel doc2 = coreSession.saveDocument(doc);
+            coreSession.saveDocument(doc);
             coreSession.save();
             List<DocumentModel> versions = coreSession.getVersions(doc.getRef());
             return versions.get(versions.size() - 1);
@@ -135,6 +144,58 @@ public abstract class AbstractBasePublishedDocumentFactory implements
 
     public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
         return false;
+    }
+
+    /*
+     * -------- Event firing --------
+     */
+
+    protected void notifyEvent(PublishingEvent event, DocumentModel doc,
+            CoreSession coreSession) throws PublishingException {
+        try {
+            notifyEvent(event.name(), null, null, null, doc, coreSession);
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        }
+    }
+
+    protected void notifyEvent(String eventId,
+            Map<String, Serializable> properties, String comment,
+            String category, DocumentModel dm, CoreSession coreSession)
+            throws ClientException {
+        // Default category
+        if (category == null) {
+            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+        }
+        if (properties == null) {
+            properties = new HashMap<String, Serializable>();
+        }
+        properties.put(CoreEventConstants.REPOSITORY_NAME,
+                dm.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID,
+                coreSession.getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
+                dm.getCurrentLifeCycleState());
+
+        DocumentEventContext ctx = new DocumentEventContext(coreSession,
+                coreSession.getPrincipal(), dm);
+        ctx.setProperties(properties);
+        ctx.setComment(comment);
+        ctx.setCategory(category);
+
+        Event event = ctx.newEvent(eventId);
+        getEventProducer().fireEvent(event);
+    }
+
+    protected EventProducer getEventProducer() throws ClientException {
+        if (eventProducer == null) {
+            try {
+                eventProducer = Framework.getService(EventProducer.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return eventProducer;
     }
 
 }
