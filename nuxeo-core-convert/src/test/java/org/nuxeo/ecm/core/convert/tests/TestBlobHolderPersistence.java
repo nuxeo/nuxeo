@@ -23,13 +23,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
-
-import junit.framework.TestCase;
 
 public class TestBlobHolderPersistence extends TestCase {
 
@@ -59,27 +59,18 @@ public class TestBlobHolderPersistence extends TestCase {
         assertTrue(holderDir.isDirectory());
 
         File[] files = holderDir.listFiles();
-        assertEquals(2, files.length);
+        assertEquals(10, files.length);
 
         boolean mainFileFound = false;
-        boolean subFilesFound = false;
         for (File file : files) {
-            if (file.isDirectory()) {
-                File[] subFiles = file.listFiles();
-                assertEquals(9, subFiles.length);
-                for (File subFile : subFiles) {
-                    assertTrue(subFile.getName().startsWith("subFile"));
-                    assertTrue(new FileBlob(subFile).getString().startsWith("FileContent_"));
-                }
-                subFilesFound = true;
-            } else {
-                assertTrue(file.getName().startsWith("index.html"));
-                assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
+            if (file.getName().startsWith("index.html")) {
                 mainFileFound = true;
+            } else {
+                assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
             }
+
         }
         assertTrue(mainFileFound);
-        assertTrue(subFilesFound);
 
         // check reload
         holder = new SimpleCachableBlobHolder();
