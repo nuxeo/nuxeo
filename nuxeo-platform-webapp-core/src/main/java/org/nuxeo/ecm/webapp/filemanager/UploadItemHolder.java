@@ -91,6 +91,9 @@ public class UploadItemHolder implements Serializable {
         uploadedFiles = new ArrayList<UploadItem>();
         fileUpload=null;
         fileName=null;
+        if(tempFile != null) {
+            tempFile.delete();
+        }
         tempFile=null;
     }
 

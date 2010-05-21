@@ -608,7 +608,9 @@ public class FileManageActionsBean extends InputController implements
             } finally {
                 org.nuxeo.common.utils.FileUtils.close(stream);
                 // the content of the temporary blob has been
-                fileUploadHolder.getTempFile().delete();
+                if(fileUploadHolder.getTempFile() != null) {
+                    fileUploadHolder.getTempFile().delete();
+                }
             }
         } else {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
