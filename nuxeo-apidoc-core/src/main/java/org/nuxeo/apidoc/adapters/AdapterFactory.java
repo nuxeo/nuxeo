@@ -24,6 +24,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
@@ -44,53 +45,77 @@ public class AdapterFactory implements DocumentAdapterFactory {
             return null;
         }
 
-        if (adapterClass.getSimpleName().equals(BundleGroup.class.getSimpleName())) {
+        String adapterClassName =adapterClass.getSimpleName();
+
+        if (adapterClassName.equals(BundleGroup.class.getSimpleName())) {
             if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
                 return new BundleGroupDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(BundleInfo.class.getSimpleName())) {
+        if (adapterClassName.equals(BundleInfo.class.getSimpleName())) {
             if (doc.getType().equals(BundleInfo.TYPE_NAME)) {
                 return new BundleInfoDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(ComponentInfo.class.getSimpleName())) {
+        if (adapterClassName.equals(ComponentInfo.class.getSimpleName())) {
             if (doc.getType().equals(ComponentInfo.TYPE_NAME)) {
                 return new ComponentInfoDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(ExtensionPointInfo.class.getSimpleName())) {
+        if (adapterClassName.equals(ExtensionPointInfo.class.getSimpleName())) {
             if (doc.getType().equals(ExtensionPointInfo.TYPE_NAME)) {
                 return new ExtensionPointInfoDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(ExtensionInfo.class.getSimpleName())) {
+        if (adapterClassName.equals(ExtensionInfo.class.getSimpleName())) {
             if (doc.getType().equals(ExtensionInfo.TYPE_NAME)) {
                 return new ExtensionInfoDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(DistributionSnapshot.class.getSimpleName())) {
+        if (adapterClassName.equals(DistributionSnapshot.class.getSimpleName())) {
             if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
                 return new RepositoryDistributionSnapshot(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(DocumentationItem.class.getSimpleName())) {
+        if (adapterClassName.equals(DocumentationItem.class.getSimpleName())) {
             if (doc.getType().equals(DocumentationItemDocAdapter.DOC_TYPE)) {
                 return new DocumentationItemDocAdapter(doc);
             }
         }
 
-        if (adapterClass.getSimpleName().equals(ServiceInfo.class.getSimpleName())) {
+        if (adapterClassName.equals(ServiceInfo.class.getSimpleName())) {
             if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
                 return new ServiceInfoDocAdapter(doc);
             }
         }
+
+        if (adapterClassName.equals(NuxeoArtifact.class.getSimpleName())) {
+            if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
+                return new ServiceInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(ExtensionInfo.TYPE_NAME)) {
+                return new ExtensionInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(ExtensionPointInfo.TYPE_NAME)) {
+                return new ExtensionPointInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(ComponentInfo.TYPE_NAME)) {
+                return new ComponentInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(BundleInfo.TYPE_NAME)) {
+                return new BundleInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
+                return new BundleGroupDocAdapter(doc);
+            }
+        }
+
 
         return null;
     }

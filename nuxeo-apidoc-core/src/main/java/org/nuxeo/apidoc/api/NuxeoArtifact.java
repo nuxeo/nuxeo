@@ -35,4 +35,6 @@ public interface NuxeoArtifact {
 
     String getArtifactType();
 
+    String getHierarchyPath();
+
 }

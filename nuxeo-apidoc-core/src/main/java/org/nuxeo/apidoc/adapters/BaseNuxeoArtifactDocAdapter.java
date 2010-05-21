@@ -21,6 +21,8 @@ package org.nuxeo.apidoc.adapters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -118,6 +121,31 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
             }
             return (T) defaultValue;
         }
+    }
+
+    public String getHierarchyPath() {
+
+        String path = "";
+        try {
+
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+            Collections.reverse(parents);
+
+            for (DocumentModel doc : parents) {
+                if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
+                    break;
+                }
+                NuxeoArtifact item = doc.getAdapter(NuxeoArtifact.class);
+
+                path = "/" + item.getId() + path;
+            }
+            return path;
+        }
+        catch (Exception e) {
+            log.error("Error while computing Hierarchy path", e);
+            return null;
+        }
+
     }
 
 }

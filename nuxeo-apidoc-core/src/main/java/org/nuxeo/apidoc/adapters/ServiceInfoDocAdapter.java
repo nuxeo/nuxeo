@@ -45,6 +45,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         doc.setPropertyValue("dc:title", si.getId());
 
         doc.setPropertyValue("nxservice:className", si.getId());
+        doc.setPropertyValue("nxservice:componentId", si.getComponentId());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -73,6 +74,10 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
         log.error("Unable to determine version for Service " + getId());
         return "?";
+    }
+
+    public String getComponentId() {
+        return safeGet("nxservice:componentId", "unknown_service");
     }
 
 }

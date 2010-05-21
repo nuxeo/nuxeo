@@ -45,4 +45,13 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
         return component.getVersion();
     }
 
+    public String getComponentId() {
+        return component.getId();
+    }
+
+    public String getHierarchyPath() {
+        return component.getHierarchyPath() + "/" + this.getId();
+    }
+
+
 }

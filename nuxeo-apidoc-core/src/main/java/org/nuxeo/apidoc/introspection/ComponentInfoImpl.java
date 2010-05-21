@@ -198,4 +198,8 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         return services;
     }
 
+    public String getHierarchyPath() {
+        return getBundle().getHierarchyPath() + "/" + getId();
+    }
+
 }

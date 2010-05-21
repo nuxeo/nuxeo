@@ -176,9 +176,12 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         BundleGroupImpl bGroup = new BundleGroupImpl(id, version);
         for (String aid : getBundleGroupChildren(id)) {
             if (aid.startsWith("grp:")) {
-                bGroup.add(buildBundleGroup(aid, version));
+                BundleGroupImpl newGroup = buildBundleGroup(aid, version);
+                bGroup.add(newGroup);
+                newGroup.addParent(bGroup.getId());
             } else {
                 bGroup.add(aid);
+                getBundle(aid).setBundleGroup(bGroup);
             }
         }
         return bGroup;
@@ -320,7 +323,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
 
         for (ServiceInfo si : getComponent(cId).getServices()) {
-            if (id.equals(id)) {
+            if (id.equals(si.getId())) {
                 return si;
             }
         }
@@ -348,6 +351,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     public boolean isLive() {
         return true;
+    }
+
+    public String getHierarchyPath() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

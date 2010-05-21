@@ -101,4 +101,8 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         return ExtensionInfo.TYPE_NAME;
     }
 
+    public String getHierarchyPath() {
+        return component.getHierarchyPath() + "/" + getId();
+    }
+
 }

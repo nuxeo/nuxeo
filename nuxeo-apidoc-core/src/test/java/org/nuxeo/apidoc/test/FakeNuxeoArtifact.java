@@ -51,4 +51,9 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
         return type;
     }
 
+    public String getHierarchyPath() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

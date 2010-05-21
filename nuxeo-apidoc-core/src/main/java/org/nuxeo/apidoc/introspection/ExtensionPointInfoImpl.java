@@ -97,4 +97,8 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
         return name + " (" + component.getId() + ")";
     }
 
+    public String getHierarchyPath() {
+        return component.getHierarchyPath() + "/" + getId();
+    }
+
 }

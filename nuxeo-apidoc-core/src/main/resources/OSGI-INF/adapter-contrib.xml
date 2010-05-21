@@ -21,6 +21,21 @@
     <adapter type="NXDocumentation"
       class="org.nuxeo.apidoc.api.DocumentationItem" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 
+
+    <adapter type="NXBundleGroup"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXBundle"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXComponent"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXExtensionPoint"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXContribution"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXService"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+
+
   </extension>
 
 </component>

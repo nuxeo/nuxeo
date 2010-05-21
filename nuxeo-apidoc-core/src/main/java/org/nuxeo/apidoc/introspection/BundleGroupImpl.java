@@ -35,6 +35,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     protected final List<BundleGroup> subGroups = new ArrayList<BundleGroup>();
     protected final List<String> bundleIds = new ArrayList<String>();
     protected final String version;
+    protected List<String> parentIds = new ArrayList<String>();
 
     public BundleGroupImpl(String key, String version) {
         this.key = key;
@@ -44,6 +45,10 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             name = key;
         }
         this.version = version;
+    }
+
+    void addParent(String bgId) {
+        parentIds.add(bgId);
     }
 
     public String getKey() {
@@ -81,6 +86,14 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    public String getHierarchyPath() {
+        String path = "";
+        for (String parentId : parentIds) {
+            path = path + "/" + parentId;
+        }
+        return path + "/" + getId();
     }
 
 }

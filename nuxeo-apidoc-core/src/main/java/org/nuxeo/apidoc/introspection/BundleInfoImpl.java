@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 
@@ -39,6 +40,16 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     protected String groupId;
     protected String artifactId;
     protected String artifactVersion;
+
+    protected BundleGroup bundleGroup;
+
+    public BundleGroup getBundleGroup() {
+        return bundleGroup;
+    }
+
+    public void setBundleGroup(BundleGroup bundleGroup) {
+        this.bundleGroup = bundleGroup;
+    }
 
     protected String location;
 
@@ -126,6 +137,10 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    public String getHierarchyPath() {
+        return bundleGroup.getHierarchyPath() + "/" + getId();
     }
 
 }
