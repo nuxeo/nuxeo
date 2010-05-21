@@ -56,6 +56,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected final Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
     protected final List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
 
+    public final static String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
+
     protected final List<Class> spi = new ArrayList<Class>();
 
     public RuntimeSnapshot() {
@@ -78,7 +80,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             for (BundleInfoImpl bInfo : serverInfo.getBundles()) {
                 bundlesIds.add(bInfo.getId());
 
-                String groupId = "grp:" + bInfo.getArtifactGroupId();
+                String groupId = bInfo.getArtifactGroupId();
+                if (groupId!=null) {
+                    groupId = "grp:" + groupId;
+                }
                 String artifactId = bInfo.getArtifactId();
 
                 if (groupId != null && artifactId != null) {
@@ -86,6 +91,12 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                         mavenGroups.put(groupId, new ArrayList<String>());
                     }
                     mavenGroups.get(groupId).add(bInfo.getId());
+                } else {
+                    if (!mavenGroups.containsKey(VIRTUAL_BUNDLE_GROUP)) {
+                        mavenGroups.put(VIRTUAL_BUNDLE_GROUP, new ArrayList<String>());
+                    }
+                    bInfo.setGroupId(VIRTUAL_BUNDLE_GROUP);
+                    mavenGroups.get(VIRTUAL_BUNDLE_GROUP).add(bInfo.getId());
                 }
 
                 for (ComponentInfo cInfo : bInfo.getComponents()) {

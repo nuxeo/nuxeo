@@ -132,6 +132,7 @@ public class SnapshotPersister {
 
     public void persistBundleGroup(DistributionSnapshot snapshot, BundleGroup bundleGroup, CoreSession session, String label,  DocumentModel parent) throws ClientException {
        log.info("Persist bundle group " + bundleGroup.getId());
+
        DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup, session, label, parent);
 
        for (String bundleId : bundleGroup.getBundleIds()) {

@@ -139,7 +139,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
         try {
-            String query = "select * from NXBundleGroup where ecm:path startswith '" + doc.getPathAsString() + "'";
+            //String query = "select * from NXBundleGroup where ecm:path startswith '" + doc.getPathAsString() + "'";
+            String query = "select * from NXBundleGroup where ecm:parentId = '" + doc.getId() + "'";
 
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
