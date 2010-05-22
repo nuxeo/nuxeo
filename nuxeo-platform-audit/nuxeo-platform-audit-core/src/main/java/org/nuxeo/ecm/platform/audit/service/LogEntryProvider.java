@@ -194,6 +194,7 @@ public class LogEntryProvider {
             + " AND log.eventDate >= :limit"
             + " ORDER BY log.eventDate DESC";
         }
+        
         if (log.isDebugEnabled()) {
             log.debug("queryLogs() =" + queryStr);
         }

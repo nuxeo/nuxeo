@@ -21,6 +21,13 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonAutomationInfoWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentListWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonExceptionWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
+import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -30,8 +37,20 @@ public class AutomationModule extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         HashSet<Class<?>> result = new HashSet<Class<?>>();
-        result.add(OperationResource.class);
+        result.add(AutomationResource.class);
+        result.add(MultiPartRequestReader.class); // need to be stateless since it needs the request member to be injected
         return result;
     }
-    
+
+    @Override
+    public Set<Object> getSingletons() {
+        HashSet<Object> result = new HashSet<Object>();
+        result.add(new JsonRequestReader());
+        result.add(new JsonExceptionWriter());
+        result.add(new JsonAutomationInfoWriter());
+        result.add(new JsonDocumentWriter());
+        result.add(new JsonDocumentListWriter());
+        return result;
+    }
+
 }

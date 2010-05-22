@@ -1,0 +1,135 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bstefanescu
+ */
+package org.nuxeo.ecm.automation.client.jaxrs.impl;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.jaxrs.Constants;
+import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
+import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Properties;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.OperationRegistry;
+import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class JsonMarshalling {
+
+
+    public static OperationRegistry readRegistry(String content) {
+        JSONObject json = JSONObject.fromObject(content);
+        HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
+        HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
+        JSONArray ar = json.getJSONArray("operations");
+        if (ar != null) {
+            for (int i=0, len=ar.size(); i<len; i++) {
+                JSONObject obj = ar.getJSONObject(i);
+                OperationDocumentation op = JSONExporter.fromJSON(obj);
+                ops.put(op.id, op);
+            }
+        }
+        ar = json.getJSONArray("chains");
+        if (ar != null) {
+            for (int i=0, len=ar.size(); i<len; i++) {
+                JSONObject obj = ar.getJSONObject(i);
+                OperationDocumentation op = JSONExporter.fromJSON(obj);
+                chains.put(op.id, op);
+            }
+        }
+        return new OperationRegistry(ops, chains);
+    }
+
+    public static Object readEntity(String content) {
+        JSONObject json = JSONObject.fromObject(content);
+        String type = json.getString(Constants.KEY_ENTITY_TYPE);
+        if ("document".equals(type)) {
+            return readDocument(json);
+        } else if ("documents".equals(type)) {
+            JSONArray ar = json.getJSONArray("entries");
+            int size = ar.size();
+            Documents docs = new Documents(size);
+            for (int i=0; i<size; i++) {
+                JSONObject obj = ar.getJSONObject(i);
+                docs.add(readDocument(obj));
+            }
+            return docs;
+        } else if ("blobs".equals(type)) {
+            return null; //TODO
+        } else if ("exception".equals(type)) {
+            throw readException(content);
+        }
+        throw new IllegalArgumentException("Unknown entity type: "+type);
+    }
+
+    public static RemoteException readException(String content) {
+        return readException(JSONObject.fromObject(content));
+    }
+
+    protected static RemoteException readException(JSONObject json) {
+        return new RemoteException(Integer.parseInt(json.getString("status")),
+                json.optString("type", null),
+                json.optString("message"),
+                json.optString("stack", null));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static Document readDocument(JSONObject json) {
+        String uid = json.getString("uid");
+        String path = json.getString("path");
+        String type = json.getString("type");
+        String state = json.optString("state", null);
+        String lock = json.optString("lock", null);
+        String title = json.optString("title", null);
+        String lastModified = json.optString("lastModified", null);
+        JSONObject jsonProps = json.optJSONObject("properties");
+        Properties props = new Properties();
+        props.set("dc:title", title);
+        props.set("dc:modified", lastModified);
+        if (jsonProps != null) {
+            Iterator<String> keys = jsonProps.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                props.set(key, jsonProps.getString(key));
+            }
+        }
+        return new Document(uid, type, path, state, lock, props);
+    }
+
+    public static String writeRequest(OperationRequest req) throws Exception {
+        JSONObject entity = new JSONObject();
+        OperationInput input = req.getInput();
+
+        if (input != null && !input.isBinary()) {
+            entity.element("input", req.getInput().toString());
+        }
+        entity.element("params", req.getParameters());
+        entity.element("context", req.getContextParameters());
+        return entity.toString();
+    }
+
+
+}

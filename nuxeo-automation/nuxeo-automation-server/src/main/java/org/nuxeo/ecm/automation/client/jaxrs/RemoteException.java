@@ -14,40 +14,37 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.server.jaxrs;
-
-import javax.ws.rs.GET;
-
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationType;
+package org.nuxeo.ecm.automation.client.jaxrs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class OperationResource extends ExecutableResource {
+public class RemoteException extends AutomationException {
 
-    protected OperationType type;
+    private static final long serialVersionUID = 1L;
 
-    public OperationResource(AutomationService service, OperationType type) {
-        super (service);
+    protected int status;
+    protected String type;
+    protected String stackTrace;
+
+    public RemoteException(int status, String type, String message, String stackTrace) {
+        super (message);
+        this.status = status;
         this.type = type;
+        this.stackTrace = stackTrace;
     }
 
-    @GET
-    public Object doGet() {
-        return null;//TODO
+    public int getStatus() {
+        return status;
     }
 
-    @Override
-    public Object execute(ExecutionRequest xreq) throws Exception {
-        OperationContext ctx = xreq.createContext(getCoreSession());
-        return service.run(ctx, xreq.createChain(type));
+    public String getType() {
+        return type;
     }
 
-    @Override
-    public String getId() {
-        return type.getId();
+    public String getRemoteStackTrace() {
+        return status + " - "+getMessage()+"\n"+stackTrace;
     }
+
 }
