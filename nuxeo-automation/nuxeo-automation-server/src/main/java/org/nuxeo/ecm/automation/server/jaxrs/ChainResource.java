@@ -16,38 +16,41 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class OperationResource extends ExecutableResource {
+public class ChainResource extends ExecutableResource {
 
-    protected OperationType type;
+    @Context
+    protected HttpServletRequest request;
+    protected String chainId;
 
-    public OperationResource(AutomationService service, OperationType type) {
+    public ChainResource(AutomationService service, String chainId) {
         super (service);
-        this.type = type;
+        this.chainId = chainId;
     }
 
     @GET
-    public Object doGet() {
-        return null;//TODO
+    public Object doGet() { //TODO
+        return null;
     }
 
-    @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(getCoreSession());
-        return service.run(ctx, xreq.createChain(type));
+        return service.run(ctx, chainId);
     }
 
     @Override
     public String getId() {
-        return type.getId();
+        return chainId;
     }
+
 }

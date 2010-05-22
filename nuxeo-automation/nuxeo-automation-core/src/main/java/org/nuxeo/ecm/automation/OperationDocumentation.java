@@ -38,10 +38,14 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
     public String requires;
     public String description;
     public List<Param> params;
+    // optional URL indicating the relative path (relative to the automation service home)
+    // of the page where the operation is exposed
+    public String url;
 
 
     public OperationDocumentation(String id) {
         this.id = id;
+        this.url = id;
     }
 
     public int compareTo(OperationDocumentation o) {

@@ -14,40 +14,21 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.server.jaxrs;
+package org.nuxeo.ecm.automation.core.impl.adapters;
 
-import javax.ws.rs.GET;
-
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class OperationResource extends ExecutableResource {
+public class StringToDate implements TypeAdapter {
 
-    protected OperationType type;
-
-    public OperationResource(AutomationService service, OperationType type) {
-        super (service);
-        this.type = type;
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
+        String content = (String)objectToAdapt;
+        return DateParser.parseW3CDateTime(content);
     }
 
-    @GET
-    public Object doGet() {
-        return null;//TODO
-    }
-
-    @Override
-    public Object execute(ExecutionRequest xreq) throws Exception {
-        OperationContext ctx = xreq.createContext(getCoreSession());
-        return service.run(ctx, xreq.createChain(type));
-    }
-
-    @Override
-    public String getId() {
-        return type.getId();
-    }
 }

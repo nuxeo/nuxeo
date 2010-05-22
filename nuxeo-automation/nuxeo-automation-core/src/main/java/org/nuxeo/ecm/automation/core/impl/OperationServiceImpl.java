@@ -30,6 +30,7 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.TypeAdapter;
@@ -129,12 +130,21 @@ public class OperationServiceImpl implements AutomationService {
         }
     }
 
-    public OperationChain getOperationChain(String id) throws OperationException {
+    public OperationChain getOperationChain(String id) throws OperationNotFoundException {
         ChainEntry chain = chainLookup().get(id);
         if (chain == null) {
-            throw new OperationException("No such chain was registered: "+id);
+            throw new OperationNotFoundException("No such chain was registered: "+id);
         }
         return chain.chain;
+    }
+
+    public List<OperationChain> getOperationChains() {
+        ArrayList<OperationChain> result = new ArrayList<OperationChain>();
+        Map<String, ChainEntry> chains = chainLookup();
+        for (ChainEntry entry : chains.values()) {
+            result.add(entry.chain);
+        }
+        return result;
     }
 
     public ChainEntry getChainEntry(String id) throws OperationException {
@@ -176,10 +186,10 @@ public class OperationServiceImpl implements AutomationService {
         return values.toArray(new OperationType[values.size()]);
     }
 
-    public OperationType getOperation(String id) throws OperationException {
+    public OperationType getOperation(String id) throws OperationNotFoundException {
         OperationType op = (OperationType)lookup().get(id);
         if (op == null) {
-            throw new OperationException("No operation was bound on ID: "+id);
+            throw new OperationNotFoundException("No operation was bound on ID: "+id);
         }
         return op;
     }
