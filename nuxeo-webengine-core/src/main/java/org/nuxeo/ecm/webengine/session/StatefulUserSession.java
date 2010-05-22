@@ -51,9 +51,5 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
         uninstall();
     }
 
-    @Override
-    public void terminateRequest(HttpServletRequest request) {
-        // TODO Auto-generated method stub
-    }
 
 }

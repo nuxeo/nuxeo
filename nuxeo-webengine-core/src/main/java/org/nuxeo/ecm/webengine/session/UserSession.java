@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.webengine.session;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
 // TODO: should be synchronized? concurrent access may happen for the same
 // session
 public abstract class UserSession extends HashMap<String, Object> {
+
+    public static final String CLEANUP_HANDLERS = "webengine.request.cleanup.handlers";
 
     private static final long serialVersionUID = 260562970988817064L;
 
@@ -75,7 +79,7 @@ public abstract class UserSession extends HashMap<String, Object> {
         }
         return us;
     }
-    
+
     public static UserSession getCurrentSession(HttpServletRequest request) {
         UserSession us = tryGetCurrentSession(request);
         if (us==null) {
@@ -330,6 +334,30 @@ public abstract class UserSession extends HashMap<String, Object> {
         }
     }
 
-    public abstract void terminateRequest(HttpServletRequest request);
+    @SuppressWarnings("unchecked")
+    public void terminateRequest(HttpServletRequest request) {
+        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>)request.getAttribute(CLEANUP_HANDLERS);
+        if (handlers != null) {
+            for (RequestCleanupHandler handler : handlers) {
+                handler.cleanup(request);
+            }
+            request.setAttribute(CLEANUP_HANDLERS, null);
+        }
+    }
 
+    /**
+     * Register a cleanup handler that will be invoked when HTTP request terminate.
+     * This method is not thread safe
+     * @param request
+     * @param handler
+     */
+    @SuppressWarnings("unchecked")
+    public static void addRequestCleanupHandler(HttpServletRequest request, RequestCleanupHandler handler) {
+        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>)request.getAttribute(CLEANUP_HANDLERS);
+        if (handlers == null) {
+            handlers = new ArrayList<RequestCleanupHandler>();
+            request.setAttribute(CLEANUP_HANDLERS, handlers);
+        }
+        handlers.add(handler);
+    }
 }
