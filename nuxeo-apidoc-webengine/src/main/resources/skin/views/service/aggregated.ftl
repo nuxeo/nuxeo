@@ -9,7 +9,7 @@
 <#assign nestedLevel=0/>
 
 <h1> View Service <span class="componentTitle">${nxItem.id}</span>
-  <A href="${Root.path}/${distId}/viewComponent/" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
+<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.getComponentId()}" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
 </h1>
 
 <#include "/views/service/serviceMacros.ftl">
