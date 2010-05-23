@@ -2,14 +2,12 @@
 
 <#assign navPoint=Root.getNavigationPoint()/>
 
-<h3>Browse distributions</h3>
+<A href="${Root.path}"> See all available distributions </A>
+
+<h3>Explore distribution ${Root.currentDistribution.name} ${Root.currentDistribution.version}</h3>
+
 <b> Browse by category </b>
 <table border=0 style="padding:0px;margin:0px">
-<tr>
-      <td colspan="5" style="font-weight:bold">
-      <A href="${Root.path}"> Distributions </A>
-      </td>
-</tr>
 <tr>
     <td class="spacerTab"></td>
     <td colspan="4"
@@ -149,17 +147,30 @@
 
 <#macro tree id url="${Root.path}/${distId}/tree" root="/">
   <script type="text/javascript">
+  var currentSelectedTreeId='${Context.request.session.getAttribute("tree-last-path")}';
+
   $(document).ready(function(){
+    //alert("ready");
     $("#${id}").treeview({
       url: "${url}",
       root: "${root}",
-      animated: "fast",
-      unique: true,
-      control: "#treeControler",
-      collapsed: true,
-      persist: "cookie"
+      animated: "fast"
     });
+
+    //if (currentSelectedTreeId!='') {
+    //  items = $("ul").find(".open").filter(function() { return this.id==currentSelectedTreeId;})
+    //  $(items[0]).css("background-color","red");
+    //  //$("#" + currentSelectedTreeId).toggleClass('currentTreeNode');
+    //  }
   });
+  //unique: true,
+  //control: "#treeControler",
+  //collapsed: true,
+  //persist: "cookie"
+
+
+
+
   </script>
 
   <ul id="${id}" class="filetree">

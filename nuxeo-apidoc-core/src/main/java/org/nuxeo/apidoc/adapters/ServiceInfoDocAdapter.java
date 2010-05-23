@@ -19,6 +19,7 @@ package org.nuxeo.apidoc.adapters;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,4 +81,10 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         return safeGet("nxservice:componentId", "unknown_service");
     }
 
+    @Override
+    public String getHierarchyPath() {
+        String path = super.getHierarchyPath() + "###";
+        String toReplace = "/" + getId() + "###";
+        return path.replace(toReplace, "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId());
+    }
 }

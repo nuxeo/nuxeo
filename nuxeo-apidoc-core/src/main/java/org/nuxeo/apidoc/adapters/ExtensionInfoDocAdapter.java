@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -120,6 +121,14 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+
+    @Override
+    public String getHierarchyPath() {
+        String path = super.getHierarchyPath() + "###";
+        String toReplace = "/" + getId() + "###";
+        return path.replace(toReplace, "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
     }
 
 }

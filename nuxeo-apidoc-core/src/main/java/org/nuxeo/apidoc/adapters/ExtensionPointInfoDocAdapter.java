@@ -27,6 +27,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -137,6 +138,13 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     public String getLabel() {
         return getName() + " (" + getComponent().getId() + ")";
+    }
+
+    @Override
+    public String getHierarchyPath() {
+        String path = super.getHierarchyPath() + "###";
+        String toReplace = "/" + getId() + "###";
+        return path.replace(toReplace, "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId());
     }
 
 }

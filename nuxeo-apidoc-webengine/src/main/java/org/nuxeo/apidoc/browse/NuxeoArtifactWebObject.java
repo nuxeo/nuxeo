@@ -37,8 +37,8 @@ import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.webengine.model.Guard;
 import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
 import org.nuxeo.runtime.api.Framework;
@@ -87,8 +87,12 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path(value = "updateDocumentation")
-    @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doUpdateDocumentation(DocumentationItem docItem) throws Exception {
+        if (!new GroupGuard(SecurityConstants.Write_Group).check(this))
+        {
+            throw new WebSecurityException("You are not allowed to do this operation");
+        }
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
@@ -126,8 +130,13 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path(value = "createDocumentation")
-    @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
+        if (!new GroupGuard(SecurityConstants.Write_Group).check(this))
+        {
+            throw new WebSecurityException("You are not allowed to do this operation");
+        }
+
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(), docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
         return redirect(getDocUrl());

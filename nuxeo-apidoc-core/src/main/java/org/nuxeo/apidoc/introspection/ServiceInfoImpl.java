@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.introspection;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 
 public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
@@ -50,7 +51,7 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
     }
 
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + this.getId();
+        return component.getHierarchyPath() + "/" +  VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
     }
 
 

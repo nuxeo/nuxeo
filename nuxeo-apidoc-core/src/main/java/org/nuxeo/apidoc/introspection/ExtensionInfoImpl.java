@@ -18,6 +18,7 @@ package org.nuxeo.apidoc.introspection;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
@@ -102,7 +103,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
     }
 
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + getId();
+        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
     }
 
 }

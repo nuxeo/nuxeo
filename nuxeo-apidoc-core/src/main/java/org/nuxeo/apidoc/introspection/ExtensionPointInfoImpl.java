@@ -23,6 +23,7 @@ import java.util.List;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -98,7 +99,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     }
 
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + getId();
+        return component.getHierarchyPath() + "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId();
     }
 
 }

@@ -10,6 +10,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 
@@ -56,30 +57,30 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
          else if (obj.getArtifactType().equals(ComponentInfo.TYPE_NAME)) {
              ComponentInfo ci = ds.getComponent(obj.getId());
              if (ci.getExtensionPoints().size()>0) {
-                 result.add(new VirtualNode(ci, VirtualNode.ExtensionPoints_VNODE, "ExtensionPoints"));
+                 result.add(new VirtualNode(ci, VirtualNodesConsts.ExtensionPoints_VNODE, VirtualNodesConsts.ExtensionPoints_VNODE_NAME));
              }
              if (ci.getServices().size()>0) {
-                 result.add(new VirtualNode(ci, VirtualNode.Services_VNODE, "Services"));
+                 result.add(new VirtualNode(ci, VirtualNodesConsts.Services_VNODE, VirtualNodesConsts.Services_VNODE_NAME));
              }
              if (ci.getExtensions().size()>0) {
-                 result.add(new VirtualNode(ci,  VirtualNode.Contributions_VNODE,"Contributions"));
+                 result.add(new VirtualNode(ci,  VirtualNodesConsts.Contributions_VNODE,VirtualNodesConsts.Contributions_VNODE_NAME));
              }
          }
-         else if (obj.getArtifactType().equals( VirtualNode.ExtensionPoints_VNODE)) {
+         else if (obj.getArtifactType().equals( VirtualNodesConsts.ExtensionPoints_VNODE)) {
              String cid = ((VirtualNode)obj).getComponentId();
              ComponentInfo ci = ds.getComponent(cid);
              for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
                  result.add((NuxeoArtifact)epi);
              }
          }
-         else if (obj.getArtifactType().equals( VirtualNode.Contributions_VNODE)) {
+         else if (obj.getArtifactType().equals( VirtualNodesConsts.Contributions_VNODE)) {
              String cid = ((VirtualNode)obj).getComponentId();
              ComponentInfo ci = ds.getComponent(cid);
              for (ExtensionInfo ei : ci.getExtensions()) {
                  result.add((NuxeoArtifact)ei);
              }
          }
-         else if (obj.getArtifactType().equals( VirtualNode.Services_VNODE)) {
+         else if (obj.getArtifactType().equals( VirtualNodesConsts.Services_VNODE)) {
              String cid = ((VirtualNode)obj).getComponentId();
              ComponentInfo ci = ds.getComponent(cid);
              for (ServiceInfo si : ci.getServices()) {

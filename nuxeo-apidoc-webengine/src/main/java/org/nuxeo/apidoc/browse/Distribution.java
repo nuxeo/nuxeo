@@ -45,11 +45,9 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.webengine.model.Guard;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -149,8 +147,11 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "save")
     @Produces("text/html")
-    @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doSave() throws Exception {
+        if (!isEditor()) {
+            return null;
+        }
         log.info("Start Snapshot...");
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
         if (tx!=null) {
@@ -215,8 +216,11 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "uploadDistrib")
     @Produces("text/html")
-    @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object uploadDistrib() {
+        if (!isEditor()) {
+            return null;
+        }
         Blob blob = getContext().getForm().getFirstBlob();
         return getView("index");
     }
@@ -224,9 +228,11 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "uploadDoc")
     @Produces("text/html")
-    @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object uploadDoc() throws Exception {
-
+        if (!isEditor()) {
+            return null;
+        }
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
         if (tx!=null) {
             tx.begin();

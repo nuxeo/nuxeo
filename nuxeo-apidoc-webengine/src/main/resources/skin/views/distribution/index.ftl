@@ -46,7 +46,7 @@ Here are the currently available distributions:
 <td>${rtSnap.creationDate?datetime}</td>
 <td style="color:green">Current deployed distribution (live) </td>
 <td>
-  <A href="${Root.path}/current/"> Browse </A>
+  <A href="${Root.path}/current/"> Explore </A>
 </td>
 <td>
 <#if Root.isEditor()>
@@ -67,7 +67,7 @@ Here are the currently available distributions:
   <td>${distrib.creationDate?datetime}</td>
   <td>&nbsp; </td>
   <td>
-    <A href="${Root.path}/${distrib.key}/"> Browse </A>
+    <A href="${Root.path}/${distrib.key}/"> Explore </A>
   </td>
   <td>
     <A href="${Root.path}/download/${distrib.key}">Export</A> as zip.

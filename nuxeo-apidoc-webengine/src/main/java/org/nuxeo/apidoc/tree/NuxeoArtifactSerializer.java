@@ -35,8 +35,16 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
         String url = "";
 
+        String distId;
+        distId = ds.getKey().replace(" ", "%20");
+        if (ds.isLive()) {
+            distId="current";
+        }
+        url = ctx.getRoot().getURL() + "/" + distId + "/";
+
+
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {
-            url+="viewDistribution/";
+            url+="";
         }
         else if (obj.getArtifactType().equals(BundleInfo.TYPE_NAME)) {
             url+="viewBundle/";
@@ -61,18 +69,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         }
 
         if (url!=null) {
-            String distId;
-            distId = ds.getKey().replace(" ", "%20");
-            //try {
-            //    distId = URLEncoder.encode(ds.getKey(), "utf-8");
-            //
-            //} catch (UnsupportedEncodingException e) {
-            //    distId = ds.getKey();
-            //}
-            if (ds.isLive()) {
-                distId="current";
-            }
-            url = ctx.getRoot().getURL() + "/" + distId + "/" + url + obj.getId();
+            url = url + obj.getId();
         } else {
             url="todo";
         }

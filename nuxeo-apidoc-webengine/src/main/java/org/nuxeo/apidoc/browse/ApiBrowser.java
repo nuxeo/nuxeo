@@ -27,6 +27,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -40,6 +41,7 @@ import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.NuxeoArtifactTree;
+import org.nuxeo.apidoc.tree.TreeHelper;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -70,9 +72,11 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/plain")
     @Path(value = "tree")
-    public Object tree() {
+    public Object tree(@QueryParam("root") String source) {
 
-        HttpSession httpSession = getContext().getRequest().getSession(true);
+        return TreeHelper.updateTree(getContext(), source);
+
+/*        HttpSession httpSession = getContext().getRequest().getSession(true);
 
         NuxeoArtifactTree tree = (NuxeoArtifactTree) httpSession.getAttribute("tree--" + ctx.getProperty("distId"));
         if (tree==null) {
@@ -82,7 +86,12 @@ public class ApiBrowser extends DefaultObject {
             httpSession.setAttribute("tree--" + ctx.getProperty("distId"), tree);
         }
 
-        return tree.updateSelection(ctx);
+        if ("source".equalsIgnoreCase(source) || source==null) {
+            tree.enter(ctx, "/");
+            return tree.getTreeAsJSONArray(ctx);
+        } else {
+            return tree.enter(ctx, source);
+        }*/
     }
 
     @GET
@@ -285,7 +294,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewBundle/{bundleId}")
     public Resource viewBundle(@PathParam("bundleId") String bundleId) {
         try {
-            return ctx.newObject("bundle", bundleId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundle", bundleId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -294,7 +305,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewComponent/{componentId}")
     public Resource viewComponent(@PathParam("componentId") String componentId) {
         try {
-            return ctx.newObject("component", componentId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("component", componentId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -303,7 +316,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewService/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
         try {
-            return ctx.newObject("service", serviceId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("service", serviceId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -312,7 +327,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewExtensionPoint/{epId}")
     public Resource viewExtensionPoint(@PathParam("epId") String epId) {
         try {
-            return ctx.newObject("extensionPoint", epId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("extensionPoint", epId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -321,7 +338,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewContribution/{cId}")
     public Resource viewContribution(@PathParam("cId") String cId) {
         try {
-            return ctx.newObject("contribution", cId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("contribution", cId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -330,7 +349,9 @@ public class ApiBrowser extends DefaultObject {
     @Path(value = "viewBundleGroup/{gId}")
     public Resource viewBundleGroup(@PathParam("gId") String gId) {
         try {
-            return ctx.newObject("bundleGroup", gId);
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundleGroup", gId);
+            TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
+            return wo;
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
