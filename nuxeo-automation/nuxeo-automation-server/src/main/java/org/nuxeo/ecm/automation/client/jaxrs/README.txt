@@ -1,8 +1,13 @@
-The request API is very simple - this is due to limitations on some platform (like GWT)
-It only lets you set headers and content as a string.
-To upload or download files you need to provide specific API depending on the platform.
 
-Through Resource class you can refer to already uploaded files (through the specific api)
-Resource means an URL -> either an uploaded file either a file located by the URL. Uploaded files
-are specified using upload:/ URI.
+REQUIRED:
+1. implement multipart-form-encoded
+2. Web Services
+3. operation security
+4. review client session we need to authenticate when doing get /automation ?)
+5. cleanup -> move classes (e.g. OperationDocumentation) share classes between client/server; split projects in client/server
+6. improve java client API
+
+OPTIONAL:
+1. Implement GWT client
+2. expose doc types?
 

@@ -21,7 +21,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Properties;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
@@ -50,7 +50,7 @@ public class DocumentService {
         return createDocument(parent, type, name, null);
     }
 
-    public Document createDocument(Document parent, String type, String name, Properties properties) throws Exception {
+    public Document createDocument(Document parent, String type, String name, PropertyMap properties) throws Exception {
         OperationRequest req = session.newRequest(CreateDocument.ID).setInput(parent).set("type", type).set("name", name);
         if (properties != null && properties.size() > 0) {
             req.set("properties", properties);

@@ -50,7 +50,7 @@ public class Document implements OperationInput {
 
     protected String lock;
 
-    protected Properties properties;
+    protected PropertyMap properties;
 
 
     /**
@@ -60,13 +60,13 @@ public class Document implements OperationInput {
      * @param path
      * @param properties
      */
-    public Document(String id, String type, String path, String state, String lock,  Properties properties) {
+    public Document(String id, String type, String path, String state, String lock,  PropertyMap properties) {
         this.id = id;
         this.path = path;
         this.type = type;
         this.state = state;
         this.lock = lock;
-        this.properties = properties;
+        this.properties = properties == null ? new PropertyMap() : properties;
     }
 
     public String getInputType() {
@@ -101,7 +101,7 @@ public class Document implements OperationInput {
         return properties.getString("dc:title");
     }
 
-    public Properties getProperties() {
+    public PropertyMap getProperties() {
         return properties;
     }
 

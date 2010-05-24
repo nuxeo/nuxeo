@@ -19,9 +19,9 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -49,11 +49,13 @@ public abstract class ExecutableResource {
         this.request = request;
         try {
             Object result = execute(xreq);
+            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
+                return ResponseHelper.emptyContent(); // void response
+            }
             if (result instanceof Blob) {
-                Blob blob = (Blob)result;
-                return Response.ok(result).type(blob.getMimeType())
-                    .header("Content-Disposition", "attachment; filename="+blob.getFilename())
-                    .build();
+                return ResponseHelper.blob((Blob)result);
+            } else if (result instanceof BlobList) {
+                return ResponseHelper.blobs((BlobList)result);
             } else {
                 return result;
             }

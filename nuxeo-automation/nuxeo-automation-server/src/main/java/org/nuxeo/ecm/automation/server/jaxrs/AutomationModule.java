@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import org.nuxeo.ecm.automation.server.jaxrs.io.BlobsWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonAutomationInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentWriter;
@@ -50,6 +51,7 @@ public class AutomationModule extends Application {
         result.add(new JsonAutomationInfoWriter());
         result.add(new JsonDocumentWriter());
         result.add(new JsonDocumentListWriter());
+        result.add(new BlobsWriter());
         return result;
     }
 

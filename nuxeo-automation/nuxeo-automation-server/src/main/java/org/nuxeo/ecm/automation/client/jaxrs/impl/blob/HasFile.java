@@ -14,42 +14,16 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
-
-
+import java.io.File;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface OperationRequest {
+public interface HasFile {
 
-    Session getSession();
-
-    String getUrl();
-
-    OperationRequest setInput(OperationInput input);
-
-    OperationInput getInput();
-
-    OperationRequest set(String key, Object value);
-
-    OperationRequest setContextProperty(String key, String value);
-
-    Object execute() throws Exception;
-
-    void execute(AsyncCallback<Object> cb);
-
-    Map<String,String> getParameters();
-
-    Map<String,String> getContextParameters();
-
-    OperationRequest setHeader(String key, String value);
-
-    Map<String, String> getHeaders();
+    File getFile();
 
 }

@@ -16,13 +16,24 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.server.jaxrs.debug.DebugResource;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -38,9 +49,49 @@ public class AutomationResource {
         service = Framework.getService(AutomationService.class);
     }
 
+
     @Path("debug")
     public Object getDebugPage() {
         return new DebugResource();
+    }
+
+    /**
+     * Get the content of the blob or blobs (multipart/mixed) located by the given doc uid and property path.
+     * @param uid
+     * @param path
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    @GET
+    @Path("files/{uid}")
+    public Object getFile(@Context HttpServletRequest request, @PathParam("uid") String uid, @QueryParam("path") String path) {
+        try {
+            CoreSession session = UserSession.getCurrentSession(request).getCoreSession();
+            DocumentModel doc = session.getDocument(new IdRef(uid));
+            Object obj = null;
+            try {
+                obj = doc.getPropertyValue(path);
+            } catch (PropertyException e) {
+                return ResponseHelper.notFound();
+            }
+            if (obj == null) {
+                return ResponseHelper.notFound();
+            }
+            if (obj instanceof List<?>) {
+                List<?> list = (List<?>)obj;
+                if (list.isEmpty()) {
+                    return ResponseHelper.notFound();
+                }
+                if (list.get(0) instanceof Blob) { // a list of blobs -> use multipart/mixed
+                    return ResponseHelper.blobs((List<Blob>)list);
+                }
+            } else if (obj instanceof Blob) {
+                return ResponseHelper.blob((Blob)obj);
+            }
+            return ResponseHelper.notFound();
+        } catch (Exception e) {
+            throw ExceptionHandler.newException(e);
+        }
     }
 
     @GET

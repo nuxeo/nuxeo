@@ -40,6 +40,7 @@ public class DefaultOperationRequest implements OperationRequest {
     protected Map<String,String> ctx;
     protected OperationInput input;
 
+    protected Map<String,String> headers;
 
 
     public DefaultOperationRequest(DefaultSession session, OperationDocumentation op) {
@@ -50,6 +51,7 @@ public class DefaultOperationRequest implements OperationRequest {
         this.session = session;
         this.op = op;
         params = new HashMap<String, String>();
+        headers = new HashMap<String, String>();
         this.ctx = ctx;
     }
 
@@ -145,6 +147,16 @@ public class DefaultOperationRequest implements OperationRequest {
 
     public void execute(AsyncCallback<Object> cb) {
         session.execute(this, cb);
+    }
+
+
+    public OperationRequest setHeader(String key, String value) {
+        headers.put(key, value);
+        return this;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
 }

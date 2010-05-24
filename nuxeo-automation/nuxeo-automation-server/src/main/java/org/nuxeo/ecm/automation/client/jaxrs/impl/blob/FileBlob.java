@@ -14,42 +14,37 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface OperationRequest {
+public class FileBlob extends Blob implements HasFile {
 
-    Session getSession();
+    protected File file;
 
-    String getUrl();
+    public FileBlob(File file) {
+        super (file.getName(), getMimeTypeFromExtension(file.getPath()));
+        this.file = file;
+    }
 
-    OperationRequest setInput(OperationInput input);
+    @Override
+    public InputStream getStream() throws IOException {
+        return new FileInputStream(file);
+    }
 
-    OperationInput getInput();
+    public File getFile() {
+        return file;
+    }
 
-    OperationRequest set(String key, Object value);
-
-    OperationRequest setContextProperty(String key, String value);
-
-    Object execute() throws Exception;
-
-    void execute(AsyncCallback<Object> cb);
-
-    Map<String,String> getParameters();
-
-    Map<String,String> getContextParameters();
-
-    OperationRequest setHeader(String key, String value);
-
-    Map<String, String> getHeaders();
-
+    public static String getMimeTypeFromExtension(String path) {
+        return "application/octet-stream";
+    }
 }

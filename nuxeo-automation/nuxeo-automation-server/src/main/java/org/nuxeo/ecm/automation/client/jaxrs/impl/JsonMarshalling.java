@@ -18,8 +18,12 @@ package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -29,7 +33,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Properties;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.OperationRegistry;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
 
@@ -64,6 +69,9 @@ public class JsonMarshalling {
     }
 
     public static Object readEntity(String content) {
+        if (content.length() == 0) { // void response
+            return null;
+        }
         JSONObject json = JSONObject.fromObject(content);
         String type = json.getString(Constants.KEY_ENTITY_TYPE);
         if ("document".equals(type)) {
@@ -96,7 +104,6 @@ public class JsonMarshalling {
                 json.optString("stack", null));
     }
 
-    @SuppressWarnings("unchecked")
     protected static Document readDocument(JSONObject json) {
         String uid = json.getString("uid");
         String path = json.getString("path");
@@ -106,17 +113,55 @@ public class JsonMarshalling {
         String title = json.optString("title", null);
         String lastModified = json.optString("lastModified", null);
         JSONObject jsonProps = json.optJSONObject("properties");
-        Properties props = new Properties();
+        PropertyMap props;
+        if (jsonProps != null) {
+            props = (PropertyMap)readValue(jsonProps);
+        } else {
+            props = new PropertyMap();
+        }
         props.set("dc:title", title);
         props.set("dc:modified", lastModified);
-        if (jsonProps != null) {
-            Iterator<String> keys = jsonProps.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                props.set(key, jsonProps.getString(key));
-            }
-        }
         return new Document(uid, type, path, state, lock, props);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static Object readValue(Object o) {
+        if (o == null) {
+            return null;
+        }
+        if (o instanceof JSON) {
+            JSON jo = (JSON)o;
+            if (jo == JSONNull.getInstance()) {
+                return null;
+            } else if (jo.isArray()) {
+                JSONArray ar = (JSONArray)jo;
+                PropertyList plist = new PropertyList();
+                List<Object> list = plist.list();
+                for (int i=0, size=ar.size(); i<size; i++) {
+                    Object v = readValue(ar.get(i));
+                    if (v != null) {
+                        list.add(v);
+                    }
+                }
+                return plist;
+            } else {
+                JSONObject ob = (JSONObject)jo;
+                if (ob.isNullObject()) {
+                    return null;
+                }
+                PropertyMap pmap = new PropertyMap();
+                Map<String,Object> map = pmap.map();
+                Iterator<String> keys = ob.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    Object v = readValue(ob.get(key));
+                    map.put(key, v);
+                }
+                return pmap;
+            }
+        } else {
+            return o.toString();
+        }
     }
 
     public static String writeRequest(OperationRequest req) throws Exception {

@@ -14,36 +14,37 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.server.jaxrs;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
+
+import javax.ws.rs.core.Response;
+
+import org.nuxeo.ecm.automation.server.jaxrs.io.MultipartBlobs;
+import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FileBlob extends Blob implements HasFile {
+public class ResponseHelper {
 
-    protected File file;
-
-    public FileBlob(File file) {
-        super (file.getName(), getMimeTypeFromExtension(file.getPath()));
-        this.file = file;
+    public static Response notFound() {
+        return Response.status(404).build();
     }
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return new FileInputStream(file);
+    public static Response emptyContent() {
+        return Response.status(204).build();
     }
 
-    public File getFile() {
-        return file;
+    public static Response blob(Blob blob) {
+        return Response.ok(blob).type(blob.getMimeType())
+        .header("Content-Disposition", "attachment; filename="+blob.getFilename())
+        .build();
     }
 
-    public static String getMimeTypeFromExtension(String path) {
-        return "application/octet-stream";
+    public static Response blobs(List<Blob> blobs) throws Exception {
+        return new MultipartBlobs(blobs).getResponse();
     }
+
 }

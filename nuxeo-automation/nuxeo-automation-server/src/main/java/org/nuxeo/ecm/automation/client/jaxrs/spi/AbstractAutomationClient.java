@@ -17,11 +17,17 @@
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AuthenticationCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.Blobs;
 
 
 /**

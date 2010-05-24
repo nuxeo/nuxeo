@@ -14,10 +14,12 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

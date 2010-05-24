@@ -14,16 +14,38 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface HasFile {
+public class Blobs extends ArrayList<Blob> implements OperationInput {
 
-    File getFile();
+    private static final long serialVersionUID = 1L;
+
+    public Blobs() {
+    }
+
+    public Blobs(int size) {
+        super (size);
+    }
+
+    public Blobs(List<Blob> blobs) {
+        super (blobs);
+    }
+
+    public String getInputType() {
+        return "blobs";
+    }
+
+    public boolean isBinary() {
+        return true;
+    }
 
 }

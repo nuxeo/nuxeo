@@ -28,8 +28,6 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.http.entity.AbstractHttpEntity;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
-import org.nuxeo.ecm.automation.client.jaxrs.model.HasFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,7 +39,6 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
 
     public MultipartRequestEntity() {
         mp = new MimeMultipart("related");
-        setChunked(false); // very important otherwise you may sent incomplete data because of integration with javax.mail
         setContentType(mp.getContentType()+"; type=\""+Constants.CTYPE_REQUEST_NOCHARSET+"\"; start=\"request\"");
     }
 
@@ -96,12 +93,6 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
 
     public void writeTo(OutputStream arg0) throws IOException {
         try {
-            //TODO wait until write succeeds ...
-//            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//            mp.writeTo(out);
-//            out.writeTo(System.out);
-//            System.out.println("------------------------------------------------");
-//            out.writeTo(arg0);
             mp.writeTo(arg0);
         } catch (MessagingException e) {
             IOException ioe = new IOException(e.getMessage());

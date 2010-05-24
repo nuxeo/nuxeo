@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -35,4 +36,27 @@ public interface Constants {
 
     public final static String KEY_ENTITY_TYPE = "entity-type";
 
+    /**
+     * Header to specify a comma separated list of schemas to be included in the returned doc.
+     * If the header is not specified the default properties are returned (the minimal document properties)
+     * To specify all the schemas you can use the <code>*</code> as value. Example:
+     * <pre>
+     * X-NXDocumentProperties: *
+     * X-NXDocumentProperties: dublincore, file
+     * </pre>
+     */
+    public final static String HEADER_NX_SCHEMAS = "X-NXDocumentProperties";
+
+    /**
+     * Header to inform the server that no return entity is wanted. The must be <code>true</code> or <code>false</code>.
+     * If not specified false will be used  by default.
+     * <p>
+     * This can be used to avoid the server sending back the response entity to the client -
+     * the operation will be treated as a void operation.
+     * <p>
+     * For example the operation <code>Blob.Attach</code> is returning back the attached blob.
+     * This may generate a lot of network traffic that is not needed by the client (sending back the same blob as the one sent by the client as the operation input).
+     * In such situation you should set this header to true.
+     */
+    public final static String HEADER_NX_VOIDOP = "X-NXVoidOperation";
 }

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.automation.client.jaxrs.impl;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.protocol.BasicHttpContext;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AbstractAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.DefaultSession;
 
@@ -40,6 +42,14 @@ public class SessionImpl extends DefaultSession {
 
     public BasicHttpContext getContext() {
         return ctx;
+    }
+
+    public Blob getFile(String path) throws Exception {
+        return ((HttpAutomationClient)client).getFile(this, path);
+    }
+
+    public Blobs getFiles(String path) throws Exception {
+        return ((HttpAutomationClient)client).getFiles(this, path);
     }
 
 }

@@ -61,7 +61,7 @@ public class JsonDocumentListWriter implements MessageBodyWriter<DocumentModelLi
             JSONObject json = new JSONObject();
             JSONArray ar = new JSONArray();
             for (DocumentModel doc : docs) {
-                ar.add(JsonDocumentWriter.getJSON(doc));
+                ar.add(JsonDocumentWriter.getJSON(doc, null));
             }
             json.element("entity-type", "documents");
             json.element("entries", ar);
