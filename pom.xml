@@ -77,11 +77,6 @@
       <artifactId>xercesImpl</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
