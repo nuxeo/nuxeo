@@ -38,6 +38,7 @@ public class TestBlob {
             HttpAutomationClient client = new HttpAutomationClient();
             client.connect("http://localhost:8080/automation");
             long start = System.currentTimeMillis();
+            //SessionImpl session = (SessionImpl)client.getSession(null);
             SessionImpl session = (SessionImpl)client.getSession("Administrator", "Administrator");
             //FileBlob fb = new FileBlob(new File("/Users/bstefanescu/operations.jpg"));
             FileBlob fb = new FileBlob(new File("/Users/bstefanescu/test.jpg"));
