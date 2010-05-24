@@ -98,7 +98,8 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                         conversationManager.getCurrentConversationId(),
                         conversationManager.isLongRunningConversation());
                 log.error(errorMessage);
-                log.error(Thread.currentThread().getStackTrace());
+                Exception e = new Exception("serverLocation is null");
+                log.error(e, e);
             }
             /*
              * currentServerLocation (factory in ServerContextBean) is set
