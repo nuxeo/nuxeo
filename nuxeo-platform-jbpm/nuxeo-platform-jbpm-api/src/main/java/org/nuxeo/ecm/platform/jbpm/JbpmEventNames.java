@@ -48,6 +48,11 @@ public final class JbpmEventNames {
     public static final String WORKFLOW_ABANDONED = "workflowAbandoned";
 
     /**
+     * Fired when a process has been canceled.
+     */
+    public static final String WORKFLOW_CANCELED = "workflowProcessCanceled";
+
+    /**
      * Fired when a task has been started.
      */
     public static final String WORKFLOW_TASK_START = "workflowTaskStart";

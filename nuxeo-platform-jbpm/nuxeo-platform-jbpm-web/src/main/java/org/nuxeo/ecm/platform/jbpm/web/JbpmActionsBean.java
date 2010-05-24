@@ -614,6 +614,66 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         }
     }
 
+    // helper inner class to do the unrestricted abandon
+    protected class UnrestrictedEndProcess extends UnrestrictedSessionRunner {
+
+        private final DocumentRef ref;
+        
+        public Set<String> recipients;
+
+        protected UnrestrictedEndProcess(DocumentRef ref) {
+            super(documentManager);
+            this.ref = ref;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void run() throws ClientException {
+            // end process and tasks
+            List<TaskInstance> tis = jbpmService.getTaskInstances(
+                    session.getDocument(ref),
+                    (NuxeoPrincipal) null, null);
+            recipients = new HashSet<String>();
+            for (TaskInstance ti : tis) {
+                String actor = ti.getActorId();
+                recipients.add(actor);
+                Set<PooledActor> pooledActors = ti.getPooledActors();
+                for (PooledActor pa : pooledActors) {
+                    recipients.add(pa.getActorId());
+                }
+            }
+        }
+    }
+
+    public String cancelCurrentProcess() throws ClientException {
+        ProcessInstance currentProcess = getCurrentProcess();
+        if (currentProcess != null) {
+            // remove wf acls
+            Long pid = currentProcess.getId();
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
+            if (currentDoc != null) {
+                UnrestrictedAbandon runner = new UnrestrictedAbandon(
+                        currentDoc.getRef(), pid);
+                runner.runUnrestricted();
+            }
+
+            // end process and tasks using unrestricted session
+            UnrestrictedEndProcess endProcessRunner = new UnrestrictedEndProcess(
+                    currentDoc.getRef());
+            endProcessRunner.runUnrestricted();
+
+            jbpmService.deleteProcessInstance(currentUser, pid);
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get("workflowProcessCanceled"));
+            notifyEventListeners(JbpmEventNames.WORKFLOW_CANCELED, userComment,
+                    endProcessRunner.recipients.toArray(new String[] {}));
+            Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_CANCELED);
+            resetCurrentData();
+        }
+        webActions.resetCurrentTab();
+        return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public String abandonCurrentProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();

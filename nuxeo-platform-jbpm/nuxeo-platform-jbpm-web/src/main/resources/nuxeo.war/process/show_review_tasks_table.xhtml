@@ -134,6 +134,11 @@
                 action="#{jbpmActions.rejectTask(task, 'reject')}"
                 rendered="#{jbpmActions.getCanEndTask(task) and task.name != 'validate-after-reject'}" />
               </td>
+              <td><h:commandLink
+                value="#{messages['label.review.cancel.process']}"
+                action="#{jbpmActions.cancelCurrentProcess}"
+                rendered="#{jbpmActions.getCanEndTask(task) and task.name == 'validate-after-reject'}" />
+              </td>
               <f:subview rendered="#{jbpmActions.canManageParticipants}">
                 <td></td>
               </f:subview>
