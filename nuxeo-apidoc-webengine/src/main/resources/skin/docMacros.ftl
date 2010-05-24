@@ -32,6 +32,26 @@
   </div>
 </#macro>
 
+<#macro inlineEdit cid contentDoc>
+  <span id="${cid}_panel">
+    <#if Root.isEditor()><!--
+     <A href="javascript:doEditInline('${cid}_panel','${cid}')">
+     <img src="${skinPath}/images/edit.png" alt="Edit"/>
+     </A>-->
+    </#if>
+    <#if contentDoc!=null>
+    (${contentDoc.title}) <br/>
+    <div class="description">
+       <@docContent contentDoc/> <br/>
+    </div>
+    </#if>
+    <#if contentDoc==null>
+      No associated documentation <br/>
+    </#if>
+  </span>
+
+</#macro>
+
 <#macro viewAdditionalDoc docsByCat>
   <#assign categories=docsByCat?keys/>
   <#if ((categories?size)>1)>

@@ -24,19 +24,25 @@ enctype="application/x-www-form-urlencoded">
 <tr><td>
   <table>
   <tr>
-    <td> Type : </td>
-    <td>
     <#if mode=='create'>
-      <select name="type">
-      <#assign categories=This.categories/>
-      <#list categories?keys as category>
-      <option value="${category}"
-      <#if category==docItem.type>
-        selected
+      <#if preselectedType??>
+      <td colspan="2">
+        <input type="hidden" name="type" value="${preselectedType}"/>
       </#if>
-      >${categories[category]}</option>
-      </#list>
-      </select>
+      <#if preselectedType==null>
+      <td> Type : </td>
+         <td>
+        <select name="type">
+        <#assign categories=This.categories/>
+        <#list categories?keys as category>
+        <option value="${category}"
+        <#if category==docItem.type>
+          selected
+        </#if>
+        >${categories[category]}</option>
+        </#list>
+        </select>
+     </#if>
     </#if>
     <#if mode=='edit'>
      ${docItem.typeLabel}

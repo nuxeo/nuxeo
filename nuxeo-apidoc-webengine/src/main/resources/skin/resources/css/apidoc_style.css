@@ -381,3 +381,9 @@ color:#fff;
   background-color:green;
   font-weight:bold;
  }
+
+ .description {
+  background-color:#DDDDEE;
+  margin:5 0 0 10;
+  padding:2px;
+ }

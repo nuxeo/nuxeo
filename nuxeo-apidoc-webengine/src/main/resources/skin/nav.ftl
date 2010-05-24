@@ -157,11 +157,6 @@
       animated: "fast"
     });
 
-    //if (currentSelectedTreeId!='') {
-    //  items = $("ul").find(".open").filter(function() { return this.id==currentSelectedTreeId;})
-    //  $(items[0]).css("background-color","red");
-    //  //$("#" + currentSelectedTreeId).toggleClass('currentTreeNode');
-    //  }
   });
   //unique: true,
   //control: "#treeControler",

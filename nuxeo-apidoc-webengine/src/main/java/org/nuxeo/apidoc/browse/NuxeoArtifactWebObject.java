@@ -28,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
@@ -165,12 +166,16 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "createForm")
-    public Object doAddDoc() throws Exception {
+    public Object doAddDoc(@QueryParam("inline") Boolean inline, @QueryParam("type") String type) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
-        return getView("../docForm")
-                .arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
+        String targetView = "../docForm";
+        if (inline!=null && inline.equals(true)) {
+            targetView = "../../docItemForm";
+        }
+        return getView(targetView)
+                .arg("nxItem", nxItem).arg("mode","create").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView").arg("preselectedType",type);
     }
 
     @GET
