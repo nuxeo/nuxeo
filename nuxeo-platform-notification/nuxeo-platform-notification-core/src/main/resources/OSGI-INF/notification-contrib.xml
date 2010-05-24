@@ -39,6 +39,7 @@
       autoSubscribed="false" template="workflow" subject="Workflow event" label="label.nuxeo.notifications.workflow">
       <event name="workflowNewProcessStarted"/>
       <event name="workflowProcessEnded"/>
+      <event name="workflowProcessCanceled"/>
       <event name="workflowAbandoned"/>
       <event name="workflowTaskCompleted"/>
       <event name="workflowTaskRejected"/>
