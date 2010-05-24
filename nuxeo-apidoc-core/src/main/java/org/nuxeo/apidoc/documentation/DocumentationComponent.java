@@ -139,17 +139,18 @@ public class DocumentationComponent extends DefaultComponent implements
         return null;
     }
 
-    public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category) throws Exception {
+    public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType) throws Exception {
 
-        String query = "select * from NXDocumentation where ";
+        String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
 
-        if (category == null) {
-            query += " nxdoc:targetType!='description' ";
-        } else {
-            query += " nxdoc:targetType in ('" + category + "') ";
+        if (category != null) {
+            query += " AND nxdoc:type='" + category + "' ";
+        }
+        if (targetType!=null) {
+            query += " AND nxdoc:targetType='" + targetType + "' ";
         }
 
-        query += " AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
+        query += " ORDER BY nxdoc:documentationId, dc:modified";
         List<DocumentModel> docs = session.query(query);
 
         Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
@@ -455,6 +456,23 @@ public class DocumentationComponent extends DefaultComponent implements
         catch (Exception e) {
             log.error("Error while exporting documentation", e);
         }
+        return result;
+    }
+
+    public Map<String, DocumentationItem> getAvailableDescriptions(
+            CoreSession session, String targetType) throws Exception {
+
+        Map<String, List<DocumentationItem>> itemsByCat = listDocumentationItems(session, DefaultDocumentationType.DESCRIPTION.getValue(), targetType);
+        Map<String, DocumentationItem> result = new HashMap<String, DocumentationItem>();
+
+        if (itemsByCat.size()>0) {
+            String labelKey = itemsByCat.keySet().iterator().next();
+            List<DocumentationItem> docs = itemsByCat.get(labelKey);
+            for (DocumentationItem doc : docs) {
+                result.put(doc.getTarget(), doc);
+            }
+        }
+
         return result;
     }
 

@@ -47,6 +47,8 @@ public interface DocumentationService {
 
      String getDocumentationStats(CoreSession session);
 
-     Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category) throws Exception;
+     Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType) throws Exception;
+
+     Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType) throws Exception;
 
 }

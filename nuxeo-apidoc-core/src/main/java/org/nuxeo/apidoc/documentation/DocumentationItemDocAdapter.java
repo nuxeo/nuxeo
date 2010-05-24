@@ -188,4 +188,8 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         return attachments;
     }
 
+    public boolean isPlaceHolder() {
+        return false;
+    }
+
 }

@@ -2,10 +2,7 @@ package org.nuxeo.apidoc.tree;
 
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
-import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -46,14 +43,27 @@ public class VirtualNode implements NuxeoArtifact {
     }
 
     public String getHierarchyPath() {
-        if (ServiceInfo.TYPE_NAME.equals(type)) {
-            return basePath + "/" + VirtualNodesConsts.Services_VNODE ;
+        if (VirtualNodesConsts.Services_VNODE.equals(type)) {
+            return basePath + "/" + VirtualNodesConsts.Services_VNODE_NAME ;
         }
-        else if (ExtensionInfo.TYPE_NAME.equals(type)) {
-            return basePath + "/" + VirtualNodesConsts.Contributions_VNODE ;
+        else if (VirtualNodesConsts.Contributions_VNODE.equals(type)) {
+            return basePath + "/" + VirtualNodesConsts.Contributions_VNODE_NAME ;
         }
-        else if (ExtensionPointInfo.TYPE_NAME.equals(type)) {
-            return basePath + "/" + VirtualNodesConsts.ExtensionPoints_VNODE ;
+        else if (VirtualNodesConsts.ExtensionPoints_VNODE.equals(type)) {
+            return basePath + "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME ;
+        }
+        return "";
+    }
+
+    public String getAnchor() {
+        if (VirtualNodesConsts.Services_VNODE.equals(type)) {
+            return "services" ;
+        }
+        else if (VirtualNodesConsts.ExtensionPoints_VNODE.equals(type)) {
+            return "extensionPoints" ;
+        }
+        else if (VirtualNodesConsts.Contributions_VNODE.equals(type)) {
+            return "contributions" ;
         }
         return "";
     }

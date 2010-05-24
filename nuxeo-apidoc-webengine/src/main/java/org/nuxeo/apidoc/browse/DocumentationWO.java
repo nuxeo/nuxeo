@@ -44,7 +44,7 @@ public class DocumentationWO extends DefaultObject {
     @Produces("text/html")
     public Object viewAll() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null);
+        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
         return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
     }
 

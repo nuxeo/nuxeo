@@ -82,4 +82,11 @@ public interface DocumentationItem {
      */
     Map<String, String> getAttachments();
 
+    /**
+     * Return true if item is a placeholder automatically generated
+     *
+     * @return
+     */
+    boolean isPlaceHolder();
+
 }

@@ -71,6 +71,7 @@
 
   <#if (services?size>0) >
   <br/>
+  <A name="services"></A>
   <b>Declared services</b>
   <p>
   <span class="builtindoc">
@@ -103,6 +104,7 @@
 
   <#if (xps?size>0) >
   <br/>
+  <A name="extensionPoints"></A>
   <b>Declared extension points</b>
   <p>
   <span class="builtindoc">
@@ -136,6 +138,7 @@
 
  <#if (contribs?size>0) >
  <br/>
+ <A name="contributions"></A>
  <b>Declared contributions</b>
   <p>
   <span class="builtindoc">

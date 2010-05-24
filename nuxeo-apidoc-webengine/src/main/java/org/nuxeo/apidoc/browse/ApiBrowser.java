@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.browse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -34,9 +35,11 @@ import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
@@ -73,25 +76,7 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/plain")
     @Path(value = "tree")
     public Object tree(@QueryParam("root") String source) {
-
         return TreeHelper.updateTree(getContext(), source);
-
-/*        HttpSession httpSession = getContext().getRequest().getSession(true);
-
-        NuxeoArtifactTree tree = (NuxeoArtifactTree) httpSession.getAttribute("tree--" + ctx.getProperty("distId"));
-        if (tree==null) {
-            SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
-            DistributionSnapshot ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
-            tree = new NuxeoArtifactTree(ctx, ds);
-            httpSession.setAttribute("tree--" + ctx.getProperty("distId"), tree);
-        }
-
-        if ("source".equalsIgnoreCase(source) || source==null) {
-            tree.enter(ctx, "/");
-            return tree.getTreeAsJSONArray(ctx);
-        } else {
-            return tree.enter(ctx, source);
-        }*/
     }
 
     @GET
@@ -115,6 +100,11 @@ public class ApiBrowser extends DefaultObject {
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         return getView("listBundleGroups")
                 .arg("tree", tree).arg("distId", ctx.getProperty("distId"));
+    }
+
+    public Map<String, DocumentationItem> getDescriptions(String targetType) throws Exception {
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        return ds.getAvailableDescriptions(getContext().getCoreSession(), targetType);
     }
 
     @GET

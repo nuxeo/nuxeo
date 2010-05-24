@@ -103,4 +103,8 @@ public class FakeDocumentationItem implements DocumentationItem {
         return null;
     }
 
+    public boolean isPlaceHolder() {
+        return false;
+    }
+
 }

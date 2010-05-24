@@ -65,15 +65,19 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
             url+="viewService/";
         }
         else {
-            url=null;
+                url=null;
         }
 
         if (url!=null) {
             url = url + obj.getId();
         } else {
-            url="todo";
+            if (obj instanceof VirtualNode) {
+                VirtualNode vn = (VirtualNode) obj;
+                url=ctx.getRoot().getURL() + "/" + distId + "/viewComponent/" + vn.getComponentId()+ "#" + vn.getAnchor();
+           } else {
+               url="todo";
+           }
         }
-
         return url;
     }
 

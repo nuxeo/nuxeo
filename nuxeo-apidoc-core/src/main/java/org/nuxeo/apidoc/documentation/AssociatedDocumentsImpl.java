@@ -86,7 +86,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         for (DocumentationItem docItem : docItems) {
             String cat = docItem.getType();
-            if ("description".equals(cat)) {
+            if (DefaultDocumentationType.DESCRIPTION.getValue().equals(cat)) {
                 return docItem;
             }
         }
@@ -151,6 +151,10 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
             public Map<String, String> getAttachments() {
                 return new HashMap<String, String>();
+            }
+
+            public boolean isPlaceHolder() {
+                return true;
             }
         };
 

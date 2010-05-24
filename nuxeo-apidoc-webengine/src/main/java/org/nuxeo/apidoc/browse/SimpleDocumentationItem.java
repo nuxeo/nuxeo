@@ -96,4 +96,8 @@ public class SimpleDocumentationItem implements DocumentationItem {
         return attachments;
     }
 
+    public boolean isPlaceHolder() {
+        return false;
+    }
+
 }
