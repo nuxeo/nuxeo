@@ -229,12 +229,13 @@ public class SecurityActionsBean extends InputController implements
 
         List<AbstractTableCell> cells = new ArrayList<AbstractTableCell>();
 
-        if (user.equals(SecurityConstants.EVERYONE)
-                && securityData.getCurrentDocDeny().get(user).contains(
-                        SecurityConstants.EVERYTHING)) {
-            // remove DENY EveryThing to EveryOne from display list
-            blockRightInheritance = true;
-            return null;
+        if (user.equals(SecurityConstants.EVERYONE)) {
+            List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
+            if (deniedPerms!=null && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
+                // remove DENY EveryThing to EveryOne from display list
+                blockRightInheritance = true;
+                return null;
+            }
         }
 
         cells.add(new SelectionTableCell(false));
