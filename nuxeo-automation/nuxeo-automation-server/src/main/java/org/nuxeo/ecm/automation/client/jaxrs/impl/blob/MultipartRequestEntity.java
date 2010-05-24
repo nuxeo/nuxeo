@@ -104,7 +104,9 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
 //            out.writeTo(arg0);
             mp.writeTo(arg0);
         } catch (MessagingException e) {
-            throw new IOException(e);
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 
