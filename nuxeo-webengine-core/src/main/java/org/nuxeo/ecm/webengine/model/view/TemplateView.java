@@ -29,6 +29,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A view to be used by regular JAX-RS resources to be able to use freemarker templates.
@@ -43,20 +44,37 @@ public class TemplateView {
     protected Object target;
     protected Map<String,Object> bindings;
 
+
+    public static URL findTemplate(Object owner, String name) {
+        URL url = owner.getClass().getResource(name);
+        if (url == null) {
+            url = Framework.getResourceLoader().getResource(name);
+            if (url == null) {
+                throw new WebResourceNotFoundException("View not found: "+name+" for object "+owner);
+            }
+        }
+        return url;
+    }
+
     public TemplateView(Object owner, String name) {
         this (WebEngine.getActiveContext(), owner, name);
     }
 
     public TemplateView(WebContext ctx, Object owner, String name) {
+        this (ctx, owner, findTemplate(owner, name));
+    }
+
+    public TemplateView(Object owner, URL url) {
+        this (WebEngine.getActiveContext(), owner, url);
+    }
+
+    public TemplateView(WebContext ctx, Object owner, URL url) {
         if (ctx == null) {
             throw new WebException("Not in WebEngine context");
         }
         this.ctx = ctx;
-        url = owner.getClass().getResource(name);
-        if (url == null) {
-            throw new WebResourceNotFoundException("View not found: "+name+" for object "+owner);
-        }
         this.target = owner;
+        this.url = url;
         bindings = new HashMap<String, Object>();
         bindings.put("This", target);
         bindings.put("Context", ctx);
