@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,10 +35,12 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -147,6 +150,9 @@ public class NuxeoRequestControllerFilter implements Filter {
         try {
             if (useTx) {
                 txStarted = TransactionHelper.startTransaction();
+                if (txStarted) {
+                    response = new CommittingServletResponseWrapper(httpResponse);
+                }
             }
             chain.doFilter(request, response);
         } catch (Exception e) {
@@ -160,7 +166,9 @@ public class NuxeoRequestControllerFilter implements Filter {
             throw new ServletException(e);
         } finally {
             if (txStarted) {
-                TransactionHelper.commitOrRollbackTransaction();
+                if (!((CommittingServletResponseWrapper) response).committedTx) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             }
             if (sessionSynched) {
                 simpleReleaseSyncOnSession(httpRequest);
@@ -168,6 +176,50 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(httpRequest,"Exiting NuxeoRequestControler filter"));
             }
+        }
+    }
+
+    /**
+     * Response Wrapper that commits the transaction as soon as something is
+     * written to the output.
+     */
+    public static class CommittingServletResponseWrapper extends
+            HttpServletResponseWrapper {
+
+        public boolean committedTx = false;
+
+        public CommittingServletResponseWrapper(HttpServletResponse response) {
+            super(response);
+        }
+
+        public void commitTxIfNeeded() {
+            if (!committedTx) {
+                committedTx = true;
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+
+        @Override
+        public void setHeader(String name, String value) {
+            commitTxIfNeeded();
+            super.setHeader(name, value);
+        }
+
+        @Override
+        public void addHeader(String name, String value) {
+            commitTxIfNeeded();
+            super.addHeader(name, value);
+        }
+        @Override
+        public ServletOutputStream getOutputStream() throws IOException {
+            commitTxIfNeeded();
+            return super.getOutputStream();
+        }
+
+        @Override
+        public PrintWriter getWriter() throws IOException {
+            commitTxIfNeeded();
+            return super.getWriter();
         }
     }
 
