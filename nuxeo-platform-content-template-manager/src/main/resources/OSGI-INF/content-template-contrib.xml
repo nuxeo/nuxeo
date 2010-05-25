@@ -27,7 +27,6 @@
       <acl>
         <ace principal="Administrator" permission="Everything" granted="true"/>
         <ace principal="members" permission="Read" granted="true"/>
-        <ace principal="members" permission="Version" granted="true"/>
       </acl>
       <template>
         <templateItem typeName="Domain" id="default-domain" title="Default domain"
