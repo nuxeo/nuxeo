@@ -50,7 +50,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-core</artifactId>
-      <version>${nuxeo.platform.annotations.version}</version>
+      <version>${nuxeo.services.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

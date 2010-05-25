@@ -10,6 +10,4 @@
   <artifactId>nuxeo-platform-annotations-core-contrib</artifactId>
   <name>Nuxeo Platform Annotation Service core contributions</name>
 
-  <dependencies>
-  </dependencies>
 </project>
