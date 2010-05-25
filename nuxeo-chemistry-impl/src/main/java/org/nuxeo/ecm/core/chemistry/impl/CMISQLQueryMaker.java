@@ -63,7 +63,7 @@ import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
@@ -303,9 +303,9 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
-    public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
-            String query, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public Query buildQuery(SQLInfo sqlInfo, Model model,
+            PathResolver pathResolver, String query, QueryFilter queryFilter,
+            Object... params) throws StorageException {
         NuxeoConnection conn = (NuxeoConnection) params[0];
         boolean addSystemColumns = params.length >= 2
                 && Boolean.TRUE.equals(params[1]);

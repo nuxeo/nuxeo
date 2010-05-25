@@ -31,8 +31,8 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.CapturingQueryMaker.Captured;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.Query;
@@ -51,7 +51,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
     private Model model;
 
-    private Session modelSession;
+    private PathResolver pathResolver;
 
     @Override
     public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         session.queryAndFetch("", CapturingQueryMaker.TYPE, captured);
         sqlInfo = captured.sqlInfo;
         model = captured.model;
-        modelSession = captured.session;
+        pathResolver = captured.pathResolver;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " WHERE dc:title = 123 OR dc:title = 'xyz'" //
                 + " ORDER BY dc:description DESC, cmis:parentid ASC";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", "");
         String expected;
@@ -121,7 +121,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " FROM cmis:document" //
                 + " WHERE dc:title IN ('xyz', 'abc')";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -158,7 +158,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " FROM cmis:document" //
                 + " WHERE 'bob' = ANY dc:contributors";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -200,7 +200,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " JOIN cmis:Document B ON A.cmis:ObjectId = B.dc:title" //
                 + " WHERE A.dc:title = '123' OR B.dc:title = 'xyz'";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -253,7 +253,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " JOIN cmis:document B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.dc:title = '123' OR 'bob' = ANY B.dc:contributors";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -311,7 +311,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
     public void testSELECT_STAR() throws Exception {
         String query = "SELECT * FROM cmis:document WHERE dc:title = 123";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, conn);
+                pathResolver, query, null, conn);
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -347,7 +347,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
     public void testSELECT_DISTINCT() throws Exception {
         String query = "SELECT DISTINCT dc:title FROM cmis:document";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, conn);
+                pathResolver, query, null, conn);
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -378,7 +378,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String query;
         query = "SELECT DISTINCT dc:title, cmis:contentStreamLength FROM cmis:document";
         try {
-            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, pathResolver,
                     query, null, conn);
             fail("Shouldn't be able to do DISTINCT on virtual column");
         } catch (CMISQLQueryMaker.QueryMakerException e) {
@@ -387,7 +387,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
 
         query = "SELECT DISTINCT dc:title FROM cmis:document";
         try {
-            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, pathResolver,
                     query, null, conn, Boolean.TRUE); // add system cols
             fail("Shouldn't be able to do DISTINCT with system columns added");
         } catch (CMISQLQueryMaker.QueryMakerException e) {
@@ -399,7 +399,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String query = "SELECT cmis:objectId FROM cmis:document "
                 + "WHERE dc:title = true or dc:title = TIMESTAMP '2010-01-01T00:00:00.123Z'";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -436,7 +436,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String query = "SELECT cmis:objectId ID, cmis:objectTypeId AS TYP"
                 + "  FROM cmis:document ORDER BY ID, TYP DESC";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -467,7 +467,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
         String query = "SELECT cmis:objectId ID"
                 + "  FROM cmis:document ORDER BY cmis:objectId";
         try {
-            new CMISQLQueryMaker().buildQuery(sqlInfo, model, modelSession,
+            new CMISQLQueryMaker().buildQuery(sqlInfo, model, pathResolver,
                     query, null, new Object[] { null });
             fail("should raise because of aliased colum used unaliased in ORDER BY");
         } catch (CMISQLQueryMaker.QueryMakerException e) {
@@ -478,7 +478,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
     public void testFulltext() throws Exception {
         String query = "SELECT cmis:objectId FROM cmis:document WHERE CONTAINS('foo')";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
@@ -515,7 +515,7 @@ public class TestCMISQLQueryMaker extends SQLRepositoryTestCase {
                 + " FROM cmis:document WHERE CONTAINS('foo')" //
                 + " ORDER BY SC DESC";
         Query q = new CMISQLQueryMaker().buildQuery(sqlInfo, model,
-                modelSession, query, null, new Object[] { null });
+                pathResolver, query, null, new Object[] { null });
         assertNotNull(q);
         String sql = q.selectInfo.sql.replace("\"", ""); // more readable
         String expected;
