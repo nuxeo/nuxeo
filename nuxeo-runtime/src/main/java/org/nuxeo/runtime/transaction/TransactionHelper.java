@@ -19,7 +19,11 @@ package org.nuxeo.runtime.transaction;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -178,11 +182,25 @@ public class TransactionHelper {
     /**
      * Commits or rolls back the User Transaction depending on the transaction
      * status.
+     *
+     * @throws SystemException
+     * @throws HeuristicRollbackException
+     * @throws HeuristicMixedException
+     * @throws RollbackException
+     * @throws IllegalStateException
+     * @throws SecurityException
      */
     public static void commitOrRollbackTransaction() {
+        UserTransaction ut;
         try {
-            UserTransaction ut = lookupUserTransaction();
-            int status = ut.getStatus();
+            ut = lookupUserTransaction();
+        } catch (NamingException e) {
+            log.warn("No user transaction", e);
+            return;
+        }
+        int status;
+        try {
+            status = ut.getStatus();
             if (status == Status.STATUS_ACTIVE) {
                 if (log.isDebugEnabled()) {
                     log.debug("Commiting transaction");
@@ -194,10 +212,10 @@ public class TransactionHelper {
                 }
                 ut.rollback();
             }
-        } catch (NamingException e) {
-            // no transaction
         } catch (Exception e) {
-            log.error("Unable to commit/rollback transaction", e);
+            String msg = "Unable to commit/rollback  " + ut;
+            log.error(msg, e);
+            throw new TransactionRuntimeException(msg, e);
         }
     }
 
