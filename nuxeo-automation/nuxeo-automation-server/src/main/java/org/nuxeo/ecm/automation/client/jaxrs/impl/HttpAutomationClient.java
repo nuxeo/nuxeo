@@ -265,11 +265,14 @@ public class HttpAutomationClient extends AbstractAutomationClient implements Co
 
     @Override
     protected Session createSession(AuthenticationCallback cb) {
-        String[] c = cb.getCredentials();
-        if (c == null) {
-            return new SessionImpl(this, null, null);
+        if (cb != null) {
+            String[] c = cb.getCredentials();
+            if (c == null) {
+                return new SessionImpl(this, null, null);
+            }
+            return new SessionImpl(this, c[0], c[1]);
         }
-        return new SessionImpl(this, c[0], c[1]);
+        return new SessionImpl(this, null, null);
     }
 
     @SuppressWarnings("unchecked")
