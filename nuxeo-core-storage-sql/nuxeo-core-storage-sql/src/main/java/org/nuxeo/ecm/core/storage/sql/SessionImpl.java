@@ -798,7 +798,7 @@ public class SessionImpl implements Session {
     }
 
     private void addRootACP() throws StorageException {
-        ACLRow[] aclrows = new ACLRow[4];
+        ACLRow[] aclrows = new ACLRow[3];
         // TODO put groups in their proper place. like that now for consistency.
         aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, true,
                 SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
