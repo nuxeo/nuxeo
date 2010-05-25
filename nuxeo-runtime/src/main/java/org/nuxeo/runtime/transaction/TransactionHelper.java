@@ -190,8 +190,7 @@ public class TransactionHelper {
      * @throws IllegalStateException
      * @throws SecurityException
      */
-    public static void commitOrRollbackTransaction() throws SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException,
-            HeuristicRollbackException {
+    public static void commitOrRollbackTransaction() {
         UserTransaction ut;
         try {
             ut = lookupUserTransaction();
@@ -199,17 +198,24 @@ public class TransactionHelper {
             log.warn("No user transaction", e);
             return;
         }
-        int status = ut.getStatus();
-        if (status == Status.STATUS_ACTIVE) {
-            if (log.isDebugEnabled()) {
-                log.debug("Commiting transaction");
+        int status;
+        try {
+            status = ut.getStatus();
+            if (status == Status.STATUS_ACTIVE) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Commiting transaction");
+                }
+                ut.commit();
+            } else if (status == Status.STATUS_MARKED_ROLLBACK) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cannot commit transaction because it is marked rollback only");
+                }
+                ut.rollback();
             }
-            ut.commit();
-        } else if (status == Status.STATUS_MARKED_ROLLBACK) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cannot commit transaction because it is marked rollback only");
-            }
-            ut.rollback();
+        } catch (Exception e) {
+            String msg = "Unable to commit/rollback  " + ut;
+            log.error(msg, e);
+            throw new TransactionRuntimeException(msg, e);
         }
     }
 
