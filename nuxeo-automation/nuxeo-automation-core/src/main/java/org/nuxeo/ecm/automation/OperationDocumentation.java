@@ -54,6 +54,37 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
         return s1.compareTo(s2);
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public String[] getSignature() {
+        return signature;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getRequires() {
+        return requires;
+    }
+
+    public List<Param> getParams() {
+        return params;
+    }
 
     @Override
     public String toString() {
@@ -67,6 +98,22 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
         public String widget; // the widget type
         public String[] values; // the default values
         public boolean isRequired;
+
+        public String getName() {
+            return name;
+        }
+        public String getType() {
+            return type;
+        }
+        public String getWidget() {
+            return widget;
+        }
+        public String[] getValues() {
+            return values;
+        }
+        public boolean isRequired() {
+            return isRequired;
+        }
         @Override
         public String toString() {
             return name+" ["+type+"] "+(isRequired?"required":"optional");

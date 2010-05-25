@@ -28,6 +28,7 @@ import javax.ws.rs.core.Context;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.server.jaxrs.debug.DebugResource;
+import org.nuxeo.ecm.automation.server.jaxrs.doc.DocResource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,6 +50,11 @@ public class AutomationResource {
         service = Framework.getService(AutomationService.class);
     }
 
+
+    @Path("doc")
+    public Object getDocPage() {
+        return new DocResource();
+    }
 
     @Path("debug")
     public Object getDebugPage() {

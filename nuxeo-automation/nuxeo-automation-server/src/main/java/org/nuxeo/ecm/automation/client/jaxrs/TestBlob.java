@@ -63,6 +63,13 @@ public class TestBlob {
             System.out.println(map);
 
             System.out.println("took: "+((double)System.currentTimeMillis()-start)/1000);
+
+
+            start = System.currentTimeMillis();
+            for (int i=0; i<60; i++) {
+                doc = (Document)session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
+            }
+            System.out.println("60 full docs took: "+((double)System.currentTimeMillis()-start)/1000);
             client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();
