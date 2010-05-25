@@ -41,7 +41,6 @@ public class TestTestFramework extends NXRuntimeTestCase {
     public void testSetProperty() {
         runtime.getProperties().put("toto", "titi");
         assertEquals("titi", runtime.getProperty("toto"));
-        assertEquals("{toto=titi}", runtime.getProperties().toString());
     }
 
     public void testLookupBundleUrl() throws Exception {

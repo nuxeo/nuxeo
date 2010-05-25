@@ -18,11 +18,15 @@
 package org.nuxeo.runtime.jtajca;
 
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.Subject;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.SubjectSource;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PartitionedPool;
@@ -48,7 +52,7 @@ public class NuxeoContainer {
 
     private static UserTransaction userTransaction;
 
-    private static ConnectionManager connectionManager;
+    private static ConnectionManagerWrapper connectionManager;
 
     private NuxeoContainer() {
     }
@@ -87,9 +91,18 @@ public class NuxeoContainer {
             initTransactionManager();
         }
         if (connectionManager == null) {
-            connectionManager = createConnectionManager(transactionManager,
+            AbstractConnectionManager cm = createConnectionManager(transactionManager,
                     config);
+            connectionManager = new ConnectionManagerWrapper(cm, config);
         }
+    }
+
+    public static synchronized void resetConnectionManager() throws Exception {
+        ConnectionManagerWrapper cm = connectionManager;
+        if (cm == null) {
+            return;
+        }
+        cm.reset();
     }
 
     protected static RecoverableTransactionManager createTransactionManager(
@@ -114,7 +127,7 @@ public class NuxeoContainer {
      * The pool uses the transaction manager for recovery, and when using
      * XATransactions for cache + enlist/delist.
      */
-    protected static ConnectionManager createConnectionManager(
+    protected static AbstractConnectionManager createConnectionManager(
             RecoverableTransactionManager transactionManager,
             ConnectionManagerConfiguration config) {
         TransactionSupport transactionSupport = new XATransactions(
@@ -146,6 +159,29 @@ public class NuxeoContainer {
 
         public void setTransactionTimeoutSeconds(int transactionTimeoutSeconds) {
             this.transactionTimeoutSeconds = transactionTimeoutSeconds;
+        }
+    }
+
+    /**
+     * Wrap a geronimo cm to be able to flush the pool
+     * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+     *
+     */
+    public static class ConnectionManagerWrapper implements ConnectionManager {
+        private static final long serialVersionUID = 1L;
+        protected AbstractConnectionManager cm;
+        protected ConnectionManagerConfiguration config;
+        public ConnectionManagerWrapper(AbstractConnectionManager cm, ConnectionManagerConfiguration config) {
+            this.cm = cm;
+            this.config = config;
+        }
+        public Object allocateConnection(ManagedConnectionFactory managedConnectionFactory,
+                ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
+            return cm.allocateConnection(managedConnectionFactory, connectionRequestInfo);
+        }
+        public void reset() throws Exception {
+            cm.doStop();
+            cm = createConnectionManager(transactionManager, config);
         }
     }
 

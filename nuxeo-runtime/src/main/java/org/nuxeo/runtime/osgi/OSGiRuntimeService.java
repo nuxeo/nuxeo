@@ -24,7 +24,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -84,8 +86,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
 
-    private static final Log componentDebugLog = LogFactory.getLog("nuxeo.bundle.debug");
-
     private final BundleContext bundleContext;
 
     private final Map<String, RuntimeContext> contexts;
@@ -113,7 +113,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
         }
         String homeDir = getProperty(PROP_HOME_DIR);
-        componentDebugLog.info("Home directory: " + homeDir);
+        log.debug("Home directory: " + homeDir);
         if (homeDir != null) {
             workingDir = new File(homeDir);
         } else {
@@ -127,7 +127,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
         workingDir.mkdirs();
         persistence = new ComponentPersistence(this);
-        componentDebugLog.info("Working directory: " + workingDir);
+        log.debug("Working directory: " + workingDir);
     }
 
     public String getName() {
@@ -199,7 +199,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             throws Exception {
         String list = getComponentsList(bundle);
         String name = bundle.getSymbolicName();
-        componentDebugLog.debug("Bundle: " + name + " components: " + list);
+        log.debug("Bundle: " + name + " components: " + list);
         if (list == null) {
             return;
         }
@@ -207,7 +207,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
             URL url = bundle.getEntry(path);
-            componentDebugLog.debug("Loading component for: " + name
+            log.debug("Loading component for: " + name
                     + " path: " + path + " url: " + url);
             if (url != null) {
                 try {
@@ -236,10 +236,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     protected void loadConfig() throws Exception {
         Environment env = Environment.getDefault();
         if (env != null) {
-            componentDebugLog.info("Configuration: host application: "
+            log.info("Configuration: host application: "
                     + env.getHostApplicationName());
         } else {
-            componentDebugLog.info("Configuration: no host application");
+            log.warn("Configuration: no host application");
         }
 
         File blacklistFile = new File(env.getConfig(), "blacklist");
@@ -255,65 +255,34 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             manager.setBlacklist(new HashSet<String>(lines));
         }
 
-        // TODO: in JBoss there is a deployer that will deploy nuxeo
-        // configuration files ..
-        if (env != null && !"JBoss".equals(env.getHostApplicationName())) {
-            File dir = env.getConfig();
-            if (dir != null) {
-                log.debug(dir.getAbsolutePath());
-                boolean isDirectory = dir.isDirectory();
-                componentDebugLog.info("Configuration: loading from: "
-                        + dir.getAbsolutePath()
-                        + (isDirectory ? " (is directory)" : ""));
-                if (isDirectory) {
-                    for (String name : dir.list()) {
-                        if (name.endsWith("-config.xml")
-                                || name.endsWith("-bundle.xml")) {
-                            // TODO
-                            // because of some dep bugs (regarding the
-                            // deployment of demo-ds.xml)
-                            // we cannot let the runtime deploy config dir at
-                            // beginning...
-                            // until fixing this we deploy config dir from
-                            // NuxeoDeployer
-                            File file = new File(dir, name);
-                            componentDebugLog.info("Configuration: deploying to "
-                                    + "context: " + file.toURL());
-                            context.deploy(file.toURL());
-                        } else if (name.endsWith(".config")
-                                || name.endsWith(".ini")
-                                || name.endsWith(".properties")) {
-                            File file = new File(dir, name);
-                            componentDebugLog.info("Configuration: loading "
-                                    + "properties: " + name);
-                            loadProperties(file);
-                        } else {
-                            componentDebugLog.info("Configuration: ignoring "
-                                    + name);
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
-        componentDebugLog.info("Configuration: " + configDir);
-        if (configDir == null) {
-            return;
-        }
-
-        if (configDir.contains(":/")) { // an url of a config file
+        if (configDir != null && configDir.contains(":/")) { // an url of a config file
+            log.debug("Configuration: " + configDir);
             URL url = new URL(configDir);
-            componentDebugLog.info("Configuration:   loading properties url: "
+            log.debug("Configuration:   loading properties url: "
                     + configDir);
             loadProperties(url);
             return;
         }
 
-        File dir = new File(configDir);
-        if (dir.isDirectory()) {
-            for (String name : dir.list()) {
+        if (env == null) {
+            return;
+        }
+
+        // TODO: in JBoss there is a deployer that will deploy nuxeo
+        // configuration files ..
+        boolean isNotJBoss = env != null && !"JBoss".equals(env.getHostApplicationName());
+
+        File dir = env.getConfig();
+        //File dir = new File(configDir);
+        String[] names = dir.list();
+        if (names != null) {
+            Arrays.sort(names, new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    return o1.compareToIgnoreCase(o2);
+                }
+            });
+            for (String name : names) {
                 if (name.endsWith("-config.xml")
                         || name.endsWith("-bundle.xml")) {
                     // TODO
@@ -323,26 +292,28 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     // beginning...
                     // until fixing this we deploy config dir from
                     // NuxeoDeployer
-
-                    // File file = new File(dir, name);
-                    // context.deploy(file.toURL());
-                    componentDebugLog.info("Configuration:   postponing config: "
-                            + name);
+                    if (isNotJBoss) {
+                        File file = new File(dir, name);
+                        log.debug("Configuration: deploy config component: "
+                                + name);
+                        context.deploy(file.toURI().toURL());
+                    }
                 } else if (name.endsWith(".config") || name.endsWith(".ini")
                         || name.endsWith(".properties")) {
                     File file = new File(dir, name);
-                    componentDebugLog.info("Configuration:   loading properties: "
+                    log.debug("Configuration: loading properties: "
                             + name);
                     loadProperties(file);
                 } else {
-                    componentDebugLog.info("Configuration:   ignoring: " + name);
+                    log.debug("Configuration: ignoring: " + name);
                 }
             }
-        } else { // a file - load it
-            File file = new File(configDir);
-            componentDebugLog.info("Configuration:   loading properties: "
-                    + file);
-            loadProperties(file);
+        } else if (dir.isFile()) { // a file - load it
+            log.debug("Configuration: loading properties: "
+                    + dir);
+            loadProperties(dir);
+        } else {
+            log.debug("Configuration: no configuration file found");
         }
 
         loadDefaultConfig();
@@ -473,7 +444,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public Bundle findHostBundle(Bundle bundle) {
         String hostId = (String) bundle.getHeaders().get(
                 Constants.FRAGMENT_HOST);
-        componentDebugLog.info("Looking for host bundle: "
+        log.debug("Looking for host bundle: "
                 + bundle.getSymbolicName() + " host id: " + hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');
@@ -482,11 +453,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             }
             RuntimeContext ctx = contexts.get(hostId);
             if (ctx != null) {
-                componentDebugLog.info("Context was found for host id: "
+                log.debug("Context was found for host id: "
                         + hostId);
                 return ctx.getBundle();
             } else {
-                componentDebugLog.info("No context found for host id: "
+                log.warn("No context found for host id: "
                         + hostId);
 
             }
@@ -502,7 +473,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         String name = bundle.getSymbolicName();
 
         if ("Eclipse".equals(vendor)) { // equinox framework
-            componentDebugLog.debug("getBundleFile (Eclipse): " + name + "->"
+            log.debug("getBundleFile (Eclipse): " + name + "->"
                     + location);
             // update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
             // initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
@@ -519,7 +490,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = FileUtils.urlToFile(location);
             } catch (Exception e) {
-                componentDebugLog.error("getBundleFile: Unable to create "
+                log.error("getBundleFile: Unable to create "
                         + " for bundle: " + name + " as URI: " + location);
                 return null;
             }
@@ -528,17 +499,17 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = new File(location);
             } catch (Exception e) {
-                componentDebugLog.error("getBundleFile: Unable to create "
+                log.error("getBundleFile: Unable to create "
                         + " for bundle: " + name + " as file: " + location);
                 return null;
             }
         }
         if (file != null && file.exists()) {
-            componentDebugLog.debug("getBundleFile: " + name
+            log.debug("getBundleFile: " + name
                     + " bound to file: " + file);
             return file;
         } else {
-            componentDebugLog.debug("getBundleFile: " + name
+            log.debug("getBundleFile: " + name
                     + " cannot bind to nonexistent file: " + file);
             return null;
         }
