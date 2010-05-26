@@ -9,10 +9,12 @@ public class BankUtils {
 
     public static String getFileContent(File file) {
         String content = "";
-        try {
-            content = FileUtils.readFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (file.exists()) {
+            try {
+                content = FileUtils.readFile(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return content;
     }

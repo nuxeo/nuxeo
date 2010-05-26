@@ -104,6 +104,7 @@ public class BankManager {
         return file;
     }
 
+    @SuppressWarnings("rawtypes")
     public static File getStylePreviewFile(String bank, String collection,
             String resource) {
         Map<String, Object> info = getInfo(bank, "style", collection);
@@ -113,7 +114,6 @@ public class BankManager {
                 String preview = (String) value.get("preview");
                 String path = String.format("%s/style/%s/%s", bank, collection,
                         preview);
-                
                 File file = BankManager.getFile(path);
                 return file;
             }
@@ -129,6 +129,7 @@ public class BankManager {
         return file;
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getInfo(String bank, String typeName,
             String collection) {
         File file = getInfoFile(bank, typeName, collection);

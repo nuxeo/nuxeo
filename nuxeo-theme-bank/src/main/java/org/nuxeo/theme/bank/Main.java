@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -108,30 +107,42 @@ public class Main extends ModuleRoot {
     /*
      * Styles
      */
+
     @GET
-    @Path("skins")
-    public Object getSkins() {
-        List<Skin> skins = new ArrayList<Skin>();
-        for (String bank : BankManager.getBankNames()) {
-            for (String collection : BankManager.getCollections(bank, "style")) {
-                Map<String, Object> info = BankManager.getInfo(bank, "style",
-                        collection);
-                if (info == null) {
-                    continue;
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{bank}/json/skins")
+    @SuppressWarnings("rawtypes")
+    public String listBankSkins(@PathParam("bank") String bank) {
+        JSONArray skins = new JSONArray();
+        for (String collection : BankManager.getCollections(bank, "style")) {
+            Map<String, Object> info = BankManager.getInfo(bank, "style",
+                    collection);
+            if (info == null) {
+                continue;
+            }
+            for (Map.Entry<String, Object> entry : info.entrySet()) {
+                String resource = entry.getKey();
+                Map value = (Map) entry.getValue();
+                Boolean isSkin = false;
+                if (value.containsKey("skin")) {
+                    isSkin = (Boolean) value.get("skin");
                 }
-                for (Map.Entry<String, Object> entry : info.entrySet()) {
-                    System.out.println(entry.getKey());
-                    System.out.println(entry.getValue());
-                    String key = entry.getKey();
-                    Map value = (Map) entry.getValue();
-                    Boolean skin = (Boolean) value.get("skin");
-                    System.out.println(skin);
-                    skins.add(new Skin(bank, collection, key));
+                if (isSkin) {
+                    JSONObject skinMap = new JSONObject();
+                    skinMap.put("bank", bank);
+                    skinMap.put("collection", collection);
+                    skinMap.put("resource", resource);
+                    skins.add(skinMap);
                 }
-                System.out.println(info);
             }
         }
-        return getTemplate("skins.ftl").arg("skins", skins);
+        return skins.toString();
+    }
+
+    @GET
+    @Path("{bank}/skins/view")
+    public Object getBankSkinsView(@PathParam("bank") String bank) {
+        return getTemplate("skins.ftl").arg("bank", bank);
     }
 
     @GET
@@ -377,6 +388,7 @@ public class Main extends ModuleRoot {
         folderTypes.add(getNavTreeNode(bankName, "style"));
         folderTypes.add(getNavTreeNode(bankName, "preset"));
         folderTypes.add(getNavTreeNode(bankName, "image"));
+        folderTypes.add(getNavTreeNode(bankName, "skins"));
         bankNode.put("children", folderTypes);
 
         tree.add(bankNode);
@@ -384,14 +396,16 @@ public class Main extends ModuleRoot {
     }
 
     private JSONObject getNavTreeNode(String bankName, String typeName) {
-
         JSONObject folderTypeNode = new JSONObject();
-
         JSONObject folderTypeMap = new JSONObject();
         folderTypeMap.put("title", typeName);
 
         JSONObject folderTypeAttributes = new JSONObject();
-        folderTypeAttributes.put("rel", "folder");
+        String folderTypeName = "folder";
+        if ("skins".equals(typeName)) {
+            folderTypeName = "skins";
+        }
+        folderTypeAttributes.put("rel", folderTypeName);
         folderTypeAttributes.put("path", String.format("/%s/%s", bankName,
                 typeName));
         folderTypeAttributes.put("id", BankUtils.getDomId(String.format(
@@ -399,44 +413,48 @@ public class Main extends ModuleRoot {
         folderTypeNode.put("attributes", folderTypeAttributes);
         folderTypeNode.put("data", folderTypeMap);
 
-        JSONArray collections = new JSONArray();
-        for (String c : getCollections(bankName, typeName)) {
-            JSONArray items = new JSONArray();
+        if ("skins".equals(typeName)) {
 
-            JSONObject collectionNode = new JSONObject();
-            JSONObject collectionMap = new JSONObject();
-            collectionMap.put("title", c);
+        } else {
+            JSONArray collections = new JSONArray();
+            for (String c : getCollections(bankName, typeName)) {
+                JSONArray items = new JSONArray();
 
-            JSONObject collectionAttributes = new JSONObject();
-            collectionAttributes.put("rel", "collection");
-            collectionAttributes.put("path", String.format("/%s/%s/%s",
-                    bankName, typeName, c));
-            collectionAttributes.put("id", BankUtils.getDomId(String.format(
-                    "%s-%s-%s", bankName, typeName, c)));
-            collectionNode.put("attributes", collectionAttributes);
-            collectionNode.put("data", collectionMap);
+                JSONObject collectionNode = new JSONObject();
+                JSONObject collectionMap = new JSONObject();
+                collectionMap.put("title", c);
 
-            for (String item : getItemsInCollection(bankName, typeName, c)) {
+                JSONObject collectionAttributes = new JSONObject();
+                collectionAttributes.put("rel", "collection");
+                collectionAttributes.put("path", String.format("/%s/%s/%s",
+                        bankName, typeName, c));
+                collectionAttributes.put("id",
+                        BankUtils.getDomId(String.format("%s-%s-%s", bankName,
+                                typeName, c)));
+                collectionNode.put("attributes", collectionAttributes);
+                collectionNode.put("data", collectionMap);
 
-                JSONObject itemNode = new JSONObject();
+                for (String item : getItemsInCollection(bankName, typeName, c)) {
+                    JSONObject itemNode = new JSONObject();
+                    JSONObject itemMap = new JSONObject();
+                    itemMap.put("title", item);
 
-                JSONObject itemMap = new JSONObject();
-                itemMap.put("title", item);
+                    JSONObject itemAttributes = new JSONObject();
+                    itemAttributes.put("rel", typeName);
+                    itemAttributes.put("path", String.format("/%s/%s/%s/%s",
+                            bankName, typeName, c, item));
+                    itemAttributes.put("id", BankUtils.getDomId(String.format(
+                            "%s-%s-%s-%s", bankName, typeName, c, item)));
+                    itemNode.put("attributes", itemAttributes);
+                    itemNode.put("data", itemMap);
 
-                JSONObject itemAttributes = new JSONObject();
-                itemAttributes.put("rel", typeName);
-                itemAttributes.put("path", String.format("/%s/%s/%s/%s",
-                        bankName, typeName, c, item));
-                itemAttributes.put("id", BankUtils.getDomId(String.format(
-                        "%s-%s-%s-%s", bankName, typeName, c, item)));
-                itemNode.put("attributes", itemAttributes);
-                itemNode.put("data", itemMap);
-                items.add(itemNode);
+                    items.add(itemNode);
+                }
+                collectionNode.put("children", items);
+                collections.add(collectionNode);
             }
-            collectionNode.put("children", items);
-            collections.add(collectionNode);
+            folderTypeNode.put("children", collections);
         }
-        folderTypeNode.put("children", collections);
         return folderTypeNode;
     }
 
@@ -473,7 +491,7 @@ public class Main extends ModuleRoot {
             }
         };
     }
-    
+
     private Object noPreview() {
         return redirect(ctx.getModulePath() + "/skin/img/no-preview.png");
     }

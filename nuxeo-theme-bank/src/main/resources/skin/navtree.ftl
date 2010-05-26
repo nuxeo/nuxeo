@@ -60,6 +60,12 @@
                         image: "${basePath}/theme-banks/skin/img/collection.png"
                     }
                 },
+                "skins" : {
+                    valid_children : "none",
+                    icon: {
+                        image: "${basePath}/theme-banks/skin/img/skins.png"
+                    }
+                },                
                 "style" : {
                     valid_children : "none",
                     icon: {
@@ -77,7 +83,7 @@
                     icon: {
                         image: "${basePath}/theme-banks/skin/img/preset.png"
                     }
-                }
+                }              
             }
         });
         
