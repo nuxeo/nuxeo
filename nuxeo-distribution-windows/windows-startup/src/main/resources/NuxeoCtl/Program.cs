@@ -33,8 +33,21 @@ namespace NuxeoCtl
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+            Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
+
+            MainForm frm = new MainForm();
+            if (args.Length > 0)
+            {
+                frm.Arg = args[0];
+            }
+            Application.Run(frm);    
 		}
+
+        static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            Console.WriteLine("Exception occured : {0}", e.Exception.Message);
+            Console.WriteLine(e.Exception.StackTrace);
+        }
 		
 	}
 }

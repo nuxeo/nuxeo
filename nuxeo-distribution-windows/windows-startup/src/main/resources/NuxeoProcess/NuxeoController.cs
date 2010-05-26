@@ -62,13 +62,15 @@ namespace NuxeoProcess
 	/// </summary>
 	public partial class NuxeoController
 	{
-		private String platform=null;
-		private static Process nxProcess=null;
-		private static Process stopProcess=null;
-		private Dictionary<String,String> nxEnv=new Dictionary<String,String>();
-		private String startArgs=null;
-		private String stopArgs=null;
-		public bool running=false;
+        public bool Initialized { get; private set; }
+
+        private String platform = null;
+        private static Process nxProcess = null;
+        private static Process stopProcess = null;
+        private Dictionary<String, String> nxEnv;
+        private String startArgs = null;
+        private String stopArgs = null;
+        public bool running = false;
 		
 		// Constructor
 		
@@ -76,13 +78,50 @@ namespace NuxeoProcess
 			
 			// Detect platform
 			int p = (int) Environment.OSVersion.Platform;
-                if ((p==4)||(p==6)||(p==128)) {
-                	platform="unix";
-                } else {
-                    platform="windows";
-                }
-
+            if ((p == 4) || (p == 6) || (p == 128))
+            {
+                platform = "unix";
+            }
+            else
+            {
+                platform = "windows";
+            }
 		}
+
+        public bool Initialize() {
+            bool init = InitializeController();
+            Initialized = init;
+            return init;
+        }
+
+        private bool InitializeController()
+        {
+            // Return if The process is already started
+            if (nxProcess != null) return false;
+
+            // Parse Nuxeo configuration file
+            Dictionary<String, String> nxConfig = new Dictionary<string,string>();
+            if ((nxConfig = ParseConfig()) == null)
+            {
+                Log("Could not parse nuxeo.conf", "ERROR");
+                return false;
+            }
+
+            // Set up environment (nxEnv)
+            if (SetupEnv(nxConfig) == false)
+            {
+                Log("Could not set up environment", "ERROR");
+                return false;
+            }
+
+            // Setup up application server paths
+            if (SetupApplicationServer() == false)
+            {
+                Log("Could not set up the application server", "ERROR");
+                return false;
+            }
+            return true;
+        }
 		
 		// Utility : log
 		// If delegateLog is true, this will generate a LogEvent
@@ -124,31 +163,7 @@ namespace NuxeoProcess
 		
 		// ********** STARTUP **********
 		
-		public bool Start() {
-			
-			// Return if The process is already started
-			if (nxProcess!=null) return false;
-			
-			// Parse Nuxeo configuration file
-			Dictionary<String,String> nxConfig;
-			if ((nxConfig=ParseConfig())==null) {
-				Log("Could not parse nuxeo.conf","ERROR");
-				return false;
-			}
-			
-			// Set up environment (nxEnv)
-			if (SetupEnv(nxConfig)==false) {
-			    Log("Could not set up environment","ERROR");
-			    return false;
-			}
-			
-			// Setup up application server paths
-			if (SetupApplicationServer()==false) {
-				Log("Could not set up the application server","ERROR");
-				return false;
-			}
-			
-			
+		public bool Start() {			
 			// Run
 			nxProcess=new Process();
 			nxProcess.StartInfo.FileName=nxEnv["JAVA"];

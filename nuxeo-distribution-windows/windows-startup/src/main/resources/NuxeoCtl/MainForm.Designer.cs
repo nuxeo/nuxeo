@@ -49,78 +49,80 @@ namespace NuxeoCtl
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.startButton = new System.Windows.Forms.Button();
-			this.stopButton = new System.Windows.Forms.Button();
-			this.logBox = new System.Windows.Forms.RichTextBox();
-			this.terminateButton = new System.Windows.Forms.Button();
-			this.SuspendLayout();
-			// 
-			// startButton
-			// 
-			this.startButton.Location = new System.Drawing.Point(12, 33);
-			this.startButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.startButton.Name = "startButton";
-			this.startButton.Size = new System.Drawing.Size(116, 22);
-			this.startButton.TabIndex = 0;
-			this.startButton.Text = "Start";
-			this.startButton.UseVisualStyleBackColor = true;
-			this.startButton.Click += new System.EventHandler(this.StartClick);
-			// 
-			// stopButton
-			// 
-			this.stopButton.Enabled = false;
-			this.stopButton.Location = new System.Drawing.Point(134, 33);
-			this.stopButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.stopButton.Name = "stopButton";
-			this.stopButton.Size = new System.Drawing.Size(116, 22);
-			this.stopButton.TabIndex = 1;
-			this.stopButton.Text = "Stop";
-			this.stopButton.UseVisualStyleBackColor = true;
-			this.stopButton.Click += new System.EventHandler(this.StopClick);
-			// 
-			// logBox
-			// 
-			this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.logBox.DetectUrls = false;
-			this.logBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.logBox.Location = new System.Drawing.Point(12, 79);
-			this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.logBox.Name = "logBox";
-			this.logBox.ReadOnly = true;
-			this.logBox.Size = new System.Drawing.Size(917, 462);
-			this.logBox.TabIndex = 4;
-			this.logBox.TabStop = false;
-			this.logBox.Text = "";
-			// 
-			// terminateButton
-			// 
-			this.terminateButton.BackColor = System.Drawing.Color.Red;
-			this.terminateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.terminateButton.Location = new System.Drawing.Point(256, 32);
-			this.terminateButton.Name = "terminateButton";
-			this.terminateButton.Size = new System.Drawing.Size(113, 23);
-			this.terminateButton.TabIndex = 5;
-			this.terminateButton.Text = "Terminate";
-			this.terminateButton.UseVisualStyleBackColor = false;
-			this.terminateButton.Visible = false;
-			this.terminateButton.Click += new System.EventHandler(this.TerminateClick);
-			// 
-			// MainForm
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(941, 553);
-			this.Controls.Add(this.terminateButton);
-			this.Controls.Add(this.logBox);
-			this.Controls.Add(this.stopButton);
-			this.Controls.Add(this.startButton);
-			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.Name = "MainForm";
-			this.Text = "NuxeoCtl";
-			this.ResumeLayout(false);
+            this.startButton = new System.Windows.Forms.Button();
+            this.stopButton = new System.Windows.Forms.Button();
+            this.logBox = new System.Windows.Forms.RichTextBox();
+            this.terminateButton = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // startButton
+            // 
+            this.startButton.Location = new System.Drawing.Point(12, 33);
+            this.startButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(116, 22);
+            this.startButton.TabIndex = 0;
+            this.startButton.Text = "Start";
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.StartClick);
+            // 
+            // stopButton
+            // 
+            this.stopButton.Enabled = false;
+            this.stopButton.Location = new System.Drawing.Point(134, 33);
+            this.stopButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new System.Drawing.Size(116, 22);
+            this.stopButton.TabIndex = 1;
+            this.stopButton.Text = "Stop";
+            this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.Click += new System.EventHandler(this.StopClick);
+            // 
+            // logBox
+            // 
+            this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.logBox.DetectUrls = false;
+            this.logBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.logBox.Location = new System.Drawing.Point(12, 79);
+            this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.logBox.Name = "logBox";
+            this.logBox.ReadOnly = true;
+            this.logBox.Size = new System.Drawing.Size(917, 462);
+            this.logBox.TabIndex = 4;
+            this.logBox.TabStop = false;
+            this.logBox.Text = "";
+            // 
+            // terminateButton
+            // 
+            this.terminateButton.BackColor = System.Drawing.Color.Red;
+            this.terminateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.terminateButton.Location = new System.Drawing.Point(256, 32);
+            this.terminateButton.Name = "terminateButton";
+            this.terminateButton.Size = new System.Drawing.Size(113, 23);
+            this.terminateButton.TabIndex = 5;
+            this.terminateButton.Text = "Terminate";
+            this.terminateButton.UseVisualStyleBackColor = false;
+            this.terminateButton.Visible = false;
+            this.terminateButton.Click += new System.EventHandler(this.TerminateClick);
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(941, 553);
+            this.Controls.Add(this.terminateButton);
+            this.Controls.Add(this.logBox);
+            this.Controls.Add(this.stopButton);
+            this.Controls.Add(this.startButton);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.Name = "MainForm";
+            this.Text = "NuxeoCtl";
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.Button terminateButton;
 		private System.Windows.Forms.RichTextBox logBox;
@@ -144,15 +146,26 @@ namespace NuxeoCtl
 		}
 		
 		bool StartApplication() {
-			if (nxControl==null) nxControl=new NuxeoProcess.NuxeoController();
+            if (nxControl == null)
+            {
+                nxControl = new NuxeoProcess.NuxeoController();
+            }
+
 			if (!nxControl.IsLogDelegated()) {
 				nxControl.DelegatedLog+=new LogEventHandler(nxControllerLog);
 				nxControl.SetDelegateLog(true);
 			}
-			if (nxControl.Start()==false) {
+
+            if(!nxControl.Initialized) {
+                nxControl.Initialize();
+            }
+
+            if (!nxControl.Initialized || nxControl.Start() == false)
+            {
 				Log("Could not start the application","ERROR");
 				return false;
 			}
+
 			Process nxProcess=nxControl.getProcess();
 			nxProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
 			nxProcess.BeginOutputReadLine();
@@ -174,19 +187,32 @@ namespace NuxeoCtl
 		}
 		
 		bool StopApplication() {
-			if (nxControl!=null) {
-				nxControl.Stop();
-				Log("Stopping "+nxSvcName+" application...","WARN");
-				Process stopProcess=nxControl.getStopProcess();
-				stopProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
-				stopProcess.BeginOutputReadLine();
-				stopProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
-				stopProcess.BeginErrorReadLine();
-				return true;
-			} else {
-				Log("Application is not started","WARN");
-				return false;
-			}
+            if (nxControl == null)
+            {
+                nxControl = new NuxeoProcess.NuxeoController();
+            }
+
+            if (!nxControl.Initialized) {
+                nxControl.Initialize();
+            }
+
+            if (nxControl != null && nxControl.Initialized)
+            {
+                nxControl.Stop();
+                Log("Stopping " + nxSvcName + " application...", "WARN");
+                Process stopProcess = nxControl.getStopProcess();
+                stopProcess.OutputDataReceived += new DataReceivedEventHandler(OutputLog);
+                stopProcess.BeginOutputReadLine();
+                stopProcess.ErrorDataReceived += new DataReceivedEventHandler(ErrorLog);
+                stopProcess.BeginErrorReadLine();
+
+                return true;
+            }
+            else
+            {
+                Log("Application is not started", "WARN");
+                return false;
+            }
 		}
 		
 		bool TerminateApplication() {

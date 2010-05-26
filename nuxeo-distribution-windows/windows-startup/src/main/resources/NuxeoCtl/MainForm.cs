@@ -30,6 +30,21 @@ namespace NuxeoCtl
 	/// </summary>
 	public partial class MainForm : Form
 	{
+        private bool CliUse { get; set; }
+        private String arg;
+        public String Arg
+        {
+            get
+            {
+                return arg;
+            }
+            set
+            {
+                arg = value;
+                CliUse = true;
+            }
+        }
+
 		private ServiceController nxService;
 		private static String nxSvcName="Nuxeo";
 		private String nxSvcStatus;
@@ -81,6 +96,11 @@ namespace NuxeoCtl
 		private void OutputLog(object sender, DataReceivedEventArgs outLine) {
 			if (!String.IsNullOrEmpty(outLine.Data)) {
 				Log(outLine.Data,"LOG");
+
+                if (CliUse && outLine.Data.Contains("[OSGiRuntimeService] Nuxeo EP Started"))
+                {
+                    Environment.Exit(0);
+                }
 			}
 		}
 		
@@ -175,6 +195,26 @@ namespace NuxeoCtl
 						
 			
 		}
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            if (CliUse)
+            {
+                switch (Arg)
+                {
+                    case "start":
+                        StartClick(this, new EventArgs());
+                        break;
+                    case "stop":
+                        StopClick(this, new EventArgs());
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Log(String.Format("Invalid argument \"{0}\"", Arg), "ERROR");
+                        break;
+                }
+            }
+        }
 		
 		
 	}

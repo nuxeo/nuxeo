@@ -63,7 +63,7 @@ namespace NuxeoProcess
 			if (!File.Exists(NUXEO_CONF)) {
 				NUXEO_CONF="nuxeo.conf";
 				if (!File.Exists(NUXEO_CONF)) {
-					NUXEO_CONF="C:\\DEV\\nuxeo-dm-jboss\\bin\\nuxeo.conf";
+                    //NUXEO_CONF = @"C:\Documents and Settings\Administrateur\Bureau\nuxeo-dm-5.3.2-SNAPSHOT-jboss\bin\nuxeo.conf";
 					if (!File.Exists(NUXEO_CONF)) {
 						Log("Could not find nuxeo configuration");
 						return null;
@@ -76,14 +76,15 @@ namespace NuxeoProcess
 			String[] split;
 			char[] splitParams={'='};
 			try {
-				StreamReader file=new StreamReader(NUXEO_CONF);
-				while ((line=file.ReadLine())!=null) {
-					if (line.Length==0) continue;
-					if (line[0]=='#') continue;
-					split=line.Split(splitParams,2);
-					if (split.Length!=2) continue;
-					nxConfig.Add(split[0].Trim(),split[1].Trim());
-				}
+				using(StreamReader file = new StreamReader(NUXEO_CONF)) {
+				    while ((line=file.ReadLine())!=null) {
+                        if (line.Length == 0) continue;
+                        if (line[0] == '#') continue;
+                        split = line.Split(splitParams, 2);
+                        if (split.Length != 2) continue;
+                        nxConfig.Add(split[0].Trim(), split[1].Trim());
+                    }
+                }
 			} catch (Exception e) {
 				Log("Error reading "+NUXEO_CONF);
 				Log(e.Message);
@@ -105,7 +106,7 @@ namespace NuxeoProcess
 		//
 		
 		private bool SetupEnv(Dictionary<String,String> nxConfig) {
-			
+            nxEnv = new Dictionary<String, String>();
 			nxEnv.Add("NUXEO_CONF",nxConfig["NUXEO_CONF"]);
 			
 			// Setup the JVM
@@ -116,6 +117,11 @@ namespace NuxeoProcess
 			} else if (Environment.GetEnvironmentVariable("JAVA_HOME")!=null) {
 				JAVA=Path.Combine(Path.Combine(Environment.GetEnvironmentVariable("NUXEO_HOME"),"bin"),JAVA);
 			}
+
+            if (!File.Exists(JAVA)) {
+                Log("java.exe doesn't exists in the given path : " + JAVA, "ERROR");
+                return false;
+            }
 			nxEnv.Add("JAVA",JAVA);
 			
 			if (nxConfig.ContainsKey("CLASSPATH")) {
@@ -138,15 +144,24 @@ namespace NuxeoProcess
 			String NUXEO_HOME=null;
 			if (nxConfig.ContainsKey("NUXEO_HOME")) {
 				NUXEO_HOME=nxConfig["NUXEO_HOME"];
-			} else if (Environment.GetEnvironmentVariable("NUXEO_HOME")!=null) {
-				NUXEO_HOME=Environment.GetEnvironmentVariable("NUXEO_HOME");
-			} else if (Environment.GetEnvironmentVariable("JBOSS_HOME")!=null) {
-				NUXEO_HOME=Environment.GetEnvironmentVariable("JBOSS_HOME");
-			} else if (Environment.GetEnvironmentVariable("CATALINA_HOME")!=null) {
-				NUXEO_HOME=Environment.GetEnvironmentVariable("CATALINA_HOME");
-			} else {
-				NUXEO_HOME=Path.GetDirectoryName(Directory.GetCurrentDirectory());
+            }
+            else if (Environment.GetEnvironmentVariable("NUXEO_HOME") != null)
+            {
+                NUXEO_HOME = Environment.GetEnvironmentVariable("NUXEO_HOME");
+            }
+            else if (Environment.GetEnvironmentVariable("JBOSS_HOME") != null)
+            {
+                NUXEO_HOME = Environment.GetEnvironmentVariable("JBOSS_HOME");
+            }
+            else if (Environment.GetEnvironmentVariable("CATALINA_HOME") != null)
+            {
+                NUXEO_HOME = Environment.GetEnvironmentVariable("CATALINA_HOME");
+            }
+            else
+            {
+                NUXEO_HOME = Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Name);
 			}
+
 			nxEnv.Add("NUXEO_HOME",NUXEO_HOME);
 			
 			// Setup LOG_DIR
