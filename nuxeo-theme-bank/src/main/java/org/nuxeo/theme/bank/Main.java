@@ -24,11 +24,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import org.nuxeo.theme.presets.PaletteParseException;
-import org.nuxeo.theme.presets.PaletteIdentifyException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -46,6 +46,8 @@ import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.theme.presets.PaletteIdentifyException;
+import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
 
 @WebObject(type = "theme-banks")
@@ -75,6 +77,12 @@ public class Main extends ModuleRoot {
     }
 
     @GET
+    @Path("{bank}/info")
+    public Object getBankInfo(@PathParam("bank") String bank) {
+        return "XXX";
+    }
+
+    @GET
     @Path("{bank}/logo")
     public Object displayBankThumbnail(@PathParam("bank") String bank) {
         File file = BankManager.getBankLogoFile(bank);
@@ -101,6 +109,32 @@ public class Main extends ModuleRoot {
      * Styles
      */
     @GET
+    @Path("skins")
+    public Object getSkins() {
+        List<Skin> skins = new ArrayList<Skin>();
+        for (String bank : BankManager.getBankNames()) {
+            for (String collection : BankManager.getCollections(bank, "style")) {
+                Map<String, Object> info = BankManager.getInfo(bank, "style",
+                        collection);
+                if (info == null) {
+                    continue;
+                }
+                for (Map.Entry<String, Object> entry : info.entrySet()) {
+                    System.out.println(entry.getKey());
+                    System.out.println(entry.getValue());
+                    String key = entry.getKey();
+                    Map value = (Map) entry.getValue();
+                    Boolean skin = (Boolean) value.get("skin");
+                    System.out.println(skin);
+                    skins.add(new Skin(bank, collection, key));
+                }
+                System.out.println(info);
+            }
+        }
+        return getTemplate("skins.ftl").arg("skins", skins);
+    }
+
+    @GET
     @Path("{bank}/style/view")
     public Object getStyleCollectionsView(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
@@ -113,9 +147,18 @@ public class Main extends ModuleRoot {
     @Path("{bank}/style/{collection}/view")
     public Object getStyleCollectionView(@PathParam("bank") String bank,
             @PathParam("collection") String collection) {
-        return getTemplate("styleCollection.ftl").arg("styles",
+        Object info = BankManager.getInfo(bank, "style", collection);
+        return getTemplate("styleCollection.ftl").arg("info", info).arg(
+                "styles",
                 BankManager.getItemsInCollection(bank, "style", collection)).arg(
                 "collection", collection).arg("bank", bank);
+    }
+
+    @GET
+    @Path("{bank}/style/{collection}/info")
+    public Object getStyleCollectionInfo(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return BankManager.getInfoFile(bank, "style", collection);
     }
 
     @GET
@@ -147,7 +190,7 @@ public class Main extends ModuleRoot {
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
         File file = BankManager.getStylePreviewFile(bank, collection, resource);
-        if (!file.exists()) {
+        if (file == null) {
             return Response.status(404).build();
         }
         String ext = FileUtils.getFileExtension(path);
@@ -179,6 +222,13 @@ public class Main extends ModuleRoot {
         return getTemplate("presetCollection.ftl").arg("presets",
                 BankManager.getItemsInCollection(bank, "preset", collection)).arg(
                 "collection", collection).arg("bank", bank);
+    }
+
+    @GET
+    @Path("{bank}/preset/{collection}/info")
+    public Object getPresetCollectionInfo(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return BankManager.getInfoFile(bank, "preset", collection);
     }
 
     @GET
@@ -250,6 +300,13 @@ public class Main extends ModuleRoot {
         return getTemplate("imageCollection.ftl").arg("images",
                 BankManager.getItemsInCollection(bank, "image", collection)).arg(
                 "collection", collection).arg("bank", bank);
+    }
+
+    @GET
+    @Path("{bank}/image/{collection}/info")
+    public Object getImageCollectionInfo(@PathParam("bank") String bank,
+            @PathParam("collection") String collection) {
+        return BankManager.getInfoFile(bank, "image", collection);
     }
 
     @GET
@@ -340,8 +397,8 @@ public class Main extends ModuleRoot {
         folderTypeAttributes.put("rel", "folder");
         folderTypeAttributes.put("path", String.format("/%s/%s", bankName,
                 typeName));
-        folderTypeAttributes.put("id", BankUtils.getDomId(String.format("%s-%s", bankName,
-                typeName)));
+        folderTypeAttributes.put("id", BankUtils.getDomId(String.format(
+                "%s-%s", bankName, typeName)));
         folderTypeNode.put("attributes", folderTypeAttributes);
         folderTypeNode.put("data", folderTypeMap);
 
@@ -357,8 +414,8 @@ public class Main extends ModuleRoot {
             collectionAttributes.put("rel", "collection");
             collectionAttributes.put("path", String.format("/%s/%s/%s",
                     bankName, typeName, c));
-            collectionAttributes.put("id", BankUtils.getDomId(String.format("%s-%s-%s",
-                    bankName, typeName, c)));
+            collectionAttributes.put("id", BankUtils.getDomId(String.format(
+                    "%s-%s-%s", bankName, typeName, c)));
             collectionNode.put("attributes", collectionAttributes);
             collectionNode.put("data", collectionMap);
 
@@ -373,8 +430,8 @@ public class Main extends ModuleRoot {
                 itemAttributes.put("rel", typeName);
                 itemAttributes.put("path", String.format("/%s/%s/%s/%s",
                         bankName, typeName, c, item));
-                itemAttributes.put("id", BankUtils.getDomId(String.format("%s-%s-%s-%s",
-                        bankName, typeName, c, item)));
+                itemAttributes.put("id", BankUtils.getDomId(String.format(
+                        "%s-%s-%s-%s", bankName, typeName, c, item)));
                 itemNode.put("attributes", itemAttributes);
                 itemNode.put("data", itemMap);
                 items.add(itemNode);

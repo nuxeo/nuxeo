@@ -25,9 +25,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.yaml.snakeyaml.Yaml;
 
 public class BankManager {
     private static final File BANKS_DIR;
@@ -72,6 +74,9 @@ public class BankManager {
         String path = String.format("%s/%s/%s", bank, typeName, collection);
         File file = BankManager.getFile(path);
         for (String item : file.list()) {
+            if (typeName.equals("style") && !item.endsWith(".css")) {
+                continue;
+            }
             names.add(item);
         }
         return names;
@@ -101,10 +106,33 @@ public class BankManager {
 
     public static File getStylePreviewFile(String bank, String collection,
             String resource) {
-        String path = String.format("%s/style/%s/preview/%s", bank, collection,
-                resource.replace(".css", ".png"));
+        Map<String, Object> info = getInfo(bank, "style", collection);
+        if (info.containsKey(resource)) {
+            Map value = (Map) info.get(resource);
+            if (value.containsKey("preview")) {
+                String preview = (String) value.get("preview");
+                String path = String.format("%s/style/%s/%s", bank, collection,
+                        preview);
+                File file = BankManager.getFile(path);
+                return file;
+            }
+        }
+        return null;
+    }
+
+    public static File getInfoFile(String bank, String typeName,
+            String collection) {
+        String path = String.format("%s/%s/%s/info.txt", bank, typeName,
+                collection);
         File file = BankManager.getFile(path);
         return file;
+    }
+
+    public static Map<String, Object> getInfo(String bank, String typeName,
+            String collection) {
+        File file = getInfoFile(bank, typeName, collection);
+        Yaml yaml = new Yaml();
+        return (Map<String, Object>) yaml.load(BankUtils.getFileContent(file));
     }
 
     /*
