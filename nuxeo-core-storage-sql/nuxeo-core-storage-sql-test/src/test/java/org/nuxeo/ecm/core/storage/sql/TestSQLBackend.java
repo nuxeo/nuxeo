@@ -421,7 +421,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
         assertNotNull(prop);
-        assertEquals(4, prop.getValue().length); // root acls preexist
+        assertEquals(3, prop.getValue().length); // root acls preexist
         ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
         ACLRow acl2 = new ACLRow(0, "test", true, "Read", null, "Members");
         prop.setValue(new ACLRow[] { acl1, acl2 });

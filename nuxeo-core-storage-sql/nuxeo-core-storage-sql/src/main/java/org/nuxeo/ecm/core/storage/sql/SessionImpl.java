@@ -863,7 +863,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private void addRootACP() throws StorageException {
-        ACLRow[] aclrows = new ACLRow[4];
+        ACLRow[] aclrows = new ACLRow[3];
         // TODO put groups in their proper place. like that now for consistency.
         aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, true,
                 SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
@@ -873,8 +873,6 @@ public class SessionImpl implements Session, XAResource {
                 null);
         aclrows[2] = new ACLRow(2, ACL.LOCAL_ACL, true, SecurityConstants.READ,
                 SecurityConstants.MEMBERS, null);
-        aclrows[3] = new ACLRow(3, ACL.LOCAL_ACL, true,
-                SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
         rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
         requireReadAclsUpdate();
     }

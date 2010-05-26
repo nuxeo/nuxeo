@@ -194,8 +194,6 @@ public class JCRRoot extends JCRDocument {
                         SecurityConstants.EVERYTHING, true));
                 acl.add(new ACE(SecurityConstants.MEMBERS,
                         SecurityConstants.READ, true));
-                acl.add(new ACE(SecurityConstants.MEMBERS,
-                        SecurityConstants.VERSION, true));
                 // temporary hack to have junit tests running
                 // TODO - update tests to an user from the administrators group
                 acl.add(new ACE(SecurityConstants.ADMINISTRATOR,

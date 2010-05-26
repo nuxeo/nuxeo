@@ -41,7 +41,7 @@ public class XL2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(XL2TextConverter.class);
 
-    private static final String CELL_SEP = "";
+    private static final String CELL_SEP = " ";
     private static final String ROW_SEP = "\n";
 
     public BlobHolder convert(BlobHolder blobHolder,

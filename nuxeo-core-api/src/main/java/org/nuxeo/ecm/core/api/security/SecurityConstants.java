@@ -69,6 +69,10 @@ public interface SecurityConstants {
 
     static final String VERSION = "Version";
 
+    static final String READ_VERSION = "ReadVersion";
+
+    static final String WRITE_VERSION = "WriteVersion";
+
     static final String BROWSE = "Browse";
 
     static final String WRITE_SECURITY = "WriteSecurity";

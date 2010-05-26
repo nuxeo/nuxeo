@@ -20,9 +20,12 @@
     <permission name="ReviewParticipant" />
     <permission name="ReadSecurity" />
 
-    <permission name="Version" />
-    <permission name="ReadVersion">
-      <alias>Version</alias><!-- BBB deprecated old name -->
+    <permission name="ReadVersion"/>
+    <permission name="WriteVersion"/>
+ 
+    <permission name="Version" >
+       <include>ReadVersion</include>
+       <include>WriteVersion</include>
     </permission>
 
     <permission name="Read">
@@ -33,7 +36,6 @@
       <include>ReadLifeCycle</include>
       <include>ReadSecurity</include>
       <include>ReviewParticipant</include>
-      <include>Version</include><!-- use ReadVersion instead once alias works -->
     </permission>
 
     <permission name="AddChildren" />
