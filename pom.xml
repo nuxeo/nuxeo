@@ -1961,8 +1961,7 @@
           <configuration>
             <rules>
               <requirePluginVersions>
-                <message>Define plugin versions in a pluginManagement
-                  section.</message>
+                <message>Set plugin versions in pluginManagement section.</message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
