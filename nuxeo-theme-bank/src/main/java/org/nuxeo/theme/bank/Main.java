@@ -84,10 +84,10 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("{bank}/logo")
-    public Object displayBankThumbnail(@PathParam("bank") String bank) {
+    public Object displayBankLogo(@PathParam("bank") String bank) {
         File file = BankManager.getBankLogoFile(bank);
-        if (!file.exists()) {
-            return Response.status(404).build();
+        if (file == null || !file.exists()) {
+            return noPreview();
         }
         String ext = FileUtils.getFileExtension(path);
         String mimeType = ctx.getEngine().getMimeType(ext);
@@ -190,8 +190,8 @@ public class Main extends ModuleRoot {
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
         File file = BankManager.getStylePreviewFile(bank, collection, resource);
-        if (file == null) {
-            return Response.status(404).build();
+        if (file == null || !file.exists()) {
+            return noPreview();
         }
         String ext = FileUtils.getFileExtension(path);
         String mimeType = ctx.getEngine().getMimeType(ext);
@@ -315,9 +315,6 @@ public class Main extends ModuleRoot {
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
         File file = BankManager.getImageFile(bank, collection, resource);
-        if (!file.exists()) {
-            return Response.status(404).build();
-        }
         String ext = FileUtils.getFileExtension(path);
         String mimeType = ctx.getEngine().getMimeType(ext);
         if (mimeType == null) {
@@ -475,6 +472,10 @@ public class Main extends ModuleRoot {
                 }
             }
         };
+    }
+    
+    private Object noPreview() {
+        return redirect(ctx.getModulePath() + "/skin/img/no-preview.png");
     }
 
 }

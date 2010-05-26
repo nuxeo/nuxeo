@@ -113,6 +113,7 @@ public class BankManager {
                 String preview = (String) value.get("preview");
                 String path = String.format("%s/style/%s/%s", bank, collection,
                         preview);
+                
                 File file = BankManager.getFile(path);
                 return file;
             }
