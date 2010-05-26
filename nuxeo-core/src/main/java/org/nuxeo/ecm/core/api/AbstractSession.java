@@ -2161,7 +2161,8 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
+            checkPermission(doc, READ_PROPERTIES);
+            checkPermission(doc, READ_VERSION);
             String docPath = doc.getPath();
             doc = doc.getVersion(version.getLabel());
             if (doc == null) {
