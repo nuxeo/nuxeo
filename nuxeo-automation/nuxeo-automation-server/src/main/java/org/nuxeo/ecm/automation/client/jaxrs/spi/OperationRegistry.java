@@ -27,12 +27,18 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
  */
 public class OperationRegistry {
 
+    protected Map<String, String> paths;
     protected Map<String, OperationDocumentation> ops;
     protected Map<String, OperationDocumentation> chains;
 
-    public OperationRegistry(Map<String, OperationDocumentation> ops, Map<String, OperationDocumentation> chains) {
+    public OperationRegistry(Map<String,String> paths, Map<String, OperationDocumentation> ops, Map<String, OperationDocumentation> chains) {
         this.ops = ops;
         this.chains = chains;
+        this.paths = paths;
+    }
+
+    public String getPath(String key) {
+        return paths.get(key);
     }
 
     public OperationDocumentation getOperation(String key) {

@@ -14,37 +14,36 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
+package org.nuxeo.ecm.automation.server.jaxrs;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FileBlob extends Blob implements HasFile {
+public class LoginInfo {
 
-    protected File file;
+    protected String username;
+    protected Set<String> groups;
+    protected boolean isAdministrator;
 
-    public FileBlob(File file) {
-        super (file.getName(), getMimeTypeFromExtension(file.getPath()));
-        this.file = file;
+    public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
+        this.username = username;
+        this.groups = groups;
+        this.isAdministrator = isAdministrator;
     }
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return new FileInputStream(file);
+    public boolean isAdministrator() {
+        return isAdministrator;
     }
 
-    public File getFile() {
-        return file;
+    public String getUsername() {
+        return username;
     }
 
-    public static String getMimeTypeFromExtension(String path) {
-        return "application/octet-stream";
+    public Set<String> getGroups() {
+        return groups;
     }
+
 }

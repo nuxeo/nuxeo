@@ -23,7 +23,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.InputStreamDataSource;
+import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**

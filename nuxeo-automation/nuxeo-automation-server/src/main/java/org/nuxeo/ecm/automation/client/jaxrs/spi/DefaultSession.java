@@ -22,51 +22,132 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
+import org.nuxeo.ecm.automation.client.jaxrs.Constants;
+import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.jaxrs.util.MultipartInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultSession implements Session {
+public class DefaultSession implements Session, Constants {
 
     protected AbstractAutomationClient client;
-    protected String auth;
-    protected String username;
-    protected String password;
+    protected Connector connector;
+    protected LoginInfo login;
 
-    public DefaultSession(AbstractAutomationClient client, String username, String password) {
+    public DefaultSession(AbstractAutomationClient client, Connector connector, LoginInfo login) {
         this.client = client;
-        this.username = username;
-        this.password = password;
-        if (username != null) {
-            auth = "Basic "+Base64.encode(username+":"+password);
-        }
+        this.connector = connector;
+        this.login = login;
     }
 
     public AutomationClient getClient() {
         return client;
     }
 
-    public String getUsername() {
-        return username;
+    public Connector getConnector() {
+        return connector;
     }
 
-    public String getPassword() {
-        return password;
+    public LoginInfo getLogin() {
+        return login;
     }
 
-    public String getAuth() {
-        return auth;
+    public <T> T getAdapter(Class<T> type) {
+        return client.getAdapter(this, type);
     }
 
-    public OperationDocumentation getOperation(String id) {
-        return client.getRegistry().getOperation(id);
+
+    public Object execute(OperationRequest request) throws Exception {
+        Request req = null;
+        String content = JsonMarshalling.writeRequest(request);
+        String ctype;
+        OperationInput input = request.getInput();
+        if (input != null && input.isBinary()) {
+            MultipartInput mpinput = new MultipartInput();
+            mpinput.setRequest(content);
+            ctype = mpinput.getContentType();
+            if (input instanceof Blob) {
+                Blob blob = (Blob)input;
+                mpinput.setBlob(blob);
+            } else if (input instanceof Blobs) {
+                mpinput.setBlobs((Blobs)input);
+            } else {
+                throw new IllegalArgumentException("Unsupported binary input object: "+input);
+            }
+            req = new Request(Request.POST, request.getUrl(), mpinput);
+        } else {
+            req = new Request(Request.POST, request.getUrl(), content);
+            ctype = CTYPE_REQUEST_NOCHARSET;
+        }
+        // set headers
+        for (Map.Entry<String,String> entry : request.getHeaders().entrySet()) {
+            req.put(entry.getKey(), entry.getValue());
+        }
+        req.put("Accept", REQUEST_ACCEPT_HEADER);
+        req.put("Content-Type", ctype);
+        if (connector.getBasicAuth() != null) {
+            req.put("Authorization", connector.getBasicAuth());
+        }
+        return connector.execute(req);
     }
 
-    public Map<String, OperationDocumentation> getOperations() {
-        return client.getRegistry().getOperations();
+    public void execute(final OperationRequest request, final AsyncCallback<Object> cb) {
+        client.asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    cb.onSuccess(execute(request));
+                } catch (Throwable t) {
+                    cb.onError(t);
+                }
+            }
+        });
+    }
+
+    public Blob getFile(String path) throws Exception {
+        Request req = new Request(Request.GET, client.getBaseUrl()+path);
+        if (connector.getBasicAuth() != null) {
+            req.put("Authorization", connector.getBasicAuth());
+        }
+        return (Blob)connector.execute(req);
+    }
+
+    public Blobs getFiles(String path) throws Exception {
+        Request req = new Request(Request.GET, client.getBaseUrl()+path);
+        if (connector.getBasicAuth() != null) {
+            req.put("Authorization", connector.getBasicAuth());
+        }
+        return (Blobs)connector.execute(req);
+    }
+
+    public void getFile(final String path, final AsyncCallback<Blob> cb) throws Exception {
+        client.asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    cb.onSuccess(getFile(path));
+                } catch (Throwable t) {
+                    cb.onError(t);
+                }
+            }
+        });
+    }
+
+    public void getFiles(final String path, final AsyncCallback<Blobs> cb) throws Exception {
+        client.asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    cb.onSuccess(getFiles(path));
+                } catch (Throwable t) {
+                    cb.onError(t);
+                }
+            }
+        });
     }
 
     public OperationRequest newRequest(String id) throws Exception {
@@ -83,16 +164,12 @@ public class DefaultSession implements Session {
         return req;
     }
 
-    public Object execute(OperationRequest request) throws Exception {
-        return client.execute(request);
+    public OperationDocumentation getOperation(String id) {
+        return client.getOperation(id);
     }
 
-    public void execute(OperationRequest request, AsyncCallback<Object> cb) {
-        client.execute(request, cb);
-    }
-
-    public <T> T getAdapter(Class<T> type) {
-        return client.getAdapter(this, type);
+    public Map<String, OperationDocumentation> getOperations() {
+        return client.getOperations();
     }
 
 }

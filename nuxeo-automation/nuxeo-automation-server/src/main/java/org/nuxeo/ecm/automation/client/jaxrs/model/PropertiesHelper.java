@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.util.Date;
 
-import org.nuxeo.ecm.automation.client.jaxrs.spi.DateUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

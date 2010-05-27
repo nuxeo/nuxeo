@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.JsonAutomationInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonExceptionWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 
@@ -52,6 +53,7 @@ public class AutomationModule extends Application {
         result.add(new JsonDocumentWriter());
         result.add(new JsonDocumentListWriter());
         result.add(new BlobsWriter());
+        result.add(new JsonLoginInfoWriter());
         return result;
     }
 

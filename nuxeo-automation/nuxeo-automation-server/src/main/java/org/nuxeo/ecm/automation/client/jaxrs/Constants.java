@@ -27,7 +27,8 @@ public interface Constants {
 
     public final static String CTYPE_ENTITY = "application/json+nxentity";
 
-    public final static String CTYPE_MULTIPART = "multipart/related"; // for blobs
+    public final static String CTYPE_MULTIPART_RELATED = "multipart/related"; // for blobs upload
+    public final static String CTYPE_MULTIPART_MIXED = "multipart/mixed"; // for blobs download
 
     public final static String REQUEST_ACCEPT_HEADER = CTYPE_ENTITY+", */*";
 

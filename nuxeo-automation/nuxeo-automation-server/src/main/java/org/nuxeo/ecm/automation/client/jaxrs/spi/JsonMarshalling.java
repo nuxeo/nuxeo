@@ -14,9 +14,10 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl;
+package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
+import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
@@ -35,7 +37,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.OperationRegistry;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
 
 /**
@@ -45,10 +46,12 @@ import org.nuxeo.ecm.automation.core.doc.JSONExporter;
 public class JsonMarshalling {
 
 
+    @SuppressWarnings("unchecked")
     public static OperationRegistry readRegistry(String content) {
         JSONObject json = JSONObject.fromObject(content);
         HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
         HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
+        HashMap<String, String> paths = new HashMap<String, String>();
         JSONArray ar = json.getJSONArray("operations");
         if (ar != null) {
             for (int i=0, len=ar.size(); i<len; i++) {
@@ -65,7 +68,16 @@ public class JsonMarshalling {
                 chains.put(op.id, op);
             }
         }
-        return new OperationRegistry(ops, chains);
+        JSONObject pathsObj = json.getJSONObject("paths");
+        if (pathsObj != null) {
+            Iterator<String> it = pathsObj.keys();
+            while (it.hasNext()) {
+                String key = it.next();
+                String value = pathsObj.getString(key);
+                paths.put(key, value);
+            }
+        }
+        return new OperationRegistry(paths, ops, chains);
     }
 
     public static Object readEntity(String content) {
@@ -85,8 +97,8 @@ public class JsonMarshalling {
                 docs.add(readDocument(obj));
             }
             return docs;
-        } else if ("blobs".equals(type)) {
-            return null; //TODO
+        } else if ("login".equals(type)) {
+            return readLogin(json);
         } else if ("exception".equals(type)) {
             throw readException(content);
         }
@@ -102,6 +114,19 @@ public class JsonMarshalling {
                 json.optString("type", null),
                 json.optString("message"),
                 json.optString("stack", null));
+    }
+
+    protected static LoginInfo readLogin(JSONObject json) {
+        String username = json.getString("username");
+        String isAdmin = json.optString("isAdministrator", "false");
+        JSONArray groups = json.optJSONArray("groups");
+        HashSet<String> set = new HashSet<String>();
+        if (groups != null) {
+            for (int i=0,size=groups.size(); i<size; i++) {
+                set.add(groups.getString(i));
+            }
+        }
+        return new LoginInfo(username, set, Boolean.parseBoolean(isAdmin));
     }
 
     protected static Document readDocument(JSONObject json) {

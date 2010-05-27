@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DateUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 
 /**

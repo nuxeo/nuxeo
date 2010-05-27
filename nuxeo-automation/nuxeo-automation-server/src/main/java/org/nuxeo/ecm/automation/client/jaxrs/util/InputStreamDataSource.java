@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
+package org.nuxeo.ecm.automation.client.jaxrs.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,34 +22,40 @@ import java.io.OutputStream;
 
 import javax.activation.DataSource;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobDataSource implements DataSource {
+public class InputStreamDataSource implements DataSource {
 
-    protected Blob blob;
+    protected InputStream in;
+    protected String ctype;
+    protected String name;
 
-    public BlobDataSource(Blob blob) {
-        this.blob = blob;
+    public InputStreamDataSource(InputStream in, String ctype) {
+        this (in, ctype, "MultipartRequest");
     }
 
-    public String getContentType() {
-        return blob.getMimeType();
-    }
-
-    public InputStream getInputStream() throws IOException {
-        return blob.getStream();
-    }
-
-    public String getName() {
-        return blob.getFileName();
+    public InputStreamDataSource(InputStream in, String ctype, String name) {
+        this.in = in;
+        this.name = name;
+        this.ctype = ctype;
     }
 
     public OutputStream getOutputStream() throws IOException {
-        throw new UnsupportedOperationException("blob data source is read only");
+        throw new UnsupportedOperationException("data source is not writeable");
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public InputStream getInputStream() throws IOException {
+        return in;
+    }
+
+    public String getContentType() {
+        return ctype;
+    }
 }
+
