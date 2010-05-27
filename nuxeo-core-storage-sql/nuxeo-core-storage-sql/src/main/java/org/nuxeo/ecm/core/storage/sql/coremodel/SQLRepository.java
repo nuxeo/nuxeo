@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SQLRepository implements Repository {
 
-    private final RepositoryImpl repository;
+    public final RepositoryImpl repository;
 
     private final SchemaManager schemaManager;
 

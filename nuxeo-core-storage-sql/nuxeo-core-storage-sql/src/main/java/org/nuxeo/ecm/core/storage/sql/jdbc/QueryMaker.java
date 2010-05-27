@@ -24,7 +24,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 
 /**
@@ -56,12 +56,12 @@ public interface QueryMaker {
      *
      * @param sqlInfo the sql info
      * @param model the model
-     * @param session the session
+     * @param pathResolver the path resolver
      * @param query the query
      * @param queryFilter the query filter
      * @param params additional parameters, maker-specific
      */
-    Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
+    Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver,
             String query, QueryFilter queryFilter, Object... params)
             throws StorageException;
 

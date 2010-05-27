@@ -31,7 +31,7 @@ import java.util.NoSuchElementException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
  * Iterable query result implemented as a cursor on a SQL {@link ResultSet}.
@@ -56,11 +56,12 @@ public class ResultSetQueryResult implements IterableQueryResult,
     private final JDBCMapperLogger logger;
 
     public ResultSetQueryResult(QueryMaker queryMaker, String query,
-            QueryFilter queryFilter, Session session, JDBCMapper mapper,
-            Object... params) throws StorageException, SQLException {
+            QueryFilter queryFilter, PathResolver pathResolver,
+            JDBCMapper mapper, Object... params) throws StorageException,
+            SQLException {
         logger = mapper.logger;
-        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, session, query,
-                queryFilter, params);
+        q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver,
+                query, queryFilter, params);
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
             ps = null;
@@ -93,11 +94,21 @@ public class ResultSetQueryResult implements IterableQueryResult,
         // rs.setFetchDirection(ResultSet.FETCH_UNKNOWN); fails in H2
     }
 
+    protected static void closePreparedStatement(PreparedStatement ps)
+            throws SQLException {
+        try {
+            ps.close();
+        } catch (IllegalArgumentException e) {
+            // ignore
+            // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
+        }
+    }
+
     public void close() {
         if (rs != null) {
             try {
                 rs.close();
-                JDBCMapper.closePreparedStatement(ps);
+                closePreparedStatement(ps);
             } catch (SQLException e) {
                 logger.error("Error closing statement: " + e.getMessage(), e);
             } finally {

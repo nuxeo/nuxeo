@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,13 +14,12 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,51 +27,72 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
+import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 
 /**
- * The persistence context in use by a session.
+ * This class holds persistence context information.
+ * <p>
+ * All non-saved modified data is referenced here. At save time, the data is
+ * sent to the database by the {@link Mapper}. The database will at some time
+ * later be committed by the external transaction manager in effect.
+ * <p>
+ * Internally a fragment can be in at most one of the "pristine" or "modified"
+ * map. After a save() all the fragments are pristine, and may be partially
+ * invalidated after commit by other local or clustered contexts that committed
+ * too.
+ * <p>
+ * Depending on the table, the context may hold {@link SimpleFragment}s, which
+ * represent one row, {@link CollectionFragment}s, which represent several rows.
  * <p>
  * This class is not thread-safe, it should be tied to a single session and the
  * session itself should not be used concurrently.
- * <p>
- * This class mostly delegates all its work to per-fragment {@link Context}s. It
- * also deals with maintaining information about generated ids.
- *
- * @author Florent Guillaume
  */
-public class PersistenceContext implements XAResource {
+public class PersistenceContext {
 
     private static final Log log = LogFactory.getLog(PersistenceContext.class);
 
-    private final Model model;
+    protected final Model model;
 
-    private final Mapper mapper;
+    // protected because accessed by Fragment.refetch()
+    protected final RowMapper mapper;
 
-    private final Map<String, Context> contexts;
+    // public because used by unit tests
+    public final HierarchyContext hierContext;
 
-    private final HierarchyContext hierContext;
+    /**
+     * The pristine fragments. All held data is identical to what is present in
+     * the database and could be refetched if needed.
+     * <p>
+     * This contains fragment that are {@link State#PRISTINE} or
+     * {@link State#ABSENT}, or in some cases {@link State#INVALIDATED_MODIFIED}
+     * or {@link State#INVALIDATED_DELETED}.
+     * <p>
+     * Pristine fragments must be kept here when referenced by the application,
+     * because the application must get the same fragment object if asking for
+     * it twice, even in two successive transactions.
+     * <p>
+     * This is memory-sensitive, a fragment can always be refetched if nobody
+     * uses it and the GC collects it. Use a weak reference for the values, we
+     * don't hold them longer than they need to be referenced, as the underlying
+     * mapper also has its own cache.
+     */
+    protected final Map<RowId, Fragment> pristine;
 
-    private EventProducer eventProducer;
+    /**
+     * The fragments changed by the session.
+     * <p>
+     * This contains fragment that are {@link State#CREATED},
+     * {@link State#MODIFIED} or {@link State#DELETED}.
+     */
+    protected final Map<RowId, Fragment> modified;
 
     /**
      * Fragment ids generated but not yet saved. We know that any fragment with
@@ -81,76 +101,55 @@ public class PersistenceContext implements XAResource {
     private final Set<Serializable> createdIds;
 
     /**
-     * HACK: if some application code illegally recorded temporary ids (which
-     * Nuxeo does), then it's useful to keep around the map to avoid crashing
-     * the application.
-     * <p>
-     * TODO IMPORTANT don't keep it around forever, use some LRU.
+     * The invalidations that should be propagated to other sessions at
+     * post-commit time.
      */
-    private final HashMap<Serializable, Serializable> oldIdMap;
+    private final Invalidations transactionInvalidations;
 
-    public PersistenceContext(Model model, Mapper mapper) {
+    /**
+     * The invalidations received from other session, to process at
+     * pre-transaction time. Usage must be synchronized.
+     */
+    private final Invalidations receivedInvalidations;
+
+    @SuppressWarnings("unchecked")
+    public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
+            throws StorageException {
         this.model = model;
         this.mapper = mapper;
-        // accessed by invalidator, needs to be concurrent
-        contexts = new ConcurrentHashMap<String, Context>();
+        hierContext = new HierarchyContext(model, mapper, session, this);
 
-        // avoid doing tests all the time for this known case
-        hierContext = new HierarchyContext(model, mapper, this);
-        contexts.put(model.hierTableName, hierContext);
-
+        // use a weak reference for the values, we don't hold them longer than
+        // they need to be referenced, as the underlying mapper also has its own
+        // cache
+        pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
+        modified = new HashMap<RowId, Fragment>();
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
-        oldIdMap = new HashMap<Serializable, Serializable>();
+
+        transactionInvalidations = new Invalidations();
+        receivedInvalidations = new Invalidations();
     }
 
-    protected EventProducer getEventProducer() throws StorageException {
-        if (eventProducer == null) {
-            try {
-                eventProducer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                throw new StorageException("Unable to find EventProducer", e);
-            }
-        }
-        return eventProducer;
-    }
-
-    /**
-     * Clears all the caches. Called by RepositoryManagement.
-     */
     protected int clearCaches() {
-        int n = 0;
-        for (Context context : contexts.values()) {
-            n += context.clearCaches();
-        }
+        mapper.clearCache();
+        hierContext.clearCaches();
+        // TODO there should be a synchronization here
+        // but this is a rare operation and we don't call
+        // it if a transaction is in progress
+        int n = pristine.size();
+        pristine.clear();
+        modified.clear(); // not empty when rolling back before save
+        transactionInvalidations.clear();
         createdIds.clear();
         return n;
-    }
-
-    // get or return null
-    protected Context getContextOrNull(String tableName) {
-        return contexts.get(tableName);
-    }
-
-    // get or create if missing
-    public Context getContext(String tableName) {
-        Context context = contexts.get(tableName);
-        if (context == null) {
-            context = new Context(tableName, model, mapper, this);
-            contexts.put(tableName, context);
-        }
-        return context;
-    }
-
-    public HierarchyContext getHierContext() {
-        return hierContext;
     }
 
     /**
      * Generates a new id, or used a pre-generated one (import).
      */
-    public Serializable generateNewId(Serializable id) {
+    protected Serializable generateNewId(Serializable id) {
         if (id == null) {
             id = model.generateNewId();
         }
@@ -158,217 +157,223 @@ public class PersistenceContext implements XAResource {
         return id;
     }
 
-    /* Called by Context */
     protected boolean isIdNew(Serializable id) {
         return createdIds.contains(id);
     }
 
-    protected Serializable getRootId(Serializable repositoryId)
-            throws StorageException {
-        return mapper.getRootId(repositoryId);
-    }
-
-    protected void setRootId(Serializable repositoryId, Serializable id)
-            throws StorageException {
-        mapper.setRootId(repositoryId, id);
-    }
-
-    public void close() {
-        mapper.close();
-        for (Context context : contexts.values()) {
-            context.close();
-        }
-        // don't clean the contexts, we keep the pristine cache around
-    }
-
     /**
-     * Update fulltext.
+     * Saves all the created, modified and deleted rows into a batch object, for
+     * later execution.
      */
-    protected void updateFulltext(Session session) throws StorageException {
-        Set<Serializable> dirtyStrings = new HashSet<Serializable>();
-        Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
-        for (Context context : contexts.values()) {
-            context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
-        }
-        if (dirtyStrings.isEmpty() && dirtyBinaries.isEmpty()) {
-            return;
-        }
+    protected RowBatch getSaveBatch() throws StorageException {
+        RowBatch batch = new RowBatch();
 
-        // update simpletext on documents with dirty strings
-        for (Serializable docId : dirtyStrings) {
-            if (docId == null) {
-                // cannot happen, but has been observed :(
-                log.error("Got null doc id in fulltext update, cannot happen");
+        // created main rows are saved first in the batch (in their order of
+        // creation), because they are used as foreign keys in all other tables
+        for (Serializable id : createdIds) {
+            RowId rowId = new RowId(model.hierTableName, id);
+            Fragment fragment = modified.remove(rowId);
+            if (fragment == null) {
+                // was created and deleted before save
                 continue;
             }
-            Node document = session.getNodeById(docId);
-            if (document == null) {
-                // cannot happen
-                continue;
-            }
-
-            for (String indexName : model.getFulltextInfo().indexNames) {
-                Set<String> paths;
-                if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
-                    // index all string fields, minus excluded ones
-                    // TODO XXX excluded ones...
-                    paths = model.getTypeSimpleTextPropertyPaths(document.getPrimaryType());
-                } else {
-                    // index configured fields
-                    paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
-                }
-                String strings = findFulltext(session, document, paths);
-                // Set the computed full text
-                // On INSERT/UPDATE a trigger will change the actual fulltext
-                String propName = model.FULLTEXT_SIMPLETEXT_PROP
-                        + model.getFulltextIndexSuffix(indexName);
-                document.setSingleProperty(propName, strings);
-            }
+            batch.creates.add(fragment.row);
+            fragment.clearDirty();
+            fragment.setPristine();
+            pristine.put(rowId, fragment);
         }
-
-        if (!dirtyBinaries.isEmpty()) {
-            log.debug("Queued documents for asynchronous fulltext extraction: "
-                    + dirtyBinaries.size());
-            EventContext eventContext = new EventContextImpl(dirtyBinaries,
-                    model.getFulltextInfo());
-            eventContext.setRepositoryName(session.getRepositoryName());
-            Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
-            try {
-                getEventProducer().fireEvent(event);
-            } catch (ClientException e) {
-                throw new StorageException(e);
-            }
-        }
-    }
-
-    private String findFulltext(Session session, Node document,
-            Set<String> paths) throws StorageException {
-        if (paths == null) {
-            return "";
-        }
-
-        String documentType = document.getPrimaryType();
-        List<String> strings = new LinkedList<String>();
-
-        for (String path : paths) {
-            ModelProperty pi = model.getPathPropertyInfo(documentType, path);
-            if (pi == null) {
-                continue; // doc type doesn't have this property
-            }
-            if (pi.propertyType != PropertyType.STRING
-                    && pi.propertyType != PropertyType.ARRAY_STRING) {
-                continue;
-            }
-            List<Node> nodes = new ArrayList<Node>(
-                    Collections.singleton(document));
-            String[] names = path.split("/");
-            for (int i = 0; i < names.length; i++) {
-                String name = names[i];
-                List<Node> newNodes;
-                if (i + 1 < names.length && "*".equals(names[i + 1])) {
-                    // traverse complex list
-                    i++;
-                    newNodes = new ArrayList<Node>();
-                    for (Node node : nodes) {
-                        newNodes.addAll(session.getChildren(node, name, true));
-                    }
-                } else {
-                    if (i == names.length - 1) {
-                        // last path component: get value
-                        for (Node node : nodes) {
-                            if (pi.propertyType == PropertyType.STRING) {
-                                String v = node.getSimpleProperty(name).getString();
-                                if (v != null) {
-                                    strings.add(v);
-                                }
-                            } else /* ARRAY_STRING */{
-                                for (Serializable v : node.getCollectionProperty(
-                                        name).getValue()) {
-                                    if (v != null) {
-                                        strings.add((String) v);
-                                    }
-                                }
-                            }
-                        }
-                        newNodes = Collections.emptyList();
-                    } else {
-                        // traverse
-                        newNodes = new ArrayList<Node>(nodes.size());
-                        for (Node node : nodes) {
-                            node = session.getChildNode(node, name, true);
-                            if (node != null) {
-                                newNodes.add(node);
-                            }
-                        }
-                    }
-                }
-                nodes = newNodes;
-            }
-
-        }
-        return StringUtils.join(strings, " ");
-    }
-
-    /**
-     * Saves all the data to persistent storage.
-     */
-    public void save() throws StorageException {
-        log.debug("Saving persistence context");
-        /*
-         * First, create the main rows to get final ids for each.
-         */
-        assert !model.separateMainTable;
-        Map<Serializable, Serializable> idMap = hierContext.saveCreated(createdIds);
         createdIds.clear();
 
-        /*
-         * Then save all other rows, taking the map of ids into account.
-         */
-        for (Context context : contexts.values()) {
-            context.save(idMap);
+        // save the rest
+        for (Entry<RowId, Fragment> en : modified.entrySet()) {
+            RowId rowId = en.getKey();
+            Fragment fragment = en.getValue();
+            // hack to avoid gathering invalidations for a write-only table
+            boolean skipInvalidation = model.FULLTEXT_TABLE_NAME.equals(rowId.tableName);
+            switch (fragment.getState()) {
+            case CREATED:
+                batch.creates.add(fragment.row);
+                fragment.clearDirty();
+                fragment.setPristine();
+                // modified map cleared at end of loop
+                pristine.put(rowId, fragment);
+                if (!skipInvalidation) {
+                    transactionInvalidations.addModified(rowId);
+                }
+                break;
+            case MODIFIED:
+                if (fragment.row.isCollection()) {
+                    if (((CollectionFragment) fragment).isDirty()) {
+                        batch.updates.add(new RowUpdate(fragment.row, null));
+                        fragment.clearDirty();
+                    }
+                } else {
+                    Collection<String> keys = ((SimpleFragment) fragment).getDirtyKeys();
+                    if (!keys.isEmpty()) {
+                        batch.updates.add(new RowUpdate(fragment.row, keys));
+                        fragment.clearDirty();
+                    }
+                }
+                fragment.setPristine();
+                // modified map cleared at end of loop
+                pristine.put(rowId, fragment);
+                if (!skipInvalidation) {
+                    transactionInvalidations.addModified(rowId);
+                }
+                break;
+            case DELETED:
+                // TODO deleting non-hierarchy fragments is done by the database
+                // itself as their foreign key to hierarchy is ON DELETE CASCADE
+                batch.deletes.add(new RowId(rowId));
+                fragment.setDetached();
+                // modified map cleared at end of loop
+                if (!skipInvalidation) {
+                    transactionInvalidations.addDeleted(rowId);
+                }
+                break;
+            case PRISTINE:
+                // cannot happen, but has been observed :(
+                log.error("Found PRISTINE fragment in modified map: "
+                        + fragment);
+                break;
+            default:
+                throw new RuntimeException(fragment.toString());
+            }
         }
-        // no need to clear the contexts, they'd get reallocate soon anyway
+        modified.clear();
 
-        // HACK: remember the idMap
-        oldIdMap.putAll(idMap);
+        // flush children caches
+        hierContext.postSave();
 
-        log.debug("End of save");
+        return batch;
     }
 
     /**
-     * Rolls back everything.
-     * <p>
-     * As there may have been things already written to database and recorded as
-     * pristine, the caches must be completely cleared.
-     * <p>
-     * In a transactional context, the underlying XAResource held by the mapper
-     * will also be rolled back by {@link TransactionalSession}.
+     * Finds the documents having dirty text or dirty binaries that have to be
+     * reindexed as fulltext.
+     *
+     * @param dirtyStrings set of ids, updated by this method
+     * @param dirtyBinaries set of ids, updated by this method
      */
-    public void rollback() {
-        clearCaches();
+    protected void findDirtyDocuments(Set<Serializable> dirtyStrings,
+            Set<Serializable> dirtyBinaries) throws StorageException {
+        for (Fragment fragment : modified.values()) {
+            Serializable docId = null;
+            switch (fragment.getState()) {
+            case CREATED:
+                docId = hierContext.getContainingDocument(fragment.getId());
+                dirtyStrings.add(docId);
+                dirtyBinaries.add(docId);
+                break;
+            case MODIFIED:
+                String tableName = fragment.row.tableName;
+                Collection<String> keys;
+                if (model.isCollectionFragment(tableName)) {
+                    keys = Collections.singleton(null);
+                } else {
+                    keys = ((SimpleFragment) fragment).getDirtyKeys();
+                }
+                for (String key : keys) {
+                    PropertyType type = model.getFulltextFieldType(tableName,
+                            key);
+                    if (type == null) {
+                        continue;
+                    }
+                    if (docId == null) {
+                        docId = hierContext.getContainingDocument(fragment.getId());
+                    }
+                    if (type == PropertyType.STRING) {
+                        dirtyStrings.add(docId);
+                    } else if (type == PropertyType.BINARY) {
+                        dirtyBinaries.add(docId);
+                    }
+                }
+                break;
+            default:
+            }
+        }
     }
 
     /**
-     * Called post-transaction to gathers invalidations, to be sent to others.
+     * Marks locally all the invalidations gathered by a {@link Mapper}
+     * operation (like a version restore).
+     */
+    protected void markInvalidated(Invalidations invalidations) {
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                Fragment fragment = getIfPresent(rowId);
+                if (fragment != null) {
+                    setFragmentPristine(fragment);
+                    fragment.setInvalidatedModified();
+                }
+            }
+            hierContext.markInvalidated(invalidations.modified);
+        }
+        if (invalidations.deleted != null) {
+            for (RowId rowId : invalidations.deleted) {
+                Fragment fragment = getIfPresent(rowId);
+                if (fragment != null) {
+                    setFragmentPristine(fragment);
+                    fragment.setInvalidatedDeleted();
+                }
+            }
+        }
+        transactionInvalidations.add(invalidations);
+    }
+
+    // called from Fragment
+    protected void setFragmentModified(Fragment fragment) {
+        RowId rowId = fragment.row;
+        pristine.remove(rowId);
+        modified.put(rowId, fragment);
+    }
+
+    // also called from Fragment
+    protected void setFragmentPristine(Fragment fragment) {
+        RowId rowId = fragment.row;
+        modified.remove(rowId);
+        pristine.put(rowId, fragment);
+    }
+
+    /**
+     * Gathers invalidations from this session.
+     * <p>
+     * Called post-transaction to gathers invalidations to be sent to others.
      */
     protected Invalidations gatherInvalidations() {
         Invalidations invalidations = new Invalidations();
-        for (Context context : contexts.values()) {
-            if (context.getTableName().equals(model.FULLTEXT_TABLE_NAME)) {
-                // hack to avoid gathering invalidations for a write-only table
-                continue;
-            }
-            context.gatherInvalidations(invalidations);
-        }
+        invalidations.add(transactionInvalidations);
+        transactionInvalidations.clear();
+        hierContext.gatherInvalidations(invalidations);
         return invalidations;
     }
 
     /**
-     * Pre-transaction invalidations processing.
+     * Applies all invalidations accumulated.
+     * <p>
+     * Called pre-transaction.
      */
-    protected void processReceivedInvalidations() {
-        for (Context context : contexts.values()) {
-            context.processReceivedInvalidations();
+    protected void processReceivedInvalidations() throws StorageException {
+        synchronized (receivedInvalidations) {
+            if (receivedInvalidations.modified != null) {
+                for (RowId rowId : receivedInvalidations.modified) {
+                    Fragment fragment = pristine.remove(rowId);
+                    if (fragment != null) {
+                        fragment.setInvalidatedModified();
+                    }
+                }
+                hierContext.processReceivedInvalidations(receivedInvalidations.modified);
+            }
+            if (receivedInvalidations.deleted != null) {
+                for (RowId rowId : receivedInvalidations.deleted) {
+                    Fragment fragment = pristine.remove(rowId);
+                    if (fragment != null) {
+                        fragment.setInvalidatedDeleted();
+                    }
+                }
+            }
+            mapper.invalidateCache(receivedInvalidations);
+            receivedInvalidations.clear();
         }
     }
 
@@ -380,504 +385,383 @@ public class PersistenceContext implements XAResource {
      * node happen when the transaction starts.
      */
     protected void invalidate(Invalidations invalidations) {
-        for (Context context : contexts.values()) {
-            context.invalidate(invalidations);
+        if (!invalidations.isEmpty()) {
+            synchronized (receivedInvalidations) {
+                receivedInvalidations.add(invalidations);
+            }
         }
     }
 
     /**
-     * Find out if this old temporary id has been mapped to something permanent.
+     * Gets a fragment, if present in the context.
      * <p>
-     * This is a workaround for incorrect application code.
+     * Called by {@link #get}, and by the {@link Mapper} to reuse known
+     * hierarchy fragments in lists of children.
+     *
+     * @param rowId the fragment id
+     * @return the fragment, or {@code null} if not found
      */
-    protected Serializable getOldId(Serializable id) {
-        return oldIdMap.get(id);
+    protected Fragment getIfPresent(RowId rowId) {
+        Fragment fragment = pristine.get(rowId);
+        if (fragment != null) {
+            return fragment;
+        }
+        return modified.get(rowId);
     }
 
     /**
-     * Creates a new row in the context, for a new id (not yet saved).
-     *
-     * @param tableName the table name
-     * @param id the new id
-     * @param map the fragments map, or {@code null}
-     * @return the created row
-     * @throws StorageException if the row is already in the context
-     */
-    public SimpleFragment createSimpleFragment(String tableName,
-            Serializable id, Map<String, Serializable> map)
-            throws StorageException {
-        return getContext(tableName).create(id, map);
-    }
-
-    /**
-     * Gets a fragment given a table name and an id.
+     * Gets a fragment.
      * <p>
-     * If the fragment is not in the context, fetch it from the mapper. If it's
-     * not in the database, returns {@code null} or an absent fragment.
+     * If it's not in the context, fetch it from the mapper. If it's not in the
+     * database, returns {@code null} or an absent fragment.
+     * <p>
+     * Deleted fragments may be returned.
      *
-     * @param tableName the fragment table name
-     * @param id the fragment id
+     * @param rowId the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
      *         allowAbsent} was {@code false}
-     * @throws StorageException
      */
-    public Fragment get(String tableName, Serializable id, boolean allowAbsent)
+    protected Fragment get(RowId rowId, boolean allowAbsent)
             throws StorageException {
-        return getContext(tableName).get(id, allowAbsent);
+        Fragment fragment = getIfPresent(rowId);
+        if (fragment == null) {
+            fragment = getFromMapper(rowId, allowAbsent);
+        }
+        // if (fragment != null && fragment.getState() == State.DELETED) {
+        // fragment = null;
+        // }
+        return fragment;
+    }
+
+    protected Fragment getFromMapper(RowId rowId, boolean allowAbsent)
+            throws StorageException {
+        List<Fragment> fragments = getFromMapper(Collections.singleton(rowId),
+                allowAbsent);
+        return fragments.isEmpty() ? null : fragments.get(0);
     }
 
     /**
-     * Gets a list of fragments given a table name and their ids.
+     * Gets a collection of fragments from the mapper. No order is kept between
+     * the inputs and outputs.
      * <p>
-     * If the fragment is not in the context, fetch it from the mapper. If it's
-     * not in the database, uses {@code null} or an absent fragment.
+     * Fragments not found are not returned if {@code allowAbsent} is {@code
+     * false}.
+     */
+    protected List<Fragment> getFromMapper(Collection<RowId> rowIds,
+            boolean allowAbsent) throws StorageException {
+        List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
+
+        // find fragments we really want to fetch
+        List<RowId> todo = new ArrayList<RowId>(rowIds.size());
+        for (RowId rowId : rowIds) {
+            if (isIdNew(rowId.id)) {
+                // the id has not been saved, so nothing exists yet in the
+                // database
+                // rowId is not a row -> will use an absent fragment
+                Fragment fragment = getFragmentFromFetchedRow(rowId,
+                        allowAbsent);
+                if (fragment != null) {
+                    res.add(fragment);
+                }
+            } else {
+                todo.add(rowId);
+            }
+        }
+        if (todo.isEmpty()) {
+            return res;
+        }
+
+        // fetch these fragments in bulk
+        List<? extends RowId> rows = mapper.read(todo);
+        res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
+
+        return res;
+    }
+
+    /**
+     * Gets a list of fragments.
+     * <p>
+     * If a fragment is not in the context, fetch it from the mapper. If it's
+     * not in the database, use an absent fragment or skip it.
+     * <p>
+     * Deleted fragments are skipped.
      *
-     * @param tableName the fragment table name
-     * @param ids the fragment ids (not empty)
+     * @param id the fragment id
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of skipping it
+     * @return the fragments, in arbitrary order (no {@code null}s)
+     */
+    protected List<Fragment> getMulti(Collection<RowId> rowIds,
+            boolean allowAbsent) throws StorageException {
+        if (rowIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // find those already in the context
+        List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
+        List<RowId> todo = new LinkedList<RowId>();
+        for (RowId rowId : rowIds) {
+            Fragment fragment = getIfPresent(rowId);
+            if (fragment == null) {
+                todo.add(rowId);
+            } else {
+                if (fragment.getState() != State.DELETED) {
+                    res.add(fragment);
+                }
+            }
+        }
+        if (todo.isEmpty()) {
+            return res;
+        }
+
+        // fetch missing ones, return union
+        List<Fragment> fetched = getFromMapper(todo, allowAbsent);
+        res.addAll(fetched);
+        return res;
+    }
+
+    /**
+     * Turns the given rows (just fetched from the mapper) into fragments and
+     * record them in the context.
+     * <p>
+     * For each row, if the context already contains a fragment with the given
+     * id, it is returned instead of building a new one.
+     * <p>
+     * Deleted fragments are skipped.
+     * <p>
+     * If a simple {@link RowId} is passed, it means that an absent row was
+     * found by the mapper. An absent fragment will be returned, unless {@code
+     * allowAbsent} is {@code false} in which case it will be skipped.
+     *
+     * @param rowIds the list of rows or row ids
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
-     * @return the fragments, with a fragment being {@code null} if none is
-     *         found and {@value allowAbsent} was {@code false}
-     * @throws StorageException
+     * @return the list of fragments
      */
-    public List<Fragment> getMulti(String tableName, List<Serializable> ids,
-            boolean allowAbsent) throws StorageException {
-        return getContext(tableName).getMulti(ids, allowAbsent);
+    protected List<Fragment> getFragmentsFromFetchedRows(
+            List<? extends RowId> rowIds, boolean allowAbsent)
+            throws StorageException {
+        List<Fragment> fragments = new ArrayList<Fragment>(rowIds.size());
+        for (RowId rowId : rowIds) {
+            Fragment fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
+            if (fragment != null) {
+                fragments.add(fragment);
+            }
+        }
+        return fragments;
     }
 
     /**
-     * Finds a row in the hierarchy table given its parent id and name. If the
-     * row is not in the context, fetch it from the mapper.
-     *
-     * @param parentId the parent id
-     * @param name the name
-     * @param complexProp whether to get complex properties or real children
-     * @return the hierarchy fragment, or {@code null} if none is found
-     * @throws StorageException
-     */
-    public SimpleFragment getChildByName(Serializable parentId, String name,
-            boolean complexProp) throws StorageException {
-        return hierContext.getChildByName(parentId, name, complexProp);
-    }
-
-    /**
-     * Finds all the children given a parent id.
-     *
-     * @param parentId the parent id
-     * @param name the name of the children, or {@code null} for all
-     * @param complexProp whether to get complex properties or real children
-     * @return the collection of hierarchy fragments
-     * @throws StorageException
-     */
-    public List<SimpleFragment> getChildren(Serializable parentId, String name,
-            boolean complexProp) throws StorageException {
-        return hierContext.getChildren(parentId, name, complexProp);
-    }
-
-    /**
-     * Order a source child node before a destination child node, in a given
-     * parent folder.
+     * Turns the given row (just fetched from the mapper) into a fragment and
+     * record it in the context.
      * <p>
-     * The source node will be placed before the destination one. If destId is
-     * {@code null}, the source node will be appended at the end of the children
-     * list.
+     * If the context already contains a fragment with the given id, it is
+     * returned instead of building a new one.
+     * <p>
+     * If the fragment was deleted, {@code null} is returned.
+     * <p>
+     * If a simple {@link RowId} is passed, it means that an absent row was
+     * found by the mapper. An absent fragment will be returned, unless {@code
+     * allowAbsent} is {@code false} in which case {@code null} will be
+     * returned.
      *
-     * @param parentId the parent id
-     * @param sourceId the child node id to move
-     * @param destId the child node id before which to place the source node
-     * @throws StorageException
+     * @param rowId the row or row id (may be {@code null})
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
+     * @return the fragment, or {@code null} if it was deleted
      */
-    public void orderBefore(Serializable parentId, Serializable sourceId,
-            Serializable destId) throws StorageException {
-        hierContext.orderBefore(parentId, sourceId, destId);
+    protected Fragment getFragmentFromFetchedRow(RowId rowId,
+            boolean allowAbsent) throws StorageException {
+        if (rowId == null) {
+            return null;
+        }
+        Fragment fragment = getIfPresent(rowId);
+        if (fragment != null) {
+            // row is already known in the context, use it
+            State state = fragment.getState();
+            if (state == State.DELETED) {
+                // row has been deleted in the context, ignore it
+                return null;
+            } else if (state == State.ABSENT
+                    || state == State.INVALIDATED_MODIFIED
+                    || state == State.INVALIDATED_DELETED) {
+                // XXX TODO
+                throw new IllegalStateException(state.toString());
+            } else {
+                // keep existing fragment
+                return fragment;
+            }
+        }
+        boolean isCollection = model.isCollectionFragment(rowId.tableName);
+        if (rowId instanceof Row) {
+            Row row = (Row) rowId;
+            if (isCollection) {
+                fragment = new CollectionFragment(row, State.PRISTINE, this);
+            } else {
+                fragment = new SimpleFragment(row, State.PRISTINE, this);
+            }
+            hierContext.recordFragment(fragment);
+            return fragment;
+        } else {
+            if (allowAbsent) {
+                if (isCollection) {
+                    Serializable[] empty = model.getCollectionFragmentType(
+                            rowId.tableName).getEmptyArray();
+                    Row row = new Row(rowId.tableName, rowId.id, empty);
+                    return new CollectionFragment(row, State.ABSENT, this);
+                } else {
+                    Row row = new Row(rowId.tableName, rowId.id);
+                    return new SimpleFragment(row, State.ABSENT, this);
+                }
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
-     * Gets the next pos value for a new child in a folder.
+     * Creates a new fragment for a new row, not yet saved.
      *
-     * @param nodeId the folder node id
-     * @param complexProp whether to deal with complex properties or regular
-     *            children
-     * @return the next pos, or {@code null} if not orderable
-     * @throws StorageException
+     * @param row the row
+     * @return the created fragment
+     * @throws StorageException if the fragment is already in the context
      */
+    protected SimpleFragment createSimpleFragment(Row row)
+            throws StorageException {
+        if (pristine.containsKey(row) || modified.containsKey(row)) {
+            throw new StorageException("Row already registered: " + row);
+        }
+        SimpleFragment fragment = new SimpleFragment(row, State.CREATED, this);
+        hierContext.createdSimpleFragment(fragment);
+        return fragment;
+    }
+
+    protected void removeNode(Fragment hierFragment) throws StorageException {
+        hierContext.removeNode(hierFragment);
+
+        // find all the fragments with this id in the maps
+        Serializable id = hierFragment.getId();
+        List<Fragment> fragments = new LinkedList<Fragment>();
+        for (Fragment fragment : pristine.values()) {
+            if (id.equals(fragment.getId())) {
+                fragments.add(fragment);
+            }
+        }
+        for (Fragment fragment : modified.values()) {
+            if (id.equals(fragment.getId())) {
+                if (fragment.getState() != State.DELETED) {
+                    fragments.add(fragment);
+                }
+            }
+        }
+        // remove the fragments
+        for (Fragment fragment : fragments) {
+            removeFragment(fragment);
+        }
+    }
+
+    /** Deletes a fragment from the context. */
+    protected void removeFragment(Fragment fragment) throws StorageException {
+        hierContext.removeFragment(fragment);
+
+        RowId rowId = fragment.row;
+        switch (fragment.getState()) {
+        case ABSENT:
+        case INVALIDATED_DELETED:
+            pristine.remove(rowId);
+            break;
+        case CREATED:
+            modified.remove(rowId);
+            break;
+        case PRISTINE:
+        case INVALIDATED_MODIFIED:
+            pristine.remove(rowId);
+            modified.put(rowId, fragment);
+            break;
+        case MODIFIED:
+            // already in modified
+            break;
+        case DETACHED:
+        case DELETED:
+            break;
+        }
+        fragment.setDeleted();
+    }
+
+    protected List<Serializable> getVersionIds(Serializable versionableId)
+            throws StorageException {
+        List<Row> rows = mapper.getVersionRows(versionableId);
+        List<Fragment> fragments = getFragmentsFromFetchedRows(rows, false);
+        return fragmentsIds(fragments);
+    }
+
+    protected List<Serializable> getProxyIds(Serializable searchId,
+            boolean byTarget, Serializable parentId) throws StorageException {
+        List<Row> rows = mapper.getProxyRows(searchId, byTarget, parentId);
+        List<Fragment> fragments = getFragmentsFromFetchedRows(rows, false);
+        return fragmentsIds(fragments);
+    }
+
+    private List<Serializable> fragmentsIds(List<Fragment> fragments) {
+        List<Serializable> ids = new ArrayList<Serializable>(fragments.size());
+        for (Fragment fragment : fragments) {
+            ids.add(fragment.getId());
+        }
+        return ids;
+    }
+
+    /*
+     * ----- Pass-through to HierarchyContext -----
+     */
+
+    protected boolean isDeleted(Serializable id) throws StorageException {
+        return hierContext.isDeleted(id);
+    }
+
     protected Long getNextPos(Serializable nodeId, boolean complexProp)
             throws StorageException {
         return hierContext.getNextPos(nodeId, complexProp);
     }
 
-    /**
-     * Move a hierarchy fragment to a new parent with a new name.
-     *
-     * @param source the source
-     * @param parentId the destination parent id
-     * @param name the new name
-     * @throws StorageException
-     */
-    public void move(Node source, Serializable parentId, String name)
+    protected void orderBefore(Serializable parentId, Serializable sourceId,
+            Serializable destId) throws StorageException {
+        hierContext.orderBefore(parentId, sourceId, destId);
+    }
+
+    protected SimpleFragment getChildHierByName(Serializable parentId,
+            String name, boolean complexProp) throws StorageException {
+        return hierContext.getChildHierByName(parentId, name, complexProp);
+    }
+
+    protected List<SimpleFragment> getChildren(Serializable parentId,
+            String name, boolean complexProp) throws StorageException {
+        return hierContext.getChildren(parentId, name, complexProp);
+    }
+
+    protected void move(Node source, Serializable parentId, String name)
             throws StorageException {
-        hierContext.moveChild(source, parentId, name);
+        hierContext.move(source, parentId, name);
     }
 
-    /**
-     * Copy a hierarchy (and its children) to a new parent with a new name.
-     *
-     * @param source the source of the copy
-     * @param parentId the destination parent id
-     * @param name the new name
-     * @return the id of the copy
-     * @throws StorageException
-     */
-    public Serializable copy(Node source, Serializable parentId, String name)
+    protected Serializable copy(Node source, Serializable parentId, String name)
             throws StorageException {
-        return hierContext.copyChild(source, parentId, name);
+        return hierContext.copy(source, parentId, name);
     }
 
-    /**
-     * Removes a row.
-     *
-     * @param row
-     * @throws StorageException
-     */
-    public void remove(Fragment row) throws StorageException {
-        String tableName = row.getTableName();
-        Context context = contexts.get(tableName);
-        if (context == null) {
-            log.error("Removing row not in a context: " + row);
-            return;
-        }
-        context.remove(row);
-    }
-
-    /**
-     * Removes the fragments in all contexts for a given id.
-     *
-     * @param id the fragment id
-     * @throws StorageException
-     */
-    public void remove(Serializable id) throws StorageException {
-        for (Context context : contexts.values()) {
-            Fragment fragment = context.getIfPresent(id);
-            if (fragment != null) {
-                context.remove(fragment);
-            }
-        }
-    }
-
-    /**
-     * Checks in a node.
-     *
-     * @param node the node to check in
-     * @param label the version label
-     * @param description the version description
-     * @return the created version id
-     * @throws StorageException
-     */
-    public Serializable checkIn(Node node, String label, String description)
+    protected Serializable checkIn(Node node, String label, String description)
             throws StorageException {
-        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
-        if (Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked in");
-        }
-        /*
-         * Do the copy without non-complex children, with null parent.
-         */
-        Serializable id = node.getId();
-        String typeName = node.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, null, null,
-                null, null, this);
-        get(model.hierTableName, newId, false); // adds version as a new child
-        // of its parent
-        /*
-         * Create a "version" row for our new version.
-         */
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.VERSION_VERSIONABLE_KEY, id);
-        map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
-        map.put(model.VERSION_LABEL_KEY, label);
-        map.put(model.VERSION_DESCRIPTION_KEY, description);
-        SimpleFragment versionRow = createSimpleFragment(
-                model.VERSION_TABLE_NAME, newId, map);
-        /*
-         * Update the original node to reflect that it's checked in.
-         */
-        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        node.mainFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
-        /*
-         * Save to reflect changes immediately in database.
-         */
-        save();
-        return newId;
+        return hierContext.checkIn(node, label, description);
     }
 
-    /**
-     * Checks out a node.
-     *
-     * @param node the node to check out
-     * @throws StorageException
-     */
-    public void checkOut(Node node) throws StorageException {
-        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
-        if (!Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked out");
-        }
-        /*
-         * Update the node to reflect that it's checked out.
-         */
-        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
+    protected void checkOut(Node node) throws StorageException {
+        hierContext.checkOut(node);
     }
 
-    /**
-     * Restores a node by label.
-     * <p>
-     * The restored node is checked in.
-     *
-     * @param node the node
-     * @param label the version label to restore
-     * @throws StorageException
-     */
-    public void restoreByLabel(Node node, String label) throws StorageException {
-        String typeName = node.getPrimaryType();
-        /*
-         * Find the version.
-         */
-        Serializable versionableId = node.getId();
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        Serializable versionId = mapper.getVersionByLabel(versionableId, label,
-                versionsContext);
-        if (versionId == null) {
-            throw new StorageException("Unknown version: " + label);
-        }
-        /*
-         * Clear complex properties.
-         */
-        List<SimpleFragment> children = getChildren(versionableId, null, true);
-        // copy to avoid concurrent modifications
-        for (Fragment child : children.toArray(new Fragment[children.size()])) {
-            remove(child); // will cascade deletes
-        }
-        save(); // flush deletes
-        /*
-         * Copy the version values.
-         */
-        Map<String, Serializable> overwriteMap = new HashMap<String, Serializable>();
-        SimpleFragment versionHier = (SimpleFragment) hierContext.get(
-                versionId, false);
-        for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
-            if (key.equals(model.HIER_PARENT_KEY)
-                    || key.equals(model.HIER_CHILD_NAME_KEY)
-                    || key.equals(model.HIER_CHILD_POS_KEY)
-                    || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
-                    || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
-                    || key.equals(model.MAIN_CHECKED_IN_KEY)
-                    || key.equals(model.MAIN_BASE_VERSION_KEY)) {
-                continue;
-            }
-            overwriteMap.put(key, versionHier.get(key));
-        }
-        overwriteMap.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        overwriteMap.put(model.MAIN_BASE_VERSION_KEY, versionId);
-        mapper.copyHierarchy(versionId, typeName, node.getParentId(), null,
-                versionableId, overwriteMap, this);
-    }
-
-    /**
-     * Gets a version id given a versionable id and a version label.
-     *
-     * @param versionableId the versionable id
-     * @param label the version label
-     * @return the version id, or {@code null} if not found
-     * @throws StorageException
-     */
-    public Serializable getVersionByLabel(Serializable versionableId,
-            String label) throws StorageException {
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        return mapper.getVersionByLabel(versionableId, label, versionsContext);
-    }
-
-    /**
-     * Gets the the last version id given a versionable id.
-     *
-     * @param versionableId the versionabel id
-     * @return the version id, or {@code null} if not found
-     * @throws StorageException
-     */
-    public Serializable getLastVersion(Serializable versionableId)
+    protected void restoreVersion(Node node, Serializable versionId)
             throws StorageException {
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-
-        SimpleFragment result = mapper.getLastVersion(versionableId,
-                versionsContext);
-        return (result == null) ? null : result.getId();
-    }
-
-    /**
-     * Gets all the versions given a versionable id.
-     *
-     * @param versionableId the versionable id
-     * @return the list of version fragments
-     * @throws StorageException
-     */
-    public List<SimpleFragment> getVersions(Serializable versionableId)
-            throws StorageException {
-        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
-        return mapper.getVersions(versionableId, versionsContext);
-    }
-
-    /**
-     * Finds the proxies for a document. If the parent is not {@code null}, the
-     * search will be limited to its direct children.
-     * <p>
-     * If the document is a version, then only proxies to that version will be
-     * looked up.
-     * <p>
-     * If the document is a proxy, then all similar proxies (pointing to any
-     * version of the same versionable) are retrieved.
-     *
-     * @param document the document
-     * @param parent the parent, or {@code null}
-     * @return the list of proxies fragments
-     * @throws StorageException
-     */
-    public List<SimpleFragment> getProxies(Node document, Node parent)
-            throws StorageException {
-        /*
-         * Find the versionable id.
-         */
-        boolean byTarget;
-        Serializable searchId;
-        if (document.isVersion()) {
-            byTarget = true;
-            searchId = document.getId();
-        } else {
-            byTarget = false;
-            if (document.isProxy()) {
-                searchId = document.getSimpleProperty(
-                        model.PROXY_VERSIONABLE_PROP).getString();
-            } else {
-                searchId = document.getId();
-            }
-        }
-        Serializable parentId;
-        if (parent == null) {
-            parentId = null;
-        } else {
-            parentId = parent.getId();
-        }
-        Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
-        return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
-    }
-
-    /**
-     * Finds the id of the enclosing non-complex-property node.
-     *
-     * @param id the id
-     * @return the id of the containing document, or {@code null} if there is no
-     *         parent or the parent has been deleted.
-     */
-    protected Serializable getContainingDocument(Serializable id)
-            throws StorageException {
-        return hierContext.getContainingDocument(id);
-    }
-
-    /**
-     * Makes a NXQL query to the database.
-     *
-     * @param query the query
-     * @param queryFilter the query filter
-     * @param countTotal if {@code true}, count the total size without
-     *            limit/offset
-     * @param session the current session (to resolve paths)
-     * @return the list of matching document ids
-     * @throws StorageException
-     */
-    public PartialList<Serializable> query(String query,
-            QueryFilter queryFilter, boolean countTotal, Session session)
-            throws StorageException {
-        return mapper.query(query, queryFilter, countTotal, session);
-    }
-
-    /**
-     * Makes a query to the database and returns an iterable (which must be
-     * closed when done).
-     *
-     * @param query the query
-     * @param queryType the query type
-     * @param queryFilter the query filter
-     * @param session the current session (to resolve paths)
-     * @param params optional query-type-dependent parameters
-     * @return an iterable, which <b>must</b> be closed when done
-     * @throws StorageException
-     */
-    public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Session session, Object... params)
-            throws StorageException {
-        return mapper.queryAndFetch(query, queryType, queryFilter, session,
-                params);
-    }
-
-    /**
-     * Updates only the read ACLs that have changed.
-     *
-     * @throws StorageException
-     */
-    public void updateReadAcls() throws StorageException {
-        mapper.updateReadAcls();
-    }
-
-    /**
-     * Rebuilds the read ACLs for the whole repository.
-     *
-     * @throws StorageException
-     */
-    public void rebuildReadAcls() throws StorageException {
-        mapper.rebuildReadAcls();
-    }
-
-    /*
-     * ----- XAResource -----
-     */
-
-    public void start(Xid xid, int flags) throws XAException {
-        mapper.start(xid, flags);
-    }
-
-    public void end(Xid xid, int flags) throws XAException {
-        mapper.end(xid, flags);
-    }
-
-    public int prepare(Xid xid) throws XAException {
-        return mapper.prepare(xid);
-    }
-
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-        mapper.commit(xid, onePhase);
-    }
-
-    public void rollback(Xid xid) throws XAException {
-        mapper.rollback(xid);
-    }
-
-    public void forget(Xid xid) throws XAException {
-        mapper.forget(xid);
-    }
-
-    public Xid[] recover(int flag) throws XAException {
-        return mapper.recover(flag);
-    }
-
-    public boolean setTransactionTimeout(int seconds) throws XAException {
-        return mapper.setTransactionTimeout(seconds);
-    }
-
-    public int getTransactionTimeout() throws XAException {
-        return mapper.getTransactionTimeout();
-    }
-
-    public boolean isSameRM(XAResource xares) throws XAException {
-        throw new UnsupportedOperationException();
+        hierContext.restoreVersion(node, versionId);
     }
 
 }

@@ -43,7 +43,7 @@ public interface CollectionIO {
      * Sets the values of a fragment to a SQL prepared statement, and executes
      * the statement for each value.
      */
-    void setToPreparedStatement(CollectionFragment fragment,
+    void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)
             throws SQLException;

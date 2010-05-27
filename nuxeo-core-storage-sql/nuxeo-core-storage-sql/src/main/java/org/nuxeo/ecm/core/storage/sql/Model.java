@@ -824,8 +824,7 @@ public class Model {
     protected void addTypeFragment(String typeName, String fragmentName) {
         Set<String> fragments = typeFragments.get(typeName);
         if (fragments == null) {
-            fragments = new HashSet<String>();
-            typeFragments.put(typeName, fragments);
+            typeFragments.put(typeName, fragments = new HashSet<String>());
         }
         // fragmentName may be null, to just create the entry
         if (fragmentName != null) {
