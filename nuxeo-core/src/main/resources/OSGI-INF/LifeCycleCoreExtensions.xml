@@ -73,6 +73,7 @@
       <type name="Note">default</type>
       <type name="Calendar">default</type>
       <type name="Folder">default</type>
+      <type name="OrderedFolder">default</type>
       <type name="Workspace">default</type>
       <type name="Domain">default</type>
       <type name="Root">default</type>
