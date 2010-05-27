@@ -6,12 +6,11 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.1-CP03</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-jsf-parent</artifactId>
-  <version>5.3.1</version>
   <name>Nuxeo JSF Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo JSF: Parent.</description>
@@ -44,7 +43,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-api</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -154,7 +153,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>${nuxeo.jsf.version}</version>
+        <version>${nuxeo.jsf.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -226,6 +225,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-base</artifactId>
+        <version>${nuxeo.jsf.version}-CP03</version>
       </dependency>
       <dependency>
        <groupId>org.nuxeo.ecm.platform</groupId>
