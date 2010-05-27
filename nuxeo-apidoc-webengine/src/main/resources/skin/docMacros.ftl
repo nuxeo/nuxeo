@@ -32,24 +32,25 @@
   </div>
 </#macro>
 
+<#macro quickEditorLinks docItem>
+
+<#if Root.isEditor()>
+  <img src="${skinPath}/images/edit.png" title="Edit" id='${docItem.getEditId()}_button'  onclick="return quickEditShow('${docItem.getEditId()}')"/>
+</#if>
+
+</#macro>
 <#macro inlineEdit cid contentDoc>
-  <span id="${cid}_panel">
-    <#if Root.isEditor()><!--
-     <A href="javascript:doEditInline('${cid}_panel','${cid}')">
-     <img src="${skinPath}/images/edit.png" alt="Edit"/>
-     </A>-->
-    </#if>
-    <#if contentDoc!=null>
-    (${contentDoc.title}) <br/>
-    <div class="description">
-       <@docContent contentDoc/> <br/>
-    </div>
-    </#if>
+
     <#if contentDoc==null>
       No associated documentation <br/>
     </#if>
-  </span>
-
+    <#if contentDoc!=null>
+      <span id="${contentDoc.getEditId()}_doctitle" >${contentDoc.title}</span>
+      <@quickEditorLinks docItem=contentDoc/>
+      <div class="description">
+        <@docContent docItem=contentDoc />
+      </div>
+    </#if>
 </#macro>
 
 <#macro viewAdditionalDoc docsByCat>

@@ -38,12 +38,11 @@
 </table>
 
 
-<#assign descriptions=This.getDescriptions("NXService")/>
-
 <#list services as service>
 
   <A href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</A>
   <#if Context.request.getParameter("showDesc")??>
+     <#assign descriptions=This.getDescriptions("NXService")/>
      <#assign cid=service.id/>
      <#assign desc=descriptions[cid]/>
     <@inlineEdit cid desc/>
@@ -51,19 +50,6 @@
   <br/>
 
 </#list>
-
-<script language="javascript">
-
-function doEditInline(id,cid) {
- var items = items = $("span").filter(function() { return this.id==id;});
- var panel = $(items[0]);
- panel.css("display","none");
- var url = "${Root.path}/${distId}/viewService/" + cid + "/createForm?inline=true&type=description";
- var iframe = "<div><iframe width='100%' height='550' frameborder='0' scrolling='yes' src='" + url + "' ></iframe></div>";
- $(iframe).insertBefore(panel);
-}
-
-</script>
 
 </@block>
 

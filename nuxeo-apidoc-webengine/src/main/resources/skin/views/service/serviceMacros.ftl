@@ -10,13 +10,10 @@
 
     <div class="blocTitle bTitle${nestedLevel}" id="Service.${serviceItem.id}">
     <img src="${skinPath}/images/${serviceDesc.targetType}.png" alt="Service"/>
-     ${serviceDesc.title}
+    <span id="${serviceDesc.getEditId()}_doctitle"> ${serviceDesc.title}</span>
 
-<#if Root.isEditor()>
-    <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/doc">
-    <img src="${skinPath}/images/edit.png" alt="Edit"/>
-    </A>
-</#if>
+<@quickEditorLinks docItem=serviceDesc/>
+
 <#if This.nxArtifact.id!=serviceItem.id>
 &nbsp;&nbsp;
     <A href="${Root.path}/${distId}/viewService/${serviceItem.id}/">

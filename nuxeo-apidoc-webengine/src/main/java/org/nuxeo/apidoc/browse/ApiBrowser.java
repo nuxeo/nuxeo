@@ -101,7 +101,6 @@ public class ApiBrowser extends DefaultObject {
         return getView("listBundleGroups")
                 .arg("tree", tree).arg("distId", ctx.getProperty("distId"));
     }
-
     public Map<String, DocumentationItem> getDescriptions(String targetType) throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getAvailableDescriptions(getContext().getCoreSession(), targetType);

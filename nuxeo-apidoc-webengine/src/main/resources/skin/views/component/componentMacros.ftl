@@ -23,14 +23,9 @@
     <img src="${skinPath}/images/${componentDesc.targetType}-java.png" alt="Java Component"/>
   </#if>
 
+  <span id="${componentDesc.getEditId()}_doctitle">${componentDesc.title}</span>
 
-  ${componentDesc.title}
-
-<#if Root.isEditor()>
-  <A href="${Root.path}/${distId}/viewComponent/${componentItem.id}/doc">
-  <img src="${skinPath}/images/edit.png" alt="Edit"/>
-  </A>
-</#if>
+<@quickEditorLinks docItem=componentDesc/>
 
 <#if This.nxArtifact.id!=componentItem.id>
 &nbsp;&nbsp;

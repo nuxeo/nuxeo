@@ -12,12 +12,9 @@
   <A name="Bundle.${bundleItem.id}"> </A>
   <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">
   <img src="${skinPath}/images/${bundleDesc.targetType}.png" alt="Bundle"/>
-  ${bundleDesc.title}
-<#if Root.isEditor()>
-  <A href="${Root.path}/${distId}/viewBundle/${bundleItem.id}/doc">
-  <img src="${skinPath}/images/edit.png" alt="Edit"/>
-  </A>
-</#if>
+  <span id="${bundleDesc.getEditId()}_doctitle" >${bundleDesc.title}</span>
+
+<@quickEditorLinks docItem=bundleDesc/>
 
 <#if This.nxArtifact.id!=bundleItem.id>
 &nbsp;&nbsp;

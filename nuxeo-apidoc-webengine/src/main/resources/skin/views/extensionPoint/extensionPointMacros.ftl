@@ -10,13 +10,10 @@
 
   <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">
   <img src="${skinPath}/images/${extensionPointDesc.targetType}.png" alt="ExtensionPoint"/>
-   ${extensionPointDesc.title} (${extensionPointItem.name})
+   <span id="${extensionPointDesc.getEditId()}_doctitle">${extensionPointDesc.title}</span> (${extensionPointItem.name})
 
-<#if Root.isEditor()>
-  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/doc">
-  <img src="${skinPath}/images/edit.png" alt="Edit"/>
-  </A>
-</#if>
+<@quickEditorLinks docItem=extensionPointDesc/>
+
   &nbsp;&nbsp;
 <#if This.nxArtifact.id!=extensionPointItem.id>
   <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/">

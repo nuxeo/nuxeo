@@ -13,7 +13,9 @@
 
 
   <@block name="stylesheets" />
-
+   <script type="text/javascript">
+     var skinPath = '${skinPath}';
+   </script>
    <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
    <script type="text/javascript" src="${skinPath}/script/jquery/cookie.js"></script>
    <script type="text/javascript" src="${skinPath}/script/highlight.js"></script>
@@ -23,6 +25,7 @@
 
    <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.js"></script>
    <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.async.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/quickEditor.js"></script>
 
    <@block name="header_scripts" />
 
