@@ -556,7 +556,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(1, acl.size());
         assertEquals("princ2", acl.get(0).getUsername());
         acl = acls[1];
-        assertEquals(1 + 4, acl.size()); // 1 + 4 root defaults
+        assertEquals(1 + 3, acl.size()); // 1 + 3 root defaults
         assertEquals("princ1", acl.get(0).getUsername());
 
         // remove live document (create a proxy so the version stays)
