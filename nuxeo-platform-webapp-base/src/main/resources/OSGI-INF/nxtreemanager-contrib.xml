@@ -23,6 +23,7 @@
       <leafFilterClass>org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter</leafFilterClass>
       <sortPropertyPath>dc:title</sortPropertyPath>
       <queryModel>TREE_CHILDREN</queryModel>
+      <orderableQueryModel>TREE_ORDERED_CHILDREN</orderableQueryModel>
     </treeManagerPlugin>
 
   </extension>

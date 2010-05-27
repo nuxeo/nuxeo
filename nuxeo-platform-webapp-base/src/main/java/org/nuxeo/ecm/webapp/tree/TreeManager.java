@@ -52,4 +52,10 @@ public interface TreeManager extends Serializable {
      */
     QueryModelDescriptor getQueryModelDescriptor(String pluginName);
 
+    /**
+     * Returns the query model descriptor to use for given plugin name
+     * on an Orderable DocumentModel.
+     */
+    QueryModelDescriptor getOrderableQueryModelDescriptor(String pluginName);
+
 }

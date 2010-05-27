@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 
 /**
@@ -59,6 +60,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final QueryModel queryModel;
 
+    protected final QueryModel orderableQueryModel;
+
     protected Map<Object, DocumentTreeNodeImpl> children;
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
@@ -67,15 +70,29 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 queryModel);
     }
 
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Filter leafFilter, Sorter sorter, QueryModel queryModel,
+            QueryModel orderableQueryModel) {
+        this(document.getSessionId(), document, filter, leafFilter, sorter,
+                queryModel, orderableQueryModel);
+    }
+
     public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
             Filter filter, Filter leafFilter, Sorter sorter,
             QueryModel queryModel) {
+        this(sessionId, document, filter, leafFilter, sorter, queryModel, null);
+    }
+
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
+            Filter filter, Filter leafFilter, Sorter sorter,
+            QueryModel queryModel, QueryModel orderableQueryModel) {
         this.document = document;
         this.sessionId = sessionId;
         this.filter = filter;
         this.leafFilter = leafFilter;
         this.sorter = sorter;
         this.queryModel = queryModel;
+        this.orderableQueryModel = orderableQueryModel;
     }
 
     /** @deprecated use the other constructor */
@@ -131,18 +148,27 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             List<DocumentModel> documents;
             if (queryModel == null) {
                 // get the children using the core
+                Sorter sorterToUse = document.hasFacet(FacetNames.ORDERABLE) ? null
+                        : sorter;
                 documents = session.getChildren(document.getRef(), null,
-                        SecurityConstants.READ, filter, sorter);
+                        SecurityConstants.READ, filter, sorterToUse);
             } else {
                 // get the children using a query model
-                documents = queryModel.getDocuments(session,
-                        new Object[] { getId() });
+                if (document.hasFacet(FacetNames.ORDERABLE)
+                        && orderableQueryModel != null) {
+                    documents = orderableQueryModel.getDocuments(session,
+                            new Object[] { getId() });
+                } else {
+                    documents = queryModel.getDocuments(session,
+                            new Object[] { getId() });
+                }
             }
             // build the children nodes
             for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode = new DocumentTreeNodeImpl(
-                        session.getSessionId(), child, filter, leafFilter, sorter, queryModel);
+                        session.getSessionId(), child, filter, leafFilter,
+                        sorter, queryModel, orderableQueryModel);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {

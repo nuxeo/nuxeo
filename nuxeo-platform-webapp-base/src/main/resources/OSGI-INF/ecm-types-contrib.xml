@@ -118,6 +118,7 @@
       <subtypes>
         <type>Workspace</type>
         <type>Folder</type>
+        <type>OrderedFolder</type>
         <type>File</type>
         <type>Note</type>
       </subtypes>
@@ -197,6 +198,7 @@
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Folder</type>
+        <type>OrderedFolder</type>
         <type>File</type>
         <type>Note</type>
       </subtypes>
@@ -211,6 +213,32 @@
         <layout>document_listing</layout>
         <layout>document_listing_compact_2_columns</layout>
         <layout>document_listing_icon_2_columns</layout>
+      </layouts>
+    </type>
+
+    <type id="OrderedFolder">
+      <label>OrderedFolder</label>
+      <icon>/icons/ordered_folder.png</icon>
+      <bigIcon>/icons/ordered_folder_100.png</bigIcon>
+      <icon-expanded>/icons/ordered_folder_open.png</icon-expanded>
+      <category>Collaborative</category>
+      <description>OrderedFolder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
       </layouts>
     </type>
 

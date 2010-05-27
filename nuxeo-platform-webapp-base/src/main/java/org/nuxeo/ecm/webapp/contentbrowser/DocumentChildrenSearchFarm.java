@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.io.Serializable;
 
 import org.jboss.seam.annotations.In;
@@ -35,6 +33,8 @@ import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+
+import static org.jboss.seam.ScopeType.SESSION;
 
 /**
  * Creates ResultsProvider for the children of the current document using
@@ -75,20 +75,18 @@ public class DocumentChildrenSearchFarm extends InputController implements
             SortInfo sortInfo) throws ClientException {
         final DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
-        if (DocumentChildrenStdFarm.CHILDREN_BY_COREAPI.equals(name)) {
-            PagedDocumentsProvider provider = getChildrenResultsProviderQMPattern(name, currentDoc, sortInfo);
-            provider.setName(name);
-            return provider;
-        } else {
-            throw new ClientException("Unknown provider: " + name);
-        }
+        PagedDocumentsProvider provider = getChildrenResultsProviderQMPattern(
+                name, currentDoc, sortInfo);
+        provider.setName(name);
+        return provider;
     }
 
     /**
      * Usable with a queryModel that defines a pattern NXQL.
      */
     private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
-            String queryModelName, DocumentModel parent, SortInfo sortInfo) throws ClientException {
+            String queryModelName, DocumentModel parent, SortInfo sortInfo)
+            throws ClientException {
 
         final String parentId = parent.getId();
         Object[] params = { parentId };

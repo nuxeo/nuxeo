@@ -62,6 +62,8 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, String> queryModelNames;
 
+    protected Map<String, String> orderableQueryModelNames;
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -78,6 +80,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
         queryModelNames = new HashMap<String, String>();
+        orderableQueryModelNames = new HashMap<String, String>();
     }
 
     @Override
@@ -86,6 +89,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         leafFilters = null;
         sorters = null;
         queryModelNames = null;
+        orderableQueryModelNames = null;
         super.deactivate(context);
     }
 
@@ -128,6 +132,15 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             }
             log.info("Registering query model for plugin " + name);
             queryModelNames.put(name, plugin.getQueryModelName());
+            // Orederable query model
+            if (orderableQueryModelNames.containsKey(name)) {
+                // FIXME handle merge?
+                log.info("Overriding Orderable query model for plugin " + name);
+                orderableQueryModelNames.remove(name);
+            }
+            log.info("Registering Orderable query model for plugin " + name);
+            orderableQueryModelNames.put(name,
+                    plugin.getOrderableQueryModelName());
         }
     }
 
@@ -157,6 +170,12 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             if (queryModelNames.containsKey(name)) {
                 log.info("Unregistering query model for plugin " + name);
                 queryModelNames.remove(name);
+            }
+            // Orderable query model
+            if (orderableQueryModelNames.containsKey(name)) {
+                log.info("Unregistering Orderable query model for plugin "
+                        + name);
+                orderableQueryModelNames.remove(name);
             }
         }
     }
@@ -275,4 +294,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         // lazily compute the descriptor to allow for runtime overriding
         return buildQueryModelDescriptor(queryModelNames.get(pluginName));
     }
+
+    public QueryModelDescriptor getOrderableQueryModelDescriptor(
+            String pluginName) {
+        return buildQueryModelDescriptor(orderableQueryModelNames.get(pluginName));
+    }
+
 }

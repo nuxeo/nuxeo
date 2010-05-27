@@ -53,6 +53,9 @@ public class TreeManagerPluginDescriptor implements Serializable {
     @XNode("queryModel")
     protected String queryModelName;
 
+    @XNode("orderableQueryModel")
+    protected String orderableQueryModelName;
+
     @XNodeList(value = "excludedTypes/type", type = ArrayList.class, componentType = String.class)
     protected List<String> excludedTypes;
 
@@ -83,6 +86,10 @@ public class TreeManagerPluginDescriptor implements Serializable {
 
     public String getQueryModelName() {
         return queryModelName;
+    }
+
+    public String getOrderableQueryModelName() {
+        return orderableQueryModelName;
     }
 
     public List<String> getExcludedTypes() {

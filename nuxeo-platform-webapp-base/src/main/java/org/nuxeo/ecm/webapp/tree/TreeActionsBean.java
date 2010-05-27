@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.webapp.tree;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,9 +52,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 /**
  * Manages the navigation tree.
- * 
+ *
  * @author Razvan Caraghin
  * @author Anahide Tchertchian
  */
@@ -94,7 +94,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return getTreeRoots(false);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot)
+            throws ClientException {
 
         if (treeInvalidator.needsInvalidation()) {
             reset();
@@ -134,6 +135,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 Filter leafFilter = null;
                 Sorter sorter = null;
                 QueryModel queryModel = null;
+                QueryModel orderableQueryModel = null;
                 try {
                     TreeManager treeManager = Framework.getService(TreeManager.class);
                     filter = treeManager.getFilter(DEFAULT_TREE_PLUGIN_NAME);
@@ -142,6 +144,9 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME);
                     queryModel = queryModelDescriptor == null ? null
                             : new QueryModel(queryModelDescriptor);
+                    QueryModelDescriptor orderableQueryModelDescriptor = treeManager.getOrderableQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME);
+                    orderableQueryModel = orderableQueryModelDescriptor == null ? null
+                            : new QueryModel(orderableQueryModelDescriptor);
                 } catch (Exception e) {
                     log.error(
                             "Could not fetch filter, sorter or node type for tree ",
@@ -149,7 +154,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 }
                 DocumentTreeNode treeRoot = new DocumentTreeNodeImpl(
                         firstAccessibleParent, filter, leafFilter, sorter,
-                        queryModel);
+                        queryModel, orderableQueryModel);
                 tree.add(treeRoot);
                 log.debug("Tree initialized with document: "
                         + firstAccessibleParent.getId());
