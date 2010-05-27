@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.api.operation;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -92,7 +94,6 @@ public abstract class Operation<T> implements Serializable {
     private ModificationSet modifs;
     protected transient Operation<?> parent;
     protected transient CoreSession session;
-
 
     protected Operation(String name, int flags) {
         this.name = name;
@@ -169,21 +170,21 @@ public abstract class Operation<T> implements Serializable {
         return name;
     }
 
-//    /**
-//     * TODO impl this?
-//     * @param args
-//     */
-//    public void setArguments(Object ... args) {
-//
-//    }
-//
-//    /**
-//     * TODO impl this?
-//     * @return command arguments.
-//     */
-//    public Object[] getArguments() {
-//        return null;
-//    }
+    //    /**
+    //     * TODO impl this?
+    //     * @param args
+    //     */
+    //    public void setArguments(Object ... args) {
+    //
+    //    }
+    //
+    //    /**
+    //     * TODO impl this?
+    //     * @return command arguments.
+    //     */
+    //    public Object[] getArguments() {
+    //        return null;
+    //    }
 
     public final Operation<?> getParent() {
         return parent;
@@ -235,15 +236,41 @@ public abstract class Operation<T> implements Serializable {
         return true;
     }
 
+    protected long startedTime;
+
     private void start() {
         setFlags(RUNNING);
         parent = operation.get();
+        if (parent != null) { // inherits client cache context from parent
+            startedTime = parent.startedTime;
+        } else {
+            startedTime = Calendar.getInstance().getTimeInMillis();
+        }
         operation.set(this);
     }
+
+    protected long endedTime;
 
     private void end() {
         operation.set(parent);
         setFlags(TERMINATED);
+        endedTime = Calendar.getInstance().getTimeInMillis();
+    }
+
+    public Date getStartedDate() {
+        return new Date(startedTime);
+    }
+
+    public Date getEndedDate() {
+        return new Date(endedTime);
+    }
+
+    public long getDuration() {
+        return endedTime - startedTime;
+    }
+
+    public boolean isStartedBefore(long time) {
+        return startedTime <= time;
     }
 
     public List<Operation<?>> getCommandStack() {
@@ -256,7 +283,7 @@ public abstract class Operation<T> implements Serializable {
         if (parent != null) {
             fillCommandStack(cmds);
         }
-      cmds.add(this);
+        cmds.add(this);
     }
 
     public void printCommandStack(PrintStream out) {

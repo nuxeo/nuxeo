@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ *
  */
 public interface DocumentModelCache {
 
@@ -61,5 +62,7 @@ public interface DocumentModelCache {
      * @throws ClientException
      */
     DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
+
+    void handleDirtyUpdateTag(Object tag);
 
 }
