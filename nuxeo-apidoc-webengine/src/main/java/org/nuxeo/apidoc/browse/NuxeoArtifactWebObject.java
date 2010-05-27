@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.browse;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +31,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.json.JSONObject;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -189,6 +193,59 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return getView("../docForm")
                 .arg("nxItem", nxItem).arg("mode","edit").arg("docItem", docItem).arg("versions", versions).arg("selectedTab","docView");
     }
+
+    @GET
+    @Produces("text/plain")
+    @Path(value = "quickEdit/{editId}")
+    public Object quickEdit(@PathParam("editId") String editId) throws Exception {
+
+        if (editId==null || editId.startsWith("placeholder_")) {
+            return "";
+        }
+
+        DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
+        DocumentationItem item = doc.getAdapter(DocumentationItem.class);
+
+        return item.getContent();
+    }
+
+    @POST
+    @Produces("text/plain")
+    @Path(value = "quickEdit/{editId}")
+    public Object quickEditSave(@PathParam("editId") String editId) throws Exception {
+
+
+        String title = getContext().getForm().getString("title");
+        String content = getContext().getForm().getString("content");
+        String type = getContext().getForm().getString("type");
+        if (type==null || type.trim().length()==0) {
+            type="description";
+        }
+
+        String renderingType="wiki";
+        if (content.contains("<ul>") || content.contains("<p>") || content.contains("<br/>")) {
+            renderingType="html";
+        }
+
+        List<String> applicableVersions = new ArrayList<String>();
+        applicableVersions.add(getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX !!!
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        if (editId==null || editId.startsWith("placeholder_")) {
+            ds.createDocumentationItem(getContext().getCoreSession(), getNxArtifact(), title, content, type, applicableVersions, false, renderingType);
+        }
+        else {
+            DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
+            doc.setPropertyValue("dc:title", title);
+            doc.setPropertyValue("file:content", new StringBlob(content));
+            DocumentationItem item = doc.getAdapter(DocumentationItem.class);
+
+            ds.updateDocumentationItem(getContext().getCoreSession(), item);
+        }
+
+        return "OK";
+    }
+
+
 
     public Map<String, String> getCategories() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);

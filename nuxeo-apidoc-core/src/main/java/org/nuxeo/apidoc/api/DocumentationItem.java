@@ -89,4 +89,12 @@ public interface DocumentationItem {
      */
     boolean isPlaceHolder();
 
+    /**
+     * Return the id used by quick editor
+     * (can contains a real UUID for existing doc or an artifact id for new one)
+     *
+     * @return
+     */
+    String getEditId();
+
 }

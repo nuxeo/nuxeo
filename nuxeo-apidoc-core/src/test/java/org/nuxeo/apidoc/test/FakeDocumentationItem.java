@@ -107,4 +107,9 @@ public class FakeDocumentationItem implements DocumentationItem {
         return false;
     }
 
+    public String getEditId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

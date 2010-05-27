@@ -100,4 +100,8 @@ public class SimpleDocumentationItem implements DocumentationItem {
         return false;
     }
 
+    public String getEditId() {
+        return null;
+    }
+
 }

@@ -128,10 +128,10 @@
     });
 
     // toggle title bars
-    $(".blocTitle").click(function() {
-     var toFold=$(this).parent().find(".foldablePanel").get(0);
-     $(toFold).toggle("fold",{horizFirst: true },10);
-    });
+    //$(".blocTitle").click(function() {
+    // var toFold=$(this).parent().find(".foldablePanel").get(0);
+    // $(toFold).toggle("fold",{horizFirst: true },10);
+    //});
 
     var lastDisplayedDoc;
     function showAddDoc(docId) {

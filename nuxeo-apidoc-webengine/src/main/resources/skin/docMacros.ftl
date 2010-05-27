@@ -1,5 +1,5 @@
 <#macro docContent docItem>
-  <div class="docContent">
+  <div class="docContent" id="${docItem.editId}_doccontent">
     <#if docItem.renderingType=='html'>
         ${docItem.content}
     </#if>

@@ -192,4 +192,8 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         return false;
     }
 
+    public String getEditId() {
+        return getUUID();
+    }
+
 }

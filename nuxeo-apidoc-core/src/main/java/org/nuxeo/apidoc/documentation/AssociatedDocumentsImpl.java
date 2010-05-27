@@ -156,6 +156,10 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             public boolean isPlaceHolder() {
                 return true;
             }
+
+            public String getEditId() {
+                return "placeholder_" + item.getId();
+            }
         };
 
     }

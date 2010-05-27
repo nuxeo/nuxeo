@@ -387,3 +387,10 @@ color:#fff;
   margin:5 0 0 10;
   padding:2px;
  }
+
+ .quickEdit {
+  border-style:solid;
+  border-width:1px;
+  border-color:#777777;
+  background-color:#F8F8FF;
+ }
