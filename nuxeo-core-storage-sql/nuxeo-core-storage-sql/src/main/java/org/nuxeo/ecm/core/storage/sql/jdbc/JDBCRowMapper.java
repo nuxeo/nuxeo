@@ -35,8 +35,6 @@ import java.util.Map.Entry;
 
 import javax.sql.XADataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -44,6 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper;
+import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -54,11 +53,17 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
  */
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
-    private static final Log log = LogFactory.getLog(JDBCRowMapper.class);
-
     public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
             throws StorageException {
         super(model, sqlInfo, xadatasource);
+    }
+
+    public void invalidateCache(Invalidations invalidations) {
+        // no cache
+    }
+
+    public void clearCache() {
+        // no cache
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
@@ -214,7 +219,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     /**
-     * Fetch the rows for a select with fixed criteria given as a map.
+     * Fetches the rows for a select with fixed criteria given as two maps (a
+     * criteriaMap whose values and up in the returned rows, and a joinMap for
+     * other criteria).
      */
     protected List<Row> getSelectRows(String tableName, SQLInfoSelect select,
             Map<String, Serializable> criteriaMap,
@@ -245,7 +252,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(select.sql);
-    
+
             /*
              * Compute where part.
              */
@@ -286,12 +293,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             if (debugValues != null) {
                 logger.logSQL(select.sql, debugValues);
             }
-    
+
             /*
              * Execute query.
              */
             ResultSet rs = ps.executeQuery();
-    
+
             /*
              * Construct the maps from the result set.
              */
@@ -326,7 +333,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error(e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -453,7 +460,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error(e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -484,7 +491,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 try {
                     closePreparedStatement(ps);
                 } catch (SQLException e) {
-                    log.error(e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -663,7 +670,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             childId = column.getFromResultSet(rs, i);
                         }
                     }
-                    log.error(String.format(
+                    logger.error(String.format(
                             "Child '%s' appeared twice as child of %s "
                                     + "(%s and %s), renaming second to '%s'",
                             childName, parentId, row.id, childId, newName));
@@ -741,8 +748,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 updateSimpleRowWithValues(tableName, overwriteRow);
                 idMap.put(sourceId, overwriteId);
                 // invalidate
-                invalidations.addModified(Collections.singleton(new RowId(
-                        tableName, overwriteId)));
+                invalidations.addModified(new RowId(tableName, overwriteId));
             }
             // create the new hierarchy by copy
             Serializable newRootId = copyHierRecursive(sourceId, typeName,
@@ -751,8 +757,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             Serializable invalParentId = overwriteId == null ? destParentId
                     : overwriteId;
             if (invalParentId != null) { // null for a new version
-                invalidations.addModified(Collections.singleton(new RowId(
-                        Invalidations.PARENT, invalParentId)));
+                invalidations.addModified(new RowId(Invalidations.PARENT,
+                        invalParentId));
             }
             // copy all collected fragments
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(

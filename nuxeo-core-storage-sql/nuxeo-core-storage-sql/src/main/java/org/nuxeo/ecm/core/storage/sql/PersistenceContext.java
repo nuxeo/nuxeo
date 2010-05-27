@@ -94,28 +94,16 @@ public class PersistenceContext {
     private final Set<Serializable> createdIds;
 
     /**
-     * The set of modified/created fragments that should be invalidated in other
-     * sessions at post-commit time.
+     * The invalidations that should be propagated to other sessions at
+     * post-commit time.
      */
-    private final Set<RowId> modifiedInTransaction;
+    private final Invalidations transactionInvalidations;
 
     /**
-     * The set of deleted fragments that should be invalidated in other sessions
-     * at post-commit time.
+     * The invalidations received from other session, to process at
+     * pre-transaction time. Usage must be synchronized.
      */
-    private final Set<RowId> deletedInTransaction;
-
-    /**
-     * The set of fragments that have to be invalidated as modified in this
-     * session at post-commit time. Usage must be synchronized.
-     */
-    private final Set<RowId> modifiedInvalidations;
-
-    /**
-     * The set of fragments that have to be invalidated as deleted in this
-     * session at post-commit time. Usage must be synchronized.
-     */
-    private final Set<RowId> deletedInvalidations;
+    private final Invalidations receivedInvalidations;
 
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
@@ -130,13 +118,12 @@ public class PersistenceContext {
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
 
-        modifiedInTransaction = new HashSet<RowId>();
-        deletedInTransaction = new HashSet<RowId>();
-        modifiedInvalidations = new HashSet<RowId>();
-        deletedInvalidations = new HashSet<RowId>();
+        transactionInvalidations = new Invalidations();
+        receivedInvalidations = new Invalidations();
     }
 
     protected int clearCaches() {
+        mapper.clearCache();
         hierContext.clearCaches();
         // TODO there should be a synchronization here
         // but this is a rare operation and we don't call
@@ -144,8 +131,7 @@ public class PersistenceContext {
         int n = pristine.size();
         pristine.clear();
         modified.clear(); // not empty when rolling back before save
-        modifiedInTransaction.clear();
-        deletedInTransaction.clear();
+        transactionInvalidations.clear();
         createdIds.clear();
         return n;
     }
@@ -192,6 +178,8 @@ public class PersistenceContext {
         for (Entry<RowId, Fragment> en : modified.entrySet()) {
             RowId rowId = en.getKey();
             Fragment fragment = en.getValue();
+            // hack to avoid gathering invalidations for a write-only table
+            boolean skipInvalidation = model.FULLTEXT_TABLE_NAME.equals(rowId.tableName);
             switch (fragment.getState()) {
             case CREATED:
                 batch.creates.add(fragment.row);
@@ -199,7 +187,9 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                modifiedInTransaction.add(rowId);
+                if (!skipInvalidation) {
+                    transactionInvalidations.addModified(rowId);
+                }
                 break;
             case MODIFIED:
                 if (fragment.row.isCollection()) {
@@ -217,7 +207,9 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                modifiedInTransaction.add(rowId);
+                if (!skipInvalidation) {
+                    transactionInvalidations.addModified(rowId);
+                }
                 break;
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
@@ -225,7 +217,9 @@ public class PersistenceContext {
                 batch.deletes.add(rowId);
                 fragment.setDetached();
                 // modified map cleared at end of loop
-                deletedInTransaction.add(rowId);
+                if (!skipInvalidation) {
+                    transactionInvalidations.addDeleted(rowId);
+                }
                 break;
             case PRISTINE:
                 // cannot happen, but has been observed :(
@@ -302,8 +296,8 @@ public class PersistenceContext {
                     setFragmentPristine(fragment);
                     fragment.setInvalidatedModified();
                 }
-                modifiedInTransaction.add(rowId);
             }
+            hierContext.markInvalidated(invalidations.modified);
         }
         if (invalidations.deleted != null) {
             for (RowId rowId : invalidations.deleted) {
@@ -312,10 +306,9 @@ public class PersistenceContext {
                     setFragmentPristine(fragment);
                     fragment.setInvalidatedDeleted();
                 }
-                deletedInTransaction.add(rowId);
             }
         }
-        hierContext.markInvalidated(invalidations);
+        transactionInvalidations.add(invalidations);
     }
 
     // called from Fragment
@@ -339,49 +332,39 @@ public class PersistenceContext {
      */
     protected Invalidations gatherInvalidations() {
         Invalidations invalidations = new Invalidations();
-
-        // invalidations.addModified(modifiedInTransaction);
-        for (RowId rowId : modifiedInTransaction) {
-            if (model.FULLTEXT_TABLE_NAME.equals(rowId.tableName)) {
-                // hack to avoid gathering invalidations for a write-only table
-                continue;
-            }
-            invalidations.addModified(Collections.singleton(rowId));
-        }
-        invalidations.addDeleted(deletedInTransaction);
-        modifiedInTransaction.clear();
-        deletedInTransaction.clear();
-
+        invalidations.add(transactionInvalidations);
+        transactionInvalidations.clear();
         hierContext.gatherInvalidations(invalidations);
-
         return invalidations;
     }
 
     /**
-     * Processes all invalidations accumulated.
+     * Applies all invalidations accumulated.
      * <p>
      * Called pre-transaction.
      */
     protected void processReceivedInvalidations() throws StorageException {
-        synchronized (modifiedInvalidations) {
-            for (RowId rowId : modifiedInvalidations) {
-                Fragment fragment = pristine.remove(rowId);
-                if (fragment != null) {
-                    fragment.setInvalidatedModified();
+        synchronized (receivedInvalidations) {
+            if (receivedInvalidations.modified != null) {
+                for (RowId rowId : receivedInvalidations.modified) {
+                    Fragment fragment = pristine.remove(rowId);
+                    if (fragment != null) {
+                        fragment.setInvalidatedModified();
+                    }
+                }
+                hierContext.processReceivedInvalidations(receivedInvalidations.modified);
+            }
+            if (receivedInvalidations.deleted != null) {
+                for (RowId rowId : receivedInvalidations.deleted) {
+                    Fragment fragment = pristine.remove(rowId);
+                    if (fragment != null) {
+                        fragment.setInvalidatedDeleted();
+                    }
                 }
             }
-            modifiedInvalidations.clear();
+            mapper.invalidateCache(receivedInvalidations);
+            receivedInvalidations.clear();
         }
-        synchronized (deletedInvalidations) {
-            for (RowId rowId : deletedInvalidations) {
-                Fragment fragment = pristine.remove(rowId);
-                if (fragment != null) {
-                    fragment.setInvalidatedDeleted();
-                }
-            }
-            deletedInvalidations.clear();
-        }
-        hierContext.processReceivedInvalidations();
     }
 
     /**
@@ -392,17 +375,11 @@ public class PersistenceContext {
      * node happen when the transaction starts.
      */
     protected void invalidate(Invalidations invalidations) {
-        if (invalidations.modified != null) {
-            synchronized (modifiedInvalidations) {
-                modifiedInvalidations.addAll(invalidations.modified);
+        if (!invalidations.isEmpty()) {
+            synchronized (receivedInvalidations) {
+                receivedInvalidations.add(invalidations);
             }
         }
-        if (invalidations.deleted != null) {
-            synchronized (deletedInvalidations) {
-                deletedInvalidations.addAll(invalidations.deleted);
-            }
-        }
-        hierContext.invalidate(invalidations);
     }
 
     /**

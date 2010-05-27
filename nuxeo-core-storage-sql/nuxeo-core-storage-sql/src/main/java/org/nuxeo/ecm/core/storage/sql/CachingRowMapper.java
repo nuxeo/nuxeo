@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * The cache only holds {@link Row}s that are known to be identical to what's in
  * the underlying {@link RowMapper}.
  */
-// TODO deal with received invalidations to clear the cache
 public class CachingRowMapper implements RowMapper {
 
     private static final String ABSENT = "__ABSENT__\0\0\0";
@@ -45,21 +44,31 @@ public class CachingRowMapper implements RowMapper {
      * or a row with tableName {@link #ABSENT} to denote a fragment known to be
      * absent from the database.
      * <p>
-     * This cache is memory-sensitive, a fragment can always be refetched if the
-     * GC collects it.
+     * This cache is memory-sensitive (all values are soft-referenced), a
+     * fragment can always be refetched if the GC collects it.
      */
-    protected final Map<RowId, Row> cache;
+    // we use a new Row instance for the absent case to avoid keeping other
+    // references to it which would prevent its GCing
+    private final Map<RowId, Row> cache;
 
     /**
      * The {@link RowMapper} to which operations that cannot be processed from
      * the cache are delegated.
      */
-    protected final RowMapper mapper;
+    private final RowMapper rowMapper;
 
     @SuppressWarnings("unchecked")
     public CachingRowMapper(RowMapper rowMapper) {
-        this.mapper = rowMapper;
+        this.rowMapper = rowMapper;
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+    }
+
+    /*
+     * ----- Cache Management -----
+     */
+
+    protected static boolean isAbsent(Row row) {
+        return row.tableName == ABSENT; // == is ok
     }
 
     protected void cachePut(Row row) {
@@ -86,16 +95,33 @@ public class CachingRowMapper implements RowMapper {
         }
     }
 
-    protected boolean isAbsent(Row row) {
-        return row.tableName == ABSENT; // == is ok
-    }
-
     protected Row cacheGet(RowId rowId) {
         Row row = cache.get(rowId);
         if (row != null && !isAbsent(row)) {
             row = row.clone();
         }
         return row;
+    }
+
+    protected void cacheRemove(RowId rowId) {
+        cache.remove(rowId);
+    }
+
+    public void invalidateCache(Invalidations invalidations) {
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                cacheRemove(rowId);
+            }
+        }
+        if (invalidations.deleted != null) {
+            for (RowId rowId : invalidations.deleted) {
+                cachePutAbsent(rowId);
+            }
+        }
+    }
+
+    public void clearCache() {
+        cache.clear();
     }
 
     /*
@@ -121,7 +147,7 @@ public class CachingRowMapper implements RowMapper {
             }
         }
         // ask missing ones to underlying row mapper
-        List<? extends RowId> fetched = mapper.read(todo);
+        List<? extends RowId> fetched = rowMapper.read(todo);
         // add them to the cache
         for (RowId rowId : fetched) {
             cachePutAbsentIfRowId(rowId);
@@ -145,7 +171,7 @@ public class CachingRowMapper implements RowMapper {
             assert !(rowId instanceof Row);
             cachePutAbsent(rowId);
         }
-        mapper.write(batch);
+        rowMapper.write(batch);
     }
 
     /*
@@ -155,7 +181,7 @@ public class CachingRowMapper implements RowMapper {
     public Row readSimpleRow(RowId rowId) throws StorageException {
         Row row = cacheGet(rowId);
         if (row == null) {
-            row = mapper.readSimpleRow(rowId);
+            row = rowMapper.readSimpleRow(rowId);
             cachePutAbsentIfNull(rowId, row);
             return row;
         } else if (isAbsent(row)) {
@@ -167,14 +193,24 @@ public class CachingRowMapper implements RowMapper {
 
     public Serializable[] readCollectionRowArray(RowId rowId)
             throws StorageException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Row row = cacheGet(rowId);
+        if (row == null) {
+            Serializable[] array = rowMapper.readCollectionRowArray(rowId);
+            assert array != null;
+            row = new Row(rowId.tableName, rowId.id, array);
+            cachePut(row);
+            return row.values;
+        } else if (isAbsent(row)) {
+            return null;
+        } else {
+            return row.values;
+        }
     }
 
     // TODO this API isn't cached well...
     public Row readChildHierRow(Serializable parentId, String childName,
             boolean complexProp) throws StorageException {
-        Row row = mapper.readChildHierRow(parentId, childName, complexProp);
+        Row row = rowMapper.readChildHierRow(parentId, childName, complexProp);
         if (row != null) {
             cachePut(row);
         }
@@ -184,23 +220,31 @@ public class CachingRowMapper implements RowMapper {
     // TODO this API isn't cached well...
     public List<Row> readChildHierRows(Serializable parentId,
             boolean complexProp) throws StorageException {
-        List<Row> rows = mapper.readChildHierRows(parentId, complexProp);
+        List<Row> rows = rowMapper.readChildHierRows(parentId, complexProp);
         for (Row row : rows) {
             cachePut(row);
         }
         return rows;
     }
 
+    // TODO this API isn't cached well...
     public List<Row> getVersionRows(Serializable versionableId)
             throws StorageException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<Row> rows = rowMapper.getVersionRows(versionableId);
+        for (Row row : rows) {
+            cachePut(row);
+        }
+        return rows;
     }
 
+    // TODO this API isn't cached well...
     public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
             Serializable parentId) throws StorageException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<Row> rows = rowMapper.getProxyRows(searchId, byTarget, parentId);
+        for (Row row : rows) {
+            cachePut(row);
+        }
+        return rows;
     }
 
     /*
@@ -210,8 +254,20 @@ public class CachingRowMapper implements RowMapper {
     public CopyHierarchyResult copyHierarchy(Serializable sourceId,
             String typeName, Serializable destParentId, String destName,
             Row overwriteRow) throws StorageException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        CopyHierarchyResult result = rowMapper.copyHierarchy(sourceId,
+                typeName, destParentId, destName, overwriteRow);
+        Invalidations invalidations = result.invalidations;
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                cacheRemove(rowId);
+            }
+        }
+        if (invalidations.deleted != null) {
+            for (RowId rowId : invalidations.deleted) {
+                cacheRemove(rowId);
+            }
+        }
+        return result;
     }
 
 }

@@ -59,15 +59,10 @@ public class HierarchyContext {
     private final Map<Serializable, Children>[] childrenAllMaps;
 
     /**
-     * The parents modified in the transaction.
+     * The parents modified in the transaction, that should be propagated as
+     * invalidations to other sessions at post-commit time.
      */
     private final Set<Serializable> modifiedParentsInTransaction;
-
-    /**
-     * The set of parents that have to be invalidated in this session at
-     * post-commit time. Usage must be synchronized.
-     */
-    private final Set<Serializable> modifiedParentsInvalidations;
 
     private final PositionComparator posComparator;
 
@@ -88,7 +83,6 @@ public class HierarchyContext {
                 childrenComplexPropSoft, childrenComplexPropHard };
 
         modifiedParentsInTransaction = new HashSet<Serializable>();
-        modifiedParentsInvalidations = new HashSet<Serializable>();
 
         posComparator = new PositionComparator(model.HIER_CHILD_POS_KEY);
     }
@@ -625,19 +619,17 @@ public class HierarchyContext {
      * Marks locally all the invalidations gathered by a {@link Mapper}
      * operation (like a version restore).
      */
-    public void markInvalidated(Invalidations invalidations) {
-        if (invalidations.modified != null) {
-            for (RowId rowId : invalidations.modified) {
-                if (Invalidations.PARENT.equals(rowId.tableName)) {
-                    Serializable parentId = rowId.id;
-                    for (Map<Serializable, Children> map : childrenAllMaps) {
-                        Children children = map.get(parentId);
-                        if (children != null) {
-                            children.setIncomplete();
-                        }
+    public void markInvalidated(Set<RowId> modified) {
+        for (RowId rowId : modified) {
+            if (Invalidations.PARENT.equals(rowId.tableName)) {
+                Serializable parentId = rowId.id;
+                for (Map<Serializable, Children> map : childrenAllMaps) {
+                    Children children = map.get(parentId);
+                    if (children != null) {
+                        children.setIncomplete();
                     }
-                    modifiedParentsInTransaction.add(parentId);
                 }
+                modifiedParentsInTransaction.add(parentId);
             }
         }
     }
@@ -649,8 +641,7 @@ public class HierarchyContext {
      */
     public void gatherInvalidations(Invalidations invalidations) {
         for (Serializable id : modifiedParentsInTransaction) {
-            RowId rowId = new RowId(Invalidations.PARENT, id);
-            invalidations.addModified(Collections.singleton(rowId));
+            invalidations.addModified(new RowId(Invalidations.PARENT, id));
         }
         modifiedParentsInTransaction.clear();
     }
@@ -660,38 +651,13 @@ public class HierarchyContext {
      * <p>
      * Called pre-transaction.
      */
-    public void processReceivedInvalidations() throws StorageException {
-        synchronized (modifiedParentsInvalidations) {
-            for (Serializable parentId : modifiedParentsInvalidations) {
+    public void processReceivedInvalidations(Set<RowId> modified)
+            throws StorageException {
+        for (RowId rowId : modified) {
+            if (Invalidations.PARENT.equals(rowId.tableName)) {
+                Serializable parentId = rowId.id;
                 for (Map<Serializable, Children> map : childrenAllMaps) {
                     map.remove(parentId);
-                }
-            }
-            modifiedParentsInvalidations.clear();
-        }
-    }
-
-    /**
-     * Processes invalidations received by another session or cluster node.
-     * <p>
-     * Invalidations from other local session can happen asynchronously at any
-     * time (when the other session commits). Invalidations from another cluster
-     * node happen when the transaction starts.
-     */
-    public void invalidate(Invalidations invalidations) {
-        if (invalidations.modified != null) {
-            Set<Serializable> set = null;
-            for (RowId rowId : invalidations.modified) {
-                if (Invalidations.PARENT.equals(rowId.tableName)) {
-                    if (set == null) {
-                        set = new HashSet<Serializable>();
-                    }
-                    set.add(rowId.id);
-                }
-            }
-            if (set != null) {
-                synchronized (modifiedParentsInvalidations) {
-                    modifiedParentsInvalidations.addAll(set);
                 }
             }
         }

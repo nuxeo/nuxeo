@@ -94,7 +94,6 @@ public class SessionImpl implements Session, XAResource {
         this.mapper = mapper;
         // this.credentials = credentials;
         this.model = model;
-        // context = new PersistenceContext(model, new CachingRowMapper(mapper), this);
         context = new PersistenceContext(model, mapper, this);
         live = true;
         readAclsChanged = false;
@@ -114,6 +113,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    // called by NetServlet when forwarding remote NetMapper calls.
     public Mapper getMapper() {
         return mapper;
     }

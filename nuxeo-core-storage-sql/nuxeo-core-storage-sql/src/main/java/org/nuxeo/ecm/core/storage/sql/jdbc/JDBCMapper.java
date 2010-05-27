@@ -86,6 +86,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * Creates a new Mapper.
      *
      * @param model the model
+     * @param pathResolver the path resolver (used for startswith queries)
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      */

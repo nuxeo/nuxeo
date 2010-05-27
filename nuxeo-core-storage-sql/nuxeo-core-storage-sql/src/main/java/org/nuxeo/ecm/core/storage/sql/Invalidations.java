@@ -47,6 +47,11 @@ public class Invalidations implements Serializable {
         return modified == null && deleted == null;
     }
 
+    public void clear() {
+        modified = null;
+        deleted = null;
+    }
+
     /** only call this if it's to add at least one element in the set */
     public Set<RowId> getKindSet(int kind) {
         switch (kind) {
@@ -64,11 +69,34 @@ public class Invalidations implements Serializable {
         throw new AssertionError();
     }
 
+    public void add(Invalidations other) {
+        if (other.modified != null) {
+            addModified(other.modified);
+        }
+        if (other.deleted != null) {
+            addDeleted(other.deleted);
+        }
+    }
+
+    public void addModified(RowId rowId) {
+        if (modified == null) {
+            modified = new HashSet<RowId>();
+        }
+        modified.add(rowId);
+    }
+
     public void addModified(Set<RowId> rowIds) {
         if (modified == null) {
             modified = new HashSet<RowId>();
         }
         modified.addAll(rowIds);
+    }
+
+    public void addDeleted(RowId rowId) {
+        if (deleted == null) {
+            deleted = new HashSet<RowId>();
+        }
+        deleted.add(rowId);
     }
 
     public void addDeleted(Set<RowId> rowIds) {

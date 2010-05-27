@@ -80,19 +80,26 @@ public class RepositoryImpl implements Repository {
             throw new StorageException(e);
         }
 
-        // binary manager
+        binaryManager = createBinaryManager();
+        backend = createBackend();
+        server = createServer();
+    }
+
+    protected BinaryManager createBinaryManager() throws StorageException {
         try {
             Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
             if (klass == null) {
                 klass = DefaultBinaryManager.class;
             }
-            binaryManager = klass.newInstance();
+            BinaryManager binaryManager = klass.newInstance();
             binaryManager.initialize(repositoryDescriptor);
+            return binaryManager;
         } catch (Exception e) {
             throw new StorageException(e);
         }
+    }
 
-        // backend / connect
+    protected RepositoryBackend createBackend() throws StorageException {
         Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
         List<ServerDescriptor> connect = repositoryDescriptor.connect;
         if (backendClass == null) {
@@ -108,18 +115,22 @@ public class RepositoryImpl implements Repository {
             }
         }
         try {
-            backend = backendClass.newInstance();
+            RepositoryBackend backend = backendClass.newInstance();
+            backend.initialize(this);
+            return backend;
+        } catch (StorageException e) {
+            throw e;
         } catch (Exception e) {
             throw new StorageException(e);
         }
-        backend.initialize(this);
+    }
 
-        // server
+    protected Object createServer() {
         ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
         if (serverDescriptor != null && !serverDescriptor.disabled) {
-            server = NetServer.startServer(repositoryDescriptor);
+            return NetServer.startServer(repositoryDescriptor);
         } else {
-            server = null;
+            return null;
         }
     }
 
@@ -199,6 +210,7 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
+        mapper = new CachingMapper(mapper);
         return new SessionImpl(this, model, mapper, credentials);
     }
 
@@ -346,11 +358,10 @@ public class RepositoryImpl implements Repository {
                 invalidations = clusterMapper.getClusterInvalidations();
                 clusterLastInvalidationTimeMillis = System.currentTimeMillis();
             }
-            if (invalidations.isEmpty()) {
-                return;
-            }
-            for (SessionImpl session : sessions) {
-                session.invalidate(invalidations);
+            if (!invalidations.isEmpty()) {
+                for (SessionImpl session : sessions) {
+                    session.invalidate(invalidations);
+                }
             }
         }
     }

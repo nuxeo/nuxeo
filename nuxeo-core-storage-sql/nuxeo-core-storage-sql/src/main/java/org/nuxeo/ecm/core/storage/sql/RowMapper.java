@@ -22,12 +22,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.
+ * <p>
+ * These are the operations that can benefit from a cache.
+ *
+ * @see CachingRowMapper
  */
 public interface RowMapper {
 
@@ -247,5 +253,19 @@ public interface RowMapper {
     CopyHierarchyResult copyHierarchy(Serializable sourceId, String typeName,
             Serializable destParentId, String destName, Row overwriteRow)
             throws StorageException;
+
+    /**
+     * Notifies the mapper's cache (if any) that some invalidations have to be
+     * processed.
+     */
+    void invalidateCache(Invalidations invalidations);
+
+    /**
+     * Clears the mapper's cache (if any)
+     * <p>
+     * Called after a rollback, or a manual clear through RepositoryStatus
+     * MBean.
+     */
+    void clearCache();
 
 }

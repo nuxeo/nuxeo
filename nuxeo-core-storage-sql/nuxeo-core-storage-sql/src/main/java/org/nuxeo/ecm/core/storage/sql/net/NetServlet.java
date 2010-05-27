@@ -177,11 +177,6 @@ public class NetServlet extends HttpServlet {
 
     protected Object invoke(Session session, String methodName, Object[] args)
             throws Exception {
-        if ("readSingleRow".equals(methodName)) {
-            String tableName = (String) args[0];
-            Serializable id = (Serializable) args[1];
-            return readSingleRow(session, tableName, id);
-        }
         Method method = mapperMethods.get(methodName);
         if (method == null) {
             throw new StorageException("Unknown Mapper method: " + methodName);
@@ -194,16 +189,6 @@ public class NetServlet extends HttpServlet {
             }
             throw new StorageException(e);
         }
-    }
-
-    /*
-     * ----- Methods that can check the cache before the database -----
-     */
-
-    public Row readSingleRow(Session session, String tableName, Serializable id)
-            throws StorageException {
-        // return session.readSingleRow(tableName, id);
-        throw new UnsupportedOperationException();
     }
 
 }

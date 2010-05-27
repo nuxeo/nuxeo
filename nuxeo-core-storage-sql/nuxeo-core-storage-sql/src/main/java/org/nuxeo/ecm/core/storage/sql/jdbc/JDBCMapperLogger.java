@@ -55,6 +55,10 @@ public class JDBCMapperLogger {
         return log.isTraceEnabled();
     }
 
+    public void error(Object message) {
+        log.error(message);
+    }
+
     public void error(Object message, Throwable t) {
         log.error(message, t);
     }
