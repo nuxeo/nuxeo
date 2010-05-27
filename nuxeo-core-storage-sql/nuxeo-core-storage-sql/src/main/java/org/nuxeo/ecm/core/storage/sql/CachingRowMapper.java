@@ -23,6 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.Xid;
+
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -64,7 +67,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     /*
-     * ----- Cache Management -----
+     * ----- Cache -----
      */
 
     protected static boolean isAbsent(Row row) {
@@ -107,6 +110,10 @@ public class CachingRowMapper implements RowMapper {
         cache.remove(rowId);
     }
 
+    /*
+     * ----- Cache Management -----
+     */
+
     public void invalidateCache(Invalidations invalidations) {
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
@@ -118,10 +125,17 @@ public class CachingRowMapper implements RowMapper {
                 cachePutAbsent(rowId);
             }
         }
+        rowMapper.invalidateCache(invalidations);
     }
 
     public void clearCache() {
         cache.clear();
+        rowMapper.clearCache();
+    }
+
+    public void rollback(Xid xid) throws XAException {
+        cache.clear();
+        rowMapper.rollback(xid);
     }
 
     /*
@@ -168,7 +182,9 @@ public class CachingRowMapper implements RowMapper {
             cachePut(rowu.row);
         }
         for (RowId rowId : batch.deletes) {
-            assert !(rowId instanceof Row);
+            if (rowId instanceof Row) {
+                throw new AssertionError();
+            }
             cachePutAbsent(rowId);
         }
         rowMapper.write(batch);

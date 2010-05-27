@@ -45,8 +45,9 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
  * later be committed by the external transaction manager in effect.
  * <p>
  * Internally a fragment can be in at most one of the "pristine" or "modified"
- * map. The pristine cache survives a save(), and may be partially invalidated
- * after commit by other local or clustered contexts that committed too.
+ * map. After a save() all the fragments are pristine, and may be partially
+ * invalidated after commit by other local or clustered contexts that committed
+ * too.
  * <p>
  * Depending on the table, the context may hold {@link SimpleFragment}s, which
  * represent one row, {@link CollectionFragment}s, which represent several rows.
@@ -74,8 +75,14 @@ public class PersistenceContext {
      * {@link State#ABSENT}, or in some cases {@link State#INVALIDATED_MODIFIED}
      * or {@link State#INVALIDATED_DELETED}.
      * <p>
-     * This cache is memory-sensitive, a fragment can always be refetched if the
-     * GC collects it.
+     * Pristine fragments must be kept here when referenced by the application,
+     * because the application must get the same fragment object if asking for
+     * it twice, even in two successive transactions.
+     * <p>
+     * This is memory-sensitive, a fragment can always be refetched if nobody
+     * uses it and the GC collects it. Use a weak reference for the values, we
+     * don't hold them longer than they need to be referenced, as the underlying
+     * mapper also has its own cache.
      */
     protected final Map<RowId, Fragment> pristine;
 
@@ -112,7 +119,10 @@ public class PersistenceContext {
         this.mapper = mapper;
         hierContext = new HierarchyContext(model, mapper, session, this);
 
-        pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        // use a weak reference for the values, we don't hold them longer than
+        // they need to be referenced, as the underlying mapper also has its own
+        // cache
+        pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
         modified = new HashMap<RowId, Fragment>();
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
@@ -214,7 +224,7 @@ public class PersistenceContext {
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
                 // itself as their foreign key to hierarchy is ON DELETE CASCADE
-                batch.deletes.add(rowId);
+                batch.deletes.add(new RowId(rowId));
                 fragment.setDetached();
                 // modified map cleared at end of loop
                 if (!skipInvalidation) {

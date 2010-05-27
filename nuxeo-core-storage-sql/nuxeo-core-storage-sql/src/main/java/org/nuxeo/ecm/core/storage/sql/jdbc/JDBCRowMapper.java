@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.sql.XADataSource;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -64,6 +66,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public void clearCache() {
         // no cache
+    }
+
+    public void rollback(Xid xid) throws XAException {
+        try {
+            xaresource.rollback(xid);
+        } catch (XAException e) {
+            logger.error("XA error on rollback: " + e);
+            throw e;
+        }
     }
 
     protected CollectionIO getCollectionIO(String tableName) {

@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.Xid;
+
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 
@@ -267,5 +270,10 @@ public interface RowMapper {
      * MBean.
      */
     void clearCache();
+
+    /**
+     * Rollback the XA Resource.
+     */
+    void rollback(Xid xid) throws XAException;
 
 }

@@ -133,8 +133,8 @@ public class Children {
             existing = new LinkedList<Serializable>();
         }
         if (existing.contains(id) || (created != null && created.contains(id))) {
-            // TODO remove sanity check if ok
-            log.warn("Adding already present id: " + id);
+            // the id is already known here, this happens if the fragment was
+            // GCed from pristine and we had to refetched it from the mapper
             return;
         }
         existing.add(id);

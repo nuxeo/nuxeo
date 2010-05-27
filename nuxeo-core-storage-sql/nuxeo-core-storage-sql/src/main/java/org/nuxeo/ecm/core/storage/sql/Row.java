@@ -234,8 +234,8 @@ public final class Row extends RowId implements Serializable {
                 if (truncated) {
                     buf.append("...");
                 }
-                buf.append('}');
             }
+            buf.append('}');
         } else {
             // multiple rows
             buf.append(", [");

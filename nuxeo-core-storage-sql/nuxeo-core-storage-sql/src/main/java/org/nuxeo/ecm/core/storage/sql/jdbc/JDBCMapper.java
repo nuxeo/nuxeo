@@ -801,14 +801,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-    public void rollback(Xid xid) throws XAException {
-        try {
-            xaresource.rollback(xid);
-        } catch (XAException e) {
-            log.error("XA error on rollback: " + e);
-            throw e;
-        }
-    }
+    // rollback interacts with caches so is in RowMapper
 
     public void forget(Xid xid) throws XAException {
         xaresource.forget(xid);

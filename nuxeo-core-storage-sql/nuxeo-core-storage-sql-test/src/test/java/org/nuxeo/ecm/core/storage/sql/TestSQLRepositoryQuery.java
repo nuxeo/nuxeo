@@ -85,6 +85,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
             l.add(x);
         }
         assertEquals(3, l.size());
+        res.close();
 
         // cursor behavior
         res = session.queryAndFetch("SELECT * FROM File", "NXQL");
@@ -138,6 +139,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(7, res.size());
+        res.close();
 
         // NoFile2SecurityPolicy
         deployContrib("org.nuxeo.ecm.core.query.test",
@@ -145,6 +147,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(4, res.size());
+        res.close();
     }
 
     @Override

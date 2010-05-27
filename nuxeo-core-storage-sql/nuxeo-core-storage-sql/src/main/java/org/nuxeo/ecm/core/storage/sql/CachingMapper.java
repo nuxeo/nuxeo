@@ -132,9 +132,7 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
         mapper.commit(xid, onePhase);
     }
 
-    public void rollback(Xid xid) throws XAException {
-        mapper.rollback(xid);
-    }
+    // rollback interacts with caches so is in RowMapper
 
     public void forget(Xid xid) throws XAException {
         mapper.forget(xid);
