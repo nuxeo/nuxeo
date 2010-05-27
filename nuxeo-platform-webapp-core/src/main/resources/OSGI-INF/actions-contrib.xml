@@ -163,6 +163,15 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
+      <filter-id>not_orderable</filter-id>
+    </action>
+
+    <action id="TAB_ORDERED_CONTENT" link="/incl/tabs/orderable_document_content.xhtml" order="10"
+      label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content</filter-id>
+      <filter-id>outSection</filter-id>
+      <filter-id>orderable</filter-id>
     </action>
 
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
@@ -170,6 +179,15 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
+      <filter-id>not_orderable</filter-id>
+    </action>
+
+    <action id="TAB_SECTION_ORDERED_CONTENT" link="/incl/tabs/orderable_section_content.xhtml"
+      order="10" label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content</filter-id>
+      <filter-id>inSection</filter-id>
+      <filter-id>orderable</filter-id>
     </action>
 
     <action id="TAB_TRASH_CONTENT"
@@ -332,6 +350,86 @@
       <filter id="no_addtolist_for_domains">
         <rule grant="false">
           <type>Root</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_TOP" link="#{orderableDocumentActions.moveToTop}"
+      enabled="true" label="command.order.movetotop" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
+      <filter id="canMoveToTop">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveToTop}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_UP" link="#{orderableDocumentActions.moveUp}"
+      enabled="true" label="command.order.moveup" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
+      <filter id="canMoveUp">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveUp}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_DOWN" link="#{orderableDocumentActions.moveDown}"
+      enabled="true" label="command.order.movedown" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
+      <filter id="canMoveDown">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveDown}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_BOTTOM" link="#{orderableDocumentActions.moveToBottom}"
+      enabled="true" label="command.order.movetobottom" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
+      <filter id="canMoveToBottom">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
+      enabled="true" label="command.order.movetotop" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="canMoveTop">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveUp}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_UP_IN_SECTION" link="#{orderableDocumentActions.moveUp}"
+      enabled="true" label="command.order.moveup" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="canMoveUpInSection">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveUp}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
+      enabled="true" label="command.order.movedown" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="canMoveDownInSection">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveDown}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
+      enabled="true" label="command.order.movetobottom" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="canMoveToBottom">
+        <rule grant="true">
+          <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
         </rule>
       </filter>
     </action>
@@ -586,6 +684,7 @@
         <type>TemplateRoot</type>
         <type>Section</type>
         <type>Folder</type>
+        <type>OrderedFolder</type>
       </rule>
     </filter>
 
@@ -821,6 +920,19 @@
         <condition>#{notReadOnly}</condition>
       </rule>
     </filter>
+
+    <filter id="orderable">
+      <rule grant="true">
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="not_orderable">
+      <rule grant="false">
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
   </extension>
 
 </component>

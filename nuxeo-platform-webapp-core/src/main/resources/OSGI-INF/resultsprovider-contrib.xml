@@ -17,6 +17,7 @@
     <resultsProvider name="DOMAIN_PUBLISHED_DOCUMENTS" farm="dashboardActions"/>
     <!-- resultsProvider name="CURRENT_DOC_CHILDREN" farm="documentChildrenFarm"/-->
     <resultsProvider name="CURRENT_DOC_CHILDREN" farm="documentChildrenSearchFarm"/>
+    <resultsProvider name="CURRENT_DOC_ORDERED_CHILDREN" farm="documentChildrenSearchFarm"/>
     <resultsProvider name="CURRENT_DOC_DELETED_CHILDREN" farm="deleteActions"/>
     <resultsProvider name="SEARCH_BEAN_NXQL_PROVIDER" farm="searchActions"/>
 

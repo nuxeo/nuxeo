@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -82,6 +79,9 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -157,9 +157,10 @@ public class DocumentActionsBean extends InputController implements
         if (doc == null) {
             return null;
         }
-        String[] layouts =  typeManager.getType(doc.getType()).getLayouts(BuiltinModes.SUMMARY, null);
+        String[] layouts = typeManager.getType(doc.getType()).getLayouts(
+                BuiltinModes.SUMMARY, null);
 
-        if (layouts!=null && layouts.length>0) {
+        if (layouts != null && layouts.length > 0) {
             return layouts[0];
         }
         return DEFAULT_SUMMARY_LAYOUT;
@@ -266,7 +267,8 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += doc.getRef().toString() + "/";
                     bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
                             + "/";
-                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename, true);
+                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename,
+                            true);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
@@ -444,7 +446,7 @@ public class DocumentActionsBean extends InputController implements
         if (newDocument.getId() != null) {
             log.debug("Document " + newDocument.getName() + " already created");
             return navigationContext.navigateToDocument(newDocument,
-            "after-create");
+                    "after-create");
         }
         try {
             if (parentDocumentPath == null) {
@@ -493,8 +495,7 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -513,8 +514,7 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -635,6 +635,11 @@ public class DocumentActionsBean extends InputController implements
     private String computeSelectionActions(String listName) {
         List<Action> availableActions = webActions.getUnfiltredActionsList(listName
                 + "_LIST");
+
+        // add Orderable actions
+        availableActions.addAll(webActions.getUnfiltredActionsList("ORDERABLE_"
+                + listName + "_LIST"));
+
         List<String> availableActionIds = new ArrayList<String>();
         for (Action a : availableActions) {
             if (a.getAvailable()) {
@@ -689,6 +694,5 @@ public class DocumentActionsBean extends InputController implements
         }
         return false;
     }
-
 
 }
