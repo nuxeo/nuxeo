@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.1-CP03</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -377,7 +377,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -452,7 +452,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-lang</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -783,12 +783,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-publisher-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-publisher-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -798,7 +798,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-publisher-jbpm</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -869,7 +869,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-userworkspace-web</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -885,7 +885,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
 
       <dependency>
@@ -896,7 +896,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-tag-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -973,7 +973,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-sites</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
