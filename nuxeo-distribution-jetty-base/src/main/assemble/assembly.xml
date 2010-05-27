@@ -11,6 +11,11 @@
   <artifactSet id="bundles">
     <artifacts>
       <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-jetty-adapter" version="${nuxeo.runtime.version}"/>
+
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-core" version="${nuxeo.features.version}"/>
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-jsf" version="${nuxeo.features.version}" />
+      <artifact group="org.nuxeo.ecm.automation" name="nuxeo-automation-server" version="${nuxeo.features.version}" />
+
     </artifacts>
   </artifactSet>
 
@@ -29,6 +34,7 @@
       <artifact group="com.sun.xml" name="xsom" />
       <artifact group="cup" name="java-cup" />
       <artifact group="javassist" name="javassist" version="3.6"/> <!-- unresolved ??? -->
+      <artifact group="org.mvel" name="mvel2" />
     </artifacts>
   </artifactSet>
 
