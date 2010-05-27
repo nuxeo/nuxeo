@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace NuxeoProcess
 {
@@ -63,7 +64,7 @@ namespace NuxeoProcess
 			if (!File.Exists(NUXEO_CONF)) {
 				NUXEO_CONF="nuxeo.conf";
 				if (!File.Exists(NUXEO_CONF)) {
-                    //NUXEO_CONF = @"C:\Documents and Settings\Administrateur\Bureau\nuxeo-dm-5.3.2-SNAPSHOT-jboss\bin\nuxeo.conf";
+                    NUXEO_CONF = @"C:\Documents and Settings\Administrateur\Bureau\nuxeo-dm-5.3.2-SNAPSHOT-jboss\bin\nuxeo.conf";
 					if (!File.Exists(NUXEO_CONF)) {
 						Log("Could not find nuxeo configuration");
 						return null;
@@ -115,8 +116,8 @@ namespace NuxeoProcess
 			if (nxConfig.ContainsKey("JAVA_HOME")) {
 				JAVA=Path.Combine(Path.Combine(nxConfig["JAVA_HOME"],"bin"),JAVA);
 			} else if (Environment.GetEnvironmentVariable("JAVA_HOME")!=null) {
-				JAVA=Path.Combine(Path.Combine(Environment.GetEnvironmentVariable("NUXEO_HOME"),"bin"),JAVA);
-			}
+				JAVA=Path.Combine(Path.Combine(Environment.GetEnvironmentVariable("JAVA_HOME"),"bin"),JAVA);
+            }
 
             if (!File.Exists(JAVA)) {
                 Log("java.exe doesn't exists in the given path : " + JAVA, "ERROR");
@@ -159,7 +160,7 @@ namespace NuxeoProcess
             }
             else
             {
-                NUXEO_HOME = Path.GetDirectoryName(Directory.GetParent(Directory.GetCurrentDirectory()).Name);
+                NUXEO_HOME = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
 			}
 
 			nxEnv.Add("NUXEO_HOME",NUXEO_HOME);
