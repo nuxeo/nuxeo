@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.1-CP03</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.6.1</version>
+  <version>1.6.1-CP03</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -75,27 +75,27 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-api</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-facade</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-jcr-connector</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
