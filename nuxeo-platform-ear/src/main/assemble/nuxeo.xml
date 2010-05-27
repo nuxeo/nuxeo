@@ -139,6 +139,8 @@
       <artifact group="batik" name="batik-ext" />
       <artifact group="batik" name="batik-gui-util" />
       <artifact group="batik" name="batik-util" />
+
+      <artifact group="org.mvel" name="mvel2" />
     </artifacts>
   </artifactSet>
 

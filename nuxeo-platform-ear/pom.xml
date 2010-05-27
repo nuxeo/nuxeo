@@ -554,6 +554,23 @@
       <artifactId>nuxeo-platform-userworkspace-types</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-server</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-jsf</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+
+
     <!-- Language extension addon -->
     <dependency>
       <groupId>org.nuxeo</groupId>
