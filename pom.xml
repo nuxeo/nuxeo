@@ -6,12 +6,11 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.1-CP03</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-dm-parent</artifactId>
-  <version>5.3.1</version>
   <name>Nuxeo DM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DM: Parent.</description>
@@ -246,6 +245,26 @@
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-core</artifactId>
+        <version>${nuxeo.services.version}-CP03</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp</artifactId>
+        <version>${nuxeo.services.version}-CP03</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-types</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-default-config</artifactId>
+        <version>${nuxeo.services.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
