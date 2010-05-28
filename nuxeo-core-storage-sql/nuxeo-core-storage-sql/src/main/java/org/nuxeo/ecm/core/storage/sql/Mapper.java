@@ -39,8 +39,9 @@ public interface Mapper extends RowMapper, XAResource {
      * mapper an incoming connection is targeted.
      *
      * @return the unique mapper id
+     * @throws StorageException when initial connection failed (for a NetMapper)
      */
-    String getMapperId();
+    String getMapperId() throws StorageException;
 
     void close();
 

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 public class NetMapper implements InvocationHandler {
 
     public static Mapper getMapper(RepositoryImpl repository,
-            HttpClient httpClient) {
+            HttpClient httpClient) throws StorageException {
         NetMapper handler = new NetMapper(repository, httpClient);
         Mapper mapper = (Mapper) Proxy.newProxyInstance(
                 NetMapper.class.getClassLoader(),
@@ -61,6 +61,10 @@ public class NetMapper implements InvocationHandler {
 
     protected NetMapper(RepositoryImpl repository, HttpClient httpClient) {
         this.httpClient = httpClient;
+        url = getUrl(repository);
+    }
+
+    protected static String getUrl(RepositoryImpl repository) {
         ServerDescriptor sd = repository.getRepositoryDescriptor().connect.get(0);
         String path = sd.path;
         if (!path.startsWith("/")) {
@@ -75,20 +79,12 @@ public class NetMapper implements InvocationHandler {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        url = uri.toString();
+        return uri.toString();
     }
 
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         String methodName = method.getName();
-        // System.out.println(methodName + ' '
-        // + (args == null ? "[]" : Arrays.asList(args)));
-        Object res = invoke(methodName, args);
-        // System.out.println(" -> " + res);
-        return res;
-    }
-
-    protected Object invoke(String methodName, Object[] args) throws Throwable {
         // special cases
         if ("getMapperId".equals(methodName)) {
             if (mapperId != null) {

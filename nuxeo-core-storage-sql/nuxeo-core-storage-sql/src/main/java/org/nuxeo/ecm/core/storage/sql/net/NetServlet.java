@@ -20,15 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,12 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
-import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.Row;
-import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
 /**
@@ -69,7 +64,7 @@ public class NetServlet extends HttpServlet {
 
     // currently connected sessions
     // TODO GC after timeout
-    private Map<String, Session> sessions;
+    private Map<String, MapperInvoker> invokers;
 
     protected synchronized void initialize() {
         if (initialized) {
@@ -99,8 +94,24 @@ public class NetServlet extends HttpServlet {
             throw new RuntimeException("Unknown repository class: "
                     + repo.getClass().getName());
         }
-        sessions = Collections.synchronizedMap(new HashMap<String, Session>());
+        invokers = Collections.synchronizedMap(new HashMap<String, MapperInvoker>());
     }
+
+    @Override
+    public void destroy() {
+        for (Entry<String, MapperInvoker> es : invokers.entrySet()) {
+            MapperInvoker invoker = es.getValue();
+            try {
+                invoker.call("close");
+                invoker.close();
+            } catch (Throwable e) {
+                log.error("Cannot close invoker " + es.getKey());
+            }
+        }
+        super.destroy();
+    }
+
+    private final AtomicInteger threadNumber = new AtomicInteger();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -111,21 +122,24 @@ public class NetServlet extends HttpServlet {
             sid = null;
         }
         InputStream is = req.getInputStream();
-        Session session = null;
         try {
-            // session
+            // invoker
+            MapperInvoker invoker;
             if (sid == null) {
-                session = repository.getConnection();
+                // new session
+                String name = "Nuxeo-VCS-NetServlet-"
+                        + threadNumber.incrementAndGet();
+                invoker = new MapperInvoker(repository, name);
+                sid = (String) invoker.call("getMapperId");
+                // log.info("New sid " + sid);
+                invokers.put(sid, invoker);
             } else {
-                session = sessions.get(sid);
-                if (session == null) {
+                // existing session
+                invoker = invokers.get(sid);
+                if (invoker == null) {
                     throw new RuntimeException(
                             "Unknown session id (maybe timed out): " + sid);
                 }
-            }
-            if (sid == null) {
-                sid = session.getMapper().getMapperId();
-                sessions.put(sid, session);
             }
 
             // set up output stream
@@ -138,6 +152,7 @@ public class NetServlet extends HttpServlet {
             // read method and args
             ObjectInputStream ois = new ObjectInputStream(is);
             String methodName = (String) ois.readObject();
+            // log.info("  Sid " + sid + " method " + methodName);
             List<Object> args = new LinkedList<Object>();
             while (true) {
                 Object object = ois.readObject();
@@ -147,47 +162,25 @@ public class NetServlet extends HttpServlet {
                 args.add(object);
             }
 
-            // invoke method, special case for close
-            Object res;
+            // invoke method
+            Object res = invoker.call(methodName, args.toArray());
+
+            // close?
             if ("close".equals(methodName)) {
-                session.close();
-                sessions.remove(sid);
-                res = null;
-            } else {
-                res = invoke(session, methodName, args.toArray());
+                // close session
+                invoker.close();
+                invokers.remove(sid);
+                // log.info("Closing sid " + sid);
             }
 
             // write result
             oos.writeObject(res);
             oos.flush();
             oos.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error(e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     e.toString());
-        }
-    }
-
-    private static final Map<String, Method> mapperMethods = new HashMap<String, Method>();
-    static {
-        for (Method m : Mapper.class.getMethods()) {
-            mapperMethods.put(m.getName(), m);
-        }
-    }
-
-    protected Object invoke(Session session, String methodName, Object[] args)
-            throws Exception {
-        Method method = mapperMethods.get(methodName);
-        if (method == null) {
-            throw new StorageException("Unknown Mapper method: " + methodName);
-        }
-        try {
-            return method.invoke(session.getMapper(), args);
-        } catch (Exception e) {
-            if (e instanceof InvocationTargetException) {
-                throw new StorageException(e.getCause());
-            }
-            throw new StorageException(e);
         }
     }
 

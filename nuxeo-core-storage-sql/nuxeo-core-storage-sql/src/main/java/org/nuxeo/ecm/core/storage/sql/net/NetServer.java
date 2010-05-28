@@ -61,7 +61,8 @@ public class NetServer {
         }
         String serverUrl = "http://" + serverDescriptor.host + ':'
                 + serverDescriptor.port + path;
-        log.info("VCS server started on: " + serverUrl);
+        log.info(String.format("VCS server for repository '%s' started on: %s",
+                repositoryDescriptor.name, serverUrl));
         return server;
     }
 

@@ -43,7 +43,7 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
         this.mapper = mapper;
     }
 
-    public String getMapperId() {
+    public String getMapperId() throws StorageException {
         return mapper.getMapperId();
     }
 

@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.io.Serializable;
 import java.security.Principal;
 
 /**
@@ -244,14 +245,19 @@ public class SQLQuery implements ASTNode {
     /**
      * Interface for a class that can transform a {@link SQLQuery} into another.
      */
-    public interface Transformer {
-        Transformer IDENTITY = new Transformer() {
-            public SQLQuery transform(Principal principal, SQLQuery query) {
-                return query;
-            }
-        };
+    public interface Transformer extends Serializable {
+
+        Transformer IDENTITY = new IdentityTransformer();
 
         SQLQuery transform(Principal principal, SQLQuery query);
+    }
+
+    public static class IdentityTransformer implements Transformer {
+        private static final long serialVersionUID = 1L;
+
+        public SQLQuery transform(Principal principal, SQLQuery query) {
+            return query;
+        }
     }
 
 }

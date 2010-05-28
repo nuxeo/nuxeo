@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql.net;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
  * Network client backend for a repository.
  */
 public class NetBackend implements RepositoryBackend {
+
+    private static final Log log = LogFactory.getLog(NetBackend.class);
 
     protected RepositoryImpl repository;
 
@@ -57,7 +61,13 @@ public class NetBackend implements RepositoryBackend {
 
     public Mapper newMapper(Model model, PathResolver pathResolver)
             throws StorageException {
-        return NetMapper.getMapper(repository, httpClient);
+        try {
+            return NetMapper.getMapper(repository, httpClient);
+        } catch (StorageException e) {
+            String url = NetMapper.getUrl(repository);
+            log.error("Failed to connect to server: " + url, e);
+            throw e;
+        }
     }
 
     public void shutdown() {
