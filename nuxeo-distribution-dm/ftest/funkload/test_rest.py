@@ -67,7 +67,7 @@ class Rest(FunkLoadTestCase):
                                        'Test folder description')
         for i in range(self.nb_doc):
             title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
-            description = self.tag + ' ' + self._lipsum.getParagraph()
+            description = self.tag + ' ' + self._lipsum.getParagraph(1)
             uid = r.createDocument(dir_uid, 'File',
                                    title, description)
         r.logout()

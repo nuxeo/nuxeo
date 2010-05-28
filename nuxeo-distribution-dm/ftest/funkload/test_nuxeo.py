@@ -81,7 +81,7 @@ class Nuxeo(NuxeoTestCase):
             file_path = random.choice(self.files)
             extension = os.path.splitext(file_path)[1][1:].upper()
             title = lipsum.getSubject(uniq=True, prefix=tag) + " " + extension
-            description = tag + ' ' + self._lipsum.getParagraph()
+            description = tag + ' ' + self._lipsum.getParagraph(1)
             p.createFile(title, description, file_path)
             p = p.viewDocumentPath(self.dir_path)
         p.logout()
