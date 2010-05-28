@@ -17,9 +17,12 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -28,6 +31,7 @@ import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
@@ -41,8 +45,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
             return;
         }
 
-        Repository repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                REPOSITORY_NAME);
+        Repository repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(REPOSITORY_NAME);
         assertEquals(1, repo.getActiveSessionsCount()); // 1 low level session
 
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
@@ -124,8 +127,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         TransactionHelper.startTransaction();
         openSession();
         assertTrue(TransactionHelper.isTransactionActive());
-        DocumentModel doc = new DocumentModelImpl("/nosuchdir", "doc",
-                "Document");
+        DocumentModel doc = new DocumentModelImpl("/nosuchdir", "doc", "Document");
         try {
             session.createDocument(doc);
             fail("Missing parent should throw");
@@ -137,8 +139,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(TransactionHelper.isTransactionMarkedRollback());
     }
 
-    protected static class HelperEventTransactionListener implements
-            EventTransactionListener {
+    protected static class HelperEventTransactionListener implements EventTransactionListener {
         public boolean committed;
 
         public void transactionStarted() {
@@ -161,4 +162,60 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(listener.committed);
     }
 
+    protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+
+    public void testDirtyUpdateDetection() throws Exception {
+        if (!(database instanceof DatabaseH2)) {
+            // no pooling conf available
+            return;
+        }
+        // first transaction
+        DocumentModel doc = session.createDocumentModel("/", "doc", "Note");
+        doc.getProperty("dc:title").setValue("initial");
+        doc = session.createDocument(doc);
+        // let commit do an implicit save
+        closeSession(session);
+        TransactionHelper.commitOrRollbackTransaction(); // release cx
+
+
+        final DocumentRef ref = new PathRef("/doc");
+        TransactionHelper.startTransaction();
+        openSession();
+        doc = session.getDocument(ref);
+        doc.getProperty("dc:title").setValue("first");
+        session.saveDocument(doc);
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    TransactionHelper.startTransaction();
+                    CoreSession session2;
+                    session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+                    try {
+                        DocumentModel doc = session2.getDocument(ref);
+                        doc.getProperty("dc:title").setValue("second update");
+                        session2.saveDocument(doc);
+                    } catch (Exception e) {
+                        log.error("Catched error while setting title", e);
+                    } finally {
+                        TransactionHelper.commitOrRollbackTransaction();
+                        closeSession(session2);
+                    }
+                } catch (Exception e) {
+                    fail(e.toString());
+                }
+            }
+        };
+        t.start();
+        t.join();
+        boolean isDirtyUpdateDetected = false;
+        try {
+            TransactionHelper.commitOrRollbackTransaction(); // release cx
+        } catch (TransactionRuntimeException ex) {
+            isDirtyUpdateDetected = true;
+        }
+        if (isDirtyUpdateDetected == false) {
+            fail("dirty update not detected");
+        }
+    }
 }
