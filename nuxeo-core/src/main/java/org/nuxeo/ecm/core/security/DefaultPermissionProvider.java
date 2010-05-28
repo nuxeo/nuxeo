@@ -24,9 +24,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,6 +95,9 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                     .get(pvd.getTypeName());
             if (mergedPvd == null) {
                 mergedPvd = new PermissionVisibilityDescriptor(pvd);
+                if (!pvd.getTypeName().isEmpty()) {
+                    mergedPvd.merge(mergedPermissionsVisibility.get(""));
+                }
                 mergedPermissionsVisibility.put(mergedPvd.getTypeName(),
                         mergedPvd);
             } else {

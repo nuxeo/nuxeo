@@ -61,6 +61,7 @@
       <include>Remove</include>
       <include>ManageWorkflows</include>
       <include>WriteLifeCycle</include>
+      <include>WriteVersion</include>
     </permission>
 
     <permission name="ReadWrite">
