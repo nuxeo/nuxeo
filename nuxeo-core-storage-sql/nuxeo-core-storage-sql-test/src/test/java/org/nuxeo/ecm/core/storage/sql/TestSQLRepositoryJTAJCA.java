@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
@@ -210,7 +211,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         boolean isDirtyUpdateDetected = false;
         try {
             TransactionHelper.commitOrRollbackTransaction(); // release cx
-        } catch (javax.transaction.RollbackException ex) {
+        } catch (TransactionRuntimeException ex) {
             isDirtyUpdateDetected = true;
         }
         if (isDirtyUpdateDetected == false) {
