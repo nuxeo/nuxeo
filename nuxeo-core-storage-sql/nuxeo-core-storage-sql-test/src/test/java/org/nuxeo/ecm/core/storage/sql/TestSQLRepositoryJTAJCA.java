@@ -164,6 +164,13 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
+    /**
+     * Testing that if 2 modifications are done at the same time on the same
+     * document on 2 separate transactions, one is rejected
+     * (TransactionRuntimeException)
+     * 
+     * @throws Exception
+     */
     public void testDirtyUpdateDetection() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             // no pooling conf available
