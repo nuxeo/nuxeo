@@ -14,16 +14,18 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client.jaxrs.test;
 
 import java.io.File;
 
+import org.nuxeo.ecm.automation.client.jaxrs.Constants;
+import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
+import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.SessionImpl;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.Blob;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.blob.FileBlob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.util.FileBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 
@@ -39,7 +41,7 @@ public class TestBlob {
             client.connect("http://localhost:8080/automation");
             long start = System.currentTimeMillis();
             //SessionImpl session = (SessionImpl)client.getSession(null);
-            SessionImpl session = (SessionImpl)client.getSession("Administrator", "Administrator");
+            Session session = (Session)client.getSession("Administrator", "Administrator");
             //FileBlob fb = new FileBlob(new File("/Users/bstefanescu/operations.jpg"));
             FileBlob fb = new FileBlob(new File("/Users/bstefanescu/test.jpg"));
             fb.setMimeType("image/jpeg");
@@ -70,7 +72,7 @@ public class TestBlob {
                 doc = (Document)session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
             }
             System.out.println("60 full docs took: "+((double)System.currentTimeMillis()-start)/1000);
-            client.shutdown();
+            client.disconnect();
         } catch (RemoteException e) {
             e.printStackTrace();
             System.out.println(e.getRemoteStackTrace());

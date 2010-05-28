@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.spi;
+package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.util.Date;
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 
 /**

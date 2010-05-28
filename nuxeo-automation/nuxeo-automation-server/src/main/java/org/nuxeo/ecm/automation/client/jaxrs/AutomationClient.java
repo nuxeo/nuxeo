@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
+import java.util.Map;
+
+import org.nuxeo.ecm.automation.OperationDocumentation;
+
 
 
 /**
@@ -34,9 +38,13 @@ public interface AutomationClient {
 
     void disconnect();
 
+    OperationDocumentation getOperation(String id);
+
+    Map<String, OperationDocumentation> getOperations();
+
     Session getSession(String username, String password) throws Exception;
 
-    Session getSession(AuthenticationCallback credentials) throws Exception;
+    void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
      * Adapt the given object to the given type. Return the adapter instance if any otherwise null.
@@ -48,6 +56,8 @@ public interface AutomationClient {
      * @param adapterType
      * @return
      */
-    public <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
+    <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
+
+    void registerAdapter(AdapterFactory<?> factory);
 
 }

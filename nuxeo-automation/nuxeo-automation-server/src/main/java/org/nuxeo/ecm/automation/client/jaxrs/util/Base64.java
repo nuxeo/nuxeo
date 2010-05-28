@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.spi;
+package org.nuxeo.ecm.automation.client.jaxrs.util;
 
 /**
  * Base64 MIME content transfer encoding.

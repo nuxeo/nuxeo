@@ -14,21 +14,21 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client.jaxrs.test;
 
+import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
+import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
-import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
-import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Test {
+public class Test2 {
 
     public static void main(String[] args) throws Exception {
         try {
@@ -37,10 +37,9 @@ public class Test {
             long start = System.currentTimeMillis();
             Session session = client.getSession("Administrator", "Administrator");
             DocumentService rs = session.getAdapter(DocumentService.class);
-            Document doc = (Document)session.newRequest(FetchDocument.ID).set("value", "/default-domain").execute();
-            System.out.println(doc);
-            System.out.println(doc.getTitle());
-            Documents docs = (Documents)session.newRequest(GetDocumentChildren.ID).setInput(doc).execute();
+            Document doc = rs.getDocument("/default-domain");
+            System.out.println(doc + " - " + doc.getTitle());
+            Documents docs = rs.getChildren(doc);
             System.out.println(docs);
             Document dd  = null;
             for (Document d : docs) {
@@ -49,12 +48,11 @@ public class Test {
                 }
                 System.out.println(d.getTitle() +" at "+d.getLastModified());
             }
-            DocRef wsRef = new DocRef("/default-domain/workspaces");
-//            doc = (Document)session.newRequest(CreateDocument.ID).setInput(wsRef)
-//                .set("type", "Workspace").set("name", "hello").execute();
+//            doc = rs.createDocument(dd, "Workspace", "hello");
 //            System.out.println(doc + " - "+doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
-            docs = (Documents)session.newRequest(GetDocumentChildren.ID).setInput(wsRef).execute();
+            DocRef wsRef = new DocRef("/default-domain/workspaces");
+            docs = rs.getChildren(wsRef);
             System.out.println(docs);
             for (Document d : docs) {
                 System.out.println(d.getTitle() +" at "+d.getLastModified() + " state: "+ d.getState());
@@ -64,7 +62,7 @@ public class Test {
             System.out.println(doc + " - "+doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
             System.out.println("took: "+((double)System.currentTimeMillis()-start)/1000);
-            client.shutdown();
+            client.disconnect();
         } catch (RemoteException e) {
             e.printStackTrace();
             System.out.println(e.getRemoteStackTrace());

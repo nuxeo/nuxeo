@@ -29,6 +29,7 @@ public class AutomationException extends RuntimeException {
     }
 
     public AutomationException(String message) {
+        super (message);
     }
 
     public AutomationException(Throwable cause) {

@@ -16,14 +16,18 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
@@ -33,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
@@ -103,6 +108,21 @@ public class AutomationResource {
     @GET
     public AutomationInfo doGet() {
         return new AutomationInfo(service);
+    }
+
+
+    @POST
+    @Path("login")
+    public Object login(@Context HttpServletRequest request) {
+        Principal p = request.getUserPrincipal();
+        if (p instanceof NuxeoPrincipal) {
+            NuxeoPrincipal np = (NuxeoPrincipal)p;
+            List<String> groups = np.getAllGroups();
+            HashSet<String> set = new HashSet<String>(groups);
+            return new LoginInfo(np.getName(), set, np.isAdministrator());
+        } else {
+            return Response.status(403).build();
+        }
     }
 
     @Path("{oid}")
