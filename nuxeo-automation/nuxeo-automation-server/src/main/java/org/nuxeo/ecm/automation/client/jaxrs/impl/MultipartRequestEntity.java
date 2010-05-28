@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl.blob;
+package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +28,9 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.http.entity.AbstractHttpEntity;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.HasFile;
+import org.nuxeo.ecm.automation.client.jaxrs.util.BlobDataSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,8 +40,17 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
 
     protected MimeMultipart mp;
 
+
     public MultipartRequestEntity() {
-        mp = new MimeMultipart("related");
+        this (new MimeMultipart("related"));
+    }
+
+    public MultipartRequestEntity(String subType) {
+        this (new MimeMultipart(subType));
+    }
+
+    public MultipartRequestEntity(MimeMultipart mp) {
+        this.mp = mp;
         setContentType(mp.getContentType()+"; type=\""+Constants.CTYPE_REQUEST_NOCHARSET+"\"; start=\"request\"");
     }
 

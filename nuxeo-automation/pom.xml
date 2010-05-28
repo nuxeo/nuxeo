@@ -46,7 +46,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-web</artifactId>
+        <artifactId>nuxeo-automation-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -59,11 +59,6 @@
         <artifactId>nuxeo-automation-client</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency-->
-      <dependency>
-        <groupId>org.mvel</groupId>
-        <artifactId>mvel2</artifactId>
-        <version>2.0.16</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

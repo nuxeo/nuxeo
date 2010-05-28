@@ -14,18 +14,18 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface AuthenticationCallback {
+public interface Connector {
 
-    /**
-     * Return an array containing 2 elements: the username and the password or null if no credentials are filled.
-     * @return
-     */
-    public String[] getCredentials();
+    void setBasicAuth(String auth);
+
+    String getBasicAuth();
+
+    Object execute(Request request) throws Exception;
 
 }

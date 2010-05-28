@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl;
+package org.nuxeo.ecm.automation.client.jaxrs.util;
 
 import java.io.File;
 import java.io.FileOutputStream;

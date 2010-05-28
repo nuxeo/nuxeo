@@ -31,52 +31,40 @@ import javax.ws.rs.ext.Provider;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.core.doc.JSONExporter;
-import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
+import org.nuxeo.ecm.automation.server.jaxrs.LoginInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @Provider
-@Produces({"application/json+nxautomation", "application/json"})
-public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInfo> {
+@Produces({"application/json+nxentity", "application/json"})
+public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
 
-    public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2,
+    public long getSize(LoginInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return AutomationInfo.class.isAssignableFrom(arg0);
+        return LoginInfo.class.isAssignableFrom(arg0);
     }
 
-    public void writeTo(AutomationInfo arg0, Class<?> arg1, Type arg2,
+    public void writeTo(LoginInfo login, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-        //JSON json = JSONExporter.toJSON(arg0.getOperations());
-        JSONObject json = new JSONObject();
-        JSONObject paths = new JSONObject();
-        paths.element("login", "login");
-        json.element("paths", paths);
-        JSONArray ops = new JSONArray();
-        for (OperationDocumentation doc : arg0.getOperations()) {
-            JSONObject op = JSONExporter.toJSON(doc);
-            //op.element("url", doc.id);
-            ops.add(op);
-        }
-        json.element("operations", ops);
-        // TODO write operation chains
-        JSONArray chains = new JSONArray();
-        for (OperationDocumentation doc : arg0.getChains()) {
-            JSONObject op = JSONExporter.toJSON(doc);
-            //op.element("url", "Chain."+doc.id);
-            chains.add(op);
-        }
-        json.element("chains", chains);
-        arg6.write(json.toString(2).getBytes("UTF-8"));
+            JSONObject json = new JSONObject();
+            json.element("entity-type", "login");
+            json.element("username", login.getUsername());
+            json.element("isAdministrator", login.isAdministrator());
+            JSONArray g = new JSONArray();
+            for (String group : login.getGroups()) {
+                g.add(group);
+            }
+            json.element("groups", g);
+            arg6.write(json.toString().getBytes("UTF-8"));
     }
+
 }
