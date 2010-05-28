@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 
+import org.nuxeo.common.DirtyUpdateInvokeBridge;
+import org.nuxeo.common.DirtyUpdateInvokeBridge.ThreadContext;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -11,28 +13,8 @@ import org.nuxeo.ecm.core.api.operation.ModificationSet;
 
 public class DirtyUpdateChecker {
 
-    protected static ThreadLocal<Context> contextHolder = new ThreadLocal<Context>();
-
-    protected static class Context {
-        final Long modified;
-
-        final Long invoked;
-        Context(Long modified) {
-            this.modified = modified;
-            this.invoked = Calendar.getInstance().getTimeInMillis();
-        }
-    }
-
-    public static void putInThreadContext(Object tag) {
-        contextHolder.set(new Context((Long) tag));
-    }
-
-    public static void clearThreadContext() {
-        contextHolder.remove();
-    }
-
     public static void check(DocumentModel doc) {
-        Context ctx = contextHolder.get();
+        ThreadContext ctx = DirtyUpdateInvokeBridge.getThreadContext();
         if (ctx == null) {
             return; // invoked on server, no cache
         }
@@ -50,13 +32,13 @@ public class DirtyUpdateChecker {
         } catch (Exception e) {
             throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
         }
-        if (ctx.modified >= modified) {
+        if (ctx.tag >= modified) {
             return; // client cache is freshest than doc
         }
         if (ctx.invoked <= modified) {
             return; // modified by self user
         }
-        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(ctx.modified), new Date(ctx.invoked), new Date(modified));
+        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(ctx.tag), new Date(ctx.invoked), new Date(modified));
         throw new ConcurrentModificationException(message);
     }
 
