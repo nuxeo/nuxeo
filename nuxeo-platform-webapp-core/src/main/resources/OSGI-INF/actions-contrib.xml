@@ -357,81 +357,49 @@
     <action id="MOVE_TOP" link="#{orderableDocumentActions.moveToTop}"
       enabled="true" label="command.order.movetotop" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
-      <filter id="canMoveToTop">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveToTop}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveToTop</filter-id>
     </action>
 
     <action id="MOVE_UP" link="#{orderableDocumentActions.moveUp}"
       enabled="true" label="command.order.moveup" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
-      <filter id="canMoveUp">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveUp}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveUp</filter-id>
     </action>
 
     <action id="MOVE_DOWN" link="#{orderableDocumentActions.moveDown}"
       enabled="true" label="command.order.movedown" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
-      <filter id="canMoveDown">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveDown}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveDown</filter-id>
     </action>
 
     <action id="MOVE_BOTTOM" link="#{orderableDocumentActions.moveToBottom}"
       enabled="true" label="command.order.movetobottom" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
-      <filter id="canMoveToBottom">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveToBottom</filter-id>
     </action>
 
     <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
       enabled="true" label="command.order.movetotop" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter id="canMoveTop">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveUp}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveToTop</filter-id>
     </action>
 
     <action id="MOVE_UP_IN_SECTION" link="#{orderableDocumentActions.moveUp}"
       enabled="true" label="command.order.moveup" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter id="canMoveUpInSection">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveUp}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveUp</filter-id>
     </action>
 
     <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
       enabled="true" label="command.order.movedown" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter id="canMoveDownInSection">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveDown}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveDown</filter-id>
     </action>
 
     <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
       enabled="true" label="command.order.movetobottom" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter id="canMoveToBottom">
-        <rule grant="true">
-          <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
-        </rule>
-      </filter>
+      <filter-id>canMoveToBottom</filter-id>
     </action>
 
     <!-- disabled: see NXP-3029 (even if it was disabled before) -->
@@ -929,6 +897,34 @@
 
     <filter id="not_orderable">
       <rule grant="false">
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="canMoveToTop">
+      <rule grant="true">
+        <condition>#{orderableDocumentActions.canMoveToTop}</condition>
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="canMoveUp">
+      <rule grant="true">
+        <condition>#{orderableDocumentActions.canMoveUp}</condition>
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="canMoveDown">
+      <rule grant="true">
+        <condition>#{orderableDocumentActions.canMoveDown}</condition>
+        <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="canMoveToBottom">
+      <rule grant="true">
+        <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
         <facet>Orderable</facet>
       </rule>
     </filter>
