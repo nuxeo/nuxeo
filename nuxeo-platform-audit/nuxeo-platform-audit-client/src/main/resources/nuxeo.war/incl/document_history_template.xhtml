@@ -74,7 +74,7 @@
       </h:column>
     </h:dataTable>
 
-   <h:panelGroup rendered="#{nxd:hasPermission(currentDocument, 'READ_VERSION') and
+   <h:panelGroup rendered="#{nxd:hasPermission(currentDocument, 'ReadVersion') and
           currentDocument.versionable and
        !(currentDocument.version or currentDocument.proxy)}">
     <h3><h:outputText value="#{messages['title.version']}" /></h3>
