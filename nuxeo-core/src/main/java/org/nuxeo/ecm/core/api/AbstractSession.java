@@ -1826,7 +1826,7 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
             Document headDocument = doc.getSourceDocument();
             if (headDocument == null) {
                 throw new DocumentException("Source document has been deleted");
@@ -1844,7 +1844,7 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
 
             DocumentVersion version = doc.getLastVersion();
             if (version == null) {
@@ -1866,7 +1866,7 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
 
             DocumentVersion version = doc.getLastVersion();
             if (version != null) {
@@ -1882,7 +1882,7 @@ public abstract class AbstractSession implements CoreSession,
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
             List<String> ids = doc.getVersionsIds();
             List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
             for (String id : ids) {
@@ -1900,7 +1900,7 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
             List<DocumentModel> versions = new ArrayList<DocumentModel>();
             DocumentVersionIterator versionIterator = doc.getVersions();
 
@@ -1935,7 +1935,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
 
             Document doc = resolveReference(docRef);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, READ_VERSION);
 
             List<VersionModel> versions = new ArrayList<VersionModel>();
             DocumentVersionIterator versionIterator = doc.getVersions();
@@ -1981,7 +1981,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_PROPERTIES);
-            checkPermission(doc, VERSION);
+            checkPermission(doc, WRITE_VERSION);
 
             DocumentModel docModel = readModel(doc, null);
 
@@ -2040,6 +2040,7 @@ public abstract class AbstractSession implements CoreSession,
             // TODO: add a new permission names CHECKIN and use it instead of
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
+            checkPermission(doc, WRITE_VERSION);
 
             DocumentModel docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, null,
@@ -2160,7 +2161,8 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
+            checkPermission(doc, READ_PROPERTIES);
+            checkPermission(doc, READ_VERSION);
             String docPath = doc.getPath();
             doc = doc.getVersion(version.getLabel());
             if (doc == null) {

@@ -19,6 +19,15 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.lifecycle.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,11 +51,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
-import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
-import static org.nuxeo.ecm.core.lifecycle.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 /**
  * @author Razvan Caraghin
@@ -630,7 +634,7 @@ public class TestLocalAPI extends BaseTestCase {
         assertEquals(1, acl.size());
         assertEquals("princ2", acl.get(0).getUsername());
         acl = acls[1];
-        assertEquals(1 + 4, acl.size()); // 1 + 4 root defaults
+        assertEquals(1 + 3, acl.size()); // 1 + 3 root defaults
         assertEquals("princ1", acl.get(0).getUsername());
 
         // remove live document (create a proxy so the version stays)
