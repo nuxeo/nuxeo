@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1-CP03</version>
+    <version>5.3.1-CP07</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.6.1-CP03</version>
+  <version>1.6.1-CP07</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
