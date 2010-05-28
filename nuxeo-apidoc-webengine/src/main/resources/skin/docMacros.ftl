@@ -35,7 +35,7 @@
 <#macro quickEditorLinks docItem>
 
 <#if Root.isEditor()>
-  <img src="${skinPath}/images/edit.png" title="Edit" id='${docItem.getEditId()}_button'  onclick="return quickEditShow('${docItem.getEditId()}')"/>
+  <img src="${skinPath}/images/edit.png" title="Edit" id='${docItem.getEditId()}_button'  onclick="return quickEditShow('${docItem.getEditId()}', '${docItem.getTarget()}')"/>
 </#if>
 
 </#macro>

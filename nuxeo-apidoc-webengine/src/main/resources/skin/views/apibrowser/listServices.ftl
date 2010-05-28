@@ -37,12 +37,14 @@
   </tr>
 </table>
 
+<#if Context.request.getParameter("showDesc")??>
+   <#assign descriptions=This.getDescriptions("NXService")/>
+</#if>
 
 <#list services as service>
 
   <A href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</A>
   <#if Context.request.getParameter("showDesc")??>
-     <#assign descriptions=This.getDescriptions("NXService")/>
      <#assign cid=service.id/>
      <#assign desc=descriptions[cid]/>
     <@inlineEdit cid desc/>

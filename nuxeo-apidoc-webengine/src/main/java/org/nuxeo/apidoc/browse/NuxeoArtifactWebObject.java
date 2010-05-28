@@ -31,14 +31,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.json.JSONObject;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -135,7 +134,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path(value = "createDocumentation")
-    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
         if (!new GroupGuard(SecurityConstants.Write_Group).check(this))
         {
@@ -159,7 +157,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    //@Path(value = "aggView")
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());

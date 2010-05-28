@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import org.nuxeo.apidoc.doc.DocumentationItemReader;
 import org.nuxeo.apidoc.export.ArchiveFileWriter;
 
 public class ApiDocApplication extends Application {

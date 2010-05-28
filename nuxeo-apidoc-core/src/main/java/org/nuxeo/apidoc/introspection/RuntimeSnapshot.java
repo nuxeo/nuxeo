@@ -239,6 +239,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     public ComponentInfo getComponent(String id) {
         String bundleId = components2Bundles.get(id);
+        if (bundleId==null) {
+            return null;
+        }
         BundleInfoImpl bi = getBundle(bundleId);
 
         for (ComponentInfo ci : bi.getComponents()) {

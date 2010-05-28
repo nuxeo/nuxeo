@@ -30,12 +30,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.DocumentationItem;
+import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
@@ -341,6 +344,48 @@ public class ApiBrowser extends DefaultObject {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundleGroup", gId);
             TreeHelper.updateTree(getContext(), wo.getNxArtifact().getHierarchyPath());
             return wo;
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+    @Path(value = "viewArtifact/{id}")
+    public Object viewArtifact(@PathParam("id") String id) {
+        try {
+
+            DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession());
+
+            BundleGroup bg = snap.getBundleGroup(id);
+            if (bg!=null) {
+                return viewBundleGroup(id);
+            }
+
+            BundleInfo bi = snap.getBundle(id);
+            if (bi!=null) {
+                return viewBundle(id);
+            }
+
+            ComponentInfo ci = snap.getComponent(id);
+            if (ci!=null) {
+                return viewComponent(id);
+            }
+
+            ServiceInfo si = snap.getService(id);
+            if (si!=null) {
+                return viewService(id);
+            }
+
+            ExtensionPointInfo epi = snap.getExtensionPoint(id);
+            if (epi!=null) {
+                return viewExtensionPoint(id);
+            }
+
+            ExtensionInfo ei = snap.getContribution(id);
+            if (ei!=null) {
+                return viewContribution(id);
+            }
+
+            return Response.status(404).build();
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }

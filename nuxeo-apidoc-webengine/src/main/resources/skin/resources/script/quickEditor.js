@@ -1,13 +1,28 @@
 
 var editorDisplayed=false;
 
-function quickEditSave(id) {
+function getTargetUrl(id,target) {
+    var targetUrl = document.location.href
+    // remove Query String
+    if (targetUrl.indexOf("?")>0) {
+      targetUrl = targetUrl.substr(0,targetUrl.indexOf("?"));
+    }
+    // if listing mode then call on the distribution object
+    if (targetUrl.indexOf("/list")>0) {
+        targetUrl = targetUrl.substr(0,targetUrl.indexOf("/list"));
+        targetUrl = targetUrl + '/viewArtifact/' + target;
+      }
+    if (targetUrl.substr(-1)!="/") {
+     targetUrl +="/";
+    }
+    targetUrl += 'quickEdit/' + id;
 
- var targetUrl = document.location.href
- if (targetUrl.substr(-1)!="/") {
-  targetUrl +="/";
- }
- targetUrl += 'quickEdit/' + id;
+    return targetUrl;
+  }
+
+function quickEditSave(id, target) {
+
+ var targetUrl = getTargetUrl(id,target);
 
  var content = $('#liveQuickEditor').val();
  var title=$('#liveQuickEditorTitle').val();
@@ -39,14 +54,7 @@ function quickEditCancel(id) {
   editorDisplayed=false;
 }
 
-function quickEditShow(id) {
-
- var targetUrl = document.location.href
- if (targetUrl.substr(-1)!="/") {
-  targetUrl +="/";
- }
- targetUrl += 'quickEdit/' + id;
-
+function quickEditShow(id, target) {
 
 var isPlaceHolder=false;
 
@@ -56,6 +64,9 @@ if (id.match("^placeholder_")=="placeholder_") {
 if (editorDisplayed==true) {
  return;
 }
+
+var targetUrl = getTargetUrl(id,target);
+
 editorDisplayed=true;
 
 var titleItem = $("span").filter(function() { return this.id==(id+'_doctitle');})[0]
@@ -74,7 +85,7 @@ var editContent="<textarea id='liveQuickEditor' class='quickEdit' cols='120' row
 $(editContent).insertBefore($(textItem));
 $(textItem).css("display","none");
 
-var saveButton="<img id='liveQuickEditorSave' src='" + skinPath + "/images/save.gif' title='Save' onclick='return quickEditSave(\"" + id + "\")' />";
+var saveButton="<img id='liveQuickEditorSave' src='" + skinPath + "/images/save.gif' title='Save' onclick='return quickEditSave(\"" + id + "\",\"" + target + "\")' />";
 var cancelButton="<img id='liveQuickEditorCancel' src='" + skinPath + "/images/cancel.png' title='Cancel' onclick='return quickEditCancel(\"" + id + "\")' />";
 
 var editBtn = $("img").filter(function() { return this.id==(id+'_button');})[0]
@@ -90,8 +101,6 @@ $.get(targetUrl, function(data) {
   $('#liveQuickEditor').attr("enabled","false");
   $('#liveQuickEditor').html(data);
 });
-
-
 
 return true;
 }

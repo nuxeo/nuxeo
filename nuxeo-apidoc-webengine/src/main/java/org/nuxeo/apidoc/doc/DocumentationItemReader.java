@@ -15,7 +15,7 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.apidoc.browse;
+package org.nuxeo.apidoc.doc;
 
 import java.io.IOException;
 import java.io.InputStream;
