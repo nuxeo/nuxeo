@@ -10,7 +10,7 @@
 
   <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">
   <img src="${skinPath}/images/${contributionDesc.targetType}.png" alt="Contribution"/>
-  <span id="${contributionDesc}_doctitle"> ${contributionDesc.title}</span>
+  <span id="${contributionDesc.getEditId()}_doctitle"> ${contributionDesc.title}</span>
 
 <@quickEditorLinks docItem=contributionDesc/>
 

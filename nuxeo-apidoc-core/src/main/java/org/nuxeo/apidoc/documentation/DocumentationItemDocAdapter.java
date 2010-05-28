@@ -61,18 +61,20 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     }
 
     public String getContent() {
+        String encoding = "unset";
         try {
             Blob blob = (Blob) doc.getPropertyValue("file:content");
             if (blob==null) {
                 return "";
             }
-            if (blob.getEncoding()==null || blob.getEncoding()=="") {
+            encoding = blob.getEncoding();
+            if (encoding==null || encoding.equals("")) {
                 blob.setEncoding("utf-8");
             }
             return blob.getString();
         } catch (Exception e) {
-            log.error("Error while reading content", e);
-            return "";
+            log.error("Error while reading content with encoding " + encoding, e);
+            return "ERROR : " + e.getMessage();
         }
     }
 

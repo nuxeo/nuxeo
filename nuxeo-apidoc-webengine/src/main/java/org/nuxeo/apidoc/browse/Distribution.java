@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
-import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
@@ -216,12 +215,15 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "uploadDistrib")
     @Produces("text/html")
-    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
-    public Object uploadDistrib() {
+    public Object uploadDistrib() throws Exception {
         if (!isEditor()) {
             return null;
         }
         Blob blob = getContext().getForm().getFirstBlob();
+
+        getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
+        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
+
         return getView("index");
     }
 
@@ -251,7 +253,7 @@ public class Distribution extends ModuleRoot{
 
     public boolean isEditor() {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
-        return principal.getAllGroups().contains(SecurityConstants.Write_Group);
+        return SecurityHelper.canEditDocumentation(principal);
     }
 
 }

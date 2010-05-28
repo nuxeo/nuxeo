@@ -36,7 +36,6 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
-import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -44,7 +43,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.ecm.webengine.security.guards.GroupGuard;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -91,9 +89,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path(value = "updateDocumentation")
-    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doUpdateDocumentation(DocumentationItem docItem) throws Exception {
-        if (!new GroupGuard(SecurityConstants.Write_Group).check(this))
+        if (!SecurityHelper.canEditDocumentation(getContext()))
         {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
@@ -102,7 +99,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
         ds.updateDocumentationItem(ctx.getCoreSession(), docItem);
         return redirect(getDocUrl());
-        //return Response.seeOther(new URI(targetUrl)).build();
     }
 
     protected String getDocUrl() {
@@ -135,7 +131,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Produces("text/html")
     @Path(value = "createDocumentation")
     public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
-        if (!new GroupGuard(SecurityConstants.Write_Group).check(this))
+        if (!SecurityHelper.canEditDocumentation(getContext()))
         {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
