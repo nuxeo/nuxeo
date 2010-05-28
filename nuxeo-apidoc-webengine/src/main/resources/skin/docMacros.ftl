@@ -40,9 +40,10 @@
 
 </#macro>
 <#macro inlineEdit cid contentDoc>
-
     <#if contentDoc==null>
-      No associated documentation <br/>
+     <img src="${skinPath}/images/edit.png" title="Edit" id='placeholder_${cid}_button'  onclick="return quickEditShow('placeholder_${cid}', '${cid}')"/>
+      <span id="placeholder_${cid}_doctitle" ></span>
+      <div id="placeholder_${cid}_doccontent" >No associated documentation</div>
     </#if>
     <#if contentDoc!=null>
       <span id="${contentDoc.getEditId()}_doctitle" >${contentDoc.title}</span>
