@@ -67,6 +67,8 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <!-- Required for Java 1.5 compliance -->
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
