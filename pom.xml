@@ -75,12 +75,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-api</artifactId>
-        <version>${nuxeo.core.version}-CP03</version>
+        <version>${nuxeo.core.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core</artifactId>
-        <version>${nuxeo.core.version}-CP03</version>
+        <version>${nuxeo.core.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -90,12 +90,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-jcr-connector</artifactId>
-        <version>${nuxeo.core.version}-CP03</version>
+        <version>${nuxeo.core.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
-        <version>${nuxeo.core.version}-CP03</version>
+        <version>${nuxeo.core.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
