@@ -7,10 +7,6 @@
     point="permissions">
 
     <permission name="Write">
-      <include>AddChildren</include>
-      <include>WriteProperties</include>
-      <include>Remove</include>
-      <include>ManageWorkflows</include>
       <include>Comment</include>
     </permission>
 
@@ -19,18 +15,10 @@
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
       point="permissionsVisibility">
     <visibility type="Workspace">
-      <item show="true" order="10">Read</item>
-      <item show="true" order="30" denyPermission="Write">ReadWrite</item>
-      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
-      <item show="true" order="100">Everything</item>
       <item show="true" order="200">Comment</item>
       <item show="true" order="200">Moderate</item>
     </visibility>
     <visibility type="WebSite">
-      <item show="true" order="10">Read</item>
-      <item show="true" order="30" denyPermission="Write">ReadWrite</item>
-      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
-      <item show="true" order="100">Everything</item>
       <item show="true" order="200">Comment</item>
       <item show="true" order="200">Moderate</item>
     </visibility>
