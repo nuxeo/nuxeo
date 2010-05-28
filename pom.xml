@@ -237,7 +237,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-client</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -788,7 +788,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-publisher-core</artifactId>
-        <version>${nuxeo.features.version}-CP03</version>
+        <version>${nuxeo.features.version}-CP07</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
