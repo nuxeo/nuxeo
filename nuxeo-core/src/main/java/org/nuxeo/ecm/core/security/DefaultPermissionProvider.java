@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -95,7 +96,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                     .get(pvd.getTypeName());
             if (mergedPvd == null) {
                 mergedPvd = new PermissionVisibilityDescriptor(pvd);
-                if (!pvd.getTypeName().isEmpty()) {
+                if (!StringUtils.isEmpty(pvd.getTypeName())) {
                     mergedPvd.merge(mergedPermissionsVisibility.get(""));
                 }
                 mergedPermissionsVisibility.put(mergedPvd.getTypeName(),
