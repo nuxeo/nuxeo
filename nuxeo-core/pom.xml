@@ -53,6 +53,10 @@
       <artifactId>xercesImpl</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
