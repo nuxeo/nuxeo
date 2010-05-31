@@ -147,10 +147,12 @@
 
 <#macro tree id url="${Root.path}/${distId}/tree" root="/">
   <script type="text/javascript">
-  var currentSelectedTreeId='${Context.request.session.getAttribute("tree-last-path")}';
-
+  var currentSelectedTreeId='${Context.request.getAttribute("tree-last-path")}';
+  var anonymousTree=false;
+  <#if Context.getPrincipal().isAnonymous()>
+   anonymousTree = true;
+  </#if>
   $(document).ready(function(){
-    //alert("ready");
     $("#${id}").treeview({
       url: "${url}",
       root: "${root}",
@@ -158,20 +160,12 @@
     });
 
   });
-  //unique: true,
-  //control: "#treeControler",
-  //collapsed: true,
-  //persist: "cookie"
-
-
-
-
   </script>
-
   <ul id="${id}" class="filetree">
   </ul>
 
 </#macro>
+
 <@tree id="myTree" root="/"/>
 
 <br/>

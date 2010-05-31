@@ -65,7 +65,12 @@ $.fn.treeview = function(settings) {
     return proxied.apply(this, arguments);
   }
   var container = this;
-  load(settings, "source", this, container);
+  if (anonymousTree && currentSelectedTreeId!='') {
+    load(settings, "source:" + currentSelectedTreeId  , this, container);
+  }
+  else {
+    load(settings, "source", this, container);
+  }
   var userToggle = settings.toggle;
   return proxied.call(this, $.extend({}, settings, {
     collapsed: true,

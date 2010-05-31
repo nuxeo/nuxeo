@@ -75,12 +75,13 @@ $(document).ready(function() {
 </script>
 
 <#if (Context.principal.isAnonymous())>
-  <!--div id="logstate" style="color:white">Hi Guest! You are not logged in.</div-->
+<!--
     <form id="login_form" method="post" action="#">
       <input type="text" name="userid" id="username" value="login" size="15" onfocus="if (this.value=='login') this.value=''" onblur="if (this.value=='') this.value='login'">
       <input type="password" name="password" id="password" value="password" size="15" onfocus="if (this.value=='password') this.value=''" onblur="if (this.value=='') this.value='password'">
       <input type="submit" name="nuxeo_login" value="Ok" id="login" class="button">
     </form>
+-->
 <#else>
   <div class="logout"><span id="logstate">You are logged in as ${Context.principal.name}</span>
   &nbsp;|&nbsp;
