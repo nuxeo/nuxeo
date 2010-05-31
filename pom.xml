@@ -17,6 +17,7 @@
   <name>Nuxeo Chemistry</name>
   <description>Nuxeo Core: Chemistry</description>
   <packaging>pom</packaging>
+  <version>1.6.1-chemistry-r935930</version>
 
   <modules>
     <module>nuxeo-chemistry-impl</module>

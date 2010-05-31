@@ -16,6 +16,7 @@
   <artifactId>nuxeo-chemistry-tests</artifactId>
   <name>Nuxeo Chemistry Tests</name>
   <description>Nuxeo Core: Chemistry Tests</description>
+  <version>1.6.1-chemistry-r935930</version>
 
   <dependencies>
     <dependency>

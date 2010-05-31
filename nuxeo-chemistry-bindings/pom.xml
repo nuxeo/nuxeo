@@ -13,6 +13,7 @@
   <artifactId>nuxeo-chemistry-bindings</artifactId>
   <name>Nuxeo Chemistry AtomPub/SOAP Bindings</name>
   <description>Nuxeo Core: Chemistry Bindings for AtomPub and SOAP</description>
+  <version>1.6.1-chemistry-r935930</version>
 
   <build>
     <plugins>

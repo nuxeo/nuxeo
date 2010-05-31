@@ -16,6 +16,7 @@
   <artifactId>nuxeo-chemistry-impl</artifactId>
   <name>Nuxeo Chemistry Implementation</name>
   <description>Nuxeo Core: Chemistry Implementation</description>
+  <version>1.6.1-chemistry-r935930</version>
 
   <build>
     <plugins>
