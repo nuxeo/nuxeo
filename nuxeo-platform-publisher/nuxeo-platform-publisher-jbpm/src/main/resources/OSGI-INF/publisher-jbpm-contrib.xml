@@ -2,6 +2,8 @@
 
 <component name="org.nuxeo.ecm.platform.publisher.jbpm.contrib">
 
+ <require>org.nuxeo.ecm.platform.publisher.contrib</require>
+ 
   <extension
       target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
       point="factory">
