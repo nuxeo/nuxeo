@@ -21,8 +21,6 @@
 	<td>/nuxeo/logout</td>
 	<td></td>
 </tr>
-<!-- disabled as not reliable, see NXP-4920 -->
-<!--
 <tr>
 	<td>open</td>
 	<td>/nuxeo/site/error</td>
@@ -36,11 +34,6 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Web Exception</td>
-	<td></td>
-</tr>
-<tr>
-	<td>refreshAndWait</td>
-	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -53,7 +46,6 @@
 	<td>org.nuxeo.ecm.webengine.WebException: Web exception</td>
 	<td></td>
 </tr>
--->
 <tr>
 	<td>open</td>
 	<td>/nuxeo/site/error</td>
@@ -68,11 +60,6 @@
 	<td>clickAndWait</td>
 	<td>link=Checked Error</td>
 	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.isElementPresent('document.body')</td>
-	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
@@ -100,11 +87,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.isElementPresent('document.body')</td>
-	<td>10000</td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>WEBENGINE HANDLED ERROR:</td>
 	<td></td>
@@ -128,11 +110,6 @@
 	<td>clickAndWait</td>
 	<td>link=Security Error</td>
 	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.isElementPresent('document.body')</td>
-	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
