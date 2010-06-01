@@ -48,6 +48,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.presets.PaletteIdentifyException;
 import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.themes.ThemeManager;
 
 @WebObject(type = "theme-banks")
 @Produces(MediaType.TEXT_HTML)
@@ -112,10 +114,11 @@ public class Main extends ModuleRoot {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/skins")
     @SuppressWarnings("rawtypes")
-    public String listBankSkins(@PathParam("bank") String bank) {
+    public String listBankSkins(@PathParam("bank") String bankName) {
         JSONArray skins = new JSONArray();
-        for (String collection : BankManager.getCollections(bank, "style")) {
-            Map<String, Object> info = BankManager.getInfo(bank, "style",
+        ResourceBank resourceBank = ThemeManager.getResourceBank(bankName);
+        for (String collection : BankManager.getCollections(bankName, "style")) {
+            Map<String, Object> info = BankManager.getInfo(bankName, "style",
                     collection);
             if (info == null) {
                 continue;
@@ -129,9 +132,13 @@ public class Main extends ModuleRoot {
                 }
                 if (isSkin) {
                     JSONObject skinMap = new JSONObject();
-                    skinMap.put("bank", bank);
+                    String preview = String.format("%s/style/%s/%s/preview",
+                            resourceBank.getConnectionUrl(), collection,
+                            resource);
+                    skinMap.put("bank", bankName);
                     skinMap.put("collection", collection);
                     skinMap.put("resource", resource);
+                    skinMap.put("preview", preview);
                     skins.add(skinMap);
                 }
             }

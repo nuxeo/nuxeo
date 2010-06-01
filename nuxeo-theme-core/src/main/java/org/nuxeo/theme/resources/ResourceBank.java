@@ -88,9 +88,10 @@ public class ResourceBank implements Type {
         }
         return paths;
     }
-    
-    public List<Map> getSkins() {
-        List<Map> skins = new ArrayList<Map>();
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, String>> getSkins() {
+        List<Map<String, String>> skins = new ArrayList<Map<String, String>>();
         String src = String.format("%s/json/skins", connectionUrl);
         String list = "";
         try {
@@ -101,7 +102,7 @@ public class ResourceBank implements Type {
             return skins;
         }
         for (Object object : JSONArray.fromObject(list)) {
-            Map skin = (Map)JSONObject.fromObject(object);
+            Map<String, String> skin = (Map<String, String>) JSONObject.fromObject(object);
             skins.add(skin);
         }
         return skins;
