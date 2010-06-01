@@ -279,6 +279,8 @@
         <include name="apacheds-core-*" />
         <include name="apacheds-core-shared-*" />
         <include name="apacheds-protocol-shared-*" />
+        <include name="bcmail-jdk14*" />
+        <include name="bcprov-jdk14*" />
         <include name="c3p0-*" />
         <include name="commons-beanutils-*" />
         <include name="commons-beanutils-core-*" />
