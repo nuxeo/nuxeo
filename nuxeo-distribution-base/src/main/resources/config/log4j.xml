@@ -6,7 +6,7 @@
     <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
     <!--    <param name="Target" value="System.out" />-->
     <layout class="org.apache.log4j.PatternLayout">
-      <!--      <param name="ConversionPattern" value="[%C{1}] %m%n" />-->
+      <!-- <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" /> -->
       <param name="ConversionPattern" value="%m%n" />
     </layout>
   </appender>
@@ -17,7 +17,7 @@
     <!--    <param name="MaxFileSize" value="10MB" />-->
     <param name="MaxBackupIndex" value="3" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
     </layout>
   </appender>
 
@@ -29,14 +29,13 @@
     <param name="MaxFileSize" value="30MB" />
     <param name="MaxBackupIndex" value="5" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
     </layout>
   </appender>
 
   <!-- Main logger -->
   <logger name="org.nuxeo">
     <level value="INFO" />
-    <appender-ref ref="FILE" />
   </logger>
   <!-- Console output -->
   <logger name="org.nuxeo.ecm.shell">
@@ -63,6 +62,7 @@
 
   <root>
     <level value="WARN" />
+    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

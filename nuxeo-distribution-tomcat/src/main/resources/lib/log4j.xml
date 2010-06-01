@@ -3,9 +3,8 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false">
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <!--    <param name="Target" value="System.out" />-->
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
     </layout>
   </appender>
 
@@ -15,7 +14,7 @@
     <!--    <param name="MaxFileSize" value="10MB" />-->
     <param name="MaxBackupIndex" value="3" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
     </layout>
   </appender>
 
@@ -26,14 +25,14 @@
     <param name="MaxFileSize" value="30MB" />
     <param name="MaxBackupIndex" value="5" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
     </layout>
   </appender>
 
   <!-- Main logger -->
-  <logger name="org.nuxeo">
-    <level value="INFO" />
-  </logger>
+  <!--  <logger name="org.nuxeo">-->
+  <!--    <level value="INFO" />-->
+  <!--  </logger>-->
   <!-- Loggers for import commands -->
   <logger name="org.nuxeo.ecm.shell.commands.io.ImportCommand">
     <level value="INFO" />
@@ -51,9 +50,28 @@
     <level value="INFO" />
     <appender-ref ref="import" />
   </logger>
+  <category name="org.nuxeo.ecm.platform.ui.web.auth">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.StandaloneApplication">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
+    <priority value="INFO" />
+  </category>
 
   <root>
-    <level value="INFO" />
+    <level value="WARN" />
+    <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
   </root>
 
