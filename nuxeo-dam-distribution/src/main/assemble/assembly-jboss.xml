@@ -41,7 +41,6 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.distribution.version}:zip"
                             classifier="nuxeo-dm" />
       <patternset>
-        <exclude name="**/templates/common/config/nxrelations-default-jena-bundle.xml" />
         <exclude name="**/templates/common/config/nxmail-scheduler-config.xml" />
         <exclude name="**/templates/common/config/default-opensocial-config.xml" />
         <exclude name="**/templates/common/config/opensocial.properties" />
