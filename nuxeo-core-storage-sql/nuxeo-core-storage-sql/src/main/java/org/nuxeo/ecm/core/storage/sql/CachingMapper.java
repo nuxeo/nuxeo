@@ -47,11 +47,11 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
         return mapper.getMapperId();
     }
 
-    public void close() {
+    public void close() throws StorageException {
         mapper.close();
     }
 
-    public int getTableSize(String tableName) {
+    public int getTableSize(String tableName) throws StorageException {
         return mapper.getTableSize(tableName);
     }
 

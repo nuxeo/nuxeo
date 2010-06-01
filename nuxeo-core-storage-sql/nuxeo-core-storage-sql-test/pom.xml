@@ -172,4 +172,84 @@
     -->
   </dependencies>
 
+  <build>
+    <plugins>
+      <!-- Make sure Surefire does NOT run integration tests  -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/IT*.java</exclude>
+            <exclude>**/*IT.java</exclude>
+            <exclude>**/*ITCase.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- Spawn a Nuxeo in server mode -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start</id>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <tasks>
+                <echo message="pre" />
+                <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner"
+                  classpathref="maven.test.classpath" fork="true" spawn="true">
+                  <jvmarg value="-Xdebug" />
+                  <jvmarg
+                    value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n" />
+                </java>
+                <echo message="end pre" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Run integration tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>failsafe-maven-plugin</artifactId>
+        <version>2.4.3-alpha-1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Stop server -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>stop</id>
+            <phase>post-integration-test</phase>
+            <configuration>
+              <tasks>
+                <echo message="waiting a bit..." />
+                <sleep seconds="10" />
+                <echo message="stopping server" />
+                <java
+                  classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner$Stopper"
+                  classpathref="maven.test.classpath">
+                </java>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+
 </project>

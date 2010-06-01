@@ -43,10 +43,10 @@ public interface Mapper extends RowMapper, XAResource {
      */
     String getMapperId() throws StorageException;
 
-    void close();
+    void close() throws StorageException;
 
     // TODO
-    int getTableSize(String tableName);
+    int getTableSize(String tableName) throws StorageException;
 
     /**
      * Creates the necessary structures in the database.

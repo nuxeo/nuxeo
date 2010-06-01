@@ -21,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -45,6 +47,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  */
 public class SQLRepository implements Repository {
+
+    private static final Log log = LogFactory.getLog(SQLRepository.class);
 
     public final RepositoryImpl repository;
 
@@ -143,7 +147,11 @@ public class SQLRepository implements Repository {
     }
 
     public void shutdown() {
-        repository.close();
+        try {
+            repository.close();
+        } catch (StorageException e) {
+            log.error("Cannot close repository", e);
+        }
     }
 
     public int getStartedSessionsCount() {

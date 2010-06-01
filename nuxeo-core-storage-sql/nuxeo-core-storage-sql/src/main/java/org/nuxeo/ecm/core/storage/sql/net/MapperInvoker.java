@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.storage.sql.Session;
  */
 public class MapperInvoker extends Thread {
 
-    private static final String INIT = "__init";
+    private static final String INVOKER_INIT = "__init";
 
-    private static final String CLOSE = "__close";
+    private static final String INVOKER_CLOSE = "__close";
 
     private static final Map<String, Method> mapperMethods = new HashMap<String, Method>();
     static {
@@ -105,12 +105,12 @@ public class MapperInvoker extends Thread {
 
     // called in the main thread
     public void init() throws Throwable {
-        call(INIT);
+        call(INVOKER_INIT);
     }
 
     // called in the main thread
     public void close() throws Throwable {
-        call(CLOSE);
+        call(INVOKER_CLOSE);
         interrupt();
         join();
     }
@@ -127,13 +127,17 @@ public class MapperInvoker extends Thread {
 
     protected Object localCall(String methodName, Object[] args)
             throws Exception {
-        if (methodName == INIT) { // == is ok
+        if (methodName == INVOKER_INIT) { // == is ok
             session = repository.getConnection();
             mapper = session.getMapper();
             return null;
-        } else if (methodName == CLOSE) { // == is ok
+        } else if (methodName == INVOKER_CLOSE) { // == is ok
             session.close();
             mapper = null;
+            return null;
+        } else if ("close".equals(methodName)) {
+            // ignored, done by above invoker close, on the session
+            // (we must not close the mapper directly as it may be in a pool)
             return null;
         }
         Method method = mapperMethods.get(methodName);

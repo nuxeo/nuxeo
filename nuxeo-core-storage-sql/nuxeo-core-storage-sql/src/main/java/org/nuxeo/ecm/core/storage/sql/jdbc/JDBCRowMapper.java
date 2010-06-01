@@ -449,6 +449,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // insert the row
             // XXX statement should be already prepared
             String sql = sqlInfo.getInsertSql(row.tableName);
+            if (sql == null) {
+                throw new StorageException("Unknown table: " + row.tableName);
+            }
             List<Column> columns = sqlInfo.getInsertColumns(row.tableName);
             try {
                 if (logger.isLogEnabled()) {

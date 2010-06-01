@@ -80,7 +80,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         protected final String repositoryName;
 
         public RemoteVCS(String repositoryName) {
-            super("Remote VCS");
+            super("Nuxeo-VCS-Remote");
             this.repositoryName = repositoryName;
         }
 

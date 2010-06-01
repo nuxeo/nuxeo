@@ -182,12 +182,16 @@ public class SessionImpl implements Session, XAResource {
      * ----- javax.resource.cci.Connection -----
      */
 
-    public void close() {
-        closeSession();
+    public void close() throws ResourceException {
+        try {
+            closeSession();
+        } catch (StorageException e) {
+            throw new ResourceException(e);
+        }
         repository.closeSession(this);
     }
 
-    protected void closeSession() {
+    protected void closeSession() throws StorageException {
         live = false;
         // close the mapper and therefore the connection
         mapper.close();

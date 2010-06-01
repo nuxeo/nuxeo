@@ -258,7 +258,7 @@ public class RepositoryImpl implements Repository {
      * ----- Repository -----
      */
 
-    public synchronized void close() {
+    public synchronized void close() throws StorageException {
         for (SessionImpl session : sessions) {
             if (!session.isLive()) {
                 continue;

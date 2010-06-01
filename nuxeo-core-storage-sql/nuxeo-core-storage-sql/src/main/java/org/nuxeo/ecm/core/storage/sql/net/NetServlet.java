@@ -99,13 +99,15 @@ public class NetServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        for (Entry<String, MapperInvoker> es : invokers.entrySet()) {
-            MapperInvoker invoker = es.getValue();
-            try {
-                invoker.call("close");
-                invoker.close();
-            } catch (Throwable e) {
-                log.error("Cannot close invoker " + es.getKey());
+        if (invokers != null) {
+            for (Entry<String, MapperInvoker> es : invokers.entrySet()) {
+                MapperInvoker invoker = es.getValue();
+                try {
+                    invoker.call("close");
+                    invoker.close();
+                } catch (Throwable e) {
+                    log.error("Cannot close invoker " + es.getKey());
+                }
             }
         }
         super.destroy();
@@ -178,7 +180,7 @@ public class NetServlet extends HttpServlet {
             oos.flush();
             oos.close();
         } catch (Throwable e) {
-            log.error(e);
+            log.error(e, e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     e.toString());
         }
