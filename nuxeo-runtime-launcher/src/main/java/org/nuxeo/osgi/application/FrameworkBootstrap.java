@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.osgi.application;
 
@@ -33,29 +33,40 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*";
+
     protected static final String DEFAULT_LIBS_CP = "lib/*:.:config";
 
+    private static final Log log = LogFactory.getLog(FrameworkBootstrap.class);
+
     protected File home;
+
     protected MutableClassLoader loader;
-    protected Map<String,Object> env;
+
+    protected Map<String, Object> env;
+
     protected Class<?> frameworkLoaderClass;
 
     protected long startTime;
-    protected boolean scanForNestedJars = true;
-    protected boolean flushCache = false;
 
+    protected boolean scanForNestedJars = true;
+
+    protected boolean flushCache = false;
 
     public FrameworkBootstrap(ClassLoader cl, File home) throws IOException {
         this(new MutableClassLoaderDelegate(cl), home);
     }
 
-    public FrameworkBootstrap(MutableClassLoader loader, File home) throws IOException {
+    public FrameworkBootstrap(MutableClassLoader loader, File home)
+            throws IOException {
         this.home = home.getCanonicalFile();
         this.loader = loader;
         initializeEnvironment();
@@ -104,14 +115,17 @@ public class FrameworkBootstrap implements LoaderConstants {
     public void initialize() throws Exception {
         startTime = System.currentTimeMillis();
         List<File> bundleFiles = buildClassPath();
-        frameworkLoaderClass = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.FrameworkLoader");
-        Method init = frameworkLoaderClass.getMethod("initialize", ClassLoader.class, File.class, List.class, Map.class);
+        frameworkLoaderClass = getClassLoader().loadClass(
+                "org.nuxeo.osgi.application.loader.FrameworkLoader");
+        Method init = frameworkLoaderClass.getMethod("initialize",
+                ClassLoader.class, File.class, List.class, Map.class);
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
 
     public void start() throws Exception {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException(
+                    "Framework Loader was not initialized. Call initialize() method first");
         }
         Method start = frameworkLoaderClass.getMethod("start");
         start.invoke(null);
@@ -120,7 +134,8 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     public void stop() throws Exception {
         if (frameworkLoaderClass == null) {
-            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
+            throw new IllegalStateException(
+                    "Framework Loader was not initialized. Call initialize() method first");
         }
         Method stop = frameworkLoaderClass.getMethod("stop");
         stop.invoke(null);
@@ -142,12 +157,12 @@ public class FrameworkBootstrap implements LoaderConstants {
         FileInputStream in = new FileInputStream(file);
         try {
             p.load(in);
-            env.putAll((Map)p);
-            String v = (String)env.get(SCAN_FOR_NESTED_JARS);
+            env.putAll((Map) p);
+            String v = (String) env.get(SCAN_FOR_NESTED_JARS);
             if (v != null) {
                 scanForNestedJars = Boolean.parseBoolean(v);
             }
-            v = (String)env.get(FLUSH_CACHE);
+            v = (String) env.get(FLUSH_CACHE);
             if (v != null) {
                 flushCache = Boolean.parseBoolean(v);
             }
@@ -157,7 +172,8 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     protected void printStartedMessage() {
-        System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");
+        log.info("Framework started in "
+                + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
     }
 
     protected File newFile(String path) throws IOException {
@@ -170,16 +186,16 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     *
+     * 
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
         List<File> bundleFiles = new ArrayList<File>();
-        String libsCp = (String)env.get(LIBS);
+        String libsCp = (String) env.get(LIBS);
         if (libsCp != null) {
             buildLibsClassPath(libsCp);
         }
-        String bundlesCp = (String)env.get(BUNDLES);
+        String bundlesCp = (String) env.get(BUNDLES);
         if (libsCp != null) {
             buildBundlesClassPath(bundlesCp, bundleFiles);
         }
@@ -189,7 +205,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     protected void buildLibsClassPath(String libsCp) throws IOException {
         String[] ar = libsCp.split(":");
-        for (int i=0; i<ar.length; i++) {
+        for (int i = 0; i < ar.length; i++) {
             String entry = ar[i];
             File entryFile;
             if (entry.endsWith("/*")) {
@@ -207,9 +223,10 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    protected void buildBundlesClassPath(String bundlesCp, List<File> bundleFiles) throws IOException {
+    protected void buildBundlesClassPath(String bundlesCp,
+            List<File> bundleFiles) throws IOException {
         String[] ar = bundlesCp.split(":");
-        for (int i=0; i<ar.length; i++) {
+        for (int i = 0; i < ar.length; i++) {
             String entry = ar[i];
             File entryFile;
             if (entry.endsWith("/*")) {
@@ -218,7 +235,8 @@ public class FrameworkBootstrap implements LoaderConstants {
                 if (files != null) {
                     for (File file : files) {
                         String path = file.getPath();
-                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")) {
+                        if (path.endsWith(".jar") || path.endsWith(".zip")
+                                || path.endsWith(".war")) {
                             bundleFiles.add(file);
                             loader.addURL(file.toURI().toURL());
                         }
@@ -232,8 +250,8 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-
-    protected void extractNestedJars(List<File> bundleFiles, File dir) throws IOException {
+    protected void extractNestedJars(List<File> bundleFiles, File dir)
+            throws IOException {
         if (!scanForNestedJars) {
             return;
         }
@@ -274,7 +292,8 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
     }
 
-    protected void extractNestedJar(JarFile file, ZipEntry entry, File dest) throws IOException {
+    protected void extractNestedJar(JarFile file, ZipEntry entry, File dest)
+            throws IOException {
         InputStream in = null;
         try {
             in = file.getInputStream(entry);
@@ -324,7 +343,9 @@ public class FrameworkBootstrap implements LoaderConstants {
     }
 
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
+
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
+
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
     private static byte[] createBuffer(int preferredSize) {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.BundleFile;
@@ -44,27 +46,38 @@ public class StandaloneApplication extends OSGiAdapter {
 
     public static final String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
 
+    private static final Log log = LogFactory.getLog(StandaloneApplication.class);
+
     private static StandaloneApplication instance;
+
     private static CommandLineOptions options; // TODO should be remove
+
     private static String[] args;
+
     private static Runnable mainTask;
 
     protected final SharedClassLoader classLoader;
+
     protected final Environment env;
+
     protected boolean isStarted;
+
     protected File home;
+
     protected List<File> classPath;
+
     protected boolean scanForNestedJARs = true; // by default true
 
-    // a list of class path prefixes that contains JARS that should not be treated as bundles.
+    // a list of class path prefixes that contains JARS that should not be
+    // treated as bundles.
     protected String[] libdirs;
-
 
     public static StandaloneApplication getInstance() {
         return instance;
     }
 
-    public static StandaloneApplication createInstance(SharedClassLoader cl) throws IOException {
+    public static StandaloneApplication createInstance(SharedClassLoader cl)
+            throws IOException {
         if (instance != null) {
             throw new IllegalStateException("Application already instantiated");
         }
@@ -83,7 +96,7 @@ public class StandaloneApplication extends OSGiAdapter {
             if (ar.length > 0) {
                 instance.libdirs = ar;
                 File wd = instance.getWorkingDir();
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     if (!ar[i].startsWith("/")) {
                         instance.libdirs[i] = new File(wd, ar[i]).getCanonicalFile().getAbsolutePath();
                     }
@@ -110,7 +123,8 @@ public class StandaloneApplication extends OSGiAdapter {
 
     public void start() throws Exception {
         if (isStarted) {
-            throw new IllegalStateException("OSGi Application is already started");
+            throw new IllegalStateException(
+                    "OSGi Application is already started");
         }
         List<BundleFile> preBundles = loadUserBundles("pre-bundles");
         List<BundleFile> postBundles = loadUserBundles("post-bundles");
@@ -120,13 +134,15 @@ public class StandaloneApplication extends OSGiAdapter {
             startBundles(preBundles);
         }
         // start level 2
-        // if needed install all discovered bundles (the one that are located in bundles dir)
+        // if needed install all discovered bundles (the one that are located in
+        // bundles dir)
         autoInstallBundles();
         // start level 3
         if (postBundles != null) {
             startBundles(postBundles);
         }
-        fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, getSystemBundle(), null));
+        fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                getSystemBundle(), null));
         isStarted = true;
     }
 
@@ -196,7 +212,8 @@ public class StandaloneApplication extends OSGiAdapter {
             return;
         }
         boolean clear = hasCommandLineOption("clear");
-        ClassPath cpath = new ClassPath(classLoader, new File(env.getData(), "nested-jars"));
+        ClassPath cpath = new ClassPath(classLoader, new File(env.getData(),
+                "nested-jars"));
         File cache = new File(env.getData(), "bundles.cache");
         if (!clear && cache.exists()) {
             try {
@@ -210,7 +227,7 @@ public class StandaloneApplication extends OSGiAdapter {
             cpath.store(cache);
         }
         installAll(cpath.getBundles());
-        //new ApplicationBundleLoader(this, !clear).loadBundles(classPath);
+        // new ApplicationBundleLoader(this, !clear).loadBundles(classPath);
     }
 
     public void install(BundleFile bf) throws BundleException {
@@ -227,7 +244,8 @@ public class StandaloneApplication extends OSGiAdapter {
      * Creates the system bundle from the jar specified by the
      * nuxeo.osgi.system.bundle property.
      */
-    public static BundleFile createSystemBundle(URL systemBundle) throws URISyntaxException, IOException {
+    public static BundleFile createSystemBundle(URL systemBundle)
+            throws URISyntaxException, IOException {
         File file = new File(systemBundle.toURI());
         BundleFile sysbf = null;
         if (file.isFile()) {
@@ -302,8 +320,9 @@ public class StandaloneApplication extends OSGiAdapter {
         return mainTask;
     }
 
-    public static void main(URL systemBundle, List<File> classPath, String[] args) {
-        SharedClassLoader classLoader = (SharedClassLoader)Thread.currentThread().getContextClassLoader();
+    public static void main(URL systemBundle, List<File> classPath,
+            String[] args) {
+        SharedClassLoader classLoader = (SharedClassLoader) Thread.currentThread().getContextClassLoader();
         long startTime = System.currentTimeMillis();
         // parse command line args
         StandaloneApplication.args = args;
@@ -313,26 +332,30 @@ public class StandaloneApplication extends OSGiAdapter {
             StandaloneApplication app = createInstance(classLoader);
             // start level 0
             app.setClassPath(classPath);
-            app.setSystemBundle(new SystemBundle(app, createSystemBundle(systemBundle), classLoader.getLoader()));
+            app.setSystemBundle(new SystemBundle(app,
+                    createSystemBundle(systemBundle), classLoader.getLoader()));
             // start level 1
             app.start();
-            System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");
+            log.info("Framework started in "
+                    + ((System.currentTimeMillis() - startTime) / 1000)
+                    + " sec.");
             if (mainTask != null) {
                 mainTask.run();
             }
-        } catch (Throwable  e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             System.exit(13);
-// this should not be called here because it will stop the server if the main thread is not blocking
-//        } finally {
-//            try {
-//                if (app != null && app.isStarted()) {
-//                    app.shutdown();
-//                }
-//            } catch (Exception e) {
-//                System.err.println("Failed to stop framework");
-//                e.printStackTrace();
-//            }
+            // this should not be called here because it will stop the server if
+            // the main thread is not blocking
+            // } finally {
+            // try {
+            // if (app != null && app.isStarted()) {
+            // app.shutdown();
+            // }
+            // } catch (Exception e) {
+            // System.err.println("Failed to stop framework");
+            // e.printStackTrace();
+            // }
         }
     }
 
