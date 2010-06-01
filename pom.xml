@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -29,25 +30,39 @@
       <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
       <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
       <otherArchives>
-        <otherArchive>http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs</otherArchive>
-        <otherArchive>http://www.mail-archive.com/ecm@lists.nuxeo.com/</otherArchive>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm@lists.nuxeo.com/
+        </otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>Nuxeo ECM checkins list</name>
-      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ecm-checkins</subscribe>
-      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ecm-checkins</unsubscribe>
+      <subscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </unsubscribe>
       <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
       <otherArchives>
-        <otherArchive>http://dir.gmane.org/gmane.comp.cms.nuxeo.scm</otherArchive>
-        <otherArchive>http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/</otherArchive>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.scm
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/
+        </otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>Nuxeo ECM developers list</name>
       <post>nuxeo-dev@lists.nuxeo.com</post>
       <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
-      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</unsubscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev
+      </unsubscribe>
       <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
     </mailingList>
   </mailingLists>
@@ -1620,15 +1635,23 @@
         <configuration>
           <argLine>-Xmx512M</argLine>
           <systemPropertyVariables>
-            <net.sourceforge.cobertura.datafile>${project.build.directory}/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
+            <net.sourceforge.cobertura.datafile>
+              ${project.build.directory}/cobertura/cobertura.ser
+            </net.sourceforge.cobertura.datafile>
             <!-- Used by org.nuxeo.ecm.core.storage.sql.DatabaseHelper -->
             <nuxeo.test.vcs.db>${nuxeo.test.vcs.db}</nuxeo.test.vcs.db>
             <nuxeo.test.vcs.url>${nuxeo.test.vcs.url}</nuxeo.test.vcs.url>
-            <nuxeo.test.vcs.server>${nuxeo.test.vcs.server}</nuxeo.test.vcs.server>
+            <nuxeo.test.vcs.server>
+              ${nuxeo.test.vcs.server}
+            </nuxeo.test.vcs.server>
             <nuxeo.test.vcs.port>${nuxeo.test.vcs.port}</nuxeo.test.vcs.port>
-            <nuxeo.test.vcs.database>${nuxeo.test.vcs.database}</nuxeo.test.vcs.database>
+            <nuxeo.test.vcs.database>
+              ${nuxeo.test.vcs.database}
+            </nuxeo.test.vcs.database>
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
-            <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
+            <nuxeo.test.vcs.password>
+              ${nuxeo.test.vcs.password}
+            </nuxeo.test.vcs.password>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
@@ -1803,7 +1826,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.6</version> <!-- MECLIPSE-576 fixed in 2.9 -->
+          <version>2.6</version><!-- MECLIPSE-576 fixed in 2.9 -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1967,7 +1990,9 @@
           <configuration>
             <rules>
               <requirePluginVersions>
-                <message>Set plugin versions in pluginManagement section.</message>
+                <message>
+                  Set plugin versions in pluginManagement section.
+                </message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
@@ -2178,7 +2203,9 @@
                 </group>
                 <group>
                   <title>Nuxeo WebEngine Packages</title>
-                  <packages>org.nuxeo.webengine*:org.nuxeo.ecm.webengine*</packages>
+                  <packages>
+                    org.nuxeo.webengine*:org.nuxeo.ecm.webengine*
+                  </packages>
                 </group>
                 <group>
                   <title>Nuxeo GWT Packages</title>
@@ -2208,7 +2235,9 @@
       <repositories>
         <repository>
           <id>internal-releases</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-releases</url>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -2218,7 +2247,9 @@
         </repository>
         <repository>
           <id>internal-snapshots</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots</url>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2231,7 +2262,9 @@
       <pluginRepositories>
         <pluginRepository>
           <id>internal-releases</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-releases</url>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
           <name>Nuxeo virtual release repository</name>
           <releases>
             <enabled>true</enabled>
@@ -2242,7 +2275,9 @@
         </pluginRepository>
         <pluginRepository>
           <id>internal-snapshots</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots</url>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
             <enabled>false</enabled>
@@ -2256,7 +2291,9 @@
       <distributionManagement>
         <snapshotRepository>
           <id>daily-snapshots</id>
-          <url>http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots</url>
+          <url>
+            http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
+          </url>
           <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
@@ -2269,7 +2306,9 @@
       <repositories>
         <repository>
           <id>private-releases</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases
+          </url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -2279,7 +2318,9 @@
         </repository>
         <repository>
           <id>private-snapshots</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots
+          </url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2292,7 +2333,9 @@
       <pluginRepositories>
         <pluginRepository>
           <id>private-releases</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases
+          </url>
           <name>Nuxeo virtual release repository</name>
           <releases>
             <enabled>true</enabled>
@@ -2303,7 +2346,9 @@
         </pluginRepository>
         <pluginRepository>
           <id>private-snapshots</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots
+          </url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
             <enabled>false</enabled>
@@ -2317,11 +2362,15 @@
       <distributionManagement>
         <repository>
           <id>releases</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases
+          </url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots
+          </url>
           <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
@@ -2419,11 +2468,15 @@
     </site>
     <repository>
       <id>public-releases</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/repositories/public-releases</url>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
     </repository>
     <snapshotRepository>
       <id>public-snapshots</id>
-      <url>http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots</url>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
