@@ -38,7 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
  *
  * @author Shane Bryzak
  */
-public class MultipartRequest extends HttpServletRequestWrapper {
+public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     private static final String PARAM_NAME = "name";
 
     private static final String PARAM_FILENAME = "filename";
@@ -99,7 +98,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 
     public MultipartRequest(HttpServletRequest request,
             boolean createTempFiles, int maxRequestSize) {
-        super(request);
+        super(request, createTempFiles, maxRequestSize);
         this.createTempFiles = createTempFiles;
 
         String contentLength = request.getHeader("Content-Length");
