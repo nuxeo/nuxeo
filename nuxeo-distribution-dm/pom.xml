@@ -365,6 +365,12 @@
             </artifactItem>
             <artifactItem>
               <groupId>org.nuxeo.runtime</groupId>
+              <artifactId>nuxeo-runtime-launcher</artifactId>
+              <version>${nuxeo.runtime.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.runtime</groupId>
               <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
               <version>${nuxeo.runtime.version}</version>
               <overWrite>true</overWrite>
