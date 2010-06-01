@@ -183,7 +183,7 @@ public class FrameworkLoader {
                 BundleImpl bundle = new BundleImpl(osgi, bf, loader);
                 osgi.install(bundle);
             } catch (Throwable t) { // silently ignore
-                log.error("Failed to install bundle: " + f, t);
+                log.warn("Failed to install bundle: " + f);
                 // do nothing
             }
         }
@@ -280,16 +280,18 @@ public class FrameworkLoader {
     }
 
     protected static void printStartMessage() {
+        String newline = System.getProperty("line.separator");
         Environment env = Environment.getDefault();
-        String hr = "======================================================================";
+        String hr = "======================================================================"
+                + newline;
         StringBuilder msg = new StringBuilder(hr);
-        msg.append("= Starting Nuxeo Framework");
+        msg.append("= Starting Nuxeo Framework" + newline);
         msg.append(hr);
-        msg.append("  * Home Directory = " + home);
-        msg.append("  * Data Directory = " + env.getData());
-        msg.append("  * Log Directory = " + env.getLog());
-        msg.append("  * Configuration Directory = " + env.getConfig());
-        msg.append("  * Temp Directory = " + env.getTemp());
+        msg.append("  * Home Directory = " + home + newline);
+        msg.append("  * Data Directory = " + env.getData() + newline);
+        msg.append("  * Log Directory = " + env.getLog() + newline);
+        msg.append("  * Configuration Directory = " + env.getConfig() + newline);
+        msg.append("  * Temp Directory = " + env.getTemp() + newline);
         // System.out.println("  * System Bundle = "+systemBundle);
         // System.out.println("  * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         msg.append(hr);
