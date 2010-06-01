@@ -73,7 +73,6 @@
         <exclude name="**/nxserver/lib/oauth*" />
         <exclude name="**/nxserver/lib/caja*" />
 
-        <exclude name="**/nxserver/config/nxrelations-default-jena-bundle.xml" />
         <exclude name="**/nxserver/config/nxmail-scheduler-config.xml" />
         <exclude name="**/nxserver/config/default-opensocial-config.xml" />
 
