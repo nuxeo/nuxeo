@@ -18,8 +18,13 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +53,7 @@ import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.TreeHelper;
+import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -195,15 +201,36 @@ public class ApiBrowser extends DefaultObject {
                 .arg("services", serviceLabels).arg("distId", ctx.getProperty("distId"));
     }
 
+    protected Map<String, String> getRenderedDescriptions(String type) throws Exception {
+
+         Map<String, DocumentationItem> descs = getDescriptions(type);
+         Map<String, String> result = new HashMap<String, String>();
+
+         for (String key : descs.keySet()) {
+             DocumentationItem docItem = descs.get(key);
+             String content = docItem.getContent();
+             if ("wiki".equals(docItem.getRenderingType())) {
+                 Reader reader = new StringReader(content);
+                 WikiSerializer engine = new WikiSerializer();
+                 StringWriter writer = new StringWriter();
+                 engine.serialize(reader, writer);
+                 content = writer.getBuffer().toString();
+             } else {
+                 content="<div class='doc'>" + content + "</div>";
+             }
+             result.put(key, content);
+         }
+        return result;
+    }
+
+
     @GET
     @Produces("text/plain")
     @Path(value = "feedServices")
     public String feedServices() throws Exception {
         List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
 
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-
-        Map<String, DocumentationItem> descs = getDescriptions("NXService");
+        Map<String, String> descs = getRenderedDescriptions("NXService");
 
         List<ArtifactLabel> serviceLabels = new ArrayList<ArtifactLabel>();
 
@@ -219,6 +246,36 @@ public class ApiBrowser extends DefaultObject {
             object.put("id", label.getId());
             object.put("label", label.getLabel());
             object.put("desc", descs.get(label.id));
+            object.put("url", "http://explorer.nuxeo.org/nuxeo/site/distribution/current/service2Bundle/" + label.id);
+            array.put(object);
+        }
+
+        return array.toString();
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path(value = "feedExtensionPoints")
+    public String feedExtensionPoints() throws Exception {
+        List<String> epIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
+
+        Map<String, String> descs = getRenderedDescriptions("NXExtensionPoint");
+
+        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
+
+        for (String id : epIds) {
+            labels.add(ArtifactLabel.createLabelFromExtensionPoint(id));
+        }
+        Collections.sort(labels);
+
+        JSONArray array = new JSONArray();
+
+        for (ArtifactLabel label : labels) {
+            JSONObject object = new JSONObject();
+            object.put("id", label.getId());
+            object.put("label", label.getLabel());
+            object.put("desc", descs.get(label.id));
+            object.put("url", "http://explorer.nuxeo.org/nuxeo/site/distribution/current/extensionPoint2Component/" + label.id);
             array.put(object);
         }
 
@@ -311,6 +368,45 @@ public class ApiBrowser extends DefaultObject {
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "service2Bundle/{serviceId}")
+    public Object service2Bundle(@PathParam("serviceId") String serviceId) throws Exception {
+
+        ServiceInfo si = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getService(serviceId);
+        if (si==null) {
+            return null;
+        }
+        String cid = si.getComponentId();
+
+        ComponentInfo ci = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getComponent(cid);
+        String bid = ci.getBundle().getId();
+
+        org.nuxeo.common.utils.Path target = new org.nuxeo.common.utils.Path(getContext().getRoot().getName());
+        target = target.append(distributionId);
+        target = target.append("viewBundle");
+        target = target.append(bid + "#Service." + serviceId);
+        return Response.seeOther(new URI(target.toString())).build();
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "extensionPoint2Component/{epId}")
+    public Object extensionPoint2Component(@PathParam("epId") String epId) throws Exception {
+
+        ExtensionPointInfo epi = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPoint(epId);
+        if (epi==null) {
+            return null;
+        }
+        String cid = epi.getComponent().getId();
+
+        org.nuxeo.common.utils.Path target = new org.nuxeo.common.utils.Path(getContext().getRoot().getName());
+        target = target.append(distributionId);
+        target = target.append("viewComponent");
+        target = target.append(cid + "#extensionPoint." + epId);
+        return Response.seeOther(new URI(target.toString())).build();
     }
 
 

@@ -11,5 +11,12 @@
       <icon>tasks.png</icon>
     </internalGadget>
 
+    <internalGadget name="extensionPoints">
+      <mountPoint>/extensionPoints</mountPoint>
+      <entryPoint>extensionPoints.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>tasks.png</icon>
+    </internalGadget>
+
   </extension>
 </component>

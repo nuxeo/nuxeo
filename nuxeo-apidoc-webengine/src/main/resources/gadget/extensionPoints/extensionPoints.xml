@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Nuxeo Services" category="Nuxeo" render_inline="required" scrolling="false" author="T Delprat" directory_title="Nuxeo Services" author_aboutme="nuxeo" singleton="false">
+  <ModulePrefs title="Nuxeo Extension Points" category="Nuxeo" render_inline="required" scrolling="false" author="T Delprat" directory_title="Nuxeo Extension Points" author_aboutme="nuxeo" singleton="false">
       <Require feature="opensocial-0.8" />
       <Require feature="dynamic-height" />
       <Require feature="setprefs" />
       <Require feature="settitle" />
   </ModulePrefs>
-  <UserPref name="title" display_name="Title" required="false" default_value="Nuxeo Services"/>
+  <UserPref name="title" display_name="Title" required="false" default_value="Nuxeo Extension Points"/>
 
   <Content type="html">
     <![CDATA[
@@ -38,14 +38,14 @@
       font-size:12px;
     }
     </style>
-    <h3> Nuxeo Services </h3>
+    <h3> Nuxeo Extension Points </h3>
     <div id="serviceList">
     </div>
 
     <script language="javascript">
 
 function getResourceUrl() {
-  return "http://explorer.nuxeo.org/nuxeo/site/distribution/current/feedServices";
+  return "http://explorer.nuxeo.org/nuxeo/site/distribution/current/feedExtensionPoints";
 }
 
 var dbgResponse;

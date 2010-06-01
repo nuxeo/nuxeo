@@ -23,7 +23,6 @@
     </div>
 
     <div class="foldablePanel">
-
     <span class="componentId">Service Id : ${serviceItem.id}</span> <br/>
 
     <p><@docContent docItem=serviceDesc /></p>
