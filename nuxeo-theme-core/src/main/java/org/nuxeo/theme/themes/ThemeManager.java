@@ -1334,7 +1334,7 @@ public final class ThemeManager implements Registrable {
     }
 
     // Resource banks
-    public ResourceBank getResourceBank(String name) {
+    public static ResourceBank getResourceBank(String name) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(
                 TypeFamily.RESOURCE_BANK, name);

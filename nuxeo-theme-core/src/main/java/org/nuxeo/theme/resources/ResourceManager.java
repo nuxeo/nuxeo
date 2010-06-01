@@ -152,7 +152,7 @@ public final class ResourceManager implements Registrable {
     public static List<String> getBankImagePaths() {
         Set<String> paths = new HashSet<String>();
         for (ResourceBank resourceBank : ThemeManager.getResourceBanks()) {
-            paths.addAll(resourceBank.getImagePaths());
+            paths.addAll(resourceBank.getImages());
         }
         return new ArrayList<String>(paths);
     }

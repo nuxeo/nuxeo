@@ -197,7 +197,7 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("{bank}/style/{collection}/{resource}/preview")
-    public Object displayrStylePreview(@PathParam("bank") String bank,
+    public Object displayStylePreview(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
             @PathParam("resource") String resource) {
         File file = BankManager.getStylePreviewFile(bank, collection, resource);

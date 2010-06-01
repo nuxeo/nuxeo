@@ -17,8 +17,10 @@ package org.nuxeo.theme.resources;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +37,7 @@ public class ResourceBank implements Type {
     private static final Log log = LogFactory.getLog(ResourceBank.class);
 
     @XNode("@name")
-    public String bankName;
+    public String name;
 
     @XNode("@url")
     private String connectionUrl;
@@ -48,7 +50,7 @@ public class ResourceBank implements Type {
     }
 
     public String getTypeName() {
-        return bankName;
+        return name;
     }
 
     public TypeFamily getTypeFamily() {
@@ -65,12 +67,12 @@ public class ResourceBank implements Type {
             return Utils.fetchUrl(new URL(src));
         } catch (Exception e) {
             log.error("Could not retrieve RESOURCE: " + src
-                    + " from THEME BANK: " + bankName);
+                    + " from THEME BANK: " + name);
         }
         return null;
     }
 
-    public List<String> getImagePaths() {
+    public List<String> getImages() {
         List<String> paths = new ArrayList<String>();
         String src = String.format("%s/json/images", connectionUrl);
         String list = "";
@@ -78,13 +80,35 @@ public class ResourceBank implements Type {
             list = new String(Utils.fetchUrl(new URL(src)));
         } catch (Exception e) {
             log.error("Could not retrieve image list: " + src
-                    + " from THEME BANK: " + bankName);
+                    + " from THEME BANK: " + name);
             return paths;
         }
         for (Object path : JSONArray.fromObject(list)) {
             paths.add((String) path);
         }
         return paths;
+    }
+    
+    public List<Map> getSkins() {
+        List<Map> skins = new ArrayList<Map>();
+        String src = String.format("%s/json/skins", connectionUrl);
+        String list = "";
+        try {
+            list = new String(Utils.fetchUrl(new URL(src)));
+        } catch (Exception e) {
+            log.error("Could not retrieve skin list: " + src
+                    + " from THEME BANK: " + name);
+            return skins;
+        }
+        for (Object object : JSONArray.fromObject(list)) {
+            Map skin = (Map)JSONObject.fromObject(object);
+            skins.add(skin);
+        }
+        return skins;
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

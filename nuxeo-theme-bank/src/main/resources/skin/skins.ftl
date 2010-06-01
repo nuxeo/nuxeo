@@ -20,8 +20,8 @@
   
   <@block name="content">
   
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
-      <span>skins</span></h1>
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;  
+        <span>skins</span></h1>
   
     <div id="skins" class="album">
     </div>

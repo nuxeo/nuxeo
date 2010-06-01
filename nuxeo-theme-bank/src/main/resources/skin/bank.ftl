@@ -26,13 +26,8 @@
             <div class="image"></div>
             <div class="footer">image</div>
           </div>
-        </a>
-        <a href="${Root.getPath()}/${bank}/skins/view">  
-          <div class="imageSingle">
-            <div class="image"></div>
-            <div class="footer">skins</div>
-          </div>
-        </a>
+        </a>        
+
     </div>
     
   </@block>
