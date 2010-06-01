@@ -31,6 +31,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
@@ -192,6 +194,37 @@ public class ApiBrowser extends DefaultObject {
         return getView("listServices")
                 .arg("services", serviceLabels).arg("distId", ctx.getProperty("distId"));
     }
+
+    @GET
+    @Produces("text/plain")
+    @Path(value = "feedServices")
+    public String feedServices() throws Exception {
+        List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getServiceIds();
+
+        DocumentationService ds = Framework.getService(DocumentationService.class);
+
+        Map<String, DocumentationItem> descs = getDescriptions("NXService");
+
+        List<ArtifactLabel> serviceLabels = new ArrayList<ArtifactLabel>();
+
+        for (String id : serviceIds) {
+            serviceLabels.add(ArtifactLabel.createLabelFromService(id));
+        }
+        Collections.sort(serviceLabels);
+
+        JSONArray array = new JSONArray();
+
+        for (ArtifactLabel label : serviceLabels) {
+            JSONObject object = new JSONObject();
+            object.put("id", label.getId());
+            object.put("label", label.getLabel());
+            object.put("desc", descs.get(label.id));
+            array.put(object);
+        }
+
+        return array.toString();
+    }
+
 
     @GET
     @Produces("text/html")
