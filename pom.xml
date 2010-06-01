@@ -68,6 +68,7 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-launcher</artifactId>
         <version>${nuxeo.runtime.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>

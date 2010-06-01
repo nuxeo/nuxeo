@@ -12,13 +12,7 @@
   <name>Nuxeo Runtime OSGI Adapter</name>
   <description>Nuxeo Runtime: OSGi Framework Adapter.</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-launcher</artifactId>    
-      <scope>provided</scope>
-    </dependency>
-    
+  <dependencies>    
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
