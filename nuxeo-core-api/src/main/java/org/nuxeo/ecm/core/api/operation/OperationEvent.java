@@ -34,6 +34,8 @@ public interface OperationEvent extends Serializable {
 
     ModificationSet getModifications();
 
+    Object getDirtyUpdateTag();
+
     String getRepositoryName();
 
     String getSessionId();
