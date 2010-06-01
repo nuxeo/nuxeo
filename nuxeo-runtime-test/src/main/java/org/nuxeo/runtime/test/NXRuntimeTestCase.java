@@ -20,6 +20,7 @@ package org.nuxeo.runtime.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -223,15 +224,25 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         deployContrib("org.nuxeo.runtime.test", "DeploymentService.xml");
     }
 
-    protected void initUrls() {
+    protected void initUrls() throws Exception {
         ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
-        if (!(classLoader instanceof URLClassLoader)) {
+        if (classLoader instanceof URLClassLoader) {
+            urls = ((URLClassLoader) classLoader).getURLs();
+        } else if (classLoader.getClass().getName().equals(
+                "org.apache.tools.ant.AntClassLoader")) {
+            Method method = classLoader.getClass().getMethod("getClasspath");
+            String cp = (String) method.invoke(classLoader);
+            String[] paths = cp.split(File.pathSeparator);
+            urls = new URL[paths.length];
+            for (int i = 0; i < paths.length; i++) {
+                urls[i] = new URL("file:" + paths[i]);
+            }
+        } else {
             log.warn("Unknow classloader type: "
-                    + classLoader.getClass().getName() +
-            "\nWon't be able to load OSGI bundles");
+                    + classLoader.getClass().getName()
+                    + "\nWon't be able to load OSGI bundles");
             return;
         }
-        urls = ((URLClassLoader) classLoader).getURLs();
         // special case for maven surefire with useManifestOnlyJar
         if (urls.length == 1) {
             try {
