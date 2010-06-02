@@ -269,6 +269,11 @@ public abstract class Dialect {
      * Information needed to express fulltext search with scoring.
      */
     public static class FulltextMatchInfo {
+
+        public String join;
+
+        public String joinParam;
+
         public String leftJoin;
 
         public String leftJoinParam;
@@ -579,6 +584,13 @@ public abstract class Dialect {
      *
      */
     public boolean supportsReadAcl() {
+        return false;
+    }
+
+    /**
+     * Does the dialect support SQL-99 WITH common table expressions.
+     */
+    public boolean supportsWith() {
         return false;
     }
 

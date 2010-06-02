@@ -62,7 +62,8 @@ public class HierarchyContext extends Context {
 
     private final PositionComparator posComparator;
 
-    public HierarchyContext(Model model, Mapper mapper, PersistenceContext persistenceContext) {
+    public HierarchyContext(Model model, Mapper mapper,
+            PersistenceContext persistenceContext) {
         super(model.hierTableName, model, mapper, persistenceContext);
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);

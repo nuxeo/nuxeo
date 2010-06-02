@@ -54,7 +54,7 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 /**
  * The session is the main high level access point to data from the underlying
  * database.
- * 
+ *
  * @author Florent Guillaume
  */
 public class SessionImpl implements Session, XAResource {
@@ -122,7 +122,7 @@ public class SessionImpl implements Session, XAResource {
         String currentThreadName = Thread.currentThread().getName();
         String msg = String.format(
                 "Concurrency Error: Session was started in thread %s (%s)"
-                + " but is being used in thread %s (%s)", threadId,
+                        + " but is being used in thread %s (%s)", threadId,
                 threadName, currentThreadId, currentThreadName);
         log.debug(msg, new Exception(msg));
     }
@@ -330,7 +330,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public List<Node> getNodesByIds(List<Serializable> ids)
-    throws StorageException {
+            throws StorageException {
         checkThread();
         checkLive();
 
@@ -485,7 +485,7 @@ public class SessionImpl implements Session, XAResource {
 
     public Node addChildNode(Serializable id, Node parent, String name,
             Long pos, String typeName, boolean complexProp)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".")
                 || name.equals("..")) {
@@ -558,14 +558,14 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
         return context.getChildByName(parent.getId(), name, complexProp) != null;
     }
 
     public Node getChildNode(Node parent, String name, boolean complexProp)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".")
                 || name.equals("..")) {
@@ -607,13 +607,13 @@ public class SessionImpl implements Session, XAResource {
 
     // TODO optimize with dedicated backend call
     public boolean hasChildren(Node parent, boolean complexProp)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         return context.getChildren(parent.getId(), null, complexProp).size() > 0;
     }
 
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         List<SimpleFragment> fragments = context.getChildren(parent.getId(),
                 name, complexProp);
@@ -631,14 +631,14 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void orderBefore(Node parent, Node source, Node dest)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         context.orderBefore(parent.getId(), source.getId(), dest == null ? null
                 : dest.getId());
     }
 
     public Node move(Node source, Node parent, String name)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         context.save();
         context.move(source, parent.getId(), name);
@@ -647,7 +647,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public Node copy(Node source, Node parent, String name)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         context.save();
         Serializable id = context.copy(source, parent.getId(), name);
@@ -674,7 +674,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public Node checkIn(Node node, String label, String description)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         context.save();
         Serializable id = context.checkIn(node, label, description);
@@ -696,7 +696,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public Node getVersionByLabel(Serializable versionableId, String label)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         Serializable id = context.getVersionByLabel(versionableId, label);
         if (id == null) {
@@ -727,7 +727,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public List<Node> getProxies(Node document, Node parent)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         context.save();
         List<SimpleFragment> fragments = context.getProxies(document, parent);
@@ -845,7 +845,7 @@ public class SessionImpl implements Session, XAResource {
     // public Node newNodeInstance() needed ?
 
     public void checkPermission(String absPath, String actions)
-    throws StorageException {
+            throws StorageException {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");

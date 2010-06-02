@@ -70,6 +70,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected final String fulltextAnalyzer;
 
+    protected final boolean supportsWith;
+
     protected boolean hierarchyCreated;
 
     protected boolean pathOptimizationsEnabled;
@@ -81,6 +83,14 @@ public class DialectPostgreSQL extends Dialect {
         fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                 : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor.pathOptimizationsEnabled;
+        int major, minor;
+        try {
+            major = metadata.getDatabaseMajorVersion();
+            minor = metadata.getDatabaseMinorVersion();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+        supportsWith = major > 8 || (major == 8 && minor >= 4);
     }
 
     @Override
@@ -290,7 +300,7 @@ public class DialectPostgreSQL extends Dialect {
         String queryAlias = "_nxquery" + nthSuffix;
         String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.leftJoin = String.format(
+        info.join = String.format(
                 "%s ON %s = %s", //
                 ft.getQuotedName(), ftMain.getFullQuotedName(),
                 mainColumn.getFullQuotedName());
@@ -1434,7 +1444,13 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public void performAdditionalStatements(Connection connection)  throws SQLException {
+    public boolean supportsWith() {
+        return supportsWith;
+    }
+
+    @Override
+    public void performAdditionalStatements(Connection connection)
+            throws SQLException {
         // Warn user if BROWSE permissions has changed
         Set<String> dbPermissions = new HashSet<String>();
         String sql = "SELECT * FROM read_acl_permissions";
@@ -1450,12 +1466,11 @@ public class DialectPostgreSQL extends Dialect {
         for (String perm : securityService.getPermissionsToCheck(SecurityConstants.BROWSE)) {
             confPermissions.add(perm);
         }
-        if (! dbPermissions.equals(confPermissions)) {
+        if (!dbPermissions.equals(confPermissions)) {
             log.error("Security permission for BROWSE has changed, you need to rebuild the optimized read acls:"
                     + "DROP TABLE read_acl_permissions; DROP TABLE read_acls; then restart.");
         }
 
     }
-
 
 }
