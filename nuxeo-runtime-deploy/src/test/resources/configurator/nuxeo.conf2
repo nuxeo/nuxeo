@@ -7,7 +7,7 @@ LOG_DIR="logs"
 PID_DIR="bin"
 
 # See templates/README.txt for customization parameters.
-nuxeo.templates=default,testinclude
+nuxeo.templates=common,testinclude2
 #nuxeo.bind.address=0.0.0.0
 
 test.nuxeo.conf = true

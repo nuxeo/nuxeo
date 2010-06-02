@@ -18,7 +18,6 @@ nuxeo.db.password=
 nuxeo.db.min-pool-size=
 nuxeo.db.max-pool-size=20
 
-nuxeo.templates.custom=templates/custom
 nuxeo.config.jboss=server/default/deploy/nuxeo.ear/config
 nuxeo.datasources.jboss=server/default/deploy/nuxeo.ear/datasources
 nuxeo.config.tomcat=nxserver/config

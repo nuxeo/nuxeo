@@ -27,43 +27,56 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JBossConfiguratorTest {
 
     private static final Object PROPERTY_TO_GENERATE = "<config-property name=\""
             + "property\" type=\"java.lang.String\">URL=jdbc:h2:${jboss.server.data.dir}"
-            + "/h2/nuxeo;AUTO_SERVER=true</config-property>";
+            + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+
+    private static final Log log = LogFactory.getLog(JBossConfiguratorTest.class);
 
     private ConfigurationGenerator configGenerator;
 
-    private File nuxeoConf;
+    private ConfigurationGenerator configGenerator2;
 
     private File nuxeoHome;
 
     @Before
     public void setUp() throws Exception {
-        nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf");
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
+        File nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf");
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
+                nuxeoConf.getPath());
         nuxeoHome = File.createTempFile("nuxeo", null);
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
-        System.setProperty(ConfigurationGenerator.NUXEO_HOME, nuxeoHome.getPath());
+        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
+                nuxeoHome.getPath());
         FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
                 new File(nuxeoHome, "templates"));
-        System.setProperty("jboss.home.dir",nuxeoHome.getPath());
+        System.setProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator();
+
+        nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf2");
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
+                nuxeoConf.getPath());
+        configGenerator2 = new ConfigurationGenerator();
     }
 
     @Test
-    public void testGetConfifuration() throws Exception {
-        Properties config = configGenerator.getConfiguration();
+    public void testConfifuration() throws Exception {
+        configGenerator.browseTemplates();
+        log.debug(configGenerator.getIncludedTemplates());
+        Properties config = configGenerator.getUserConfig();
         assertTrue(config.getProperty("nuxeo.template").equals("default"));
         assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
         assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
@@ -75,15 +88,44 @@ public class JBossConfiguratorTest {
                 "true"));
         assertTrue(config.getProperty(
                 "test.nuxeo.conf.override.defaults.template").equals("true"));
-        assertTrue(config.getProperty("nuxeo.db.name").equals("nuxeo"));
+        assertTrue(config.getProperty("nuxeo.db.name").equals("testinclude"));
         assertTrue(config.getProperty("nuxeo.db.user").equals("sa"));
     }
 
     @Test
     public void testGenerateFiles() throws ConfigurationException, IOException {
         configGenerator.run();
+        log.debug(configGenerator.getIncludedTemplates());
         File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
-        assertTrue(new File(configDir,"test2").exists());
+        assertTrue(new File(configDir, "test2").exists());
+        File generatedFile = new File(configDir.getParentFile(),
+                "datasources/default-repository-ds.xml");
+        String generatedProperty = new BufferedReader(new FileReader(
+                generatedFile)).readLine();
+        assertTrue(generatedProperty,
+                PROPERTY_TO_GENERATE.equals(generatedProperty));
+    }
+
+    @Test
+    public void testGenerateFiles2() throws Exception {
+        configGenerator2.run();
+        log.debug(configGenerator2.getIncludedTemplates());
+        Properties config = configGenerator2.getUserConfig();
+        assertTrue(config.getProperty("nuxeo.template").equals("default"));
+        assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
+        assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
+        assertTrue(config.getProperty("test.nuxeo.defaults.template.1").equals(
+                "true"));
+        assertTrue(config.getProperty("test.nuxeo.defaults.template.2").equals(
+                "true"));
+        assertTrue(config.getProperty("test.nuxeo.conf.override.defaults").equals(
+                "true"));
+        assertTrue(config.getProperty(
+                "test.nuxeo.conf.override.defaults.template").equals("true"));
+        assertTrue(config.getProperty("nuxeo.db.name").equals("testinclude"));
+        assertTrue(config.getProperty("nuxeo.db.user").equals("sa"));
+        File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
+        assertTrue(new File(configDir, "test2").exists());
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
