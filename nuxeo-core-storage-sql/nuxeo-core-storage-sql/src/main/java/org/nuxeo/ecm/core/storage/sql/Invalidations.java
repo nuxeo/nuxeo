@@ -52,6 +52,13 @@ public class Invalidations implements Serializable {
         deleted = null;
     }
 
+    public boolean contains(RowId rowId) {
+        // even if rowId or the maps contain a Row, only RowId has an equals()
+        // so things comparisons will be correct
+        return (modified != null && modified.contains(rowId))
+                || (deleted != null && deleted.contains(rowId));
+    }
+
     /** only call this if it's to add at least one element in the set */
     public Set<RowId> getKindSet(int kind) {
         switch (kind) {

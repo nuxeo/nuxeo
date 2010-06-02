@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -378,19 +379,24 @@ public class PersistenceContext {
     }
 
     protected void checkReceivedInvalidations() {
-        synchronized (modifiedInvalidations) {
-            for (Serializable id : modifiedInvalidations) {
-                if (modifiedInTransaction.contains(id)) {
-                    throw new ConcurrentModificationException(
-                    "Updating a concurrently modified value");
+        synchronized (receivedInvalidations) {
+            if (receivedInvalidations.modified != null) {
+                for (RowId rowId : receivedInvalidations.modified) {
+                    if (transactionInvalidations.contains(rowId)) {
+                        throw new ConcurrentModificationException(
+                                "Updating a concurrently modified value: "
+                                        + new RowId(rowId));
+                    }
                 }
             }
-        }
-        synchronized (deletedInvalidations) {
-            for (Serializable id : deletedInvalidations) {
-                if (modifiedInTransaction.contains(id)) {
-                    throw new ConcurrentModificationException(
-                    "Updating a concurrently modified value");
+
+            if (receivedInvalidations.deleted != null) {
+                for (RowId rowId : receivedInvalidations.deleted) {
+                    if (transactionInvalidations.contains(rowId)) {
+                        throw new ConcurrentModificationException(
+                                "Updating a concurrently deleted value: "
+                                        + new RowId(rowId));
+                    }
                 }
             }
         }

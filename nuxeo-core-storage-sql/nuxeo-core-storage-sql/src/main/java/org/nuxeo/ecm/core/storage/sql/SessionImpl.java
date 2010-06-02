@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -934,7 +935,12 @@ public class SessionImpl implements Session, XAResource {
                 try {
                     flush();
                 } catch (Exception e) {
-                    log.error("Could not end transaction", e);
+                    String msg = "Could not end transaction";
+                    if (e instanceof ConcurrentModificationException) {
+                        log.debug(msg, e);
+                    } else {
+                        log.error(msg, e);
+                    }
                     throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
             }
