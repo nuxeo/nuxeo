@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.operation;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 
 /**
  * This class is not thread safe
@@ -43,6 +44,8 @@ public class DefaultOperationEvent implements OperationEvent {
     public ModificationSet modifications;
 
     public Object details; // should be serializable
+
+    public Object dirtyUpdateTag;
 
     /**
      *
@@ -69,6 +72,8 @@ public class DefaultOperationEvent implements OperationEvent {
         this.id = id;
         modifications = modifs;
         this.details = details;
+
+        this.dirtyUpdateTag = DirtyUpdateChecker.computeTag(sessionId, modifs);
     }
 
 
@@ -94,6 +99,10 @@ public class DefaultOperationEvent implements OperationEvent {
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    public Object getDirtyUpdateTag() {
+        return dirtyUpdateTag;
     }
 
 }

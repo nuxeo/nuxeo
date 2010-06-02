@@ -146,6 +146,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String UNION_ALIAS = "_T";
 
+    protected static final String WITH_ALIAS_PREFIX = "_W";
+
     protected static final String JOIN_ON = "%s ON %s = %s";
 
     /*
@@ -300,11 +302,15 @@ public class NXQLQueryMaker implements QueryMaker {
 
         List<Column> whatColumns = null;
         List<String> whatKeys = null;
-        boolean aliasColumns = docKinds.length > 1;
+        boolean doUnion = docKinds.length > 1;
         Select select = null;
         String orderBy = null;
         List<String> statements = new ArrayList<String>(2);
         List<Serializable> selectParams = new LinkedList<Serializable>();
+        List<String> withTables = new LinkedList<String>();
+        List<Select> withSelects = new LinkedList<Select>();
+        List<String> withSelectsStatements = new LinkedList<String>();
+        List<Serializable> withParams = new LinkedList<Serializable>();
         for (DocKind docKind : docKinds) {
 
             // The hierarchy table, which may be an alias table.
@@ -317,6 +323,7 @@ public class NXQLQueryMaker implements QueryMaker {
             String dataHierId;
 
             List<String> joins = new LinkedList<String>();
+            List<Serializable> joinsParams = new LinkedList<Serializable>();
             LinkedList<String> leftJoins = new LinkedList<String>();
             List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
             LinkedList<String> implicitJoins = new LinkedList<String>();
@@ -360,10 +367,15 @@ public class NXQLQueryMaker implements QueryMaker {
             for (String fragmentName : fragmentNames) {
                 Table table = database.getTable(fragmentName);
                 // the versions table joins on the real hier table
-                boolean useHier = model.VERSION_TABLE_NAME.equals(fragmentName);
+                String joinId;
+                if (model.VERSION_TABLE_NAME.equals(fragmentName)) {
+                    joinId = hierId;
+                } else {
+                    joinId = dataHierId;
+                }
                 leftJoins.add(String.format(JOIN_ON, table.getQuotedName(),
-                        useHier ? hierId : dataHierId, table.getColumn(
-                                model.MAIN_KEY).getFullQuotedName()));
+                        joinId,
+                        table.getColumn(model.MAIN_KEY).getFullQuotedName()));
             }
 
             /*
@@ -427,7 +439,7 @@ public class NXQLQueryMaker implements QueryMaker {
             try {
                 whereBuilder = new WhereBuilder(database, model, pathResolver,
                         dialect, hierTable, hierId, dataHierTable, dataHierId,
-                        docKind == DocKind.PROXY, aliasColumns);
+                        docKind == DocKind.PROXY, true);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
             }
@@ -442,6 +454,8 @@ public class NXQLQueryMaker implements QueryMaker {
             if (info.wherePredicate != null) {
                 info.wherePredicate.accept(whereBuilder);
                 // JOINs added by fulltext queries
+                joins.addAll(whereBuilder.joins);
+                joinsParams.addAll(whereBuilder.joinsParams);
                 leftJoins.addAll(whereBuilder.leftJoins);
                 leftJoinsParams.addAll(whereBuilder.leftJoinsParams);
                 implicitJoins.addAll(whereBuilder.implicitJoins);
@@ -455,9 +469,48 @@ public class NXQLQueryMaker implements QueryMaker {
             }
 
             /*
+             * Columns on which to select and do ordering.
+             */
+
+            // alias columns in all cases to simplify logic
+            int nalias = 0;
+            List<String> whatNames = new LinkedList<String>();
+            String mainAlias = hierId;
+            for (Column col : whatColumns) {
+                String name = col.getFullQuotedName();
+                String alias = dialect.openQuote() + COL_ALIAS_PREFIX
+                        + ++nalias + dialect.closeQuote();
+                name += " AS " + alias;
+                if (col.getTable().getRealTable() == hier
+                        && col.getKey().equals(model.MAIN_KEY)) {
+                    mainAlias = alias;
+                }
+                whatNames.add(name);
+            }
+            if (doUnion) {
+                // UNION, so we need all orderable columns aliased as well
+                whereBuilder.nalias = nalias; // used below in visitor accept()
+                for (String key : info.orderKeys) {
+                    Column column = whereBuilder.findColumn(key, false, true);
+                    String name = column.getFullQuotedName();
+                    String alias = dialect.openQuote() + COL_ALIAS_PREFIX
+                            + ++nalias + dialect.closeQuote();
+                    name += " AS " + alias;
+                    whatNames.add(name);
+                }
+            }
+            String selectWhat = StringUtils.join(whatNames, ", ");
+            if (!doUnion && sqlQuery.getSelectClause().isDistinct()) {
+                selectWhat = "DISTINCT " + selectWhat;
+            }
+
+            /*
              * Security check.
              */
 
+            String securityClause = null;
+            List<Serializable> securityParams = new LinkedList<Serializable>();
+            String securityJoin = null;
             if (queryFilter.getPrincipals() != null) {
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
@@ -465,47 +518,21 @@ public class NXQLQueryMaker implements QueryMaker {
                     principals = StringUtils.join((String[]) principals, '|');
                     permissions = StringUtils.join((String[]) permissions, '|');
                 }
+                // when using WITH for the query, the main column is referenced
+                // through an alias because of the subselect
+                String id = dialect.supportsWith() ? mainAlias : hierId;
                 if (dialect.supportsReadAcl()) {
                     /* optimized read acl */
-                    whereClauses.add(dialect.getReadAclsCheckSql("r.acl_id"));
-                    whereParams.add(principals);
-                    joins.add(String.format("%s AS r ON %s = r.id",
-                            model.HIER_READ_ACL_TABLE_NAME, hierId));
+                    securityClause = dialect.getReadAclsCheckSql("r.acl_id");
+                    securityParams.add(principals);
+                    securityJoin = String.format(JOIN_ON,
+                            model.HIER_READ_ACL_TABLE_NAME + " AS r", id,
+                            "r.id");
                 } else {
-                    whereClauses.add(dialect.getSecurityCheckSql(hierId));
-                    whereParams.add(principals);
-                    whereParams.add(permissions);
+                    securityClause = dialect.getSecurityCheckSql(id);
+                    securityParams.add(principals);
+                    securityParams.add(permissions);
                 }
-            }
-
-            /*
-             * Columns on which to select and do ordering.
-             */
-
-            int nalias = 0;
-            List<String> whatNames = new LinkedList<String>();
-            for (Column col : whatColumns) {
-                String name = col.getFullQuotedName();
-                if (aliasColumns) {
-                    name += " AS " + dialect.openQuote() + COL_ALIAS_PREFIX
-                            + ++nalias + dialect.closeQuote();
-                }
-                whatNames.add(name);
-            }
-            if (aliasColumns) {
-                // UNION, so we need all orderable columns, aliased
-                whereBuilder.nalias = nalias; // used below in visitor accept()
-                for (String key : info.orderKeys) {
-                    Column column = whereBuilder.findColumn(key, false, true);
-                    String qname = column.getFullQuotedName();
-                    whatNames.add(qname + " AS " + dialect.openQuote()
-                            + COL_ALIAS_PREFIX + ++nalias
-                            + dialect.closeQuote());
-                }
-            }
-            String selectWhat = StringUtils.join(whatNames, ", ");
-            if (!aliasColumns && sqlQuery.getSelectClause().isDistinct()) {
-                selectWhat = "DISTINCT " + selectWhat;
             }
 
             /*
@@ -522,6 +549,31 @@ public class NXQLQueryMaker implements QueryMaker {
              * Resulting select.
              */
 
+            if (securityClause != null) {
+                if (dialect.supportsWith()) {
+                    // wrap security into a WITH
+                    String withTable = dialect.openQuote() + WITH_ALIAS_PREFIX
+                            + (statements.size() + 1) + dialect.closeQuote();
+                    withTables.add(withTable);
+                    Select withSelect = new Select(null);
+                    withSelect.setWhat("*");
+                    withSelect.setFrom(withTable
+                            + (securityJoin == null ? ""
+                                    : (" JOIN " + securityJoin)));
+                    withSelect.setWhere(securityClause);
+                    withSelects.add(withSelect);
+                    withSelectsStatements.add(withSelect.getStatement());
+                    withParams.addAll(securityParams);
+                } else {
+                    // add directly to main select
+                    if (securityJoin != null) {
+                        joins.add(securityJoin);
+                    }
+                    whereClauses.add(securityClause);
+                    whereParams.addAll(securityParams);
+                }
+            }
+
             select = new Select(null);
             select.setWhat(selectWhat);
             leftJoins.addFirst(StringUtils.join(joins, " JOIN "));
@@ -532,6 +584,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             select.setFrom(from);
             select.setWhere(StringUtils.join(whereClauses, " AND "));
+            selectParams.addAll(joinsParams);
             selectParams.addAll(leftJoinsParams);
             selectParams.addAll(implicitJoinsParams);
             selectParams.addAll(whereParams);
@@ -543,7 +596,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Create the whole select.
          */
 
-        if (statements.size() > 1) { // equivalent to aliasColumns
+        if (doUnion) {
             select = new Select(null);
             // use aliases for column names
             List<String> whatNames = new ArrayList<String>(whatColumns.size());
@@ -559,13 +612,46 @@ public class NXQLQueryMaker implements QueryMaker {
             select.setWhat(selectWhat);
             // note that Derby has bizarre restrictions on parentheses placement
             // around UNION, see http://issues.apache.org/jira/browse/DERBY-2374
-            String from = '(' + StringUtils.join(statements, " UNION ALL ") + ')';
+            String subselect;
+            if (withSelects.isEmpty()) {
+                subselect = StringUtils.join(statements, " UNION ALL ");
+            } else {
+                StringBuilder with = new StringBuilder("WITH ");
+                for (int i = 0; i < statements.size(); i++) {
+                    if (i > 0) {
+                        with.append(", ");
+                    }
+                    with.append(withTables.get(i));
+                    with.append(" AS (");
+                    with.append(statements.get(i));
+                    with.append(')');
+                }
+                with.append(' ');
+                subselect = with.toString()
+                        + StringUtils.join(withSelectsStatements, " UNION ALL ");
+                selectParams.addAll(withParams);
+            }
+            String from = '(' + subselect + ')';
             if (dialect.needsAliasForDerivedTable()) {
                 from += " AS " + dialect.openQuote() + UNION_ALIAS
                         + dialect.closeQuote();
             }
             select.setFrom(from);
+        } else {
+            // use last (and only) Select in above big loop
+            if (!withSelects.isEmpty()) {
+                select = new Select(null);
+                String with = withTables.get(0) + " AS (" + statements.get(0)
+                        + ')';
+                select.setWith(with);
+                Select withSelect = withSelects.get(0);
+                select.setWhat(withSelect.getWhat());
+                select.setFrom(withSelect.getFrom());
+                select.setWhere(withSelect.getWhere());
+                selectParams.addAll(withParams);
+            }
         }
+
         select.setOrderBy(orderBy);
 
         Query q = new Query();
@@ -990,6 +1076,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
+        public final List<String> joins = new LinkedList<String>();
+
+        public final List<Serializable> joinsParams = new LinkedList<Serializable>();
+
         public final List<String> leftJoins = new LinkedList<String>();
 
         public final List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
@@ -1385,6 +1475,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
                         fulltextQuery, name, ftJoinNumber, mainColumn, model,
                         database);
+                if (info.join != null) {
+                    joins.add(info.join);
+                    if (info.joinParam != null) {
+                        joinsParams.add(info.joinParam);
+                    }
+                }
                 if (info.leftJoin != null) {
                     leftJoins.add(info.leftJoin);
                     if (info.leftJoinParam != null) {

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -467,13 +468,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session1.save();
         assertEquals("mama", title1.getString());
         assertEquals("glop", title2.getString());
-        session2.save(); // and notifies invalidations
-        // in non-transaction mode, session1 has not processed its invalidations
-        // yet, call save() to process them artificially
-        session1.save();
-        // session2 save wins
-        assertEquals("glop", title1.getString());
-        assertEquals("glop", title2.getString());
+        boolean isFailure = false;
+        try {
+            session2.save();
+        } catch (ConcurrentModificationException e) {
+            isFailure = true;
+        }
+        // session1 save should wins
+        assertTrue(isFailure);
     }
 
     public void testConcurrentNameCreation() throws Exception {

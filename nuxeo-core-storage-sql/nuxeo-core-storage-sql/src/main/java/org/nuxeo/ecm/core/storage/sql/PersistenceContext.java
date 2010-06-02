@@ -377,6 +377,25 @@ public class PersistenceContext {
         }
     }
 
+    protected void checkReceivedInvalidations() {
+        synchronized (modifiedInvalidations) {
+            for (Serializable id : modifiedInvalidations) {
+                if (modifiedInTransaction.contains(id)) {
+                    throw new ConcurrentModificationException(
+                    "Updating a concurrently modified value");
+                }
+            }
+        }
+        synchronized (deletedInvalidations) {
+            for (Serializable id : deletedInvalidations) {
+                if (modifiedInTransaction.contains(id)) {
+                    throw new ConcurrentModificationException(
+                    "Updating a concurrently modified value");
+                }
+            }
+        }
+    }
+
     /**
      * Processes invalidations received by another session or cluster node.
      * <p>

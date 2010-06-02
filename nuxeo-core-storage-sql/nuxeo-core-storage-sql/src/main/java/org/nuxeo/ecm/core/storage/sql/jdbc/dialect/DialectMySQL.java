@@ -282,7 +282,7 @@ public class DialectMySQL extends Dialect {
         String match = String.format("MATCH (%s, %s)",
                 stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.leftJoin = String.format(
+        info.join = String.format(
                 "%s ON %s = %s", //
                 ft.getQuotedName(), ftMain.getFullQuotedName(),
                 mainColumn.getFullQuotedName());

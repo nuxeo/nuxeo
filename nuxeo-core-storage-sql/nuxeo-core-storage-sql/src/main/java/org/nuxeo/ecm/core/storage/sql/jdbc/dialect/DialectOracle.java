@@ -343,7 +343,7 @@ public class DialectOracle extends Dialect {
                 + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.leftJoin = String.format(
+        info.join = String.format(
                 "%s ON %s = %s", //
                 ft.getQuotedName(), ftMain.getFullQuotedName(),
                 mainColumn.getFullQuotedName());
@@ -455,6 +455,11 @@ public class DialectOracle extends Dialect {
     @Override
     public String getClusterDeleteInvalidations() {
         return "DELETE FROM cluster_invals WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+    }
+
+    @Override
+    public boolean supportsWith() {
+        return true;
     }
 
     @Override

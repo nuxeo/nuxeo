@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
@@ -93,7 +94,7 @@ public class DocumentModelFactory {
     }
 
     public static DocumentModelImpl createDocumentModel(Document doc)
-            throws DocumentException {
+    throws DocumentException {
         DocumentType docType = doc.getType();
         String[] schemas;
         if (docType == null) {
@@ -154,7 +155,7 @@ public class DocumentModelFactory {
 
         // Immutable flag
         boolean immutable = doc.isVersion()
-                || (doc.isProxy() && sourceDoc.isVersion());
+        || (doc.isProxy() && sourceDoc.isVersion());
 
         Set<String> typeFacets = type.getFacets();
         if (immutable) {
@@ -174,6 +175,7 @@ public class DocumentModelFactory {
             repositoryName = repository.getName();
         }
         String p = doc.getPath();
+
         // versions being imported before their live doc don't have a path
         Path path = p == null ? null : new Path(p);
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
@@ -207,7 +209,7 @@ public class DocumentModelFactory {
                     Object value = doc.getPropertyValue(field.getName().getPrefixedName());
                     docModel.prefetchProperty(
                             field.getDeclaringType().getName() + '.'
-                                    + field.getName().getLocalName(), value);
+                            + field.getName().getLocalName(), value);
                 } catch (NoSuchPropertyException e) {
                     // skip
                 } catch (DocumentException e) {
@@ -241,6 +243,8 @@ public class DocumentModelFactory {
                     + ". Error: " + e.getMessage());
         }
 
+        DirtyUpdateChecker.check(docModel);
+
         return docModel;
     }
 
@@ -253,7 +257,7 @@ public class DocumentModelFactory {
      * @throws DocumentException
      */
     public static DocumentModelImpl createDocumentModel(DocumentType docType)
-            throws DocumentException {
+    throws DocumentException {
         return createDocumentModel(null, docType);
     }
 
@@ -293,7 +297,7 @@ public class DocumentModelFactory {
      */
     public static DocumentModelImpl createDocumentModel(String parentPath,
             String id, DocumentType docType, String[] schemas)
-            throws DocumentException {
+    throws DocumentException {
         DocumentModelImpl docModel = new DocumentModelImpl(parentPath, id,
                 docType.getName());
         // populate models

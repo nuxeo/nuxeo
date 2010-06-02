@@ -271,6 +271,7 @@ public class SessionImpl implements Session, XAResource {
         if (readAclsChanged) {
             updateReadAcls();
         }
+        checkReceivedInvalidations();
     }
 
     /**
@@ -425,6 +426,14 @@ public class SessionImpl implements Session, XAResource {
     protected void processReceivedInvalidations() throws StorageException {
         repository.receiveClusterInvalidations();
         context.processReceivedInvalidations();
+    }
+
+    /**
+     * Post transaction check invalidations processing.
+     */
+    protected void checkReceivedInvalidations() throws StorageException {
+        repository.receiveClusterInvalidations();
+        context.checkReceivedInvalidations();
     }
 
     /**

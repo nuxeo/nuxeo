@@ -495,7 +495,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     }
 
     public void testReadAclSecurity() throws ClientException {
-        // Check that all permissions that contain Browse enable to list a document using aclOptimization
+        // Check that all permissions that contain Browse enable to list a
+        // document using aclOptimization
         SecurityService securityService = NXCore.getSecurityService();
         String[] browsePermissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
         // Check for test permission contribution
@@ -523,6 +524,14 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
             List<String> names = new ArrayList<String>();
+            for (DocumentModel doc : list) {
+                names.add(doc.getName());
+            }
+            assertEquals("Expecting " + docNames + " got " + names,
+                    browsePermissions.length, list.size());
+
+            list = joeSession.query("SELECT * FROM Folder WHERE ecm:isProxy = 0");
+            names.clear();
             for (DocumentModel doc : list) {
                 names.add(doc.getName());
             }
