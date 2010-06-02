@@ -182,6 +182,10 @@
             <exclude>**/IT*.java</exclude>
             <exclude>**/*IT.java</exclude>
             <exclude>**/*ITCase.java</exclude>
+            <!-- (in parent pom) -->
+            <!-- Synthetic classes for switch() (surefire bug) -->
+            <!-- Inner classes -->
+            <exclude>**/*$*.java</exclude>
           </excludes>
         </configuration>
       </plugin>
