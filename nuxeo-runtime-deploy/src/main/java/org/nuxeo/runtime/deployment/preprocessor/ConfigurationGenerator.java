@@ -91,6 +91,10 @@ public class ConfigurationGenerator {
 
     private boolean forceGeneration;
 
+    public void setForceGeneration(boolean forceGeneration) {
+        this.forceGeneration = forceGeneration;
+    }
+
     private Properties defaultConfig;
 
     private Properties userConfig = null;

@@ -134,4 +134,15 @@ public class JBossConfiguratorTest {
                 PROPERTY_TO_GENERATE.equals(generatedProperty));
     }
 
+    @Test
+    public void testForceGeneration() throws ConfigurationException {
+        configGenerator2.run();
+        File testFile = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
+        testFile = new File(testFile, "test2");
+        testFile.delete();
+        configGenerator2.setForceGeneration(true);
+        configGenerator2.run();
+        assertTrue(testFile.exists());
+    }
+
 }
