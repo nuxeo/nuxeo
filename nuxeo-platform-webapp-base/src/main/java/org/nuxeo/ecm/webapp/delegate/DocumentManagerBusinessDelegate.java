@@ -34,12 +34,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -65,9 +63,6 @@ public class DocumentManagerBusinessDelegate implements Serializable {
 
     private static final Log log = LogFactory.getLog(DocumentManagerBusinessDelegate.class);
 
-    @In(value = "org.jboss.seam.core.manager")
-    public transient Manager conversationManager;
-
     /**
      * Map holding the open session for each repository location.
      */
@@ -92,15 +87,6 @@ public class DocumentManagerBusinessDelegate implements Serializable {
             throws ClientException {
 
         if (serverLocation == null) {
-            if (Framework.getProperty("org.nuxeo.conversation.error.log") != null) {
-                String errorMessage = String.format(
-                        "serverLocation is null. Current ConversationId: %s; LongRunningConversation: %b",
-                        conversationManager.getCurrentConversationId(),
-                        conversationManager.isLongRunningConversation());
-                log.error(errorMessage);
-                Exception e = new Exception("serverLocation is null");
-                log.error(e, e);
-            }
             /*
              * currentServerLocation (factory in ServerContextBean) is set
              * through navigationContext, which itself injects documentManager,
