@@ -51,23 +51,31 @@ public class DirtyUpdateChecker {
         } catch (Exception e) {
             throw new ClientRuntimeException("cannot fetch dc modified for doc " + doc, e);
         }
-        if (ctx.tag >= modified) {
+        long tag = ctx.tag.longValue();
+        if (tag >= modified) {
             return; // client cache is freshest than doc
         }
-        if (ctx.invoked <= modified) {
+        long invoked = ctx.invoked.longValue();
+        if (invoked <= modified) {
             return; // modified by self user
         }
-        String message = String.format("%s is outdated : cache %s - op start %s - doc %s", doc.getId(), new Date(ctx.tag), new Date(ctx.invoked), new Date(modified));
+        String message = String.format(
+                "%s is outdated : cache %s - op start %s - doc %s",
+                doc.getId(), new Date(tag), new Date(
+                        invoked), new Date(modified));
         throw new ConcurrentModificationException(message);
     }
 
     public static Object earliestTag(Object tag1, Object tag2) {
-        return Long.class.cast(tag1) > Long.class.cast(tag2) ? tag1 : tag2;
+        return ((Long) tag1).longValue() > ((Long) tag2).longValue() ? tag1
+                : tag2;
     }
 
-    public static Object computeTag(String sessionId, ModificationSet modifs) {
+    public static Object computeTag(
+            @SuppressWarnings("unused") String sessionId,
+            @SuppressWarnings("unused") ModificationSet modifs) {
         // TODO compute a more precise time stamp than current date
-        return Calendar.getInstance().getTimeInMillis();
+        return Long.valueOf(Calendar.getInstance().getTimeInMillis());
     }
 
 }
