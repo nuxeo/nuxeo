@@ -46,7 +46,8 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.event.compat");
-        deployTestContrib("org.nuxeo.ecm.core.event.compat",
+        deployBundle("org.nuxeo.ecm.core.event.compat.test");
+        deployTestContrib("org.nuxeo.ecm.core.event.compat.test",
                 "CoreEventListenerTestExtensions.xml");
 
         repositoryListenerService = Framework.getLocalService(CoreEventListenerService.class);

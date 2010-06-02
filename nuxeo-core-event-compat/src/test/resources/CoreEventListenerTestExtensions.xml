@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.core.repository.TestRepositoryListenerExtensions">
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="fakelistener"
+      class="org.nuxeo.ecm.core.repository.FakeEventListener" />
+    <listener name="second-listener"
+      class="org.nuxeo.ecm.core.repository.FakeEventListener" order="2" />
+    <listener name="first-listener"
+      class="org.nuxeo.ecm.core.repository.FakeEventListener" order="1" />
+    <listener name="party-listener"
+      class="org.nuxeo.ecm.core.repository.FakeEventListener">
+      <eventId>party</eventId>
+    </listener>
+  </extension>
+
+</component>
