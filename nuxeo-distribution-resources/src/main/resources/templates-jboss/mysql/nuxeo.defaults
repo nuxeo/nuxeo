@@ -7,6 +7,3 @@ nuxeo.db.name=nuxeo
 nuxeo.db.user=nuxeo
 nuxeo.db.password=password
 nuxeo.db.min-pool-size=5
-
-org.nuxeo.ecm.instance.name=Nuxeo 5.3
-org.nuxeo.ecm.instance.description=Nuxeo ECM server
