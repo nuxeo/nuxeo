@@ -77,7 +77,7 @@ public class JBossConfiguratorTest {
         configGenerator.browseTemplates();
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
-        assertTrue(config.getProperty("nuxeo.template").equals("default"));
+        assertTrue(config.getProperty("nuxeo.templates").equals("default,testinclude"));
         assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
         assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
         assertTrue(config.getProperty("test.nuxeo.defaults.template.1").equals(
@@ -111,7 +111,7 @@ public class JBossConfiguratorTest {
         configGenerator2.run();
         log.debug(configGenerator2.getIncludedTemplates());
         Properties config = configGenerator2.getUserConfig();
-        assertTrue(config.getProperty("nuxeo.template").equals("default"));
+        assertTrue(config.getProperty("nuxeo.templates").equals("common,testinclude2"));
         assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
         assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
         assertTrue(config.getProperty("test.nuxeo.defaults.template.1").equals(

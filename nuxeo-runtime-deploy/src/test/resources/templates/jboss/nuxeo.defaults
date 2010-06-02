@@ -4,7 +4,7 @@
 # Specific default values are defined in templates/{template_name}/nuxeo.defaults
 
 # Default template to use if not defined in nuxeo.conf
-nuxeo.template=default
+nuxeo.templates=default
 
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0
