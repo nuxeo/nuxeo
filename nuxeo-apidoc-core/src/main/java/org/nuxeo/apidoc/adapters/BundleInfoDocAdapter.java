@@ -119,6 +119,9 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     public String getManifest() {
         try {
             Blob mf = safeGet(Blob.class, "file:content", new StringBlob("No MANIFEST"));
+            if (mf.getEncoding()==null || "".equals(mf.getEncoding())) {
+                mf.setEncoding("utf-8");
+            }
             return mf.getString();
         } catch (IOException e) {
             log.error("Error while reading blob", e);

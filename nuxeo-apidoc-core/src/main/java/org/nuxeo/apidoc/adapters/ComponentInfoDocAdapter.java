@@ -161,6 +161,9 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public String getXmlFileContent() throws IOException {
         try {
             Blob xml = safeGet(Blob.class, "file:content", null);
+            if (xml.getEncoding()==null || "".equals(xml.getEncoding())) {
+                xml.setEncoding("utf-8");
+            }
             return xml.getString();
         } catch (IOException e) {
             log.error("Error while reading blob", e);

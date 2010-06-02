@@ -100,6 +100,9 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public String getXml() {
         try {
             Blob xml = safeGet(Blob.class, "file:content", new StringBlob(""));
+            if (xml.getEncoding()==null || "".equals(xml.getEncoding())) {
+                xml.setEncoding("utf-8");
+            }
             return xml.getString();
         } catch (IOException e) {
             log.error("Error while reading blob", e);
