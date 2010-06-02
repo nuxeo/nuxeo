@@ -1,9 +1,0 @@
-<component name="org.nuxeo.ecm.core.jms.CoreEventPublisher" version="1.0">
-
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-
-    <listener class="org.nuxeo.ecm.core.jms.JMSCompatibilityPostCommitEventListener" async="false"/>
-
-  </extension>
-
-</component>

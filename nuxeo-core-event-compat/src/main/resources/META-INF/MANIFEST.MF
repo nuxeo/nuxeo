@@ -7,8 +7,7 @@ Bundle-Localization: bundle
 Bundle-Category: core
 Eclipse-LazyStart: true
 Nuxeo-Component: OSGI-INF/CompatibilityListener.xml,
- OSGI-INF/CoreEventListenerService.xml,
- OSGI-INF/CoreEventPublisher.xml
+ OSGI-INF/CoreEventListenerService.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.event
 Nuxeo-RequiredBy: org.nuxeo.ecm.core 
