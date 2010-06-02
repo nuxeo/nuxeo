@@ -209,7 +209,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         map = it.next();
         assertEquals("testfile2_Title", map.get("dc:title"));
         map = it.next();
-        assertEquals("testfile4_Title", map.get("dc:title"));
+        assertEquals("testfile4Title", map.get("dc:title"));
         res.close();
     }
 

@@ -34,8 +34,13 @@ public class TestDialectQuerySyntax extends TestCase {
             InvocationHandler {
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            if (method.getName().equals("storesUpperCaseIdentifiers")) {
+            String name = method.getName();
+            if (name.equals("storesUpperCaseIdentifiers")) {
                 return Boolean.FALSE;
+            } else if (name.equals("getDatabaseMajorVersion")) {
+                return Integer.valueOf(0);
+            } else if (name.equals("getDatabaseMinorVersion")) {
+                return Integer.valueOf(0);
             }
             return null;
         }

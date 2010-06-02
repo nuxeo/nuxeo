@@ -28,6 +28,8 @@ public class Select implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String with;
+
     private String what;
 
     private String from;
@@ -42,16 +44,32 @@ public class Select implements Serializable {
         // table unused
     }
 
+    public void setWith(String with) {
+        this.with = with;
+    }
+
     public void setWhat(String what) {
         this.what = what;
+    }
+
+    public String getWhat() {
+        return what;
     }
 
     public void setFrom(String from) {
         this.from = from;
     }
 
+    public String getFrom() {
+        return from;
+    }
+
     public void setWhere(String where) {
         this.where = where;
+    }
+
+    public String getWhere() {
+        return where;
     }
 
     public void setGroupBy(String groupBy) {
@@ -64,6 +82,11 @@ public class Select implements Serializable {
 
     public String getStatement() {
         StringBuilder buf = new StringBuilder(128);
+        if (with != null && with.length() != 0) {
+            buf.append("WITH ");
+            buf.append(with);
+            buf.append(' ');
+        }
         buf.append("SELECT ");
         buf.append(what);
         buf.append(" FROM ");
