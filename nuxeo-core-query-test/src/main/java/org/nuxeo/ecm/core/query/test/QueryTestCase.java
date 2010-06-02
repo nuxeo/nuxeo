@@ -195,7 +195,9 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // create file 4
         DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
                 "testfile4", "File");
-        file4.setPropertyValue("dc:title", "testfile4_Title");
+        // title without space or _ for Oracle fulltext searchability
+        // (testFulltextProxy)
+        file4.setPropertyValue("dc:title", "testfile4Title");
         file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
         file4 = session.createDocument(file4);
 
@@ -880,20 +882,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         Filter filter;
 
         // queries must return proxies *and versions*
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title'");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title'");
         assertIdSet(dml, docId, proxyId, versionId);
 
         // facet filter: immutable
         filter = new FacetFilter(FacetNames.IMMUTABLE, true);
         dml = session.query(
-                "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
+                "SELECT * FROM Document WHERE dc:title = 'testfile4Title'",
                 filter, 99);
         assertIdSet(dml, proxyId, versionId);
 
         // facet filter: not immutable
         filter = new FacetFilter(FacetNames.IMMUTABLE, false);
         dml = session.query(
-                "SELECT * FROM Document WHERE dc:title = 'testfile4_Title'",
+                "SELECT * FROM Document WHERE dc:title = 'testfile4Title'",
                 filter, 99);
         assertIdSet(dml, docId);
 
@@ -913,15 +915,15 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(7, dml.size()); // 7 folder/docs
 
         // filter out proxies explicitely, keeps live and version
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isProxy = 0");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isProxy = 0");
         assertIdSet(dml, docId, versionId);
 
         // only keep proxies
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isProxy = 1");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isProxy = 1");
         assertIdSet(dml, proxyId);
 
         // only keep versions
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' AND ecm:isCheckedInVersion = 1");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
 
         // only keep immutable (proxy + version)
@@ -954,9 +956,9 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
 
         // proxy query with order by
-        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4_Title' ORDER BY dc:title");
+        dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' ORDER BY dc:title");
         assertIdSet(dml, docId, proxyId, versionId);
-        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile4_Title' ORDER BY dc:description");
+        dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile4Title' ORDER BY dc:description");
         assertIdSet(dml, docId, proxyId, versionId);
     }
 
@@ -1144,7 +1146,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     public void testFulltext() throws Exception {
         createDocs();
         sleepForFulltext();
-        String query;
+        String query, nquery;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
                 "/testfolder1/testfile1"));
@@ -1152,35 +1154,57 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "/testfolder1/testfile2"));
         DocumentModel file3 = session.getDocument(new PathRef(
                 "/testfolder1/testfile3"));
+        DocumentModel file4 = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
 
+        // query
         query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
-
         dml = session.query(query);
         assertEquals(0, dml.size());
+
+        // negative query
+        nquery = "SELECT * FROM File WHERE NOT(ecm:fulltext = 'world')";
+        dml = session.query(nquery);
+        assertIdSet(dml, file1.getId(), file2.getId(), file4.getId());
 
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
         sleepForFulltext();
 
+        // query
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+
+        // negative query
+        dml = session.query(nquery);
+        assertIdSet(dml, file2.getId(), file4.getId());
 
         file2.setProperty("dublincore", "description", "the world is my oyster");
         session.saveDocument(file2);
         session.save();
         sleepForFulltext();
 
+        // query
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId());
+
+        // negative query
+        dml = session.query(nquery);
+        assertIdSet(dml, file4.getId());
 
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
         session.save();
         sleepForFulltext();
 
+        // query
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId()); // file3 is a Note
+
+        // negative query
+        dml = session.query(nquery);
+        assertIdSet(dml, file4.getId());
 
         query = "SELECT * FROM Note WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
@@ -1217,7 +1241,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "/testfolder2/testfolder3/testfile4"));
         String docId = doc.getId();
 
-        query = "SELECT * FROM Document WHERE ecm:fulltext = 'testfile4_Title'";
+        query = "SELECT * FROM Document WHERE ecm:fulltext = 'testfile4Title'";
         dml = session.query(query);
         assertIdSet(dml, docId);
 
