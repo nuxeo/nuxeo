@@ -27,7 +27,6 @@
   </build>
 
   <dependencies>
-    <!--  TODO put this in nuxeo root pom.xml -->  
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
