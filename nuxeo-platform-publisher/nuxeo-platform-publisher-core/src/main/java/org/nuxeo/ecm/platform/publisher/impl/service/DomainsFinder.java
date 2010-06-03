@@ -17,14 +17,15 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
-
-import java.util.List;
-import java.util.ArrayList;
+import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -39,11 +40,20 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
 
     @Override
     public void run() throws ClientException {
-        domains = new ArrayList<DocumentModel>();
+        domains = getDomainsFiltered();
+    }
+
+    protected List<DocumentModel> getDomainsFiltered() throws ClientException {
+    	List<DocumentModel> result = new ArrayList<DocumentModel>();
         DocumentRef rootRef = session.getRootDocument().getRef();
-        for (DocumentModel doc : session.getChildren(rootRef, "Domain")) {
-            domains.add(doc);
+
+        Filter filter = new LifeCycleFilter("deleted", false);
+
+        for (DocumentModel doc : session.getChildren(rootRef, "Domain", filter, null)) {
+            result.add(doc);
         }
+
+        return result;
     }
 
     public List<DocumentModel> getDomains() throws ClientException {
