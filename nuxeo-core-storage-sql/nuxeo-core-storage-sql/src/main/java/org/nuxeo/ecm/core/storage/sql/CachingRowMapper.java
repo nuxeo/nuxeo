@@ -18,7 +18,9 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -75,7 +78,22 @@ public class CachingRowMapper implements RowMapper {
     }
 
     protected void cachePut(Row row) {
-        cache.put(new RowId(row), row.clone());
+        row = row.clone();
+        // for ACL collections, make sure the order is correct
+        // (without the cache, the query to get a list of collection does an
+        // ORDER BY pos, so users of the cache must get the same behavior)
+        if (row.isCollection() && row.values.length > 0
+                && row.values[0] instanceof ACLRow) {
+            row.values = sortACLRows((ACLRow[]) row.values);
+        }
+        cache.put(new RowId(row), row);
+    }
+
+    protected ACLRow[] sortACLRows(ACLRow[] acls) {
+        List<ACLRow> list = new ArrayList<ACLRow>(Arrays.asList(acls));
+        Collections.sort(list, ACLRowPositionComparator.INSTANCE);
+        ACLRow[] res = new ACLRow[acls.length];
+        return list.toArray(res);
     }
 
     protected void cachePutAbsent(RowId rowId) {

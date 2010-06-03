@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -134,6 +135,7 @@ public class NetServlet extends HttpServlet {
                 invoker = new MapperInvoker(repository, name);
                 sid = (String) invoker.call("getMapperId");
                 // log.info("New sid " + sid);
+                // System.out.println("New sid " + sid + " thread " + name);
                 invokers.put(sid, invoker);
             } else {
                 // existing session
@@ -163,9 +165,11 @@ public class NetServlet extends HttpServlet {
                 }
                 args.add(object);
             }
+            // System.out.println(sid + " " + methodName + " " + args);
 
             // invoke method
             Object res = invoker.call(methodName, args.toArray());
+            // System.out.println("  -> " + res);
 
             // close?
             if ("close".equals(methodName)) {
@@ -173,6 +177,7 @@ public class NetServlet extends HttpServlet {
                 invoker.close();
                 invokers.remove(sid);
                 // log.info("Closing sid " + sid);
+                // System.out.println("Closing sid " + sid);
             }
 
             // write result
@@ -180,6 +185,7 @@ public class NetServlet extends HttpServlet {
             oos.flush();
             oos.close();
         } catch (Throwable e) {
+            // e.printStackTrace(); // System.out.println
             log.error(e, e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     e.toString());

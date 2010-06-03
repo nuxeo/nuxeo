@@ -118,7 +118,15 @@ public class NetMapper implements InvocationHandler {
             if (cs != null && !cs.equals("ISO-8859-1")) {
                 throw new RuntimeException("Bad encoding: " + cs);
             }
-            return new ObjectInputStream(m.getResponseBodyAsStream()).readObject();
+            Object res = new ObjectInputStream(m.getResponseBodyAsStream()).readObject();
+            if (res instanceof Throwable) {
+                Throwable t = (Throwable) res;
+                throw new StorageException("Remote exception: " + t, t);
+            } else {
+                return res;
+            }
+        } catch (StorageException e) {
+            throw e;
         } catch (Exception e) {
             throw new StorageException(e);
         } finally {

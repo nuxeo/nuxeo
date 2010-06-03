@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
@@ -37,7 +36,8 @@ public interface CollectionIO {
      * Gets one value from the current position of the result set.
      */
     Serializable getCurrentFromResultSet(ResultSet rs, List<Column> columns,
-            Model model, Serializable[] returnId) throws SQLException;
+            Model model, Serializable[] returnId, int[] returnPos)
+            throws SQLException;
 
     /**
      * Sets the values of a fragment to a SQL prepared statement, and executes

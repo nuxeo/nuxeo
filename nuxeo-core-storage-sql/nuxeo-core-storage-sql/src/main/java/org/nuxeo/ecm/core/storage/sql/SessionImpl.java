@@ -402,21 +402,15 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /**
-     * Marks locally all the invalidations gathered by a {@link Mapper}
-     * operation (like a version restore).
-     */
-    private void markInvalidated(Invalidations invalidations) {
-        context.markInvalidated(invalidations);
-    }
-
-    /**
      * Post-transaction invalidations notification.
      * <p>
      * Called post-transaction by commit/rollback or transactionless save.
      */
     protected void sendInvalidationsToOthers() throws StorageException {
         Invalidations invalidations = context.gatherInvalidations();
-        repository.invalidate(invalidations, this);
+        if (!invalidations.isEmpty()) {
+            repository.invalidate(invalidations, this);
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -224,16 +225,7 @@ public final class Row extends RowId implements Serializable {
                 }
                 buf.append(keys[i]);
                 buf.append('=');
-                Serializable value = values[i];
-                boolean truncated = false;
-                if (value instanceof String && ((String) value).length() > 100) {
-                    value = ((String) value).substring(0, 100);
-                    truncated = true;
-                }
-                buf.append(value);
-                if (truncated) {
-                    buf.append("...");
-                }
+                printValue(values[i], buf);
             }
             buf.append('}');
         } else {
@@ -243,21 +235,74 @@ public final class Row extends RowId implements Serializable {
                 if (i > 0) {
                     buf.append(", ");
                 }
-                Serializable value = values[i];
-                boolean truncated = false;
-                if (value instanceof String && ((String) value).length() > 100) {
-                    value = ((String) value).substring(0, 100);
-                    truncated = true;
-                }
-                buf.append(value);
-                if (truncated) {
-                    buf.append("...");
-                }
+                printValue(values[i], buf);
             }
             buf.append(']');
         }
         buf.append(')');
         return buf.toString();
+    }
+
+    public static final int MAX_STRING = 100;
+
+    public static final int MAX_ARRAY = 10;
+
+    @SuppressWarnings("boxing")
+    public static void printValue(Serializable value, StringBuilder buf) {
+        if (value == null) {
+            buf.append("NULL");
+        } else if (value instanceof String) {
+            String v = (String) value;
+            if (v.length() > MAX_STRING) {
+                v = v.substring(0, MAX_STRING) + "...(" + v.length()
+                        + " chars)...";
+            }
+            buf.append('"');
+            buf.append(v);
+            buf.append('"');
+        } else if (value instanceof Calendar) {
+            Calendar cal = (Calendar) value;
+            char sign;
+            int offset = cal.getTimeZone().getOffset(cal.getTimeInMillis()) / 60000;
+            if (offset < 0) {
+                offset = -offset;
+                sign = '-';
+            } else {
+                sign = '+';
+            }
+            buf.append(String.format(
+                    "Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)",
+                    cal.get(Calendar.YEAR), //
+                    cal.get(Calendar.MONTH) + 1, //
+                    cal.get(Calendar.DAY_OF_MONTH), //
+                    cal.get(Calendar.HOUR_OF_DAY), //
+                    cal.get(Calendar.MINUTE), //
+                    cal.get(Calendar.SECOND), //
+                    cal.get(Calendar.MILLISECOND), //
+                    sign, offset / 60, offset % 60));
+        } else if (value instanceof Binary) {
+            buf.append("Binary(");
+            buf.append(((Binary) value).getDigest());
+            buf.append(')');
+        } else if (value.getClass().isArray()) {
+            Serializable[] v = (Serializable[]) value;
+            buf.append('[');
+            for (int i = 0; i < v.length; i++) {
+                if (i > 0) {
+                    buf.append(',');
+                    if (i > MAX_ARRAY) {
+                        buf.append("...(");
+                        buf.append(v.length);
+                        buf.append(" items)...");
+                        break;
+                    }
+                }
+                printValue(v[i], buf);
+            }
+            buf.append(']');
+        } else {
+            buf.append(value.toString());
+        }
     }
 
 }

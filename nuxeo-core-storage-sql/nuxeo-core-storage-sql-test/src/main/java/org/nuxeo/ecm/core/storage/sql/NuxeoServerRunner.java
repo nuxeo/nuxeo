@@ -16,32 +16,42 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.File;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.JUnitCore;
-import org.nuxeo.ecm.core.NXCore;
 
 /**
  * Runs a Nuxeo server based on the unit tests configuration. Wait for a
  * connection on a given port to stop it.
+ * <p>
+ * Args: -p SHUTDOWNPORT
  */
 public class NuxeoServerRunner {
 
     private static final Log log = LogFactory.getLog(NuxeoServerRunner.class);
 
-    public static int PORT = 4432;
+    public static int shutdownPort = 4444;
+
+    public static void getPortFromArgs(String[] args) {
+        if (args.length == 2 && "-p".equals(args[0])) {
+            try {
+                shutdownPort = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                // use default port
+            }
+        }
+        String msg = "Using server shutdown port " + shutdownPort;
+        log.info(msg);
+        // note that System.out is closed when running from ant spawn
+        System.out.println(msg);
+    }
 
     public static void main(String[] args) {
         try {
-            // re-connect stdout, as ant spawn closed everything
-            PrintStream out = new PrintStream(new File("server.out"));
-            System.setOut(out);
-            System.setErr(out);
+            getPortFromArgs(args);
             JUnitCore.runClasses(ToRun.class);
         } catch (Exception e) {
             log.error(e, e);
@@ -65,16 +75,15 @@ public class NuxeoServerRunner {
 
         // wait until connection on PORT
         public void test() throws Exception {
-            System.out.println("Waiting for stop...");
-            new ServerSocket(PORT).accept();
-            System.out.println("Stopped.");
+            new ServerSocket(shutdownPort).accept();
         }
     }
 
     public static class Stopper {
 
         public static void main(String[] args) throws Exception {
-            new Socket("127.0.0.1", PORT);
+            getPortFromArgs(args);
+            new Socket("127.0.0.1", shutdownPort);
         }
 
     }

@@ -16,9 +16,15 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
 /**
@@ -32,9 +38,37 @@ public class ITSQLBackendNet extends TestSQLBackend {
     }
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        Thread.sleep(2 * 1000); // wait 2s for server startup
+    public void tearDown() throws Exception {
+        // make sure all connections were closed
+        ((RepositoryImpl) repository).closeAllSessions();
+        // delete all documents under the root
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        List<Node> children = session.getChildren(root, null, false);
+        for (Node node : children) {
+            session.removeNode(node);
+        }
+        // delete all the versions
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1",
+                QueryFilter.EMPTY, false);
+        for (Serializable id : res.list) {
+            session.removeNode(session.getNodeById(id));
+        }
+        // reset ACLs as well
+        CollectionProperty acls = root.getCollectionProperty(Model.ACL_PROP);
+        ACLRow acl1 = new ACLRow(0, ACL.LOCAL_ACL, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
+                null);
+        ACLRow acl2 = new ACLRow(1, ACL.LOCAL_ACL, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATOR,
+                null);
+        ACLRow acl3 = new ACLRow(2, ACL.LOCAL_ACL, true,
+                SecurityConstants.READ, SecurityConstants.MEMBERS, null);
+        acls.setValue(new ACLRow[] { acl1, acl2, acl3 });
+        session.save();
+        session.close();
+        super.tearDown();
     }
 
     @Override

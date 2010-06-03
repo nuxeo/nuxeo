@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.storage.sql.net;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -110,19 +111,18 @@ public class MapperInvoker extends Thread {
 
     // called in the main thread
     public void close() throws Throwable {
-        call(INVOKER_CLOSE);
-        interrupt();
-        join();
+        try {
+            call(INVOKER_CLOSE);
+        } finally {
+            interrupt();
+            join();
+        }
     }
 
     // called in the main thread
     public Object call(String methodName, Object... args) throws Throwable {
         methodCalls.put(new MethodCall(methodName, args));
-        Object res = methodResults.take().result;
-        if (res instanceof Throwable) {
-            throw (Throwable) res;
-        }
-        return res;
+        return methodResults.take().result;
     }
 
     protected Object localCall(String methodName, Object[] args)

@@ -373,7 +373,9 @@ public class PersistenceContext {
                     }
                 }
             }
-            mapper.invalidateCache(receivedInvalidations);
+            if (!receivedInvalidations.isEmpty()) {
+                mapper.invalidateCache(receivedInvalidations);
+            }
             receivedInvalidations.clear();
         }
     }

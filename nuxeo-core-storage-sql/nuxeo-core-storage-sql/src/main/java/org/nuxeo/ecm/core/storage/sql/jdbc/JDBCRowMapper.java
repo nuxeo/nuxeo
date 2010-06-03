@@ -182,11 +182,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 Serializable curId = null;
                 List<Serializable> list = null;
                 Serializable[] returnId = new Serializable[1];
+                int[] returnPos = new int[] { -1 };
                 List<Row> res = new LinkedList<Row>();
                 Set<Serializable> remainingIds = new HashSet<Serializable>(ids);
                 while (rs.next()) {
                     Serializable value = io.getCurrentFromResultSet(rs,
-                            select.whatColumns, model, returnId);
+                            select.whatColumns, model, returnId, returnPos);
                     Serializable newId = returnId[0];
                     if (newId != null && !newId.equals(curId)) {
                         // flush old list
@@ -593,9 +594,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 // construct the resulting collection using each row
                 CollectionIO io = getCollectionIO(tableName);
                 ArrayList<Serializable> list = new ArrayList<Serializable>();
+                Serializable[] returnId = new Serializable[1];
+                int[] returnPos = new int[] { -1 };
                 while (rs.next()) {
                     list.add(io.getCurrentFromResultSet(rs, columns, model,
-                            null));
+                            returnId, returnPos));
                 }
                 PropertyType type = model.getCollectionFragmentType(tableName).getArrayBaseType();
                 Serializable[] array = type.collectionToArray(list);

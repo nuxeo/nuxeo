@@ -282,6 +282,17 @@ public class RepositoryImpl implements Repository {
             NetServer.stopServer(server);
             server = null;
         }
+        backend.shutdown();
+    }
+
+    protected synchronized void closeAllSessions() throws StorageException {
+        for (SessionImpl session : sessions) {
+            if (!session.isLive()) {
+                continue;
+            }
+            session.closeSession();
+        }
+        sessions.clear();
     }
 
     /*

@@ -647,7 +647,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testClustering() throws Exception {
-        if (this instanceof TestSQLBackendNet) {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
             return;
         }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
@@ -1201,7 +1202,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         SimpleProperty sp = nodeac3.getSimpleProperty("tst:title");
         assertNotNull(sp);
         assertNull(sp.getString());
-
     }
 
     public void testProxies() throws Exception {
@@ -1390,7 +1390,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testFulltextDisabled() throws Exception {
-        if (this instanceof TestSQLBackendNet) {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
             return;
         }
         // reconfigure repository with fulltext disabled
