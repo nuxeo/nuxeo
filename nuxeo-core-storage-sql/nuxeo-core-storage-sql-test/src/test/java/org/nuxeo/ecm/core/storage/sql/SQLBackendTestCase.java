@@ -33,6 +33,11 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository2;
 
+    /** Set to false for client unit tests */
+    public boolean initDatabase() {
+        return true;
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -40,7 +45,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.storage.sql");
-        DatabaseHelper.DATABASE.setUp();
+        if (initDatabase()) {
+            DatabaseHelper.DATABASE.setUp();
+        }
         repository = newRepository(-1, false);
     }
 
@@ -67,15 +74,23 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeRepository();
+        if (initDatabase()) {
+            DatabaseHelper.DATABASE.tearDown();
+        }
+        super.tearDown();
+    }
+
+    protected void closeRepository() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         if (repository != null) {
             repository.close();
+            repository = null;
         }
         if (repository2 != null) {
             repository2.close();
+            repository2 = null;
         }
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
 }

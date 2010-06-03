@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
@@ -34,8 +33,9 @@ public class ScalarCollectionIO implements CollectionIO {
     public static final CollectionIO INSTANCE = new ScalarCollectionIO();
 
     public Serializable getCurrentFromResultSet(ResultSet rs,
-            List<Column> columns, Model model, Serializable[] returnId)
-            throws SQLException {
+            List<Column> columns, Model model, Serializable[] returnId,
+            int[] returnPos) throws SQLException {
+        Serializable id = null;
         Serializable value = null;
         int i = 0;
         for (Column column : columns) {
@@ -43,9 +43,7 @@ public class ScalarCollectionIO implements CollectionIO {
             String key = column.getKey();
             Serializable v = column.getFromResultSet(rs, i);
             if (key.equals(model.MAIN_KEY)) {
-                if (returnId != null) {
-                    returnId[0] = v;
-                }
+                id = v;
             } else if (key.equals(model.COLL_TABLE_POS_KEY)) {
                 // (the pos column is ignored, results are already ordered by id
                 // then pos)
@@ -55,25 +53,29 @@ public class ScalarCollectionIO implements CollectionIO {
                 throw new RuntimeException(key);
             }
         }
+        Serializable prevId = returnId[0];
+        returnId[0] = id;
+        int pos = (id != null && !id.equals(prevId)) ? 0 : returnPos[0] + 1;
+        returnPos[0] = pos;
         return value;
     }
 
-    public void setToPreparedStatement(CollectionFragment fragment,
+    public void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)
             throws SQLException {
-        for (int i = 0; i < fragment.array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             int n = 0;
             for (Column column : columns) {
                 n++;
                 String key = column.getKey();
                 Serializable v;
                 if (key.equals(model.MAIN_KEY)) {
-                    v = fragment.getId();
+                    v = id;
                 } else if (key.equals(model.COLL_TABLE_POS_KEY)) {
                     v = (long) i;
                 } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
-                    v = fragment.array[i];
+                    v = array[i];
                 } else {
                     throw new RuntimeException(key);
                 }

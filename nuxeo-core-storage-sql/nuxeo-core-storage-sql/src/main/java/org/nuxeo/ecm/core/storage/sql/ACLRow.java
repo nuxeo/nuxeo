@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * A simple value holding one row of the ACLs table.
@@ -52,8 +53,21 @@ public class ACLRow implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + pos + ',' + name + ',' +
-                (grant ? "GRANT" : "DENY") + ',' + permission + ',' + user +
-                ',' + group + ')';
+        return getClass().getSimpleName() + '(' + pos + ',' + name + ','
+                + (grant ? "GRANT" : "DENY") + ',' + permission + ',' + user
+                + ',' + group + ')';
     }
+
+    /**
+     * Comparator of {@link ACLRow}s according to their pos field.
+     */
+    public static class ACLRowPositionComparator implements Comparator<ACLRow> {
+
+        public static final ACLRowPositionComparator INSTANCE = new ACLRowPositionComparator();
+
+        public int compare(ACLRow acl1, ACLRow acl2) {
+            return acl1.pos - acl2.pos;
+        }
+    }
+
 }

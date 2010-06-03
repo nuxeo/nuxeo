@@ -21,19 +21,13 @@ import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A rich value corresponding to one row or a collection of rows in a table.
  * <p>
- * The table is identified by its table name, which the {@link Mapper} knows
- * about.
- * <p>
- * The id of the fragment is distinguished internally from other columns. For
- * fragments corresponding to created data, the initial id is a temporary one,
- * and it will be changed after database insert.
+ * In addition to the basic {@link Row}, this holds the old values (to check
+ * dirty state), the state and a reference to the session.
  * <p>
  * This class has two kinds of state-changing methods:
  * <ul>
@@ -48,15 +42,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public abstract class Fragment implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(Fragment.class);
-
-    /**
-     * The id. If the fragment was just created, and database id generation is
-     * used, the initial temporary id will be changed at save time to its final
-     * value.
-     */
-    private Serializable id;
 
     /**
      * The possible states of a fragment.
@@ -118,26 +103,31 @@ public abstract class Fragment implements Serializable {
         INVALIDATED_DELETED
     }
 
-    private transient State state; // default is DETACHED
-
-    private transient Context context;
-
-    // private void logStateTransition(State newState) {
-    // log.info("(" + context.mapper.instanceNumber + ") " + id + '/'
-    // + getTableName() + ' ' + state + " -> " + newState);
-    // }
+    /**
+     * The row holding the data.
+     */
+    protected Row row;
 
     /**
-     * Constructs an empty {@link Fragment} with the given id (which may be a
-     * temporary one).
+     * The row old values, from the time of construction / refetch. The size of
+     * the the array is following {@link #row.values.length}.
+     */
+    protected Serializable[] oldvalues;
+
+    private State state; // default is DETACHED
+
+    protected PersistenceContext context;
+
+    /**
+     * Constructs a {@link Fragment} from a {@link Row}.
      *
-     * @param id the id
+     * @param row the row
      * @param state the initial state for the fragment
      * @param context the persistence context to which the fragment is tied, or
      *            {@code null}
      */
-    protected Fragment(Serializable id, State state, Context context) {
-        this.id = id;
+    protected Fragment(Row row, State state, PersistenceContext context) {
+        this.row = row;
         this.state = state;
         this.context = context;
         switch (state) {
@@ -148,35 +138,18 @@ public abstract class Fragment implements Serializable {
             break;
         case CREATED:
         case DELETED:
-            context.modified.put(id, this);
+            context.setFragmentModified(this); // not in pristine
             break;
         case ABSENT:
         case PRISTINE:
-            context.pristine.put(id, this);
+            context.setFragmentPristine(this); // not in modified
             break;
         case MODIFIED:
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             throw new IllegalArgumentException(state.toString());
         }
-    }
-
-    /**
-     * Gets the context.
-     *
-     * @return the context
-     */
-    protected Context getContext() {
-        return context;
-    }
-
-    /**
-     * Gets the table name.
-     *
-     * @return the table name
-     */
-    public String getTableName() {
-        return context.getTableName();
+        clearDirty();
     }
 
     /**
@@ -195,9 +168,7 @@ public abstract class Fragment implements Serializable {
      * @param id the new persistent id
      */
     public void setId(Serializable id) {
-        assert state == State.CREATED;
-        assert id != null;
-        this.id = id;
+        row.id = id;
     }
 
     /**
@@ -206,7 +177,14 @@ public abstract class Fragment implements Serializable {
      * @return the id
      */
     public Serializable getId() {
-        return id;
+        return row.id;
+    }
+
+    /**
+     * Clears the dirty state.
+     */
+    public void clearDirty() {
+        oldvalues = row.values.clone();
     }
 
     /**
@@ -217,6 +195,14 @@ public abstract class Fragment implements Serializable {
      * @throws StorageException
      */
     protected abstract State refetch() throws StorageException;
+
+    /**
+     * Resets the data for a fragment that was invalidated by deletion.
+     *
+     * @return the new state, {@link State#PRISTINE} or {@link State#ABSENT}
+     * @throws StorageException
+     */
+    protected abstract State refetchDeleted() throws StorageException;
 
     /**
      * Checks that access to the fragment is possible. Called internally before
@@ -234,13 +220,10 @@ public abstract class Fragment implements Serializable {
         case DELETED:
             break;
         case INVALIDATED_MODIFIED:
-            State newState = refetch();
-            // logStateTransition(newState);
-            state = newState;
+            state = refetch();
             break;
         case INVALIDATED_DELETED:
-            throw new ConcurrentModificationException(
-                    "Accessing a concurrently deleted value");
+            state = refetchDeleted();
         }
     }
 
@@ -250,18 +233,14 @@ public abstract class Fragment implements Serializable {
     protected void markModified() {
         switch (state) {
         case ABSENT:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
-            // logStateTransition(State.CREATED); // <---
+            context.setFragmentModified(this);
             state = State.CREATED;
             break;
         case INVALIDATED_MODIFIED:
             // can only happen if overwrite all invalidated (array)
             // fall through
         case PRISTINE:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
-            // logStateTransition(State.MODIFIED);
+            context.setFragmentModified(this);
             state = State.MODIFIED;
             break;
         case DETACHED:
@@ -278,32 +257,24 @@ public abstract class Fragment implements Serializable {
     /**
      * Marks the fragment deleted. Called after a remove.
      */
-    protected void markDeleted() {
+    protected void setDeleted() {
         switch (state) {
         case DETACHED:
             break;
         case ABSENT:
         case INVALIDATED_DELETED:
-            context.pristine.remove(id);
             context = null;
-            // logStateTransition(State.DETACHED);
             state = State.DETACHED;
             break;
         case CREATED:
-            context.modified.remove(id);
             context = null;
-            // logStateTransition(State.DETACHED);
             state = State.DETACHED;
             break;
         case PRISTINE:
         case INVALIDATED_MODIFIED:
-            context.pristine.remove(id);
-            context.modified.put(id, this);
-            // logStateTransition(State.DELETED);
             state = State.DELETED;
             break;
         case MODIFIED:
-            // logStateTransition(State.DELETED);
             state = State.DELETED;
             break;
         case DELETED:
@@ -312,63 +283,10 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Marks the fragment invalidated from modification.
-     * <p>
-     * Called when a database operation does non-tracked changes, which means
-     * that on access a refetch will be needed.
-     */
-    protected void markInvalidatedModified() {
-        switch (state) {
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            context.modified.remove(id);
-            context.pristine.put(id, this);
-            // fall through
-        case ABSENT:
-        case PRISTINE:
-            // logStateTransition(State.INVALIDATED_MODIFIED);
-            state = State.INVALIDATED_MODIFIED;
-            break;
-        case INVALIDATED_MODIFIED:
-        case INVALIDATED_DELETED:
-            break;
-        case DETACHED:
-            throw new RuntimeException(this.toString());
-        }
-    }
-
-    /**
-     * Marks the fragment invalidated from deletion.
-     * <p>
-     * Called when a database operation does a delete.
-     */
-    protected void markInvalidatedDeleted() {
-        switch (state) {
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            context.modified.remove(id);
-            context.pristine.put(id, this);
-            // fall through
-        case ABSENT:
-        case PRISTINE:
-            // logStateTransition(State.INVALIDATED_MODIFIED);
-            state = State.INVALIDATED_MODIFIED;
-            break;
-        case INVALIDATED_MODIFIED:
-        case INVALIDATED_DELETED:
-            break;
-        case DETACHED:
-            throw new RuntimeException(this.toString());
-        }
-    }
-
-    /**
-     * Detaches the fragment from its persistence context.
+     * Detaches the fragment from its persistence context. The caller makes sure
+     * that the fragment is removed from the context map.
      */
     protected void setDetached() {
-        // logStateTransition(State.DETACHED);
         state = State.DETACHED;
         context = null;
     }
@@ -381,7 +299,6 @@ public abstract class Fragment implements Serializable {
         switch (state) {
         case CREATED:
         case MODIFIED:
-            // logStateTransition(State.PRISTINE); // <---
             state = State.PRISTINE;
             break;
         case ABSENT:
@@ -396,51 +313,67 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Sets the fragment in the "invalidated from a modification" state. Called
-     * during post-commit invalidation.
+     * Sets the fragment in the "invalidated from a modification" state. This is
+     * called:
+     * <ul>
+     * <li>when a database operation does non-tracked changes, which means that
+     * on access a refetch will be needed,
+     * <li>during post-commit invalidation.
+     * </ul>
      */
     protected void setInvalidatedModified() {
         switch (state) {
         case ABSENT:
         case PRISTINE:
-            // logStateTransition(State.INVALIDATED_MODIFIED);
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
             state = State.INVALIDATED_MODIFIED;
             break;
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             break;
         case DETACHED:
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            // incoherent with the pristine map
             throw new RuntimeException(this.toString());
         }
     }
 
     /**
-     * Sets the fragment in the "invalidated from a deletion" state. Called
-     * during post-commit invalidation.
+     * Sets the fragment in the "invalidated from a deletion" state. This is
+     * called:
+     * <ul>
+     * <li>when a database operation does a delete,
+     * <li>during post-commit invalidation.
+     * </ul>
      */
     protected void setInvalidatedDeleted() {
         switch (state) {
         case ABSENT:
         case PRISTINE:
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
         case INVALIDATED_MODIFIED:
-            // logStateTransition(State.INVALIDATED_DELETED);
             state = State.INVALIDATED_DELETED;
             break;
         case INVALIDATED_DELETED:
             break;
         case DETACHED:
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            // incoherent with the pristine map
             throw new RuntimeException(this.toString());
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append("(row=");
+        buf.append(row);
+        buf.append(", state=");
+        buf.append(getState());
+        buf.append(')');
+        return buf.toString();
+    }
 }
 
 /**
@@ -463,23 +396,17 @@ class FragmentsMap extends HashMap<String, Fragment> {
  */
 class FragmentGroup {
 
-    public final SimpleFragment main;
-
     public final SimpleFragment hier;
 
     public final FragmentsMap fragments;
 
-    public FragmentGroup(SimpleFragment main, SimpleFragment hier,
-            FragmentsMap fragments) {
-        this.main = main;
+    public FragmentGroup(SimpleFragment hier, FragmentsMap fragments) {
         this.hier = hier;
         this.fragments = fragments;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + hier + ", " + main + ", "
-                + fragments + ')';
+        return getClass().getSimpleName() + '(' + hier + ", " + fragments + ')';
     }
-
 }

@@ -17,9 +17,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,59 +26,100 @@ import java.util.Set;
  * Records both modified and deleted fragments, as well as "parents modified"
  * fragments.
  */
-public class Invalidations {
+public class Invalidations implements Serializable {
 
-    public final Map<String, Set<Serializable>> modified = new HashMap<String, Set<Serializable>>();
+    private static final long serialVersionUID = 1L;
 
-    public final Map<String, Set<Serializable>> deleted = new HashMap<String, Set<Serializable>>();
+    /** Pseudo-table to use to notify about children invalidated. */
+    public static final String PARENT = "__PARENT__";
+
+    public static final int MODIFIED = 1;
+
+    public static final int DELETED = 2;
+
+    /** null when empty */
+    public Set<RowId> modified;
+
+    /** null when empty */
+    public Set<RowId> deleted;
 
     public boolean isEmpty() {
-        return modified.isEmpty() && deleted.isEmpty();
+        return modified == null && deleted == null;
     }
 
-    public Map<String, Set<Serializable>> getKindMap(int kind) {
-        if (kind == 1) {
+    public void clear() {
+        modified = null;
+        deleted = null;
+    }
+
+    public boolean contains(RowId rowId) {
+        // even if rowId or the maps contain a Row, only RowId has an equals()
+        // so things comparisons will be correct
+        return (modified != null && modified.contains(rowId))
+                || (deleted != null && deleted.contains(rowId));
+    }
+
+    /** only call this if it's to add at least one element in the set */
+    public Set<RowId> getKindSet(int kind) {
+        switch (kind) {
+        case MODIFIED:
+            if (modified == null) {
+                modified = new HashSet<RowId>();
+            }
             return modified;
-        } else if (kind == 2) {
+        case DELETED:
+            if (deleted == null) {
+                deleted = new HashSet<RowId>();
+            }
             return deleted;
-        } else {
-            throw new AssertionError();
+        }
+        throw new AssertionError();
+    }
+
+    public void add(Invalidations other) {
+        if (other.modified != null) {
+            addModified(other.modified);
+        }
+        if (other.deleted != null) {
+            addDeleted(other.deleted);
         }
     }
 
-    public void addModified(String tableName, Set<Serializable> ids) {
-        if (ids.isEmpty()) {
-            return;
+    public void addModified(RowId rowId) {
+        if (modified == null) {
+            modified = new HashSet<RowId>();
         }
-        Set<Serializable> set = modified.get(tableName);
-        if (set == null) {
-            set = new HashSet<Serializable>();
-            modified.put(tableName, set);
-        }
-        set.addAll(ids);
+        modified.add(rowId);
     }
 
-    public void addDeleted(String tableName, Set<Serializable> ids) {
-        if (ids.isEmpty()) {
-            return;
+    public void addModified(Set<RowId> rowIds) {
+        if (modified == null) {
+            modified = new HashSet<RowId>();
         }
-        Set<Serializable> set = deleted.get(tableName);
-        if (set == null) {
-            set = new HashSet<Serializable>();
-            deleted.put(tableName, set);
+        modified.addAll(rowIds);
+    }
+
+    public void addDeleted(RowId rowId) {
+        if (deleted == null) {
+            deleted = new HashSet<RowId>();
         }
-        set.addAll(ids);
+        deleted.add(rowId);
+    }
+
+    public void addDeleted(Set<RowId> rowIds) {
+        if (deleted == null) {
+            deleted = new HashSet<RowId>();
+        }
+        deleted.addAll(rowIds);
     }
 
     public void add(Serializable id, String[] tableNames, int kind) {
-        Map<String, Set<Serializable>> map = getKindMap(kind);
+        if (tableNames.length == 0) {
+            return;
+        }
+        Set<RowId> set = getKindSet(kind);
         for (String tableName : tableNames) {
-            Set<Serializable> set = map.get(tableName);
-            if (set == null) {
-                set = new HashSet<Serializable>();
-                map.put(tableName, set);
-            }
-            set.add(id);
+            set.add(new RowId(tableName, id));
         }
     }
 
@@ -88,16 +127,16 @@ public class Invalidations {
     public String toString() {
         StringBuilder sb = new StringBuilder(
                 this.getClass().getSimpleName() + '(');
-        if (!modified.isEmpty()) {
+        if (modified != null) {
             sb.append("modified=");
-            sb.append(modified.toString());
-            if (!deleted.isEmpty()) {
+            sb.append(modified);
+            if (deleted != null) {
                 sb.append(',');
             }
         }
-        if (!deleted.isEmpty()) {
+        if (deleted != null) {
             sb.append("deleted=");
-            sb.append(deleted.toString());
+            sb.append(deleted);
         }
         sb.append(')');
         return sb.toString();

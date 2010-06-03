@@ -17,19 +17,30 @@
 
 package org.nuxeo.ecm.core.storage;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * The bundling of a list and a total size.
- *
- * @author Florent Guillaume
+ * <p>
+ * The list MUST be {@link Serializable}.
  */
-public class PartialList<E> {
+public class PartialList<E> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public final List<E> list;
 
     public final long totalSize;
 
+    /**
+     * Constructs a partial list.
+     * <p>
+     * The list MUST be {@link Serializable}.
+     *
+     * @param list the list (MUST be {@link Serializable})
+     * @param totalSize the total size
+     */
     public PartialList(List<E> list, long totalSize) {
         this.list = list;
         this.totalSize = totalSize;

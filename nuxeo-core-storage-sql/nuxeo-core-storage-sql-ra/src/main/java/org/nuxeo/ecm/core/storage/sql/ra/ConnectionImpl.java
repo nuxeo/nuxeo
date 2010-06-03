@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -136,6 +137,10 @@ public class ConnectionImpl implements Session {
                     + this);
         }
         return session;
+    }
+
+    public Mapper getMapper() throws StorageException {
+        return getSession().getMapper();
     }
 
     public boolean isLive() {

@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,8 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
-import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
+import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
@@ -54,6 +53,10 @@ public class JDBCMapperLogger {
 
     public boolean isLogEnabled() {
         return log.isTraceEnabled();
+    }
+
+    public void error(Object message) {
+        log.error(message);
     }
 
     public void error(Object message, Throwable t) {
@@ -117,27 +120,15 @@ public class JDBCMapperLogger {
         log("  -> " + debugIds + end);
     }
 
-    public void logSQL(String sql, List<Column> columns, SimpleFragment row) {
+    public void logSQL(String sql, List<Column> columns, Row row) {
         List<Serializable> values = new ArrayList<Serializable>(columns.size());
         for (Column column : columns) {
-            String key = column.getKey();
-            Serializable value;
-            if (key.equals(Model.MAIN_KEY)) {
-                value = row.getId();
-            } else {
-                try {
-                    value = row.get(key);
-                } catch (StorageException e) {
-                    // cannot happen
-                    value = "ACCESSFAILED";
-                }
-            }
-            values.add(value);
+            values.add(row.get(column.getKey()));
         }
         logSQL(sql, values);
     }
 
-    public void logSQL(String sql, List<Serializable> values) {
+    public void logSQL(String sql, Collection<Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
         for (Serializable v : values) {
