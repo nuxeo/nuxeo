@@ -331,6 +331,90 @@ createdirs() {
 	fi
 }
 
+stop() {
+  if checkalive; then
+    kill `cat $PID`
+    max_count=100
+    count=0
+    while [ $count -le $max_count ]; do
+      if checkalive; then
+        /bin/echo -n "."
+        count=`expr $count + 1`
+        sleep 1 || exit 1
+      else
+        rm $PID
+        echo Nuxeo stopped.
+        return 0
+      fi
+    done
+    echo "Stoping process is taking too long - giving up. Check end of process `cat $PID`."
+  else
+    echo "Nuxeo is not running."
+  fi
+}
+
+start() {
+  if checkalive; then
+    die "Nuxeo is already running with pid `cat $PID`"
+  fi
+  createdirs
+  $CMD_START > $LOG 2>&1 &
+  NUXEO_PID=$!
+  echo $NUXEO_PID > $PID
+
+  # Trap common signals and relay them to the jboss process
+  trap "kill -HUP  `cat $PID`" HUP
+  trap "kill -TERM `cat $PID`" INT
+  trap "kill -QUIT `cat $PID`" QUIT
+  trap "kill -PIPE `cat $PID`" PIPE
+  trap "kill -TERM `cat $PID`" TERM
+  # Wait for "Server started"
+  /bin/echo -n "Starting Nuxeo... "
+  echo "(pressing Ctrl+C will interrupt starting process)"
+  max_count=300
+  count=0
+  exit=0
+  while [ $count -le $max_count ]; do
+    line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in")
+    if [ $? = 0 ]; then
+      countStatus=0
+      countActive=false
+      while read lineStatus; do
+        echo "$lineStatus" |grep "\[OSGiRuntimeService\] Nuxeo EP Started"
+        if [ $? = 0 ]; then
+          countActive=true
+        fi
+        if ! $countActive; then
+          continue
+        fi
+        echo "$lineStatus" | grep "======================================================================" > /dev/null
+        if [ $? = 0 ]; then
+          countStatus=`expr $countStatus + 1`
+        fi
+        if [ $countStatus -gt 0 ]; then
+          echo "$lineStatus"
+        fi
+        if [ $countStatus -eq 3 ]; then
+          break
+        fi          
+      done < "$LOG"
+      echo $line
+      exit 0
+    fi
+    /bin/echo -n "."
+    count=`expr $count + 1`
+    sleep 1 || exit=1
+    if [ $exit -eq 1 ]; then
+      rm $PID 2>/dev/null
+      exit 1
+    fi
+  done
+  # Startup took over 5 minutes
+  echo "Starting process is taking too long - giving up."
+  # Tell java to stop working
+  kill `cat $PID` && wait `cat $PID` && rm $PID
+}
+
 case "$1" in
 	status)
 		if checkalive; then
@@ -349,61 +433,8 @@ case "$1" in
 		echo $NUXEO_PID > $PID
 		;;
 	start)
-		if checkalive; then
-			die "Nuxeo is already running with pid `cat $PID`"
-		fi
-		createdirs
-		$CMD_START > $LOG 2>&1 &
-		NUXEO_PID=$!
-		echo $NUXEO_PID > $PID
-
-		# Trap common signals and relay them to the jboss process
-		trap "kill -HUP  `cat $PID`" HUP
-		trap "kill -TERM `cat $PID`" INT
-		trap "kill -QUIT `cat $PID`" QUIT
-		trap "kill -PIPE `cat $PID`" PIPE
-		trap "kill -TERM `cat $PID`" TERM
-		# Wait for "Server started"
-		/bin/echo -n "Starting Nuxeo... "
-		echo "(pressing Ctrl+C will interrupt starting process)"
-		max_count=300
-		count=0
-		while [ $count -le $max_count ]; do
-			line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in")
-			if [ $? = 0 ]; then
-        countStatus=0
-        countActive=false
-        while read lineStatus; do
-          echo "$lineStatus" |grep "\[OSGiRuntimeService\] Nuxeo EP Started"
-          if [ $? = 0 ]; then
-            countActive=true
-          fi
-          if ! $countActive; then
-            continue
-          fi
-          echo "$lineStatus" | grep "======================================================================" > /dev/null
-          if [ $? = 0 ]; then
-            countStatus=`expr $countStatus + 1`
-          fi
-          if [ $countStatus -gt 0 ]; then
-            echo "$lineStatus"
-          fi
-          if [ $countStatus -eq 3 ]; then
-            break
-          fi          
-			  done < "$LOG"
-				echo $line
-				exit 0
-			fi
-			/bin/echo -n "."
-			count=`expr $count + 1`
-			sleep 1 || exit 1
-		done
-		# Startup took over 5 minutes
-		echo "Starting process is taking too long - giving up."
-		# Tell java to stop working
-		kill `cat $PID`
-		;;
+	  start
+	  ;;
 	console)
 		if checkalive; then
 			die "Nuxeo is already running with pid `cat $PID`"
@@ -413,13 +444,12 @@ case "$1" in
 		$CMD_START
 		;;
 	stop)
-		if checkalive; then
-			kill `cat $PID`
-			rm $PID
-		else
-			echo "Nuxeo is not running."
-		fi
+	  stop
 		;;
+  restart)
+    stop
+    start
+    ;;
 	*)
 		echo "Usage: nuxeoctl (startbg|start|console|stop|status)"
 		;;
