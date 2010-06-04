@@ -1445,7 +1445,8 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public boolean supportsWith() {
-        return supportsWith;
+        return false; // don't activate until proven useful
+        // return supportsWith;
     }
 
     @Override
