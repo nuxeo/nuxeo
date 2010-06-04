@@ -15,10 +15,10 @@ target
 *.gpd.*
 *cpJar*
 build.properties
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/result-*.html
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.conf
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/user-extensions.js
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/ffprofile/prefs.js
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/selenium-server.jar
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/funkload/*.pyc
-nuxeo-dam-distribution/nuxeo-dam-ear/ftest/funkload/input-files.txt
+nuxeo-dam-distribution/ftest/selenium/result-*.html
+nuxeo-dam-distribution/ftest/selenium/run.conf
+nuxeo-dam-distribution/ftest/selenium/user-extensions.js
+nuxeo-dam-distribution/ftest/selenium/ffprofile/prefs.js
+nuxeo-dam-distribution/ftest/selenium/selenium-server.jar
+nuxeo-dam-distribution/ftest/funkload/*.pyc
+nuxeo-dam-distribution/ftest/funkload/input-files.txt
