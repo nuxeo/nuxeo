@@ -235,7 +235,9 @@
                   file="${project.build.testOutputDirectory}/log4j.properties.bak"
                   tofile="${project.build.testOutputDirectory}/log4j.properties" />
                 <!-- Wait for server to start -->
-                <sleep seconds="4" />
+                <waitfor maxwait="30" maxwaitunit="second">
+                  <socket server="localhost" port="8181" />
+                </waitfor>
               </tasks>
             </configuration>
             <goals>
