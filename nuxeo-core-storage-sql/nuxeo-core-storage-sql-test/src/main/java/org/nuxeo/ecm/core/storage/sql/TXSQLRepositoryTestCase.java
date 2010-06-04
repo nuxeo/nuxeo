@@ -52,6 +52,9 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
         if (database instanceof DatabaseH2) {
             String contrib = "OSGI-INF/test-pooling-h2-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
+        } else if (database instanceof DatabasePostgreSQL) {
+            String contrib = "OSGI-INF/test-pooling-postgres-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
         } else {
             super.deployRepositoryContrib();
         }
