@@ -439,7 +439,7 @@ public class NXQLQueryMaker implements QueryMaker {
             try {
                 whereBuilder = new WhereBuilder(database, model, pathResolver,
                         dialect, hierTable, hierId, dataHierTable, dataHierId,
-                        docKind == DocKind.PROXY, true);
+                        docKind == DocKind.PROXY);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
             }
@@ -540,6 +540,7 @@ public class NXQLQueryMaker implements QueryMaker {
              */
 
             if (orderBy == null && sqlQuery.orderBy != null) {
+                whereBuilder.aliasColumns = doUnion;
                 whereBuilder.buf.setLength(0);
                 sqlQuery.orderBy.accept(whereBuilder);
                 orderBy = whereBuilder.buf.toString();
@@ -1108,7 +1109,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private final boolean isProxies;
 
-        private final boolean aliasColumns;
+        private boolean aliasColumns;
 
         // internal fields
 
@@ -1125,7 +1126,7 @@ public class NXQLQueryMaker implements QueryMaker {
         public WhereBuilder(Database database, Model model,
                 PathResolver pathResolver, Dialect dialect, Table hierTable,
                 String hierId, Table dataHierTable, String dataHierId,
-                boolean isProxies, boolean aliasColumns) {
+                boolean isProxies) {
             this.pathResolver = pathResolver;
             this.model = model;
             this.dialect = dialect;
@@ -1135,7 +1136,6 @@ public class NXQLQueryMaker implements QueryMaker {
             this.dataHierTable = dataHierTable;
             this.dataHierId = dataHierId;
             this.isProxies = isProxies;
-            this.aliasColumns = aliasColumns;
         }
 
         public Column findColumn(String name, boolean allowArray,

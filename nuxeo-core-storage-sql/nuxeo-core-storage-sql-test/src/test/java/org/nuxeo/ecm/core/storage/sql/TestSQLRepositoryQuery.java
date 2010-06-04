@@ -214,6 +214,19 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         map = it.next();
         assertEquals("testfile4Title", map.get("dc:title"));
         res.close();
+
+        // check content with no proxies (simpler query with no UNION ALL)
+        query = "SELECT ecm:uuid, dc:title FROM File WHERE ecm:isProxy = 0 ORDER BY dc:title";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        it = res.iterator();
+        map = it.next();
+        assertEquals("testfile1_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile2_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile4Title", map.get("dc:title"));
+        res.close();
     }
 
     public void testSelectColumnsSameName() throws Exception {
