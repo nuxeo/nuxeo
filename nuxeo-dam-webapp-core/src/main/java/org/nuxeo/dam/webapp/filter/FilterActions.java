@@ -215,6 +215,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     public PagedDocumentsProvider getResultsProvider(String queryModelName)
             throws ClientException, ResultsProviderFarmUserException {
         try {
+
             return getResultsProvider(queryModelName, null);
         } catch (SortNotSupportedException e) {
             throw new ClientException("unexpected exception", e);
@@ -234,6 +235,9 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
             throw new SortNotSupportedException();
         }
 
+        if (sortInfo == null) {
+            sortInfo = new SortInfo("dc:title", true);
+        }
         PagedDocumentsProvider provider = model.getResultsProvider(
                 documentManager, null, sortInfo);
         provider.setName(queryModelName);
