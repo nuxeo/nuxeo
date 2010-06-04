@@ -40,7 +40,6 @@ public class TestSQLBackendNet extends TestSQLBackend {
         // "OSGI-INF/test-repo-core-types-contrib.xml");
         remoteVCS = new RemoteVCS("test");
         remoteVCS.start();
-        Thread.sleep(2 * 1000); // wait 2s for server startup
     }
 
     protected void deployRepositoryContrib() throws Exception {
@@ -79,9 +78,24 @@ public class TestSQLBackendNet extends TestSQLBackend {
     public static class RemoteVCS extends Thread {
         protected final String repositoryName;
 
+        private final Object monitor = new String();
+
         public RemoteVCS(String repositoryName) {
             super("Nuxeo-VCS-Remote");
             this.repositoryName = repositoryName;
+        }
+
+        @Override
+        public void start() {
+            synchronized (monitor) {
+                super.start();
+                // wait until ready
+                try {
+                    monitor.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         @Override
@@ -97,6 +111,10 @@ public class TestSQLBackendNet extends TestSQLBackend {
                         repositoryName);
                 // init root
                 repository.getSession(null).close();
+                // notify ready
+                synchronized (monitor) {
+                    monitor.notify();
+                }
                 // now wait until interrupted by caller
                 try {
                     while (true) {
