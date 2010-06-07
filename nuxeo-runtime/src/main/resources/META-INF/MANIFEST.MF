@@ -18,24 +18,17 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.model.impl,
  org.nuxeo.runtime.osgi,
  org.nuxeo.runtime.remoting,
- org.nuxeo.runtime.remoting.net,
- org.nuxeo.runtime.remoting.net.impl,
- org.nuxeo.runtime.remoting.net.multicast,
  org.nuxeo.runtime.remoting.transporter,
  org.nuxeo.runtime.services.adapter,
  org.nuxeo.runtime.services.adapter.extension,
  org.nuxeo.runtime.services.deployment,
  org.nuxeo.runtime.services.event,
  org.nuxeo.runtime.services.streaming,
- org.nuxeo.runtime.streaming,
  org.nuxeo.runtime.transaction,
  org.nuxeo.runtime.util
 Bundle-ClassPath: .
-Require-Bundle: commons-jexl.commons-jexl,
- commons-io.commons-io,
- system.bundle,
- org.nuxeo.common;visibility:=reexport,
- org.nuxeo.logging;visibility:=reexport
+Require-Bundle: system.bundle;visibility:=reexport,
+ org.nuxeo.common;visibility:=reexport
 Eclipse-LazyStart: true
 Eclipse-ExtensibleAPI: true
 Eclipse-BuddyPolicy: dependent, global
