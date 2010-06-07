@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,10 +36,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
@@ -47,8 +49,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.ConditionalStatement;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for
@@ -152,6 +154,10 @@ public class SQLInfo {
 
     private final boolean separateMainTable = false;
 
+    protected Map<String, List<SQLStatement>> sqlStatements;
+
+    protected Map<String, Serializable> sqlStatementsProperties;
+
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
      * {@link Dialect}.
@@ -209,20 +215,6 @@ public class SQLInfo {
 
     public Database getDatabase() {
         return database;
-    }
-
-    // ----- cluster -----
-
-    public String getCleanupClusterNodesSql() {
-        return dialect.getCleanupClusterNodesSql(model, database);
-    }
-
-    public String getCreateClusterNodeSql() {
-        return dialect.getCreateClusterNodeSql(model, database);
-    }
-
-    public String getRemoveClusterNodeSql() {
-        return dialect.getRemoveClusterNodeSql(model, database);
     }
 
     // ----- select -----
@@ -524,7 +516,15 @@ public class SQLInfo {
          */
         if (!model.getRepositoryDescriptor().fulltextDisabled) {
             table = database.getTable(model.FULLTEXT_TABLE_NAME);
-            for (String indexName : model.getFulltextInfo().indexNames) {
+            ModelFulltext fulltextInfo = model.getFulltextInfo();
+            if (fulltextInfo.indexNames.size() > 1
+                    && !dialect.supportsMultipleFulltextIndexes()) {
+                String msg = String.format(
+                        "SQL database supports only one fulltext index, but %d are configured: %s",
+                        fulltextInfo.indexNames.size(), fulltextInfo.indexNames);
+                throw new StorageException(msg);
+            }
+            for (String indexName : fulltextInfo.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 int ftic = dialect.getFulltextIndexedColumns();
                 if (ftic == 1) {
@@ -1158,14 +1158,22 @@ public class SQLInfo {
                 whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
-    /**
-     * Gets the statements to execute (stored procedures and triggers).
-     */
-    public Collection<ConditionalStatement> getConditionalStatements() {
-        return dialect.getConditionalStatements(model, database);
+    public void initSQLStatements() throws IOException {
+        sqlStatements = SQLStatement.read(dialect.getSQLStatementsFilename());
+        sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
+                database);
     }
 
-    public Collection<ConditionalStatement> getTestConditionalStatements() {
-        return dialect.getTestConditionalStatements(model, database);
+    /**
+     * Executes the SQL statements for the given category.
+     */
+    public void executeSQLStatements(String category, JDBCConnection jdbc)
+            throws SQLException {
+        List<SQLStatement> statements = sqlStatements.get(category);
+        if (statements != null) {
+            SQLStatement.execute(statements, sqlStatementsProperties,
+                    jdbc);
+        }
     }
+
 }

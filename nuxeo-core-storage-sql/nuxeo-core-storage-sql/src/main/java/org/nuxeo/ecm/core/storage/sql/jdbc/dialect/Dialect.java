@@ -28,9 +28,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -244,6 +244,13 @@ public abstract class Dialect {
      * @return 0 for none, 1 for the synthetic one, 2 for the individual ones
      */
     public abstract int getFulltextIndexedColumns();
+
+    /**
+     * SQL Server supports only one fulltext index.
+     */
+    public boolean supportsMultipleFulltextIndexes() {
+        return true;
+    }
 
     /**
      * Does the fulltext synthetic column have to be materialized.
@@ -498,13 +505,14 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets the additional statements to execute (stored procedures and
-     * triggers) when creating the database.
+     * Gets the name of the file containing the SQL statements.
      */
-    public abstract Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database);
+    public abstract String getSQLStatementsFilename();
 
-    public abstract Collection<ConditionalStatement> getTestConditionalStatements(
+    /**
+     * Gets the properties to use with the SQL statements.
+     */
+    public abstract Map<String, Serializable> getSQLStatementsProperties(
             Model model, Database database);
 
     /**
@@ -521,27 +529,6 @@ public abstract class Dialect {
      */
     public boolean isClusteringDeleteNeeded() {
         return false;
-    }
-
-    /**
-     * Gets the SQL to cleanup info about old (crashed) cluster nodes.
-     */
-    public String getCleanupClusterNodesSql(Model model, Database database) {
-        return null;
-    }
-
-    /**
-     * Gets the SQL to create a cluster node.
-     */
-    public String getCreateClusterNodeSql(Model model, Database database) {
-        return null;
-    }
-
-    /**
-     * Gets the SQL to remove a node from the cluster.
-     */
-    public String getRemoveClusterNodeSql(Model model, Database database) {
-        return null;
     }
 
     /**

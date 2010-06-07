@@ -47,7 +47,7 @@ public class JDBCConnection {
     private XAConnection xaconnection;
 
     /** The actual connection. */
-    Connection connection;
+    public Connection connection;
 
     protected XAResource xaresource;
 
@@ -58,7 +58,7 @@ public class JDBCConnection {
     private final long instanceNumber = instanceCounter.incrementAndGet();
 
     // for debug
-    protected final JDBCMapperLogger logger = new JDBCMapperLogger(
+    public final JDBCMapperLogger logger = new JDBCMapperLogger(
             instanceNumber);
 
     /**

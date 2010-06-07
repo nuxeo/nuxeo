@@ -1418,6 +1418,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testFulltextUpgrade() throws Exception {
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            System.out.println("Skipping multi-fulltext test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -1443,13 +1449,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         root = session.getRootNode();
         node = session.getChildNode(root, "foo", false);
         assertNotNull(node);
-        node.setSingleProperty("tst:title", "bar");
+        node.setSingleProperty("tst:title", "one two three testing");
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         // check fulltext search works
         PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"bar\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"testing\"",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
 
@@ -1459,7 +1465,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             return;
         }
         res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = \"bar\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = \"testing\"",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
     }

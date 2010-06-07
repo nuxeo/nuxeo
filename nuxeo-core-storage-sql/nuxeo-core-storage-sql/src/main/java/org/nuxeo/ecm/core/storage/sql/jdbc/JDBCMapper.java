@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
@@ -60,7 +61,6 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.ConditionalStatement;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.runtime.api.Framework;
@@ -112,16 +112,20 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public void createDatabase() throws StorageException {
         try {
-            Collection<ConditionalStatement> statements = sqlInfo.getConditionalStatements();
-            executeConditionalStatements(statements, true);
+            sqlInfo.initSQLStatements();
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
+        try {
+            sqlInfo.executeSQLStatements("beforeTableCreation", this);
             if (debugTestUpgrade) {
-                executeConditionalStatements(
-                        sqlInfo.getTestConditionalStatements(), true);
+                sqlInfo.executeSQLStatements("testUpgrade", this);
             }
             createTables();
-            executeConditionalStatements(statements, false);
+            sqlInfo.executeSQLStatements("afterTableCreation", this);
             sqlInfo.dialect.performAdditionalStatements(connection);
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException(e);
         }
     }
@@ -272,63 +276,18 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return tableNames;
     }
 
-    protected void executeConditionalStatements(
-            Collection<ConditionalStatement> statements, boolean early)
-            throws SQLException {
-        Statement st = connection.createStatement();
-        for (ConditionalStatement s : statements) {
-            if (s.early != early) {
-                continue;
-            }
-            boolean doPre;
-            if (s.doPre != null) {
-                doPre = s.doPre.booleanValue();
-            } else {
-                logger.log(s.checkStatement);
-                ResultSet rs = st.executeQuery(s.checkStatement);
-                if (rs.next()) {
-                    // already present
-                    logger.log("  -> (present)");
-                    doPre = true;
-                } else {
-                    doPre = false;
-                }
-            }
-            if (doPre) {
-                logger.log(s.preStatement);
-                st.execute(s.preStatement);
-            }
-            logger.log(s.statement);
-            st.execute(s.statement);
-        }
-        st.close();
-    }
-
     public void createClusterNode() throws StorageException {
         try {
-            Statement st = connection.createStatement();
-            String sql = sqlInfo.getCleanupClusterNodesSql();
-            logger.log(sql);
-            int n = st.executeUpdate(sql);
-            if (logger.isLogEnabled()) {
-                logger.logCount(n);
-            }
-            sql = sqlInfo.getCreateClusterNodeSql();
-            logger.log(sql);
-            st.execute(sql);
-            st.close();
+            sqlInfo.executeSQLStatements("addClusterNode", this);
         } catch (SQLException e) {
+            checkConnectionReset(e);
             throw new StorageException(e);
         }
     }
 
     public void removeClusterNode() throws StorageException {
         try {
-            Statement st = connection.createStatement();
-            String sql = sqlInfo.getRemoveClusterNodeSql();
-            logger.log(sql);
-            st.execute(sql);
-            st.close();
+            sqlInfo.executeSQLStatements("removeClusterNode", this);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException(e);

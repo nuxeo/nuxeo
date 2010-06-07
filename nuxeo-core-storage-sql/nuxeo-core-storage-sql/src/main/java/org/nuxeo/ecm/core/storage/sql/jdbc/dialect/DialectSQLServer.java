@@ -25,11 +25,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -41,7 +42,6 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -243,6 +243,12 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public boolean supportsMultipleFulltextIndexes() {
+        // With SQL Server, only one full-text index is allowed per table...
+        return false;
+    }
+
+    @Override
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, Table table, List<Column> columns,
             Model model) {
@@ -364,207 +370,23 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database) {
-        String idType;
-        switch (model.idGenPolicy) {
-        case APP_UUID:
-            idType = "NVARCHAR(36)";
-            break;
-        case DB_IDENTITY:
-            idType = "INTEGER";
-            break;
-        default:
-            throw new AssertionError(model.idGenPolicy);
-        }
-
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                "IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL DROP TRIGGER dbo.nxTrigCascadeDelete", //
-                "CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy] " //
-                        + "INSTEAD OF DELETE AS " //
-                        + "BEGIN" //
-                        + "  SET NOCOUNT ON;" //
-                        + "  WITH subtree(id, parentid) AS (" //
-                        + "    SELECT id, parentid" //
-                        + "    FROM deleted" //
-                        + "  UNION ALL" //
-                        + "    SELECT h.id, h.parentid" //
-                        + "    FROM [hierarchy] h" //
-                        + "    JOIN subtree ON subtree.id = h.parentid" //
-                        + "  )" //
-                        + "  DELETE FROM [hierarchy]" //
-                        + "    FROM [hierarchy] h" //
-                        + "    JOIN subtree" //
-                        + "    ON subtree.id = h.id; " //
-                        + "END" //
-        ));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                "IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL DROP PROCEDURE dbo.NX_CLUSTER_INVAL", //
-                String.format(
-                        "CREATE PROCEDURE NX_CLUSTER_INVAL(@i %s, @f VARCHAR(8000), @k TINYINT) " //
-                                + "AS " //
-                                + "BEGIN" //
-                                + "  DECLARE @nid SMALLINT;" //
-                                + "  DECLARE @cur CURSOR;" //
-                                + "  SET @cur = CURSOR FAST_FORWARD FOR" //
-                                + "    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @@SPID;" //
-                                + "  OPEN @cur;" //
-                                + "  FETCH FROM @cur INTO @nid;" //
-                                + "  WHILE @@FETCH_STATUS = 0 BEGIN" //
-                                + "    INSERT INTO [cluster_invals] ([nodeid], [id], [fragments], [kind]) VALUES (@nid, @i, @f, @k) "
-                                + "    FETCH FROM @cur INTO @nid;" //
-                                + "  END;" //
-                                + "  CLOSE @cur; " //
-                                + "END" //
-                        , idType)));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                "IF OBJECT_ID('dbo.NX_ACCESS_ALLOWED', 'FN') IS NOT NULL DROP FUNCTION dbo.NX_ACCESS_ALLOWED", //
-                String.format(
-                        "CREATE FUNCTION NX_ACCESS_ALLOWED" //
-                                + "(@id %s, @users NVARCHAR(4000), @perms NVARCHAR(4000)) " //
-                                + "RETURNS TINYINT AS " //
-                                + "BEGIN" //
-                                + "  DECLARE @allusers NVARCHAR(4000);" //
-                                + "  DECLARE @allperms NVARCHAR(4000);" //
-                                + "  DECLARE @first TINYINT;" //
-                                + "  DECLARE @curid %<s;" //
-                                + "  DECLARE @newid %<s;" //
-                                + "  DECLARE @gr TINYINT;" //
-                                + "  DECLARE @pe VARCHAR(1000);" //
-                                + "  DECLARE @us VARCHAR(1000);" //
-                                + "  SET @allusers = N'|' + @users + N'|';" //
-                                + "  SET @allperms = N'|' + @perms + N'|';" //
-                                + "  SET @first = 1;" //
-                                + "  SET @curid = @id;" //
-                                + "  WHILE @curid IS NOT NULL BEGIN" //
-                                + "    DECLARE @cur CURSOR;" //
-                                + "    SET @cur = CURSOR FAST_FORWARD FOR" //
-                                + "      SELECT [grant], [permission], [user] FROM [acls]" //
-                                + "      WHERE [id] = @curid ORDER BY [pos];" //
-                                + "    OPEN @cur;" //
-                                + "    FETCH FROM @cur INTO @gr, @pe, @us;" //
-                                + "    WHILE @@FETCH_STATUS = 0 BEGIN" //
-                                + "      IF @allusers LIKE (N'%%|' + @us + N'|%%')" //
-                                + "        AND @allperms LIKE (N'%%|' + @pe + N'|%%')" //
-                                + "      BEGIN" //
-                                + "        CLOSE @cur;" //
-                                + "        RETURN @gr;" //
-                                + "      END;" //
-                                + "      FETCH FROM @cur INTO @gr, @pe, @us;" //
-                                + "    END;" //
-                                + "    CLOSE @cur;" //
-                                + "    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);" //
-                                + "    IF @first = 1 AND @newid IS NULL BEGIN" //
-                                + "      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);" //
-                                + "    END;" //
-                                + "    SET @first = 0;" //
-                                + "    SET @curid = @newid;" //
-                                + "  END;" //
-                                + "  RETURN 0; " //
-                                + "END" //
-                        , idType)));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                "IF OBJECT_ID('dbo.NX_IN_TREE', 'FN') IS NOT NULL DROP FUNCTION dbo.NX_IN_TREE", //
-                String.format(
-                        "CREATE FUNCTION NX_IN_TREE(@id %s, @baseid %<s) " //
-                                + "RETURNS TINYINT AS " //
-                                + "BEGIN" //
-                                + "  DECLARE @curid %<s;" //
-                                + "  IF @baseid IS NULL OR @id IS NULL OR @baseid = @id RETURN 0;" //
-                                + "  SET @curid = @id;" //
-                                + "  WHILE @curid IS NOT NULL BEGIN" //
-                                + "    SET @curid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);" //
-                                + "    IF @curid = @baseid RETURN 1;" //
-                                + "  END;" //
-                                + "  RETURN 0;" //
-                                + "END" //
-                        , idType)));
-
-        if (!fulltextDisabled) {
-            statements.add(new ConditionalStatement( //
-                    true, // early
-                    null, // do a check
-                    // strange inverted condition because this is designed to
-                    // test drops
-                    String.format(
-                            "IF EXISTS(SELECT name FROM sys.fulltext_catalogs WHERE name = '%s') "
-                                    + "SELECT * FROM sys.tables WHERE 1 = 0 "
-                                    + "ELSE SELECT 1", //
-                            fulltextCatalog), //
-                    String.format("CREATE FULLTEXT CATALOG [%s]",
-                            fulltextCatalog), //
-                    "SELECT 1"));
-        }
-
-        return statements;
+    public String getSQLStatementsFilename() {
+        return "nuxeovcs/sqlserver.sql.txt";
     }
 
     @Override
-    public Collection<ConditionalStatement> getTestConditionalStatements(
-            Model model, Database database) {
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                // here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test
-                // compatibility
-                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR(36) NOT NULL, TITLE NVARCHAR(MAX) NULL)"));
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
-        return statements;
+    public Map<String, Serializable> getSQLStatementsProperties(Model model,
+            Database database) {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("idType", "NVARCHAR(36)");
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextCatalog", fulltextCatalog);
+        return properties;
     }
 
     @Override
     public boolean isClusteringSupported() {
         return true;
-    }
-
-    @Override
-    public String getCleanupClusterNodesSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        return String.format("DELETE FROM N FROM %s N WHERE"
-                + "  HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1"
-                + "  AND NOT EXISTS(" //
-                + "    SELECT 1 FROM sys.dm_exec_sessions S WHERE" //
-                + "      S.is_user_process = 1 AND N.%s = S.session_id)", //
-                cln.getQuotedName(), clnid.getQuotedName());
-    }
-
-    @Override
-    public String getCreateClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
-        return String.format(
-                "INSERT INTO %s (%s, %s) VALUES (@@SPID, CURRENT_TIMESTAMP)",
-                cln.getQuotedName(), clnid.getQuotedName(),
-                clncr.getQuotedName());
-    }
-
-    @Override
-    public String getRemoveClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        return String.format("DELETE FROM %s WHERE %s = @@SPID",
-                cln.getQuotedName(), clnid.getQuotedName());
     }
 
     @Override
