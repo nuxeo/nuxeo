@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Platform Imaging API
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.api;singleton=true
 Bundle-Vendor: Nuxeo
-Eclipse-LazyStart: true
+Eclipse-LazyStart: false
 Require-Bundle: org.nuxeo.ecm.core.api
 Export-Package: org.nuxeo,
  org.nuxeo.ecm.platform,

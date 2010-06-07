@@ -34,3 +34,4 @@ Bundle-ClassPath: .,
  lib/mlibwrapper_jai.jar,
  lib/ij.jar
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.picture.web
+Eclipse-RegisterBuddy: org.nuxeo.ecm.platform.filemanager.core
