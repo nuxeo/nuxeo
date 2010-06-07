@@ -36,14 +36,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * @author Thierry Delprat
  *
  */
-public class DefaultDocumentModelFactory implements ImporterDocumentModelFactory {
-
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#isTargetDocumentModelFolderish(org.nuxeo.ecm.platform.importer.base.SourceNode)
-     */
-    public boolean isTargetDocumentModelFolderish(SourceNode node) {
-        return node.isFolderish();
-    }
+public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
     /* (non-Javadoc)
      * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#createFolderishNode(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.platform.importer.base.SourceNode)
@@ -98,15 +91,6 @@ public class DefaultDocumentModelFactory implements ImporterDocumentModelFactory
         }
         doc = session.createDocument(doc);
         return doc;
-    }
-
-    protected String getValidNameFromFileName(String fileName) {
-        String name = IdUtils.generateId(fileName, "-", true, 100);
-        name = name.replace("'", "");
-        name = name.replace("(", "");
-        name = name.replace(")", "");
-        name = name.replace("+", "");
-        return name;
     }
 
     /** Modify this to get right mime types depending on the file input */

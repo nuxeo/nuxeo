@@ -192,8 +192,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected void doRun() throws Exception {
 
-        targetContainer = getCoreSession().getDocument(
-                new PathRef(importWritePath));
+        targetContainer = getTargetContainer();
 
         nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
 
@@ -265,6 +264,24 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         for (String k : nbCreatedDocsByThreads.keySet()) {
             log.info(k + " --> " + nbCreatedDocsByThreads.get(k));
         }
+    }
+
+    protected DocumentModel getTargetContainer() throws Exception {
+        if (targetContainer == null) {
+            targetContainer  = createTargetContainer();
+        }
+        return targetContainer;
+    }
+
+    /**
+     * Creates the target container where the import will be done.
+     * Can be overridden in subclasses.
+     * @return
+     * @throws Exception
+     */
+    protected DocumentModel createTargetContainer() throws Exception {
+        return getCoreSession().getDocument(
+                new PathRef(importWritePath));
     }
 
     public ImporterThreadingPolicy getThreadPolicy() {

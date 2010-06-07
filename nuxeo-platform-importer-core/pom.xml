@@ -25,7 +25,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-api</artifactId>
-    </dependency>     
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
