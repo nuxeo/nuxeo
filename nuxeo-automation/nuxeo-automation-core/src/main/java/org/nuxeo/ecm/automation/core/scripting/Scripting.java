@@ -85,6 +85,7 @@ public class Scripting {
         map.put("Session", ctx.getCoreSession());
         map.put("Principal", ctx.getPrincipal());
         map.put("Env", Framework.getProperties());
+        map.put("Fn", Functions.INSTANCE);
         if (input instanceof DocumentModel) {
             map.put("Document", new DocumentWrapper(ctx.getCoreSession(), (DocumentModel)input));
         }
