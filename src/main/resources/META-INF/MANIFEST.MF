@@ -16,6 +16,6 @@ Provide-Package: org.nuxeo.common,
  org.nuxeo.runtime.util
 Nuxeo-Require: system.bundle;reprovide=true,
  org.nuxeo.logging;optional=true;reprovide=true
-Require-Bundle: org.apache.xerces;visibility:=reexport,
- org.dom4j;visibility:=reexport,
- org.apache.commons.logging;reprovide=true
+Require-Bundle: org.apache.commons.logging;reprovide=true,
+ xerces.xmlParserAPIs,
+ xerces.Impl
