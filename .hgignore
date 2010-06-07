@@ -7,3 +7,7 @@ bin
 target
 *~
 *.orig
+*.iml
+*.ipr
+*.iws
+
