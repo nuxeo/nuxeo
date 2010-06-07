@@ -28,6 +28,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -83,6 +84,7 @@ public class Scripting {
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
         map.put("Principal", ctx.getPrincipal());
+        map.put("Env", Framework.getProperties());
         if (input instanceof DocumentModel) {
             map.put("Document", new DocumentWrapper(ctx.getCoreSession(), (DocumentModel)input));
         }
