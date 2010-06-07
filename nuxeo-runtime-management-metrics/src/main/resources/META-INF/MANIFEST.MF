@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Metrics
+Bundle-SymbolicName: org.nuxeo.runtime.management.metrics;singleton:=true
+Require-Bundle: org.nuxeo.runtime,
+ org.javasimon.core,
+ org.javasimon.jmx,
+ com.thoughtworks.xstream,
+ org.eclipse.osgi
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/runtime-management-metrics-component.xml
+Nuxeo-Require: org.nuxeo.runtime
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+
