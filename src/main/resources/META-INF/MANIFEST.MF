@@ -17,4 +17,5 @@ Provide-Package: org.nuxeo.common,
 Nuxeo-Require: system.bundle;reprovide=true,
  org.nuxeo.logging;optional=true;reprovide=true
 Require-Bundle: org.apache.xerces;visibility:=reexport,
- org.nuxeo.logging;visibility:=reexport
+ org.dom4j;visibility:=reexport,
+ org.apache.commons.logging;reprovide=true
