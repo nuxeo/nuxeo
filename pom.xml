@@ -1623,6 +1623,21 @@
         <artifactId>oauth-provider</artifactId>
         <version>20090531</version>
       </dependency>
+      <dependency>
+	<groupId>org.javasimon</groupId>
+	<artifactId>javasimon-core</artifactId>
+	<version>2.3.0</version>
+      </dependency>
+      <dependency>
+	<groupId>org.javasimon</groupId>
+	<artifactId>javasimon-jmx</artifactId>
+	<version>2.3.0</version>
+      </dependency>
+      <dependency>
+	<groupId>org.javasimon</groupId>
+	<artifactId>javasimon-jdbc3</artifactId>
+	<version>2.3.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
