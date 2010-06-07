@@ -70,5 +70,10 @@
       <artifactId>ejb-api</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.nuxeo.runtime</groupId>
+    	<artifactId>nuxeo-runtime-management-metrics</artifactId>
+    	<version>1.6.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
