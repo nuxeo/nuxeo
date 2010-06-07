@@ -25,6 +25,7 @@
     <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-webapp-override</module>
     <module>nuxeo-dam-lang</module>
+    <module>nuxeo-dam-importer</module>
   </modules>
 
   <properties>
@@ -136,6 +137,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-categorization-subjects</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-importer-jaxrs</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
 
