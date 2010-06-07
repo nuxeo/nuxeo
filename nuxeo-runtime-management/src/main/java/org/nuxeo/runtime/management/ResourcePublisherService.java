@@ -37,6 +37,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
@@ -369,8 +370,13 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        BundleContext bundleContext = context.getRuntimeContext().getBundle().getBundleContext();
+        if (bundleContext == null) {
+            log.warn("Cannot register framework listener, not correctly initialized");
+            return;
+        }
         serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
+        bundleContext.addFrameworkListener(new FrameworkListener() {
             public void frameworkEvent(FrameworkEvent event) {
                 if(event.getType() != FrameworkEvent.STARTED) {
                     return;
