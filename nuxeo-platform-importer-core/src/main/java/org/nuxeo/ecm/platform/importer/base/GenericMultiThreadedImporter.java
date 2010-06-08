@@ -109,12 +109,15 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     public GenericMultiThreadedImporter(SourceNode sourceNode,
             String importWritePath, Integer batchSize, Integer nbThreads,
             ImporterLogger log) throws Exception {
-
         importSource = sourceNode;
         this.importWritePath = importWritePath;
-        this.batchSize = batchSize;
-        this.nbThreads = nbThreads;
         this.log = log;
+        if (batchSize != null) {
+            this.batchSize = batchSize;
+        }
+        if (nbThreads != null) {
+            this.nbThreads = nbThreads;
+        }
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
