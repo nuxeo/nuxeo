@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-  
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-  
+
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -43,11 +43,13 @@
       </li>
       <li> userDisplayName(String, String, String): returns the full name of a user given its id, first name and last name.
       </li>
+      <li> htmlEscape(String): returns html escaped string (can be use to do safe h:outputText in scripts).
+      </li>
       <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
       </li>
-      <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of 
+      <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of
       a file using the format given in its short or long form. The format available are "SI",
-      "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a> 
+      "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a>
       for more information on those format.
       </li>
       <li>printFormattedDuration(Object durationInSeconds, Map<String, String> messages): pretty print raw duration measured
@@ -190,7 +192,7 @@
     <description>
       <![CDATA[
       <p>
-      Facelet tag handler that performs an iteration.      
+      Facelet tag handler that performs an iteration.
       </p>
       <p>
       This handler is different from the standard one because it performs a real

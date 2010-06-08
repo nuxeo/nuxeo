@@ -132,7 +132,7 @@
       java.lang.String formatDateUsingBasicFormatter(java.util.Date)
     </function-signature>
   </function>
-  
+
   <function>
     <function-name>dateAndTimeFormater</function-name>
     <function-class>
@@ -188,6 +188,15 @@
     <function-signature>
       String userDisplayName(java.lang.String, java.lang.String,
       java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>htmlEscape</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String htmlEscape(java.lang.String)
     </function-signature>
   </function>
   <!-- XXX AT: should be in nxdirectory taglib, not util -->

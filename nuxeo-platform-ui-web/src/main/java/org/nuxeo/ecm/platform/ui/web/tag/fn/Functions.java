@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -121,6 +122,10 @@ public final class Functions {
             return null;
         }
         return StringUtils.join(collection.iterator(), separator);
+    }
+
+    public static String htmlEscape (String data) {
+        return  StringEscapeUtils.escapeHtml(data);
     }
 
     /**
