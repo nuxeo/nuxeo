@@ -19,11 +19,8 @@
 
 package org.nuxeo.ecm.webengine.admin;
 
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -33,19 +30,23 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.List;
+
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "User")
 @Produces("text/html;charset=UTF-8")
 public class User extends DefaultObject {
 
-    NuxeoPrincipal principal;
+    NuxeoPrincipalImpl principal;
 
     @Override
     protected void initialize(Object... args) {
         assert args != null && args.length > 0;
-        principal = (NuxeoPrincipal) args[0];
+        principal = (NuxeoPrincipalImpl) args[0];
     }
 
     @GET
@@ -66,6 +67,7 @@ public class User extends DefaultObject {
         principal.setFirstName(req.getParameter("firstName"));
         principal.setLastName(req.getParameter("lastName"));
         principal.setPassword(req.getParameter("password"));
+        principal.setEmail(req.getParameter("email"));
 
         String[] selectedGroups = req.getParameterValues("groups");
         List<String> listGroups = Arrays.asList(selectedGroups);

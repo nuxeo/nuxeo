@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.automation.OperationContext;
@@ -25,14 +24,10 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.PrincipalHelper;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -47,58 +42,24 @@ public class GetDocumentPrincipalEmails {
 
     public static final String ID = "Document.GetPrincipalEmails";
 
+    protected @Context PermissionProvider permissionProvider;
     protected @Context UserManager umgr;
     protected @Context OperationContext ctx;
     @Param(name="permission")
     protected String permission;
     @Param(name="key")
     protected String key;
-    @Param(name="resolve groups", required=true, values="false")
+    @Param(name="resolve groups", required=false, values="false")
     protected boolean resolveGroups = false;
+
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws Exception {
-        HashSet<String> result = new HashSet<String>();
-        ACP acp = input.getACP();
-        for (ACL acl : acp.getACLs()) {
-            for (ACE ace : acl.getACEs()) {
-                if (permission.equals(ace.getPermission()) && ace.isGranted()) {
-                    try {
-                        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl)umgr.getPrincipal(ace.getUsername());
-                        String email = principal.getEmail();
-                        if (email != null && email.length() > 0) {
-                            result.add(email);
-                        }
-                    } catch (Throwable t) {
-                        if (resolveGroups ) {
-                            resolveGroups(ace.getUsername(), result);
-                        }
-                        // else continue - ignore groups
-                    }
-                }
-            }
-        }
+        PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
+        Set<String> result = ph.getEmailsForPermission(input, permission, resolveGroups);
         ctx.put(key, new StringList(result));
         return input;
     }
 
-    public void resolveGroups(String name, Set<String> result) throws ClientException {
-        try {
-            NuxeoGroup group = umgr.getGroup(name);
-            for (String u : group.getMemberUsers()) {
-                try {
-                    NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl)umgr.getPrincipal(u);
-                    String email = principal.getEmail();
-                    if (email != null && email.length() > 0) {
-                        result.add(email);
-                    }
-                } catch (Throwable t) {
-                    resolveGroups(u, result);
-                }
-            }
-        } catch (Throwable t) {
-            // ignore missing group
-        }
-    }
 
 }

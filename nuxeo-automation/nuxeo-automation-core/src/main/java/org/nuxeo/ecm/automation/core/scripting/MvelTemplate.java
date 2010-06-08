@@ -26,21 +26,22 @@ import org.nuxeo.ecm.automation.OperationContext;
  *
  */
 public class MvelTemplate implements Expression {
-    
+
     private static final long serialVersionUID = 1L;
 
     protected transient volatile CompiledTemplate compiled;
     protected String expr;
-    
+
     public MvelTemplate(String expr) {
         this.expr = expr;
     }
-    
+
     public Object eval(OperationContext ctx) throws Exception {
         if (compiled  == null) {
             compiled = TemplateCompiler.compileTemplate(expr);
         }
-        return TemplateRuntime.execute(compiled, Scripting.initBindings(ctx));
+        Object obj = TemplateRuntime.execute(compiled, Scripting.initBindings(ctx));
+        return obj == null ? "" : obj.toString();
     }
 
 }
