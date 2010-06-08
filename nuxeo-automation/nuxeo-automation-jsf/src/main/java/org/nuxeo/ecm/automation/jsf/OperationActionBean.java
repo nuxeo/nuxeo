@@ -31,12 +31,12 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jsf.operations.SeamOperation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 @Name("operationActionBean")
 @Scope(ScopeType.EVENT)
@@ -60,25 +60,6 @@ public class OperationActionBean implements Serializable {
         return runOperation(chainId);
     }
 
-//    public String testOperation(String testChain) throws Exception {
-//
-//        OperationChain chain = new OperationChain(testChain);
-//
-//        if ("test1".equals(testChain)) {
-//            chain.add(SeamOperation.ADD_CLIPBOARD);
-//            chain.add(SeamOperation.SET_OUTCOME).set("outcome", "opensocial_dashboard");
-//        } else if ("test2".equals(testChain)) {
-//            chain.add(SeamOperation.GET_CURRENTWORKSPACE);
-//            chain.add(SeamOperation.NAVIGATE);
-//        } else if ("test3".equals(testChain)) {            ;
-//            chain.add(SeamOperation.CHANGE_TAB).set("tab", "TAB_MANAGE");
-//        } else {
-//            facesMessages.add(FacesMessage.SEVERITY_ERROR,"Unknown chain: " + testChain);
-//            return null;
-//        }
-//        return runOperation(chain);
-//    }
-
     protected String runOperation(Object chain) throws Exception {
         AutomationService os = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext(documentManager);
@@ -87,15 +68,24 @@ public class OperationActionBean implements Serializable {
         if (chain instanceof String) {
             try {
                 os.run(ctx, (String) chain);
-                facesMessages.add(FacesMessage.SEVERITY_INFO,"chain " + chain + " executed successfully");
-            }
-            catch (InvalidChainException e) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,"Unknown chain: " + chain);
+                facesMessages.add(FacesMessage.SEVERITY_INFO, "chain " + chain
+                        + " executed successfully");
+            } catch (InvalidChainException e) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "Unknown chain: " + chain);
+                return null;
+            } catch (Throwable t) {
+                Throwable cause = ExceptionHelper.unwrapException(t);
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "An error occured while executing the chain '" + chain
+                                + "': " + cause.getMessage());
                 return null;
             }
         } else {
             os.run(ctx, (OperationChain) chain);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,"chain " + ((OperationChain) chain).getId() + " executed successfully");
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "chain "
+                    + ((OperationChain) chain).getId()
+                    + " executed successfully");
         }
 
         String outcome = (String) ctx.get(SeamOperation.OUTCOME);
