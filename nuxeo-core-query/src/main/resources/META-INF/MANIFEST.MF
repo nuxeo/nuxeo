@@ -12,4 +12,6 @@ Export-Package: org.nuxeo.ecm.core.query,
  java_cup.runtime,
  org.joda.time
 Nuxeo-Require: org.nuxeo.ecm.core.api
-Require-Bundle: cup.java-cup, joda-time.joda-time, org.nuxeo.ecm.core.api
+Require-Bundle: cup.java-cup, 
+ joda-time, 
+ org.nuxeo.ecm.core.api

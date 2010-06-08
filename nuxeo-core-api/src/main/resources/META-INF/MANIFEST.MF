@@ -33,7 +33,7 @@ Bundle-ClassPath: .
 Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
  org.nuxeo.ecm.core.schema;visibility:=reexport,
  org.apache.commons.collections,
- org.apache.log4j
+ org.apache.log
 Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
  org.nuxeo.ecm.core.schema;visibility:=reexport
 Bundle-Vendor: Nuxeo

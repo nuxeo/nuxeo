@@ -5,7 +5,11 @@ Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins
 Bundle-Localization: plugin
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.convert,
- org.nuxeo.ecm.core.convert.api
+ org.nuxeo.ecm.core.convert.api,
+ javax.mail
 Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
+Nuxeo-Require: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.core.convert.api

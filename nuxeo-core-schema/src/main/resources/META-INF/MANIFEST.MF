@@ -10,7 +10,7 @@ Export-Package: org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.schema.types.constraints,
  org.nuxeo.ecm.core.schema.types.primitives,
  org.nuxeo.ecm.core.schema.utils
-Eclipse-LazyStart: true
+Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/SchemaService.xml
 Nuxeo-Require: org.nuxeo.runtime
 Require-Bundle: com.sun.xml.relaxngDatatype, com.sun.xml.xsom, org.nuxeo.runtime
