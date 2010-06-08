@@ -57,6 +57,9 @@ public class EventHandler {
     @XNode("filters/lifeCycle")
     protected String lifeCycle;
 
+    @XNode("filters/pathStartsWith")
+    protected String pathStartsWith;
+
     protected Filter attribute;
     @XNode("filters/attribute")
     public void setAttribute(String attribute) {
@@ -121,6 +124,10 @@ public class EventHandler {
         this.memberOf = groups;
     }
 
+    public void setPathStartsWith(String pathStartsWith) {
+        this.pathStartsWith = pathStartsWith;
+    }
+
     public void setExpression(String expression) {
         this.expression = expression;
     }
@@ -168,6 +175,11 @@ public class EventHandler {
         }
         if (attribute != null) {
             if (doc == null || !attribute.accept(doc)) {
+                return false;
+            }
+        }
+        if (pathStartsWith != null) {
+            if (doc == null || !doc.getPathAsString().startsWith(pathStartsWith)) {
                 return false;
             }
         }

@@ -52,6 +52,7 @@ public class FilterDocuments {
     protected @Param(name="types", required=false) String types; // comma separated list.
     protected @Param(name="facet", required=false) String facet;
     protected @Param(name="lifecycle", required=false) String lifeCycle;
+    protected @Param(name="pathStartsWith", required=false) String pathStartsWith;
     protected @Param(name="condition", required=false) String condition;
     @Param(name="class", required=false, widget=Constants.W_OPTION, values={
             AttrFilterFactory.ANY_DOC,
