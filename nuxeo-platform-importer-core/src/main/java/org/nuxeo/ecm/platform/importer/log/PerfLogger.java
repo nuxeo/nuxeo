@@ -13,6 +13,7 @@ public class PerfLogger {
     protected String[] headers;
 
     protected File logFile;
+
     protected Writer logWriter;
 
     protected static final String SEP = ";";
@@ -20,7 +21,8 @@ public class PerfLogger {
     public PerfLogger(String[] headers) throws IOException {
         this.headers = headers;
         File home = Framework.getRuntime().getHome();
-        String logPath = new Path(home.getAbsolutePath()).append("perfLog_" + System.currentTimeMillis() + ".csv").toString();
+        String logPath = new Path(home.getAbsolutePath()).append(
+                "perfLog_" + System.currentTimeMillis() + ".csv").toString();
         logFile = new File(logPath);
         logWriter = new FileWriter(logFile);
         log(headers);
@@ -51,12 +53,11 @@ public class PerfLogger {
         logWriter.flush();
     }
 
-
     public void release() throws IOException {
-        if (logWriter!=null) {
+        if (logWriter != null) {
             logWriter.flush();
             logWriter.close();
-            logWriter=null;
+            logWriter = null;
         }
     }
 }

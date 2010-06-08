@@ -4,11 +4,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.webengine.WebEngine;
 
 @Produces("text/plain; charset=UTF-8")
 public abstract class AbstractJaxRSImporterExecutor extends

@@ -113,7 +113,6 @@ public class GenericThreadedImportTask implements Runnable {
 
     }
 
-
     public GenericThreadedImportTask(CoreSession session,
             SourceNode rootSource, DocumentModel rootDoc,
             ImporterLogger rsLogger, int batchSize,

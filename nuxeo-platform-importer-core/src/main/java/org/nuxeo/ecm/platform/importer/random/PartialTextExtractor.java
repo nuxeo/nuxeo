@@ -21,12 +21,13 @@ public class PartialTextExtractor implements Converter {
             Blob blob = blobHolder.getBlob();
 
             String data = blob.getString();
-            int endIdx = new Double(data.length()*TEXT_RATIO).intValue();
+            int endIdx = new Double(data.length() * TEXT_RATIO).intValue();
             String txtData = data.substring(0, endIdx);
             return new SimpleBlobHolder(new StringBlob(txtData));
 
         } catch (Exception e) {
-            throw new ConversionException("error extracting partial text content", e);
+            throw new ConversionException(
+                    "error extracting partial text content", e);
         }
     }
 

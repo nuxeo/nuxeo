@@ -271,20 +271,20 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected DocumentModel getTargetContainer() throws Exception {
         if (targetContainer == null) {
-            targetContainer  = createTargetContainer();
+            targetContainer = createTargetContainer();
         }
         return targetContainer;
     }
 
     /**
-     * Creates the target container where the import will be done.
-     * Can be overridden in subclasses.
+     * Creates the target container where the import will be done. Can be
+     * overridden in subclasses.
+     *
      * @return
      * @throws Exception
      */
     protected DocumentModel createTargetContainer() throws Exception {
-        return getCoreSession().getDocument(
-                new PathRef(importWritePath));
+        return getCoreSession().getDocument(new PathRef(importWritePath));
     }
 
     public ImporterThreadingPolicy getThreadPolicy() {

@@ -35,24 +35,34 @@ public class RandomTextGenerator {
     protected DictionaryHolder dictionaryHolder = new FrenchDictionaryHolder();
 
     protected Map<String, String> paragraphCache = new HashMap<String, String>();
+
     protected Map<String, String> pageCache = new HashMap<String, String>();
+
     protected Map<String, String> blockCache = new HashMap<String, String>();
 
     protected static final int PARAGRAPH_CACHE_SIZE = 100;
+
     protected static final int PARAGRAPH_CACHE_HIT = 100;
+
     protected static final int PAGE_CACHE_SIZE = 50;
+
     protected static final int PAGE_CACHE_HIT = 30;
+
     protected static final int BLOC_CACHE_SIZE = 30;
+
     protected static final int BLOC_CACHE_HIT = 20;
+
     protected static final int BLOC_SIZE = 10 * 1024;
 
     protected static final int NB_WORDS_PER_LINE = 20;
+
     protected static final int NB_LINES_PER_PARAGRAPH = 40;
+
     protected static final int NB_PARAGRAPH_PER_PAGE = 8;
+
     protected static final int NB_PAGE_PER_BLOC = 3;
 
     protected Random generator;
-
 
     public RandomTextGenerator() throws Exception {
         generator = new Random(System.currentTimeMillis());
@@ -85,7 +95,7 @@ public class RandomTextGenerator {
 
         for (int i = 0; i < nbL; i++) {
             sb.append(getRandomLine());
-            if (sb.length()>maxSize) {
+            if (sb.length() > maxSize) {
                 break;
             }
         }
@@ -134,7 +144,7 @@ public class RandomTextGenerator {
         int maxTargetPageSize = getTargetPageMaxSizeB();
         for (int i = 0; i < nbL; i++) {
             sb.append(getRandomParagraph());
-            if (sb.length()> maxTargetPageSize) {
+            if (sb.length() > maxTargetPageSize) {
                 break;
             }
         }
@@ -181,8 +191,7 @@ public class RandomTextGenerator {
 
     public String getRandomText(int avSizeInK) {
         StringBuffer sb = new StringBuffer();
-        int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * generator
-                .nextFloat()));
+        int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * generator.nextFloat()));
         while (sb.length() < (minSize - BLOC_SIZE)) {
             String p = getRandomBloc();
             sb.append(p);

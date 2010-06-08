@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
-import static javax.transaction.Status.STATUS_ACTIVE;
-import static javax.transaction.Status.STATUS_COMMITTED;
-import static javax.transaction.Status.STATUS_MARKED_ROLLBACK;
-import static javax.transaction.Status.STATUS_ROLLEDBACK;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.SystemException;
@@ -34,6 +29,11 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static javax.transaction.Status.STATUS_ACTIVE;
+import static javax.transaction.Status.STATUS_COMMITTED;
+import static javax.transaction.Status.STATUS_MARKED_ROLLBACK;
+import static javax.transaction.Status.STATUS_ROLLEDBACK;
+
 /**
  *
  * Simple helper for Tx management
@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class TxHelper {
-
 
     private static final Log log = LogFactory.getLog(TxHelper.class);
 
@@ -56,7 +55,7 @@ public class TxHelper {
 
     protected UserTransaction tx;
 
-    protected boolean disabled=false;
+    protected boolean disabled = false;
 
     public void beginNewTransaction() {
         beginNewTransaction(null);
@@ -109,11 +108,12 @@ public class TxHelper {
                 disabled = true;
             }
         }
-        if (transactionTimeout!=null && ut!=null) {
+        if (transactionTimeout != null && ut != null) {
             try {
                 ut.setTransactionTimeout(transactionTimeout);
             } catch (SystemException e) {
-                log.error("Error while setting transaction timeout to " + transactionTimeout, e);
+                log.error("Error while setting transaction timeout to "
+                        + transactionTimeout, e);
             }
         }
         return ut;

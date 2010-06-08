@@ -23,26 +23,27 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
- * Default multi-threading policy
- * (creates a new thread on each branch until the max nb thread is reached)
+ * Default multi-threading policy (creates a new thread on each branch until the
+ * max nb thread is reached)
  *
  * @author Thierry Delprat
  *
  */
 public class DefaultMultiThreadingPolicy implements ImporterThreadingPolicy {
 
-    public boolean needToCreateThreadAfterNewFolderishNode(DocumentModel parent,
-            SourceNode node, long uploadedSources, int batchSize, int scheduledTasks) {
+    public boolean needToCreateThreadAfterNewFolderishNode(
+            DocumentModel parent, SourceNode node, long uploadedSources,
+            int batchSize, int scheduledTasks) {
 
-          if (uploadedSources < (batchSize / 3)) {
-              return false;
-          }
+        if (uploadedSources < (batchSize / 3)) {
+            return false;
+        }
 
-          if (scheduledTasks >= 5) {
-              return false;
-          } else {
-              return true;
-          }
+        if (scheduledTasks >= 5) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

@@ -39,11 +39,11 @@ public class FileSourceNode implements SourceNode {
     protected File file;
 
     public FileSourceNode(File file) {
-        this.file=file;
+        this.file = file;
     }
 
     public FileSourceNode(String path) {
-        this.file=new File(path);
+        this.file = new File(path);
     }
 
     public BlobHolder getBlobHolder() {

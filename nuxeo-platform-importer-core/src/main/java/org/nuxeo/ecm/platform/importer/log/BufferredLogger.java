@@ -35,7 +35,7 @@ public class BufferredLogger extends BasicLogger {
 
     protected static int DEFAULT_LOG_BUFFER_LENGTH = 50;
 
-    protected Integer bufferSize= null;
+    protected Integer bufferSize = null;
 
     protected LinkedList<String> logStack = new LinkedList<String>();
 
@@ -48,9 +48,8 @@ public class BufferredLogger extends BasicLogger {
         this.bufferSize = bufferSize;
     }
 
-
     protected int getMaxStackLen() {
-        if (bufferSize==null) {
+        if (bufferSize == null) {
             bufferSize = DEFAULT_LOG_BUFFER_LENGTH;
         }
         return bufferSize;
@@ -116,7 +115,8 @@ public class BufferredLogger extends BasicLogger {
         super.debug(message, t);
         if (bufferActive) {
             logInStack("DEBUG", message);
-            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":"
+                    + t.getMessage());
         }
     }
 
@@ -133,9 +133,9 @@ public class BufferredLogger extends BasicLogger {
         super.error(message, t);
         if (bufferActive) {
             logInStack("ERROR", message);
-            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":"
+                    + t.getMessage());
         }
     }
-
 
 }

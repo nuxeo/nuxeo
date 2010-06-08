@@ -19,11 +19,9 @@
 
 package org.nuxeo.ecm.platform.importer.factories;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -38,8 +36,13 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#createFolderishNode(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.platform.importer.base.SourceNode)
+    /*
+     * (non-Javadoc)
+     *
+     * @seeorg.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#
+     * createFolderishNode(org.nuxeo.ecm.core.api.CoreSession,
+     * org.nuxeo.ecm.core.api.DocumentModel,
+     * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     public DocumentModel createFolderishNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
@@ -54,8 +57,13 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         return doc;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#createLeafNode(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.platform.importer.base.SourceNode)
+    /*
+     * (non-Javadoc)
+     *
+     * @seeorg.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#
+     * createLeafNode(org.nuxeo.ecm.core.api.CoreSession,
+     * org.nuxeo.ecm.core.api.DocumentModel,
+     * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     public DocumentModel createLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
@@ -64,7 +72,8 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     protected DocumentModel defaultCreateLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node, String docType) throws Exception {
+            DocumentModel parent, SourceNode node, String docType)
+            throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
 

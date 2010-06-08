@@ -51,17 +51,19 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
         return importer.getCreatedDocsCounter();
     }
 
-    public String run(String inputPath,String targetPath,Integer batchSize ,Integer nbTheards, Boolean interactive) throws Exception {
+    public String run(String inputPath, String targetPath, Integer batchSize,
+            Integer nbTheards, Boolean interactive) throws Exception {
         SourceNode source = new FileSourceNode(inputPath);
         return run(source, targetPath, batchSize, nbTheards, interactive);
     }
 
-    public String run(SourceNode source,String targetPath,Integer batchSize ,Integer nbTheards, Boolean interactive) throws Exception {
-        importer = new GenericMultiThreadedImporter(source, targetPath, batchSize, nbTheards, getLogger());
+    public String run(SourceNode source, String targetPath, Integer batchSize,
+            Integer nbTheards, Boolean interactive) throws Exception {
+        importer = new GenericMultiThreadedImporter(source, targetPath,
+                batchSize, nbTheards, getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
         return doRun(importer, interactive);
     }
 
 }
-

@@ -25,14 +25,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
+
+import junit.framework.TestCase;
 
 public class TestMetadataCollector extends TestCase {
 
     Map<String, String> props1 = new HashMap<String, String>();
+
     Map<String, String> props2 = new HashMap<String, String>();
+
     Map<String, String> props3 = new HashMap<String, String>();
 
     MetadataCollector mc = new MetadataCollector();
@@ -63,13 +65,14 @@ public class TestMetadataCollector extends TestCase {
         mc.addPropertiesFromStrings("/node21/node31", props3);
     }
 
-
     public void testRead() {
 
         assertEquals("value0", mc.getProperty("/", "str0"));
         assertEquals("value1", mc.getProperty("/", "str"));
         assertEquals(new Long(1577), mc.getProperty("/", "num"));
-        assertEquals(2007, ((GregorianCalendar) mc.getProperty("/", "date")).get(Calendar.YEAR));
+        assertEquals(
+                2007,
+                ((GregorianCalendar) mc.getProperty("/", "date")).get(Calendar.YEAR));
         assertNull(mc.getProperty("/", "doesnotexist"));
         List<Long> list = (List<Long>) mc.getProperty("/", "lst");
         assertNotNull(list);
@@ -79,19 +82,19 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value2", mc.getProperty("/node21/", "str"));
         assertEquals("value22", mc.getProperty("/node21/", "str2"));
         assertEquals(new Long(2008), mc.getProperty("/node21/", "num"));
-        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21/", "date")).get(Calendar.YEAR));
+        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21/",
+                "date")).get(Calendar.YEAR));
         assertNull(mc.getProperty("/node21/", "doesnotexist"));
         list = (List<Long>) mc.getProperty("/node21", "lst");
         assertNotNull(list);
         assertEquals(3, list.size());
 
-
-
         assertEquals("value0", mc.getProperty("/node21", "str0"));
         assertEquals("value2", mc.getProperty("/node21", "str"));
         assertEquals("value22", mc.getProperty("/node21", "str2"));
         assertEquals(new Long(2008), mc.getProperty("/node21", "num"));
-        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21", "date")).get(Calendar.YEAR));
+        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21",
+                "date")).get(Calendar.YEAR));
         assertNull(mc.getProperty("/node21", "doesnotexist"));
 
         assertEquals("value0", mc.getProperty("/node21/node31", "str0"));
@@ -99,7 +102,8 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value33", mc.getProperty("/node21/node31", "str3"));
         assertEquals("value22", mc.getProperty("/node21/node31", "str2"));
         assertNull(mc.getProperty("/node21/node31", "doesnotexist"));
-        List<String> list2 = (List<String>) mc.getProperty("/node21/node31", "lst");
+        List<String> list2 = (List<String>) mc.getProperty("/node21/node31",
+                "lst");
         assertNotNull(list2);
         assertEquals(3, list2.size());
 

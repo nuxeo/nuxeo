@@ -47,38 +47,37 @@ import org.nuxeo.common.utils.Path;
  */
 public class MetadataCollector {
 
-
     public static final boolean staticInherit = true;
+
     public static final boolean useIntrospection = false;
 
     public static String DATE_FORMAT = "MM/dd/yyyy";
+
     public static String LIST_SEPARATOR = "|";
 
-    protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<String, Map<String,Serializable>>();
+    protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<String, Map<String, Serializable>>();
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected String nomalizePath(String contextPath) {
-        if (contextPath!=null) {
+        if (contextPath != null) {
             return contextPath = new Path(contextPath).removeTrailingSeparator().toString();
         }
         return null;
     }
 
-
-    public void addPropertiesFromStrings(String contextPath, Map<String, String> properties)
-    {
+    public void addPropertiesFromStrings(String contextPath,
+            Map<String, String> properties) {
         Map<String, Serializable> collectedProperties = new HashMap<String, Serializable>();
-        for (String name : properties.keySet() ){
+        for (String name : properties.keySet()) {
             Serializable value = parseFromString(name, properties.get(name));
             collectedProperties.put(name, value);
         }
         addProperties(contextPath, collectedProperties);
     }
 
-
-    public void addProperties(String contextPath, Map<String, Serializable> collectedProperties)
-    {
+    public void addProperties(String contextPath,
+            Map<String, Serializable> collectedProperties) {
         try {
             lock.writeLock().lock();
             contextPath = nomalizePath(contextPath);
@@ -87,42 +86,42 @@ public class MetadataCollector {
                 while (!path.isEmpty() && !path.isRoot()) {
                     path = path.removeLastSegments(1);
                     Map<String, Serializable> parentProperties = collectedMetadata.get(path.toString());
-                    if (parentProperties!=null) {
+                    if (parentProperties != null) {
                         for (String name : parentProperties.keySet()) {
                             if (!collectedProperties.containsKey(name)) {
-                                collectedProperties.put(name, parentProperties.get(name));
+                                collectedProperties.put(name,
+                                        parentProperties.get(name));
                             }
                         }
                     }
                 }
             }
             collectedMetadata.put(contextPath, collectedProperties);
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
 
     }
 
-
     protected static Pattern numPattern = Pattern.compile("([0-9\\,\\.\\+\\-]+)");
 
-    protected Serializable parseFromString(String name, String value ){
+    protected Serializable parseFromString(String name, String value) {
 
         Serializable prop = value;
         if (useIntrospection) {
-            throw new UnsupportedOperationException("Introspection mode not available");
+            throw new UnsupportedOperationException(
+                    "Introspection mode not available");
         } else {
             if (value.contains("/")) {
                 try {
                     Date date = new SimpleDateFormat(DATE_FORMAT).parse(value);
-                    Calendar cal =  new GregorianCalendar();
+                    Calendar cal = new GregorianCalendar();
                     cal.setTime(date);
                     prop = cal;
                 } catch (ParseException e) {
                 }
             } else if (value.contains(LIST_SEPARATOR)) {
-                List<Serializable> lstprop= new ArrayList<Serializable>();
+                List<Serializable> lstprop = new ArrayList<Serializable>();
                 String[] parts = value.split("\\" + LIST_SEPARATOR);
                 for (String part : parts) {
                     lstprop.add(parseFromString(name, part));
@@ -132,28 +131,24 @@ public class MetadataCollector {
             } else if (numPattern.matcher(value).matches()) {
                 try {
                     prop = Long.parseLong(value);
-                }
-                catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                 }
             }
         }
         return prop;
     }
 
-
     public Serializable getProperty(String contextPath, String name) {
 
         Map<String, Serializable> props = getProperties(contextPath);
-        if (props!=null) {
+        if (props != null) {
             try {
                 lock.readLock().lock();
                 return props.get(name);
-            }
-            finally {
+            } finally {
                 lock.readLock().unlock();
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -164,18 +159,19 @@ public class MetadataCollector {
 
         try {
             lock.readLock().lock();
-            Map<String, Serializable> props =  collectedMetadata.get(contextPath);
+            Map<String, Serializable> props = collectedMetadata.get(contextPath);
 
-            if (props==null) {
+            if (props == null) {
                 Path path = new Path(contextPath);
-                while (props==null && ! path.isEmpty() && !path.isRoot()) {
+                while (props == null && !path.isEmpty() && !path.isRoot()) {
                     path = path.removeLastSegments(1);
-                    props =  collectedMetadata.get(path.toString()); // XXX return a copy ?
+                    props = collectedMetadata.get(path.toString()); // XXX
+                                                                    // return a
+                                                                    // copy ?
                 }
             }
             return props;
-        }
-        finally {
+        } finally {
             lock.readLock().unlock();
         }
     }
@@ -193,7 +189,8 @@ public class MetadataCollector {
             stringMap.put(name, mdProperties.getProperty(name));
         }
 
-        String contextPath = new Path(propertyFile.getAbsolutePath()).removeLastSegments(1).toString();
+        String contextPath = new Path(propertyFile.getAbsolutePath()).removeLastSegments(
+                1).toString();
         addPropertiesFromStrings(contextPath, stringMap);
     }
 

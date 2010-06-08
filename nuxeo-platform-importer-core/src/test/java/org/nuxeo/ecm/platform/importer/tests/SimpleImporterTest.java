@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class SimpleImporterTest extends SQLRepositoryTestCase {
 
-
     public SimpleImporterTest(String name) {
         super(name);
     }
@@ -40,19 +39,18 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
     }
 
     /*
-    public void testImport() throws Exception {
-
-        String inputPath = "/home/tiry/docs/tests/";
-        String targetPath = "/default-domain/workspaces/";
-
-        DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
-
-        executor.run(inputPath, targetPath, 5, 5, true);
-
-        long createdDocs = executor.getCreatedDocsCounter();
-        assertTrue(createdDocs > 0);
-    }*/
-
+     * public void testImport() throws Exception {
+     *
+     * String inputPath = "/home/tiry/docs/tests/"; String targetPath =
+     * "/default-domain/workspaces/";
+     *
+     * DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
+     *
+     * executor.run(inputPath, targetPath, 5, 5, true);
+     *
+     * long createdDocs = executor.getCreatedDocsCounter();
+     * assertTrue(createdDocs > 0); }
+     */
 
     public void testRamdomImport() throws Exception {
 
@@ -68,9 +66,9 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
         long createdDocs = executor.getCreatedDocsCounter();
         assertTrue(createdDocs > 0);
 
-        System.out.println("total content size = " + RandomTextSourceNode.getSize()/(1024*1024) + " MB");
+        System.out.println("total content size = "
+                + RandomTextSourceNode.getSize() / (1024 * 1024) + " MB");
         System.out.println("nb nodes = " + RandomTextSourceNode.getNbNodes());
     }
-
 
 }

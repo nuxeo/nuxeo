@@ -42,7 +42,7 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
     protected int wordCount;
 
     public FrenchDictionaryHolder() throws Exception {
-        generator = new Random (System.currentTimeMillis());
+        generator = new Random(System.currentTimeMillis());
     }
 
     public void init() throws Exception {
@@ -52,19 +52,19 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
 
     protected void loadDic(String dicName) throws Exception {
 
-        //File dic = FileUtils.getResourceFileFromContext(dicName);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(dicName);
-
+        // File dic = FileUtils.getResourceFileFromContext(dicName);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                dicName);
 
         BufferedReader reader = null;
         try {
-            //InputStream in = new FileInputStream(dic);
+            // InputStream in = new FileInputStream(dic);
             InputStream in = url.openStream();
             reader = new BufferedReader(new InputStreamReader(in));
             String line;
             while ((line = reader.readLine()) != null) {
                 int idx = line.indexOf("/");
-                if (idx>0) {
+                if (idx > 0) {
                     String word = line.substring(0, idx);
                     words.add(word + " ");
                 } else {
@@ -81,15 +81,21 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getWordCount()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getWordCount()
      */
     public int getWordCount() {
         return wordCount;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getRandomWord()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getRandomWord()
      */
     public String getRandomWord() {
         int idx = generator.nextInt(wordCount);

@@ -23,8 +23,7 @@ import org.apache.commons.logging.Log;
 
 /**
  *
- * Simple logger that wraps
- * a bufferized string logger (for remote retrieval)
+ * Simple logger that wraps a bufferized string logger (for remote retrieval)
  * and a log4J logger
  *
  * @author tiry
@@ -71,8 +70,7 @@ public class BasicLogger implements ImporterLogger {
     public String getLoggerBuffer() {
         if (bufferActive) {
             return getLoggerBuffer("\n");
-        }
-        else {
+        } else {
             return "Buffer is not active";
         }
     }
