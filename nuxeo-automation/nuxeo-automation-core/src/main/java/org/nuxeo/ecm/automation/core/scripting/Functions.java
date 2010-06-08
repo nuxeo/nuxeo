@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import java.util.List;
+
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,7 +58,7 @@ public class Functions {
     public String getVocabularyLabel(String voc, String key) throws Exception {
         org.nuxeo.ecm.directory.Session session = getDirService().open(voc);
         DocumentModel doc = session.getEntry(key);
-        //TODO: which is the best method to get "label" property when not knowning vocabulary schema?
+        //TODO: which is the best method to get "label" property when not knowing vocabulary schema?
         DataModel dm = doc.getDataModels().values().iterator().next();
         return (String)dm.getData("label");
     }
@@ -71,12 +75,32 @@ public class Functions {
         return (String)principal.getModel().getProperty(schema, key);
     }
 
-//    public String getPrincipalEmail(String username) throws Exception {
-//        NuxeoPrincipal principal = getPrincipal(username);
-//        UserManager mgr = getUserMgr();
-//        String key = mgr.getUserEmailField();
-//        String schema = mgr.getUserSchemaName();
-//        return (String)principal.getModel().getProperty(schema, key);
-//    }
+    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals) throws Exception {
+        StringList result = new StringList(principals.size());
+        for (NuxeoPrincipal p : principals) {
+            String email = ((NuxeoPrincipalImpl)p).getEmail();
+            if (email != null && email.length() > 0) {
+                result.add(email);
+            }
+        }
+        return result;
+    }
+
+    public StringList getEmails(List<String> usernames) throws Exception {
+        UserManager umgr = getUserMgr();
+        StringList result = new StringList(usernames.size());
+        for (String u : usernames) {
+            try {
+                NuxeoPrincipalImpl p = (NuxeoPrincipalImpl)umgr.getPrincipal(u);
+                String email = p.getEmail();
+                if (email != null && email.length() > 0) {
+                    result.add(email);
+                }
+            } catch (Throwable t) {
+                // ignore groups or missing principals
+            }
+        }
+        return result;
+    }
 
 }

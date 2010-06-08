@@ -36,6 +36,10 @@ public class StringList extends ArrayList<String> {
 
     }
 
+    public StringList(int size) {
+        super (size);
+    }
+
     public StringList(String[] ar) {
         super(ar.length);
         for (String v : ar) {
