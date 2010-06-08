@@ -44,10 +44,6 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     public static final String TARGET_PATH = "/default-domain/import-root";
 
-    public static final int BATCH_SIZE = 50;
-
-    public static final int NB_THREADS = 1;
-
     @Override
     protected Log getJavaLogger() {
         return log;
@@ -59,12 +55,13 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
     public String run(@QueryParam("inputPath") String inputPath,
             @QueryParam("importFolderName") String importFolderName,
             @QueryParam("importSetName") String importSetName,
+            @QueryParam("batchSize") Integer batchSize , @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive) throws Exception {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
         DamMultiThreadedImporter runner = new DamMultiThreadedImporter(source,
-                TARGET_PATH, importFolderName, importSetName, BATCH_SIZE,
-                NB_THREADS, getLogger());
+                TARGET_PATH, importFolderName, importSetName, batchSize,
+                nbThreads, getLogger());
         runner.setFactory(new FileManagerDocumentModelFactory());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,
