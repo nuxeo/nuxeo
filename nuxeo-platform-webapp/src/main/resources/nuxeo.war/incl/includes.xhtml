@@ -1,10 +1,10 @@
-<div xmlns:h="http://java.sun.com/jsf/html">
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util">
 
 <script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"></script>
-
 <script type="text/javascript">
-  <h:outputText
-    value="var currentConversationId='#{org.jboss.seam.core.manager.currentConversationId}';"/>
+<h:outputText
+   value="var currentConversationId='#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}';"/>
   <h:outputText
     value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
     // set the conversation id before doing any call
