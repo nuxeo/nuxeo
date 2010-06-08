@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.importer.factories;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
@@ -45,9 +46,12 @@ public class FileManagerDocumentModelFactory extends
     public DocumentModel createLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
         FileManager fileManager = getFileManager();
-        return fileManager.createDocumentFromBlob(session,
-                node.getBlobHolder().getBlob(), parent.getPathAsString(), true,
+        BlobHolder bh = node.getBlobHolder();
+        DocumentModel doc = fileManager.createDocumentFromBlob(session,
+                bh.getBlob(), parent.getPathAsString(), true,
                 getValidNameFromFileName(node.getName()));
+        setDocumentProperties(bh.getProperties(), doc);
+        return doc;
     }
 
     protected FileManager getFileManager() throws Exception {

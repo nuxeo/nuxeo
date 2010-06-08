@@ -83,12 +83,8 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         doc.setProperty("file", "filename", fileName);
         doc.setProperty("file", "content", bh.getBlob());
 
-        Map<String, Serializable> props = bh.getProperties();
-        if (props!=null) {
-            for (String pName : props.keySet()) {
-                doc.setPropertyValue(pName, props.get(pName));
-            }
-        }
+        setDocumentProperties(bh.getProperties(), doc);
+
         doc = session.createDocument(doc);
         return doc;
     }
