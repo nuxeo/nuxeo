@@ -43,6 +43,8 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FilterDocuments;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
+import org.nuxeo.ecm.automation.core.operations.document.GetDocumentPrincipalEmails;
+import org.nuxeo.ecm.automation.core.operations.document.GetDocumentPrincipals;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument;
@@ -163,6 +165,9 @@ public class AutomationComponent extends DefaultComponent {
         // platform
         service.putOperation(GetRelations.class);
         service.putOperation(SendMail.class);
+
+        service.putOperation(GetDocumentPrincipals.class);
+        service.putOperation(GetDocumentPrincipalEmails.class);
 
         // disabled operations
 //      service.putOperation(FireEvent.class);

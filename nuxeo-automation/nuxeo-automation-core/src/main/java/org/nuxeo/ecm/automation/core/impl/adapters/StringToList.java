@@ -14,26 +14,23 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core;
+package org.nuxeo.ecm.automation.core.impl.adapters;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.core.util.StringList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("adapter")
-public class TypeAdapterContribution {
+public class StringToList implements TypeAdapter {
 
-    /**
-     * Adapter implementation class
-     */
-    @XNode("@class") public Class<? extends TypeAdapter> clazz;
-
-    @XNode("@accept") public Class<?> accept;
-
-    @XNode("@produce") public Class<?> produce;
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
+        String content = (String)objectToAdapt;
+        String[] ar = StringUtils.split(content, ',', true);
+        return new StringList(ar);
+    }
 
 }

@@ -12,6 +12,7 @@
     <operation class="org.nuxeo.ecm.automation.core.test.AdaptableOperation2" />
     <operation class="org.nuxeo.ecm.automation.core.test.ControlOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.GetVarOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.StringListOperation" />
   </extension>
 
   <extension point="chains" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">

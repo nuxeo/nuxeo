@@ -71,4 +71,12 @@ public class Functions {
         return (String)principal.getModel().getProperty(schema, key);
     }
 
+//    public String getPrincipalEmail(String username) throws Exception {
+//        NuxeoPrincipal principal = getPrincipal(username);
+//        UserManager mgr = getUserMgr();
+//        String key = mgr.getUserEmailField();
+//        String schema = mgr.getUserSchemaName();
+//        return (String)principal.getModel().getProperty(schema, key);
+//    }
+
 }

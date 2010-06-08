@@ -14,26 +14,25 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core;
+package org.nuxeo.ecm.automation.core.test;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.core.annotations.Operation;
+import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.StringList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("adapter")
-public class TypeAdapterContribution {
+@Operation(id="slo")
+public class StringListOperation {
 
-    /**
-     * Adapter implementation class
-     */
-    @XNode("@class") public Class<? extends TypeAdapter> clazz;
+    @Param(name="emails") protected StringList emails;
 
-    @XNode("@accept") public Class<?> accept;
-
-    @XNode("@produce") public Class<?> produce;
+    @OperationMethod
+    public StringList getEmails() throws Exception {
+        return emails;
+    }
 
 }

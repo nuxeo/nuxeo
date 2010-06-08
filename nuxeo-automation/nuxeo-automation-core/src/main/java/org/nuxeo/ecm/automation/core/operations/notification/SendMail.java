@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 
 import java.util.Map;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -28,6 +27,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.mail.Composer;
 import org.nuxeo.ecm.automation.core.mail.Mailer;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
@@ -58,7 +58,7 @@ public class SendMail {
     protected String from;
 
     @Param(name="to")
-    protected String to; // a comma separated list of emails
+    protected StringList to; // a comma separated list of emails
 
 
     @OperationMethod
@@ -73,11 +73,11 @@ public class SendMail {
         return docs;
     }
 
-    protected String[] getRecipients() {
-        return StringUtils.split(to, ',', true);
+    protected StringList getRecipients() {
+        return to;
     }
 
-    protected void send(String[] sendTo) throws Exception {
+    protected void send(StringList sendTo) throws Exception {
         Map<String,Object> map = Scripting.initBindings(ctx);
         Mailer.Message msg = COMPOSER.newTextMessage(message, map);
         msg.setFrom(from);

@@ -14,26 +14,38 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core;
+package org.nuxeo.ecm.automation.core.util;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.automation.TypeAdapter;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
+ * A string list can be used as an injectable parameter when a list of strings
+ * is required.
+ *
+ * String list are injectable from a string value (comma separated list) or String[].
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("adapter")
-public class TypeAdapterContribution {
+public class StringList extends ArrayList<String> {
 
-    /**
-     * Adapter implementation class
-     */
-    @XNode("@class") public Class<? extends TypeAdapter> clazz;
+    private static final long serialVersionUID = 1L;
 
-    @XNode("@accept") public Class<?> accept;
+    public StringList() {
 
-    @XNode("@produce") public Class<?> produce;
+    }
+
+    public StringList(String[] ar) {
+        super(ar.length);
+        for (String v : ar) {
+            add(v);
+        }
+    }
+
+    public StringList(Collection<String> list) {
+        super(list.size());
+        addAll(list);
+    }
 
 }
