@@ -159,7 +159,7 @@ public class EventHandler {
             doc = (DocumentModel)obj;
         }
         if (doctypes != null) {
-            if (doc == null || !doctypes.contains(doc.getType())) {
+            if (doc == null || (!doctypes.isEmpty() && !doctypes.contains(doc.getType()))) {
                 return false;
             }
         }
