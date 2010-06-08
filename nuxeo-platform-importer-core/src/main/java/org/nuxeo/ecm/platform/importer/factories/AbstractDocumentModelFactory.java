@@ -20,10 +20,12 @@ package org.nuxeo.ecm.platform.importer.factories;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
@@ -34,6 +36,8 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public abstract class AbstractDocumentModelFactory implements
         ImporterDocumentModelFactory {
+
+    private static final Log log = LogFactory.getLog(AbstractDocumentModelFactory.class);
 
     /*
      * (non-Javadoc)
@@ -58,11 +62,24 @@ public abstract class AbstractDocumentModelFactory implements
         return name;
     }
 
+    /**
+     * Set all the properties to the given {@code doc}. The key is field xpath,
+     * the value is the value to set on the document.
+     *
+     */
     protected void setDocumentProperties(Map<String, Serializable> properties,
             DocumentModel doc) throws ClientException {
         if (properties != null) {
-            for (String pName : properties.keySet()) {
-                doc.setPropertyValue(pName, properties.get(pName));
+
+            for (Map.Entry<String, Serializable> entry : properties.entrySet()) {
+                try {
+                    doc.setPropertyValue(entry.getKey(), entry.getValue());
+                } catch (PropertyNotFoundException e) {
+                    String message = String.format(
+                            "Property '%s' not found on document type: %s. Skipping it.",
+                            entry.getKey(), doc.getType());
+                    log.debug(message);
+                }
             }
         }
     }
