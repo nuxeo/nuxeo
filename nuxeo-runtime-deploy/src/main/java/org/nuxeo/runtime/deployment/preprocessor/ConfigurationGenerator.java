@@ -144,10 +144,18 @@ public class ConfigurationGenerator {
 
     /**
      * Run the configuration files generation
+     * 
+     * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {
         if (userConfig == null) {
-            setBasicConfiguration();
+            try {
+                setBasicConfiguration();
+            } catch (ConfigurationException e) {
+                log.warn("Error reading basic configuration. Server is considered as already configured.");
+                log.debug(e);
+                return;
+            }
         }
         if (serverConfigurator == null) {
             log.warn("Unrecognized server. Considered as already configured.");
