@@ -95,6 +95,10 @@
       <groupId>javax.script</groupId>
       <artifactId>script-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

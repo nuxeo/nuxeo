@@ -17,6 +17,7 @@
         This command is useful for debugging command line parser
       </help>
     </command>
+    
     <command name="commands" class="org.nuxeo.ecm.shell.commands.CommandsCommand"
       requireConnection="false" alias="cmds">
       <description>
@@ -54,8 +55,7 @@
       alt="s">
       <options>
         <option name="file" shortcut="f" var="true" type="file">
-          A path to the
-          script file to execute
+          Path to a script file to execute
         </option>
       </options>
       <description>Executes scripts</description>
@@ -157,8 +157,7 @@
     <command name="mkdir" class="org.nuxeo.ecm.shell.commands.repository.MkDirCommand">
       <description>
         Create a document of the specified type (or Folder) at
-        the
-        given path (or in the current path).
+        the given path (or in the current path).
       </description>
       <params>
         <param index="0" type="path" />
@@ -318,7 +317,7 @@
     <command name="export" class="org.nuxeo.ecm.shell.commands.io.ExportCommand"
       alt="exp">
       <description>
-        List directory content (on remote)
+        Export data from a repository.
       </description>
       <params>
         <param index="0" type="doc" />
@@ -370,6 +369,24 @@
       </params>
       <help>Dynamically define a logger and its parameters (output local
         file, log level, package or class filtered). Start or stop debug mode.</help>
+    </command>
+
+    <command name="connect" class="org.nuxeo.ecm.shell.commands.repository.ConnectCommand"
+      requireConnection="false">
+      <description>
+        (Re-)initialize connection.
+        Usage: connect [username [password]]
+      </description>
+      <help>Initialize a connection on a Nuxeo instance, closing or discarding any 
+      previous connection</help>
+    </command>
+
+    <command name="disconnect" class="org.nuxeo.ecm.shell.commands.repository.DisconnectCommand"
+      requireConnection="true">
+      <description>
+        Close connection.
+      </description>
+      <help>Close current connection if any.</help>
     </command>
 
   </extension>

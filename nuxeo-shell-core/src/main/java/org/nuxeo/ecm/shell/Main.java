@@ -50,7 +50,6 @@ public class Main {
             cmdLine = service.parse(args, true);
         } catch (ParseException e) {
             log.error(e);
-//            System.exit(1);
             return;
         }
 

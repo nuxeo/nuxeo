@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,13 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
 
 package org.nuxeo.ecm.shell;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -36,11 +37,12 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.client.DefaultLoginHandler;
 import org.nuxeo.ecm.core.client.NuxeoClient;
+import org.nuxeo.ecm.shell.commands.InteractiveCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class CommandContext extends HashMap<String, Object> {
     private static final Log log = LogFactory.getLog(CommandContext.class);
@@ -53,7 +55,7 @@ public class CommandContext extends HashMap<String, Object> {
 
     private CommandLine cmdLine;
 
-    private RepositoryInstance repository;
+    private RepositoryInstance repositoryInstance;
 
     private final CommandLineService service;
 
@@ -124,7 +126,7 @@ public class CommandContext extends HashMap<String, Object> {
     }
 
     public boolean isCurrentRepositorySet() {
-        return repository != null;
+        return repositoryInstance != null;
     }
 
     public DocumentRef getCurrentDocument() throws Exception {
@@ -151,7 +153,7 @@ public class CommandContext extends HashMap<String, Object> {
     }
 
     public void setRepositoryInstance(RepositoryInstance repository) {
-        this.repository = repository;
+        this.repositoryInstance = repository;
     }
 
     public DocumentModel fetchDocument() throws Exception {
@@ -181,7 +183,7 @@ public class CommandContext extends HashMap<String, Object> {
     }
 
     public RepositoryInstance getRepositoryInstance() throws Exception {
-        if (repository == null) {
+        if (repositoryInstance == null) {
             // initialize connection
             if (isLocal()) {
                 // TODO: do here the authentication ...
@@ -191,36 +193,29 @@ public class CommandContext extends HashMap<String, Object> {
             // open repository
             String repoName = cmdLine.getOption("repository");
             if (isLocal()) { // connect to a local repository
-                repository = openLocalRepository(repoName);
+                repositoryInstance = openLocalRepository(repoName);
             } else {
                 if (repoName == null) {
-                    repository = NuxeoClient.getInstance().openRepository();
+                    repositoryInstance = NuxeoClient.getInstance().openRepository();
                 } else {
-                    repository = NuxeoClient.getInstance().openRepository(
+                    repositoryInstance = NuxeoClient.getInstance().openRepository(
                             repoName);
                 }
             }
         }
-        return repository;
+        return repositoryInstance;
     }
 
     protected void initalizeConnection() throws Exception {
-        NuxeoClient client = NuxeoClient.getInstance();
-        if (username != null && !SecurityConstants.SYSTEM_USERNAME.equals(username)) {
-            client.setLoginHandler(new DefaultLoginHandler(username, password));
-        }
+        askForCredentials();
         // try connecting to all candidate hosts
         Exception exc = null;
         for (String h : getCandidateHosts()) {
-            if (username != null && !SecurityConstants.SYSTEM_USERNAME.equals(username)) {
-                client.setLoginHandler(new DefaultLoginHandler(username,
-                        password));
-            }
             try {
                 log.info("Trying to connect to nuxeo server at " + h + ':'
                         + port + " as "
                         + (username == null ? "system user" : username) + "...");
-                client.connect(h, port);
+                NuxeoClient.getInstance().connect(h, port);
                 setHost(h);
                 break;
             } catch (CannotConnectException e) {
@@ -232,6 +227,25 @@ public class CommandContext extends HashMap<String, Object> {
             throw new RuntimeException("Could not connect to server", exc);
         }
         log.info("Connection established");
+    }
+
+    protected void askForCredentials() throws IOException {
+        if (password == null && isInteractive()) {
+            if (username == null
+                    || SecurityConstants.SYSTEM_USERNAME.equals(username)) {
+                InteractiveCommand.getConsole().printString("Username? ");
+                username = InteractiveCommand.getConsole().readLine();
+            }
+            InteractiveCommand.getConsole().printString("Password? ");
+            password = InteractiveCommand.getConsole().readLine(
+                    new Character('*'));
+        }
+
+        if (username != null
+                && !SecurityConstants.SYSTEM_USERNAME.equals(username)) {
+            NuxeoClient.getInstance().setLoginHandler(
+                    new DefaultLoginHandler(username, password));
+        }
     }
 
     public RepositoryInstance openLocalRepository(String repoName) {
