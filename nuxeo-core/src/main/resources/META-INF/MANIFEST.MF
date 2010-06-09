@@ -3,15 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Core
 Bundle-SymbolicName: org.nuxeo.ecm.core;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
 Bundle-Activator: org.nuxeo.ecm.core.NXCoreActivator
 Bundle-Category: core
-Bundle-ClassPath: .,
- lib/connector-api.jar
+Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.api.local,
- org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.lifecycle,
  org.nuxeo.ecm.core.lifecycle.extensions,
  org.nuxeo.ecm.core.lifecycle.impl,
@@ -35,3 +32,8 @@ Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
  org.nuxeo.ecm.core.schema;visibility:=reexport,
  org.nuxeo.ecm.core.query;visibility:=reexport,
  org.nuxeo.ecm.core.event;visibility:=reexport
+Nuxeo-Require: org.nuxeo.runtime,
+  org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.core.schema,
+  org.nuxeo.ecm.core.query,
+  org.nuxeo.ecm.core.event

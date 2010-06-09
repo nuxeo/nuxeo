@@ -6,6 +6,9 @@ Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.core.storage.sql.ra
-Require-Bundle: org.nuxeo.ecm.core.storage.sql
+Nuxeo-Require: org.nuxeo.ecm.core.storage.sql
+Require-Bundle: org.nuxeo.ecm.core.storage.sql,
+ org.apache.geronimo.specs.geronimo-jta_1.1_spec;bundle-version="1.1.1",
+ org.apache.geronimo.specs.geronimo-j2ee-connector_1.5_spec;bundle-version="2.0.0"
 Bundle-Category: core
-Eclipse-LazyStart: true
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
