@@ -69,5 +69,5 @@ public interface Constants {
     public final static String W_DATE = "Date"; // Default widget for Date
     public final static String W_DECIMAL = "Decimal"; // Default widget for Long
     public final static String W_NUMBER = "Number"; // Default widget for Double
-
+    public static final String W_AUDIT_EVENT = "AuditEvent";
 }
