@@ -33,6 +33,7 @@
     <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
   </modules>

@@ -8,3 +8,4 @@ Export-Package: org.nuxeo.osgi,
  org.nuxeo.osgi.application,
  org.nuxeo.osgi.application.loader,
  org.nuxeo.osgi.application.client
+Bundle-Version: 1.6.2.qualifier
