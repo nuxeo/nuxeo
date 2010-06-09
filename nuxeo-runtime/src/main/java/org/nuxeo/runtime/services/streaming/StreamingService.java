@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -115,11 +115,17 @@ public class StreamingService extends DefaultComponent {
             if (remoting == null) {
                 // TODO throw other exception!
                 throw new IllegalStateException(
-                        "Cannot start manager. RemotingService not availalbe.");
+                        "Cannot start manager. RemotingService not available.");
             }
             TransporterServer transporterServer = remoting.getTransporterServer();
-            manager = new StreamManagerServer(transporterServer, tmpDir);
-            serverLocator = transporterServer.getLocatorURI();
+            if (transporterServer != null) {
+                manager = new StreamManagerServer(transporterServer, tmpDir);
+                serverLocator = transporterServer.getLocatorURI();
+            } else {
+                String msg = "Streaming Transporter Server is not defined. Streaming will not work.";
+                log.warn(msg);
+                Framework.getRuntime().getWarnings().add(msg);
+            }
         } else if (serverLocator == null) {
             String msg = "Streaming Server Locator is not defined. Streaming will not work.";
             log.warn(msg);
