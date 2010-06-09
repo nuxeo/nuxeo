@@ -92,7 +92,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         doc.setProperty("file", "filename", fileName);
         doc.setProperty("file", "content", bh.getBlob());
 
-        setDocumentProperties(bh.getProperties(), doc);
+        doc = setDocumentProperties(session, bh.getProperties(), doc);
 
         doc = session.createDocument(doc);
         return doc;

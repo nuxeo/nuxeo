@@ -50,7 +50,7 @@ public class FileManagerDocumentModelFactory extends
         DocumentModel doc = fileManager.createDocumentFromBlob(session,
                 bh.getBlob(), parent.getPathAsString(), true,
                 getValidNameFromFileName(node.getName()));
-        setDocumentProperties(bh.getProperties(), doc);
+        doc = setDocumentProperties(session, bh.getProperties(), doc);
         return doc;
     }
 

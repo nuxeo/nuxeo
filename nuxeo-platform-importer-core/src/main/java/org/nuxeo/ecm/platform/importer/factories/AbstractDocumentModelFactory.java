@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -67,7 +68,7 @@ public abstract class AbstractDocumentModelFactory implements
      * the value is the value to set on the document.
      *
      */
-    protected void setDocumentProperties(Map<String, Serializable> properties,
+    protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,
             DocumentModel doc) throws ClientException {
         if (properties != null) {
 
@@ -81,7 +82,9 @@ public abstract class AbstractDocumentModelFactory implements
                     log.debug(message);
                 }
             }
+            doc = session.saveDocument(doc);
         }
+        return doc;
     }
 
 }

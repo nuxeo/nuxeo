@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -59,7 +60,7 @@ public class MetadataCollector {
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    protected String nomalizePath(String contextPath) {
+    protected String normalizePath(String contextPath) {
         if (contextPath != null) {
             return contextPath = new Path(contextPath).removeTrailingSeparator().toString();
         }
@@ -80,7 +81,7 @@ public class MetadataCollector {
             Map<String, Serializable> collectedProperties) {
         try {
             lock.writeLock().lock();
-            contextPath = nomalizePath(contextPath);
+            contextPath = normalizePath(contextPath);
             if (staticInherit) {
                 Path path = new Path(contextPath);
                 while (!path.isEmpty() && !path.isRoot()) {
@@ -112,7 +113,14 @@ public class MetadataCollector {
             throw new UnsupportedOperationException(
                     "Introspection mode not available");
         } else {
-            if (value.contains("/")) {
+            if (value.contains(LIST_SEPARATOR)) {
+                List<Serializable> lstprop = new ArrayList<Serializable>();
+                String[] parts = value.split("\\" + LIST_SEPARATOR);
+                for (String part : parts) {
+                    lstprop.add(parseFromString(name, part));
+                }
+                prop = (Serializable) lstprop;
+            } else if (value.contains("/")) {
                 try {
                     Date date = new SimpleDateFormat(DATE_FORMAT).parse(value);
                     Calendar cal = new GregorianCalendar();
@@ -120,14 +128,6 @@ public class MetadataCollector {
                     prop = cal;
                 } catch (ParseException e) {
                 }
-            } else if (value.contains(LIST_SEPARATOR)) {
-                List<Serializable> lstprop = new ArrayList<Serializable>();
-                String[] parts = value.split("\\" + LIST_SEPARATOR);
-                for (String part : parts) {
-                    lstprop.add(parseFromString(name, part));
-                }
-                prop = (Serializable) lstprop;
-
             } else if (numPattern.matcher(value).matches()) {
                 try {
                     prop = Long.parseLong(value);
@@ -155,7 +155,7 @@ public class MetadataCollector {
 
     public Map<String, Serializable> getProperties(String contextPath) {
 
-        contextPath = nomalizePath(contextPath);
+        contextPath = normalizePath(contextPath);
 
         try {
             lock.readLock().lock();
@@ -165,10 +165,12 @@ public class MetadataCollector {
                 Path path = new Path(contextPath);
                 while (props == null && !path.isEmpty() && !path.isRoot()) {
                     path = path.removeLastSegments(1);
-                    props = collectedMetadata.get(path.toString()); // XXX
-                                                                    // return a
-                                                                    // copy ?
+                    props = collectedMetadata.get(path.toString());
                 }
+            }
+
+            if (props != null) {
+                props = Collections.unmodifiableMap(props);
             }
             return props;
         } finally {
