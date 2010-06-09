@@ -17,8 +17,6 @@
 
 package org.nuxeo.runtime.transaction;
 
-import java.util.ConcurrentModificationException;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.HeuristicMixedException;
