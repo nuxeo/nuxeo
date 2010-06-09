@@ -1300,7 +1300,7 @@
         <clear>both</clear>
       </selector>
       <selector path=".bigIcon">
-        <width>32px</width>
+        <width>50px</width>
       </selector>
       <selector path=".smallIcon">
         <width>16px</width>
