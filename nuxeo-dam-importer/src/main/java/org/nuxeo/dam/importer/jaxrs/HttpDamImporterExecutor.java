@@ -61,7 +61,7 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
         DamMultiThreadedImporter runner = new DamMultiThreadedImporter(source,
-                TARGET_PATH, importFolderName, importSetName, batchSize,
+                TARGET_PATH, true, importFolderName, importSetName, batchSize,
                 nbThreads, getLogger());
         runner.setFactory(new FileManagerDocumentModelFactory());
 

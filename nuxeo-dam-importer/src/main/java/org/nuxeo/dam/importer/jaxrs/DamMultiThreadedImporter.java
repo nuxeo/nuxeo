@@ -45,6 +45,8 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
 
     public static final String DEFAULT_IMPORT_FOLDER_NAME = "automatic-import";
 
+    public static final String DEFAULT_IMPORT_FOLDER_TITLE = "Automatic Import";
+
     public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
 
     public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
@@ -55,19 +57,19 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
     protected String importSetName;
 
     public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, String importFolderTitle,
+            String importWritePath, Boolean skipRootContainerCreation, String importFolderTitle,
             String importSetName, Integer batchSize, Integer nbThreads,
             ImporterLogger log) throws Exception {
-        super(sourceNode, importWritePath, batchSize, nbThreads, log);
+        super(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log);
         this.importFolderTitle = importFolderTitle;
         this.importSetName = importSetName;
     }
 
     public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, String importFolderTitle,
+            String importWritePath, Boolean skipRootContainerCreation, String importFolderTitle,
             String importSetName, Integer batchSize, Integer nbThreads,
             String jobName, ImporterLogger log) throws Exception {
-        super(sourceNode, importWritePath, batchSize, nbThreads, jobName, log);
+        super(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, jobName, log);
         this.importFolderTitle = importFolderTitle;
         this.importSetName = importSetName;
     }
@@ -82,7 +84,7 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
         String importFolderName;
         if (importFolderTitle == null) {
             importFolderName = DEFAULT_IMPORT_FOLDER_NAME;
-            importFolderTitle = DEFAULT_IMPORT_FOLDER_NAME;
+            importFolderTitle = DEFAULT_IMPORT_FOLDER_TITLE;
         } else {
             importFolderName = IdUtils.generateId(importFolderTitle);
         }
@@ -93,7 +95,7 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
         DocumentModel importFolder;
         if (!session.exists(importFolderRef)) {
             importFolder = session.createDocumentModel(importWritePath,
-                    importFolderTitle, IMPORT_FOLDER_TYPE);
+                    importFolderName, IMPORT_FOLDER_TYPE);
             importFolder = session.createDocument(importFolder);
             importFolder.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, importFolderTitle);
         } else {
