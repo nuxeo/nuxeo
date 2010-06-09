@@ -144,7 +144,7 @@ namespace NuxeoProcess
 			// Setup NUXEO_HOME
 			String NUXEO_HOME=null;
 			if (nxConfig.ContainsKey("NUXEO_HOME")) {
-				NUXEO_HOME=nxConfig["NUXEO_HOME"];
+                NUXEO_HOME = nxConfig["NUXEO_HOME"];
             }
             else if (Environment.GetEnvironmentVariable("NUXEO_HOME") != null)
             {
@@ -160,7 +160,7 @@ namespace NuxeoProcess
             }
             else
             {
-                NUXEO_HOME = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
+                NUXEO_HOME = Directory.GetParent(Assembly.GetEntryAssembly().Location).Parent.FullName;
 			}
 
 			nxEnv.Add("NUXEO_HOME",NUXEO_HOME);
