@@ -53,7 +53,8 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         getLogger().info("Random text generator initialized");
 
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(
-                source, targetPath, skipRootContainerCreation, batchSize, nbTheards, getLogger());
+                source, targetPath, skipRootContainerCreation, batchSize,
+                nbTheards, getLogger());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(
                 blockSyncPostCommitProcessing, blockAsyncProcessing, !onlyText,

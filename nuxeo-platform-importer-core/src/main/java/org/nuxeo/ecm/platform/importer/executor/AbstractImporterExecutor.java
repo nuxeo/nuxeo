@@ -79,8 +79,6 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    // protected abstract CoreSession getCoreSession();
-
     protected void startTask(ImporterRunner runner, boolean interactive) {
         executorMainThread = new Thread(runner);
         executorMainThread.setName("ImporterExecutorMainThread");

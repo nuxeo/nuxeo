@@ -91,9 +91,9 @@ public class GenericThreadedImportTask implements Runnable {
     protected ImporterLogger rsLogger = null;
 
     public GenericThreadedImportTask(CoreSession session,
-            SourceNode rootSource, DocumentModel rootDoc, boolean skipContainerCreation,
-            ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory,
+            SourceNode rootSource, DocumentModel rootDoc,
+            boolean skipContainerCreation, ImporterLogger rsLogger,
+            int batchSize, ImporterDocumentModelFactory factory,
             ImporterThreadingPolicy threadPolicy) throws Exception {
         this.rsLogger = rsLogger;
 
@@ -115,13 +115,13 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public GenericThreadedImportTask(CoreSession session,
-            SourceNode rootSource, DocumentModel rootDoc, boolean skipContainerCreation,
-            ImporterLogger rsLogger, int batchSize,
-            ImporterDocumentModelFactory factory,
+            SourceNode rootSource, DocumentModel rootDoc,
+            boolean skipContainerCreation, ImporterLogger rsLogger,
+            int batchSize, ImporterDocumentModelFactory factory,
             ImporterThreadingPolicy threadPolicy, String jobName)
             throws Exception {
-        this(session, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory,
-                threadPolicy);
+        this(session, rootSource, rootDoc, skipContainerCreation, rsLogger,
+                batchSize, factory, threadPolicy);
         this.jobName = jobName;
         this.jobHelper = new JobHistoryHelper(jobName);
     }
@@ -197,8 +197,8 @@ public class GenericThreadedImportTask implements Runnable {
     protected GenericThreadedImportTask createNewTask(DocumentModel parent,
             SourceNode node, ImporterLogger log, Integer batchSize)
             throws Exception {
-        return new GenericThreadedImportTask(null, node, parent, skipContainerCreation, log,
-                batchSize, factory, threadPolicy);
+        return new GenericThreadedImportTask(null, node, parent,
+                skipContainerCreation, log, batchSize, factory, threadPolicy);
     }
 
     protected GenericThreadedImportTask createNewTaskIfNeeded(

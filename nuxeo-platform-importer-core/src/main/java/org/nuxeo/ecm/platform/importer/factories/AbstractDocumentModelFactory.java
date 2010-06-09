@@ -68,8 +68,9 @@ public abstract class AbstractDocumentModelFactory implements
      * the value is the value to set on the document.
      *
      */
-    protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,
-            DocumentModel doc) throws ClientException {
+    protected DocumentModel setDocumentProperties(CoreSession session,
+            Map<String, Serializable> properties, DocumentModel doc)
+            throws ClientException {
         if (properties != null) {
 
             for (Map.Entry<String, Serializable> entry : properties.entrySet()) {

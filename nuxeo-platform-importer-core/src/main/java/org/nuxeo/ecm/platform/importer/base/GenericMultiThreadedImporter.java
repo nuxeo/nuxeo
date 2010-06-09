@@ -109,8 +109,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads,
-            ImporterLogger log) throws Exception {
+            String importWritePath, Boolean skipRootContainerCreation,
+            Integer batchSize, Integer nbThreads, ImporterLogger log)
+            throws Exception {
         importSource = sourceNode;
         this.importWritePath = importWritePath;
         this.log = log;
@@ -126,10 +127,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, Boolean skipRootContainerCreation, Integer batchSize, Integer nbThreads,
-            String jobName, ImporterLogger log) throws Exception {
+            String importWritePath, Boolean skipRootContainerCreation,
+            Integer batchSize, Integer nbThreads, String jobName,
+            ImporterLogger log) throws Exception {
 
-        this(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log);
+        this(sourceNode, importWritePath, skipRootContainerCreation, batchSize,
+                nbThreads, log);
         this.jobName = jobName;
         this.jobHelper = new JobHistoryHelper(jobName);
     }
@@ -190,11 +193,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     protected GenericThreadedImportTask initRootTask(SourceNode importSource,
-            DocumentModel targetContainer, boolean skipRootContainerCreation,  ImporterLogger log,
-            Integer batchSize, String jobName) throws Exception {
+            DocumentModel targetContainer, boolean skipRootContainerCreation,
+            ImporterLogger log, Integer batchSize, String jobName)
+            throws Exception {
         GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(
-                null, importSource, targetContainer, skipRootContainerCreation, log, batchSize,
-                getFactory(), getThreadPolicy(), jobName);
+                null, importSource, targetContainer, skipRootContainerCreation,
+                log, batchSize, getFactory(), getThreadPolicy(), jobName);
         return rootImportTask;
     }
 
@@ -208,7 +212,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
         GenericThreadedImportTask rootImportTask = initRootTask(importSource,
-                targetContainer, skipRootContainerCreation, log, batchSize, jobName);
+                targetContainer, skipRootContainerCreation, log, batchSize,
+                jobName);
 
         rootImportTask.setRootTask();
         long t0 = System.currentTimeMillis();
