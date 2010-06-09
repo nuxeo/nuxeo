@@ -65,6 +65,7 @@ import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
+import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlobList;
@@ -168,6 +169,8 @@ public class AutomationComponent extends DefaultComponent {
 
         service.putOperation(GetDocumentPrincipals.class);
         service.putOperation(GetDocumentPrincipalEmails.class);
+
+        service.putOperation(AuditLog.class);
 
         // disabled operations
 //      service.putOperation(FireEvent.class);
