@@ -26,6 +26,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.dam.importer.filter.DamImporterFilter;
 import org.nuxeo.ecm.platform.importer.executor.jaxrs.AbstractJaxRSImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.FileManagerDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
@@ -67,6 +68,7 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,
                 false, false, true);
         runner.addFilter(filter);
+        runner.addFilter(new DamImporterFilter());
 
         return doRun(runner, interactive);
     }
