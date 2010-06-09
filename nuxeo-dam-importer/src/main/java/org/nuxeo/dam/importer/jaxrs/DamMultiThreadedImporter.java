@@ -50,25 +50,25 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
     public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
             "yyyyMMdd HH:mm");
 
-    protected String importFolderName;
+    protected String importFolderTitle;
 
     protected String importSetName;
 
     public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, String importFolderName,
+            String importWritePath, String importFolderTitle,
             String importSetName, Integer batchSize, Integer nbThreads,
             ImporterLogger log) throws Exception {
         super(sourceNode, importWritePath, batchSize, nbThreads, log);
-        this.importFolderName = importFolderName;
+        this.importFolderTitle = importFolderTitle;
         this.importSetName = importSetName;
     }
 
     public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, String importFolderName,
+            String importWritePath, String importFolderTitle,
             String importSetName, Integer batchSize, Integer nbThreads,
             String jobName, ImporterLogger log) throws Exception {
         super(sourceNode, importWritePath, batchSize, nbThreads, jobName, log);
-        this.importFolderName = importFolderName;
+        this.importFolderTitle = importFolderTitle;
         this.importSetName = importSetName;
     }
 
@@ -79,17 +79,23 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
     }
 
     protected DocumentModel getOrCreateImportFolder() throws Exception {
-        if (importFolderName == null) {
+        String importFolderName;
+        if (importFolderTitle == null) {
             importFolderName = DEFAULT_IMPORT_FOLDER_NAME;
+            importFolderTitle = DEFAULT_IMPORT_FOLDER_NAME;
+        } else {
+            importFolderName = IdUtils.generateId(importFolderTitle);
         }
+
         DocumentRef importFolderRef = new PathRef(importWritePath,
                 importFolderName);
         CoreSession session = getCoreSession();
         DocumentModel importFolder;
         if (!session.exists(importFolderRef)) {
             importFolder = session.createDocumentModel(importWritePath,
-                    importFolderName, IMPORT_FOLDER_TYPE);
+                    importFolderTitle, IMPORT_FOLDER_TYPE);
             importFolder = session.createDocument(importFolder);
+            importFolder.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, importFolderTitle);
         } else {
             importFolder = session.getDocument(importFolderRef);
         }

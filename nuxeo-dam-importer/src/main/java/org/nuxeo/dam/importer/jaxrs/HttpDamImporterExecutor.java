@@ -54,7 +54,7 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Path("run")
     @Produces("text/plain; charset=UTF-8")
     public String run(@QueryParam("inputPath") String inputPath,
-            @QueryParam("importFolderName") String importFolderName,
+            @QueryParam("importFolderTitle") String importFolderName,
             @QueryParam("importSetName") String importSetName,
             @QueryParam("batchSize") Integer batchSize , @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive) throws Exception {
