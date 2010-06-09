@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Common
 Bundle-SymbolicName: org.nuxeo.common;singleton:=true
-Bundle-Vendor: Nuxeo
+Bundle-Vendor: Nuxeo SAS
 Provide-Package: org.nuxeo.common,
  org.nuxeo.common.collections,
  org.nuxeo.common.debug,
@@ -14,8 +15,11 @@ Provide-Package: org.nuxeo.common,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
  org.nuxeo.runtime.util
-Nuxeo-Require: system.bundle;reprovide=true,
- org.nuxeo.logging;optional=true;reprovide=true
-Require-Bundle: org.apache.commons.logging;reprovide=true,
+Nuxeo-Require: system.bundle,
+ org.nuxeo.logging;
+Require-Bundle: system.bundle;visibility:=reexport,
+ org.apache.commons.logging;bundle-version="1.0.4";visibility:=reexport,
  xerces.xmlParserAPIs,
  xerces.Impl
+Bundle-Version: 1.6.2.qualifier
+Bundle-ClassPath: .
