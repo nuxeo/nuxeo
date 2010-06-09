@@ -33,25 +33,27 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class StreamingService extends DefaultComponent{
+public class StreamingService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(StreamingService.class);
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.streaming");
+    public static final ComponentName NAME = new ComponentName(
+            "org.nuxeo.runtime.streaming");
 
     protected StreamManager manager;
+
     protected ComponentContext context;
 
     protected boolean isServer;
-    protected String serverLocator;
 
+    protected String serverLocator;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         this.context = context;
-        String val = Framework.getProperty("org.nuxeo.runtime.streaming.isServer", "true");
+        String val = Framework.getProperty(
+                "org.nuxeo.runtime.streaming.isServer", "true");
         isServer = val.equalsIgnoreCase("true");
         serverLocator = Framework.getProperty("org.nuxeo.runtime.streaming.serverLocator");
         startManager();
@@ -101,16 +103,19 @@ public class StreamingService extends DefaultComponent{
 
     public synchronized void startManager() throws Exception {
         if (manager != null) {
-            throw new IllegalStateException("StreamingManager is already started");
+            throw new IllegalStateException(
+                    "StreamingManager is already started");
         }
 
         if (isServer) {
-            File tmpDir = new File(Framework.getRuntime().getHome(), "tmp/uploads");
+            File tmpDir = new File(Framework.getRuntime().getHome(),
+                    "tmp/uploads");
             RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(
                     RemotingService.NAME);
             if (remoting == null) {
                 // TODO throw other exception!
-                throw new IllegalStateException("Cannot start manager. RemotingService not availalbe.");
+                throw new IllegalStateException(
+                        "Cannot start manager. RemotingService not availalbe.");
             }
             TransporterServer transporterServer = remoting.getTransporterServer();
             manager = new StreamManagerServer(transporterServer, tmpDir);
@@ -120,9 +125,12 @@ public class StreamingService extends DefaultComponent{
             log.warn(msg);
             Framework.getRuntime().getWarnings().add(msg);
         } else {
-            int minBufSize = (Integer) context.getPropertyValue("minBufferSize", 1024*8);
-            int maxBufSize = (Integer) context.getPropertyValue("maxBufferSize", 1024*1024*8);
-            manager = new StreamManagerClient(serverLocator, minBufSize, maxBufSize);
+            int minBufSize = (Integer) context.getPropertyValue(
+                    "minBufferSize", 1024 * 8);
+            int maxBufSize = (Integer) context.getPropertyValue(
+                    "maxBufferSize", 1024 * 1024 * 8);
+            manager = new StreamManagerClient(serverLocator, minBufSize,
+                    maxBufSize);
         }
         if (manager != null) {
             manager.start();
