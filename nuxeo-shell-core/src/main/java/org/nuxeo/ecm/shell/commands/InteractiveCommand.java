@@ -119,6 +119,7 @@ public class InteractiveCommand extends AbstractCommand {
             }
             runCommand(cmdLine);
         } catch (UnknownCommandException e) {
+            log.error(e.getMessage());
             return CommandLineReturn.FAILURE;
         } catch (ParseException e) {
             log.error("Command failed. " + e.getMessage());
@@ -139,8 +140,7 @@ public class InteractiveCommand extends AbstractCommand {
     void runCommand(CommandLine cmdLine) throws Exception {
         CommandDescriptor cd = service.getCommand(cmdLine.getCommand());
         if (cd == null) {
-            log.error("Unknown command: " + cmdLine.getCommand());
-            throw new UnknownCommandException();
+            throw new UnknownCommandException("Unknown command: " + cmdLine.getCommand());
         } else {
             service.runCommand(cd, cmdLine);
         }
@@ -194,15 +194,10 @@ public class InteractiveCommand extends AbstractCommand {
     }
 
     private class UnknownCommandException extends Exception {
-        public UnknownCommandException() {
-        }
+        private static final long serialVersionUID = 1L;
 
         public UnknownCommandException(String message) {
             super(message);
-        }
-
-        public UnknownCommandException(Throwable cause) {
-            super(cause);
         }
 
     }
