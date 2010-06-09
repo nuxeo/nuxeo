@@ -51,15 +51,15 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
         return importer.getCreatedDocsCounter();
     }
 
-    public String run(String inputPath, String targetPath, Integer batchSize,
+    public String run(String inputPath, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) throws Exception {
         SourceNode source = new FileSourceNode(inputPath);
-        return run(source, targetPath, batchSize, nbTheards, interactive);
+        return run(source, targetPath, skipRootContainerCreation, batchSize, nbTheards, interactive);
     }
 
-    public String run(SourceNode source, String targetPath, Integer batchSize,
+    public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) throws Exception {
-        importer = new GenericMultiThreadedImporter(source, targetPath,
+        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation,
                 batchSize, nbTheards, getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());

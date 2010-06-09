@@ -53,7 +53,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
 
-        executor.run(src, targetPath, 10, 5, true);
+        executor.run(src, targetPath, false, 10, 5, true);
 
         long createdDocs = executor.getCreatedDocsCounter();
         assertTrue(createdDocs > 0);

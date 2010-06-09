@@ -91,7 +91,7 @@ public class GenericThreadedImportTask implements Runnable {
     protected ImporterLogger rsLogger = null;
 
     public GenericThreadedImportTask(CoreSession session,
-            SourceNode rootSource, DocumentModel rootDoc,
+            SourceNode rootSource, DocumentModel rootDoc, boolean skipContainerCreation,
             ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory,
             ImporterThreadingPolicy threadPolicy) throws Exception {
@@ -103,10 +103,11 @@ public class GenericThreadedImportTask implements Runnable {
         taskId = "T" + getNextTaskId();
         this.rootSource = rootSource;
         this.rootDoc = rootDoc;
+        this.skipContainerCreation = skipContainerCreation;
         this.factory = factory;
         this.threadPolicy = threadPolicy;
 
-        // there are docuemnts without path, like versions
+        // there are documents without path, like versions
         if (rootSource == null) {
             throw new IllegalArgumentException("source node must be specified");
         }
@@ -114,12 +115,12 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public GenericThreadedImportTask(CoreSession session,
-            SourceNode rootSource, DocumentModel rootDoc,
+            SourceNode rootSource, DocumentModel rootDoc, boolean skipContainerCreation,
             ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory,
             ImporterThreadingPolicy threadPolicy, String jobName)
             throws Exception {
-        this(session, rootSource, rootDoc, rsLogger, batchSize, factory,
+        this(session, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory,
                 threadPolicy);
         this.jobName = jobName;
         this.jobHelper = new JobHistoryHelper(jobName);
@@ -196,7 +197,7 @@ public class GenericThreadedImportTask implements Runnable {
     protected GenericThreadedImportTask createNewTask(DocumentModel parent,
             SourceNode node, ImporterLogger log, Integer batchSize)
             throws Exception {
-        return new GenericThreadedImportTask(null, node, parent, log,
+        return new GenericThreadedImportTask(null, node, parent, skipContainerCreation, log,
                 batchSize, factory, threadPolicy);
     }
 

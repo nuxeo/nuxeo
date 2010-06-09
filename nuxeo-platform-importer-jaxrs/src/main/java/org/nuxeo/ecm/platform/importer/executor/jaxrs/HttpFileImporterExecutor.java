@@ -30,13 +30,14 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Produces("text/plain; charset=UTF-8")
     public String run(@QueryParam("inputPath") String inputPath,
             @QueryParam("targetPath") String targetPath,
+            @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
             @QueryParam("batchSize") Integer batchSize,
             @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive) throws Exception {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(
-                source, targetPath, batchSize, nbThreads, getLogger());
+                source, targetPath, skipRootContainerCreation, batchSize, nbThreads, getLogger());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,
                 false, false, true);
