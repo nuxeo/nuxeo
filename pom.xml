@@ -55,7 +55,7 @@
     <module>nuxeo-platform-wss-backend</module>
     <module>nuxeo-automation</module>
     <module>nuxeo-features-test</module>
-    <module>nuxeo-jboss-platform-interceptors</module>
+    <module>nuxeo-platform-jboss-interceptors</module>
   </modules>
 
   <dependencyManagement>
