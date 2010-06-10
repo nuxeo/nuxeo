@@ -526,7 +526,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     securityClause = dialect.getReadAclsCheckSql("r.acl_id");
                     securityParams.add(principals);
                     securityJoin = String.format(JOIN_ON,
-                            model.HIER_READ_ACL_TABLE_NAME + " AS r", id,
+                            model.HIER_READ_ACL_TABLE_NAME + " r", id,
                             "r.id");
                 } else {
                     securityClause = dialect.getSecurityCheckSql(id);

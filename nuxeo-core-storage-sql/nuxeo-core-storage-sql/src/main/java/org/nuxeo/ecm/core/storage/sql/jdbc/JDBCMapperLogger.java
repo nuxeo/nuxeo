@@ -55,20 +55,28 @@ public class JDBCMapperLogger {
         return log.isTraceEnabled();
     }
 
-    public void error(Object message) {
-        log.error(message);
+    public String formatMessage(String message) {
+        return "(" + instanceNumber + ") SQL: " + message;
     }
 
-    public void error(Object message, Throwable t) {
-        log.error(message, t);
+    public void error(String message) {
+        log.error(formatMessage(message));
     }
 
-    public void warn(Object message) {
-        log.error(message);
+    public void error(String message, Throwable t) {
+        log.error(formatMessage(message), t);
     }
 
-    public void log(String string) {
-        log.trace("(" + instanceNumber + ") SQL: " + string);
+    public void warn(String message) {
+        log.warn(formatMessage(message));
+    }
+
+    public void info(String message) {
+        log.info(formatMessage(message));
+    }
+
+    public void log(String message) {
+        log.trace(formatMessage(message));
     }
 
     public void logCount(int count) {

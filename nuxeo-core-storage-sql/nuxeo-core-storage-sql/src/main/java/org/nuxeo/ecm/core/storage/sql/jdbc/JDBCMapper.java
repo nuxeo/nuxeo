@@ -692,7 +692,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         log.debug("updateReadAcls: updating ...");
         try {
             Statement st = connection.createStatement();
-            st.execute(sqlInfo.dialect.getUpdateReadAclsSql());
+            String sql = sqlInfo.dialect.getUpdateReadAclsSql();
+            logger.log(sql);
+            st.execute(sql);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to update read acls", e);
@@ -707,7 +709,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         log.debug("rebuildReadAcls: rebuilding ...");
         try {
             Statement st = connection.createStatement();
-            st.execute(sqlInfo.dialect.getRebuildReadAclsSql());
+            String sql = sqlInfo.dialect.getRebuildReadAclsSql();
+            logger.log(sql);
+            st.execute(sql);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to rebuild read acls", e);

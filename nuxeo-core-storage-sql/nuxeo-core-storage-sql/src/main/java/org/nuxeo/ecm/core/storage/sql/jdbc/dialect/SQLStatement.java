@@ -247,22 +247,39 @@ public class SQLStatement {
                 }
                 String sql = statement.sql;
                 sql = replaceVars(sql, properties);
+                if (sql.startsWith("LOG.DEBUG")) {
+                    String msg = sql.substring("LOG.DEBUG".length()).trim();
+                    jdbc.logger.log(msg);
+                    continue;
+                } else if (sql.startsWith("LOG.INFO")) {
+                    String msg = sql.substring("LOG.INFO".length()).trim();
+                    jdbc.logger.info(msg);
+                    continue;
+                } else if (sql.startsWith("LOG.ERROR")) {
+                    String msg = sql.substring("LOG.ERROR".length()).trim();
+                    jdbc.logger.error(msg);
+                    continue;
+                } else if (sql.startsWith("LOG.FATAL")) {
+                    String msg = sql.substring("LOG.FATAL".length()).trim();
+                    jdbc.logger.error(msg);
+                    throw new SQLException("Fatal error: " + msg);
+                }
+
                 jdbc.logger.log(sql.replace("\n", "\n    ")); // indented
                 if (sql.endsWith(";")
                         && properties.containsKey(DIALECT_WITH_NO_SEMICOLON)) {
                     // derby at least doesn't allow a terminating semicolon
                     sql = sql.substring(0, sql.length() - 1);
                 }
-                Boolean emptyResult;
+
                 if (test) {
                     ResultSet rs = st.executeQuery(sql);
-                    emptyResult = Boolean.valueOf(!rs.next());
+                    Boolean emptyResult = Boolean.valueOf(!rs.next());
+                    properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
                     jdbc.logger.log("  -> emptyResult = " + emptyResult);
                 } else {
                     st.execute(sql);
-                    emptyResult = null;
                 }
-                properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
             }
         } finally {
             st.close();

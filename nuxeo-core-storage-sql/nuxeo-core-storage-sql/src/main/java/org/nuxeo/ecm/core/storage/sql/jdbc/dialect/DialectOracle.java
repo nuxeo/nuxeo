@@ -34,7 +34,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,6 +43,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
@@ -384,6 +385,27 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean supportsReadAcl() {
+        return aclOptimizationsEnabled;
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String idColumnName) {
+        return String.format("%s IN (SELECT COLUMN_VALUE FROM TABLE(nx_get_read_acls_for(?)))",
+                idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "{CALL nx_update_read_acls}";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "{CALL nx_rebuild_read_acls}";
+    }
+
+    @Override
     public String getSecurityCheckSql(String idColumnName) {
         return String.format("NX_ACCESS_ALLOWED(%s, ?, ?) = 1", idColumnName);
     }
@@ -426,7 +448,7 @@ public class DialectOracle extends Dialect {
 
     @Override
     public boolean supportsWith() {
-        return true;
+        return !aclOptimizationsEnabled;
     }
 
     @Override
@@ -466,7 +488,7 @@ public class DialectOracle extends Dialect {
         init();
         try {
             Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
-                    "NX_ARRAY", connection);
+                    "NX_STRING_TABLE", connection);
             return (Array) arrayConstructor.newInstance(arrayDescriptor,
                     connection, elements);
         } catch (Exception e) {
@@ -483,8 +505,8 @@ public class DialectOracle extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "VARCHAR2"); // in function args
-        properties.put("declaredIdType", "VARCHAR2(36)"); // in function bodies
+        properties.put("idType", "VARCHAR2(36)");
+        properties.put("argIdType", "VARCHAR2"); // in function args
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
@@ -507,6 +529,13 @@ public class DialectOracle extends Dialect {
             properties.put("fulltextTriggerStatements", StringUtils.join(lines,
                     "\n"));
         }
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
+                SecurityConstants.BROWSE);
+        List<String> permsList = new LinkedList<String>();
+        for (String perm : permissions) {
+            permsList.add(String.format("  INTO READ_ACL_PERMISSIONS VALUES ('%s')", perm));
+        }
+        properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         return properties;
     }
 

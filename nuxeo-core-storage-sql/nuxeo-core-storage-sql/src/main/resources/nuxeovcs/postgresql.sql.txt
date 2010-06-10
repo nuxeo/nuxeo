@@ -269,7 +269,8 @@ SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
 # table to store canonical read acls
 CREATE TABLE read_acls (
   id varchar(34) PRIMARY KEY,
-  acl varchar(4096));
+  acl varchar(4096)
+);
 
 
 # table to cache read acls for users
@@ -279,7 +280,8 @@ SELECT 1 FROM pg_tables WHERE tablename = 'read_acls_cache';
 #IF: emptyResult
 CREATE TABLE read_acls_cache (
   users_md5 varchar(34) NOT NULL,
-  acl_id varchar(34));
+  acl_id varchar(34)
+);
 
 
 # add index
@@ -384,25 +386,23 @@ DECLARE
   read_acl varchar(4096);
   ret varchar(4096);
 BEGIN
-  -- RAISE DEBUG 'call %', curid;
   WHILE curid IS NOT NULL LOOP
-    -- RAISE DEBUG '  curid %', curid;
     SELECT nx_get_local_read_acl(curid) INTO read_acl;
-    IF (read_acl IS NOT NULL) THEN
-      IF (ret is NULL) THEN
-        ret = read_acl;
+    IF read_acl IS NOT NULL THEN
+      IF ret is NULL THEN
+        ret := read_acl;
       ELSE
         ret := ret || ',' || read_acl;
       END IF;
     END IF;
     SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
-    IF (first AND newid IS NULL) THEN
+    IF first AND newid IS NULL THEN
       SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
     END IF;
     first := false;
     curid := newid;
   END LOOP;
-  IF (ret is NULL) THEN
+  IF ret is NULL THEN
     ret = '_empty';
   END IF;
   RETURN ret;
@@ -497,8 +497,6 @@ CREATE OR REPLACE FUNCTION nx_log_hierarchy_modified()
 RETURNS trigger
 AS $$
 -- Trigger to log doc_id that need read acl update
-DECLARE
-  doc_id ${idType};
 BEGIN
   IF (TG_OP = 'INSERT') THEN
     IF (NEW.isproperty = 'f') THEN
@@ -518,7 +516,7 @@ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified ON hierarchy;
 CREATE TRIGGER nx_trig_hierarchy_modified
-  AFTER INSERT OR UPDATE OR DELETE ON hierarchy
+  AFTER INSERT OR UPDATE ON hierarchy
   FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_modified();
 
 
@@ -596,7 +594,7 @@ BEGIN
   DELETE FROM hierarchy_modified_acl WHERE NOT is_new;
   IF (update_count > 0) THEN
     -- list of read_acls have changed
-    reset_cache = true;
+    reset_cache := true;
   END IF;
   --
   -- Mark all childrens
