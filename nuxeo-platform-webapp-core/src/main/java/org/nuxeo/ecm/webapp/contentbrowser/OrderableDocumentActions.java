@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -62,7 +63,8 @@ import static org.jboss.seam.ScopeType.EVENT;
  */
 @Name("orderableDocumentActions")
 @Scope(ScopeType.CONVERSATION)
-public class OrderableDocumentActions implements SelectDataModelListener {
+public class OrderableDocumentActions implements SelectDataModelListener,
+        Serializable {
 
     private static final Log log = LogFactory.getLog(OrderableDocumentActions.class);
 
@@ -85,10 +87,10 @@ public class OrderableDocumentActions implements SelectDataModelListener {
     protected transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true, required = false)
-    protected FacesMessages facesMessages;
+    protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Factory(value = "currentOrderedChildrenSelectModel", scope = EVENT)
     public SelectDataModel getCurrentOrderedChildrenSelectModel()
