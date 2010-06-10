@@ -19,12 +19,12 @@ package org.nuxeo.ecm.automation.jsf.operations;
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
@@ -41,7 +41,7 @@ public class DownloadFile {
     @OperationMethod
     public void run(Blob blob) throws Exception {
         if (blob == null) {
-            throw new ClientException("there is no file content available");
+            throw new OperationException("there is no file content available");
         }
 
         FacesContext faces = FacesContext.getCurrentInstance();
