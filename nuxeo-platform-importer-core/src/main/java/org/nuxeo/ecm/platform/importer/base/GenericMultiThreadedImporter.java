@@ -150,6 +150,14 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 log);
     }
 
+    public GenericMultiThreadedImporter(
+            ImporterRunnerConfiguration configuration) throws Exception {
+        this(configuration.sourceNode, configuration.importWritePath,
+                configuration.skipRootContainerCreation,
+                configuration.batchSize, configuration.nbThreads,
+                configuration.jobName, configuration.log);
+    }
+
     public void addFilter(ImporterFilter filter) {
         log.debug(String.format(
                 "Filter with %s, was added on the importer with the hash code %s. The source node name is %s",

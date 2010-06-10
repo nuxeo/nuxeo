@@ -8,6 +8,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
@@ -30,7 +31,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("targetPath") String targetPath,
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
             @QueryParam("batchSize") Integer batchSize,
-            @QueryParam("nbThreads") Integer nbTheards,
+            @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive,
             @QueryParam("nbNodes") Integer nbNodes,
             @QueryParam("fileSizeKB") Integer fileSizeKB,
@@ -47,14 +48,16 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             bulkMode = true;
         }
 
-        SourceNode source = null;
         getLogger().info("Init Random text generator");
-        source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText);
+        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText);
         getLogger().info("Random text generator initialized");
 
+        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
+                source, targetPath, getLogger()).skipRootContainerCreation(
+                skipRootContainerCreation).batchSize(batchSize).nbThreads(
+                nbThreads).build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(
-                source, targetPath, skipRootContainerCreation, batchSize,
-                nbTheards, getLogger());
+                configuration);
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(
                 blockSyncPostCommitProcessing, blockAsyncProcessing, !onlyText,
