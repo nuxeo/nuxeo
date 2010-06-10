@@ -117,7 +117,7 @@ public class DialectMySQL extends Dialect {
         case NODEVAL:
             return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
         case SYSNAME:
-            return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(256) BINARY", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -177,6 +178,24 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'Test%'");
         assertEquals(5, dml.size());
+    }
+
+    public void testQueryComplexTypeFiles() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        List<Object> files = new LinkedList<Object>();
+        Map<String, Object> f = new HashMap<String, Object>();
+        f.put("filename", "f1");
+        files.add(f);
+        doc.setProperty("files", "files", files);
+        doc = session.createDocument(doc);
+        session.save();
+
+        DocumentModelList dml = session.query("SELECT * FROM File");
+        assertEquals(1, dml.size());
+        // with MySQL was logging:
+        // ERROR Unknown document type: file
+        // due to its case-insensitivity in = and IN tests...
+        // and returning an empty query, cf SQLQueryResult.getDocumentModels
     }
 
     public void testSelectColumns() throws Exception {
