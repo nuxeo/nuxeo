@@ -11,3 +11,4 @@ Export-package: org.nuxeo.ecm.core.convert.cache,
  org.nuxeo.ecm.core.convert.service
 Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/convert-service-framework.xml
+Bundle-Activator: org.nuxeo.ecm.core.convert.service.CacheCGTaskActivator
