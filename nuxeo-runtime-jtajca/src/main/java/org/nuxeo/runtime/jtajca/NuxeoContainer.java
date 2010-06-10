@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Florent Guillaume, jcarsique
  */
 
 package org.nuxeo.runtime.jtajca;
 
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -264,5 +265,14 @@ public class NuxeoContainer {
             this.idleTimeoutMinutes = idleTimeoutMinutes;
         }
 
+    }
+    
+    public static void initTransactionManagement() throws NamingException {
+        initTransactionManager(new TransactionManagerConfiguration());
+        initConnectionManager(new ConnectionManagerConfiguration());
+        InitialContext initialContext = new InitialContext();
+        initialContext.rebind("java:comp/TransactionManager",getTransactionManager());
+        initialContext.rebind("java:comp/UserTransaction",getUserTransaction());
+        initialContext.rebind("java:comp/NuxeoConnectionManager",getConnectionManager());
     }
 }
