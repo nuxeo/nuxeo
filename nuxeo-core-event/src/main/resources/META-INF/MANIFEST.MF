@@ -1,18 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Event Service
-Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
-Bundle-Vendor: Nuxeo
+Bundle-Name: Nuxeo Core Event
+Bundle-SymbolicName: org.nuxeo.core.event;singleton:=true
+Bundle-Vendor: Nuxeo SAS
 Bundle-Localization: bundle
 Require-Bundle: system.bundle,
+ org.apache.commons.logging,
  org.nuxeo.common,
  org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.runtime,
  org.nuxeo.runtime.management,
  org.apache.geronimo.specs.geronimo-jta_1.1_spec,
  javax.script.api
 Nuxeo-Require:  org.nuxeo.ecm.core.api,
   org.nuxeo.runtime.management
-Eclipse-LazyStart: false
+Eclipse-LazyStart: true
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/management-contrib.xml
 Export-Package: 
@@ -22,4 +25,3 @@ Export-Package:
  org.nuxeo.ecm.core.event.script,
  org.nuxeo.ecm.core.event.test,
  org.nuxeo.ecm.core.event.tx
-

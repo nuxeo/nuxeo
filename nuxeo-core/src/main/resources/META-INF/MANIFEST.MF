@@ -6,9 +6,9 @@ Bundle-Vendor: Nuxeo
 Bundle-Activator: org.nuxeo.ecm.core.NXCoreActivator
 Bundle-Category: core
 Bundle-ClassPath: .
-Export-Package: org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.api.local,
+Export-Package: org.nuxeo.ecm.core;split:="core"; mandatory:="core",
+ org.nuxeo.ecm.core.api;split:="core"; mandatory:="core",
+ org.nuxeo.ecm.core.api.local;split:="core"; mandatory:="core",
  org.nuxeo.ecm.core.lifecycle,
  org.nuxeo.ecm.core.lifecycle.extensions,
  org.nuxeo.ecm.core.lifecycle.impl,
@@ -27,11 +27,14 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/SecurityService.xml,
  OSGI-INF/permissions-contrib.xml,
  OSGI-INF/security-policy-contrib.xml
-Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
- org.nuxeo.ecm.core.api;visibility:=reexport,
- org.nuxeo.ecm.core.schema;visibility:=reexport,
- org.nuxeo.ecm.core.query;visibility:=reexport,
- org.nuxeo.ecm.core.event;visibility:=reexport
+Require-Bundle: system.bundle,
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.event,
+ org.apache.geronimo.specs.geronimo-jta_1.1_spec
 Nuxeo-Require: org.nuxeo.runtime,
   org.nuxeo.ecm.core.api,
   org.nuxeo.ecm.core.schema,
