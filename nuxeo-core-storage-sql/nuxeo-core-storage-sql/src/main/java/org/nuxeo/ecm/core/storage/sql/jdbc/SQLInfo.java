@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
@@ -497,7 +496,7 @@ public class SQLInfo {
          * proxies
          */
         table = database.getTable(model.PROXY_TABLE_NAME);
-        Table hierTable = database.getTable(model.hierTableName);
+        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
         selectProxiesByVersionable = makeSelect(table,
                 model.PROXY_VERSIONABLE_KEY);
         table.addIndex(model.PROXY_VERSIONABLE_KEY);
@@ -569,8 +568,7 @@ public class SQLInfo {
      * Creates the SQL for the table holding hierarchy information.
      */
     protected void initHierarchySQL() {
-        assert model.idGenPolicy == IdGenPolicy.APP_UUID;
-        TableMaker maker = new TableMaker(model.hierTableName);
+        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
         if (separateMainTable) {
             maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
         } else {
@@ -615,7 +613,7 @@ public class SQLInfo {
      */
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
-        boolean isMain = tableName.equals(model.mainTableName);
+        boolean isMain = tableName.equals(model.HIER_TABLE_NAME);
 
         if (isMain) {
             maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
@@ -677,7 +675,7 @@ public class SQLInfo {
             if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKNP
                     || type == ColumnType.NODEIDFKNULL
                     || type == ColumnType.NODEIDFKMUL) {
-                column.setReferences(database.getTable(model.mainTableName),
+                column.setReferences(database.getTable(model.HIER_TABLE_NAME),
                         model.MAIN_KEY);
             }
             return column;
@@ -734,7 +732,7 @@ public class SQLInfo {
          * Additional SQL for the main table.
          */
         protected void postProcessIdGeneration() {
-            assert model.idGenPolicy == IdGenPolicy.APP_UUID;
+            // nothing to do
         }
 
         /**
@@ -1171,8 +1169,7 @@ public class SQLInfo {
             throws SQLException {
         List<SQLStatement> statements = sqlStatements.get(category);
         if (statements != null) {
-            SQLStatement.execute(statements, sqlStatementsProperties,
-                    jdbc);
+            SQLStatement.execute(statements, sqlStatementsProperties, jdbc);
         }
     }
 

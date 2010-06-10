@@ -155,7 +155,7 @@ public class HierarchyContext {
 
     public void createdSimpleFragment(SimpleFragment fragment)
             throws StorageException {
-        if (!model.hierTableName.equals(fragment.row.tableName)) {
+        if (!model.HIER_TABLE_NAME.equals(fragment.row.tableName)) {
             return;
         }
         // add as a child of its parent
@@ -461,7 +461,7 @@ public class HierarchyContext {
 
     /** Deletes a fragment from the context. */
     public void removeFragment(Fragment fragment) throws StorageException {
-        if (!model.hierTableName.equals(fragment.row.tableName)) {
+        if (!model.HIER_TABLE_NAME.equals(fragment.row.tableName)) {
             return;
         }
         removeChild((SimpleFragment) fragment,
@@ -482,19 +482,19 @@ public class HierarchyContext {
 
     // called by Children
     public SimpleFragment getHierIfPresent(Serializable id) {
-        RowId rowId = new RowId(model.hierTableName, id);
+        RowId rowId = new RowId(model.HIER_TABLE_NAME, id);
         return (SimpleFragment) context.getIfPresent(rowId);
     }
 
     // also called by Children
     public SimpleFragment getHier(Serializable id, boolean allowAbsent)
             throws StorageException {
-        RowId rowId = new RowId(model.hierTableName, id);
+        RowId rowId = new RowId(model.HIER_TABLE_NAME, id);
         return (SimpleFragment) context.get(rowId, allowAbsent);
     }
 
     public void recordFragment(Fragment fragment) throws StorageException {
-        if (!model.hierTableName.equals(fragment.row.tableName)) {
+        if (!model.HIER_TABLE_NAME.equals(fragment.row.tableName)) {
             return;
         }
         // add as a child of its parent
@@ -594,9 +594,9 @@ public class HierarchyContext {
         session.flush(); // flush deletes
 
         // copy the version values
-        Row overwriteRow = new Row(model.hierTableName, versionableId);
+        Row overwriteRow = new Row(model.HIER_TABLE_NAME, versionableId);
         SimpleFragment versionHier = getHier(versionId, false);
-        for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
+        for (String key : model.getFragmentKeysType(model.HIER_TABLE_NAME).keySet()) {
             if (key.equals(model.HIER_PARENT_KEY)
                     || key.equals(model.HIER_CHILD_NAME_KEY)
                     || key.equals(model.HIER_CHILD_POS_KEY)

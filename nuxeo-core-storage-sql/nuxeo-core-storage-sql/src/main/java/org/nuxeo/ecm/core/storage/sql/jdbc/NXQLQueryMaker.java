@@ -273,7 +273,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             fragmentNames.add(propertyInfo.fragmentName);
         }
-        fragmentNames.remove(model.hierTableName);
+        fragmentNames.remove(model.HIER_TABLE_NAME);
 
         // Do we need to add the versions table too?
         if (info.needsVersionsTable || info.immutableClause != null) {
@@ -298,7 +298,7 @@ public class NXQLQueryMaker implements QueryMaker {
             docKinds = new DocKind[] { DocKind.DIRECT, DocKind.PROXY };
         }
 
-        Table hier = database.getTable(model.hierTableName);
+        Table hier = database.getTable(model.HIER_TABLE_NAME);
 
         List<Column> whatColumns = null;
         List<String> whatKeys = null;

@@ -172,7 +172,7 @@ public class PersistenceContext {
         // created main rows are saved first in the batch (in their order of
         // creation), because they are used as foreign keys in all other tables
         for (Serializable id : createdIds) {
-            RowId rowId = new RowId(model.hierTableName, id);
+            RowId rowId = new RowId(model.HIER_TABLE_NAME, id);
             Fragment fragment = modified.remove(rowId);
             if (fragment == null) {
                 // was created and deleted before save

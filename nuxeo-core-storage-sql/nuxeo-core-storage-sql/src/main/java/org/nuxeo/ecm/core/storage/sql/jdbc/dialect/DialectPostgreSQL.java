@@ -576,7 +576,7 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public boolean preCreateTable(Connection connection, Table table,
             Model model, Database database) throws SQLException {
-        if (table.getName().equals(model.hierTableName.toLowerCase())) {
+        if (table.getName().equals(model.HIER_TABLE_NAME.toLowerCase())) {
             hierarchyCreated = true;
             return true;
         }

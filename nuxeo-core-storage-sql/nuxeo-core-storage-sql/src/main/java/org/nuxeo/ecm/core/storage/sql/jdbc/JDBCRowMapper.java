@@ -367,7 +367,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         // reorganize by table
         Map<String, List<Row>> tableRows = new LinkedHashMap<String, List<Row>>();
         // hierarchy table first because there are foreign keys to it
-        tableRows.put(model.hierTableName, new LinkedList<Row>());
+        tableRows.put(model.HIER_TABLE_NAME, new LinkedList<Row>());
         for (Row row : creates) {
             List<Row> rows = tableRows.get(row.tableName);
             if (rows == null) {
@@ -659,7 +659,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     return null;
                 }
                 // construct the row from the results
-                Row row = new Row(model.hierTableName, (Serializable) null);
+                Row row = new Row(model.HIER_TABLE_NAME, (Serializable) null);
                 i = 1;
                 List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
                 for (Column column : columns) {
@@ -691,7 +691,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             "Child '%s' appeared twice as child of %s "
                                     + "(%s and %s), renaming second to '%s'",
                             childName, parentId, row.id, childId, newName));
-                    Row rename = new Row(model.hierTableName, childId);
+                    Row rename = new Row(model.HIER_TABLE_NAME, childId);
                     rename.putNew(model.HIER_CHILD_NAME_KEY, newName);
                     updateSimpleRowWithValues(model.HIER_TABLE_NAME, rename);
                 }
@@ -715,7 +715,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         criteriaMap.put(model.HIER_PARENT_KEY, parentId);
         criteriaMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
-        return getSelectRows(model.hierTableName, select, criteriaMap, null,
+        return getSelectRows(model.HIER_TABLE_NAME, select, criteriaMap, null,
                 false);
     }
 
@@ -761,7 +761,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     : overwriteRow.id;
             if (overwriteId != null) {
                 // overwrite hier root with explicit values
-                String tableName = model.hierTableName;
+                String tableName = model.HIER_TABLE_NAME;
                 updateSimpleRowWithValues(tableName, overwriteRow);
                 idMap.put(sourceId, overwriteId);
                 // invalidate

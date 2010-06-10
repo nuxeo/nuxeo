@@ -470,7 +470,7 @@ public class SessionImpl implements Session, XAResource {
         // TODO ctx: order of fragments
         List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
         for (Serializable id : ids) {
-            hierRowIds.add(new RowId(model.mainTableName, id));
+            hierRowIds.add(new RowId(model.HIER_TABLE_NAME, id));
         }
 
         List<Fragment> hierFragments = context.getMulti(hierRowIds, false);
@@ -497,7 +497,7 @@ public class SessionImpl implements Session, XAResource {
             }
             // add row id for each table name
             for (String tableName : tableNames) {
-                if (tableName.equals(model.mainTableName)) {
+                if (tableName.equals(model.HIER_TABLE_NAME)) {
                     continue; // already fetched
                 }
                 if (parentId != null
@@ -618,7 +618,7 @@ public class SessionImpl implements Session, XAResource {
                 : parent.hierFragment.getId();
 
         // main info
-        Row hierRow = new Row(model.mainTableName, id);
+        Row hierRow = new Row(model.HIER_TABLE_NAME, id);
         hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
         // TODO if folder is ordered, we have to compute the pos as max+1...
         hierRow.putNew(model.HIER_PARENT_KEY, parentId);
@@ -857,7 +857,7 @@ public class SessionImpl implements Session, XAResource {
         requireReadAclsUpdate();
         Serializable id = generateNewId(null);
 
-        Row hierRow = new Row(model.mainTableName, id);
+        Row hierRow = new Row(model.HIER_TABLE_NAME, id);
         hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
         hierRow.putNew(model.HIER_PARENT_KEY, null);
         hierRow.putNew(model.HIER_CHILD_POS_KEY, null);

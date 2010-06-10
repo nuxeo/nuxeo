@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -75,10 +73,6 @@ public class Model {
     public static final String REPOINFO_REPONAME_KEY = "name";
 
     public static final String MAIN_KEY = "id";
-
-    public final String hierTableName;
-
-    public final String mainTableName;
 
     public static final String CLUSTER_NODES_TABLE_NAME = "cluster_nodes";
 
@@ -257,13 +251,7 @@ public class Model {
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
-    /** The id generation policy. */
-    public final IdGenPolicy idGenPolicy;
-
-    /** Is the hierarchy table separate from the main table. */
-    protected final boolean separateMainTable;
-
-    private final AtomicLong temporaryIdCounter;
+    // private final AtomicLong temporaryIdCounter;
 
     /** Shared high-level properties that don't come from the schema manager. */
     private final Map<String, Type> specialPropertyTypes;
@@ -334,12 +322,8 @@ public class Model {
 
     public Model(ModelSetup modelSetup) throws StorageException {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
-        idGenPolicy = repositoryDescriptor.idGenPolicy;
-        separateMainTable = repositoryDescriptor.separateMainTable;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
-        temporaryIdCounter = new AtomicLong(0);
-        hierTableName = HIER_TABLE_NAME;
-        mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
+        // temporaryIdCounter = new AtomicLong(0);
 
         schemaPropertyKeyInfos = new HashMap<String, Map<String, ModelProperty>>();
         schemaPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
@@ -397,15 +381,9 @@ public class Model {
      * @return a new id, which may be temporary
      */
     public Serializable generateNewId() {
-        switch (idGenPolicy) {
-        case APP_UUID:
-            return UUID.randomUUID().toString();
-            // return "UUID_" + temporaryIdCounter.incrementAndGet();
-        case DB_IDENTITY:
-            return "T" + temporaryIdCounter.incrementAndGet();
-        default:
-            throw new AssertionError(idGenPolicy);
-        }
+        return UUID.randomUUID().toString();
+        // return "UUID_" + temporaryIdCounter.incrementAndGet();
+        // return "T" + temporaryIdCounter.incrementAndGet();
     }
 
     /**
@@ -415,22 +393,13 @@ public class Model {
      * @return the fixed up id
      */
     public Serializable unHackStringId(String id) {
-        switch (idGenPolicy) {
-        case APP_UUID:
-            return id;
-        case DB_IDENTITY:
-            if (id.startsWith("T")) {
-                return id;
-            }
-            /*
-             * Document ids coming from higher level have been turned into
-             * strings (by SQLDocument.getUUID) but are really longs for the
-             * backend.
-             */
-            return Long.valueOf(id);
-        default:
-            throw new AssertionError(idGenPolicy);
-        }
+        return id;
+        // if (id.startsWith("T")) {
+        // return id;
+        // }
+        // Document ids coming from higher level have been turned into strings
+        // (by SQLDocument.getUUID) but are really longs for the backend.
+        // return Long.valueOf(id);
     }
 
     /**
@@ -915,13 +884,8 @@ public class Model {
     }
 
     private PropertyType mainIdType() {
-        switch (idGenPolicy) {
-        case APP_UUID:
-            return PropertyType.STRING;
-        case DB_IDENTITY:
-            return PropertyType.LONG;
-        }
-        throw new AssertionError(idGenPolicy);
+        return PropertyType.STRING;
+        // return PropertyType.LONG;
     }
 
     /**
@@ -1046,19 +1010,19 @@ public class Model {
      */
     private void initMainModel() {
         addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
-                mainTableName, MAIN_PRIMARY_TYPE_KEY, true, null,
+                HIER_TABLE_NAME, MAIN_PRIMARY_TYPE_KEY, true, null,
                 ColumnType.SYSNAME);
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
-                mainTableName, MAIN_CHECKED_IN_KEY, false,
+                HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(null, MAIN_BASE_VERSION_PROP, mainIdType(),
-                mainTableName, MAIN_BASE_VERSION_KEY, false,
+                HIER_TABLE_NAME, MAIN_BASE_VERSION_KEY, false,
                 StringType.INSTANCE, ColumnType.NODEVAL);
         addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MAJOR_VERSION_KEY, false,
+                HIER_TABLE_NAME, MAIN_MAJOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
         addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MINOR_VERSION_KEY, false,
+                HIER_TABLE_NAME, MAIN_MINOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
     }
 
@@ -1260,7 +1224,7 @@ public class Model {
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
                                 : MAIN_MINOR_VERSION_KEY;
                         addPropertyInfo(typeName, propertyName, propertyType,
-                                mainTableName, fragmentKey, false, null, type);
+                                HIER_TABLE_NAME, fragmentKey, false, null, type);
                     } else {
                         addPropertyInfo(typeName, propertyName, propertyType,
                                 fragmentName, fragmentKey, false, null, type);
