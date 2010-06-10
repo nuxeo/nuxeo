@@ -107,7 +107,7 @@ public class DialectMySQL extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("DATETIME", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(40) BINARY", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:
@@ -115,7 +115,7 @@ public class DialectMySQL extends Dialect {
         case NODEIDFKMUL:
         case NODEIDFKNULL:
         case NODEVAL:
-            return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(36) BINARY", Types.VARCHAR);
         case SYSNAME:
             return jdbcInfo("VARCHAR(256) BINARY", Types.VARCHAR);
         case TINYINT:
