@@ -27,10 +27,11 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -352,166 +353,17 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database) {
-        String idType;
-        switch (model.idGenPolicy) {
-        case APP_UUID:
-            idType = "varchar(36)";
-            break;
-        case DB_IDENTITY:
-            idType = "integer";
-            break;
-        default:
-            throw new AssertionError(model.idGenPolicy);
-        }
-
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                "DROP PROCEDURE IF EXISTS NX_CLUSTER_INVAL", //
-                String.format(
-                        "CREATE PROCEDURE NX_CLUSTER_INVAL(i %s, f TEXT, k TINYINT) " //
-                                + "LANGUAGE SQL " //
-                                + "MODIFIES SQL DATA " //
-                                + "BEGIN" //
-                                + "  DECLARE n BIGINT;" //
-                                + "  DECLARE done BOOLEAN DEFAULT FALSE;" //
-                                + "  DECLARE cur CURSOR FOR " //
-                                + "    SELECT nodeid FROM cluster_nodes WHERE nodeid <> @@PSEUDO_THREAD_ID;" //
-                                + "  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;" //
-                                + "  OPEN cur;" //
-                                + "  REPEAT " //
-                                + "    FETCH cur INTO n;" //
-                                + "    IF NOT done THEN" //
-                                + "      INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (n, i, f, k);" //
-                                + "    END IF;" //
-                                + "  UNTIL done END REPEAT;" //
-                                + "  CLOSE cur; " //
-                                + "END" //
-                        , idType)));
-
-        statements.add(new ConditionalStatement(
-                true, // early
-                Boolean.TRUE, // always drop
-                null, //
-                "DROP FUNCTION IF EXISTS NX_IN_TREE", //
-                String.format(
-                        "CREATE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
-                                + "RETURNS BOOLEAN " //
-                                + "LANGUAGE SQL " //
-                                + "READS SQL DATA " //
-                                + "BEGIN" //
-                                + "  DECLARE curid %<s DEFAULT id;" //
-                                + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
-                                + "    RETURN FALSE;" //
-                                + "  END IF;" //
-                                + "  LOOP" //
-                                + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
-                                + "    IF curid IS NULL THEN" //
-                                + "      RETURN FALSE; " //
-                                + "    ELSEIF curid = baseid THEN" //
-                                + "      RETURN TRUE;" //
-                                + "    END IF;" //
-                                + "  END LOOP;" //
-                                + "END" //
-                        , idType)));
-
-        statements.add(new ConditionalStatement(
-                true, // early
-                Boolean.TRUE, // always drop
-                null, //
-                "DROP FUNCTION IF EXISTS NX_ACCESS_ALLOWED", //
-                String.format(
-                        "CREATE FUNCTION NX_ACCESS_ALLOWED" //
-                                + "(id %s, users VARCHAR(10000), perms VARCHAR(10000)) " //
-                                + "RETURNS BOOLEAN " //
-                                + "LANGUAGE SQL " //
-                                + "READS SQL DATA " //
-                                + "BEGIN" //
-                                + "  DECLARE allusers VARCHAR(10000) DEFAULT CONCAT('|',users,'|');" //
-                                + "  DECLARE allperms VARCHAR(10000) DEFAULT CONCAT('|',perms,'|');" //
-                                + "  DECLARE first BOOLEAN DEFAULT TRUE;" //
-                                + "  DECLARE curid %<s DEFAULT id;" //
-                                + "  DECLARE newid %<s;" //
-                                + "  DECLARE gr BIT;" //
-                                + "  DECLARE pe VARCHAR(1000);" //
-                                + "  DECLARE us VARCHAR(1000);" //
-                                + "  WHILE curid IS NOT NULL DO" //
-                                + "    BEGIN" //
-                                + "      DECLARE done BOOLEAN DEFAULT FALSE;" //
-                                + "      DECLARE cur CURSOR FOR" //
-                                + "        SELECT `grant`, `permission`, `user` FROM `acls`" //
-                                + "        WHERE `acls`.`id` = curid ORDER BY `pos`;" //
-                                + "      DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;" //
-                                + "      OPEN cur;" //
-                                + "      REPEAT " //
-                                + "        FETCH cur INTO gr, pe, us;" //
-                                + "        IF NOT done THEN" //
-                                + "          IF LOCATE(CONCAT('|',us,'|'), allusers) <> 0 AND LOCATE(CONCAT('|',pe,'|'), allperms) <> 0 THEN" //
-                                + "            CLOSE cur;" //
-                                + "            RETURN gr;" //
-                                + "          END IF;" //
-                                + "        END IF;" //
-                                + "      UNTIL done END REPEAT;" //
-                                + "      CLOSE cur;" //
-                                + "    END;" //
-                                + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
-                                + "    IF first AND newid IS NULL THEN" //
-                                + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
-                                + "    END IF;" //
-                                + "    SET first = FALSE;" //
-                                + "    SET curid = newid;" //
-                                + "  END WHILE;" //
-                                + "  RETURN FALSE; " //
-                                + "END" //
-                        , idType)));
-        return statements;
-    }
-
-    protected static class DebugStatements {
-        public ConditionalStatement makeDebugTable() {
-            return new ConditionalStatement(
-                    true, // early
-                    Boolean.TRUE, // always drop
-                    null, //
-                    "DROP TABLE IF EXISTS NX_DEBUG_TABLE", //
-                    "CREATE TABLE NX_DEBUG_TABLE (id INTEGER AUTO_INCREMENT PRIMARY KEY, log VARCHAR(10000))");
-        }
-
-        public ConditionalStatement makeNxDebug() {
-            return new ConditionalStatement(
-                    true, // early
-                    Boolean.TRUE, // always drop
-                    null, //
-                    "DROP PROCEDURE IF EXISTS NX_DEBUG", //
-                    String.format("CREATE PROCEDURE NX_DEBUG(line VARCHAR(10000)) " //
-                            + "LANGUAGE SQL " //
-                            + "BEGIN " //
-                            + "  INSERT INTO NX_DEBUG_TABLE (log) values (line);" //
-                            + "END" //
-                    ));
-        }
+    public String getSQLStatementsFilename() {
+        return "nuxeovcs/mysql.sql.txt";
     }
 
     @Override
-    public Collection<ConditionalStatement> getTestConditionalStatements(
-            Model model, Database database) {
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-        statements.add(new ConditionalStatement(
-                true,
-                Boolean.FALSE,
-                null,
-                null,
-                // here use a NCLOB instead of a NVARCHAR2 to test compatibility
-                "CREATE TABLE `testschema2` (`id` VARCHAR(36) NOT NULL, `title` LONGTEXT) ENGINE=InnoDB"));
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                "ALTER TABLE `testschema2` ADD CONSTRAINT `testschema2_pk` PRIMARY KEY (`id`)"));
-        return statements;
+    public Map<String, Serializable> getSQLStatementsProperties(Model model,
+            Database database) {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("idType", "varchar(36)");
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        return properties;
     }
 
     @Override
@@ -544,36 +396,6 @@ public class DialectMySQL extends Dialect {
     @Override
     public boolean isClusteringDeleteNeeded() {
         return true;
-    }
-
-    @Override
-    public String getCleanupClusterNodesSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        // delete nodes for sessions that don't exist anymore
-        return String.format(
-                "DELETE N FROM %s N WHERE NOT EXISTS("
-                        + "SELECT 1 FROM INFORMATION_SCHEMA.PROCESSLIST P WHERE N.%s = P.id)",
-                cln.getQuotedName(), clnid.getQuotedName());
-    }
-
-    @Override
-    public String getCreateClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
-        return String.format(
-                "INSERT INTO %s (%s, %s) VALUES (@@PSEUDO_THREAD_ID, CURRENT_TIMESTAMP)",
-                cln.getQuotedName(), clnid.getQuotedName(),
-                clncr.getQuotedName());
-    }
-
-    @Override
-    public String getRemoveClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        return String.format("DELETE FROM %s WHERE %s = @@PSEUDO_THREAD_ID",
-                cln.getQuotedName(), clnid.getQuotedName());
     }
 
     @Override

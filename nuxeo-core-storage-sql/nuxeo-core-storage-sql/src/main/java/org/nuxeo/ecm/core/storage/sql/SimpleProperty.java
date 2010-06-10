@@ -22,15 +22,15 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A SimpleProperty gives access to a scalar value stored in an
- * underlying {@link SimpleFragment}.
+ * A SimpleProperty gives access to a scalar value stored in an underlying
+ * {@link SimpleFragment}.
  *
  * @author Florent Guillaume
  */
 public class SimpleProperty extends BaseProperty {
 
     /** The {@link SimpleFragment} holding the information. */
-    private final SimpleFragment row;
+    private final SimpleFragment fragment;
 
     /** The key in the dataRow */
     private final String key;
@@ -39,22 +39,22 @@ public class SimpleProperty extends BaseProperty {
      * Creates a SimpleProperty, with specific info about row and key.
      */
     public SimpleProperty(String name, PropertyType type, boolean readonly,
-            SimpleFragment row, String key) {
+            SimpleFragment fragment, String key) {
         super(name, type, readonly);
-        this.row = row;
+        this.fragment = fragment;
         this.key = key;
     }
 
     // ----- getters -----
 
     public Serializable getValue() throws StorageException {
-        return row.get(key);
+        return fragment.get(key);
     }
 
     public String getString() throws StorageException {
         switch (type) {
         case STRING:
-            return (String) row.get(key);
+            return (String) fragment.get(key);
         default:
             throw new RuntimeException("Not a String property: " + type);
         }
@@ -63,7 +63,7 @@ public class SimpleProperty extends BaseProperty {
     public Long getLong() throws StorageException {
         switch (type) {
         case LONG:
-            return (Long) row.get(key);
+            return (Long) fragment.get(key);
         default:
             throw new RuntimeException("Not a Long property: " + type);
         }
@@ -73,7 +73,7 @@ public class SimpleProperty extends BaseProperty {
 
     public void setValue(Serializable value) throws StorageException {
         checkWritable();
-        row.put(key, type.normalize(value));
+        fragment.put(key, type.normalize(value));
         // mark fragment dirty!
     }
 

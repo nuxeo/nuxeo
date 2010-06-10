@@ -36,8 +36,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,13 +48,12 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
-import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 
 /**
  * Oracle-specific dialect.
@@ -408,40 +409,6 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getCleanupClusterNodesSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        // delete nodes for sessions that don't exist anymore
-        // NOTE this needs permissions on SYS.V_$SESSION
-        // i.e. GRANT SELECT ON SYS.V_$SESSION TO someuser
-        // SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'V_$SESSION';
-        return String.format(
-                "DELETE FROM %s N WHERE "
-                        + "NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.%s = S.SID) ",
-                cln.getQuotedName(), clnid.getQuotedName());
-    }
-
-    @Override
-    public String getCreateClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
-        return String.format(
-                "INSERT INTO %s (%s, %s) VALUES (SYS_CONTEXT('USERENV','SID'), CURRENT_TIMESTAMP)",
-                cln.getQuotedName(), clnid.getQuotedName(),
-                clncr.getQuotedName());
-    }
-
-    @Override
-    public String getRemoveClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        return String.format(
-                "DELETE FROM %s WHERE %s = SYS_CONTEXT('USERENV','SID')",
-                cln.getQuotedName(), clnid.getQuotedName());
-    }
-
-    @Override
     public String getClusterInsertInvalidations() {
         return "{CALL NX_CLUSTER_INVAL(?, ?, ?)}";
     }
@@ -508,111 +475,20 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database) {
-        String idType; // for function parameters
-        String declaredType; // for PL/SQL declarations
-        switch (model.idGenPolicy) {
-        case APP_UUID:
-            idType = "VARCHAR2";
-            declaredType = "VARCHAR2(36)";
-            break;
-        case DB_IDENTITY:
-            idType = "INTEGER";
-            declaredType = "INTEGER";
-            break;
-        default:
-            throw new AssertionError(model.idGenPolicy);
-        }
+    public String getSQLStatementsFilename() {
+        return "nuxeovcs/oracle.sql.txt";
+    }
 
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-
-        statements.add(new ConditionalStatement( //
-                true, // early
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                String.format(
-                        "CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i %s, f VARCHAR2, k INTEGER) " //
-                                + "IS" //
-                                + "  sid INTEGER := SYS_CONTEXT('USERENV','SID'); " //
-                                + "BEGIN" //
-                                + "  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> sid) LOOP" //
-                                + "    INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);" //
-                                + "  END LOOP; " //
-                                + "END;" //
-                        , idType)));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                String.format(
-                        "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
-                                + "RETURN NUMBER IS " //
-                                + "  curid %s := id; " //
-                                + "BEGIN" //
-                                + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
-                                + "    RETURN 0;" //
-                                + "  END IF;" //
-                                + "  LOOP" //
-                                + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
-                                + "    IF curid IS NULL THEN" //
-                                + "      RETURN 0; " //
-                                + "    ELSIF curid = baseid THEN" //
-                                + "      RETURN 1;" //
-                                + "    END IF;" //
-                                + "  END LOOP; " //
-                                + "END;" //
-                        , idType, declaredType)));
-
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop needed
-                null, //
-                null, //
-                String.format(
-                        "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
-                                + "(id %s, users NX_ARRAY, permissions NX_ARRAY) " //
-                                + "RETURN NUMBER IS " //
-                                + "  curid %s := id;" //
-                                + "  newid %<s;" //
-                                + "  first BOOLEAN := TRUE;" //
-                                + "BEGIN" //
-                                + "  WHILE curid IS NOT NULL LOOP" //
-                                + "    FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP" //
-                                + "      FOR i IN permissions.FIRST .. permissions.LAST LOOP" //
-                                + "        IF r.permission = permissions(i) THEN" //
-                                + "          FOR j IN users.FIRST .. users.LAST LOOP" //
-                                + "            IF r.user = users(j) THEN" //
-                                + "              RETURN r.\"GRANT\";" //
-                                + "            END IF;" //
-                                + "          END LOOP;" //
-                                + "          EXIT;" //
-                                + "        END IF;" //
-                                + "      END LOOP;" //
-                                + "    END LOOP;" //
-                                + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
-                                + "    IF first AND newid IS NULL THEN" //
-                                + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
-                                + "    END IF;" //
-                                + "    first := FALSE;" //
-                                + "    curid := newid;" //
-                                + "  END LOOP;" //
-                                + "  RETURN 0; " //
-                                + "END;" //
-                        , idType, declaredType)));
-
+    @Override
+    public Map<String, Serializable> getSQLStatementsProperties(Model model,
+            Database database) {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("idType", "VARCHAR2"); // in function args
+        properties.put("declaredIdType", "VARCHAR2(36)"); // in function bodies
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            properties.put("fulltextTable", ft.getQuotedName());
             ModelFulltext fti = model.getFulltextInfo();
             List<String> lines = new ArrayList<String>(fti.indexNames.size());
             for (String indexName : fti.indexNames) {
@@ -628,35 +504,10 @@ public class DialectOracle extends Dialect {
                         ftbt.getQuotedName());
                 lines.add(line);
             }
-            statements.add(new ConditionalStatement( //
-                    false, // late
-                    Boolean.FALSE, // no drop
-                    null, //
-                    null, //
-                    "CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE " //
-                            + "BEFORE INSERT OR UPDATE ON \"FULLTEXT\" "
-                            + "FOR EACH ROW " //
-                            + "BEGIN" //
-                            + StringUtils.join(lines, "") //
-                            + "END;" //
-            ));
+            properties.put("fulltextTriggerStatements", StringUtils.join(lines,
+                    "\n"));
         }
-
-        return statements;
-    }
-
-    @Override
-    public Collection<ConditionalStatement> getTestConditionalStatements(
-            Model model, Database database) {
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                // here use a NCLOB instead of a NVARCHAR2 to test compatibility
-                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR2(36) NOT NULL, TITLE NCLOB)"));
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
-        return statements;
+        return properties;
     }
 
     @Override

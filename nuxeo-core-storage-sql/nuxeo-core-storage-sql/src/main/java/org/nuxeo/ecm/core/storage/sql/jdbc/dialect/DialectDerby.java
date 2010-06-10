@@ -25,10 +25,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -48,8 +48,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 public class DialectDerby extends Dialect {
 
     public DialectDerby(DatabaseMetaData metadata, BinaryManager binaryManager,
-            RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+            RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
     }
 
@@ -262,138 +261,23 @@ public class DialectDerby extends Dialect {
         return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
     }
 
-    private final String className = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
+    private final String derbyFunctions = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
 
     @Override
-    public Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database) {
-        String idType;
-        String methodSuffix;
-        switch (model.idGenPolicy) {
-        case APP_UUID:
-            idType = "VARCHAR(36)";
-            methodSuffix = "String";
-            break;
-        case DB_IDENTITY:
-            idType = "INTEGER";
-            methodSuffix = "Long";
-            break;
-        default:
-            throw new AssertionError(model.idGenPolicy);
-        }
-
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-
-        statements.add(makeFunction("NX_IN_TREE", //
-                String.format("(ID %s, BASEID %<s) RETURNS SMALLINT", idType), //
-                "isInTree" + methodSuffix, //
-                "READS SQL DATA"));
-
-        statements.add(makeFunction(
-                "NX_ACCESS_ALLOWED",
-                String.format(
-                        "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
-                        idType), //
-                "isAccessAllowed" + methodSuffix, //
-                "READS SQL DATA"));
-
-        if (!fulltextDisabled) {
-            statements.add(makeFunction(
-                    "NX_PARSE_FULLTEXT",
-                    "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
-                    "parseFullText", //
-                    ""));
-
-            statements.add(makeFunction(
-                    "NX_CONTAINS", //
-                    "(FT VARCHAR(10000), QUERY VARCHAR(10000)) RETURNS SMALLINT", //
-                    "matchesFullTextDerby", //
-                    ""));
-
-            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
-            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
-            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
-            Column ftid = ft.getColumn(model.MAIN_KEY);
-            statements.add(makeTrigger(
-                    "NX_TRIG_FT_INSERT", //
-                    String.format(
-                            "AFTER INSERT ON %1$s "//
-                                    + "REFERENCING NEW AS NEW " //
-                                    + "FOR EACH ROW "//
-                                    + "UPDATE %1$s " //
-                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
-                                    + "WHERE %5$s = NEW.%5$s", //
-                            ft.getQuotedName(), // 1 table "FULLTEXT"
-                            ftft.getQuotedName(), // 2 column "TEXT"
-                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
-                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
-                            ftid.getQuotedName() // 5 column "ID"
-                    )));
-
-            statements.add(makeTrigger(
-                    "NX_TRIG_FT_UPDATE", //
-                    String.format(
-                            "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
-                                    + "REFERENCING NEW AS NEW " //
-                                    + "FOR EACH ROW "//
-                                    + "UPDATE %1$s " //
-                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
-                                    + "WHERE %5$s = NEW.%5$s", //
-                            ft.getQuotedName(), // 1 table "FULLTEXT"
-                            ftft.getQuotedName(), // 2 column "TEXT"
-                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
-                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
-                            ftid.getQuotedName() // 5 column "ID"
-                    )));
-        }
-
-        return statements;
-    }
-
-    private ConditionalStatement makeFunction(String functionName,
-            String proto, String methodName, String info) {
-        return new ConditionalStatement(
-                true, // early
-                null, // do a drop check
-                String.format(
-                        "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
-                        functionName), //
-                String.format("DROP FUNCTION %s", functionName), //
-                String.format("CREATE FUNCTION %s%s " //
-                        + "LANGUAGE JAVA " //
-                        + "PARAMETER STYLE JAVA " //
-                        + "EXTERNAL NAME '%s.%s' " //
-                        + "%s", //
-                        functionName, proto, //
-                        className, methodName, info));
-    }
-
-    private ConditionalStatement makeTrigger(String triggerName, String body) {
-        return new ConditionalStatement(
-                false, // late
-                null, // do a drop check
-                String.format(
-                        "SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = '%s'",
-                        triggerName), //
-                String.format("DROP TRIGGER %s", triggerName), //
-                String.format("CREATE TRIGGER %s %s", triggerName, body));
-
+    public String getSQLStatementsFilename() {
+        return "nuxeovcs/derby.sql.txt";
     }
 
     @Override
-    public Collection<ConditionalStatement> getTestConditionalStatements(
-            Model model, Database database) {
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                // here use a CLOB instead of a VARCHAR(32672) to test
-                // compatibility
-                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR(36) NOT NULL, TITLE CLOB)"));
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
-        return statements;
+    public Map<String, Serializable> getSQLStatementsProperties(Model model,
+            Database database) {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("idType", "VARCHAR(36)");
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("derbyFunctions", derbyFunctions);
+        properties.put(SQLStatement.DIALECT_WITH_NO_SEMICOLON,
+                Boolean.TRUE);
+        return properties;
     }
 
     @Override

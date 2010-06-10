@@ -27,23 +27,22 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -345,147 +344,31 @@ public class DialectH2 extends Dialect {
         return false;
     }
 
-    private static final String h2Functions = "org.nuxeo.ecm.core.storage.sql.db.H2Functions";
-
-    private static final String h2Fulltext = "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext";
-
-    private static final String h2TrigDesc = "org.nuxeo.ecm.core.storage.sql.db.H2TriggerDescendants";
+    @Override
+    public String getSQLStatementsFilename() {
+        return "nuxeovcs/h2.sql.txt";
+    }
 
     @Override
-    public Collection<ConditionalStatement> getConditionalStatements(
-            Model model, Database database) {
-        assert model.idGenPolicy == IdGenPolicy.APP_UUID;
-        Table ht = database.getTable(model.hierTableName);
-
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-
-        statements.add(makeFunction("NX_IN_TREE", //
-                "isInTreeString"));
-
-        statements.add(makeFunction("NX_ACCESS_ALLOWED", //
-                "isAccessAllowedString"));
-
-        statements.add(makeFunction("NX_CLUSTER_INVAL", //
-                "clusterInvalidateString"));
-
-        statements.add(makeFunction("NX_CLUSTER_GET_INVALS", //
-                "getClusterInvalidationsString"));
-
-        // read acls ----------------------------------------------------------
-        // table to store canonical read acls
-        statements.add(new ConditionalStatement( //
-                false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE TABLE IF NOT EXISTS read_acls (" //
-                        + "  id character varying(4096) PRIMARY KEY," //
-                        + "  acl character varying(4096));")); //
-        // table to maintain a read acl for each hierarchy entry
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE TABLE IF NOT EXISTS hierarchy_read_acl (" //
-                        + "  id character varying(36) PRIMARY KEY," //
-                        + "  acl_id character varying(4096)," //
-                        + "  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE" //
-                        + ");"));
-        // Add index
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE INDEX IF NOT EXISTS hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl(acl_id);"));
-        // Log hierarchy with updated read acl
-        statements.add(new ConditionalStatement(false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE TABLE IF NOT EXISTS hierarchy_modified_acl ("
-                        + "  id character varying(36)," //
-                        + "  is_new boolean" //
-                        + ");"));
-        // dump browse permission into a table
-        statements.add(new ConditionalStatement(false, // late
-                Boolean.FALSE, // no drop
-                null, //
-                null, //
-                "CREATE TABLE IF NOT EXISTS read_acl_permissions ("
-                        + "  permission character varying(250)" //
-                        + ");"));
-
-        SecurityService securityService = NXCore.getSecurityService();
-        String[] permissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
-        String permissionValues = "";
+    public Map<String, Serializable> getSQLStatementsProperties(Model model,
+            Database database) {
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("idType", "VARCHAR(36)");
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
+                SecurityConstants.BROWSE);
+        List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permissionValues += "('" + perm + "')";
+            permsList.add("('" + perm + "')");
         }
-        permissionValues = permissionValues.replace(")(", "), (");
-        statements.add(new ConditionalStatement(
-                false, // late
-                null, // perform a check
-                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acl_permissions);",
-                "INSERT INTO read_acl_permissions VALUES " + permissionValues
-                        + ";", //
-                "SELECT 1;"));
-
-        statements.add(makeFunction("nx_get_read_acl", //
-                "getReadAcl"));
-        statements.add(makeFunction("nx_get_read_acls_for", //
-                "getReadAclsFor"));
-        statements.add(makeFunction("nx_rebuild_read_acls", //
-                "rebuildReadAcls"));
-        statements.add(makeFunction("nx_update_read_acls", //
-                "updateReadAcls"));
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // do a drop
-                null, //
-                "DROP TRIGGER IF EXISTS nx_trig_acls_modified;",
-                "CREATE TRIGGER nx_trig_acls_modified\n" //
-                        + "  AFTER INSERT, UPDATE, DELETE ON acls\n" //
-                        + "  FOR EACH ROW CALL \""
-                        + h2Functions
-                        + "$LogAclsModified\";"));
-        statements.add(new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // do a drop
-                null, //
-                "DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;",
-                "CREATE TRIGGER nx_trig_hierarchy_modified\n" //
-                        + "  AFTER INSERT, UPDATE ON hierarchy\n" //
-                        + "  FOR EACH ROW CALL \""
-                        + h2Functions
-                        + "$LogHierarchyModified\";"));
-        // build the read acls if empty, this takes care of the upgrade
-        statements.add(new ConditionalStatement(
-                false, // late
-                null, // perform a check
-                "SELECT 1 WHERE NOT EXISTS(SELECT 1 FROM read_acls LIMIT 1);",
-                "SELECT * FROM nx_rebuild_read_acls();", //
-                "SELECT 1;"));
-
-        statements.add(makeFunction("NX_INIT_DESCENDANTS", //
-                "initDescendants"));
-
-        if (!fulltextDisabled) {
-            statements.add(new ConditionalStatement( //
-                    true, // early
-                    Boolean.FALSE, // no drop
-                    null, //
-                    null, //
-                    String.format(
-                            "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
-                                    + "CALL NXFT_INIT()", h2Fulltext)));
-        }
-
-        statements.add(makeTrigger("NX_TRIG_DESC", ht.getQuotedName(),
-                h2TrigDesc));
-
-        return statements;
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("readPermissions", StringUtils.join(permsList, ", "));
+        properties.put("h2Functions",
+                "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
+        properties.put("h2Fulltext",
+                "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
+        properties.put("h2TrigDesc",
+                "org.nuxeo.ecm.core.storage.sql.db.H2TriggerDescendants");
+        return properties;
     }
 
     @Override
@@ -497,65 +380,9 @@ public class DialectH2 extends Dialect {
         return Collections.emptyList();
     }
 
-    private ConditionalStatement makeFunction(String functionName,
-            String methodName) {
-        return new ConditionalStatement( //
-                true, // early
-                Boolean.TRUE, // always drop
-                null, //
-                String.format("DROP ALIAS IF EXISTS %s", functionName), //
-                String.format("CREATE ALIAS %s FOR \"%s.%s\"", functionName,
-                        h2Functions, methodName));
-    }
-
-    private ConditionalStatement makeTrigger(String triggerName,
-            String tableName, String className) {
-        return new ConditionalStatement(
-                false, // late
-                Boolean.TRUE, // always drop
-                null, //
-                String.format("DROP TRIGGER IF EXISTS %s", triggerName),
-                String.format("CREATE TRIGGER %s "
-                        + "AFTER INSERT, UPDATE, DELETE ON %s "
-                        + "FOR EACH ROW CALL \"%s\"", triggerName, tableName,
-                        className));
-    }
-
     @Override
     public boolean isClusteringSupported() {
         return true;
-    }
-
-    @Override
-    public String getCleanupClusterNodesSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        // delete nodes for sessions don't exist anymore, and old node for this
-        // session (session ids are recycled)
-        return String.format(
-                "DELETE FROM %s C WHERE "
-                        + "NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.SESSIONS S WHERE C.%s = S.ID) "
-                        + "OR C.%<s = SESSION_ID()", cln.getQuotedName(),
-                clnid.getQuotedName());
-    }
-
-    @Override
-    public String getCreateClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
-        return String.format(
-                "INSERT INTO %s (%s, %s) VALUES (SESSION_ID(), CURRENT_TIMESTAMP)",
-                cln.getQuotedName(), clnid.getQuotedName(),
-                clncr.getQuotedName());
-    }
-
-    @Override
-    public String getRemoveClusterNodeSql(Model model, Database database) {
-        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
-        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
-        return String.format("DELETE FROM %s WHERE %s = SESSION_ID()",
-                cln.getQuotedName(), clnid.getQuotedName());
     }
 
     @Override
@@ -566,20 +393,6 @@ public class DialectH2 extends Dialect {
     @Override
     public String getClusterGetInvalidations() {
         return "SELECT * FROM NX_CLUSTER_GET_INVALS()";
-    }
-
-    @Override
-    public Collection<ConditionalStatement> getTestConditionalStatements(
-            Model model, Database database) {
-        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                // here use a CLOB instead of a VARCHAR to test compatibility
-                "CREATE TABLE TESTSCHEMA2 (ID VARCHAR(36) NOT NULL, TITLE CLOB)"));
-        statements.add(new ConditionalStatement(true, Boolean.FALSE, null,
-                null,
-                "ALTER TABLE TESTSCHEMA2 ADD CONSTRAINT TESTSCHEMA2_PK PRIMARY KEY (ID)"));
-        return statements;
     }
 
     @Override

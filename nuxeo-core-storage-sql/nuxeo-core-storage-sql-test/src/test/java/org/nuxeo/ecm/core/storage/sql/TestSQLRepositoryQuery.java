@@ -85,6 +85,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
             l.add(x);
         }
         assertEquals(3, l.size());
+        res.close();
 
         // cursor behavior
         res = session.queryAndFetch("SELECT * FROM File", "NXQL");
@@ -138,6 +139,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(7, res.size());
+        res.close();
 
         // NoFile2SecurityPolicy
         deployContrib("org.nuxeo.ecm.core.query.test",
@@ -145,6 +147,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
         assertEquals(4, res.size());
+        res.close();
     }
 
     @Override
@@ -201,6 +204,19 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         // check content
         query = "SELECT ecm:uuid, dc:title FROM File ORDER BY dc:title";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(3, res.size());
+        it = res.iterator();
+        map = it.next();
+        assertEquals("testfile1_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile2_Title", map.get("dc:title"));
+        map = it.next();
+        assertEquals("testfile4Title", map.get("dc:title"));
+        res.close();
+
+        // check content with no proxies (simpler query with no UNION ALL)
+        query = "SELECT ecm:uuid, dc:title FROM File WHERE ecm:isProxy = 0 ORDER BY dc:title";
         res = session.queryAndFetch(query, "NXQL");
         assertEquals(3, res.size());
         it = res.iterator();

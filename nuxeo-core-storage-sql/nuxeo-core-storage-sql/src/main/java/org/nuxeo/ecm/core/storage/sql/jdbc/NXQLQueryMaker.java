@@ -62,9 +62,8 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
-import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
-import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -163,8 +162,6 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected Model model;
 
-    protected Session session;
-
     public String getName() {
         return "NXQL";
     }
@@ -178,14 +175,13 @@ public class NXQLQueryMaker implements QueryMaker {
         DIRECT, PROXY;
     }
 
-    public Query buildQuery(SQLInfo sqlInfo, Model model, Session session,
-            String query, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public Query buildQuery(SQLInfo sqlInfo, Model model,
+            PathResolver pathResolver, String query, QueryFilter queryFilter,
+            Object... params) throws StorageException {
         this.sqlInfo = sqlInfo;
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
-        this.session = session;
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
@@ -441,9 +437,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
             WhereBuilder whereBuilder;
             try {
-                whereBuilder = new WhereBuilder(database, session, dialect,
-                        hierTable, hierId, dataHierTable, dataHierId,
-                        docKind == DocKind.PROXY, true);
+                whereBuilder = new WhereBuilder(database, model, pathResolver,
+                        dialect, hierTable, hierId, dataHierTable, dataHierId,
+                        docKind == DocKind.PROXY);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
             }
@@ -544,6 +540,7 @@ public class NXQLQueryMaker implements QueryMaker {
              */
 
             if (orderBy == null && sqlQuery.orderBy != null) {
+                whereBuilder.aliasColumns = doUnion;
                 whereBuilder.buf.setLength(0);
                 sqlQuery.orderBy.accept(whereBuilder);
                 orderBy = whereBuilder.buf.toString();
@@ -1094,7 +1091,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
-        private final Session session;
+        private final PathResolver pathResolver;
 
         private final Model model;
 
@@ -1112,7 +1109,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private final boolean isProxies;
 
-        private final boolean aliasColumns;
+        private boolean aliasColumns;
 
         // internal fields
 
@@ -1126,24 +1123,19 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private int ftJoinNumber;
 
-        public WhereBuilder(Database database, Session session,
-                Dialect dialect, Table hierTable, String hierId,
-                Table dataHierTable, String dataHierId, boolean isProxies,
-                boolean aliasColumns) {
-            try {
-                this.session = session;
-                this.model = session.getModel();
-                this.dialect = dialect;
-                this.database = database;
-                this.hierTable = hierTable;
-                this.hierId = hierId;
-                this.dataHierTable = dataHierTable;
-                this.dataHierId = dataHierId;
-                this.isProxies = isProxies;
-                this.aliasColumns = aliasColumns;
-            } catch (StorageException e) {
-                throw new RuntimeException(e);
-            }
+        public WhereBuilder(Database database, Model model,
+                PathResolver pathResolver, Dialect dialect, Table hierTable,
+                String hierId, Table dataHierTable, String dataHierId,
+                boolean isProxies) {
+            this.pathResolver = pathResolver;
+            this.model = model;
+            this.dialect = dialect;
+            this.database = database;
+            this.hierTable = hierTable;
+            this.hierId = hierId;
+            this.dataHierTable = dataHierTable;
+            this.dataHierId = dataHierId;
+            this.isProxies = isProxies;
         }
 
         public Column findColumn(String name, boolean allowArray,
@@ -1346,8 +1338,7 @@ public class NXQLQueryMaker implements QueryMaker {
             // find the id from the path
             Serializable id;
             try {
-                Node n = session.getNodeByPath(path, null);
-                id = n == null ? null : n.getId();
+                id = pathResolver.getIdForPath(path);
             } catch (StorageException e) {
                 throw new QueryMakerException(e);
             }
@@ -1409,8 +1400,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             Serializable id;
             try {
-                Node n = session.getNodeByPath(path, null);
-                id = n == null ? null : n.getId();
+                id = pathResolver.getIdForPath(path);
             } catch (StorageException e) {
                 throw new QueryMakerException(e);
             }

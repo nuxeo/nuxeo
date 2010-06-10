@@ -64,13 +64,14 @@
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
 
-    <!-- TODO: Use the dep from the central repo -->
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -82,6 +83,26 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- NetServer -->
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <scope>compile</scope> <!-- override provided -->
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <scope>compile</scope> <!-- override provided -->
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
 
     <dependency>

@@ -17,7 +17,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
@@ -30,7 +32,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
+import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -62,6 +68,8 @@ public class RepositoryImpl implements Repository {
     // modified only under clusterMapper synchronization
     private long clusterLastInvalidationTimeMillis;
 
+    private Object server;
+
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
@@ -71,25 +79,58 @@ public class RepositoryImpl implements Repository {
         } catch (Exception e) {
             throw new StorageException(e);
         }
+
+        binaryManager = createBinaryManager();
+        backend = createBackend();
+        server = createServer();
+    }
+
+    protected BinaryManager createBinaryManager() throws StorageException {
         try {
             Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
             if (klass == null) {
                 klass = DefaultBinaryManager.class;
             }
-            binaryManager = klass.newInstance();
+            BinaryManager binaryManager = klass.newInstance();
             binaryManager.initialize(repositoryDescriptor);
+            return binaryManager;
         } catch (Exception e) {
             throw new StorageException(e);
         }
-        try {
-            Class<? extends RepositoryBackend> klass = repositoryDescriptor.backendClass;
-            if (klass == null) {
-                klass = JDBCBackend.class;
+    }
+
+    protected RepositoryBackend createBackend() throws StorageException {
+        Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
+        List<ServerDescriptor> connect = repositoryDescriptor.connect;
+        if (backendClass == null) {
+            if (!connect.isEmpty()) {
+                backendClass = NetBackend.class;
+            } else {
+                backendClass = JDBCBackend.class;
             }
-            backend = klass.newInstance();
+        } else {
+            if (!connect.isEmpty()) {
+                log.error("Repository descriptor specifies both backendClass and connect,"
+                        + " only the backend will be used.");
+            }
+        }
+        try {
+            RepositoryBackend backend = backendClass.newInstance();
             backend.initialize(this);
+            return backend;
+        } catch (StorageException e) {
+            throw e;
         } catch (Exception e) {
             throw new StorageException(e);
+        }
+    }
+
+    protected Object createServer() {
+        ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
+        if (serverDescriptor != null && !serverDescriptor.disabled) {
+            return NetServer.startServer(repositoryDescriptor);
+        } else {
+            return null;
         }
     }
 
@@ -143,7 +184,8 @@ public class RepositoryImpl implements Repository {
             backend.initializeModel(model);
         }
 
-        Mapper mapper = backend.newMapper(model);
+        SessionPathResolver pathResolver = new SessionPathResolver();
+        Mapper mapper = backend.newMapper(model, pathResolver);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -156,18 +198,34 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = backend.newMapper(model);
+                mapper = backend.newMapper(model, pathResolver);
             }
         }
 
         SessionImpl session = newSession(mapper, credentials);
+        pathResolver.setSession(session);
         sessions.add(session);
         return session;
     }
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
+        mapper = new CachingMapper(mapper);
         return new SessionImpl(this, model, mapper, credentials);
+    }
+
+    public static class SessionPathResolver implements PathResolver {
+
+        private Session session;
+
+        protected void setSession(Session session) {
+            this.session = session;
+        }
+
+        public Serializable getIdForPath(String path) throws StorageException {
+            Node node = session.getNodeByPath(path, null);
+            return node == null ? null : node.getId();
+        }
     }
 
     /*
@@ -200,7 +258,7 @@ public class RepositoryImpl implements Repository {
      * ----- Repository -----
      */
 
-    public synchronized void close() {
+    public synchronized void close() throws StorageException {
         for (SessionImpl session : sessions) {
             if (!session.isLive()) {
                 continue;
@@ -220,6 +278,21 @@ public class RepositoryImpl implements Repository {
             clusterMapper = null;
         }
         model = null;
+        if (server != null) {
+            NetServer.stopServer(server);
+            server = null;
+        }
+        backend.shutdown();
+    }
+
+    protected synchronized void closeAllSessions() throws StorageException {
+        for (SessionImpl session : sessions) {
+            if (!session.isLive()) {
+                continue;
+            }
+            session.closeSession();
+        }
+        sessions.clear();
     }
 
     /*
@@ -296,11 +369,10 @@ public class RepositoryImpl implements Repository {
                 invalidations = clusterMapper.getClusterInvalidations();
                 clusterLastInvalidationTimeMillis = System.currentTimeMillis();
             }
-            if (invalidations.isEmpty()) {
-                return;
-            }
-            for (SessionImpl session : sessions) {
-                session.invalidate(invalidations);
+            if (!invalidations.isEmpty()) {
+                for (SessionImpl session : sessions) {
+                    session.invalidate(invalidations);
+                }
             }
         }
     }

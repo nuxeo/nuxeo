@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
@@ -35,8 +34,9 @@ public class ACLCollectionIO implements CollectionIO {
     public static final CollectionIO INSTANCE = new ACLCollectionIO();
 
     public ACLRow getCurrentFromResultSet(ResultSet rs, List<Column> columns,
-            Model model, Serializable[] returnId) throws SQLException {
-        int pos = 0;
+            Model model, Serializable[] returnId, int[] returnPos)
+            throws SQLException {
+        Serializable id = null;
         String name = null;
         boolean grant = false;
         String permission = null;
@@ -47,10 +47,8 @@ public class ACLCollectionIO implements CollectionIO {
             i++;
             String key = column.getKey();
             Serializable v = column.getFromResultSet(rs, i);
-            if (key.equals(model.MAIN_KEY) && returnId != null) {
-                returnId[0] = v;
-            } else if (key.equals(model.ACL_POS_KEY)) {
-                pos = v == null ? 0 : ((Long) v).intValue();
+            if (key.equals(model.MAIN_KEY)) {
+                id = v;
             } else if (key.equals(model.ACL_NAME_KEY)) {
                 name = (String) v;
             } else if (key.equals(model.ACL_GRANT_KEY)) {
@@ -65,22 +63,26 @@ public class ACLCollectionIO implements CollectionIO {
                 throw new RuntimeException(key);
             }
         }
+        Serializable prevId = returnId[0];
+        returnId[0] = id;
+        int pos = (id != null && !id.equals(prevId)) ? 0 : returnPos[0] + 1;
+        returnPos[0] = pos;
         return new ACLRow(pos, name, grant, permission, user, group);
     }
 
-    public void setToPreparedStatement(CollectionFragment fragment,
+    public void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)
             throws SQLException {
-        for (int i = 0; i < fragment.array.length; i++) {
-            ACLRow acl = (ACLRow) fragment.array[i];
+        for (int i = 0; i < array.length; i++) {
+            ACLRow acl = (ACLRow) array[i];
             int n = 0;
             for (Column column : columns) {
                 n++;
                 String key = column.getKey();
                 Serializable v;
                 if (key.equals(model.MAIN_KEY)) {
-                    v = fragment.getId();
+                    v = id;
                 } else if (key.equals(model.ACL_POS_KEY)) {
                     v = (long) acl.pos;
                 } else if (key.equals(model.ACL_NAME_KEY)) {

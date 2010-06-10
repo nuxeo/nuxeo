@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
  * Interface for the backend-specific initialization code of a
@@ -47,6 +48,12 @@ public interface RepositoryBackend {
      * Creates a new instance a {@link Mapper}. Called once for every new
      * session.
      */
-    Mapper newMapper(Model model) throws StorageException;
+    Mapper newMapper(Model model, PathResolver pathResolver)
+            throws StorageException;
+
+    /**
+     * Shuts down the backend.
+     */
+    void shutdown() throws StorageException;
 
 }

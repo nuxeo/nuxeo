@@ -248,7 +248,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     public void shutdown() {
         synchronized (this) {
             if (repository != null) {
-                repository.close();
+                try {
+                    repository.close();
+                } catch (StorageException e) {
+                    log.error("Cannot close repository", e);
+                }
             }
         }
     }
