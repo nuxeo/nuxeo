@@ -17,6 +17,7 @@
 
 package org.nuxeo.runtime.jtajca;
 
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -55,6 +56,15 @@ public class NuxeoContainer {
     private static ConnectionManagerWrapper connectionManager;
 
     private NuxeoContainer() {
+    }
+
+    public static void install() throws NamingException {
+        NuxeoContainer.initTransactionManager(new TransactionManagerConfiguration());
+        NuxeoContainer.initConnectionManager(new ConnectionManagerConfiguration());
+        InitialContext context = new InitialContext();
+        context.rebind("java:comp/TransactionManager", NuxeoContainer.getTransactionManager());
+        context.rebind("java:comp/UserTransaction", NuxeoContainer.getUserTransaction());
+        context.rebind("java:comp/NuxeoConnectionManager", NuxeoContainer.getConnectionManager());
     }
 
     public static TransactionManager getTransactionManager() {
