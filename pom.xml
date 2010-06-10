@@ -666,6 +666,11 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jtajca</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-content-template-manager</artifactId>
         <version>${nuxeo.services.version}</version>
