@@ -4,9 +4,10 @@
 
   <require>org.nuxeo.ecm.core.convert.plugins</require>
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
-    point="converter">
+             point="converter">
 
-    <converter name="partialTextExtractor" class="org.nuxeo.ecm.platform.importer.random.PartialTextExtractor">
+    <converter name="partialTextExtractor"
+               class="org.nuxeo.ecm.platform.importer.random.PartialTextExtractor">
       <sourceMimeType>text/partial</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>

@@ -127,6 +127,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
+            String importWritePath, Integer batchSize, Integer nbThreads,
+            ImporterLogger log) throws Exception {
+        this(sourceNode, importWritePath, false, batchSize, nbThreads, log);
+    }
+
+    public GenericMultiThreadedImporter(SourceNode sourceNode,
             String importWritePath, Boolean skipRootContainerCreation,
             Integer batchSize, Integer nbThreads, String jobName,
             ImporterLogger log) throws Exception {
@@ -135,6 +141,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 nbThreads, log);
         this.jobName = jobName;
         this.jobHelper = new JobHistoryHelper(jobName);
+    }
+
+    public GenericMultiThreadedImporter(SourceNode sourceNode,
+            String importWritePath, Integer batchSize, Integer nbThreads,
+            String jobName, ImporterLogger log) throws Exception {
+        this(sourceNode, importWritePath, false, batchSize, nbThreads, jobName,
+                log);
     }
 
     public void addFilter(ImporterFilter filter) {
