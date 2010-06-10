@@ -1,8 +1,7 @@
 package org.nuxeo.ecm.webapp.tree;
 
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
@@ -11,16 +10,18 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
+import static org.jboss.seam.ScopeType.SESSION;
+
 @Name("treeInvalidator")
 @Scope(SESSION)
 @Install(precedence = Install.FRAMEWORK)
-public class TreeInvalidatorBean {
+public class TreeInvalidatorBean implements Serializable {
 
-    protected boolean needsInvalidation=false;
+    protected boolean needsInvalidation = false;
 
     public String forceTreeRefresh() throws IOException {
 
-        needsInvalidation=true;
+        needsInvalidation = true;
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
@@ -36,7 +37,7 @@ public class TreeInvalidatorBean {
     }
 
     public void invalidationDone() {
-        needsInvalidation=false;
+        needsInvalidation = false;
     }
 
 }
