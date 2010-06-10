@@ -1,13 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-runtime-management
+Bundle-Name: Nuxeo Runtime Management
 Bundle-SymbolicName: org.nuxeo.runtime.management;singleton:=true
-Bundle-Vendor: Nuxeo
+Bundle-Vendor: Nuxeo SAS
 Provide-Package: org.nuxeo.runtime.management
-Require-Bundle: org.nuxeo.runtime,
- org.apache.commons.lang
+Require-Bundle: system.bundle,
+ org.nuxeo.runtime,
+ org.apache.commons.lang,
+ org.apache.commons.logging
 Nuxeo-Require: org.nuxeo.runtime
 Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml,
  OSGI-INF/management-server-locator-service.xml
-Bundle-Version: 1.6.2.qualifier
-
+Bundle-ClassPath: .

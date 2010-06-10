@@ -8,6 +8,7 @@ Bundle-Category: runtime
 Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.api.login,
+ org.nuxeo.runtime.binding,
  org.nuxeo.runtime.config,
  org.nuxeo.runtime.config.v1,
  org.nuxeo.runtime.deploy,
@@ -16,7 +17,6 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.model.impl,
  org.nuxeo.runtime.osgi,
- org.nuxeo.runtime.remoting,
  org.nuxeo.runtime.remoting.transporter,
  org.nuxeo.runtime.services.adapter,
  org.nuxeo.runtime.services.adapter.extension,
@@ -37,10 +37,9 @@ Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ServiceManagement.xml,
  OSGI-INF/DefaultJBossBindings.xml
 Bundle-ClassPath: .
-Require-Bundle: system.bundle;visibility:=reexport,
+Require-Bundle: system.bundle,
  org.nuxeo.common;visibility:=reexport,
  org.apache.commons.jexl;bundle-version="0.0.0",
  org.apache.commons.io;bundle-version="1.4.0",
- org.jboss.remoting;bundle-version="0.0.0",
- org.apache.geronimo.specs.geronimo-jta_1.1_spec;bundle-version="1.1.1";visibility:=reexport
+ org.apache.geronimo.specs.geronimo-jta_1.1_spec;bundle-version="1.1.1"
 Bundle-Version: 1.6.2.qualifier

@@ -7,7 +7,7 @@ Require-Bundle: org.nuxeo.runtime,
  org.javasimon.core,
  org.javasimon.jmx,
  com.thoughtworks.xstream,
- org.eclipse.osgi
+ org.apache.commons.logging
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/runtime-management-metrics-component.xml
 Nuxeo-Require: org.nuxeo.runtime
