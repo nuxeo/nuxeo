@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -95,9 +95,9 @@ public class DefaultCommandDescriptor implements CommandDescriptor {
     /**
      * Set alternate names.
      */
-    @XNode("@alt")
-    void setAlt(String alt) {
-        aliases = StringUtils.split(alt, ',', true);
+    @XNode("@alias")
+    void setAlias(String alias) {
+        aliases = StringUtils.split(alias, ',', true);
     }
 
     public String[] getAliases() {
