@@ -35,29 +35,24 @@
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>jexl-engine</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
-      <version>1.6R7</version>
     </dependency>
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>js-engine</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.jruby</groupId>
       <artifactId>jruby</artifactId>
-      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>jruby-engine</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>
@@ -68,18 +63,15 @@
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
-      <version>2.2.3</version>
     </dependency>
 
     <dependency>
       <groupId>org.python</groupId>
       <artifactId>jython</artifactId>
-      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>jython-engine</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <!-- beanshell -->
@@ -90,12 +82,11 @@
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>bsh-engine</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
+      <artifactId>groovy-all</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.script</groupId>
@@ -127,7 +118,6 @@
             </goals>
             <configuration>
               <artifactItems>
-
                 <artifactItem>
                   <groupId>commons-jexl</groupId>
                   <artifactId>commons-jexl</artifactId>
@@ -146,7 +136,7 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.codehaus.groovy</groupId>
-                  <artifactId>groovy</artifactId>
+                  <artifactId>groovy-all</artifactId>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax.script</groupId>
