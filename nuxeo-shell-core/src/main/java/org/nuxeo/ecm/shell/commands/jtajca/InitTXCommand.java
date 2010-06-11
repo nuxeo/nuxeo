@@ -23,6 +23,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.shell.CommandLine;
 import org.nuxeo.ecm.shell.commands.repository.AbstractCommand;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -37,6 +38,7 @@ public class InitTXCommand extends AbstractCommand {
     @Override
     public void run(CommandLine cmdLine) throws NamingException {
         try {
+            NamingContextFactory.setAsInitial();
             NuxeoContainer.initTransactionManagement();
         } catch (NamingException e) {
             throw e;

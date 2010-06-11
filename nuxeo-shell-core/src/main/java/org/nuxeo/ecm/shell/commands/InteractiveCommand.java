@@ -130,6 +130,10 @@ public class InteractiveCommand extends AbstractCommand {
                     + ". Use \"connect\" command to reconnect.");
             log.debug(e);
             return CommandLineReturn.FAILURE;
+        } catch (IllegalArgumentException e) {
+            log.error("Command failed." + e.getMessage());
+            log.debug(e);
+            return CommandLineReturn.FAILURE;
         } catch (Throwable e) {
             log.error("Command failed.", e);
             return CommandLineReturn.FAILURE;
@@ -140,7 +144,8 @@ public class InteractiveCommand extends AbstractCommand {
     void runCommand(CommandLine cmdLine) throws Exception {
         CommandDescriptor cd = service.getCommand(cmdLine.getCommand());
         if (cd == null) {
-            throw new UnknownCommandException("Unknown command: " + cmdLine.getCommand());
+            throw new UnknownCommandException("Unknown command: "
+                    + cmdLine.getCommand());
         } else {
             service.runCommand(cd, cmdLine);
         }
