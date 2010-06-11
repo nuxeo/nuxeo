@@ -323,7 +323,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             allPropNames.put(name.toUpperCase(), name);
         }
 
-        hierTable = database.getTable(model.hierTableName);
+        hierTable = database.getTable(model.HIER_TABLE_NAME);
 
         NuxeoCmisWalker walker;
         try {
