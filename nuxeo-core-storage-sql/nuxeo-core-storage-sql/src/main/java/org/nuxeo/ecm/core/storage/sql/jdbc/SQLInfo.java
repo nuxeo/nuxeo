@@ -151,8 +151,6 @@ public class SQLInfo {
 
     protected List<Column> clusterInvalidationsColumns;
 
-    private final boolean separateMainTable = false;
-
     protected Map<String, List<SQLStatement>> sqlStatements;
 
     protected Map<String, Serializable> sqlStatementsProperties;
@@ -470,10 +468,6 @@ public class SQLInfo {
             if (tableName.equals(model.HIER_TABLE_NAME)) {
                 continue;
             }
-            if (tableName.equals(model.MAIN_TABLE_NAME) && !separateMainTable) {
-                // merged into already-generated hierarchy
-                continue;
-            }
             initFragmentSQL(tableName);
         }
 
@@ -569,24 +563,20 @@ public class SQLInfo {
      */
     protected void initHierarchySQL() {
         TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
-        if (separateMainTable) {
-            maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
-        } else {
-            maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
-        }
+        // if (separateMainTable)
+        // maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
+        maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
         Column column = maker.newColumn(model.HIER_PARENT_KEY,
                 ColumnType.NODEIDFKNULL);
         maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.VARCHAR);
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
-        if (!separateMainTable) {
-            maker.newFragmentFields();
-        }
+        // if (!separateMainTable)
+        maker.newFragmentFields();
         maker.postProcess();
         maker.postProcessHierarchy();
-        if (!separateMainTable) {
-            maker.postProcessIdGeneration();
-        }
+        // if (!separateMainTable)
+        maker.postProcessIdGeneration();
 
         maker.table.addIndex(model.HIER_PARENT_KEY);
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
@@ -822,7 +812,6 @@ public class SQLInfo {
 
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
-            assert !separateMainTable; // otherwise join needed
             List<Column> whatColumns = new ArrayList<Column>(2);
             List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);

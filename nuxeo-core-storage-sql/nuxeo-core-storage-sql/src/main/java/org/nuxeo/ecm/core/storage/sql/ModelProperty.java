@@ -43,7 +43,6 @@ public class ModelProperty {
                 || propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING))
                 && (fragmentKey == null || !fragmentKey.equals(Model.MAIN_KEY))
                 && !fragmentName.equals(Model.HIER_TABLE_NAME)
-                && !fragmentName.equals(Model.MAIN_TABLE_NAME)
                 && !fragmentName.equals(Model.VERSION_TABLE_NAME)
                 && !fragmentName.equals(Model.PROXY_TABLE_NAME)
                 && !fragmentName.equals(Model.FULLTEXT_TABLE_NAME)

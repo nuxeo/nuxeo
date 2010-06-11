@@ -90,8 +90,6 @@ public class Model {
 
     public static final String CLUSTER_INVALS_KIND_KEY = "kind";
 
-    public static final String MAIN_TABLE_NAME = "types";
-
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
     public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
