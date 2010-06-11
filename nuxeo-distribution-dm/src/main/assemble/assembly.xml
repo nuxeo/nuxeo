@@ -193,7 +193,7 @@
         </includes>
       </artifact:set>
     </copy>
-    <!-- Temporary workaround waiting for NXP-3879 -->
+    <!-- Remove duplicates -->
     <delete>
       <fileset dir="${nuxeo.ear}/lib">
         <include name="activation-*" />
