@@ -64,6 +64,27 @@
         </includes>
       </artifact:set>
     </copy>
+    <!-- Remove duplicates -->
+    <delete>
+      <fileset dir="${output}/lib">
+        <include name="backport-util-concurrent-*" />
+        <include name="commons-collections-*" />
+        <include name="commons-logging-*" />
+        <include name="jline-*" />
+        <include name="junit-*" />
+        <include name="log4j-*" />
+        <include name="xml-apis-*" />
+      </fileset>
+    </delete>
+    <copy todir="${output}/lib" overwrite="true">
+      <artifact:resolveFile key="backport-util-concurrent:backport-util-concurrent" />
+      <artifact:resolveFile key="commons-collections:commons-collections" />
+      <artifact:resolveFile key="commons-logging:commons-logging" />
+      <artifact:resolveFile key="jline:jline" />
+      <artifact:resolveFile key="junit:junit" />
+      <artifact:resolveFile key="log4j:log4j" />
+      <artifact:resolveFile key="xml-apis:xml-apis" />
+    </copy>
   </target>
 
   <target name="clean">
