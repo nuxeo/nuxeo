@@ -22,10 +22,10 @@ package org.nuxeo.runtime;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,7 +108,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
-                JavaUtilLoggingHelper.redirectToApacheCommons();
+                // FIXME: NXP-5217
+                // JavaUtilLoggingHelper.redirectToApacheCommons();
             }
             log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
                     + getVersion());
