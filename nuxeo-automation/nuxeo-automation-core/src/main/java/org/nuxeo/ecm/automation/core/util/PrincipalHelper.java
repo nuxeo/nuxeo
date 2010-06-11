@@ -32,44 +32,51 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Provides helper methods to find extract permissions/principals info from documents.
- * Should be instantiated with
+ * Provides helper methods to find extract permissions/principals info from
+ * documents. Should be instantiated with
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PrincipalHelper {
 
     protected UserManager umgr;
+
     protected PermissionProvider permissionProvider;
 
-    public PrincipalHelper(UserManager umgr, PermissionProvider permissionProvider) {
+    public PrincipalHelper(UserManager umgr,
+            PermissionProvider permissionProvider) {
         this.umgr = umgr;
         this.permissionProvider = permissionProvider;
     }
 
-
     @SuppressWarnings("unchecked")
-    public Set<String> getEmailsForPermission(DocumentModel input, String permission, boolean resolveGroups) throws ClientException {
-        return (Set<String>)collectObjectsMatchingPermission(input, permission, resolveGroups, new EmailCollector());
+    public Set<String> getEmailsForPermission(DocumentModel input,
+            String permission, boolean resolveGroups) throws ClientException {
+        return (Set<String>) collectObjectsMatchingPermission(input,
+                permission, resolveGroups, new EmailCollector());
     }
 
     @SuppressWarnings("unchecked")
-    public Set<NuxeoPrincipal> getPrincipalsForPermission(DocumentModel input, String permission, boolean resolveGroups) throws ClientException {
-        return (Set<NuxeoPrincipal>)collectObjectsMatchingPermission(input, permission, resolveGroups, new PrincipalCollector());
+    public Set<NuxeoPrincipal> getPrincipalsForPermission(DocumentModel input,
+            String permission, boolean resolveGroups) throws ClientException {
+        return (Set<NuxeoPrincipal>) collectObjectsMatchingPermission(input,
+                permission, resolveGroups, new PrincipalCollector());
     }
 
-    public Object collectObjectsMatchingPermission(DocumentModel input, String permission, boolean resolveGroups, Collector collector) throws ClientException {
+    public Object collectObjectsMatchingPermission(DocumentModel input,
+            String permission, boolean resolveGroups, Collector collector)
+            throws ClientException {
         String[] perms = getPermissionsToCheck(permission);
         ACP acp = input.getACP();
         for (ACL acl : acp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted() && permissionMatch(perms, ace.getPermission())) {
+                if (ace.isGranted()
+                        && permissionMatch(perms, ace.getPermission())) {
                     try {
                         NuxeoPrincipal principal = umgr.getPrincipal(ace.getUsername());
                         collector.collect(principal);
                     } catch (Throwable t) {
-                        if (resolveGroups ) {
+                        if (resolveGroups) {
                             resolveGroups(ace.getUsername(), collector);
                         }
                         // else continue - ignore groups
@@ -80,7 +87,6 @@ public class PrincipalHelper {
         return collector.getResult();
     }
 
-
     public boolean permissionMatch(String[] perms, String perm) {
         for (String p : perms) {
             if (p.equals(perm)) {
@@ -90,8 +96,8 @@ public class PrincipalHelper {
         return false;
     }
 
-
-    public void resolveGroups(String name, Collector collector) throws ClientException {
+    public void resolveGroups(String name, Collector collector)
+            throws ClientException {
         try {
             NuxeoGroup group = umgr.getGroup(name);
             for (String u : group.getMemberUsers()) {
@@ -120,20 +126,22 @@ public class PrincipalHelper {
         }
     }
 
-
     interface Collector {
         void collect(NuxeoPrincipal p);
+
         Object getResult();
     }
 
     static class EmailCollector implements Collector {
         protected HashSet<String> result = new HashSet<String>();
+
         public void collect(NuxeoPrincipal p) {
-            String email = ((NuxeoPrincipalImpl)p).getEmail();
+            String email = ((NuxeoPrincipalImpl) p).getEmail();
             if (email != null && email.length() > 0) {
                 result.add(email);
             }
         }
+
         public Object getResult() {
             return result;
         }
@@ -141,9 +149,11 @@ public class PrincipalHelper {
 
     static class PrincipalCollector implements Collector {
         protected HashSet<NuxeoPrincipal> result = new HashSet<NuxeoPrincipal>();
+
         public void collect(NuxeoPrincipal p) {
             result.add(p);
         }
+
         public Object getResult() {
             return result;
         }

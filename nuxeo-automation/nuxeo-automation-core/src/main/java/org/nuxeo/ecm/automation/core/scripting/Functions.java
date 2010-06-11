@@ -27,19 +27,16 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Functions {
 
     public final static Functions INSTANCE = new Functions();
 
     protected volatile DirectoryService dirService = null;
-    protected volatile UserManager userMgr;
 
+    protected volatile UserManager userMgr;
 
     public UserManager getUserMgr() throws Exception {
         if (userMgr == null) {
@@ -58,9 +55,10 @@ public class Functions {
     public String getVocabularyLabel(String voc, String key) throws Exception {
         org.nuxeo.ecm.directory.Session session = getDirService().open(voc);
         DocumentModel doc = session.getEntry(key);
-        //TODO: which is the best method to get "label" property when not knowing vocabulary schema?
+        // TODO: which is the best method to get "label" property when not
+        // knowing vocabulary schema?
         DataModel dm = doc.getDataModels().values().iterator().next();
-        return (String)dm.getData("label");
+        return (String) dm.getData("label");
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws Exception {
@@ -72,13 +70,14 @@ public class Functions {
         UserManager mgr = getUserMgr();
         String key = mgr.getUserEmailField();
         String schema = mgr.getUserSchemaName();
-        return (String)principal.getModel().getProperty(schema, key);
+        return (String) principal.getModel().getProperty(schema, key);
     }
 
-    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals) throws Exception {
+    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals)
+            throws Exception {
         StringList result = new StringList(principals.size());
         for (NuxeoPrincipal p : principals) {
-            String email = ((NuxeoPrincipalImpl)p).getEmail();
+            String email = ((NuxeoPrincipalImpl) p).getEmail();
             if (email != null && email.length() > 0) {
                 result.add(email);
             }
@@ -91,7 +90,7 @@ public class Functions {
         StringList result = new StringList(usernames.size());
         for (String u : usernames) {
             try {
-                NuxeoPrincipalImpl p = (NuxeoPrincipalImpl)umgr.getPrincipal(u);
+                NuxeoPrincipalImpl p = (NuxeoPrincipalImpl) umgr.getPrincipal(u);
                 String email = p.getEmail();
                 if (email != null && email.length() > 0) {
                     result.add(email);
