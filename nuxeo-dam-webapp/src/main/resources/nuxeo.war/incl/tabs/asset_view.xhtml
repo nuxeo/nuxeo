@@ -112,7 +112,7 @@
                   value="#{documentActions.currentSelection.dublincore.title}" />
         </h4>
       </div>
-      
+
       <c:if test="#{documentActions.currentSelection.hasSchema('video')}">
         <ui:include src="/incl/tabs/asset_view_panels/asset_view_video_storyboard.xhtml" />
       </c:if>
@@ -217,7 +217,7 @@
         </c:if>
         </div>
     </div>
-      
+
       <div class="togglePanel">
         <a4j:outputPanel id="commentPanel">
           <div class="togglePanelTitleBox">
@@ -279,7 +279,9 @@
               <div style="clear:both;"></div>
             </div>
             <f:subview id="exifContent" rendered="#{documentActions.showExifArea}">
-              <nxl:layout name="exif_info" mode="view" value="#{documentActions.currentSelection}"/>
+              <div class="togglePanelBody">
+                <nxl:layout name="exif_info" mode="view" value="#{documentActions.currentSelection}"/>
+              </div>
             </f:subview>
           </div>
         </a4j:outputPanel>
@@ -299,7 +301,9 @@
               <div style="clear:both;"></div>
             </div>
             <f:subview id="iptcContent" rendered="#{documentActions.showIptcArea}">
-              <nxl:layout name="iptc_info" mode="view" value="#{documentActions.currentSelection}"/>
+              <div class="togglePanelBody">
+                <nxl:layout name="iptc_info" mode="view" value="#{documentActions.currentSelection}"/>
+              </div>
             </f:subview>
           </div>
         </a4j:outputPanel>
