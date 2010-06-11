@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Florent Guillaume, jcarsique
  */
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import javax.naming.InitialContext;
-
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -33,15 +29,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
     protected void initJTAJCA() throws Exception {
-        NuxeoContainer.initTransactionManager(new TransactionManagerConfiguration());
-        NuxeoContainer.initConnectionManager(new ConnectionManagerConfiguration());
-        InitialContext context = new InitialContext();
-        context.rebind("java:comp/TransactionManager",
-                NuxeoContainer.getTransactionManager());
-        context.rebind("java:comp/UserTransaction",
-                NuxeoContainer.getUserTransaction());
-        context.rebind("java:comp/NuxeoConnectionManager",
-                NuxeoContainer.getConnectionManager());
+        NuxeoContainer.initTransactionManagement();
     }
 
     /**
