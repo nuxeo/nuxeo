@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -56,20 +57,9 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
 
     protected String importSetName;
 
-    public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, Boolean skipRootContainerCreation, String importFolderTitle,
-            String importSetName, Integer batchSize, Integer nbThreads,
-            ImporterLogger log) throws Exception {
-        super(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log);
-        this.importFolderTitle = importFolderTitle;
-        this.importSetName = importSetName;
-    }
-
-    public DamMultiThreadedImporter(SourceNode sourceNode,
-            String importWritePath, Boolean skipRootContainerCreation, String importFolderTitle,
-            String importSetName, Integer batchSize, Integer nbThreads,
-            String jobName, ImporterLogger log) throws Exception {
-        super(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, jobName, log);
+    public DamMultiThreadedImporter(ImporterRunnerConfiguration configuration, String importFolderTitle,
+            String importSetName) throws Exception {
+        super(configuration);
         this.importFolderTitle = importFolderTitle;
         this.importSetName = importSetName;
     }

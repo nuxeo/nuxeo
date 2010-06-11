@@ -27,6 +27,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.dam.importer.filter.DamImporterFilter;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.executor.jaxrs.AbstractJaxRSImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.FileManagerDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
@@ -55,14 +56,18 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Produces("text/plain; charset=UTF-8")
     public String run(@QueryParam("inputPath") String inputPath,
             @QueryParam("importFolderTitle") String importFolderName,
-            @QueryParam("importSetName") String importSetName,
-            @QueryParam("batchSize") Integer batchSize , @QueryParam("nbThreads") Integer nbThreads,
+            @QueryParam("importSetTitle") String importSetTitle,
+            @QueryParam("batchSize") Integer batchSize,
+            @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive) throws Exception {
         File srcFile = new File(inputPath);
         SourceNode source = new FileWithMetadataSourceNode(srcFile);
-        DamMultiThreadedImporter runner = new DamMultiThreadedImporter(source,
-                TARGET_PATH, true, importFolderName, importSetName, batchSize,
-                nbThreads, getLogger());
+
+        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
+                source, TARGET_PATH, getLogger()).batchSize(batchSize).nbThreads(
+                nbThreads).build();
+        DamMultiThreadedImporter runner = new DamMultiThreadedImporter(
+                configuration, importFolderName, importSetTitle);
         runner.setFactory(new FileManagerDocumentModelFactory());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,
