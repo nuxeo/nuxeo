@@ -47,7 +47,7 @@ public class TestImporterListeners extends SQLRepositoryTestCase {
 
         DummyListener listener1 = new DummyListener();
         DummyListener listener2 = new DummyListener();
-        TestImporterExecutor executor = new TestImporterExecutor(listener1, listener2);
+        ImporterExecutorWithListeners executor = new ImporterExecutorWithListeners(listener1, listener2);
         executor.run(src, targetPath, false, 10, 5, true);
 
         long createdDocs = executor.getCreatedDocsCounter();
@@ -61,11 +61,11 @@ public class TestImporterListeners extends SQLRepositoryTestCase {
 
 }
 
-class TestImporterExecutor extends DefaultImporterExecutor {
+class ImporterExecutorWithListeners extends DefaultImporterExecutor {
 
     protected ImporterListener[] listeners;
 
-    public TestImporterExecutor(ImporterListener... listeners) {
+    public ImporterExecutorWithListeners(ImporterListener... listeners) {
         this.listeners = listeners;
     }
 
