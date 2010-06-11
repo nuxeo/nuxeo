@@ -5,3 +5,5 @@ org.nuxeo.ecm.instance.name=Nuxeo 5.3 Web Stateless Server
 org.nuxeo.ecm.instance.description=Nuxeo Web Server on JBoss
 org.nuxeo.ecm.instance.host=nxwebserver
 org.nuxeo.ecm.stateful.host=nxplatformserver
+
+org.nuxeo.ecm.webapp.dashboard.mode=auto
