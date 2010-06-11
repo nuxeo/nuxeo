@@ -50,7 +50,7 @@
     <antcall target="third-party-libraries" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${stagedir}" />
+         basedir="${output}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="zip" />
