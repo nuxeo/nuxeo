@@ -74,17 +74,12 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
 @AutomaticDocumentBasedInvalidation
 public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         JbpmActions {
-
-    private static final String COMMENT = "comment";
-
-    private static final String RECIPIENTS = "recipients";
 
     private static final long serialVersionUID = 1L;
 
@@ -184,7 +179,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     }
                 }
             }
-            // NXP-3090: cannot manage participants after parallel wf is started
+            // NXP-3090: cannot manage participants after parallel wf is
+            // started
             if (canManageParticipants) {
                 if (isProcessStarted("choose-participant")
                         && "review_parallel".equals(getCurrentProcess().getProcessDefinition().getName())) {
@@ -487,7 +483,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     currentUser);
             jbpmService.endTask(startTask.getId(), null, null, null,
                     transientVariables, currentUser);
-            documentManager.save(); // process invalidations from handlers' sessions
+            documentManager.save(); // process invalidations from handlers'
+            // sessions
             resetCurrentData();
         }
         return null;
@@ -508,7 +505,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     true);
             jbpmService.endTask(taskInstance.getId(), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
-            documentManager.save(); // process invalidations from handlers' sessions
+            documentManager.save(); // process invalidations from handlers'
+            // sessions
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
@@ -541,7 +539,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     false);
             jbpmService.endTask(taskInstance.getId(), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
-            documentManager.save(); // process invalidations from handlers' sessions
+            documentManager.save(); // process invalidations from handlers'
+            // sessions
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
@@ -566,7 +565,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             if (currentProcess == null || currentProcess.hasEnded()) {
                 return navigationContext.navigateToDocument(currentDocument);
             }
-            return webActions.setCurrentTabAndNavigate(currentDocument, currentTabId);
+            return webActions.setCurrentTabAndNavigate(currentDocument,
+                    currentTabId);
         } catch (DocumentSecurityException e) {
             navigationContext.setCurrentDocument(null);
             return navigationContext.goHome();
@@ -618,7 +618,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     protected class UnrestrictedEndProcess extends UnrestrictedSessionRunner {
 
         private final DocumentRef ref;
-        
+
         public Set<String> recipients;
 
         protected UnrestrictedEndProcess(DocumentRef ref) {
@@ -631,8 +631,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         public void run() throws ClientException {
             // end process and tasks
             List<TaskInstance> tis = jbpmService.getTaskInstances(
-                    session.getDocument(ref),
-                    (NuxeoPrincipal) null, null);
+                    session.getDocument(ref), (NuxeoPrincipal) null, null);
             recipients = new HashSet<String>();
             for (TaskInstance ti : tis) {
                 String actor = ti.getActorId();
@@ -664,7 +663,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
             jbpmService.deleteProcessInstance(currentUser, pid);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("workflowProcessCanceled"));
+                    resourcesAccessor.getMessages().get(
+                            "workflowProcessCanceled"));
             notifyEventListeners(JbpmEventNames.WORKFLOW_CANCELED, userComment,
                     endProcessRunner.recipients.toArray(new String[] {}));
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_CANCELED);
@@ -673,7 +673,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         webActions.resetCurrentTab();
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public String abandonCurrentProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
@@ -721,8 +721,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public List<String> getAllowedStateTransitions(DocumentRef ref)
             throws ClientException {
-        // break reference: core gives an unmodifiable collection unsuitable for
-        // UI.
+        // break reference: core gives an unmodifiable collection unsuitable
+        // for UI.
         return new ArrayList<String>(
                 documentManager.getAllowedStateTransitions(ref));
     }
