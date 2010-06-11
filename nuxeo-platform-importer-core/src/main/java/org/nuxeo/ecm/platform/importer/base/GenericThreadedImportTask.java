@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.security.auth.login.LoginContext;
@@ -31,8 +32,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Thierry Delprat
  *
  */
-public class GenericThreadedImportTask implements Runnable {
+class GenericThreadedImportTask implements Runnable {
 
     private static final Log log = LogFactory.getLog(GenericThreadedImportTask.class);
 
@@ -81,7 +82,7 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected String jobName;
 
-    protected JobHistoryHelper jobHelper;
+    protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
 
     private static synchronized int getNextTaskId() {
         taskCounter += 1;
@@ -123,7 +124,6 @@ public class GenericThreadedImportTask implements Runnable {
         this(session, rootSource, rootDoc, skipContainerCreation, rsLogger,
                 batchSize, factory, threadPolicy);
         this.jobName = jobName;
-        this.jobHelper = new JobHistoryHelper(jobName);
     }
 
     protected CoreSession getCoreSession() throws Exception {
@@ -302,9 +302,7 @@ public class GenericThreadedImportTask implements Runnable {
             txHelper.commitOrRollbackTransaction();
         } catch (Exception e) {
             try {
-                if (jobHelper != null) {
-                    jobHelper.logJobFailed("Error during import");
-                }
+                notifyImportError();
             } catch (Exception e1) {
                 log.error("Error during import", e1);
             }
@@ -372,6 +370,12 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected ImporterDocumentModelFactory getFactory() {
         return factory;
+    }
+
+    protected void notifyImportError() throws Exception {
+        for (ImporterListener listener : listeners) {
+            listener.importError();
+        }
     }
 
 }

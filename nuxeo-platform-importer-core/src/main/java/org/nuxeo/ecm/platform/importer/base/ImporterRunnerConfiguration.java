@@ -21,6 +21,8 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
+ * Hold the configuration of an ImporterRunner.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class ImporterRunnerConfiguration {

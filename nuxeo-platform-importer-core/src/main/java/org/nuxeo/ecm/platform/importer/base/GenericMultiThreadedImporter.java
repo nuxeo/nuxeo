@@ -36,10 +36,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
+import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
+import org.nuxeo.ecm.platform.importer.listener.JobHistoryListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.log.PerfLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -82,11 +83,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected String jobName;
 
-    protected JobHistoryHelper jobHelper;
-
     protected boolean enablePerfLogging = true;
 
     protected List<ImporterFilter> filters = new ArrayList<ImporterFilter>();
+
+    protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
 
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
@@ -140,7 +141,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this(sourceNode, importWritePath, skipRootContainerCreation, batchSize,
                 nbThreads, log);
         this.jobName = jobName;
-        this.jobHelper = new JobHistoryHelper(jobName);
+        if (jobName != null) {
+            listeners.add(new JobHistoryListener(jobName));
+        }
     }
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
@@ -163,6 +166,10 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 "Filter with %s, was added on the importer with the hash code %s. The source node name is %s",
                 filter.toString(), this.hashCode(), importSource.getName()));
         filters.add(filter);
+    }
+
+    public void addListener(ImporterListener listener) {
+        listeners.add(listener);
     }
 
     protected CoreSession getCoreSession() throws Exception {
@@ -238,9 +245,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
         rootImportTask.setRootTask();
         long t0 = System.currentTimeMillis();
-        if (jobHelper != null) {
-            jobHelper.logJobStarted();
-        }
+
+        notifyBeforeImport();
+
         importTP.execute(rootImportTask);
         Thread.sleep(200);
         int activeTasks = importTP.getActiveCount();
@@ -288,9 +295,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
         log.info("All Threads terminated");
         perfLogger.release();
-        if (jobHelper != null) {
-            jobHelper.logJobEnded();
-        }
+
+        notifyAfterImport();
+
         long t1 = System.currentTimeMillis();
         long nbCreatedDocs = getCreatedDocsCounter();
         log.info(nbCreatedDocs + " docs created");
@@ -348,6 +355,18 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         if (importTP != null && !importTP.isTerminated()
                 && !importTP.isTerminating()) {
             importTP.shutdownNow();
+        }
+    }
+
+    protected void notifyBeforeImport() throws Exception {
+        for (ImporterListener listener : listeners) {
+            listener.beforeImport();
+        }
+    }
+
+    protected void notifyAfterImport() throws Exception {
+        for (ImporterListener listener : listeners) {
+            listener.afterImport();
         }
     }
 
