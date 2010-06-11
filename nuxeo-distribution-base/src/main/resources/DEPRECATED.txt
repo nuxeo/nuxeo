@@ -1,0 +1,1 @@
+DEPRECATED: no more rely on nuxeo-distribution-base for other distributions (NXP-5215)
