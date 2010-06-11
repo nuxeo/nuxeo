@@ -55,12 +55,11 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
                 "OSGI-INF/userWorkspaceImpl.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.jbpm.core.test", "OSGI-INF/jbpmService-contrib.xml");
-
+        deployContrib("org.nuxeo.ecm.platform.jbpm.core.test",
+                "OSGI-INF/jbpmService-contrib.xml");
 
         deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
-
 
         openSession();
 
@@ -145,7 +144,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         closeSession();
         openSession();
 
-        //Try to load unknown list
+        // Try to load unknown list
         TaskList listFake = service.getTaskList(session, "ListFake");
         assertNull(listFake);
 
@@ -186,7 +185,6 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
                 session, null);
         return userWorkspace;
     }
-
 
     @Override
     public void tearDown() throws Exception {
