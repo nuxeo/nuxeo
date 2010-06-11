@@ -38,16 +38,19 @@ import org.nuxeo.runtime.api.Framework;
 public class JobHistoryHelper {
 
     protected AuditReader reader = null;
+
     protected AuditLogger logger = null;
 
     protected String jobName = null;
 
     public static final String JOB_START = "exportStarted";
+
     public static final String JOB_END = "exportCompleted";
+
     public static final String JOB_FAIL = "exportFailed";
 
     public JobHistoryHelper(String jobName) {
-        this.jobName=jobName;
+        this.jobName = jobName;
     }
 
     protected LogEntry getNewLogEntry() {
@@ -59,7 +62,7 @@ public class JobHistoryHelper {
     }
 
     protected AuditLogger getLogger() throws Exception {
-        if (logger==null) {
+        if (logger == null) {
             logger = Framework.getService(AuditLogger.class);
         }
         return logger;
@@ -81,6 +84,7 @@ public class JobHistoryHelper {
 
     /**
      * Log an event for a successful Job completion
+     *
      * @throws Exception
      */
     public void logJobEnded() throws Exception {
@@ -110,7 +114,8 @@ public class JobHistoryHelper {
 
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        StringBuffer query = new StringBuffer("from LogEntry log where log.eventId=");
+        StringBuffer query = new StringBuffer(
+                "from LogEntry log where log.eventId=");
         query.append("'");
         query.append(status);
         query.append("' AND log.category='");
@@ -119,7 +124,7 @@ public class JobHistoryHelper {
 
         List result = reader.nativeQuery(query.toString(), 1, 1);
 
-        if (result.size()!=0) {
+        if (result.size() != 0) {
             LogEntry entry = (LogEntry) result.get(0);
             return entry.getEventDate();
         }
