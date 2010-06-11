@@ -37,20 +37,26 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JobHistoryHelper {
 
-    protected AuditReader reader = null;
+    public static final String JOB_STARTED_SUFFIX = "Started";
+    public static final String JOB_ENDED_SUFFIX = "Ended";
+    public static final String JOB_FAILED_SUFFIX = "Failed";
 
     protected AuditLogger logger = null;
 
     protected String jobName = null;
 
-    public static final String JOB_START = "exportStarted";
+    protected final String jobStartedEventId;
 
-    public static final String JOB_END = "exportCompleted";
+    protected final String jobEndedventId;
 
-    public static final String JOB_FAIL = "exportFailed";
+    protected final String jobFailedEventId;
 
     public JobHistoryHelper(String jobName) {
         this.jobName = jobName;
+
+        this.jobStartedEventId = jobName + JOB_STARTED_SUFFIX;
+        this.jobEndedventId = jobName + JOB_ENDED_SUFFIX;
+        this.jobFailedEventId = jobName + JOB_FAILED_SUFFIX;
     }
 
     protected LogEntry getNewLogEntry() {
@@ -74,9 +80,8 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public void logJobStarted() throws Exception {
-
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_START);
+        entry.setEventId(jobStartedEventId);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
@@ -89,7 +94,7 @@ public class JobHistoryHelper {
      */
     public void logJobEnded() throws Exception {
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_END);
+        entry.setEventId(jobEndedventId);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
@@ -103,7 +108,7 @@ public class JobHistoryHelper {
      */
     public void logJobFailed(String errMessage) throws Exception {
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_FAIL);
+        entry.setEventId(jobFailedEventId);
         entry.setComment(errMessage);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
@@ -111,7 +116,6 @@ public class JobHistoryHelper {
     }
 
     protected Date getLastRunWithStatus(String status) throws Exception {
-
         AuditReader reader = Framework.getService(AuditReader.class);
 
         StringBuffer query = new StringBuffer(
@@ -138,8 +142,8 @@ public class JobHistoryHelper {
      * @return
      * @throws Exception
      */
-    public Date getLastSucessfulRun() throws Exception {
-        return getLastRunWithStatus(JOB_END);
+    public Date getLastSuccessfulRun() throws Exception {
+        return getLastRunWithStatus(jobEndedventId);
     }
 
     /**
@@ -149,7 +153,7 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public Date getLastFailedRun() throws Exception {
-        return getLastRunWithStatus(JOB_FAIL);
+        return getLastRunWithStatus(jobFailedEventId);
     }
 
     /**
@@ -159,7 +163,7 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public Date getLastStarted() throws Exception {
-        return getLastRunWithStatus(JOB_START);
+        return getLastRunWithStatus(jobStartedEventId);
     }
 
 }
