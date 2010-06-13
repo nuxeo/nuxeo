@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
@@ -53,6 +54,7 @@ import static org.jboss.seam.ScopeType.EVENT;
  */
 @Name("typesTool")
 @Scope(CONVERSATION)
+@Install(precedence=Install.FRAMEWORK) 
 public class TypesTool implements Serializable {
 
     private static final long serialVersionUID = -5037578301250616973L;
