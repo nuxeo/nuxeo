@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -29,8 +30,15 @@ import javax.resource.cci.ResourceAdapterMetaData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -55,6 +63,8 @@ public class RepositoryImpl implements Repository {
 
     protected final SchemaManager schemaManager;
 
+    protected final EventService eventService;
+
     protected final BinaryManager binaryManager;
 
     private final RepositoryBackend backend;
@@ -76,6 +86,11 @@ public class RepositoryImpl implements Repository {
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         try {
             schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+        try {
+            eventService = Framework.getService(EventService.class);
         } catch (Exception e) {
             throw new StorageException(e);
         }
@@ -331,15 +346,17 @@ public class RepositoryImpl implements Repository {
 
     /**
      * Sends invalidation data to relevant sessions.
+     * <p>
+     * Called post-transaction by commit/rollback or transactionless save.
      *
      * @param invalidations the invalidations
-     * @param fromSession the session from which these invalidations originate,
-     *            or {@code null} if they come from another cluster node
+     * @param fromSession the session from which these invalidations originate
      * @throws StorageException on failure to insert invalidation information
      *             into the cluster invalidation tables
      */
     protected void invalidate(Invalidations invalidations,
             SessionImpl fromSession) throws StorageException {
+        // caller makes sure invalidations is not empty
         // local invalidations
         for (SessionImpl session : sessions) {
             if (session != fromSession) {
@@ -352,12 +369,16 @@ public class RepositoryImpl implements Repository {
                 clusterMapper.insertClusterInvalidations(invalidations);
             }
         }
+        sendInvalidationEvent(invalidations, true, fromSession);
     }
 
     /**
      * Reads cluster invalidations and queues them locally.
+     *
+     * @param fromSession the session that triggered the action
      */
-    protected void receiveClusterInvalidations() throws StorageException {
+    protected void receiveClusterInvalidations(SessionImpl fromSession)
+            throws StorageException {
         if (clusterMapper != null) {
             Invalidations invalidations;
             synchronized (clusterMapper) {
@@ -373,7 +394,66 @@ public class RepositoryImpl implements Repository {
                 for (SessionImpl session : sessions) {
                     session.invalidate(invalidations);
                 }
+                sendInvalidationEvent(invalidations, false, fromSession);
             }
+        }
+    }
+
+    /**
+     * Sends a Core Event about the invalidations.
+     *
+     * @param invalidations the invalidations
+     * @param local {@code true} if these invalidations come from this cluster
+     *            node (one of this repository's sessions), {@code false} if
+     *            they come from a remote cluster node
+     * @param session a session which can be used to lookup containing documents
+     */
+    protected void sendInvalidationEvent(Invalidations invalidations,
+            boolean local, SessionImpl session) {
+        if (!repositoryDescriptor.sendInvalidationEvents) {
+            return;
+        }
+        // compute modified doc ids and parent ids
+        HashSet<String> modifiedDocIds = new HashSet<String>();
+        HashSet<String> modifiedParentIds = new HashSet<String>();
+
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                String id = (String) rowId.id;
+                String docId;
+                try {
+                    docId = (String) session.getContainingDocument(id);
+                } catch (StorageException e) {
+                    log.error("Cannot get containing document for: " + id, e);
+                    docId = null;
+                }
+                if (docId == null) {
+                    continue;
+                }
+                if (Invalidations.PARENT.equals(rowId.tableName)) {
+                    if (docId.equals(id)) {
+                        modifiedParentIds.add(docId);
+                    } else { // complex prop added/removed
+                        modifiedDocIds.add(docId);
+                    }
+                } else {
+                    modifiedDocIds.add(docId);
+                }
+            }
+        }
+        // TODO check what we can do about invalidations.deleted
+
+        EventContext ctx = new EventContextImpl(null, null);
+        ctx.setRepositoryName(getName());
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS,
+                modifiedParentIds);
+        ctx.setProperty(EventConstants.INVAL_LOCAL, Boolean.valueOf(local));
+        Event event = new EventImpl(EventConstants.EVENT_VCS_INVALIDATIONS, ctx);
+        try {
+            eventService.fireEvent(event);
+        } catch (ClientException e) {
+            log.error("Failed to send invalidation event: " + e, e);
         }
     }
 

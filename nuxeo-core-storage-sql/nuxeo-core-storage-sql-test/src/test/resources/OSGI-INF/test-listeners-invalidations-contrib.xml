@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.listeners-invalidations">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <!-- async MUST be true in production, otherwise there will be no transaction.
+         It's only false here for unit tests -->
+    <listener name="testInvalidationsListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener">
+      <event>vcsInvalidations</event> <!-- EventConstants.EVENT_VCS_INVALIDATIONS -->
+    </listener>
+  </extension>
+
+</component>

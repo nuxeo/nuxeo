@@ -153,6 +153,9 @@ public class RepositoryDescriptor {
     @XNode("binaryStore@path")
     public String binaryStorePath;
 
+    @XNode("@sendInvalidationEvents")
+    public boolean sendInvalidationEvents;
+
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
         backendClass = other.backendClass;
@@ -168,6 +171,7 @@ public class RepositoryDescriptor {
         binaryStorePath = other.binaryStorePath;
         binaryManagerClass = other.binaryManagerClass;
         binaryManagerKey = other.binaryManagerKey;
+        sendInvalidationEvents = other.sendInvalidationEvents;
     }
 
     @XNode("xa-datasource")

@@ -275,6 +275,11 @@ public class SessionImpl implements Session, XAResource {
         checkReceivedInvalidations();
     }
 
+    protected Serializable getContainingDocument(Serializable id)
+            throws StorageException {
+        return context.getContainingDocument(id);
+    }
+
     /**
      * Update fulltext. Called at save() time.
      */
@@ -419,7 +424,7 @@ public class SessionImpl implements Session, XAResource {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        repository.receiveClusterInvalidations();
+        repository.receiveClusterInvalidations(this);
         context.processReceivedInvalidations();
     }
 
@@ -427,7 +432,7 @@ public class SessionImpl implements Session, XAResource {
      * Post transaction check invalidations processing.
      */
     protected void checkReceivedInvalidations() throws StorageException {
-        repository.receiveClusterInvalidations();
+        repository.receiveClusterInvalidations(this);
         context.checkReceivedInvalidations();
     }
 
@@ -982,16 +987,8 @@ public class SessionImpl implements Session, XAResource {
             }
         } finally {
             inTransaction = false;
-            try {
-                try {
-                    sendInvalidationsToOthers();
-                } finally {
-                    checkThreadEnd();
-                }
-            } catch (Exception e) {
-                log.error("Could not rollback transaction", e);
-                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-            }
+            // no invalidations to send
+            checkThreadEnd();
         }
     }
 

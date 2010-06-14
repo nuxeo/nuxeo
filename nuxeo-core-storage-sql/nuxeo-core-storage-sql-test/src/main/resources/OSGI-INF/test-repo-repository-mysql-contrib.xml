@@ -8,7 +8,7 @@
     point="repository">
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
-      <repository>
+      <repository sendInvalidationEvents="true">
         <schema>
           <field type="largetext">note</field>
         </schema>

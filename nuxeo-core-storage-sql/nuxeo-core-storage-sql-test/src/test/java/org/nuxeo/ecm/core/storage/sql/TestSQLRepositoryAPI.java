@@ -61,7 +61,9 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
 /**
@@ -3136,13 +3138,62 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // Reset the listener
-        DummyTestListener.LISTENER_CALLED = false;
+        DummyTestListener.EVENTS_RECEIVED.clear();
         DocumentModel versionDoc = session.getLastDocumentVersion(doc.getRef());
         versionDoc.setProperty("dublincore", "issued", new GregorianCalendar());
         session.saveDocument(versionDoc);
         session.save();
 
-        assertFalse(DummyTestListener.LISTENER_CALLED);
+        assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testInvalidationEvents() throws Exception {
+        Event event;
+        Boolean local;
+        Set<String> set;
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listeners-invalidations-contrib.xml");
+
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "doc", "File");
+        doc = session.createDocument(doc);
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save(); // should send invalidations
+        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
+        event = DummyTestListener.EVENTS_RECEIVED.get(0);
+        local = (Boolean) event.getContext().getProperty(
+                EventConstants.INVAL_LOCAL);
+        assertEquals(Boolean.TRUE, local);
+        set = (Set<String>) event.getContext().getProperty(
+                EventConstants.INVAL_MODIFIED_DOC_IDS);
+        assertEquals(1, set.size()); // doc created seen as modified
+        set = (Set<String>) event.getContext().getProperty(
+                EventConstants.INVAL_MODIFIED_PARENT_IDS);
+        assertEquals(2, set.size());
+        // spurious doc "parent" modified, due to its complex property
+        assertEquals(new HashSet<String>(Arrays.asList(doc.getId(),
+                root.getId())), set);
+
+        // change just one property
+        doc.setProperty("dublincore", "title", "t1");
+        doc = session.saveDocument(doc);
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save(); // should send invalidations
+        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
+        event = DummyTestListener.EVENTS_RECEIVED.get(0);
+        local = (Boolean) event.getContext().getProperty(
+                EventConstants.INVAL_LOCAL);
+        assertEquals(Boolean.TRUE, local);
+        set = (Set<String>) event.getContext().getProperty(
+                EventConstants.INVAL_MODIFIED_DOC_IDS);
+        assertEquals(1, set.size());
+        assertEquals(doc.getId(), set.iterator().next());
+        set = (Set<String>) event.getContext().getProperty(
+                EventConstants.INVAL_MODIFIED_PARENT_IDS);
+        assertEquals(0, set.size());
     }
 
 }

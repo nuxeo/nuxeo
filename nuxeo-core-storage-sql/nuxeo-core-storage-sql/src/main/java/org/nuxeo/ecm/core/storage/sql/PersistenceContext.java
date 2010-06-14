@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -199,6 +198,9 @@ public class PersistenceContext {
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
                 if (!skipInvalidation) {
+                    // we need to send modified invalidations for created
+                    // fragments because other session's ABSENT fragments have
+                    // to be invalidated
                     transactionInvalidations.addModified(rowId);
                 }
                 break;
@@ -249,6 +251,11 @@ public class PersistenceContext {
         return batch;
     }
 
+    protected Serializable getContainingDocument(Serializable id)
+            throws StorageException {
+        return hierContext.getContainingDocument(id);
+    }
+
     /**
      * Finds the documents having dirty text or dirty binaries that have to be
      * reindexed as fulltext.
@@ -262,7 +269,7 @@ public class PersistenceContext {
             Serializable docId = null;
             switch (fragment.getState()) {
             case CREATED:
-                docId = hierContext.getContainingDocument(fragment.getId());
+                docId = getContainingDocument(fragment.getId());
                 dirtyStrings.add(docId);
                 dirtyBinaries.add(docId);
                 break;
@@ -281,7 +288,7 @@ public class PersistenceContext {
                         continue;
                     }
                     if (docId == null) {
-                        docId = hierContext.getContainingDocument(fragment.getId());
+                        docId = getContainingDocument(fragment.getId());
                     }
                     if (type == PropertyType.STRING) {
                         dirtyStrings.add(docId);
