@@ -31,10 +31,13 @@ import java.lang.annotation.Target;
  * <li> A component entry is represented by an URI of the form: symbolicName:componentXmlPath,
  * where symbolicName is the symbolic name of the bundle owning the component.
  * </ul>
- * Example:
+ * Example with one module:
  * <pre>
  * @Deploy("org.nuxeo.runtime")
- * @Deploy("org.nuxeo.core:OSGI-INF/component.xml")
+ * </pre>
+ * Example with several modules:
+ * <pre>
+ * @Deploy({"org.nuxeo.runtime", "org.nuxeo.core:OSGI-INF/component.xml"})
  * </pre>
  */
 @Inherited
