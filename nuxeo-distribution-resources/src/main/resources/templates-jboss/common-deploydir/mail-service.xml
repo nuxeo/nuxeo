@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!-- $Id: mail-service.xml 62349 2007-04-15 16:48:15Z dimitris@jboss.org $ -->
+<server>
+
+  <!-- ==================================================================== -->
+  <!-- Mail Connection Factory                                              -->
+  <!-- ==================================================================== -->
+
+  <mbean code="org.jboss.mail.MailService" name="jboss:service=Mail">
+    <attribute name="JNDIName">java:/Mail</attribute>
+    <attribute name="User">${mailservice.user}</attribute>
+    <attribute name="Password">${mailservice.password}</attribute>
+    <attribute name="Configuration">
+      <configuration>
+        <property name="mail.store.protocol" value="${mail.store.protocol}" />
+        <property name="mail.transport.protocol" value="${mail.transport.protocol}" />
+        <property name="mail.user" value="${mail.user}" />
+        <property name="mail.pop3.host" value="${mail.pop3.host}" />
+        <property name="mail.smtp.host" value="${mail.smtp.host}" />
+        <property name="mail.smtp.port" value="${mail.smtp.port}" />
+        <property name="mail.from" value="${mail.from}" />
+        <property name="mail.debug" value="${mail.debug}" />
+      </configuration>
+    </attribute>
+    <depends>jboss:service=Naming</depends>
+  </mbean>
+
+</server>
