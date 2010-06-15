@@ -24,20 +24,21 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class InvokableMethod {
 
     public final static int VOID_PRIORITY = 1;
-    public final static int ADAPTABLE_PRIORITY = 2;
-    public final static int ISTANCE_OF_PRIORITY = 3;
-    public final static int EXACT_MATCH_PRIORITY = 4;
-    public final static int USER_PRIORITY = 9; // priorities from 1 to 10 are reserved for internal use.
 
+    public final static int ADAPTABLE_PRIORITY = 2;
+
+    public final static int ISTANCE_OF_PRIORITY = 3;
+
+    public final static int EXACT_MATCH_PRIORITY = 4;
+
+    public final static int USER_PRIORITY = 9; // priorities from 1 to 10 are
+                                                // reserved for internal use.
 
     protected OperationType op;
 
@@ -49,17 +50,19 @@ public class InvokableMethod {
 
     protected int priority;
 
-
     public InvokableMethod(OperationType op, Method method) {
         produce = method.getReturnType();
         Class<?>[] p = method.getParameterTypes();
         if (p.length > 1) {
-            throw new IllegalArgumentException("Operation method must accept at most one argument: "+method);
+            throw new IllegalArgumentException(
+                    "Operation method must accept at most one argument: "
+                            + method);
         }
         // if produce is Void => a control operation
-//        if (produce == Void.TYPE) {
-//            throw new IllegalArgumentException("Operation method must return a value: "+method);
-//        }
+        // if (produce == Void.TYPE) {
+        // throw new IllegalArgumentException("Operation method must return a
+        // value: "+method);
+        // }
         this.op = op;
         this.method = method;
         this.priority = method.getAnnotation(OperationMethod.class).priority();
@@ -87,6 +90,7 @@ public class InvokableMethod {
 
     /**
      * Return 0 for no match
+     *
      * @param in
      * @param consume
      * @return
@@ -109,6 +113,7 @@ public class InvokableMethod {
 
     /**
      * Return 0 for no match
+     *
      * @param in
      * @param consume
      * @return
@@ -126,21 +131,29 @@ public class InvokableMethod {
         return 0;
     }
 
-    public Object invoke(OperationContext ctx, Map<String,Object> args) throws Exception {
+    public Object invoke(OperationContext ctx, Map<String, Object> args)
+            throws Exception {
         try {
             Object input = ctx.getInput();
             Object target = op.newInstance(ctx, args);
             if (consume == Void.TYPE) {
                 Object out = method.invoke(target);
-                return produce == Void.TYPE ? input : out; // preserve last output for void methods
+                return produce == Void.TYPE ? input : out; // preserve last
+                                                            // output for void
+                                                            // methods
             } else {
-                if (input != null && !consume.isAssignableFrom(input.getClass())) {
-                    input = op.getService().getAdapter(ctx, input, consume); // try to adapt
+                if (input != null
+                        && !consume.isAssignableFrom(input.getClass())) {
+                    input = op.getService().getAdapter(ctx, input, consume); // try
+                                                                                // to
+                                                                                // adapt
                 }
                 return method.invoke(target, input);
             }
-        } catch (Exception e) { // be more explicit about the operation that failed
-            throw new OperationException("Failed to invoke operation "+getOperation().getId(), e);
+        } catch (Exception e) { // be more explicit about the operation that
+                                // failed
+            throw new OperationException("Failed to invoke operation "
+                    + getOperation().getId(), e);
         }
     }
 

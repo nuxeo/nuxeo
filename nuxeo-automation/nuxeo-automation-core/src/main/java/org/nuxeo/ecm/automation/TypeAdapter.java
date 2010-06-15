@@ -16,26 +16,26 @@
  */
 package org.nuxeo.ecm.automation;
 
-
 /**
- * An object that can adapt a given object instance to an object of another type
- * A type adapter accepts only one type of objects and can produce only one type of object
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * An object that can adapt a given object instance to an object of another
+ * type A type adapter accepts only one type of objects and can produce only
+ * one type of object
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface TypeAdapter {
 
-    
-    
     /**
-     * Adapt the given object to an instance of the given target type.
-     * The input object cannot not be null. Throws an exception if the object cannot be adapted. 
+     * Adapt the given object to an instance of the given target type. The
+     * input object cannot not be null. Throws an exception if the object
+     * cannot be adapted.
+     *
      * @param <T>
      * @param ctx
      * @param objectToAdapt
      * @return
      */
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception;
-    
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception;
+
 }

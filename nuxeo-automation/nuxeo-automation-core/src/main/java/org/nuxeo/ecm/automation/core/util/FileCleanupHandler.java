@@ -24,10 +24,10 @@ import java.util.List;
 import org.nuxeo.ecm.automation.CleanupHandler;
 
 /**
- * Cleanup Handler that takes a list of files and remove them after the operation chain was executed.
+ * Cleanup Handler that takes a list of files and remove them after the
+ * operation chain was executed.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileCleanupHandler implements CleanupHandler {
 
@@ -38,12 +38,12 @@ public class FileCleanupHandler implements CleanupHandler {
     }
 
     public FileCleanupHandler(File file) {
-        this ();
+        this();
         files.add(file);
     }
 
     public FileCleanupHandler(Collection<File> files) {
-        this ();
+        this();
         this.files.addAll(files);
     }
 

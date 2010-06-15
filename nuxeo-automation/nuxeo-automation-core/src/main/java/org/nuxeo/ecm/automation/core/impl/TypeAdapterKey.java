@@ -18,19 +18,19 @@ package org.nuxeo.ecm.automation.core.impl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class TypeAdapterKey {
 
     public final Class<?> input;
+
     public final Class<?> output;
+
     private int hashCode;
-    
+
     public TypeAdapterKey(Class<?> input, Class<?> output) {
         this.input = input;
         this.output = output;
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -41,17 +41,16 @@ public final class TypeAdapterKey {
         if (obj == null) {
             return false;
         }
-        if (obj.getClass() == TypeAdapterKey.class) { 
-            TypeAdapterKey key = (TypeAdapterKey)obj;
+        if (obj.getClass() == TypeAdapterKey.class) {
+            TypeAdapterKey key = (TypeAdapterKey) obj;
             return key.input == input && key.output == output;
         }
         return false;
     }
-    
-    
+
     @Override
     public String toString() {
-        return input+":"+output;
+        return input + ":" + output;
     }
 
     @Override

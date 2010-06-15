@@ -23,12 +23,12 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringToList implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        String content = (String)objectToAdapt;
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception {
+        String content = (String) objectToAdapt;
         String[] ar = StringUtils.split(content, ',', true);
         return new StringList(ar);
     }

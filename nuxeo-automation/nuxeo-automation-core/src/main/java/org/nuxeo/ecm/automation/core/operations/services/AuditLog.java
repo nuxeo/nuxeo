@@ -33,32 +33,33 @@ import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=AuditLog.ID, category=Constants.CAT_SERVICES, label="Audit Log",
-        description="Log events into audit for each of the input document. The operation accept as input one ore more documents that are returned back as the output.")
+@Operation(id = AuditLog.ID, category = Constants.CAT_SERVICES, label = "Audit Log", description = "Log events into audit for each of the input document. The operation accept as input one ore more documents that are returned back as the output.")
 public class AuditLog {
 
     public static final String ID = "Audit.Log";
 
-    protected @Context AuditLogger logger;
-    protected @Context OperationContext ctx;
+    @Context
+    protected AuditLogger logger;
 
-    @Param(name="event", widget=Constants.W_AUDIT_EVENT)
+    @Context
+    protected OperationContext ctx;
+
+    @Param(name = "event", widget = Constants.W_AUDIT_EVENT)
     protected String event;
 
-    @Param(name="category", required=false, values="Automation")
+    @Param(name = "category", required = false, values = "Automation")
     protected String category = "Automation";
 
-    @Param(name="comment", required=false, widget=Constants.W_MULTILINE_TEXT)
+    @Param(name = "comment", required = false, widget = Constants.W_MULTILINE_TEXT)
     protected String comment = "";
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         Principal principal = ctx.getPrincipal();
-        LogEntry entry = newEntry(doc, principal != null ? principal.getName() : null, new Date());
+        LogEntry entry = newEntry(doc, principal != null ? principal.getName()
+                : null, new Date());
         logger.addLogEntries(Collections.singletonList(entry));
         return doc;
     }
@@ -75,7 +76,6 @@ public class AuditLog {
         logger.addLogEntries(entries);
         return docs;
     }
-
 
     protected LogEntry newEntry(DocumentModel doc, String principal, Date date) {
         LogEntry entry = new LogEntry();

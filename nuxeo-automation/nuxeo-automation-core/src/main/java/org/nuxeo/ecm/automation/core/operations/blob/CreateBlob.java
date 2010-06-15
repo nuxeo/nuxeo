@@ -29,20 +29,23 @@ import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
  * TODO: detect mine?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=CreateBlob.ID, category=Constants.CAT_FETCH, label="File From URL",
-        description="Create a file from a given URL. The file parameter specify how to retrieve the file content. It should be an URL to the file you want to use as the source. You can also use an expression to get an URL from the context. Returns the created file.")
+@Operation(id = CreateBlob.ID, category = Constants.CAT_FETCH, label = "File From URL", description = "Create a file from a given URL. The file parameter specify how to retrieve the file content. It should be an URL to the file you want to use as the source. You can also use an expression to get an URL from the context. Returns the created file.")
 public class CreateBlob {
 
     public final static String ID = "Blob.Create";
 
-    @Param(name="file") protected URL file;
+    @Param(name = "file")
+    protected URL file;
 
-    @Param(name="mime-type", required=false) protected String mimeType;
-    @Param(name="filename", required=false) protected String fileName;
-    @Param(name="encoding", required=false) protected String encoding;
+    @Param(name = "mime-type", required = false)
+    protected String mimeType;
 
+    @Param(name = "filename", required = false)
+    protected String fileName;
+
+    @Param(name = "encoding", required = false)
+    protected String encoding;
 
     @OperationMethod
     public Blob run() throws Exception {
@@ -50,10 +53,10 @@ public class CreateBlob {
             fileName = file.getPath();
             int i = fileName.lastIndexOf('/');
             if (i > -1) {
-                fileName = fileName.substring(i+1);
+                fileName = fileName.substring(i + 1);
             }
         }
-        if (mimeType == null) { //TODO detect mime type
+        if (mimeType == null) { // TODO detect mime type
 
         }
         return new URLBlob(file, mimeType, encoding, fileName, null);

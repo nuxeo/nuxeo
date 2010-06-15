@@ -27,34 +27,37 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
-
 /**
- * Run an embedded operation chain that returns a DocumentModel using the current input.
+ * Run an embedded operation chain that returns a DocumentModel using the
+ * current input.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RunDocumentChain.ID, category=Constants.CAT_SUBCHAIN_EXECUTION, label="Run Document Chain",
-        description="Run an operation chain which is returning a document in the current context. The input for the chain ro run is the current input of the operation. Return the output of the chain as a document.")
+@Operation(id = RunDocumentChain.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain", description = "Run an operation chain which is returning a document in the current context. The input for the chain ro run is the current input of the operation. Return the output of the chain as a document.")
 public class RunDocumentChain {
 
     public static final String ID = "Context.RunDocumentOperation";
 
-    protected @Context OperationContext ctx;
-    protected @Context AutomationService service;
+    @Context
+    protected OperationContext ctx;
 
-    protected @Param(name="id") String chainId;
+    @Context
+    protected AutomationService service;
+
+    @Param(name = "id")
+    protected String chainId;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         OperationContext subctx = new OperationContext(ctx.getCoreSession());
         subctx.setInput(doc);
-        return (DocumentModel)service.run(subctx, chainId);
+        return (DocumentModel) service.run(subctx, chainId);
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelList result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelList result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }

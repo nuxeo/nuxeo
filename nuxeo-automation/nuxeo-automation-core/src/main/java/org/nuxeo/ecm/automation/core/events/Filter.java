@@ -22,12 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Check if a document is accepted or not.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Filter {
 
     boolean accept(DocumentModel doc) throws Exception;
-
-
 
 }

@@ -21,23 +21,20 @@ import java.util.Collection;
 
 /**
  * A string list can be used as an injectable parameter when a list of strings
- * is required.
- *
- * String list are injectable from a string value (comma separated list) or String[].
+ * is required. String list are injectable from a string value (comma separated
+ * list) or String[].
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringList extends ArrayList<String> {
 
     private static final long serialVersionUID = 1L;
 
     public StringList() {
-
     }
 
     public StringList(int size) {
-        super (size);
+        super(size);
     }
 
     public StringList(String[] ar) {

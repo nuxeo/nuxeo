@@ -23,12 +23,12 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CalendarToDate implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        return ((Calendar)objectToAdapt).getTime();
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception {
+        return ((Calendar) objectToAdapt).getTime();
     }
 
 }

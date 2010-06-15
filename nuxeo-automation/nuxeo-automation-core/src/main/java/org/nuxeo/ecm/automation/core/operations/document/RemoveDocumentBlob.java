@@ -29,18 +29,20 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RemoveDocumentBlob.ID, category=Constants.CAT_BLOB, label="Remove File",
-        description="Remove the file attached to the input document as specified by the 'xpath' parameter. If the 'xpath' point to a blob list then the list will be cleared. If the file to remove is part of a list it will be removed from the list otherwise the 'xpath' should point to a blob property that will be removed. If the save parameter is set the document modification will be automatically saved. Return the document.")
+@Operation(id = RemoveDocumentBlob.ID, category = Constants.CAT_BLOB, label = "Remove File", description = "Remove the file attached to the input document as specified by the 'xpath' parameter. If the 'xpath' point to a blob list then the list will be cleared. If the file to remove is part of a list it will be removed from the list otherwise the 'xpath' should point to a blob property that will be removed. If the save parameter is set the document modification will be automatically saved. Return the document.")
 public class RemoveDocumentBlob {
 
     public final static String ID = "Blob.Remove";
 
-    @Context protected CoreSession session;
+    @Context
+    protected CoreSession session;
 
-    @Param(name="xpath", required=false, values="file:content") protected String xpath="file:content";
-    @Param(name="save", required=false, values="true") protected boolean save = true;
+    @Param(name = "xpath", required = false, values = "file:content")
+    protected String xpath = "file:content";
+
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

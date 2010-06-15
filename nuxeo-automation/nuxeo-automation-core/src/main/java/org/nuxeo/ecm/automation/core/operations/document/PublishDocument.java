@@ -30,21 +30,19 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PublishDocument.ID, category=Constants.CAT_DOCUMENT, label="Publish Document",
-        description="Publish the input document into the target section. Existing proxy is overrided if the override attribute is set. Return the created proxy.")
+@Operation(id = PublishDocument.ID, category = Constants.CAT_DOCUMENT, label = "Publish Document", description = "Publish the input document into the target section. Existing proxy is overrided if the override attribute is set. Return the created proxy.")
 public class PublishDocument {
 
     public static final String ID = "Document.Publish";
 
+    @Context
+    protected CoreSession session;
 
-    protected @Context CoreSession session;
-
-    @Param(name="target")
+    @Param(name = "target")
     protected DocumentModel target;
 
-    @Param(name="override", required = false, values="true")
+    @Param(name = "override", required = false, values = "true")
     protected boolean override = true;
 
     @OperationMethod
@@ -52,10 +50,10 @@ public class PublishDocument {
         return session.publishDocument(doc, target, override);
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }

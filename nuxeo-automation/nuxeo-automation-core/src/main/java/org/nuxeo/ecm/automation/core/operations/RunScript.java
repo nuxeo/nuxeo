@@ -29,17 +29,16 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
  * Save the session - TODO remove this?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RunScript.ID, category=Constants.CAT_SCRIPTING, label="Run Script",
-        description="Run a script which content is specified as text in the 'script' parameter")
+@Operation(id = RunScript.ID, category = Constants.CAT_SCRIPTING, label = "Run Script", description = "Run a script which content is specified as text in the 'script' parameter")
 public class RunScript {
 
     public static final String ID = "Context.RunScript";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="script", widget=Constants.W_MULTILINE_TEXT)
+    @Param(name = "script", widget = Constants.W_MULTILINE_TEXT)
     protected String script;
 
     private volatile Expression expr;

@@ -30,20 +30,25 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-//TODO accept xpath that points to a blob entry in a list and insert a blob before. see AttachBlob too.
-@Operation(id=SetDocumentBlob.ID, category=Constants.CAT_DOCUMENT, label="Set File",
-        description="Set the input file to the given property on the input document. If the xpath points to a blob list then the blob is appended to the list, otherwise the xpath should point to a blob property. If the save parameter is set the document modification will be automatically saved. Return the document.")
+// TODO accept xpath that points to a blob entry in a list and insert a blob
+// before. see AttachBlob too.
+@Operation(id = SetDocumentBlob.ID, category = Constants.CAT_DOCUMENT, label = "Set File", description = "Set the input file to the given property on the input document. If the xpath points to a blob list then the blob is appended to the list, otherwise the xpath should point to a blob property. If the save parameter is set the document modification will be automatically saved. Return the document.")
 public class SetDocumentBlob {
 
     public final static String ID = "Blob.Set";
 
-    @Context protected CoreSession session;
+    @Context
+    protected CoreSession session;
 
-    @Param(name="xpath", required=false, values="file:content") protected String xpath="file:content";
-    @Param(name="file") protected Blob blob;
-    @Param(name="save", required=false, values="true") protected boolean save = true;
+    @Param(name = "xpath", required = false, values = "file:content")
+    protected String xpath = "file:content";
+
+    @Param(name = "file")
+    protected Blob blob;
+
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

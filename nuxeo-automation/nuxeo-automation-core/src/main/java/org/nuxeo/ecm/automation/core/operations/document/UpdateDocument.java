@@ -34,20 +34,20 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=UpdateDocument.ID, category=Constants.CAT_DOCUMENT, label="Update Properties",
-        description="Set multiple properties on the input document. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns back the updated document.")
+@Operation(id = UpdateDocument.ID, category = Constants.CAT_DOCUMENT, label = "Update Properties", description = "Set multiple properties on the input document. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns back the updated document.")
 public class UpdateDocument {
 
     public static final String ID = "Document.Update";
 
+    @Context
+    protected CoreSession session;
 
-    protected @Context CoreSession session;
+    @Param(name = "properties")
+    protected Properties content;
 
-    protected @Param(name="properties") Properties content;
-    @Param(name="save", required=false, values="true") protected boolean save = true;
-
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -60,7 +60,8 @@ public class UpdateDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -69,7 +70,8 @@ public class UpdateDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(session.getDocument(doc)));
         }

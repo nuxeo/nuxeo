@@ -22,12 +22,12 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringToDate implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        String content = (String)objectToAdapt;
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception {
+        String content = (String) objectToAdapt;
         return DateParser.parseW3CDateTime(content);
     }
 

@@ -25,22 +25,21 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * To inject contextual data into an operation field.
- * The following context objects are provided:
+ * To inject contextual data into an operation field. The following context
+ * objects are provided:
  * <ul>
- *   <li> The context itself. See {@link OperationContext}
- *   <li> A Core Session if available. See {@link CoreSession}
- *   <li> A Principal if available. This is the same as {@link CoreSession#getPrincipal()}
- *   <li> Any registered Nuxeo Service. 
+ * <li> The context itself. See {@link OperationContext}
+ * <li> A Core Session if available. See {@link CoreSession}
+ * <li> A Principal if available. This is the same as
+ * {@link CoreSession#getPrincipal()}
+ * <li> Any registered Nuxeo Service.
  * <ul>
  * CoreSession or OperationContext into a library instance field.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target( { ElementType.FIELD })
 public @interface Context {
 
 }
-

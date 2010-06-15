@@ -26,23 +26,23 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PopBlob.ID, category=Constants.CAT_EXECUTION_STACK, label="Pop File",
-    description="Restore the last saved input file in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the last <i>pushed</i> file.")
+@Operation(id = PopBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop File", description = "Restore the last saved input file in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the last <i>pushed</i> file.")
 public class PopBlob {
 
     public final static String ID = "Blob.Pop";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public Blob run() throws Exception {
         Object obj = ctx.pop(Constants.O_BLOB);
         if (obj instanceof Blob) {
-            return (Blob)obj;
+            return (Blob) obj;
         }
-        throw new OperationException("Illegal state error for pop file operation. The context stack doesn't contains a file on its top");
+        throw new OperationException(
+                "Illegal state error for pop file operation. The context stack doesn't contains a file on its top");
     }
 
 }

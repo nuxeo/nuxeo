@@ -52,14 +52,14 @@ public class GetDocumentPrincipalEmails {
 
     public static final String ID = "Document.GetPrincipalEmails";
 
-    protected @Context
-    PermissionProvider permissionProvider;
+    @Context
+    protected PermissionProvider permissionProvider;
 
-    protected @Context
-    UserManager umgr;
+    @Context
+    protected UserManager umgr;
 
-    protected @Context
-    OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @Param(name = "permission")
     protected String permission;

@@ -20,20 +20,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Describe an operation chain execution.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class OperationChain implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected String id;
+
     protected String description;
-    protected boolean isPublic; // whether this chain is visible to clients (via REST for example)
+
+    protected boolean isPublic; // whether this chain is visible to clients
+                                // (via REST for example)
+
     protected List<OperationParameters> ops;
 
     public OperationChain(String id) {

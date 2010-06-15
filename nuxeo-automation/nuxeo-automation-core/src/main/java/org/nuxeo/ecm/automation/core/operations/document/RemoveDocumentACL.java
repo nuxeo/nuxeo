@@ -34,16 +34,17 @@ import org.nuxeo.ecm.core.api.security.ACP;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RemoveDocumentACL.ID, category=Constants.CAT_DOCUMENT, label="Remove ACL",
-        description="Remove a named Acces Control List from the input document(s). Returns the document(s).")
+@Operation(id = RemoveDocumentACL.ID, category = Constants.CAT_DOCUMENT, label = "Remove ACL", description = "Remove a named Acces Control List from the input document(s). Returns the document(s).")
 public class RemoveDocumentACL {
 
     public static final String ID = "Document.RemoveACL";
 
-    @Context protected CoreSession session;
-    @Param(name="acl") String aclName;
+    @Context
+    protected CoreSession session;
+
+    @Param(name = "acl")
+    protected String aclName;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -57,10 +58,10 @@ public class RemoveDocumentACL {
         return doc;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -69,7 +70,8 @@ public class RemoveDocumentACL {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(session.getDocument(run(doc)));
         }
@@ -79,7 +81,8 @@ public class RemoveDocumentACL {
     protected void deleteACL(DocumentRef ref) throws ClientException {
         ACP acp = session.getACP(ref);
         acp.removeACL(aclName);
-        acp.removeACL("inherited"); // make sure to not save the inherited acl which is dynamically computed
+        acp.removeACL("inherited"); // make sure to not save the inherited acl
+                                    // which is dynamically computed
         session.setACP(ref, acp, true);
     }
 

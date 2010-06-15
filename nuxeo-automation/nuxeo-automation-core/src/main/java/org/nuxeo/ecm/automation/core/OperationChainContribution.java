@@ -33,10 +33,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("chain")
 public class OperationChainContribution implements Constants {
@@ -50,12 +48,11 @@ public class OperationChainContribution implements Constants {
     @XNode("description")
     protected String description;
 
-    @XNodeList(value="operation", type=ArrayList.class, componentType=Operation.class)
+    @XNodeList(value = "operation", type = ArrayList.class, componentType = Operation.class)
     protected ArrayList<Operation> ops;
 
     @XNode("public")
     protected boolean isPublic = true;
-
 
     public OperationChain toOperationChain(Bundle bundle) throws Exception {
         OperationChain chain = new OperationChain(id);
@@ -71,9 +68,11 @@ public class OperationChainContribution implements Constants {
                     param.value = param.value.replaceAll("&lt;", "<");
                     param.value = param.value.replaceAll("&gt;", ">");
                     if (param.value.indexOf("@{") > -1) {
-                        params.set(param.name, Scripting.newTemplate(param.value));
+                        params.set(param.name,
+                                Scripting.newTemplate(param.value));
                     } else {
-                        params.set(param.name, Scripting.newExpression(param.value));
+                        params.set(param.name,
+                                Scripting.newExpression(param.value));
                     }
                 } else {
                     Object val = null;
@@ -103,13 +102,16 @@ public class OperationChainContribution implements Constants {
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
                             if (param.value.startsWith(".")) {
-                                val = Scripting.newExpression("Document.resolvePathAsRef(\""+param.value+"\")");
+                                val = Scripting.newExpression("Document.resolvePathAsRef(\""
+                                        + param.value + "\")");
                             } else {
                                 val = StringToDocRef.createRef(param.value);
                             }
                         } else if (T_DOCUMENTS.equals(type)) {
-                            String[] ar = StringUtils.split(param.value, ',', true);
-                            DocumentRefListImpl result = new DocumentRefListImpl(ar.length);
+                            String[] ar = StringUtils.split(param.value, ',',
+                                    true);
+                            DocumentRefListImpl result = new DocumentRefListImpl(
+                                    ar.length);
                             for (String ref : ar) {
                                 result.add(StringToDocRef.createRef(ref));
                             }
@@ -125,7 +127,8 @@ public class OperationChainContribution implements Constants {
                         break;
                     case 'r':
                         if (T_RESOURCE.equals(type)) {
-                            if (param.value.indexOf(":/") > -1) { // a real URL
+                            if (param.value.indexOf(":/") > -1) { // a real
+                                                                    // URL
                                 val = new URL(param.value);
                             } else { // try with class loader
                                 val = bundle.getEntry(param.value);
@@ -148,19 +151,23 @@ public class OperationChainContribution implements Constants {
         @XNode("@id")
         protected String id;
 
-        @XNodeList(value="param", type=ArrayList.class, componentType=Param.class)
+        @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
         protected ArrayList<Param> params;
 
     }
 
     @XObject("param")
     public static class Param {
-        @XNode("@name") protected String name;
-        // string, boolean, date, integer, float, uid, path, expression, template, resource
-        @XNode("@type") protected String type = "string";
-        @XContent protected String value;
+        @XNode("@name")
+        protected String name;
+
+        // string, boolean, date, integer, float, uid, path, expression,
+        // template, resource
+        @XNode("@type")
+        protected String type = "string";
+
+        @XContent
+        protected String value;
     }
-
-
 
 }

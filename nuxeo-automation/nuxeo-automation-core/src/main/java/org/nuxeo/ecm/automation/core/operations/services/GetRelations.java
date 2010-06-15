@@ -42,23 +42,24 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=GetRelations.ID, category=Constants.CAT_SERVICES, label="Get Linked Documents",
-        description="Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.")
+@Operation(id = GetRelations.ID, category = Constants.CAT_SERVICES, label = "Get Linked Documents", description = "Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.")
 public class GetRelations {
 
     public static final String ID = "Relations.GetRelations";
 
-    protected @Context CoreSession session;
-    protected @Context RelationManager relations;
+    @Context
+    protected CoreSession session;
 
-    @Param(name="predicate") //TODO use a combo box?
+    @Context
+    protected RelationManager relations;
+
+    @Param(name = "predicate")
+    // TODO use a combo box?
     protected String predicate;
 
-    @Param(name="outgoing")
+    @Param(name = "outgoing")
     protected boolean outgoing = true;
 
     @OperationMethod
@@ -68,19 +69,23 @@ public class GetRelations {
         return getDocuments(res, predicate);
     }
 
-    protected QNameResource getDocumentResource(DocumentModel document) throws ClientException {
+    protected QNameResource getDocumentResource(DocumentModel document)
+            throws ClientException {
         return (QNameResource) relations.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, document, null);
     }
 
     protected Resource getPredicate() {
-        return predicate != null && predicate.length() > 0 ? new ResourceImpl(predicate) : null;
+        return predicate != null && predicate.length() > 0 ? new ResourceImpl(
+                predicate) : null;
     }
 
-    protected DocumentModelList getDocuments(QNameResource res, Resource predicate) throws ClientException {
+    protected DocumentModelList getDocuments(QNameResource res,
+            Resource predicate) throws ClientException {
         if (outgoing) {
             List<Statement> statements = getOutgoingStatements(res, predicate);
-            DocumentModelList docs = new DocumentModelListImpl(statements.size());
+            DocumentModelList docs = new DocumentModelListImpl(
+                    statements.size());
             for (Statement st : statements) {
                 DocumentModel dm = getDocumentModel(st.getObject());
                 if (dm != null) {
@@ -90,7 +95,8 @@ public class GetRelations {
             return docs;
         } else {
             List<Statement> statements = getIncomingStatements(res, predicate);
-            DocumentModelList docs = new DocumentModelListImpl(statements.size());
+            DocumentModelList docs = new DocumentModelListImpl(
+                    statements.size());
             for (Statement st : statements) {
                 DocumentModel dm = getDocumentModel(st.getSubject());
                 if (dm != null) {
@@ -101,12 +107,14 @@ public class GetRelations {
         }
     }
 
-    protected List<Statement> getIncomingStatements(QNameResource res, Resource predicate) throws ClientException {
+    protected List<Statement> getIncomingStatements(QNameResource res,
+            Resource predicate) throws ClientException {
         Statement pattern = new StatementImpl(null, predicate, res);
         return relations.getStatements(RelationConstants.GRAPH_NAME, pattern);
     }
 
-    protected List<Statement> getOutgoingStatements(QNameResource res, Resource predicate) throws ClientException {
+    protected List<Statement> getOutgoingStatements(QNameResource res,
+            Resource predicate) throws ClientException {
         Statement pattern = new StatementImpl(res, predicate, null);
         return relations.getStatements(RelationConstants.GRAPH_NAME, pattern);
     }

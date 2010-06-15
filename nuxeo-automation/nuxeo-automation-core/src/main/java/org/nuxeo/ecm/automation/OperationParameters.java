@@ -23,32 +23,34 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
- * An object holding the runtime parameters that should be used by an operation when run.
+ * An object holding the runtime parameters that should be used by an operation
+ * when run.
  * <p>
- * Parameters are injected at runtime into the operation using {@link Param} annotation. 
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Parameters are injected at runtime into the operation using {@link Param}
+ * annotation.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationParameters implements Serializable {
 
     private static final long serialVersionUID = -3215180388563955264L;
 
-    protected String oid; 
-    protected Map<String,Object> params;
-    
+    protected String oid;
+
+    protected Map<String, Object> params;
 
     public OperationParameters(String oid) {
-        this (oid, new HashMap<String, Object>());
+        this(oid, new HashMap<String, Object>());
     }
-    
-    public OperationParameters(String oid, Map<String,Object> params) {
+
+    public OperationParameters(String oid, Map<String, Object> params) {
         this.oid = oid;
         this.params = params;
     }
-    
+
     /**
      * The operation ID
+     *
      * @return
      */
     public String id() {
@@ -57,13 +59,13 @@ public class OperationParameters implements Serializable {
 
     /**
      * The map of runtime parameters
+     *
      * @return
      */
-    public final Map<String,Object> map() {
+    public final Map<String, Object> map() {
         return params;
     }
-    
-    
+
     public OperationParameters set(String key, Object valueRef) {
         params.put(key, valueRef);
         return this;
@@ -72,6 +74,6 @@ public class OperationParameters implements Serializable {
     public OperationParameters from(Map<String, Object> params) {
         this.params.putAll(params);
         return this;
-    }    
-    
+    }
+
 }

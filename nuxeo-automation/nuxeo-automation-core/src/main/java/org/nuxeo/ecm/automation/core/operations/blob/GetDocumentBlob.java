@@ -30,19 +30,18 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=GetDocumentBlob.ID, category=Constants.CAT_BLOB, label="Get Document File",
-        description="Get a file attached on the input document. The file location is specified using an xpath to the blob property of the document. Returns the file")
+@Operation(id = GetDocumentBlob.ID, category = Constants.CAT_BLOB, label = "Get Document File", description = "Get a file attached on the input document. The file location is specified using an xpath to the blob property of the document. Returns the file")
 public class GetDocumentBlob {
 
     public final static String ID = "Blob.Get";
 
-    @Param(name="xpath", required=false, values="file:content") protected String xpath="file:content";
+    @Param(name = "xpath", required = false, values = "file:content")
+    protected String xpath = "file:content";
 
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
-        return (Blob)doc.getPropertyValue(xpath);
+        return (Blob) doc.getPropertyValue(xpath);
     }
 
     @OperationMethod

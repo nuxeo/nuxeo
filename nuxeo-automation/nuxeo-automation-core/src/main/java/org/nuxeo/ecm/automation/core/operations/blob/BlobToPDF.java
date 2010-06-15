@@ -34,20 +34,20 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=BlobToPDF.ID, category=Constants.CAT_BLOB, label="Convert To PDF",
-        description="Convert the input file to a PDF and return the new file.")
+@Operation(id = BlobToPDF.ID, category = Constants.CAT_BLOB, label = "Convert To PDF", description = "Convert the input file to a PDF and return the new file.")
 public class BlobToPDF {
 
     public final static String ID = "Blob.ToPDF";
 
-    @Context protected ConversionService service;
+    @Context
+    protected ConversionService service;
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
         BlobHolder bh = new SimpleBlobHolder(blob);
-        bh = service.convertToMimeType("application/pdf", bh, new HashMap<String,Serializable>());
+        bh = service.convertToMimeType("application/pdf", bh,
+                new HashMap<String, Serializable>());
         Blob result = bh.getBlob();
         adjustBlobName(blob, result);
         return result;
@@ -56,22 +56,22 @@ public class BlobToPDF {
     @OperationMethod
     public BlobList run(BlobList blobs) throws Exception {
         BlobHolder bh = new SimpleBlobHolder(blobs);
-        bh = service.convertToMimeType("application/pdf", bh, new HashMap<String,Serializable>());
-        //TODO optimize this
+        bh = service.convertToMimeType("application/pdf", bh,
+                new HashMap<String, Serializable>());
+        // TODO optimize this
         List<Blob> result = bh.getBlobs();
-        for (int i=0, size=result.size(); i<size; i++) {
-           adjustBlobName(blobs.get(i), result.get(i));
+        for (int i = 0, size = result.size(); i < size; i++) {
+            adjustBlobName(blobs.get(i), result.get(i));
         }
         return new BlobList(result);
     }
 
-
     protected void adjustBlobName(Blob in, Blob out) {
         String fname = in.getFilename();
         if (fname == null) {
-            fname = "Unknown_"+System.identityHashCode(in);
+            fname = "Unknown_" + System.identityHashCode(in);
         }
-        out.setFilename(fname+".pdf");
+        out.setFilename(fname + ".pdf");
     }
 
 }

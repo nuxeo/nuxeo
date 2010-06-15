@@ -24,17 +24,15 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PushBlob.ID, category=Constants.CAT_EXECUTION_STACK, label="Push File",
-    description="Push the input file on the context stack. The file can be restored later as the input using the corrresponding pop operation. Returns the input file.")
+@Operation(id = PushBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File", description = "Push the input file on the context stack. The file can be restored later as the input using the corrresponding pop operation. Returns the input file.")
 public class PushBlob {
 
     public final static String ID = "Blob.Push";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {

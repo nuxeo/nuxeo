@@ -22,22 +22,23 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("operation")
 public class OperationContribution {
 
     /**
-     * The operation class that must be annotated using {@link Operation} annotation.
+     * The operation class that must be annotated using {@link Operation}
+     * annotation.
      */
     @XNode("@class")
     public Class<?> type;
-    
+
     /**
      * Put it to true to override an existing contribution having the same ID.
-     * By default overriding is not permitted and an exception is thrown when this flag is on false. 
+     * By default overriding is not permitted and an exception is thrown when
+     * this flag is on false.
      */
     @XNode("@replace")
     public boolean replace;
-    
+
 }

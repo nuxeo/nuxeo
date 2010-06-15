@@ -32,7 +32,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JSONExporter {
 
@@ -41,16 +40,20 @@ public class JSONExporter {
     }
 
     public static void toJSON(Writer writer) throws Exception {
-        toJSON(Framework.getService(AutomationService.class).getDocumentation(), writer);
+        toJSON(
+                Framework.getService(AutomationService.class).getDocumentation(),
+                writer);
     }
 
-    public static String toJSON(List<OperationDocumentation> docs) throws IOException {
+    public static String toJSON(List<OperationDocumentation> docs)
+            throws IOException {
         StringWriter writer = new StringWriter();
         toJSON(docs, writer);
         return writer.toString();
     }
 
-    public static void toJSON(List<OperationDocumentation> docs, Writer writer) throws IOException {
+    public static void toJSON(List<OperationDocumentation> docs, Writer writer)
+            throws IOException {
         JSONObject json = new JSONObject();
         JSONArray ops = new JSONArray();
         for (OperationDocumentation doc : docs) {
@@ -61,7 +64,8 @@ public class JSONExporter {
         writer.write(json.toString(2));
     }
 
-    public static JSONObject toJSON(OperationDocumentation doc) throws IOException {
+    public static JSONObject toJSON(OperationDocumentation doc)
+            throws IOException {
         JSONObject op = new JSONObject();
         op.element("id", doc.id);
         op.element("label", doc.label);
@@ -93,7 +97,8 @@ public class JSONExporter {
     }
 
     public static OperationDocumentation fromJSON(JSONObject json) {
-        OperationDocumentation op = new OperationDocumentation(json.getString("id"));
+        OperationDocumentation op = new OperationDocumentation(
+                json.getString("id"));
         op.category = json.optString("label", null);
         op.category = json.optString("category", null);
         op.requires = json.optString("requires", null);
@@ -102,7 +107,7 @@ public class JSONExporter {
         JSONArray sig = json.optJSONArray("signature");
         if (sig != null) {
             op.signature = new String[sig.size()];
-            for (int j=0, size=sig.size(); j<size; j++) {
+            for (int j = 0, size = sig.size(); j < size; j++) {
                 op.signature[j] = sig.getString(j);
             }
         }
@@ -110,7 +115,7 @@ public class JSONExporter {
         JSONArray params = json.optJSONArray("params");
         if (params != null) {
             op.params = new ArrayList<Param>(params.size());
-            for (int j=0, size=params.size(); j<size; j++) {
+            for (int j = 0, size = params.size(); j < size; j++) {
                 JSONObject p = params.getJSONObject(j);
                 Param para = new Param();
                 para.name = p.optString("name", null);
@@ -120,7 +125,7 @@ public class JSONExporter {
                 JSONArray ar = p.optJSONArray("values");
                 if (ar != null) {
                     para.values = new String[ar.size()];
-                    for (int k=0,size2=ar.size(); k<size2; k++) {
+                    for (int k = 0, size2 = ar.size(); k < size2; k++) {
                         para.values[k] = ar.getString(k);
                     }
                 }

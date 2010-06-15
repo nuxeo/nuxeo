@@ -34,27 +34,31 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Create a document into the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=CreateDocument.ID, category=Constants.CAT_DOCUMENT, label="Create",
-        description="Create a new document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns the created document.")
+@Operation(id = CreateDocument.ID, category = Constants.CAT_DOCUMENT, label = "Create", description = "Create a new document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns the created document.")
 public class CreateDocument {
 
     public final static String ID = "Document.Create";
 
-    protected @Context CoreSession session;
+    @Context
+    protected CoreSession session;
 
-    protected @Param(name="type") String type;
-    //protected @Param("parent") DocumentRef parent;
-    protected @Param(name="name", required=false) String name;
-    protected @Param(name="properties", required=false) Properties content;
+    @Param(name = "type")
+    protected String type;
+
+    @Param(name = "name", required = false)
+    protected String name;
+
+    @Param(name = "properties", required = false)
+    protected Properties content;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (name == null) {
             name = "Untitled";
         }
-        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, type);
+        DocumentModel newDoc = session.createDocumentModel(
+                doc.getPathAsString(), name, type);
         if (content != null) {
             DocumentHelper.setProperties(session, newDoc, content);
         }
@@ -63,7 +67,8 @@ public class CreateDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -72,7 +77,8 @@ public class CreateDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(session.getDocument(doc)));
         }

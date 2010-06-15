@@ -17,11 +17,11 @@
 package org.nuxeo.ecm.automation;
 
 /**
- * Can be used by any operation to do some required cleanup after the chain was executed.
- * For example this can be used to remove temporary files created by an operation.
+ * Can be used by any operation to do some required cleanup after the chain was
+ * executed. For example this can be used to remove temporary files created by
+ * an operation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface CleanupHandler {
 

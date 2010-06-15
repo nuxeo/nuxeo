@@ -27,24 +27,24 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class AdapterKeyedRegistry extends SuperKeyedRegistry<TypeAdapterKey, TypeAdapter> {
-    
+public class AdapterKeyedRegistry extends
+        SuperKeyedRegistry<TypeAdapterKey, TypeAdapter> {
+
     protected Set<Class<?>> blacklist;
-    
+
     public AdapterKeyedRegistry() {
         blacklist = new HashSet<Class<?>>();
         blacklist.add(Serializable.class);
         blacklist.add(Cloneable.class);
         blacklist.add(Comparable.class);
     }
-    
+
     @Override
     protected boolean isRoot(TypeAdapterKey key) {
         return key.input == Object.class;
     }
-    
+
     @Override
     protected List<TypeAdapterKey> getSuperKeys(TypeAdapterKey key) {
         List<TypeAdapterKey> result = new ArrayList<TypeAdapterKey>();
@@ -59,10 +59,10 @@ public class AdapterKeyedRegistry extends SuperKeyedRegistry<TypeAdapterKey, Typ
         }
         return result;
     }
-    
+
     @Override
     protected boolean isCachingEnabled(TypeAdapterKey key) {
         return !Proxy.isProxyClass(key.input);
     }
-    
+
 }

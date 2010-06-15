@@ -38,32 +38,35 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=FilterDocuments.ID, category=Constants.CAT_DOCUMENT, label="Filter List",
-        description="Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' paramter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
+@Operation(id = FilterDocuments.ID, category = Constants.CAT_DOCUMENT, label = "Filter List", description = "Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' paramter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
 public class FilterDocuments {
 
     public static final String ID = "Document.Filter";
 
+    @Context
+    protected OperationContext ctx;
 
-    protected @Context OperationContext ctx;
+    @Param(name = "types", required = false)
+    protected String types; // comma separated list.
 
-    protected @Param(name="types", required=false) String types; // comma separated list.
-    protected @Param(name="facet", required=false) String facet;
-    protected @Param(name="lifecycle", required=false) String lifeCycle;
-    protected @Param(name="pathStartsWith", required=false) String pathStartsWith;
-    protected @Param(name="condition", required=false) String condition;
-    @Param(name="class", required=false, widget=Constants.W_OPTION, values={
-            AttrFilterFactory.ANY_DOC,
-            AttrFilterFactory.REGULAR_DOC,
-            AttrFilterFactory.LINK_DOC,
-            AttrFilterFactory.PUBLISHED_DOC,
-            AttrFilterFactory.PROXY_DOC,
-            AttrFilterFactory.VERSION_DOC,
-            AttrFilterFactory.IMMUTABLE_DOC,
-            AttrFilterFactory.MUTABLE_DOC
-            })
+    @Param(name = "facet", required = false)
+    protected String facet;
+
+    @Param(name = "lifecycle", required = false)
+    protected String lifeCycle;
+
+    @Param(name = "pathStartsWith", required = false)
+    protected String pathStartsWith;
+
+    @Param(name = "condition", required = false)
+    protected String condition;
+
+    @Param(name = "class", required = false, widget = Constants.W_OPTION, values = {
+            AttrFilterFactory.ANY_DOC, AttrFilterFactory.REGULAR_DOC,
+            AttrFilterFactory.LINK_DOC, AttrFilterFactory.PUBLISHED_DOC,
+            AttrFilterFactory.PROXY_DOC, AttrFilterFactory.VERSION_DOC,
+            AttrFilterFactory.IMMUTABLE_DOC, AttrFilterFactory.MUTABLE_DOC })
     protected String attr;
 
     @OperationMethod
@@ -78,12 +81,15 @@ public class FilterDocuments {
         return result;
     }
 
-
     protected class Condition implements Filter {
         Set<String> types;
+
         String facet;
+
         String lc;
+
         Expression expr;
+
         Filter attr;
 
         Condition() {
@@ -146,13 +152,12 @@ public class FilterDocuments {
                 }
             }
             if (expr != null) {
-                if (!(Boolean)expr.eval(ctx)) {
+                if (!(Boolean) expr.eval(ctx)) {
                     return false;
                 }
             }
             return true;
         }
     }
-
 
 }

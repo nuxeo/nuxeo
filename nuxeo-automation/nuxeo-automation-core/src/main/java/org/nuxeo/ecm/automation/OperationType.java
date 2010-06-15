@@ -19,29 +19,28 @@ package org.nuxeo.ecm.automation;
 import java.util.Map;
 import java.util.Set;
 
-
-
 /**
- * Describe an operation class. Each registered operation will be stored in the registry
- * as an instance of this class. 
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Describe an operation class. Each registered operation will be stored in the
+ * registry as an instance of this class.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface OperationType {
 
     public String getId();
 
     public Class<?> getType();
-    
+
     public Set<Class<?>> getProduces();
-    
+
     public Set<Class<?>> getConsumes();
 
-    public Object newInstance(OperationContext ctx, Map<String,Object> args) throws Exception;
+    public Object newInstance(OperationContext ctx, Map<String, Object> args)
+            throws Exception;
 
     /**
-     * Get the service that registered that type. 
+     * Get the service that registered that type.
+     *
      * @return
      */
     public AutomationService getService();

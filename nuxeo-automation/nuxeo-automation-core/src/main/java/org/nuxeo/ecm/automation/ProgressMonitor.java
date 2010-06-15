@@ -19,14 +19,11 @@
 
 package org.nuxeo.ecm.automation;
 
-
 /**
- * No yet used
- * 
- * A progress monitor is notified by a running process about the execution progress
+ * No yet used A progress monitor is notified by a running process about the
+ * execution progress
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ProgressMonitor {
 

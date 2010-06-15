@@ -34,29 +34,33 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Mailer {
 
     private static final Log log = LogFactory.getLog(Mailer.class);
 
     protected Properties config;
+
     protected volatile Session session;
+
     protected Authenticator auth;
+
     /**
-     * The JNDI session name. If not null JNDI will be used to lookup the default session, otherwise
-     * local configuration (through {@link #config}) will be used to create a session.
+     * The JNDI session name. If not null JNDI will be used to lookup the
+     * default session, otherwise local configuration (through {@link #config})
+     * will be used to create a session.
      */
     protected String sessionName;
 
     /**
      * Create a mailer that can be configured using the API.
+     *
      * @see #setAuthenticator(Authenticator)
      * @see #setCredentials(String, String)
      * @see #setServer(String)
      */
     public Mailer() {
-        this (null, new Properties());
+        this(null, new Properties());
     }
 
     /**
@@ -65,20 +69,23 @@ public class Mailer {
      * @param config
      */
     public Mailer(Properties config) {
-        this (null, config);
+        this(null, config);
     }
 
     /**
-     * Create a mailer using a session that lookup for the session in JNDI under the given session name.
+     * Create a mailer using a session that lookup for the session in JNDI
+     * under the given session name.
+     *
      * @param sessionName
      */
     public Mailer(String sessionName) {
-        this (sessionName, new Properties());
+        this(sessionName, new Properties());
     }
 
     /**
-     * Create a mailer using a session that lookup for the session in JNDI under the given session name.
-     * If the JNDI binding doesn't exists use the given properties to cinfiugure the session.
+     * Create a mailer using a session that lookup for the session in JNDI
+     * under the given session name. If the JNDI binding doesn't exists use the
+     * given properties to cinfiugure the session.
      *
      * @param sessionName
      * @param config
@@ -108,6 +115,7 @@ public class Mailer {
 
     /**
      * Set the SMTP server address to use
+     *
      * @param host
      * @param port
      */
@@ -120,7 +128,8 @@ public class Mailer {
             if (port == null) {
                 port = "465";
             }
-            config.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            config.put("mail.smtp.socketFactory.class",
+                    "javax.net.ssl.SSLSocketFactory");
             config.put("mail.smtp.socketFactory.fallback", "false");
             config.put("mail.smtp.socketFactory.port", port);
 
@@ -132,9 +141,9 @@ public class Mailer {
         session = null;
     }
 
-
     /**
      * Set SMTP credential
+     *
      * @param user
      * @param pass
      */
@@ -155,7 +164,6 @@ public class Mailer {
         session = null;
     }
 
-
     public void setDebug(boolean debug) {
         config.setProperty("mail.debug", Boolean.toString(debug));
     }
@@ -169,7 +177,9 @@ public class Mailer {
                             InitialContext ic = new InitialContext();
                             session = (Session) ic.lookup(sessionName);
                         } catch (NamingException e) {
-                            log.warn("Failed to lookup mail session using JNDI name "+sessionName+". Falling back on local configuration.");
+                            log.warn("Failed to lookup mail session using JNDI name "
+                                    + sessionName
+                                    + ". Falling back on local configuration.");
                             session = Session.getInstance(config, auth);
                         }
                     } else {
@@ -180,7 +190,6 @@ public class Mailer {
         }
         return session;
     }
-
 
     public Properties getConfiguration() {
         return config;
@@ -194,7 +203,6 @@ public class Mailer {
         config.load(in);
     }
 
-
     public void send(MimeMessage message) throws MessagingException {
         Transport.send(message);
     }
@@ -206,49 +214,56 @@ public class Mailer {
     /**
      * Send a single email.
      */
-    public void sendEmail(String from, String to,
-            String subject, String body) throws MessagingException {
+    public void sendEmail(String from, String to, String subject, String body)
+            throws MessagingException {
         // Here, no Authenticator argument is used (it is null).
         // Authenticators are used to prompt the user for user
         // name and password.
         MimeMessage message = new MimeMessage(getSession());
         // the "from" address may be set in code, or set in the
         // config file under "mail.from" ; here, the latter style is used
-        message.setFrom( new InternetAddress(from) );
+        message.setFrom(new InternetAddress(from));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
         message.setSubject(subject);
         message.setText(body);
         Transport.send(message);
     }
 
-
     public static class Message extends MimeMessage {
         public Message(Session session) {
-            super (session);
+            super(session);
         }
-        public Message(Session session, InputStream in) throws MessagingException {
-            super (session, in);
+
+        public Message(Session session, InputStream in)
+                throws MessagingException {
+            super(session, in);
         }
+
         public Message addTo(String to) throws MessagingException {
             addRecipient(RecipientType.TO, new InternetAddress(to));
             return this;
         }
+
         public Message addCc(String cc) throws MessagingException {
             addRecipient(RecipientType.CC, new InternetAddress(cc));
             return this;
         }
+
         public Message addBcc(String bcc) throws MessagingException {
             addRecipient(RecipientType.BCC, new InternetAddress(bcc));
             return this;
         }
+
         public Message addFrom(String from) throws MessagingException {
-            addFrom(new InternetAddress[] {new InternetAddress(from)});
+            addFrom(new InternetAddress[] { new InternetAddress(from) });
             return this;
         }
+
         public Message setFrom(String from) throws MessagingException {
             setFrom(new InternetAddress(from));
             return this;
         }
+
         public void send() throws MessagingException {
             Transport.send(this);
         }

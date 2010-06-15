@@ -23,13 +23,13 @@ import org.nuxeo.ecm.automation.OperationContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MvelTemplate implements Expression {
 
     private static final long serialVersionUID = 1L;
 
     protected transient volatile CompiledTemplate compiled;
+
     protected String expr;
 
     public MvelTemplate(String expr) {
@@ -37,10 +37,11 @@ public class MvelTemplate implements Expression {
     }
 
     public Object eval(OperationContext ctx) throws Exception {
-        if (compiled  == null) {
+        if (compiled == null) {
             compiled = TemplateCompiler.compileTemplate(expr);
         }
-        Object obj = TemplateRuntime.execute(compiled, Scripting.initBindings(ctx));
+        Object obj = TemplateRuntime.execute(compiled,
+                Scripting.initBindings(ctx));
         return obj == null ? "" : obj.toString();
     }
 

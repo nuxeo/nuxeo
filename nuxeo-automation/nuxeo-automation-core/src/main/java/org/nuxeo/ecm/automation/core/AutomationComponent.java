@@ -84,24 +84,27 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Nuxeo component that provide an implementation of the {@link AutomationService} and handle extensions registrations.
+ * Nuxeo component that provide an implementation of the
+ * {@link AutomationService} and handle extensions registrations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AutomationComponent extends DefaultComponent {
 
     public final static String XP_OPERATIONS = "operations";
+
     public final static String XP_ADAPTERS = "adapters";
+
     public final static String XP_CHAINS = "chains";
+
     public final static String XP_EVENT_HANDLERS = "event-handlers";
 
     protected AutomationService service;
+
     protected EventHandlerRegistry handlers;
 
     public AutomationComponent() {
     }
-
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -173,12 +176,11 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(AuditLog.class);
 
         // disabled operations
-//      service.putOperation(FireEvent.class);
-//      service.putOperation(RunScriptFile.class);
+        // service.putOperation(FireEvent.class);
+        // service.putOperation(RunScriptFile.class);
 
         handlers = new EventHandlerRegistry(service);
     }
-
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
@@ -191,16 +193,19 @@ public class AutomationComponent extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
-            OperationContribution opc = (OperationContribution)contribution;
+            OperationContribution opc = (OperationContribution) contribution;
             service.putOperation(opc.type, opc.replace);
         } else if (XP_CHAINS.equals(extensionPoint)) {
-            OperationChainContribution occ = (OperationChainContribution)contribution;
-            service.putOperationChain(occ.toOperationChain(contributor.getContext().getBundle()), occ.replace);
+            OperationChainContribution occ = (OperationChainContribution) contribution;
+            service.putOperationChain(
+                    occ.toOperationChain(contributor.getContext().getBundle()),
+                    occ.replace);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
-            TypeAdapterContribution tac = (TypeAdapterContribution)contribution;
-            service.putTypeAdapter(tac.accept, tac.produce, tac.clazz.newInstance());
+            TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
+            service.putTypeAdapter(tac.accept, tac.produce,
+                    tac.clazz.newInstance());
         } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
-            EventHandler eh = (EventHandler)contribution;
+            EventHandler eh = (EventHandler) contribution;
             if (eh.isPostCommit()) {
                 handlers.putPostCommitEventHandler(eh);
             } else {
@@ -214,15 +219,15 @@ public class AutomationComponent extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
-            service.removeOperation(((OperationContribution)contribution).type);
+            service.removeOperation(((OperationContribution) contribution).type);
         } else if (XP_CHAINS.equals(extensionPoint)) {
-            OperationChainContribution occ = (OperationChainContribution)contribution;
+            OperationChainContribution occ = (OperationChainContribution) contribution;
             service.removeOperationChain(occ.id);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
-            TypeAdapterContribution tac = (TypeAdapterContribution)contribution;
+            TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             service.removeTypeAdapter(tac.accept, tac.produce);
         } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
-            EventHandler eh = (EventHandler)contribution;
+            EventHandler eh = (EventHandler) contribution;
             if (eh.isPostCommit()) {
                 handlers.removePostCommitEventHandler(eh);
             } else {

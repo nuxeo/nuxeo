@@ -31,32 +31,31 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=DeleteDocument.ID, category=Constants.CAT_DOCUMENT, label="Delete",
-        description="Delete the input document. The previous context input will be restored for the next operation.")
+@Operation(id = DeleteDocument.ID, category = Constants.CAT_DOCUMENT, label = "Delete", description = "Delete the input document. The previous context input will be restored for the next operation.")
 public class DeleteDocument {
 
     public static final String ID = "Document.Delete";
 
-    protected @Context CoreSession session;
-
-    //protected @Param(name="soft", required=false) boolean soft = false;
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public DocumentModel run(DocumentRef doc) throws Exception {
-//        if (soft) {
-//            //TODO impl safe delete
-//            throw new UnsupportedOperationException("Safe delete not yet implemented");
-//        }
+        // if (soft) {
+        // //TODO impl safe delete
+        // throw new UnsupportedOperationException("Safe delete not yet
+        // implemented");
+        // }
         session.removeDocument(doc);
-        //TODO ctx.pop
+        // TODO ctx.pop
         return null;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc.getRef()));
         }
@@ -65,7 +64,8 @@ public class DeleteDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(doc));
         }

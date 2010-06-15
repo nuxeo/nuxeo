@@ -26,18 +26,19 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class StringToDocModel implements TypeAdapter {
 
-    public DocumentModel getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        String value = (String)objectToAdapt;
+    public DocumentModel getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception {
+        String value = (String) objectToAdapt;
         if (value.startsWith(".")) {
-            Object obj = Scripting.newExpression("Document.resolvePathAsRef(\""+value+"\")").eval(ctx);
+            Object obj = Scripting.newExpression(
+                    "Document.resolvePathAsRef(\"" + value + "\")").eval(ctx);
             if (obj instanceof DocumentModel) {
-                return (DocumentModel)obj;
+                return (DocumentModel) obj;
             } else if (obj instanceof DocumentRef) {
-                return ctx.getCoreSession().getDocument((DocumentRef)obj);
+                return ctx.getCoreSession().getDocument((DocumentRef) obj);
             } else {
                 return null;
             }
@@ -46,8 +47,7 @@ public class StringToDocModel implements TypeAdapter {
     }
 
     public static DocumentRef createRef(String value) throws Exception {
-        return value.startsWith("/") ?
-                new PathRef(value) : new IdRef(value);
+        return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
     }
 
 }

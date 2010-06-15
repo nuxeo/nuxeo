@@ -31,35 +31,32 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
-
 /**
  * Save the session - TODO remove this?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SendMail.ID, category=Constants.CAT_NOTIFICATION, label="Send E-Mail",
-        description="Send an email using the input document to the specified recipients.")
+@Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients.")
 public class SendMail {
 
     public static final Composer COMPOSER = new Composer();
 
     public static final String ID = "Notification.SendMail";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="message", widget=Constants.W_MULTILINE_TEXT)
+    @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
     protected String message;
 
-    @Param(name="subject")
+    @Param(name = "subject")
     protected String subject;
 
-    @Param(name="from")
+    @Param(name = "from")
     protected String from;
 
-    @Param(name="to")
+    @Param(name = "to")
     protected StringList to; // a comma separated list of emails
-
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -78,7 +75,7 @@ public class SendMail {
     }
 
     protected void send(StringList sendTo) throws Exception {
-        Map<String,Object> map = Scripting.initBindings(ctx);
+        Map<String, Object> map = Scripting.initBindings(ctx);
         Mailer.Message msg = COMPOSER.newTextMessage(message, map);
         msg.setFrom(from);
         msg.setSubject(subject);

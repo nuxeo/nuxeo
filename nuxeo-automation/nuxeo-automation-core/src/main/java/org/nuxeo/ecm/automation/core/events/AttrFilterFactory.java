@@ -22,20 +22,27 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Create filters that are able to filter documents on their attribute (Regular Doc, Published Doc, Version, Link, Proxy, Immutable, Mutable)
+ * Create filters that are able to filter documents on their attribute (Regular
+ * Doc, Published Doc, Version, Link, Proxy, Immutable, Mutable)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AttrFilterFactory {
 
     public static final String ANY_DOC = "Any";
+
     public static final String REGULAR_DOC = "Regular Document";
+
     public static final String LINK_DOC = "Document Link";
+
     public static final String PUBLISHED_DOC = "Published Document";
+
     public static final String PROXY_DOC = "Document Proxy";
+
     public static final String VERSION_DOC = "Document Version";
+
     public static final String IMMUTABLE_DOC = "Immutable Document";
+
     public static final String MUTABLE_DOC = "Mutable Document";
 
     protected static Map<String, Filter> filters = new HashMap<String, Filter>();
@@ -94,6 +101,5 @@ public class AttrFilterFactory {
             return !doc.isImmutable();
         }
     }
-
 
 }

@@ -16,20 +16,18 @@
  */
 package org.nuxeo.ecm.automation;
 
-
-
 /**
- * The chain could not be validated. (i.e. no valid path found in the chain graph)
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The chain could not be validated. (i.e. no valid path found in the chain
+ * graph)
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class InvalidChainException extends OperationException {
 
     private static final long serialVersionUID = 1L;
 
     public InvalidChainException(String message) {
-        super (message);
+        super(message);
     }
-    
+
 }

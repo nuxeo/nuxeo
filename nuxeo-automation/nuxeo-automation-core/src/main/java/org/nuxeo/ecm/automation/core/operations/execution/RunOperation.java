@@ -24,24 +24,25 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 
-
 /**
- * Run an embedded operation chain using the current input.
- * The output is undefined (Void)
+ * Run an embedded operation chain using the current input. The output is
+ * undefined (Void)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RunOperation.ID, category=Constants.CAT_SUBCHAIN_EXECUTION, label="Run Operation",
-        description="Run an operation chain in the current context")
+@Operation(id = RunOperation.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Operation", description = "Run an operation chain in the current context")
 public class RunOperation {
 
     public static final String ID = "Context.RunOperation";
 
-    protected @Context OperationContext ctx;
-    protected @Context AutomationService service;
+    @Context
+    protected OperationContext ctx;
 
-    protected @Param(name="id") String chainId;
+    @Context
+    protected AutomationService service;
+
+    @Param(name = "id")
+    protected String chainId;
 
     @OperationMethod
     public void run() throws Exception {

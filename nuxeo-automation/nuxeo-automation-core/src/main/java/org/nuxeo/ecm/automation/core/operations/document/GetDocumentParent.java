@@ -32,17 +32,17 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=GetDocumentParent.ID, category=Constants.CAT_DOCUMENT, label="Get Parent",
-        description="Get the parent document of the input document. The parent document will become the input for the next operation. You can use the 'type' parameter to specify which parent to select from the document ancestors")
+@Operation(id = GetDocumentParent.ID, category = Constants.CAT_DOCUMENT, label = "Get Parent", description = "Get the parent document of the input document. The parent document will become the input for the next operation. You can use the 'type' parameter to specify which parent to select from the document ancestors")
 public class GetDocumentParent {
 
     public static final String ID = "Document.GetParent";
 
-    protected @Context CoreSession session;
+    @Context
+    protected CoreSession session;
 
-    protected @Param(name="type", required=false) String type;
+    @Param(name = "type", required = false)
+    protected String type;
 
     @OperationMethod
     public DocumentModel run(DocumentRef doc) throws Exception {
@@ -56,10 +56,10 @@ public class GetDocumentParent {
         return parent;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc.getRef()));
         }
@@ -68,7 +68,8 @@ public class GetDocumentParent {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(doc));
         }

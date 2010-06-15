@@ -22,12 +22,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocModelToDocRef implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        return ((DocumentModel)objectToAdapt).getRef();
+    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
+            throws Exception {
+        return ((DocumentModel) objectToAdapt).getRef();
     }
 
 }
