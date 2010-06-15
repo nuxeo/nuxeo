@@ -68,31 +68,31 @@ public class CreateTask {
     @Context
     protected JbpmTaskService jbpmTaskService;
 
-    @Param(name = "task name", required = true)
+    @Param(name = "task name", required = true, order = 0)
     protected String taskName;
 
-    @Param(name = "due date", required = false)
+    @Param(name = "due date", required = false, order = 1)
     protected Date dueDate;
 
-    @Param(name = "directive", required = false)
+    @Param(name = "directive", required = false, order = 2)
     protected String directive;
 
-    @Param(name = "comment", required = false)
+    @Param(name = "comment", required = false, order = 3)
     protected String comment;
 
-    @Param(name = "accept operation chain", required = false)
+    @Param(name = "accept operation chain", required = false, order = 4)
     protected String acceptOperationChain;
 
-    @Param(name = "reject operation chain", required = false)
+    @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
 
-    @Param(name = "key for actors prefixed ids", required = false)
+    @Param(name = "key for actors prefixed ids", required = false, order = 6)
     protected String keyForActors;
 
-    @Param(name = "additional list of actors prefixed ids", required = false)
+    @Param(name = "additional list of actors prefixed ids", required = false, order = 7)
     protected StringList additionalPrefixedActors;
 
-    @Param(name = "create one task per actor", required = false, values = "true")
+    @Param(name = "create one task per actor", required = false, values = "true", order = 8)
     protected boolean createOneTaskPerActor = true;
 
     @OperationMethod

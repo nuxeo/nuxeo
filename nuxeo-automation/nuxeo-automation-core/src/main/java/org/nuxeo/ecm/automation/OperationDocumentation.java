@@ -112,6 +112,8 @@ public class OperationDocumentation implements
 
         public String[] values; // the default values
 
+        public int order;
+
         public boolean isRequired;
 
         public String getName() {
@@ -134,6 +136,10 @@ public class OperationDocumentation implements
             return isRequired;
         }
 
+        public int getOrder() {
+            return order;
+        }
+
         @Override
         public String toString() {
             return name + " [" + type + "] "
@@ -141,6 +147,13 @@ public class OperationDocumentation implements
         }
 
         public int compareTo(Param o) {
+            if (order != 0 && o.order != 0) {
+                if (order < o.order) {
+                    return -1;
+                } else if (order > o.order) {
+                    return 1;
+                }
+            }
             if (isRequired && !o.isRequired) {
                 return -1;
             }

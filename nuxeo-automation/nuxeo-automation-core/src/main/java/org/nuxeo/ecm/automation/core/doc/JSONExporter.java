@@ -85,6 +85,7 @@ public class JSONExporter {
             param.element("type", p.type);
             param.element("required", p.isRequired);
             param.element("widget", p.widget);
+            param.element("order", p.order);
             JSONArray ar = new JSONArray();
             for (String value : p.values) {
                 ar.add(value);
@@ -122,6 +123,7 @@ public class JSONExporter {
                 para.type = p.optString("type", null);
                 para.isRequired = p.optBoolean("required", false);
                 para.widget = p.optString("widget", null);
+                para.order = p.optInt("order", 0);
                 JSONArray ar = p.optJSONArray("values");
                 if (ar != null) {
                     para.values = new String[ar.size()];

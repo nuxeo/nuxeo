@@ -259,6 +259,7 @@ public class OperationTypeImpl implements OperationType {
             if (param.widget.length() == 0) {
                 param.widget = null;
             }
+            param.order = p.order();
             param.values = p.values();
             param.isRequired = p.required();
             doc.params.add(param);

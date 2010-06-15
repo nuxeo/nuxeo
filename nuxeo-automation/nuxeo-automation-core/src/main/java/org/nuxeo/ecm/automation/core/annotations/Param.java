@@ -40,8 +40,6 @@ public @interface Param {
 
     /**
      * The parameter key in the operation parameters map.
-     *
-     * @return
      */
     String name();
 
@@ -51,8 +49,6 @@ public @interface Param {
      * thrown otherwise the injection will not be done (and any default value
      * set in the code will be preserved). The default is true - i.e. do not
      * allow missing entries in operation parameter map.
-     *
-     * @return
      */
     boolean required() default true;
 
@@ -63,8 +59,6 @@ public @interface Param {
      * the parameter type. For example if the parameter has the type String the
      * default is to use a TextBox but you can override this by specifying a
      * custom widget type like ListBox, TextArea etc.
-     *
-     * @return
      */
     String widget() default "";
 
@@ -76,4 +70,10 @@ public @interface Param {
      * be used to specify the default value for the widget.
      */
     String[] values() default {};
+
+    /**
+     * Optional attribute to set a parameter order, used for ordering them when
+     * presenting the UI form to fill.
+     */
+    int order() default 0;
 }
