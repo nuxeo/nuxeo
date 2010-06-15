@@ -32,8 +32,8 @@ public class SaveSession {
 
     public static final String ID = "Document.SaveSession";
 
-    protected @Context
-    CoreSession session;
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public void run() throws Exception {
