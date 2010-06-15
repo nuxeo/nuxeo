@@ -80,6 +80,7 @@
                             classifier="bin" />
     </unzip>
     <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
+
     <!-- Remove non-nuxeo information files from root -->
     <mkdir dir="${jboss}/doc-jboss" />
     <move todir="${jboss}/doc-jboss">
@@ -92,6 +93,11 @@
       </fileset>
     </move>
 
+    <unzip dest="${jboss}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-jboss" />
+    </unzip>
+
     <ant antfile="build.xml" target="patch">
       <property name="jboss.dir" value="${jboss}" />
     </ant>
@@ -99,11 +105,26 @@
       <property name="jboss.dir" value="${jboss}" />
     </ant>
     <copy todir="${jboss}/server/default/lib">
+      <!-- Required by rich faces -->
+      <artifact:resolveFile key="commons-digester:commons-digester" />
+      <!-- Required by rich faces -->
+      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
+      <!-- Required by tomahawk -->
+      <artifact:resolveFile key="commons-el:commons-el" />
+      <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
+      <artifact:resolveFile key="jaxen:jaxen:1.1-beta-6" />
+      <artifact:resolveFile key="metro.webservices:webservices-api" />
+      <artifact:resolveFile key="metro.webservices:webservices-rt" />
+      <artifact:resolveFile key="metro.webservices:webservices-tools" />
+      <artifact:resolveFile key="org.hibernate:hibernate:3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604" />
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
       <!-- copy logging monitor -->
       <artifact:resolveFile key="org.jboss.services:logging-monitor" />
+    </copy>
+    <copy todir="${jboss}/server/default/deploy">
+      <artifact:resolveFile key="org.nuxeo:nuxeo-jboss-interceptors:4.2.3.GA.2" />
     </copy>
   </target>
 
@@ -116,20 +137,14 @@
     <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
-    </unzip>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/templates">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss" />
-    </unzip>
-    <antcall target="jboss-third-party-libraries">
-      <param name="lib.dir"
-             value="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
-    </antcall>
     <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/bin"
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
+    <!-- Nuxeo EP EAR -->
+    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+    </unzip>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
          includes="nuxeo-ep-${maven.project.version}-jboss/**" />
@@ -148,24 +163,19 @@
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss">
       <fileset dir="${jboss}" />
     </copy>
+    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+    <!-- Nuxeo DM EAR -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
-    <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss" />
-    </unzip>
+    <!-- Complementary JBoss templates for DM -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-jboss-dm" />
     </unzip>
-    <antcall target="jboss-third-party-libraries">
-      <param name="lib.dir"
-             value="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" />
-    </antcall>
-    <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/bin"
-           perm="ug+x"
-           includes="*.sh,*ctl,*.command" />
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-jboss/**" />
@@ -173,21 +183,6 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="nuxeo-dm"
                      type="zip" />
-  </target>
-
-  <target name="jboss-third-party-libraries">
-    <!--
-    <delete>
-      <fileset dir="${lib.dir}"> -->
-    <!-- Remove third-parties provided by JBoss -->
-    <!-- Remove duplicated third-parties -->
-    <!--
-      </fileset>
-    </delete> -->
-    <!-- Add libraries required under JBoss (not present in the dependency tree)
-    <copy todir="${lib.dir}" overwrite="true">
-    </copy>
-    -->
   </target>
 
 </project>

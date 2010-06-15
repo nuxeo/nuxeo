@@ -165,9 +165,9 @@
                     <concat destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"
                       append="true">
 
-                      #################### HTTP Invoker Patch ######################## 
-                      # Uncomment these lines to activate nuxeo runtime remoting over HTTP 
-                      # replace localhost with the name (or IP) of the http server you are using to expose services 
+                      #################### HTTP Invoker Patch ########################
+                      # Uncomment these lines to activate nuxeo runtime remoting over HTTP
+                      # replace localhost with the name (or IP) of the http server you are using to expose services
                       # also comment the nuxeo-client-jndi.* properties defined above
                       nuxeo-client-jndi.java.naming.provider.url=http://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/invoker/JNDIFactory
                       nuxeo-client-jndi.java.naming.factory.initial=org.jboss.naming.HttpNamingContextFactory
@@ -235,9 +235,8 @@
                 <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
                   overwrite="true" />
                 <echo message="Replace log4j configuration..." />
-                <copy
-                  file="src/main/xml/jboss-log4j.xml"
-                  todir="${jboss.conf}" overwrite="true" />
+                <copy file="src/main/xml/jboss-log4j.xml" todir="${jboss.conf}"
+                  overwrite="true" />
 
                 <echo message="Patching main deployer ..." />
                 <copy
@@ -284,80 +283,6 @@
                   token="org.jboss.ejb3.stateful.SessionSynchronizationInterceptor"
                   value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor" />
               </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>patch-jboss-libraries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <!-- Required by rich faces -->
-                <artifactItem>
-                  <groupId>commons-digester</groupId>
-                  <artifactId>commons-digester</artifactId>
-                </artifactItem>
-                <!-- Required by rich faces -->
-                <artifactItem>
-                  <groupId>commons-beanutils</groupId>
-                  <artifactId>commons-beanutils</artifactId>
-                </artifactItem>
-                <!-- Required by tomahawk -->
-                <artifactItem>
-                  <groupId>commons-el</groupId>
-                  <artifactId>commons-el</artifactId>
-                </artifactItem>
-                <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
-                <artifactItem>
-                  <groupId>jaxen</groupId>
-                  <artifactId>jaxen</artifactId>
-                  <version>1.1-beta-6</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>metro.webservices</groupId>
-                  <artifactId>webservices-api</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>metro.webservices</groupId>
-                  <artifactId>webservices-rt</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>metro.webservices</groupId>
-                  <artifactId>webservices-tools</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.hibernate</groupId>
-                  <artifactId>hibernate</artifactId>
-                  <version>3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604</version>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${jboss.lib}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>patch-jboss-interceptors</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.nuxeo</groupId>
-                  <artifactId>nuxeo-jboss-interceptors</artifactId>
-                  <version>4.2.3.GA.2</version>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${jboss.deploy}</outputDirectory>
             </configuration>
           </execution>
         </executions>
