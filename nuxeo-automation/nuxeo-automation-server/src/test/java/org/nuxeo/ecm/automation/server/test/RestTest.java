@@ -22,8 +22,10 @@ import junit.framework.Assert;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
@@ -31,12 +33,18 @@ import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRefs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.jaxrs.util.FileBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
+import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
+import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
@@ -147,10 +155,21 @@ public class RestTest {
 
     }
 
+    /**
+     * test blob input / output
+     * 
+     * @throws Exception
+     */
     @Test
     public void testAttachAndGetFile() throws Exception {
-        FileBlob fb = new FileBlob(new File("/Users/bstefanescu/test.jpg"));
-        fb.setMimeType("image/jpeg");
+        File file = File.createTempFile("automation-test-", ".xml");
+        FileUtils.writeFile(file, "<doc>mydoc</doc>");
+        String filename = file.getName();
+        FileBlob fb = new FileBlob(file);
+        // TODO the next line is not working as expected - the file.getName()
+        // will be used instead
+        // fb.setFileName("test.xml");
+        fb.setMimeType("text/xml");
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
@@ -170,18 +189,129 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", "/myfile").execute();
 
         PropertyMap map = doc.getProperties().getMap("file:content");
-        Assert.assertEquals("test.jpg", map.getString("name"));
-        Assert.assertEquals("image/jpeg", map.getString("mime-type"));
+        Assert.assertEquals(filename, map.getString("name"));
+        Assert.assertEquals("text/xml", map.getString("mime-type"));
 
         // get the data URL
         String path = map.getString("data");
         blob = (Blob) session.getFile(path);
         Assert.assertNotNull(blob);
-        Assert.assertEquals("test.jpg", blob.getFileName());
-        Assert.assertEquals("image/jpeg", blob.getMimeType());
+        Assert.assertEquals(filename, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc</doc>",
+                FileUtils.read(blob.getStream()));
 
-        File file2 = ((FileBlob) blob).getFile();
+        // now test the GetBlob operation on the same blob
+        blob = (Blob) session.newRequest(GetDocumentBlob.ID).setInput(doc).set(
+                "xpath", "file:content").execute();
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(filename, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc</doc>",
+                FileUtils.read(blob.getStream()));
+    }
+
+    /**
+     * Test documents output - query and get children
+     */
+    @Test
+    public void testQuery() throws Exception {
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // create a folder
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "queryTest").set(
+                "properties", "dc:title=Query Test").execute();
+        // create 2 files
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note2").set("properties", "dc:title=Note2").execute();
+
+        // now query the two files
+        Documents docs = (Documents) session.newRequest(Query.ID).set("query",
+                "SELECT * FROM Note WHERE ecm:path STARTSWITH '/queryTest' ").execute();
+        Assert.assertEquals(2, docs.size());
+        String title1 = docs.get(0).getTitle();
+        String title2 = docs.get(1).getTitle();
+        Assert.assertTrue(title1.equals("Note1") && title2.equals("Note2")
+                || title1.equals("Note2") && title2.equals("Note1"));
+
+        // now get children of /testQuery
+        docs = (Documents) session.newRequest(GetDocumentChildren.ID).setInput(
+                folder).execute();
+        Assert.assertEquals(2, docs.size());
+        title1 = docs.get(0).getTitle();
+        title2 = docs.get(1).getTitle();
+        Assert.assertTrue(title1.equals("Note1") && title2.equals("Note2")
+                || title1.equals("Note2") && title2.equals("Note1"));
 
     }
 
+    /**
+     * Test documents input / output
+     */
+    @Ignore("document list input is not correctly read on server side")
+    @Test
+    public void testUpdateDocuments() throws Exception {
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // create a folder
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "docsInput").set(
+                "properties", "dc:title=Query Test").execute();
+        // create 2 files
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note2").set("properties", "dc:title=Note2").execute();
+
+        DocRefs refs = new DocRefs();
+        refs.add(new DocRef("/docsInput/note1"));
+        refs.add(new DocRef("/docsInput/note2"));
+        try {
+            Documents docs = (Documents) session.newRequest(UpdateDocument.ID).setHeader(
+                    Constants.HEADER_NX_SCHEMAS, "*").setInput(refs).set(
+                    "properties", "dc:description=updated").execute();
+            Assert.assertEquals(2, docs.size());
+            Assert.assertEquals("updated", docs.get(0).getString(
+                    "dc:description"));
+            Assert.assertEquals("updated", docs.get(1).getString(
+                    "dc:description"));
+
+        } catch (RemoteException e) {
+            System.out.println(e.getRemoteStackTrace());
+        }
+    }
+
+    /**
+     * Test blobs input / output
+     */
+    @Test
+    public void testGetBlobs() throws Exception {
+        // TODO
+    }
+
+    /**
+     * test a chain invocation
+     */
+    @Test
+    public void testChain() throws Exception {
+        // TODO
+    }
+
+    /**
+     * test security on a chain
+     */
+    @Test
+    public void testChainSecurity() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void testExpressions() throws Exception {
+        // TODO
+    }
 }
