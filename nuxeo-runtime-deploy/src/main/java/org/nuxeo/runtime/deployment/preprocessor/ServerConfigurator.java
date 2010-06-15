@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -53,14 +51,6 @@ public abstract class ServerConfigurator {
      */
     abstract boolean isConfigured();
 
-    protected void addDirectories(File[] filesToAdd, List<File> inputDirectories) {
-        if (filesToAdd != null) {
-            for (File in : filesToAdd) {
-                inputDirectories.add(in);
-            }
-        }
-    }
-
     /**
      * Generate configuration files from templates and given configuration
      * parameters
@@ -70,24 +60,29 @@ public abstract class ServerConfigurator {
      */
     protected void parseAndCopy(Properties config)
             throws FileNotFoundException, IOException {
-        TextTemplate templateParser = new TextTemplate(config);
-        File outputDirectory = getOutputDirectory();
-        // Template directories list to copy from
-        List<File> inputDirectories = new ArrayList<File>();
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        FilenameFilter filter = new FilenameFilter() {
+        final FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return !"nuxeo.defaults".equals(name);
             }
         };
+        final TextTemplate templateParser = new TextTemplate(config);
+
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
-            addDirectories(includedTemplate.listFiles(filter), inputDirectories);
-        }
-        // copy template(s) directories parsing properties
-        for (File in : inputDirectories) {
-            templateParser.processDirectory(in, new File(outputDirectory,
-                    in.getName()));
+            if (includedTemplate.listFiles(filter) != null) {
+                for (File in : includedTemplate.listFiles(filter)) {
+                    // Retrieve optional target directory if defined
+                    String outputDirectoryStr = config.getProperty(includedTemplate.getName()
+                            + ".target");
+                    File outputDirectory = (outputDirectoryStr != null) ? new File(
+                            generator.getNuxeoHome(), outputDirectoryStr)
+                            : getOutputDirectory();
+                    // copy template(s) directories parsing properties
+                    templateParser.processDirectory(in, new File(
+                            outputDirectory, in.getName()));
+                }
+            }
         }
     }
 
