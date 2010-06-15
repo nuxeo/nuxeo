@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class ResponseHelper {
 
@@ -37,10 +37,14 @@ public class ResponseHelper {
         return Response.status(204).build();
     }
 
+    public static Response notAllowed() {
+        return Response.status(401).build();
+    }
+
     public static Response blob(Blob blob) {
-        return Response.ok(blob).type(blob.getMimeType())
-        .header("Content-Disposition", "attachment; filename="+blob.getFilename())
-        .build();
+        return Response.ok(blob).type(blob.getMimeType()).header(
+                "Content-Disposition",
+                "attachment; filename=" + blob.getFilename()).build();
     }
 
     public static Response blobs(List<Blob> blobs) throws Exception {

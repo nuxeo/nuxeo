@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.AutomationServer"
+  version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <implementation class="org.nuxeo.ecm.automation.server.AutomationServerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.server.AutomationServer" />
+  </service>
+
+  <extension-point name="bindings">
+    <documentation>Rest security bindings on operations</documentation>
+    <object class="org.nuxeo.ecm.automation.server.RestBinding" />
+  </extension-point>
+
+</component>
