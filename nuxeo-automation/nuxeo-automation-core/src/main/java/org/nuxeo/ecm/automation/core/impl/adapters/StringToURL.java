@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
@@ -26,10 +28,14 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class StringToURL implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
-            throws Exception {
-        String content = (String) objectToAdapt;
-        return new URL(content);
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
+        try {
+            String content = (String) objectToAdapt;
+            return new URL(content);
+        } catch (MalformedURLException e) {
+            throw new TypeAdaptException(e);
+        }
     }
 
 }

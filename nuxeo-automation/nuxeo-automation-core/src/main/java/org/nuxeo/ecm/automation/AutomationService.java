@@ -220,7 +220,7 @@ public interface AutomationService {
      * @return
      * @throws Exception
      */
-    public <T> T getAdapter(OperationContext ctx, Object toAdapt,
+    public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
             Class<?> targetType) throws Exception;
 
     /**

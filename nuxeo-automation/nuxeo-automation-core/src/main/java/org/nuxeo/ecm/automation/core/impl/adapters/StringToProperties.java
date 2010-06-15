@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.util.Properties;
 
@@ -25,10 +26,14 @@ import org.nuxeo.ecm.automation.core.util.Properties;
  */
 public class StringToProperties implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
-            throws Exception {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
         String content = (String) objectToAdapt;
-        return new Properties(content);
+        try {
+            return new Properties(content);
+        } catch (Exception e) {
+            throw new TypeAdaptException(e);
+        }
     }
 
 }

@@ -27,15 +27,15 @@ public interface TypeAdapter {
 
     /**
      * Adapt the given object to an instance of the given target type. The
-     * input object cannot not be null. Throws an exception if the object
-     * cannot be adapted.
+     * input object cannot be null. Throws an exception if the object cannot be
+     * adapted.
      *
      * @param <T>
      * @param ctx
      * @param objectToAdapt
-     * @return
+     * @throws TypeAdaptException when the object cannot be adapted
      */
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
-            throws Exception;
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException;
 
 }

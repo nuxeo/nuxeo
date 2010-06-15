@@ -176,19 +176,13 @@ public class OperationTypeImpl implements OperationType {
                                     + entry.getKey()
                                     + "'. Seems it is missing from the context. Operation: "
                                     + getId());
-                } // else do nohting
+                } // else do nothing
             } else {
                 Field field = entry.getValue();
                 Class<?> cl = obj.getClass();
-                if (!field.getType().isAssignableFrom(cl)) { // try to adapt
-                    obj = service.getAdapter(ctx, obj, field.getType());
-                    if (obj == null) {
-                        throw new OperationException(
-                                "Cannot adapt value of type '" + cl
-                                        + "' to required field type '"
-                                        + field.getType()
-                                        + "' when injecting field: " + field);
-                    }
+                if (!field.getType().isAssignableFrom(cl)) {
+                    // try to adapt
+                    obj = service.getAdaptedValue(ctx, obj, field.getType());
                 }
                 field.set(target, obj);
             }

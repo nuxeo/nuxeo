@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.core.impl.adapters;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
@@ -26,8 +27,8 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  */
 public class CalendarToDate implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt)
-            throws Exception {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
         return ((Calendar) objectToAdapt).getTime();
     }
 

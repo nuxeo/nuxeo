@@ -38,7 +38,8 @@ public class InvokableMethod {
     public final static int EXACT_MATCH_PRIORITY = 4;
 
     public final static int USER_PRIORITY = 9; // priorities from 1 to 10 are
-                                                // reserved for internal use.
+
+    // reserved for internal use.
 
     protected OperationType op;
 
@@ -137,21 +138,19 @@ public class InvokableMethod {
             Object input = ctx.getInput();
             Object target = op.newInstance(ctx, args);
             if (consume == Void.TYPE) {
+                // preserve last output for void methods
                 Object out = method.invoke(target);
-                return produce == Void.TYPE ? input : out; // preserve last
-                                                            // output for void
-                                                            // methods
+                return produce == Void.TYPE ? input : out;
             } else {
                 if (input != null
                         && !consume.isAssignableFrom(input.getClass())) {
-                    input = op.getService().getAdapter(ctx, input, consume); // try
-                                                                                // to
-                                                                                // adapt
+                    // try to adapt
+                    input = op.getService().getAdaptedValue(ctx, input, consume);
                 }
                 return method.invoke(target, input);
             }
-        } catch (Exception e) { // be more explicit about the operation that
-                                // failed
+        } catch (Exception e) {
+            // be more explicit about the operation that failed
             throw new OperationException("Failed to invoke operation "
                     + getOperation().getId(), e);
         }

@@ -87,10 +87,8 @@ public class OperationServiceImpl implements AutomationService {
                 chain.cchain = compileChain(inputType, chain.chain);
             }
             Object ret = chain.cchain.invoke(ctx);
-            if (ctx.getCoreSession() != null && ctx.isCommit()) { // auto
-                // save
-                // session
-                // if any
+            if (ctx.getCoreSession() != null && ctx.isCommit()) {
+                // auto save session if any
                 ctx.getCoreSession().save();
             }
             return ret;
@@ -105,10 +103,8 @@ public class OperationServiceImpl implements AutomationService {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             Object ret = compileChain(inputType, chain).invoke(ctx);
-            if (ctx.getCoreSession() != null && ctx.isCommit()) { // auto
-                // save
-                // session
-                // if any
+            if (ctx.getCoreSession() != null && ctx.isCommit()) {
+                // auto save session if any
                 ctx.getCoreSession().save();
             }
             return ret;
@@ -264,7 +260,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getAdapter(OperationContext ctx, Object toAdapt,
+    public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
             Class<?> targetType) throws Exception {
         if (toAdapt == null) {
             return null;
@@ -282,7 +278,7 @@ public class OperationServiceImpl implements AutomationService {
             throw new OperationException("No type adapter found for input: "
                     + toAdapt.getClass() + " and output " + targetType);
         }
-        return (T) adapter.getAdapter(ctx, toAdapt);
+        return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
 
     public List<OperationDocumentation> getDocumentation() {
