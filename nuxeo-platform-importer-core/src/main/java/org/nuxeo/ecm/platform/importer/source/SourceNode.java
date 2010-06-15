@@ -39,5 +39,7 @@ public interface SourceNode {
     List<SourceNode> getChildren();
 
     String getName();
+    
+    String getSourcePath();
 
 }

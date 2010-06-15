@@ -227,4 +227,7 @@ public class RandomTextSourceNode implements SourceNode {
         return level;
     }
 
+    public String getSourcePath(){
+        return null;
+    }
 }

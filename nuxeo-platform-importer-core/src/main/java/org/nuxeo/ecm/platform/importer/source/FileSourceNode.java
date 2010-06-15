@@ -67,5 +67,9 @@ public class FileSourceNode implements SourceNode {
     public String getName() {
         return file.getName();
     }
+    
+    public String getSourcePath(){
+       return file.getAbsolutePath();
+    }
 
 }
