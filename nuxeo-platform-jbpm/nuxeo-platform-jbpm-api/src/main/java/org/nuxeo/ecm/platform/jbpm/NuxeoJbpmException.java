@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author arussel
- *
  */
 public class NuxeoJbpmException extends ClientException {
 
@@ -32,6 +31,10 @@ public class NuxeoJbpmException extends ClientException {
 
     public NuxeoJbpmException(Throwable e) {
         super(e);
+    }
+
+    public NuxeoJbpmException(String message) {
+        super(message);
     }
 
 }

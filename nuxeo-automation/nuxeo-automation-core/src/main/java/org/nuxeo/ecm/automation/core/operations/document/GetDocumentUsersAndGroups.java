@@ -26,30 +26,31 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.PrincipalHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Save the input document
+ * Retrieve the users/groups who have the given permission on given document.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = GetDocumentPrincipals.ID, category = Constants.CAT_DOCUMENT, label = "Get Principals", description = ""
-        + "Fetch the principals that have a given permission on the input "
-        + "document and then set them in the context under the given key "
-        + "variable name. The operation returns the input document. You can "
-        + "later use the list of principals set by this operation on the "
-        + "context from another operation. The 'key' arument represent "
-        + "the variable name and the 'permission' argument the perission "
-        + "to check. If 'resolve groups' argument is true then groups are "
-        + "recusively resolved. Be <b>warned</b> that this may be a very "
-        + "consuming operation.<ul>Note that <li></li><li>groups are not "
-        + "included</li><li>the list pushed into the context is a set of "
-        + "nuxeo principals.</li></ul>")
-public class GetDocumentPrincipals {
+@Operation(id = GetDocumentUsersAndGroups.ID, category = Constants.CAT_DOCUMENT, label = "Get Users and Groups", description = ""
+        + "Fetch the users and groups that have a given permission "
+        + "on the input document and then set them in the context under the "
+        + "given key variable name. The operation returns the input "
+        + "document. You can later use the list of identifiers set by this "
+        + "operation on the context from another operation. The 'key' "
+        + "argument represents the variable name and the 'permission' argument "
+        + "the permission to check. If the 'ignore groups' argument is false "
+        + "then groups will be part of the result. If the 'resolve groups' "
+        + "argument is true then groups are recusively resolved, adding "
+        + "user members of these groups in place of them. Be <b>warned</b> "
+        + "that this may be a very consuming operation. If the 'prefix "
+        + "identifiers' argument is true, then user identifiers are "
+        + "prefixed by 'user:' and groups identifiers are prefixed by 'group:'.")
+public class GetDocumentUsersAndGroups {
 
-    public static final String ID = "Document.GetPrincipal";
+    public static final String ID = "Document.GetUsersAndGroups";
 
     protected @Context
     PermissionProvider permissionProvider;
@@ -66,14 +67,20 @@ public class GetDocumentPrincipals {
     @Param(name = "key")
     protected String key;
 
+    @Param(name = "ignore groups", required = false, values = "false")
+    protected boolean ignoreGroups = false;
+
     @Param(name = "resolve groups", required = false, values = "false")
     protected boolean resolveGroups = false;
+
+    @Param(name = "prefix identifiers", required = false, values = "false")
+    protected boolean prefixIds = false;
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws Exception {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
-        Set<NuxeoPrincipal> result = ph.getPrincipalsForPermission(input,
-                permission, resolveGroups);
+        Set<String> result = ph.getUserAndGroupIdsForPermission(input,
+                permission, ignoreGroups, resolveGroups, prefixIds);
         ctx.put(key, result);
         return input;
     }

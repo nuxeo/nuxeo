@@ -32,6 +32,7 @@ import org.jbpm.JbpmContext;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
@@ -658,7 +659,14 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 Session session = context.getSession();
+
                 for (TaskInstance ti : taskInstances) {
+                    List<Comment> cts = ti.getComments();
+                    if(cts != null) {
+                        for(Comment c : cts) {
+                            session.save(c);
+                        }
+                    }
                     session.merge(ti);
                 }
                 return null;

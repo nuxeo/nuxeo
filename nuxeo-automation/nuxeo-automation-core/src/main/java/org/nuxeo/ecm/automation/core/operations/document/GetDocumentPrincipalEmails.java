@@ -31,7 +31,8 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Save the input document
+ * Retrieve the emails from users/groups who have the given permission on given
+ * document.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -40,12 +41,13 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "document and then set them in the context under the given key variable "
         + "name. The operation returns the input document. You can later use the "
         + "list of principals set by this operation on the context from another "
-        + "operation. The 'key' arument represent the variable name and the "
-        + "'permission' argument the perission to check. If 'resolve groups' "
-        + "argument is true then groups are recusively resolved. Be <b>warned</b> "
+        + "operation. The 'key' argument represents the variable name and the "
+        + "'permission' argument the permission to check. If the 'ignore groups' "
+        + "argument is false then groups are recusively resolved, extracting "
+        + "user members of these groups. Be <b>warned</b> "
         + "that this may be a very consuming operation.<ul>Note that <li></li>"
         + "<li>groups are not included</li><li>the list pushed into the context "
-        + "is a list of emails.</li></ul>")
+        + "is a string list of emails.</li></ul>")
 public class GetDocumentPrincipalEmails {
 
     public static final String ID = "Document.GetPrincipalEmails";
@@ -65,14 +67,14 @@ public class GetDocumentPrincipalEmails {
     @Param(name = "key")
     protected String key;
 
-    @Param(name = "resolve groups", required = false, values = "false")
-    protected boolean resolveGroups = false;
+    @Param(name = "ignore groups", required = false, values = "false")
+    protected boolean ignoreGroups = false;
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws Exception {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(input, permission,
-                resolveGroups);
+                ignoreGroups);
         ctx.put(key, new StringList(result));
         return input;
     }

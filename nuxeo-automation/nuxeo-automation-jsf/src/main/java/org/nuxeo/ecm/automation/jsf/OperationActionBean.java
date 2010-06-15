@@ -19,6 +19,8 @@ import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -41,6 +43,8 @@ import org.nuxeo.runtime.api.Framework;
 @Name("operationActionBean")
 @Scope(ScopeType.EVENT)
 public class OperationActionBean implements Serializable {
+
+    private static final Log log = LogFactory.getLog(OperationActionBean.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -75,6 +79,7 @@ public class OperationActionBean implements Serializable {
                         "Unknown chain: " + chain);
                 return null;
             } catch (Throwable t) {
+                log.error(t, t);
                 Throwable cause = ExceptionHelper.unwrapException(t);
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         "An error occured while executing the chain '" + chain

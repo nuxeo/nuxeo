@@ -25,6 +25,7 @@
     <module>nuxeo-platform-jbpm-facade</module>
     <module>nuxeo-platform-jbpm-web</module>
     <module>nuxeo-platform-jbpm-test</module>
+    <module>nuxeo-platform-jbpm-automation</module>
   </modules>
 
   <dependencyManagement>

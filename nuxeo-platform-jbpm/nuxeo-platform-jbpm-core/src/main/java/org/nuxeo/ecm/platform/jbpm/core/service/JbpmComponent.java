@@ -33,6 +33,7 @@ import org.jbpm.job.executor.JobExecutor;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -44,7 +45,6 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class JbpmComponent extends DefaultComponent implements
         FrameworkListener {
@@ -77,6 +77,8 @@ public class JbpmComponent extends DefaultComponent implements
     private final RuntimeConfigurationSelector selector = new RuntimeConfigurationSelector();
 
     private final JbpmServiceImpl service = new JbpmServiceImpl();
+
+    private final JbpmTaskServiceImpl taskService = new JbpmTaskServiceImpl();
 
     private static final Log log = LogFactory.getLog(JbpmComponent.class);
 
@@ -167,6 +169,8 @@ public class JbpmComponent extends DefaultComponent implements
                 }
             }
             return (T) service;
+        } else if (JbpmTaskService.class.isAssignableFrom(adapter)) {
+            return (T) taskService;
         }
         return null;
     }
