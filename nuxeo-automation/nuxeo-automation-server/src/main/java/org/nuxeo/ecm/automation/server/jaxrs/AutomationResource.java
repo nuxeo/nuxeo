@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @Path("automation")
 public class AutomationResource {
@@ -54,7 +54,6 @@ public class AutomationResource {
     public AutomationResource() throws Exception {
         service = Framework.getService(AutomationService.class);
     }
-
 
     @Path("doc")
     public Object getDocPage() {
@@ -67,7 +66,9 @@ public class AutomationResource {
     }
 
     /**
-     * Get the content of the blob or blobs (multipart/mixed) located by the given doc uid and property path.
+     * Get the content of the blob or blobs (multipart/mixed) located by the
+     * given doc uid and property path.
+     * 
      * @param uid
      * @param path
      * @return
@@ -75,7 +76,8 @@ public class AutomationResource {
     @SuppressWarnings("unchecked")
     @GET
     @Path("files/{uid}")
-    public Object getFile(@Context HttpServletRequest request, @PathParam("uid") String uid, @QueryParam("path") String path) {
+    public Object getFile(@Context HttpServletRequest request,
+            @PathParam("uid") String uid, @QueryParam("path") String path) {
         try {
             CoreSession session = UserSession.getCurrentSession(request).getCoreSession();
             DocumentModel doc = session.getDocument(new IdRef(uid));
@@ -89,15 +91,16 @@ public class AutomationResource {
                 return ResponseHelper.notFound();
             }
             if (obj instanceof List<?>) {
-                List<?> list = (List<?>)obj;
+                List<?> list = (List<?>) obj;
                 if (list.isEmpty()) {
                     return ResponseHelper.notFound();
                 }
-                if (list.get(0) instanceof Blob) { // a list of blobs -> use multipart/mixed
-                    return ResponseHelper.blobs((List<Blob>)list);
+                if (list.get(0) instanceof Blob) { // a list of blobs -> use
+                    // multipart/mixed
+                    return ResponseHelper.blobs((List<Blob>) list);
                 }
             } else if (obj instanceof Blob) {
-                return ResponseHelper.blob((Blob)obj);
+                return ResponseHelper.blob((Blob) obj);
             }
             return ResponseHelper.notFound();
         } catch (Exception e) {
@@ -110,18 +113,17 @@ public class AutomationResource {
         return new AutomationInfo(service);
     }
 
-
     @POST
     @Path("login")
     public Object login(@Context HttpServletRequest request) {
         Principal p = request.getUserPrincipal();
         if (p instanceof NuxeoPrincipal) {
-            NuxeoPrincipal np = (NuxeoPrincipal)p;
+            NuxeoPrincipal np = (NuxeoPrincipal) p;
             List<String> groups = np.getAllGroups();
             HashSet<String> set = new HashSet<String>(groups);
             return new LoginInfo(np.getName(), set, np.isAdministrator());
         } else {
-            return Response.status(403).build();
+            return Response.status(401).build();
         }
     }
 
@@ -135,7 +137,8 @@ public class AutomationResource {
                 OperationType op = service.getOperation(oid);
                 return new OperationResource(service, op);
             } catch (Throwable e) {
-                throw ExceptionHandler.newException("Failed to invoke operation: "+oid, e);
+                throw ExceptionHandler.newException(
+                        "Failed to invoke operation: " + oid, e);
             }
         }
     }

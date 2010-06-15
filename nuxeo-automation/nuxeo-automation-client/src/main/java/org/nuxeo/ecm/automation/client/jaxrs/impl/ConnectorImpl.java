@@ -38,18 +38,20 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 
 /**
  * Connector wrapping a {@link HttpClient} instance.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class ConnectorImpl implements Connector {
 
     protected HttpClient http;
+
     protected HttpContext ctx;
+
     protected String basicAuth;
 
     public ConnectorImpl(HttpClient http) {
-        this (http, new BasicHttpContext());
+        this(http, new BasicHttpContext());
     }
 
     public ConnectorImpl(HttpClient http, HttpContext ctx) {
@@ -61,6 +63,7 @@ public class ConnectorImpl implements Connector {
     public void setBasicAuth(String auth) {
         this.basicAuth = auth;
     }
+
     public String getBasicAuth() {
         return basicAuth;
     }
@@ -72,7 +75,7 @@ public class ConnectorImpl implements Connector {
             if (obj != null) {
                 HttpEntity entity = null;
                 if (request.isMultiPart()) {
-                    entity = new MultipartRequestEntity((MimeMultipart)obj);
+                    entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
                     entity = new StringEntity(obj.toString(), "UTF-8");
                 }
@@ -85,8 +88,9 @@ public class ConnectorImpl implements Connector {
         }
     }
 
-    protected Object execute(Request request, HttpUriRequest httpReq) throws Exception {
-        for (Map.Entry<String,String> entry : request.entrySet()) {
+    protected Object execute(Request request, HttpUriRequest httpReq)
+            throws Exception {
+        for (Map.Entry<String, String> entry : request.entrySet()) {
             httpReq.setHeader(entry.getKey(), entry.getValue());
         }
         HttpResponse resp = http.execute(httpReq, ctx);
@@ -96,9 +100,19 @@ public class ConnectorImpl implements Connector {
             if (status < 400) {
                 return null;
             }
-            throw new RemoteException(status, "ServerError", "Server Error", null);
+            throw new RemoteException(status, "ServerError", "Server Error",
+                    null);
         }
-        String ctype = entity.getContentType().getValue().toLowerCase();
+        Header ctypeHeader = entity.getContentType();
+        if (ctypeHeader == null) { // handle broken responses with no ctype
+            if (status != 200) {
+                // this may happen when login failed
+                throw new RemoteException(status, "ServerError",
+                        "Server Error", null);
+            }
+            return null; // cannot handle responses with no ctype
+        }
+        String ctype = ctypeHeader.getValue().toLowerCase();
         String disp = null;
         Header[] hdisp = resp.getHeaders("Content-Disposition");
         if (hdisp != null && hdisp.length > 0) {
@@ -106,6 +120,5 @@ public class ConnectorImpl implements Connector {
         }
         return request.handleResult(status, ctype, disp, entity.getContent());
     }
-
 
 }
