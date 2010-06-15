@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 
@@ -63,7 +64,7 @@ public class EventHandler {
 
     @XNode("filters/attribute")
     public void setAttribute(String attribute) {
-        this.attribute = AttrFilterFactory.getFilter(attribute);
+        this.attribute = DocumentAttributeFilterFactory.getFilter(attribute);
     }
 
     /** the principal should be member of at least one of the groups. OR is used */

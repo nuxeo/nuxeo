@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Filter;
 
 /**
  * Create filters that are able to filter documents on their attribute (Regular
@@ -27,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class AttrFilterFactory {
+public class DocumentAttributeFilterFactory {
 
     public static final String ANY_DOC = "Any";
 
@@ -61,43 +62,57 @@ public class AttrFilterFactory {
     }
 
     static class RegularDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return !doc.isImmutable() && !doc.isProxy();
         }
     }
 
     static class LinkDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return !doc.isImmutable() && doc.isProxy();
         }
     }
 
     static class PublishedDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return doc.isImmutable() && doc.isProxy();
         }
     }
 
     static class ProxyDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return doc.isProxy();
         }
     }
 
     static class VersionDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return doc.isVersion();
         }
     }
 
     static class ImmutableDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return doc.isImmutable();
         }
     }
 
     static class MutableDocFilter implements Filter {
-        public boolean accept(DocumentModel doc) throws Exception {
+        private static final long serialVersionUID = 1L;
+
+        public boolean accept(DocumentModel doc) {
             return !doc.isImmutable();
         }
     }
