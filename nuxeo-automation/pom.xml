@@ -19,7 +19,7 @@
     <module>nuxeo-automation-core</module>
     <module>nuxeo-automation-jsf</module>
     <module>nuxeo-automation-server</module>
-    <!--module>nuxeo-automation-client</module-->
+    <module>nuxeo-automation-client</module>
   </modules>
 
   <developers>
@@ -54,11 +54,11 @@
         <artifactId>nuxeo-automation-server</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!--dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-client</artifactId>
         <version>${nuxeo.features.version}</version>
-      </dependency-->
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

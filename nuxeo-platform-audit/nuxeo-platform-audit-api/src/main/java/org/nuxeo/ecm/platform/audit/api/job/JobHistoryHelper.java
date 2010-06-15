@@ -37,17 +37,26 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JobHistoryHelper {
 
-    protected AuditReader reader = null;
+    public static final String JOB_STARTED_SUFFIX = "Started";
+    public static final String JOB_ENDED_SUFFIX = "Ended";
+    public static final String JOB_FAILED_SUFFIX = "Failed";
+
     protected AuditLogger logger = null;
 
     protected String jobName = null;
 
-    public static final String JOB_START = "exportStarted";
-    public static final String JOB_END = "exportCompleted";
-    public static final String JOB_FAIL = "exportFailed";
+    protected final String jobStartedEventId;
+
+    protected final String jobEndedventId;
+
+    protected final String jobFailedEventId;
 
     public JobHistoryHelper(String jobName) {
-        this.jobName=jobName;
+        this.jobName = jobName;
+
+        this.jobStartedEventId = jobName + JOB_STARTED_SUFFIX;
+        this.jobEndedventId = jobName + JOB_ENDED_SUFFIX;
+        this.jobFailedEventId = jobName + JOB_FAILED_SUFFIX;
     }
 
     protected LogEntry getNewLogEntry() {
@@ -59,7 +68,7 @@ public class JobHistoryHelper {
     }
 
     protected AuditLogger getLogger() throws Exception {
-        if (logger==null) {
+        if (logger == null) {
             logger = Framework.getService(AuditLogger.class);
         }
         return logger;
@@ -71,9 +80,8 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public void logJobStarted() throws Exception {
-
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_START);
+        entry.setEventId(jobStartedEventId);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
@@ -81,11 +89,12 @@ public class JobHistoryHelper {
 
     /**
      * Log an event for a successful Job completion
+     *
      * @throws Exception
      */
     public void logJobEnded() throws Exception {
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_END);
+        entry.setEventId(jobEndedventId);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
@@ -99,7 +108,7 @@ public class JobHistoryHelper {
      */
     public void logJobFailed(String errMessage) throws Exception {
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(JOB_FAIL);
+        entry.setEventId(jobFailedEventId);
         entry.setComment(errMessage);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
@@ -107,10 +116,10 @@ public class JobHistoryHelper {
     }
 
     protected Date getLastRunWithStatus(String status) throws Exception {
-
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        StringBuffer query = new StringBuffer("from LogEntry log where log.eventId=");
+        StringBuffer query = new StringBuffer(
+                "from LogEntry log where log.eventId=");
         query.append("'");
         query.append(status);
         query.append("' AND log.category='");
@@ -119,7 +128,7 @@ public class JobHistoryHelper {
 
         List result = reader.nativeQuery(query.toString(), 1, 1);
 
-        if (result.size()!=0) {
+        if (result.size() != 0) {
             LogEntry entry = (LogEntry) result.get(0);
             return entry.getEventDate();
         }
@@ -133,8 +142,8 @@ public class JobHistoryHelper {
      * @return
      * @throws Exception
      */
-    public Date getLastSucessfulRun() throws Exception {
-        return getLastRunWithStatus(JOB_END);
+    public Date getLastSuccessfulRun() throws Exception {
+        return getLastRunWithStatus(jobEndedventId);
     }
 
     /**
@@ -144,7 +153,7 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public Date getLastFailedRun() throws Exception {
-        return getLastRunWithStatus(JOB_FAIL);
+        return getLastRunWithStatus(jobFailedEventId);
     }
 
     /**
@@ -154,7 +163,7 @@ public class JobHistoryHelper {
      * @throws Exception
      */
     public Date getLastStarted() throws Exception {
-        return getLastRunWithStatus(JOB_START);
+        return getLastRunWithStatus(jobStartedEventId);
     }
 
 }

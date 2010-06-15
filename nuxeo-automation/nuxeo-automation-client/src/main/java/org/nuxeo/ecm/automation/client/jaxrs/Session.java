@@ -18,30 +18,33 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public interface Session {
 
     /**
      * Get the client that created this session.
+     * 
      * @return the client. cannot be null.
      */
     AutomationClient getClient();
 
     /**
      * Get the login used to authenticate against the server
+     * 
      * @return the login. cannot be null.
      */
     LoginInfo getLogin();
 
     /**
      * Create a new operation request given an operation ID.
+     * 
      * @param id the ID of the operation to be executed.
      * @return the operation request
      * @throws Exception
@@ -49,13 +52,17 @@ public interface Session {
     OperationRequest newRequest(String id) throws Exception;
 
     /**
-     * Create a new operationr request given an operation ID and a operation context map.
+     * Create a new operationr request given an operation ID and a operation
+     * context map.
+     * 
      * @param id the operation id
-     * @param ctx the context map to be used when executing the operation on the server.
+     * @param ctx the context map to be used when executing the operation on the
+     *            server.
      * @return the operation request
      * @throws Exception
      */
-    OperationRequest newRequest(String id, Map<String, String> ctx) throws Exception;
+    OperationRequest newRequest(String id, Map<String, String> ctx)
+            throws Exception;
 
     Object execute(OperationRequest request) throws Exception;
 
@@ -63,6 +70,7 @@ public interface Session {
 
     /**
      * Get a file from the server given a path identifying the file.
+     * 
      * @param path the file path
      * @return a blob representation of the file
      * @throws Exception
@@ -70,34 +78,34 @@ public interface Session {
     Blob getFile(String path) throws Exception;
 
     /**
-     * Get a collection of files from the server given the path identifying the collection
+     * Get a collection of files from the server given the path identifying the
+     * collection
+     * 
      * @param path
      * @return a collection of files represented as blobs.
      * @throws Exception
      */
     Blobs getFiles(String path) throws Exception;
 
-
     void getFile(String path, AsyncCallback<Blob> cb) throws Exception;
 
-
     void getFiles(String path, AsyncCallback<Blobs> cb) throws Exception;
-
 
     OperationDocumentation getOperation(String id);
 
     Map<String, OperationDocumentation> getOperations();
 
     /**
-     * Get an adapter of the current session.
-     * Adapters can be used to define custom API over a Nuxeo Automation Session.
+     * Get an adapter of the current session. Adapters can be used to define
+     * custom API over a Nuxeo Automation Session.
      * <p>
-     * Optional operation. Environments that cannot support this method (like GWT) must throw {@link UnsupportedOperationException}
-     *
+     * Optional operation. Environments that cannot support this method (like
+     * GWT) must throw {@link UnsupportedOperationException}
+     * 
      * @param <T>
      * @param type
      * @return
-     *
+     * 
      * @see AutomationClient#getAdapter(Object, Class)
      */
     <T> T getAdapter(Class<T> type);

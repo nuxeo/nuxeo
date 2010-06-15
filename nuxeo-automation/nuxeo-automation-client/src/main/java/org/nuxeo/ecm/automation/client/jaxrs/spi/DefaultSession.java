@@ -19,7 +19,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
@@ -28,20 +27,24 @@ import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 import org.nuxeo.ecm.automation.client.jaxrs.util.MultipartInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DefaultSession implements Session, Constants {
 
     protected AbstractAutomationClient client;
+
     protected Connector connector;
+
     protected LoginInfo login;
 
-    public DefaultSession(AbstractAutomationClient client, Connector connector, LoginInfo login) {
+    public DefaultSession(AbstractAutomationClient client, Connector connector,
+            LoginInfo login) {
         this.client = client;
         this.connector = connector;
         this.login = login;
@@ -63,7 +66,6 @@ public class DefaultSession implements Session, Constants {
         return client.getAdapter(this, type);
     }
 
-
     public Object execute(OperationRequest request) throws Exception {
         Request req = null;
         String content = JsonMarshalling.writeRequest(request);
@@ -74,12 +76,13 @@ public class DefaultSession implements Session, Constants {
             mpinput.setRequest(content);
             ctype = mpinput.getContentType();
             if (input instanceof Blob) {
-                Blob blob = (Blob)input;
+                Blob blob = (Blob) input;
                 mpinput.setBlob(blob);
             } else if (input instanceof Blobs) {
-                mpinput.setBlobs((Blobs)input);
+                mpinput.setBlobs((Blobs) input);
             } else {
-                throw new IllegalArgumentException("Unsupported binary input object: "+input);
+                throw new IllegalArgumentException(
+                        "Unsupported binary input object: " + input);
             }
             req = new Request(Request.POST, request.getUrl(), mpinput);
         } else {
@@ -87,7 +90,7 @@ public class DefaultSession implements Session, Constants {
             ctype = CTYPE_REQUEST_NOCHARSET;
         }
         // set headers
-        for (Map.Entry<String,String> entry : request.getHeaders().entrySet()) {
+        for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
             req.put(entry.getKey(), entry.getValue());
         }
         req.put("Accept", REQUEST_ACCEPT_HEADER);
@@ -98,7 +101,8 @@ public class DefaultSession implements Session, Constants {
         return connector.execute(req);
     }
 
-    public void execute(final OperationRequest request, final AsyncCallback<Object> cb) {
+    public void execute(final OperationRequest request,
+            final AsyncCallback<Object> cb) {
         client.asyncExec(new Runnable() {
             public void run() {
                 try {
@@ -111,22 +115,23 @@ public class DefaultSession implements Session, Constants {
     }
 
     public Blob getFile(String path) throws Exception {
-        Request req = new Request(Request.GET, client.getBaseUrl()+path);
+        Request req = new Request(Request.GET, client.getBaseUrl() + path);
         if (connector.getBasicAuth() != null) {
             req.put("Authorization", connector.getBasicAuth());
         }
-        return (Blob)connector.execute(req);
+        return (Blob) connector.execute(req);
     }
 
     public Blobs getFiles(String path) throws Exception {
-        Request req = new Request(Request.GET, client.getBaseUrl()+path);
+        Request req = new Request(Request.GET, client.getBaseUrl() + path);
         if (connector.getBasicAuth() != null) {
             req.put("Authorization", connector.getBasicAuth());
         }
-        return (Blobs)connector.execute(req);
+        return (Blobs) connector.execute(req);
     }
 
-    public void getFile(final String path, final AsyncCallback<Blob> cb) throws Exception {
+    public void getFile(final String path, final AsyncCallback<Blob> cb)
+            throws Exception {
         client.asyncExec(new Runnable() {
             public void run() {
                 try {
@@ -138,7 +143,8 @@ public class DefaultSession implements Session, Constants {
         });
     }
 
-    public void getFiles(final String path, final AsyncCallback<Blobs> cb) throws Exception {
+    public void getFiles(final String path, final AsyncCallback<Blobs> cb)
+            throws Exception {
         client.asyncExec(new Runnable() {
             public void run() {
                 try {
@@ -151,14 +157,14 @@ public class DefaultSession implements Session, Constants {
     }
 
     public OperationRequest newRequest(String id) throws Exception {
-        return newRequest(id, new HashMap<String,String>());
+        return newRequest(id, new HashMap<String, String>());
     }
 
     public OperationRequest newRequest(String id, Map<String, String> ctx)
             throws Exception {
         OperationDocumentation op = getOperation(id);
         if (op == null) {
-            throw new IllegalArgumentException("No such operation: "+id);
+            throw new IllegalArgumentException("No such operation: " + id);
         }
         DefaultOperationRequest req = new DefaultOperationRequest(this, op, ctx);
         return req;

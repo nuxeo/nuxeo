@@ -18,13 +18,11 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
-
-
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public interface AutomationClient {
 
@@ -47,10 +45,12 @@ public interface AutomationClient {
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
-     * Adapt the given object to the given type. Return the adapter instance if any otherwise null.
+     * Adapt the given object to the given type. Return the adapter instance if
+     * any otherwise null.
      * <p>
-     * Optional operation. Framework that doesn't supports reflection like GWT must throw {@link UnsupportedOperationException}
-     *
+     * Optional operation. Framework that doesn't supports reflection like GWT
+     * must throw {@link UnsupportedOperationException}
+     * 
      * @param <T>
      * @param objToAdapt
      * @param adapterType

@@ -22,33 +22,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateUtils;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation.Param;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DefaultOperationRequest implements OperationRequest {
 
     protected OperationDocumentation op;
+
     protected DefaultSession session;
-    protected Map<String,String> params;
-    protected Map<String,String> ctx;
+
+    protected Map<String, String> params;
+
+    protected Map<String, String> ctx;
+
     protected OperationInput input;
 
-    protected Map<String,String> headers;
+    protected Map<String, String> headers;
 
-
-    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op) {
-        this (session, op, new HashMap<String, String>());
+    public DefaultOperationRequest(DefaultSession session,
+            OperationDocumentation op) {
+        this(session, op, new HashMap<String, String>());
     }
 
-    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op, Map<String,String> ctx) {
+    public DefaultOperationRequest(DefaultSession session,
+            OperationDocumentation op, Map<String, String> ctx) {
         this.session = session;
         this.op = op;
         params = new HashMap<String, String>();
@@ -61,7 +66,7 @@ public class DefaultOperationRequest implements OperationRequest {
     }
 
     protected final boolean acceptInput(String type) {
-        for (int i=0, size=op.signature.length; i<size; i+=2) {
+        for (int i = 0, size = op.signature.length; i < size; i += 2) {
             if (type.equals(op.signature[i])) {
                 return true;
             }
@@ -70,7 +75,8 @@ public class DefaultOperationRequest implements OperationRequest {
     }
 
     protected final void checkInput(String type) {
-        if (!acceptInput(type)) throw new IllegalArgumentException("Input not supported: "+type);
+        if (!acceptInput(type))
+            throw new IllegalArgumentException("Input not supported: " + type);
     }
 
     public List<String> getParamNames() {
@@ -80,6 +86,7 @@ public class DefaultOperationRequest implements OperationRequest {
         }
         return result;
     }
+
     public Param getParam(String key) {
         for (Param param : op.params) {
             if (key.equals(param.name)) {
@@ -104,25 +111,28 @@ public class DefaultOperationRequest implements OperationRequest {
     }
 
     public String getUrl() {
-        return session.getClient().getBaseUrl()+op.url;
+        return session.getClient().getBaseUrl() + op.url;
     }
 
     public OperationRequest set(String key, Object value) {
         Param param = getParam(key);
         if (param == null) {
-            throw new IllegalArgumentException("No such parameter '"+key+"' for operation "+op.id+".\n\tAvailable params: "+getParamNames());
+            throw new IllegalArgumentException("No such parameter '" + key
+                    + "' for operation " + op.id + ".\n\tAvailable params: "
+                    + getParamNames());
         }
         if (value == null) {
             params.remove(key);
             return this;
         }
         // handle strings and primitive differently
-//TODO
-//        if (!param.type.equals(value.getParamType())) {
-//            throw new IllegalArgumentException("Invalid parameter type: "+value.getParamType());
-//        }
+        // TODO
+        // if (!param.type.equals(value.getParamType())) {
+        // throw new
+        // IllegalArgumentException("Invalid parameter type: "+value.getParamType());
+        // }
         if (value.getClass() == Date.class) {
-            params.put(key, DateUtils.formatDate((Date)value));
+            params.put(key, DateUtils.formatDate((Date) value));
         } else {
             params.put(key, value.toString());
         }
@@ -149,7 +159,6 @@ public class DefaultOperationRequest implements OperationRequest {
     public void execute(AsyncCallback<Object> cb) {
         session.execute(this, cb);
     }
-
 
     public OperationRequest setHeader(String key, String value) {
         headers.put(key, value);

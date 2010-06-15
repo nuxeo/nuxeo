@@ -21,30 +21,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-public abstract class AbstractAutomationClient implements AutomationClient, Constants {
+public abstract class AbstractAutomationClient implements AutomationClient,
+        Constants {
 
     protected int state; // 0 - initialized, 1 - starting, 2 - started
+
     protected String url;
+
     protected volatile OperationRegistry registry;
+
     protected Map<Class<?>, List<AdapterFactory<?>>> adapters;
 
     protected AbstractAutomationClient() {
         adapters = new HashMap<Class<?>, List<AdapterFactory<?>>>();
     }
-
 
     public String getBaseUrl() {
         return url;
@@ -55,9 +58,10 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
     }
 
     /**
-     * Register and adapter for a given type.
-     * Registration is not thread safe. You should register adapters at initialization time.
-     * An adapter type can be bound to a single adaptable type.
+     * Register and adapter for a given type. Registration is not thread safe.
+     * You should register adapters at initialization time. An adapter type can
+     * be bound to a single adaptable type.
+     * 
      * @param typeToAdapt
      * @param adapterType
      */
@@ -78,7 +82,7 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
         if (factories != null) {
             for (AdapterFactory<?> f : factories) {
                 if (f.getAcceptType().isAssignableFrom(cls)) {
-                    return (T)f.getAdapter(objToAdapt);
+                    return (T) f.getAdapter(objToAdapt);
                 }
             }
         }
@@ -101,12 +105,12 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
 
     public synchronized void connect(String url) throws Exception {
         if (this.url != null) {
-            throw new IllegalStateException("Already connected to "+url);
+            throw new IllegalStateException("Already connected to " + url);
         }
-        this.url = url.endsWith("/") ? url : url+"/";
+        this.url = url.endsWith("/") ? url : url + "/";
         Request req = new Request(Request.GET, url);
         req.put("Accept", CTYPE_AUTOMATION);
-        registry = (OperationRegistry)newConnector().execute(req);
+        registry = (OperationRegistry) newConnector().execute(req);
     }
 
     public synchronized void connect(final String url,
@@ -123,7 +127,6 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
         });
     }
 
-
     public synchronized boolean isConnected() {
         return url != null;
     }
@@ -134,10 +137,11 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
         adapters = null;
     }
 
-
-    public Session getSession(final String username, final String password) throws Exception {
+    public Session getSession(final String username, final String password)
+            throws Exception {
         if (!isConnected()) {
-            throw new IllegalStateException("Cannot create an user session since client is not connected");
+            throw new IllegalStateException(
+                    "Cannot create an user session since client is not connected");
         }
         if (username != null) {
             return login(username, password);
@@ -146,9 +150,11 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
         }
     }
 
-    public void getSession(final String username, final String password, final AsyncCallback<Session> cb) {
+    public void getSession(final String username, final String password,
+            final AsyncCallback<Session> cb) {
         if (!isConnected()) {
-            throw new IllegalStateException("Cannot create an user session since client is not connected");
+            throw new IllegalStateException(
+                    "Cannot create an user session since client is not connected");
         }
         asyncExec(new Runnable() {
             public void run() {
@@ -163,20 +169,24 @@ public abstract class AbstractAutomationClient implements AutomationClient, Cons
 
     public Session login(String username, String password) throws Exception {
         if (!isConnected()) {
-            throw new IllegalStateException("Cannot login since client is not connected");
+            throw new IllegalStateException(
+                    "Cannot login since client is not connected");
         }
-        Request request = new Request(Request.POST, url+getRegistry().getPath("login"));
-        String auth = "Basic "+Base64.encode(username+":"+password);
+        Request request = new Request(Request.POST, url
+                + getRegistry().getPath("login"));
+        String auth = "Basic " + Base64.encode(username + ":" + password);
         request.put("Authorization", auth);
         request.put("Accept", CTYPE_ENTITY);
         Connector connector = newConnector();
         connector.setBasicAuth(auth);
-        LoginInfo login = (LoginInfo)connector.execute(request);
+        LoginInfo login = (LoginInfo) connector.execute(request);
         return createSession(connector, login);
     }
 
-    protected Session createSession(final Connector connector, final LoginInfo login) {
-        return new DefaultSession(this, connector, login == null ? LoginInfo.ANONYNMOUS : login);
+    protected Session createSession(final Connector connector,
+            final LoginInfo login) {
+        return new DefaultSession(this, connector,
+                login == null ? LoginInfo.ANONYNMOUS : login);
     }
 
     public void asyncExec(Runnable runnable) {

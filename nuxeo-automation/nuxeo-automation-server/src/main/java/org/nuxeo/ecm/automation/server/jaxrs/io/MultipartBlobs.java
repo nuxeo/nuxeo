@@ -23,21 +23,20 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class MultipartBlobs extends MimeMultipart {
 
     public MultipartBlobs() {
-        super ("mixed");
+        super("mixed");
     }
 
     public MultipartBlobs(List<Blob> blobs) throws Exception {
-        super ("mixed");
+        super("mixed");
         addBlobs(blobs);
     }
 
@@ -49,10 +48,11 @@ public class MultipartBlobs extends MimeMultipart {
 
     public void addBlob(Blob blob) throws Exception {
         MimeBodyPart part = new MimeBodyPart();
-        part.setDataHandler(new DataHandler(new InputStreamDataSource(blob.getStream(), blob.getMimeType(), blob.getFilename())));
+        part.setDataHandler(new DataHandler(new InputStreamDataSource(
+                blob.getStream(), blob.getMimeType(), blob.getFilename())));
         String filename = blob.getFilename();
         if (filename != null) {
-            part.setDisposition("attachment; filename="+blob.getFilename());
+            part.setDisposition("attachment; filename=" + blob.getFilename());
         } else {
             part.setDisposition("attachment");
         }
