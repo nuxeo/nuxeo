@@ -541,23 +541,23 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         fl.assert_('CHILDREN_DOCUMENT_LIST' in fl.getBody(),
                    'Not a folder listing page.')
-        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:header_modified_sort',
-                             'CHILDREN_DOCUMENT_LIST:dataTable:header_modified_sort'],
-                            ['sortColumn', 'dc:modified']],
-                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:header_creator_sort',
-                               'CHILDREN_DOCUMENT_LIST:dataTable:header_creator_sort'],
+        options = {'date': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_modification_date_header_sort', 
+                             'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_modification_date_header_sort'],
+                            ['sortColumn', 'dc:modified'],
+                            ['defaultSortAscending', 'false']],
+                   'author': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_author_header_sort',
+                             'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_author_header_sort'],
                               ['sortColumn', 'dc:creator']],
-                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:header_currentLifeCycleState',
-                                 'CHILDREN_DOCUMENT_LIST:dataTable:header_currentLifeCycleState'],
+                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_lifecycle_header_sort', 
+                                 'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_lifecycle_header_sort'],
                                 ['sortColumn', 'ecm:currentLifeCycleState']],
-                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:header_title_sort',
-                              'CHILDREN_DOCUMENT_LIST:dataTable:header_title_sort'],
+                   'title': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_title_link_header_sort', 
+                              'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_title_link_header_sort'],
                              ['sortColumn', 'dc:title']]
                    }
         fl.assert_(column in options.keys(), 'Invalid sort column')
         # date
         fl.post(server_url + "/view_documents.faces", params=[
-            ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['providerName', 'CURRENT_DOC_CHILDREN']] + options[column],

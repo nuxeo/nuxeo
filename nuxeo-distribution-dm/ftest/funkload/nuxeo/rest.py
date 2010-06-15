@@ -83,6 +83,12 @@ class RestAPI:
         fl.assert_('<document>' in fl.getBody(), fl.getBody())
         return resp.getDOM().getByName('docref')[0].getContentString()
 
+    def delete(self, uid):
+        fl = self.fl
+        resp = fl.get(fl.server_url + '/restAPI/' + self.repo + '/'
+                      + uid + '/delete',
+                      description='Delete %s' % uid)
+        fl.assert_(uid + ' deleted' in fl.getBody())
 
     def uploadFile(self, uid, filename):
         # TODO: does not work on 5.2.m[34]

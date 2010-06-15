@@ -68,6 +68,10 @@ bench-writer:
 	-fl-run-bench --simple-fetch -c 1:2:4:6:8:10 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
+bench-rest-writer:
+	-fl-run-bench --simple-fetch -c 1:10 -D 30 -f test_rest.py Rest.testWriter $(FLOPS)
+	-fl-build-report $(LOG_HOME)/rest-bench.xml --html -o $(REPORT)
+
 warmup:
 	fl-run-test -v -m 0 -M 0 test_nuxeo.py -e testReader $(FLOPS)
 	-fl-run-bench -c 5 -D 1 -m 0 -M 0 -s 0 test_nuxeo.py Nuxeo.testReader $(FLOPS)
