@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.PrincipalHelper;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -81,7 +82,7 @@ public class GetDocumentUsersAndGroups {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getUserAndGroupIdsForPermission(input,
                 permission, ignoreGroups, resolveGroups, prefixIds);
-        ctx.put(key, result);
+        ctx.put(key, new StringList(result));
         return input;
     }
 
