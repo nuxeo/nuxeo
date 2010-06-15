@@ -152,9 +152,6 @@
               <execution>
                 <id>patch-properties</id>
                 <phase>generate-resources</phase>
-                <!--
-                  this phase before generate-resources
-                -->
                 <goals>
                   <goal>run</goal>
                 </goals>
@@ -168,12 +165,10 @@
                     <concat destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"
                       append="true">
 
-                      #################### HTTP Invoker Patch
-                      ######################## # Uncomment these lines to
-                      activate nuxeo runtime remoting over HTTP # replace
-                      localhost with the name (or IP) of the http server you are
-                      using to expose services # also comment the
-                      nuxeo-client-jndi.* properties defined above
+                      #################### HTTP Invoker Patch ######################## 
+                      # Uncomment these lines to activate nuxeo runtime remoting over HTTP 
+                      # replace localhost with the name (or IP) of the http server you are using to expose services 
+                      # also comment the nuxeo-client-jndi.* properties defined above
                       nuxeo-client-jndi.java.naming.provider.url=http://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/invoker/JNDIFactory
                       nuxeo-client-jndi.java.naming.factory.initial=org.jboss.naming.HttpNamingContextFactory
                       org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/nuxeo/NuxeoRuntimeInvokerServlet/?datatype=nuxeo
@@ -190,7 +185,6 @@
     </profile>
   </profiles>
 
-
   <build>
     <plugins>
       <plugin>
@@ -205,13 +199,6 @@
             </goals>
             <configuration>
               <transformationSets>
-                <transformationSet>
-                  <dir>${jboss.server}</dir>
-                  <includes>
-                    <include>conf/jboss-log4j.xml</include>
-                  </includes>
-                  <stylesheet>src/main/xsl/log4j.xsl</stylesheet>
-                </transformationSet>
                 <transformationSet>
                   <dir>${jboss.server}</dir>
                   <includes>
@@ -237,51 +224,26 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>prepare-transform</id>
+            <id>ant-tasks-on-generate-sources</id>
             <phase>generate-sources</phase>
-            <!--
-              this phase before generate-resources
-            -->
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <tasks>
-                <echo message="Preparing log4j patching..." />
-                <!-- this dtd is needed for the transform to read the file correctly -->
+                <echo message="Add log4j DTD..." />
                 <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
                   overwrite="true" />
+                <echo message="Replace log4j configuration..." />
+                <copy
+                  file="src/main/xml/jboss-log4j.xml"
+                  todir="${jboss.conf}" overwrite="true" />
+
                 <echo message="Patching main deployer ..." />
                 <copy
                   file="src/main/xml/org.jboss.deployment.MainDeployer-xmbean.xml"
                   todir="${jboss.conf}/xmdesc" overwrite="true" />
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>patch-jboss-config</id>
-            <phase>process-resources</phase>
-            <configuration>
-              <tasks>
-                <echo message="Patching XML resources..." />
-                <copy todir="${jboss.server}" overwrite="true" failonerror="false">
-                  <fileset
-                    dir="${project.build.directory}/generated-resources/xml/xslt" />
-                </copy>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jbossws-remove</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
+
                 <echo message="Deleting Jboss WS stack..." />
                 <delete dir="${jboss.deploy}/jbossws.sar" />
                 <delete file="${jboss.lib}/jboss-jaxws-ext.jar" />
@@ -289,17 +251,7 @@
                 <delete file="${jboss.lib}/jboss-saaj.jar" />
                 <delete file="${jboss.lib}/jbossws-framework.jar" />
                 <delete file="${jboss.lib}/jbossws-jboss42.jar" />
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>patch-hibernate3</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
+
                 <echo message="Removing hibernate3 ..." />
                 <delete file="${jboss.lib}/hibernate3.jar" />
                 <delete file="${jboss.lib}/hibernate3-3.2.1.ga-NXP-3881.jar" />
@@ -309,24 +261,23 @@
             </configuration>
           </execution>
           <execution>
-            <id>patch-ear-deployer</id>
+            <id>ant-tasks-on-process-resources</id>
             <phase>process-resources</phase>
-            <configuration>
-              <tasks>
-                <echo message="Patching EAR deployer..." />
-                <copy file="${basedir}/src/main/xml/ear-deployer.xml"
-                  todir="${jboss.deploy}" overwrite="true" />
-              </tasks>
-            </configuration>
             <goals>
               <goal>run</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>patch-interceptors</id>
-            <phase>process-resources</phase>
             <configuration>
               <tasks>
+                <echo message="Patching XML resources..." />
+                <copy todir="${jboss.server}" overwrite="true" failonerror="false">
+                  <fileset
+                    dir="${project.build.directory}/generated-resources/xml/xslt" />
+                </copy>
+
+                <echo message="Patching EAR deployer..." />
+                <copy file="${basedir}/src/main/xml/ear-deployer.xml"
+                  todir="${jboss.deploy}" overwrite="true" />
+
                 <echo
                   message="Patch ejb3-interceptors-aop.xml replacing SessionSynchronizationInterceptor with NXSessionSynchronizationInterceptor..." />
                 <replace file="${jboss.deploy}/ejb3-interceptors-aop.xml"
@@ -334,9 +285,6 @@
                   value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor" />
               </tasks>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
