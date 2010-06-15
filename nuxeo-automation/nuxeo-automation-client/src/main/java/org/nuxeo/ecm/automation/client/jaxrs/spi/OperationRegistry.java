@@ -19,19 +19,23 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class OperationRegistry {
 
     protected Map<String, String> paths;
+
     protected Map<String, OperationDocumentation> ops;
+
     protected Map<String, OperationDocumentation> chains;
 
-    public OperationRegistry(Map<String,String> paths, Map<String, OperationDocumentation> ops, Map<String, OperationDocumentation> chains) {
+    public OperationRegistry(Map<String, String> paths,
+            Map<String, OperationDocumentation> ops,
+            Map<String, OperationDocumentation> chains) {
         this.ops = ops;
         this.chains = chains;
         this.paths = paths;
@@ -42,15 +46,16 @@ public class OperationRegistry {
     }
 
     public OperationDocumentation getOperation(String key) {
-         OperationDocumentation op = ops.get(key);
-         if (op == null) {
-             op = chains.get(key);
-         }
-         return op;
+        OperationDocumentation op = ops.get(key);
+        if (op == null) {
+            op = chains.get(key);
+        }
+        return op;
     }
 
     public Map<String, OperationDocumentation> getOperations() {
-        HashMap<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(ops);
+        HashMap<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(
+                ops);
         map.putAll(chains);
         return map;
     }

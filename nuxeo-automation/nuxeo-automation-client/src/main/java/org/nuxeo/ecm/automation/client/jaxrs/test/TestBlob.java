@@ -21,17 +21,16 @@ import java.io.File;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.jaxrs.util.FileBlob;
-import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
-import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class TestBlob {
 
@@ -40,38 +39,48 @@ public class TestBlob {
             HttpAutomationClient client = new HttpAutomationClient();
             client.connect("http://localhost:8080/automation");
             long start = System.currentTimeMillis();
-            //SessionImpl session = (SessionImpl)client.getSession(null);
-            Session session = (Session)client.getSession("Administrator", "Administrator");
-            //FileBlob fb = new FileBlob(new File("/Users/bstefanescu/operations.jpg"));
+            // SessionImpl session = (SessionImpl)client.getSession(null);
+            Session session = (Session) client.getSession("Administrator",
+                    "Administrator");
+            // FileBlob fb = new FileBlob(new
+            // File("/Users/bstefanescu/operations.jpg"));
             FileBlob fb = new FileBlob(new File("/Users/bstefanescu/test.jpg"));
             fb.setMimeType("image/jpeg");
-            Blob blob = (Blob)session.newRequest(AttachBlob.ID)
-                .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-                .setInput(fb)
-                .set("document", "/default-domain/workspaces/myws/file").execute(); //TODO avoid getting the output from server
-            System.out.println(blob);
-            //System.out.println(((FileBlob)blob).getFile());
 
-            Document doc = (Document)session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
+            // TODO avoid getting the output from server
+            Blob blob = (Blob) session.newRequest(DocumentService.AttachBlob).setHeader(
+                    Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
+                    "document", "/default-domain/workspaces/myws/file").execute();
+            System.out.println(blob);
+            // System.out.println(((FileBlob)blob).getFile());
+
+            Document doc = (Document) session.newRequest(
+                    DocumentService.FetchDocument).setHeader(
+                    Constants.HEADER_NX_SCHEMAS, "*").set("value",
+                    "/default-domain/workspaces/myws/file").execute();
 
             System.out.println(doc);
             System.out.println(doc.getProperties().map());
             PropertyMap map = doc.getProperties().getMap("file:content");
             System.out.println("----------");
             String path = map.getString("data");
-            blob = (Blob)session.getFile(path);
-            System.out.println(((FileBlob)blob).getFile());
+            blob = (Blob) session.getFile(path);
+            System.out.println(((FileBlob) blob).getFile());
             System.out.println("----------");
             System.out.println(map);
 
-            System.out.println("took: "+((double)System.currentTimeMillis()-start)/1000);
-
+            System.out.println("took: "
+                    + ((double) System.currentTimeMillis() - start) / 1000);
 
             start = System.currentTimeMillis();
-            for (int i=0; i<60; i++) {
-                doc = (Document)session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value", "/default-domain/workspaces/myws/file").execute();
+            for (int i = 0; i < 60; i++) {
+                doc = (Document) session.newRequest(
+                        DocumentService.FetchDocument).setHeader(
+                        Constants.HEADER_NX_SCHEMAS, "*").set("value",
+                        "/default-domain/workspaces/myws/file").execute();
             }
-            System.out.println("60 full docs took: "+((double)System.currentTimeMillis()-start)/1000);
+            System.out.println("60 full docs took: "
+                    + ((double) System.currentTimeMillis() - start) / 1000);
             client.disconnect();
         } catch (RemoteException e) {
             e.printStackTrace();

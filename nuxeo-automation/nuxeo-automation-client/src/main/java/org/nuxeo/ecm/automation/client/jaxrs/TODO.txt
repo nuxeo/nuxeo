@@ -11,3 +11,9 @@ OPTIONAL:
 1. Implement GWT client
 2. expose doc types?
 
+
+classes that are duplicated between server,core and client:
+OperationDocumentation
+JSONExporter - removed 2 methods that are dep. on automation-core
+InputStreamDataSource - is used by the server
+operation IDs are hardcoded

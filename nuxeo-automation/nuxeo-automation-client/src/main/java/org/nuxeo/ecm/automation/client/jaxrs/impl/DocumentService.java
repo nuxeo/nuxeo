@@ -22,15 +22,20 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
-import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
-import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DocumentService {
+
+    public static final String FetchDocument = "Document.Fetch";
+
+    public static final String CreateDocument = "Document.Create";
+
+    public static final String GetDocumentChildren = "Document.GetChildren";
+
+    public static final String AttachBlob = "Blob.Attach";
 
     protected Session session;
 
@@ -43,27 +48,31 @@ public class DocumentService {
     }
 
     public Document getDocument(String ref) throws Exception {
-        return (Document)session.newRequest(FetchDocument.ID).set("value", ref).execute();
+        return (Document) session.newRequest(FetchDocument).set("value", ref).execute();
     }
 
-    public Document createDocument(Document parent, String type, String name) throws Exception {
+    public Document createDocument(Document parent, String type, String name)
+            throws Exception {
         return createDocument(parent, type, name, null);
     }
 
-    public Document createDocument(Document parent, String type, String name, PropertyMap properties) throws Exception {
-        OperationRequest req = session.newRequest(CreateDocument.ID).setInput(parent).set("type", type).set("name", name);
+    public Document createDocument(Document parent, String type, String name,
+            PropertyMap properties) throws Exception {
+        OperationRequest req = session.newRequest(CreateDocument).setInput(
+                parent).set("type", type).set("name", name);
         if (properties != null && properties.size() > 0) {
             req.set("properties", properties);
         }
-        return (Document)req.execute();
+        return (Document) req.execute();
     }
 
     public Documents getChildren(Document doc) throws Exception {
-        return (Documents)session.newRequest(GetDocumentChildren.ID).setInput(doc).execute();
+        return (Documents) session.newRequest(GetDocumentChildren).setInput(doc).execute();
     }
 
     public Documents getChildren(DocRef docRef) throws Exception {
-        return (Documents)session.newRequest(GetDocumentChildren.ID).setInput(docRef).execute();
+        return (Documents) session.newRequest(GetDocumentChildren).setInput(
+                docRef).execute();
     }
 
 }
