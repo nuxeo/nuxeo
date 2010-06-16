@@ -9,7 +9,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="dam_common" prefix="damc" src="schemas/dam_common.xsd" />
-    <schema name="filter_query" src="schemas/filter_query.xsd"/>
+    <schema name="filter_query" prefix="fq" src="schemas/filter_query.xsd"/>
     <schema name="ip_rights" prefix="ipr" src="schemas/ip_rights.xsd"/>
   </extension>
 
