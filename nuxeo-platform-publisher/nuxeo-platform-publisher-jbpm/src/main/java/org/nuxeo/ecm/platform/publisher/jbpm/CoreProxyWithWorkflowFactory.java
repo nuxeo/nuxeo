@@ -320,6 +320,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     protected boolean isPublished(PublishedDocument publishedDocument)
             throws PublishingException {
+        // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
