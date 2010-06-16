@@ -112,7 +112,8 @@
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
                includes="nuxeo-platform-annotations*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
-               includes="nuxeo-platform-audit*" />
+               includes="nuxeo-platform-audit*"
+               excludes="nuxeo-platform-audit-api*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
                includes="nuxeo-platform-comment*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
