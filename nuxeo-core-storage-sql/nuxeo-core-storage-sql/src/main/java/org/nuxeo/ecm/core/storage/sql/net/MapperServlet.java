@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,25 +39,28 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.storage.sql.Repository;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
 /**
- * Servlet receiving remote {@link NetMapper} requests and sending them to an
+ * Servlet receiving remote {@link MapperClient} requests and sending them to an
  * actual mapper.
  */
-public class NetServlet extends HttpServlet {
+public class MapperServlet extends HttpServlet {
 
-    private static final Log log = LogFactory.getLog(NetServlet.class);
+    private static final Log log = LogFactory.getLog(MapperServlet.class);
 
     private static final long serialVersionUID = 1L;
 
-    private String repositoryName;
+    private final String repositoryName;
 
     private Repository repository;
 
-    public NetServlet(RepositoryDescriptor repositoryDescriptor) {
-        repositoryName = repositoryDescriptor.name;
+    public MapperServlet(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    public static String getName(String repositoryName) {
+        return MapperServlet.class.getSimpleName() + '-' + repositoryName;
     }
 
     private boolean initialized;
@@ -160,7 +162,7 @@ public class NetServlet extends HttpServlet {
             List<Object> args = new LinkedList<Object>();
             while (true) {
                 Object object = ois.readObject();
-                if (object == NetMapper.EOF) {
+                if (object == MapperClient.EOF) {
                     break;
                 }
                 args.add(object);

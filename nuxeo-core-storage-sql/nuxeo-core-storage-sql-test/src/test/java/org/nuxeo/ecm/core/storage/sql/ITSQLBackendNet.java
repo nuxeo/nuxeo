@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
 /**
- * Integration Tests for NetBackend.
+ * Integration Tests for NetBackend. Assumes a {@link NuxeoServerRunner} has
+ * been started.
  */
 public class ITSQLBackendNet extends TestSQLBackend {
 
@@ -83,6 +84,7 @@ public class ITSQLBackendNet extends TestSQLBackend {
         sd.port = 8181;
         sd.path = "/nuxeo";
         descriptor.connect = Collections.singletonList(sd);
+        descriptor.binaryManagerConnect = true;
         return descriptor;
     }
 

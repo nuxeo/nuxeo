@@ -370,9 +370,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testBinary() throws Exception {
-        if (this instanceof TestSQLBackendNet) {
-            return; // XXX for now
-        }
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);

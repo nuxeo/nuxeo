@@ -20,8 +20,6 @@ import java.io.ObjectInputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -29,19 +27,20 @@ import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
 /**
  * Mapper sending calls to a remote {@link NetServer}.
  */
-public class NetMapper implements InvocationHandler {
+public class MapperClient implements InvocationHandler {
 
-    public static Mapper getMapper(RepositoryImpl repository,
-            HttpClient httpClient) throws StorageException {
-        NetMapper handler = new NetMapper(repository, httpClient);
+    public static Mapper getMapper(RepositoryImpl repository)
+            throws StorageException {
+        MapperClient handler = new MapperClient(repository);
         Mapper mapper = (Mapper) Proxy.newProxyInstance(
-                NetMapper.class.getClassLoader(),
+                MapperClient.class.getClassLoader(),
                 new Class<?>[] { Mapper.class }, handler);
         handler.mapperId = mapper.getMapperId();
         return mapper;
@@ -59,27 +58,14 @@ public class NetMapper implements InvocationHandler {
 
     protected final HttpClient httpClient;
 
-    protected NetMapper(RepositoryImpl repository, HttpClient httpClient) {
-        this.httpClient = httpClient;
-        url = getUrl(repository);
+    protected MapperClient(RepositoryImpl repository) {
+        httpClient = repository.getHttpClient();
+        url = getUrl(repository.getRepositoryDescriptor());
     }
 
-    protected static String getUrl(RepositoryImpl repository) {
-        ServerDescriptor sd = repository.getRepositoryDescriptor().connect.get(0);
-        String path = sd.path;
-        if (!path.startsWith("/")) {
-            path = '/' + path;
-        }
-        if (!path.endsWith("/")) {
-            path += '/'; // needed otherwise we get a redirect
-        }
-        URI uri;
-        try {
-            uri = new URI("http", null, sd.host, sd.port, path, null, null);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        return uri.toString();
+    protected static String getUrl(RepositoryDescriptor repositoryDescriptor) {
+        ServerDescriptor sd = repositoryDescriptor.connect.get(0);
+        return sd.getUrl() + '/' + RepositoryImpl.SERVER_PATH_VCS;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args)

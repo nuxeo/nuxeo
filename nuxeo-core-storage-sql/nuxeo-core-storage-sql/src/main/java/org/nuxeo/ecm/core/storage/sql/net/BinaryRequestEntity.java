@@ -17,32 +17,21 @@
 package org.nuxeo.ecm.core.storage.sql.net;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.io.IOUtils;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 
 /**
- * Class defining a {@link RequestEntity} that writes a list of object through
- * an {@link ObjectOutputStream}.
+ * Class defining a {@link RequestEntity} that writes from a {@link Binary}.
  */
-public class ObjectWriterRequestEntity implements RequestEntity {
+public class BinaryRequestEntity implements RequestEntity {
 
-    public final List<Object> queue;
+    protected final Binary binary;
 
-    public ObjectWriterRequestEntity() {
-        queue = new ArrayList<Object>();
-    }
-
-    public void add(String methodName, Object... objects) {
-        queue.add(methodName);
-        if (objects != null) {
-            queue.addAll(Arrays.asList(objects));
-        }
-        queue.add(MapperClient.EOF);
+    public BinaryRequestEntity(Binary binary) {
+        this.binary = binary;
     }
 
     public boolean isRepeatable() {
@@ -50,15 +39,12 @@ public class ObjectWriterRequestEntity implements RequestEntity {
     }
 
     public void writeRequest(OutputStream out) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(out);
-        for (Object object : queue) {
-            oos.writeObject(object);
-        }
-        oos.flush();
+        IOUtils.copy(binary.getStream(), out);
+        out.flush();
     }
 
     public long getContentLength() {
-        return -1;
+        return binary.getLength();
     }
 
     public String getContentType() {

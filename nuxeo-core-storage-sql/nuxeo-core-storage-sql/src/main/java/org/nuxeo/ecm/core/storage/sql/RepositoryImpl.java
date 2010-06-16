@@ -28,6 +28,9 @@ import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,6 +46,9 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerClient;
+import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerServlet;
+import org.nuxeo.ecm.core.storage.sql.net.MapperServlet;
 import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
@@ -59,7 +65,15 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
+    public static final String SERVER_PATH_VCS = "vcs";
+
+    public static final String SERVER_PATH_BINARY = "binary";
+
     protected final RepositoryDescriptor repositoryDescriptor;
+
+    protected final MultiThreadedHttpConnectionManager connectionManager;
+
+    protected final HttpClient httpClient;
 
     protected final SchemaManager schemaManager;
 
@@ -78,7 +92,9 @@ public class RepositoryImpl implements Repository {
     // modified only under clusterMapper synchronization
     private long clusterLastInvalidationTimeMillis;
 
-    private Object server;
+    private boolean serverStarted;
+
+    private boolean binaryServerStarted;
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
@@ -95,9 +111,19 @@ public class RepositoryImpl implements Repository {
             throw new StorageException(e);
         }
 
+        connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = connectionManager.getParams();
+        params.setDefaultMaxConnectionsPerHost(20);
+        params.setMaxTotalConnections(20);
+        httpClient = new HttpClient(connectionManager);
+
         binaryManager = createBinaryManager();
         backend = createBackend();
-        server = createServer();
+        createServer();
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 
     protected BinaryManager createBinaryManager() throws StorageException {
@@ -108,6 +134,34 @@ public class RepositoryImpl implements Repository {
             }
             BinaryManager binaryManager = klass.newInstance();
             binaryManager.initialize(repositoryDescriptor);
+            if (repositoryDescriptor.binaryManagerConnect) {
+                List<ServerDescriptor> connect = repositoryDescriptor.connect;
+                if (connect.isEmpty() || connect.get(0).disabled) {
+                    log.error("Repository descriptor specifies binaryManager connect "
+                            + "without a global connect");
+                } else {
+                    binaryManager = new BinaryManagerClient(binaryManager,
+                            httpClient);
+                    binaryManager.initialize(repositoryDescriptor);
+                }
+            }
+            if (repositoryDescriptor.binaryManagerListen) {
+                ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
+                if (serverDescriptor == null || serverDescriptor.disabled) {
+                    log.error("Repository descriptor specifies binaryManager listen "
+                            + "without a global listen");
+                } else {
+                    BinaryManagerServlet servlet = new BinaryManagerServlet(
+                            binaryManager);
+                    String servletName = BinaryManagerServlet.getName(binaryManager);
+                    String url = NetServer.add(serverDescriptor, servletName,
+                            servlet, SERVER_PATH_BINARY);
+                    log.info(String.format(
+                            "VCS server for binary manager of repository '%s' started on: %s",
+                            repositoryDescriptor.name, url));
+                    binaryServerStarted = true;
+                }
+            }
             return binaryManager;
         } catch (Exception e) {
             throw new StorageException(e);
@@ -140,12 +194,17 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected Object createServer() {
+    protected void createServer() {
         ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
         if (serverDescriptor != null && !serverDescriptor.disabled) {
-            return NetServer.startServer(repositoryDescriptor);
-        } else {
-            return null;
+            MapperServlet servlet = new MapperServlet(repositoryDescriptor.name);
+            String servletName = MapperServlet.getName(repositoryDescriptor.name);
+            String url = NetServer.add(repositoryDescriptor.listen,
+                    servletName, servlet, SERVER_PATH_VCS);
+            log.info(String.format(
+                    "VCS server for repository '%s' started on: %s",
+                    repositoryDescriptor.name, url));
+            serverStarted = true;
         }
     }
 
@@ -293,11 +352,18 @@ public class RepositoryImpl implements Repository {
             clusterMapper = null;
         }
         model = null;
-        if (server != null) {
-            NetServer.stopServer(server);
-            server = null;
+        if (serverStarted) {
+            String servletName = MapperServlet.getName(repositoryDescriptor.name);
+            NetServer.remove(repositoryDescriptor.listen, servletName);
+            serverStarted = false;
+        }
+        if (binaryServerStarted) {
+            String servletName = BinaryManagerServlet.getName(binaryManager);
+            NetServer.remove(repositoryDescriptor.listen, servletName);
+            binaryServerStarted = false;
         }
         backend.shutdown();
+        connectionManager.shutdown();
     }
 
     protected synchronized void closeAllSessions() throws StorageException {

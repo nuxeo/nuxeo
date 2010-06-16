@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.net;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -38,17 +35,8 @@ public class NetBackend implements RepositoryBackend {
 
     protected RepositoryImpl repository;
 
-    protected HttpClient httpClient;
-
-    protected MultiThreadedHttpConnectionManager connectionManager;
-
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
-        connectionManager = new MultiThreadedHttpConnectionManager();
-        HttpConnectionManagerParams params = connectionManager.getParams();
-        params.setDefaultMaxConnectionsPerHost(20);
-        params.setMaxTotalConnections(20);
-        httpClient = new HttpClient(connectionManager);
     }
 
     public void initializeModelSetup(ModelSetup modelSetup)
@@ -62,16 +50,15 @@ public class NetBackend implements RepositoryBackend {
     public Mapper newMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         try {
-            return NetMapper.getMapper(repository, httpClient);
+            return MapperClient.getMapper(repository);
         } catch (StorageException e) {
-            String url = NetMapper.getUrl(repository);
+            String url = MapperClient.getUrl(repository.getRepositoryDescriptor());
             log.error("Failed to connect to server: " + url, e);
             throw e;
         }
     }
 
     public void shutdown() {
-        connectionManager.shutdown();
     }
 
 }

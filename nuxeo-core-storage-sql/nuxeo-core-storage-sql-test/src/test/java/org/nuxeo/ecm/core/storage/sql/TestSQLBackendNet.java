@@ -59,6 +59,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
                 fulltextDisabled);
         descriptor.name = "client";
         descriptor.binaryStorePath = "clientbinaries";
+        descriptor.binaryManagerConnect = true;
         ServerDescriptor sd = new ServerDescriptor();
         sd.host = "localhost";
         sd.port = 8181;

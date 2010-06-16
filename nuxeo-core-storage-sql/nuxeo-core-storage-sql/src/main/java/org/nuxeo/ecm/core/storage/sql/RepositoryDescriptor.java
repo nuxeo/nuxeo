@@ -93,10 +93,14 @@ public class RepositoryDescriptor {
         @XNode("path")
         public String path = "/nuxeo";
 
+        public String getUrl() {
+            return "http://" + host + ":" + port
+                    + (path.startsWith("/") ? "" : "/") + path;
+        }
+
         @Override
         public String toString() {
-            return this.getClass().getSimpleName() + "(http://" + host + ":"
-                    + port + (path.startsWith("/") ? "" : "/") + path + ")";
+            return getClass().getSimpleName() + '(' + getUrl() + ')';
         }
     }
 
@@ -150,6 +154,12 @@ public class RepositoryDescriptor {
     @XNode("binaryManager@key")
     public String binaryManagerKey;
 
+    @XNode("binaryManager@listen")
+    public boolean binaryManagerListen;
+
+    @XNode("binaryManager@connect")
+    public boolean binaryManagerConnect;
+
     @XNode("binaryStore@path")
     public String binaryStorePath;
 
@@ -171,6 +181,8 @@ public class RepositoryDescriptor {
         binaryStorePath = other.binaryStorePath;
         binaryManagerClass = other.binaryManagerClass;
         binaryManagerKey = other.binaryManagerKey;
+        binaryManagerListen = other.binaryManagerListen;
+        binaryManagerConnect = other.binaryManagerConnect;
         sendInvalidationEvents = other.sendInvalidationEvents;
     }
 

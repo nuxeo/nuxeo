@@ -168,7 +168,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
     public Binary getBinary(String digest) {
         File file = getFileForDigest(digest, false);
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             return null;
         }
         return getBinaryScrambler().getUnscrambledBinary(file, digest);
@@ -184,6 +184,9 @@ public class DefaultBinaryManager implements BinaryManager {
      */
     public File getFileForDigest(String digest, boolean createDir) {
         int depth = descriptor.depth;
+        if (digest.length() < 2 * depth) {
+            return null;
+        }
         StringBuilder buf = new StringBuilder(3 * depth - 1);
         for (int i = 0; i < depth; i++) {
             if (i != 0) {
