@@ -17,9 +17,6 @@
 
 package org.nuxeo.dam.webapp.filter;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +51,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Scope(CONVERSATION)
 @Name("filterActions")
@@ -115,8 +115,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     @Factory(value = "docTypeSelectItems", scope = ScopeType.EVENT)
     public List<SelectItem> getDocTypeSelectItems() throws ClientException {
         DocumentModel filterDocument = getFilterDocument();
-        List<String> docTypeSelection = filterDocument.getProperty(
-                DOCTYPE_FIELD_XPATH).getValue(List.class);
+        List<String> docTypeSelection = Arrays.asList((String[]) filterDocument.getPropertyValue(DOCTYPE_FIELD_XPATH));
         List<SelectItem> items = new ArrayList<SelectItem>();
         items.add(new SelectItem("All", "label.type.All", "",
                 docTypeSelection.isEmpty()));
@@ -163,7 +162,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     // CB: DAM-392 - Create new filter widget for Importset
     @Factory(value = "userImportSetsSelectItems", scope = ScopeType.EVENT)
-    public List<SelectItem> getUserImportSetsSelectItems() throws ClientException {
+    public List<SelectItem> getUserImportSetsSelectItems()
+            throws ClientException {
         DocumentModel filterDocument = getFilterDocument();
         String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
         List<SelectItem> items = new ArrayList<SelectItem>();
@@ -197,7 +197,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
                 documentManager);
         for (DocumentModel doc : docs) {
             String docPath = doc.getPathAsString();
-            items.add(new SelectItem(docPath, doc.getTitle(), "", docPath.equals(folderSelection)));
+            items.add(new SelectItem(docPath, doc.getTitle(), "",
+                    docPath.equals(folderSelection)));
         }
         return items;
     }
@@ -265,7 +266,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     }
 
     public void clearFilters() throws ClientException {
-        //CB: DAM-281 - Clear filters
+        // CB: DAM-281 - Clear filters
         filterDocument = null;
         queryModelActions.get(QUERY_MODEL_NAME).reset();
         invalidateProvider();
