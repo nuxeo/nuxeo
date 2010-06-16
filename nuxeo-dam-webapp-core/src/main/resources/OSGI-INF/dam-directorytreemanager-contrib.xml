@@ -15,15 +15,15 @@
       <directory>continent</directory>
       <directory>country</directory>
     </directoryTree>
-    
+
     <directoryTree name="topicDirectoryTree"
                    label="base.filtering.topic"
-                   querymodel="FILTERED_DOCUMENTS" field="topic"
+                   querymodel="FILTERED_DOCUMENTS" field="dc_subjects"
                    schema="filter_query"
                    multiselect="true">
       <directory>topic</directory>
       <directory>subtopic</directory>
-    </directoryTree>    
+    </directoryTree>
 
     <directoryTree name="TAG_CLOUD">
     </directoryTree>

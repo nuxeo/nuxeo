@@ -25,7 +25,7 @@
         </predicate>
 
         <predicate parameter="dc:subjects" operator="STARTSWITH">
-          <field schema="filter_query" name="topic" />
+          <field schema="filter_query" name="dc_subjects" />
         </predicate>
 
         <predicate parameter="ecm:path" operator="STARTSWITH">
