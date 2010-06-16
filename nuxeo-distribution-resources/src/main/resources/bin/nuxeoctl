@@ -226,19 +226,19 @@ if [ "$jboss" = "true" ]; then
 	do
   	if [ ! -z "$IS_JRE_6" ]; then
   		#echo "Java 1.6 detected"
-  		JAVA5_API=`ls "$NUXEO_EAR/lib/$java5_api*.jar" 2>/dev/null || echo "null"`
+  		JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
   		if [ -f "$JAVA5_API" ]; then
   			echo "Moving $JAVA5_API out of classpath (already provided by Java6)"
-  			mkdir "$NUXEO_EAR/lib-jre1.5/" 2>/dev/null
-  			mv "$JAVA5_API" "$NUXEO_EAR/lib-jre1.5/"
+  			mkdir "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
+  			mv "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/
   		fi
   		
   	else
   		#echo "Assumed Java 1.5"
-  		JAVA5_API=`ls "$NUXEO_EAR/lib/java5_api$*.jar" 2>/dev/null || echo "null"`
+  		JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
   		if [ ! -f "$JAVA5_API" ]; then
   			echo "Moving $JAVA5_API into classpath"
-  			mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR/lib/" 2>/dev/null || \
+  			mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR"/lib/ 2>/dev/null || \
   			echo "Missing $java5_api in $NUXEO_EAR/lib/ or $NUXEO_EAR/lib-jre1.5/" >&2
   		fi
   	fi
