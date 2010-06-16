@@ -19,10 +19,9 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class Blobs extends ArrayList<Blob> implements OperationInput {
 
@@ -32,15 +31,19 @@ public class Blobs extends ArrayList<Blob> implements OperationInput {
     }
 
     public Blobs(int size) {
-        super (size);
+        super(size);
     }
 
     public Blobs(List<Blob> blobs) {
-        super (blobs);
+        super(blobs);
     }
 
     public String getInputType() {
-        return "blobs";
+        return "bloblist";
+    }
+
+    public String getInputRef() {
+        return null;
     }
 
     public boolean isBinary() {

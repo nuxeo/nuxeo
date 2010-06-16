@@ -30,32 +30,34 @@ import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
-import org.nuxeo.ecm.automation.client.jaxrs.util.FileBlob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class Request extends HashMap<String, String> implements Constants {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Pattern ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*=\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
+    protected static Pattern ATTR_PATTERN = Pattern.compile(
+            ";?\\s*filename\\s*=\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
 
+    public final static int GET = 0;
 
-    public final static int GET    = 0;
-    public final static int POST   = 1;
-
+    public final static int POST = 1;
 
     protected int method;
+
     protected String url;
+
     protected Object entity;
+
     protected boolean isMultiPart;
 
     protected Object result;
-
 
     public Request(int method, String url) {
         this.method = method;
@@ -94,11 +96,11 @@ public class Request extends HashMap<String, String> implements Constants {
     }
 
     public MimeMultipart asMultiPartEntity() {
-        return isMultiPart ? (MimeMultipart)entity : null;
+        return isMultiPart ? (MimeMultipart) entity : null;
     }
 
     public String asStringEntity() {
-        return isMultiPart ? null : (String)entity;
+        return isMultiPart ? null : (String) entity;
     }
 
     public Object getResult() {
@@ -106,14 +108,17 @@ public class Request extends HashMap<String, String> implements Constants {
     }
 
     /**
-     * Must read the object from the server response and return it or throw a {@link RemoteException} if server sent an error.
+     * Must read the object from the server response and return it or throw a
+     * {@link RemoteException} if server sent an error.
+     * 
      * @param status
      * @param ctype
      * @param stream
      * @return
      * @throws Exception
      */
-    public Object handleResult(int status, String ctype, String disp, InputStream stream) throws Exception {
+    public Object handleResult(int status, String ctype, String disp,
+            InputStream stream) throws Exception {
         if (status == 204) { // no content
             return null;
         } else if (status >= 400) {
@@ -134,31 +139,34 @@ public class Request extends HashMap<String, String> implements Constants {
         }
     }
 
-    protected static Blobs readBlobs(String ctype, InputStream in) throws Exception {
+    protected static Blobs readBlobs(String ctype, InputStream in)
+            throws Exception {
         Blobs files = new Blobs();
         // save the stream to a temporary file
         File file = IOUtils.copyToTempFile(in);
         FileInputStream fin = new FileInputStream(file);
         try {
-            MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin, ctype));
+            MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin,
+                    ctype));
             int size = mp.getCount();
-            for (int i=0; i<size; i++) {
+            for (int i = 0; i < size; i++) {
                 BodyPart part = mp.getBodyPart(i);
-                String fname = null;
-                String disp = part.getDisposition();
-                if (disp != null) {
-                    fname = getFileName(disp);
-                }
-                files.add(readBlob(part.getContentType(), fname, part.getInputStream()));
+                String fname = part.getFileName();
+                files.add(readBlob(part.getContentType(), fname,
+                        part.getInputStream()));
             }
         } finally {
-            try { fin.close(); } catch (Exception e) {}
+            try {
+                fin.close();
+            } catch (Exception e) {
+            }
             file.delete();
         }
         return files;
     }
 
-    protected static Blob readBlob(String ctype, String fileName, InputStream in) throws Exception {
+    protected static Blob readBlob(String ctype, String fileName, InputStream in)
+            throws Exception {
         File file = IOUtils.copyToTempFile(in);
         file.deleteOnExit();
         FileBlob blob = new FileBlob(file);
@@ -177,18 +185,21 @@ public class Request extends HashMap<String, String> implements Constants {
         return null;
     }
 
-    protected void handleException(int status, String ctype, InputStream stream) throws Exception {
+    protected void handleException(int status, String ctype, InputStream stream)
+            throws Exception {
         if (CTYPE_ENTITY.equals(ctype)) {
             String content = IOUtils.read(stream);
             RemoteException e = null;
             try {
                 e = JsonMarshalling.readException(content);
             } catch (Throwable t) {
-                throw new RemoteException(status, "ServerError", "Server Error", content);
+                throw new RemoteException(status, "ServerError",
+                        "Server Error", content);
             }
             throw e;
         } else {
-            throw new RemoteException(status, "ServerError", "Server Error", IOUtils.read(stream));
+            throw new RemoteException(status, "ServerError", "Server Error",
+                    IOUtils.read(stream));
         }
     }
 

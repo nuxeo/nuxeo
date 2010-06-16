@@ -9,4 +9,24 @@
     </binding>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="testchain">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">chain.doc</param>
+      </operation>
+    </chain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="principals">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">chain.doc</param>
+      </operation>
+    </chain>
+  </extension>
+
  </component>

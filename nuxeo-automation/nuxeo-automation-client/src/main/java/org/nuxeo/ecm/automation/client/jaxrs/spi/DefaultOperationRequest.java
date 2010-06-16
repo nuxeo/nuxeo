@@ -67,6 +67,9 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final boolean acceptInput(String type) {
         for (int i = 0, size = op.signature.length; i < size; i += 2) {
+            if ("void".equals(op.signature[i])) {
+                return true;
+            }
             if (type.equals(op.signature[i])) {
                 return true;
             }

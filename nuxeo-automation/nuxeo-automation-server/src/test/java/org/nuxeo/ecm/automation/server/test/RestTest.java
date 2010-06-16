@@ -17,12 +17,14 @@
 package org.nuxeo.ecm.automation.server.test;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -32,14 +34,19 @@ import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRefs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
+import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
-import org.nuxeo.ecm.automation.client.jaxrs.util.FileBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
@@ -52,6 +59,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -63,6 +71,7 @@ import com.google.inject.Inject;
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
 @Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
 
@@ -75,6 +84,13 @@ public class RestTest {
     static HttpAutomationClient client;
 
     static Session session;
+
+    protected File newFile(String content) throws IOException {
+        File file = File.createTempFile("automation-test-", ".xml");
+        file.deleteOnExit();
+        FileUtils.writeFile(file, content);
+        return file;
+    }
 
     // ------ Tests comes here --------
 
@@ -156,59 +172,43 @@ public class RestTest {
     }
 
     /**
-     * test blob input / output
-     * 
-     * @throws Exception
+     * Test documents input / output
      */
     @Test
-    public void testAttachAndGetFile() throws Exception {
-        File file = File.createTempFile("automation-test-", ".xml");
-        FileUtils.writeFile(file, "<doc>mydoc</doc>");
-        String filename = file.getName();
-        FileBlob fb = new FileBlob(file);
-        // TODO the next line is not working as expected - the file.getName()
-        // will be used instead
-        // fb.setFileName("test.xml");
-        fb.setMimeType("text/xml");
+    public void testUpdateDocuments() throws Exception {
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
-        // create a file
-        session.newRequest(CreateDocument.ID).setInput(root).set("type", "File").set(
-                "name", "myfile").set("properties", "dc:title=My File").execute();
+        // create a folder
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "docsInput").set(
+                "properties", "dc:title=Query Test").execute();
+        // create 2 files
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note2").set("properties", "dc:title=Note2").execute();
 
-        Blob blob = (Blob) session.newRequest(DocumentService.AttachBlob).setHeader(
-                Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
-                "document", "/myfile").execute();
-        // test that output was avoided using Constants.HEADER_NX_VOIDOP
-        Assert.assertNull(blob);
+        DocRefs refs = new DocRefs();
+        refs.add(new DocRef("/docsInput/note1"));
+        refs.add(new DocRef("/docsInput/note2"));
+        Documents docs = (Documents) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(refs).set(
+                "properties", "dc:description=updated").execute();
+        Assert.assertEquals(2, docs.size());
+        // returned docs doesn't contains all properties.
+        // TODO should we return all schemas?
 
-        // get the file where blob was attached
-        Document doc = (Document) session.newRequest(
-                DocumentService.FetchDocument).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("value", "/myfile").execute();
+        Document doc = (Document) session.newRequest(FetchDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value",
+                "/docsInput/note1").execute();
+        Assert.assertEquals("updated", doc.getString("dc:description"));
 
-        PropertyMap map = doc.getProperties().getMap("file:content");
-        Assert.assertEquals(filename, map.getString("name"));
-        Assert.assertEquals("text/xml", map.getString("mime-type"));
+        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value",
+                "/docsInput/note2").execute();
+        Assert.assertEquals("updated", doc.getString("dc:description"));
 
-        // get the data URL
-        String path = map.getString("data");
-        blob = (Blob) session.getFile(path);
-        Assert.assertNotNull(blob);
-        Assert.assertEquals(filename, blob.getFileName());
-        Assert.assertEquals("text/xml", blob.getMimeType());
-        Assert.assertEquals("<doc>mydoc</doc>",
-                FileUtils.read(blob.getStream()));
-
-        // now test the GetBlob operation on the same blob
-        blob = (Blob) session.newRequest(GetDocumentBlob.ID).setInput(doc).set(
-                "xpath", "file:content").execute();
-        Assert.assertNotNull(blob);
-        Assert.assertEquals(filename, blob.getFileName());
-        Assert.assertEquals("text/xml", blob.getMimeType());
-        Assert.assertEquals("<doc>mydoc</doc>",
-                FileUtils.read(blob.getStream()));
     }
 
     /**
@@ -250,40 +250,61 @@ public class RestTest {
     }
 
     /**
-     * Test documents input / output
+     * test blob input / output
+     * 
+     * @throws Exception
      */
-    @Ignore("document list input is not correctly read on server side")
     @Test
-    public void testUpdateDocuments() throws Exception {
+    public void testAttachAndGetFile() throws Exception {
+        File file = newFile("<doc>mydoc</doc>");
+        String filename = file.getName();
+        FileBlob fb = new FileBlob(file);
+        // TODO the next line is not working as expected - the file.getName()
+        // will be used instead
+        // fb.setFileName("test.xml");
+        fb.setMimeType("text/xml");
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
-        // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
-                root).set("type", "Folder").set("name", "docsInput").set(
-                "properties", "dc:title=Query Test").execute();
-        // create 2 files
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
-                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
-                "Note").set("name", "note2").set("properties", "dc:title=Note2").execute();
+        // create a file
+        session.newRequest(CreateDocument.ID).setInput(root).set("type", "File").set(
+                "name", "myfile").set("properties", "dc:title=My File").execute();
 
-        DocRefs refs = new DocRefs();
-        refs.add(new DocRef("/docsInput/note1"));
-        refs.add(new DocRef("/docsInput/note2"));
-        try {
-            Documents docs = (Documents) session.newRequest(UpdateDocument.ID).setHeader(
-                    Constants.HEADER_NX_SCHEMAS, "*").setInput(refs).set(
-                    "properties", "dc:description=updated").execute();
-            Assert.assertEquals(2, docs.size());
-            Assert.assertEquals("updated", docs.get(0).getString(
-                    "dc:description"));
-            Assert.assertEquals("updated", docs.get(1).getString(
-                    "dc:description"));
+        FileBlob blob = (FileBlob) session.newRequest(
+                DocumentService.AttachBlob).setHeader(
+                Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
+                "document", "/myfile").execute();
+        // test that output was avoided using Constants.HEADER_NX_VOIDOP
+        Assert.assertNull(blob);
 
-        } catch (RemoteException e) {
-            System.out.println(e.getRemoteStackTrace());
-        }
+        // get the file where blob was attached
+        Document doc = (Document) session.newRequest(
+                DocumentService.FetchDocument).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", "/myfile").execute();
+
+        PropertyMap map = doc.getProperties().getMap("file:content");
+        Assert.assertEquals(filename, map.getString("name"));
+        Assert.assertEquals("text/xml", map.getString("mime-type"));
+
+        // get the data URL
+        String path = map.getString("data");
+        blob = (FileBlob) session.getFile(path);
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(filename, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
+
+        // now test the GetBlob operation on the same blob
+        blob = (FileBlob) session.newRequest(GetDocumentBlob.ID).setInput(doc).set(
+                "xpath", "file:content").execute();
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(filename, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
     }
 
     /**
@@ -291,7 +312,125 @@ public class RestTest {
      */
     @Test
     public void testGetBlobs() throws Exception {
-        // TODO
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // create a note
+        Document note = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Note").set("name", "blobs").set(
+                "properties", "dc:title=Blobs Test").execute();
+        // attach 2 files to that note
+        File file1 = newFile("<doc>mydoc1</doc>");
+        File file2 = newFile("<doc>mydoc2</doc>");
+        String filename1 = file1.getName();
+        String filename2 = file2.getName();
+        FileBlob fb1 = new FileBlob(file1);
+        fb1.setMimeType("text/xml");
+        FileBlob fb2 = new FileBlob(file2);
+        fb2.setMimeType("text/xml");
+        // TODO attachblob cannot set multiple blobs at once.
+        Blobs blobs = new Blobs();
+        // blobs.add(fb1);
+        // blobs.add(fb2);
+        FileBlob blob = (FileBlob) session.newRequest(AttachBlob.ID).setHeader(
+                Constants.HEADER_NX_VOIDOP, "true").setInput(fb1).set(
+                "document", "/blobs").set("xpath", "files:files").execute();
+        // test that output was avoided using Constants.HEADER_NX_VOIDOP
+        Assert.assertNull(blob);
+        // attach second blob
+        blob = (FileBlob) session.newRequest(AttachBlob.ID).setHeader(
+                Constants.HEADER_NX_VOIDOP, "true").setInput(fb2).set(
+                "document", "/blobs").set("xpath", "files:files").execute();
+        // test that output was avoided using Constants.HEADER_NX_VOIDOP
+        Assert.assertNull(blob);
+
+        // now retrieve the note with full schemas
+        note = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", "/blobs").execute();
+
+        PropertyList list = note.getProperties().getList("files:files");
+        Assert.assertEquals(2, list.size());
+        PropertyMap map = list.getMap(0).getMap("file");
+        Assert.assertEquals(filename1, map.getString("name"));
+        Assert.assertEquals("text/xml", map.getString("mime-type"));
+
+        // get the data URL
+        String path = map.getString("data");
+        blob = (FileBlob) session.getFile(path);
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(filename1, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc1</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
+
+        // the same for the second file
+        map = list.getMap(1).getMap("file");
+        Assert.assertEquals(filename2, map.getString("name"));
+        Assert.assertEquals("text/xml", map.getString("mime-type"));
+
+        // get the data URL
+        path = map.getString("data");
+        blob = (FileBlob) session.getFile(path);
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(filename2, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc2</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
+
+        // now test the GetDocumentBlobs operation on the note document
+        blobs = (Blobs) session.newRequest(GetDocumentBlobs.ID).setInput(note).set(
+                "xpath", "files:files").execute();
+        Assert.assertNotNull(blob);
+        Assert.assertEquals(2, blobs.size());
+
+        // test first blob
+        blob = (FileBlob) blobs.get(0);
+        Assert.assertEquals(filename1, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc1</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
+
+        // test the second one
+        blob = (FileBlob) blobs.get(1);
+        Assert.assertEquals(filename2, blob.getFileName());
+        Assert.assertEquals("text/xml", blob.getMimeType());
+        Assert.assertEquals("<doc>mydoc2</doc>",
+                FileUtils.read(blob.getStream()));
+        blob.getFile().delete();
+    }
+
+    /**
+     * Upload blobs to create a zip and download it
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testUploadBlobs() throws Exception {
+        File file1 = newFile("<doc>mydoc1</doc>");
+        File file2 = newFile("<doc>mydoc2</doc>");
+        String filename1 = file1.getName();
+        String filename2 = file2.getName();
+        FileBlob fb1 = new FileBlob(file1);
+        fb1.setMimeType("text/xml");
+        FileBlob fb2 = new FileBlob(file2);
+        fb2.setMimeType("text/xml");
+        Blobs blobs = new Blobs();
+        blobs.add(fb1);
+        blobs.add(fb2);
+
+        FileBlob zip = (FileBlob) session.newRequest(CreateZip.ID).set(
+                "filename", "test.zip").setInput(blobs).execute();
+
+        Assert.assertNotNull(zip);
+        ZipFile zf = new ZipFile(zip.getFile());
+        ZipEntry entry1 = zf.getEntry(filename1);
+        Assert.assertNotNull(entry1);
+        ZipEntry entry2 = zf.getEntry(filename2);
+        Assert.assertNotNull(entry2);
+        zip.getFile().delete();
     }
 
     /**
@@ -299,19 +438,43 @@ public class RestTest {
      */
     @Test
     public void testChain() throws Exception {
-        // TODO
+        OperationDocumentation opd = session.getOperation("testchain");
+        Assert.assertNotNull(opd);
+
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // create a folder
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "chainTest").execute();
+
+        Document doc = (Document) session.newRequest("testchain").setInput(
+                folder).execute();
+        Assert.assertEquals("/chainTest/chain.doc", doc.getPath());
+        Assert.assertEquals("Note", doc.getType());
+
+        // fetch again the note
+        doc = (Document) session.newRequest(FetchDocument.ID).set("value", doc).execute();
+        Assert.assertEquals("/chainTest/chain.doc", doc.getPath());
+        Assert.assertEquals("Note", doc.getType());
+
     }
 
     /**
-     * test security on a chain
+     * test security on a chain - only diable flag is tested - TODO more tests
+     * to test each security filter
      */
     @Test
     public void testChainSecurity() throws Exception {
-        // TODO
+        OperationDocumentation opd = session.getOperation("principals");
+        Assert.assertNotNull(opd);
+        try {
+            session.newRequest("principals").setInput(null).execute();
+            Assert.fail("chains invocation is supposed to fail since it is disabled - should return 404");
+        } catch (RemoteException e) {
+            Assert.assertEquals(404, e.getStatus());
+        }
+
     }
 
-    @Test
-    public void testExpressions() throws Exception {
-        // TODO
-    }
 }

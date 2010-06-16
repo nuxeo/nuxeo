@@ -17,3 +17,10 @@ OperationDocumentation
 JSONExporter - removed 2 methods that are dep. on automation-core
 InputStreamDataSource - is used by the server
 operation IDs are hardcoded
+
+===
+shoukd we return all schemas when returning docs if the right header is specified?
+remove types in param fron extension ? we can use string adapters for this ..
+setInput for void operations is normal? (in fact setInput is for the context)
+canot change file name on a fileblob
+attach blob doesnt support multiple blobs - see blobs test in rest server

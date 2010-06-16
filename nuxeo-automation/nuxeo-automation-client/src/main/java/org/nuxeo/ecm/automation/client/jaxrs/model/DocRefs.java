@@ -41,6 +41,19 @@ public class DocRefs extends ArrayList<DocRef> implements OperationInput {
         return "documents";
     }
 
+    public String getInputRef() {
+        StringBuilder buf = new StringBuilder("docs:");
+        int size = size();
+        if (size == 0) {
+            return buf.toString();
+        }
+        buf.append(get(0).ref);
+        for (int i = 1; i < size; i++) {
+            buf.append(",").append(get(i).ref);
+        }
+        return buf.toString();
+    }
+
     public boolean isBinary() {
         return false;
     }
@@ -49,11 +62,11 @@ public class DocRefs extends ArrayList<DocRef> implements OperationInput {
         StringBuilder buf = new StringBuilder();
         int size = size();
         if (size == 0) {
-            return "";
+            return buf.toString();
         }
-        buf.append(get(0).toString());
+        buf.append(get(0).ref);
         for (int i = 1; i < size; i++) {
-            buf.append(",").append(get(i).toString());
+            buf.append(",").append(get(i).ref);
         }
         return buf.toString();
     }

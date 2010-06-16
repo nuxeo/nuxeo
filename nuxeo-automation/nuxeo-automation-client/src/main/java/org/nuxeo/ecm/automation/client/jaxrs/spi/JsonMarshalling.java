@@ -192,7 +192,10 @@ public class JsonMarshalling {
         OperationInput input = req.getInput();
 
         if (input != null && !input.isBinary()) {
-            entity.element("input", req.getInput().toString());
+            String ref = input.getInputRef();
+            if (ref != null) {
+                entity.element("input", ref);
+            }
         }
         entity.element("params", req.getParameters());
         entity.element("context", req.getContextParameters());

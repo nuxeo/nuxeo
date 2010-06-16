@@ -20,22 +20,21 @@ import java.util.ArrayList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class Documents extends ArrayList<Document> implements OperationInput {
 
     private static final long serialVersionUID = 1L;
 
-
     public Documents() {
     }
 
     public Documents(int size) {
-        super (size);
+        super(size);
     }
 
     public Documents(Documents docs) {
-        super (docs);
+        super(docs);
     }
 
     public String getInputType() {
@@ -46,15 +45,28 @@ public class Documents extends ArrayList<Document> implements OperationInput {
         return false;
     }
 
-    public String toString() {
+    public String getInputRef() {
         StringBuilder buf = new StringBuilder();
         int size = size();
         if (size == 0) {
-            return "";
+            return buf.toString();
         }
-        buf.append(get(0).toString());
-        for (int i=1; i<size; i++) {
-            buf.append(",").append(get(i).toString());
+        buf.append(get(0).getId());
+        for (int i = 1; i < size; i++) {
+            buf.append(",").append(get(i).getId());
+        }
+        return buf.toString();
+    }
+
+    public String toString() {
+        StringBuilder buf = new StringBuilder("docs:");
+        int size = size();
+        if (size == 0) {
+            return buf.toString();
+        }
+        buf.append(get(0).getId());
+        for (int i = 1; i < size; i++) {
+            buf.append(",").append(get(i).getId());
         }
         return buf.toString();
     }
