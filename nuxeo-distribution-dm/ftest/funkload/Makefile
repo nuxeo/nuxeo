@@ -53,6 +53,8 @@ reader:
 
 test-nuxeo: init writer reader
 
+test-dashboard:
+	fl-run-test -dv --simple-fetch test_nuxeo.py -e testDashboard $(FLOPS)	
 
 navigation-init:
 	fl-run-test -v --simple-fetch test_navigation.py -e testBrowse $(FLOPS)
@@ -64,8 +66,10 @@ navigation:
 # bench nuxeo ep
 bench: start test-nuxeo bench-writer bench-reader stop
 
+bench-long: start test-nuxeo bench-writer bench-writer-long bench-reader stop
+
 bench-writer:
-	-fl-run-bench --simple-fetch -c 1:2:4:6:8:10 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-run-bench --simple-fetch -c 1:4:8:10:12:14 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 bench-rest-writer:
@@ -86,7 +90,7 @@ bench-longevity: start test-nuxeo bench-writer-long bench-reader-long stop
 
 
 bench-writer-long:
-	-fl-run-bench --simple-fetch -c 1:5:5:5:1 -D 600 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-run-bench --simple-fetch -c 10:10:10:10:10 -D 600 -m 0.1 -M 1 -s 0.5 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 bench-reader-long: warmup
