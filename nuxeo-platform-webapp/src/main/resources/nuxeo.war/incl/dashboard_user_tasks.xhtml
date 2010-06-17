@@ -26,10 +26,20 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataList">
                 <h:column>
                   <f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>
-                  <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />#{messages[taskNameLabel]}</h:column>
+                  <c:set var="createdFromCreateTaskOperation"
+                    value="#{task.taskInstance.getVariable('createdFromCreateTaskOperation') == 'true'}" />
+                  <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
+                  <f:subview rendered="#{createdFromCreateTaskOperation}">
+                    #{task.name}
+                  </f:subview>
+                  <f:subview rendered="#{!createdFromCreateTaskOperation}">
+                    #{messages[taskNameLabel]}
+                  </f:subview>
+                </h:column>
                 <h:column>
                   <f:facet name="header">#{messages['label.title']}</f:facet>
-                  <nxd:restDocumentLink document="#{task.document}" tab="TAB_CONTENT_JBPM">
+                  <nxd:restDocumentLink document="#{task.document}"
+                    tab="#{nxu:test(createdFromCreateTaskOperation, '', 'TAB_CONTENT_JBPM')}">
                     <h:outputText value="#{nxd:titleOrId(task.document)}" />
                   </nxd:restDocumentLink>
                 </h:column>
