@@ -16,7 +16,8 @@ Export-Package: org.nuxeo.common,
  org.nuxeo.common.xmap.annotation
 Nuxeo-Require: system.bundle,
  org.nuxeo.logging;
-Require-Bundle: org.apache.commons.logging;visibility:=reexport,
+Require-Bundle: system.bundle,
+ org.apache.commons.logging;visibility:=reexport,
  org.apache.commons.lang;visibility:=reexport,
  xerces.xmlParserAPIs;visibility:=reexport,
  xerces.Impl;visibility:=reexport,
