@@ -100,16 +100,27 @@ if [ "$cygwin" = "true" ]; then
 fi
 
 
-# Setup the JVM
+# Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
+if [ -z "$JAVA_HOME" ]; then
+  if [ -z "$JAVA" ]; then
+      JAVA="java"
+  fi
+  JAVA=`which $JAVA`
 
-if [ "x$JAVA" = "x" ]; then
-    if [ "x$JAVA_HOME" != "x" ]; then
-        PATH="$JAVA_HOME/bin:$PATH"
+  # follow symlinks
+  while [ -h "$JAVA" ]; do
+    ls=`ls -ld "$JAVA"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      JAVA="$link"
+    else
+      JAVA=`dirname "$JAVA"`/"$link"
     fi
-    JAVA="java"
+  done
+  JAVA_HOME=`dirname "$JAVA"`
+  JAVA_HOME=`dirname "$JAVA_HOME"`
 fi
-
-
+PATH="$JAVA_HOME/bin:$PATH"
 
 # Setup NUXEO_HOME
 
