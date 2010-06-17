@@ -34,23 +34,32 @@ function requestTasks() {
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
     var name = "Name";
-    var duedate = "Due Date";
+    var title = "Title";    
     var directive = "Directive";
+    var comment = "Comment";
+    var duedate = "Due Date";
+    var startdate = "Start Date";
     var labelInfo = jsonObject.translations;
     if (labelInfo != null && labelInfo != 'undefined') {
         name = labelInfo['label.workflow.task.name'];
-        duedate = labelInfo['label.workflow.task.duedate'];
+        title = labelInfo['label.title'];
         directive = labelInfo['label.workflow.task.directive'];
+        comment = labelInfo['label.review.user.comment'];
+        duedate = labelInfo['label.workflow.task.duedate'];
+        startdate = labelInfo['label.workflow.task.startdate'];
     }
     var html = "";
     html += "<table class='dataList'>";
     html += "  <thead>";
     html += "    <tr>";
-    html += "      <th/>";
     html += "      <th>" + name + "</th>";
     html += "      <th/>";
-    html += "      <th>" + duedate + "</th>";
+    html += "      <th>" + title + "</th>";
     html += "      <th>" + directive + "</th>";
+    html += "      <th>" + comment + "</th>";
+    html += "      <th>" + duedate + "</th>";
+    html += "      <th>" + startdate + "</th>";
+    html += "      <th/>";
     html += "    </tr>";
     html += "  </thead>";
     html += "  <tbody>";
@@ -76,13 +85,7 @@ function displayTaskList(data) {
     htmlContent += tableEnd();
 
     document.getElementById("nxDocumentListData").innerHTML = htmlContent + "<br/>";
-    // page info
-    //alert("page info " + data.summary.pageNumber)
-    var pageInfoLabel = data.summary.pageNumber + 1;
-    pageInfoLabel += "/";
-    maxPage = data.summary.pages;
-    pageInfoLabel += maxPage + 1;
-    document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+    // no pagination
 
     gadgets.window.adjustHeight();
 }
@@ -118,23 +121,27 @@ function mkRow(dashBoardItem, i) {
         htmlRow += "dataRowOdd";
     }
     htmlRow += "\">";
+    htmlRow += "<td>" + dashBoardItem.nameI18n + "</td>";
     htmlRow += "<td class=\"iconColumn\">"
     htmlRow += "<img alt=\"File\" src=\""
     htmlRow += getImageBaseUrl();
     htmlRow += "icons/file.gif";
     htmlRow += "\"/>";
+    htmlRow += "</td>";
     htmlRow += "</td><td><a target = \"_top\" title=\"";
-    var title = dashBoardItem.name;
+    var docTitle = dashBoardItem.id;
     if ((dashBoardItem.title != null) && (dashBoardItem.title != "")) {
-        title = dashBoardItem.title;
+      docTitle = dashBoardItem.title;
     }
-    htmlRow += title;
+    htmlRow += docTitle;
     htmlRow += "\" href=\"";
     htmlRow += getBaseUrl();
     htmlRow += dashBoardItem.link.substring(1);
     htmlRow += "\" />";
-    htmlRow += title;
-    htmlRow += "</a></td><td class=\"iconColumn\"/>";
+    htmlRow += docTitle;
+    htmlRow += "</a></td>";
+    htmlRow += "<td>" + dashBoardItem.directiveI18n + "</td>";
+    htmlRow += "<td>" + dashBoardItem.comment + "</td>";
     htmlRow += "<td>";
     var dateToDisplay = null;
     if ((dashBoardItem.dueDate != null) && (dashBoardItem.dueDate != "")) {
@@ -145,7 +152,12 @@ function mkRow(dashBoardItem, i) {
     }
     htmlRow += "</td>";
     htmlRow += "<td>";
-    htmlRow += dashBoardItem.directiveI18n;
+    if ((dashBoardItem.startDate != null) && (dashBoardItem.startDate != "")) {
+        dateToDisplay = dashBoardItem.startDate;
+    }
+    if (dateToDisplay != null) {
+        htmlRow += getDateForDisplay(dateToDisplay);
+    }
     htmlRow += "</td>";
     htmlRow += "<td class=\"iconColumn\"/>";
     htmlRow += "</tr>";
@@ -228,8 +240,11 @@ function getRestletUrl() {
     url += "workflowDirectiveDiffusion,";
     url += "label.workflow.task.name,";
     url += "label.workflow.task.duedate,";
-    url += "label.workflow.task.directive";
-
+    url += "label.workflow.task.directive,";
+    url += "label.title,";
+    url += "label.review.user.comment,";
+    url += "label.workflow.task.startdate";
+    
     return url;
 }
 

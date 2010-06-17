@@ -52,10 +52,10 @@ import org.restlet.data.Response;
 /**
  * @author bchaffangeon
  * @author arussel
- * 
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
     private JbpmService jbpmService;
+
 
     private final Log log = LogFactory.getLog(TasksRestlet.class);
 
@@ -139,8 +139,12 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 user, getFilter());
         if (tasks != null) {
             for (TaskInstance task : tasks) {
-                DocumentModel doc = getJbpmService().getDocumentModel(task,
-                        user);
+                DocumentModel doc = null;
+                try {
+                    doc = getJbpmService().getDocumentModel(task, user);
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
                 if (doc != null) {
                     results.add(new DashBoardItemImpl(task, doc));
                 } else {
@@ -163,8 +167,12 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 user, getFilter());
         if (processes != null) {
             for (ProcessInstance process : processes) {
-                DocumentModel doc = getJbpmService().getDocumentModel(process,
-                        user);
+                DocumentModel doc = null;
+                try {
+                    doc = getJbpmService().getDocumentModel(process, user);
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
                 if (doc != null) {
                     Token token = process.getRootToken();
                     Collection<TaskInstance> notDone = process.getTaskMgmtInstance().getUnfinishedTasks(
@@ -254,7 +262,6 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         try {
             session = repo.open();
         } catch (Exception e1) {
-            // TODO Auto-generated catch block
             handleError(result, res, e1);
             return false;
         }

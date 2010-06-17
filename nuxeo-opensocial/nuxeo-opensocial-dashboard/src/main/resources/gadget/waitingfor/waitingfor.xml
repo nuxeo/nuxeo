@@ -13,13 +13,6 @@
     <script type="text/javascript" language="javascript" src="waitingfor.js"></script>
     <link rel="stylesheet" type="text/css" href="waitingfor.css"/>
       <div id="nxDocumentList">
-        <div class="pageNavigationControls">
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
-        <span class="currentPageStatus" id="nxDocumentListPage"></span>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
-        </div>
         <div id="nxDocumentListData">
           <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
         </div>

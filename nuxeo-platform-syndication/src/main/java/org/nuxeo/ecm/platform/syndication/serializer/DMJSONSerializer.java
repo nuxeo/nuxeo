@@ -35,9 +35,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.apache.derby.iapi.store.raw.Transaction;
-import org.dom4j.DocumentFactory;
-import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -154,13 +151,21 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
             m.put("id", item.getId().toString());
             m.put("name", item.getName());
             if (lang != null && item.getName() != null) {
-                m.put("nameI18n", TranslationHelper.getLabel(
-                        "label.workflow.task." + item.getName(), lang));
+                String message = "label.workflow.task." + item.getName();
+                String label = TranslationHelper.getLabel(message, lang);
+                if (message.equals(label)) {
+                    // no translation found
+                    m.put("nameI18n", item.getName());
+                } else {
+                    m.put("nameI18n", label);
+                }
             }
             m.put("directive", item.getDirective());
             if (lang != null && item.getDirective() != null) {
                 m.put("directiveI18n", TranslationHelper.getLabel(
                         item.getDirective(), lang));
+            } else {
+                m.put("directiveI18n", "");
             }
             m.put("description", item.getDescription());
             m.put("title", item.getDocument().getTitle());
@@ -181,6 +186,8 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
             }
             if (item.getComment() != null) {
                 m.put("comment", item.getComment());
+            } else {
+                m.put("comment", "");
             }
             category.add(m);
         }
