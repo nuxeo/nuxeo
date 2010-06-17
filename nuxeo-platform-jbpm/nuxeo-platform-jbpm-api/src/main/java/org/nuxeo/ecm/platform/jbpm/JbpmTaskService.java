@@ -42,6 +42,13 @@ public interface JbpmTaskService extends Serializable {
     public static String TASK_INSTANCE_EVENT_PROPERTIES_KEY = "taskInstance";
 
     /**
+     * Variable names added as markers on the created task
+     */
+    enum TaskVariableName {
+        createdFromTaskService,
+    }
+
+    /**
      * Creates a task and starts it. Notifies events with names
      * {@link JbpmEventNames#WORKFLOW_TASK_ASSIGNED} and
      * {@link JbpmEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the

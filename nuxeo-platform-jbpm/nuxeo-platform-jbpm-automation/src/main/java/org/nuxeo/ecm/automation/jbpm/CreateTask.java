@@ -56,7 +56,7 @@ public class CreateTask {
     private static final Log log = LogFactory.getLog(CreateTask.class);
 
     public enum OperationTaskVariableName {
-        acceptOperationChain, rejectOperationChain
+        acceptOperationChain, rejectOperationChain, createdFromCreateTaskOperation
     }
 
     @Context
@@ -139,6 +139,9 @@ public class CreateTask {
 
         // create the task, passing operation chains in task variables
         Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
+        taskVariables.put(
+                OperationTaskVariableName.createdFromCreateTaskOperation.name(),
+                "true");
         if (!StringUtils.isEmpty(acceptOperationChain)) {
             taskVariables.put(
                     OperationTaskVariableName.acceptOperationChain.name(),

@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -148,7 +147,8 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertTrue(task.isOpen());
         assertFalse(task.isCancelled());
         assertFalse(task.hasEnded());
-        assertEquals(4, task.getVariables().size());
+
+        assertEquals(5, task.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -157,7 +157,10 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(user3.getName(),
                 task.getVariable(JbpmService.VariableName.initiator.name()));
         assertEquals("test directive",
-                task.getVariable(TaskVariableName.directive.name()));
+                task.getVariable(JbpmService.TaskVariableName.directive.name()));
+        assertEquals(
+                "true",
+                task.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // test rights for each user
         // initiator or admin can end a task
@@ -215,7 +218,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertFalse(task.isOpen());
         assertFalse(task.isCancelled());
         assertTrue(task.hasEnded());
-        assertEquals(5, task.getVariables().size());
+        assertEquals(6, task.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -224,9 +227,13 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(user3.getName(),
                 task.getVariable(JbpmService.VariableName.initiator.name()));
         assertEquals("test directive",
-                task.getVariable(TaskVariableName.directive.name()));
-        assertEquals(true,
+                task.getVariable(JbpmService.TaskVariableName.directive.name()));
+        assertEquals(
+                "true",
+                task.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
+        assertEquals("true",
                 task.getVariable(JbpmService.TaskVariableName.validated.name()));
+
     }
 
     public void testMultipleTaskWithReject() throws Exception {
@@ -275,7 +282,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertTrue(task1.isOpen());
         assertFalse(task1.isCancelled());
         assertFalse(task1.hasEnded());
-        assertEquals(4, task1.getVariables().size());
+        assertEquals(5, task1.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task1.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -283,8 +290,12 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task1.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(user3.getName(),
                 task1.getVariable(JbpmService.VariableName.initiator.name()));
-        assertEquals("test directive",
-                task1.getVariable(TaskVariableName.directive.name()));
+        assertEquals(
+                "test directive",
+                task1.getVariable(JbpmService.TaskVariableName.directive.name()));
+        assertEquals(
+                "true",
+                task1.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // test rights for each user
         // initiator or admin can end a task
@@ -337,7 +348,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertFalse(task1.isOpen());
         assertFalse(task1.isCancelled());
         assertTrue(task1.hasEnded());
-        assertEquals(5, task1.getVariables().size());
+        assertEquals(6, task1.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task1.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -345,10 +356,14 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task1.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(user3.getName(),
                 task1.getVariable(JbpmService.VariableName.initiator.name()));
-        assertEquals("test directive",
-                task1.getVariable(TaskVariableName.directive.name()));
         assertEquals(
-                false,
+                "test directive",
+                task1.getVariable(JbpmService.TaskVariableName.directive.name()));
+        assertEquals(
+                "true",
+                task1.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
+        assertEquals(
+                "false",
                 task1.getVariable(JbpmService.TaskVariableName.validated.name()));
 
         // check second task
@@ -370,7 +385,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertTrue(task2.isOpen());
         assertFalse(task2.isCancelled());
         assertFalse(task2.hasEnded());
-        assertEquals(4, task2.getVariables().size());
+        assertEquals(5, task2.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task2.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -378,8 +393,12 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task2.getVariable(JbpmService.VariableName.documentId.name()));
         assertEquals(user3.getName(),
                 task2.getVariable(JbpmService.VariableName.initiator.name()));
-        assertEquals("test directive",
-                task2.getVariable(TaskVariableName.directive.name()));
+        assertEquals(
+                "test directive",
+                task2.getVariable(JbpmService.TaskVariableName.directive.name()));
+        assertEquals(
+                "true",
+                task2.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // test rights for each user
         // initiator or admin can end a task

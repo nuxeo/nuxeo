@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.jbpm.CreateTask.OperationTaskVariableName;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -131,7 +132,7 @@ public class JbpmAutomationTest {
         Assert.assertTrue(task.isOpen());
         Assert.assertFalse(task.isCancelled());
         Assert.assertFalse(task.hasEnded());
-        Assert.assertEquals(4, task.getVariables().size());
+        Assert.assertEquals(6, task.getVariables().size());
         Assert.assertEquals(
                 document.getRepositoryName(),
                 task.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -141,6 +142,12 @@ public class JbpmAutomationTest {
                 task.getVariable(JbpmService.VariableName.initiator.name()));
         Assert.assertEquals("test directive",
                 task.getVariable(TaskVariableName.directive.name()));
+        Assert.assertEquals(
+                "true",
+                task.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        Assert.assertEquals(
+                "true",
+                task.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // accept task
         jbpmTaskService.acceptTask(coreSession,
@@ -204,7 +211,7 @@ public class JbpmAutomationTest {
         Assert.assertTrue(task1.isOpen());
         Assert.assertFalse(task1.isCancelled());
         Assert.assertFalse(task1.hasEnded());
-        Assert.assertEquals(4, task1.getVariables().size());
+        Assert.assertEquals(6, task1.getVariables().size());
         Assert.assertEquals(
                 document.getRepositoryName(),
                 task1.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -214,6 +221,12 @@ public class JbpmAutomationTest {
                 task1.getVariable(JbpmService.VariableName.initiator.name()));
         Assert.assertEquals(null,
                 task1.getVariable(TaskVariableName.directive.name()));
+        Assert.assertEquals(
+                "true",
+                task1.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        Assert.assertEquals(
+                "true",
+                task1.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
 
         // accept task
         jbpmTaskService.acceptTask(coreSession,

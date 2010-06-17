@@ -49,7 +49,6 @@ import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -97,7 +96,10 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
                         document.getRepositoryName());
                 variables.put(JbpmService.VariableName.initiator.name(),
                         principal.getName());
-                variables.put(TaskVariableName.directive.name(), directive);
+                variables.put(JbpmService.TaskVariableName.directive.name(),
+                        directive);
+                variables.put(TaskVariableName.createdFromTaskService.name(),
+                        "true");
                 if (taskVariables != null) {
                     variables.putAll(taskVariables);
                 }
@@ -167,10 +169,10 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
             // rejected
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
-                    isValidated);
+                    String.valueOf(isValidated));
             // set variable on task directly too
             task.setVariable(JbpmService.TaskVariableName.validated.name(),
-                    isValidated);
+                    String.valueOf(isValidated));
             jbpmService.endTask(task.getId(), null, taskVariables, null, null,
                     principal);
 

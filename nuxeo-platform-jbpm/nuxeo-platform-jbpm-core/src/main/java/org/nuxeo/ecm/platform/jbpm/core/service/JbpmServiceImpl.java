@@ -26,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.jbpm.JbpmConfiguration;
 import org.jbpm.JbpmContext;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
-import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
@@ -58,9 +59,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
 public class JbpmServiceImpl implements JbpmService {
+
+    private static final Log log = LogFactory.getLog(JbpmServiceImpl.class);
 
     private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
 
@@ -465,7 +467,8 @@ public class JbpmServiceImpl implements JbpmService {
         ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
         for (TaskInstance ti : tisSet) {
             ProcessInstance pi = ti.getProcessInstance();
-            if (pi == null) {// task created outside a process
+            if (pi == null) {
+                // task created outside a process
                 String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
                 if (docId.equals(dm.getId())
@@ -473,28 +476,28 @@ public class JbpmServiceImpl implements JbpmService {
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
-            } else if (!donePi.contains(pi.getId())) {// we haven't check this
-                // process instance
+            } else if (!donePi.contains(pi.getId())) {
+                // process instance hasn't been checked yet
                 String docId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentId.name());
                 String repoId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentRepositoryName.name());
-                donePi.add(pi.getId());// we, now, have checked this process
-                // instance
+                donePi.add(pi.getId());
+                // check if it uses our document, and if so, add it to the list
                 if (docId.equals(dm.getId())
                         && repoId.equals(dm.getRepositoryName())) {
-                    useDocument.add(pi.getId());// and it uses our document
+                    useDocument.add(pi.getId());
                 }
-                if (useDocument.contains(pi.getId())) {// if it uses our
-                    // document
+                if (useDocument.contains(pi.getId())) {
                     eagerLoadTaskInstance(ti);
-                    result.add(ti);// add it to the list
+                    result.add(ti);
                 }
-            } else {// we have checked this process instance
-                if (useDocument.contains(pi.getId())) {// and if it uses our
-                    // documetn
+            } else {
+                // we have checked this process instance
+                if (useDocument.contains(pi.getId())) {
+                    // if it uses our document, add it to the list
                     eagerLoadTaskInstance(ti);
-                    result.add(ti);// then add it to the list
+                    result.add(ti);
                 }
             }
         }
@@ -549,13 +552,24 @@ public class JbpmServiceImpl implements JbpmService {
                         ti.setVariableLocally(k, taskVariables.get(k));
                     }
                 }
+                boolean hasProcess = ti.getProcessInstance() != null;
                 if (variables != null) {
-                    ti.getProcessInstance().getContextInstance().addVariables(
-                            variables);
+                    if (hasProcess) {
+                        ti.getProcessInstance().getContextInstance().addVariables(
+                                variables);
+                    } else {
+                        log.error("Cannot put variables on an isolated "
+                                + "task without process: " + variables);
+                    }
                 }
                 if (transientVariables != null) {
-                    ti.getProcessInstance().getContextInstance().setTransientVariables(
-                            transientVariables);
+                    if (hasProcess) {
+                        ti.getProcessInstance().getContextInstance().setTransientVariables(
+                                transientVariables);
+                    } else {
+                        log.error("Cannot put transient variables on an isolated "
+                                + "task without process: " + transientVariables);
+                    }
                 }
                 if (transition == null || transition.equals("")) {
                     ti.end();
@@ -661,12 +675,6 @@ public class JbpmServiceImpl implements JbpmService {
                 Session session = context.getSession();
 
                 for (TaskInstance ti : taskInstances) {
-                    List<Comment> cts = ti.getComments();
-                    if(cts != null) {
-                        for(Comment c : cts) {
-                            session.save(c);
-                        }
-                    }
                     session.merge(ti);
                 }
                 return null;

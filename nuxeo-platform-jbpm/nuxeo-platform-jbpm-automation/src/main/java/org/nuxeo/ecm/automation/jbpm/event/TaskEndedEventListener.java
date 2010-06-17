@@ -51,7 +51,7 @@ public class TaskEndedEventListener implements EventListener {
             return;
         }
 
-        Boolean validated = (Boolean) task.getVariable(JbpmService.TaskVariableName.validated.name());
+        Boolean validated = Boolean.valueOf((String) task.getVariable(JbpmService.TaskVariableName.validated.name()));
 
         String chain;
         if (validated) {
