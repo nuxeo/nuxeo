@@ -1,10 +1,16 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 1.6.2.SNAPSHOT
 Bundle-Name: Nuxeo Runtime DataSource Implementation
 Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
-Bundle-Localization: plugin
-Bundle-Vendor: Nuxeo
+Bundle-Vendor: Nuxeo SAS
 Bundle-Category: runtime
-Require-Bundle: org.nuxeo.runtime
+Require-Bundle: org.nuxeo.runtime,
+ org.nuxeo.runtime.jtajca,
+ org.apache.commons.dbcp,
+ org.apache.commons.pool,
+ org.apache.commons.beanutils 
+Nuxeo-Require: org.nuxeo.runtime
 Export-Package: org.nuxeo.runtime.datasource
 Nuxeo-Component: OSGI-INF/datasource-component.xml
+Bundle-ClassPath: .
