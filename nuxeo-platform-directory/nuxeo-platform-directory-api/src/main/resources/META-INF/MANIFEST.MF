@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 5.3.2.qualifier
 Bundle-Name: Nuxeo Directory API
 Bundle-SymbolicName: org.nuxeo.ecm.directory.api;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
 Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.directory,
  org.nuxeo.ecm.directory.api
-Eclipse-LazyStart: false
-Require-Bundle: org.nuxeo.ecm.core.api
+Require-Bundle: org.nuxeo.ecm.core.api;spli:="api";mandatory:="api"
+Bundle-ActivationPolicy: lazy

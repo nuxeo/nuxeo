@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 5.3.2.qualifier
 Bundle-Name: Nuxeo Directory
 Bundle-SymbolicName: org.nuxeo.ecm.directory.types.contrib;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
 Bundle-ClassPath: .
 Bundle-Category: core
 Nuxeo-Component: OSGI-INF/DirectoryTypes.xml

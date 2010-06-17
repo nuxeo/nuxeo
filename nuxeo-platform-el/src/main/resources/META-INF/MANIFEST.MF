@@ -1,7 +1,13 @@
 Manifest-Version: 1.0
-Bundle-Name: Nuxeo Platform Expression Language
+Bundle-ManifestVersion: 2
+Bundle-Version: 5.3.2.SNAPSHOT
+Bundle-Name: Nuxeo Platform EL
 Bundle-SymbolicName: org.nuxeo.ecm.platform.el;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo SAS
 Export-Package: org.nuxeo.ecm.platform.el
-Require-Bundle: org.nuxeo.ecm.core.api
+Require-Bundle: org.nuxeo.ecm.core.api,
+ javax.el.api;visibility:=reexport,
+ javax.el.ri;visibility:=reexport,
+ javax.ejb.api
+Nuxeo-Require: org.nuxeo.ecm.core.api
+Bundle-ClassPath: .
