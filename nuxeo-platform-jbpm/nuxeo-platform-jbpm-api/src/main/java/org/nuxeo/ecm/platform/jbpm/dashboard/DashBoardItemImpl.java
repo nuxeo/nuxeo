@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 
 /**
  * Dashboard item implementation.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class DashBoardItemImpl implements DashBoardItem {
@@ -55,8 +55,11 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     protected DocumentModel document;
 
+    protected TaskInstance task;
+
     @SuppressWarnings("unchecked")
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
+        this.task = task;
         this.document = document;
         id = task.getId();
         name = task.getName();
@@ -116,6 +119,10 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     public boolean isExpired() {
         return expired;
+    }
+
+    public TaskInstance getTaskInstance() {
+        return task;
     }
 
 }

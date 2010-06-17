@@ -21,10 +21,11 @@ package org.nuxeo.ecm.platform.syndication.workflow;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 
 /**
  * Dashboard item implementation.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Deprecated
@@ -45,9 +46,15 @@ public class DashBoardItemImpl extends
      * REQUIRED FOR OPEN SOCIAL DASHBOARD
      */
     public String getDocumentLink() {
-        return "/nxdoc/" + getDocument().getRepositoryName() + "/"
-                + getDocument().getId()
-                + "/view_documents?tabId=TAB_CONTENT_JBPM";
+        TaskInstance taskInstance = getTaskInstance();
+        if ("true".equals(taskInstance.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()))) {
+            return "/nxdoc/" + getDocument().getRepositoryName() + "/"
+                    + getDocument().getId() + "/view_documents";
+        } else {
+            return "/nxdoc/" + getDocument().getRepositoryName() + "/"
+                    + getDocument().getId()
+                    + "/view_documents?tabId=TAB_CONTENT_JBPM";
+        }
     }
 
     public void prependToComment(String setOFNames) {
