@@ -26,6 +26,7 @@ Content-Type: application/json+nxautomation
 ...
 
 {
+  "paths": {"login": "login"},
   "operations": [
     {
       "id" : "Blob.Attach",
@@ -74,6 +75,15 @@ The "url" property of an operation (or operation chain) is the relative path to 
 For example if the service URL is http://localhost:8080/automation and the Blob.Attach operation has the url "Blob.Attach" then the full URL to that operation will be:
 http://localhost:8080/automation/Blob.Attach
 
+The "paths" property is used to specify various relative paths (relative to the automation service) of services exposed by the automation server.
+In the above example you can see that the "login" service is using the relative path "login".
+This service can be used to sign-in and check if the username/password is valid. To use this service you should do a POST
+to the login URL (e.g. http://localhost:8080/automation/login ) using Basic Authentication. If authentication fails you will receive a 401 HTTP response otherwise the 200 code is returned.
+
+The login service can be used to do preemptive authentication.
+Otherwise the login will be done when requested by the server by sending a WWW-Authenticate response.
+TODO: WWW-Authenticate is not yet implemented.
+
 *Note* that you should not be logged in to be able to get the service description
 
 
@@ -100,10 +110,19 @@ If the operation has no parameters then 'params' can be omitted.
 If the operation does not want to push some specific properties in the operation execution context then context can be omitted. In fact context parameters are useless for now but may be used in future.
 
 The 'input' parameter is a string that acts as a reference to the real object to be used as the input.
-For example if you want to use as input a document -> you can put as input value either the document absolute path (starting with /) wither putting the document UID.
-When using blobs (files) as input you may not be able to refer to them using a string locator.
+There are 4 types of supported inputs: void, document, document list, blob, blob list.
+
+To specify a "void" input (i.e. no input) you should omit the input parameter.
+
+To specify a reference to a document you should use the doucment absolute path or document UID prefixed using the string "doc:".
+Example: "doc:/default-domain/workspaces/myworkspace" or "doc:/96bfb9cb-a13d-48a2-9bbd-9341fcf24801"
+
+To specify a reference to a list of documents you should use a comma separated list of absolute document paths or UID prefixed by the string "docs"
+Example: "docs:/default-domain/workspaces/myworkspace, /96bfb9cb-a13d-48a2-9bbd-9341fcf24801"
+
+When using blobs (files) as input you cannot refer them using a string locator since the blob is usually a file on the client file system or raw binary data.
 For example, let say you want to execute the Blob.Attach operation that takes as input a blob and set it on the given document (the document is specified through 'params').
-Because the file content you want to set may be located on the client computer you cannot use a string reference.
+Because the file content you want to set is located on the client computer you cannot use a string reference.
 In that case you MUST use a multipart/related request that encapsulate as the root part your JSON request as an "application/json+nxrequest" content and the blob binary content in a related part.
 In case you want a list of blobs as input then you simply add one additional content part for each blob in the list.
 The only limitation (in both blob and blob list case) is to put the request content part as the first part in the multipart document.

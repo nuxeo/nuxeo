@@ -22,18 +22,18 @@ import java.util.ArrayList;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Documents extends ArrayList<Document> implements OperationInput {
+public class DocRefs extends ArrayList<DocRef> implements OperationInput {
 
     private static final long serialVersionUID = 1L;
 
-    public Documents() {
+    public DocRefs() {
     }
 
-    public Documents(int size) {
+    public DocRefs(int size) {
         super(size);
     }
 
-    public Documents(Documents docs) {
+    public DocRefs(DocRefs docs) {
         super(docs);
     }
 
@@ -41,32 +41,32 @@ public class Documents extends ArrayList<Document> implements OperationInput {
         return "documents";
     }
 
-    public boolean isBinary() {
-        return false;
-    }
-
     public String getInputRef() {
-        StringBuilder buf = new StringBuilder();
-        int size = size();
-        if (size == 0) {
-            return buf.toString();
-        }
-        buf.append(get(0).getId());
-        for (int i = 1; i < size; i++) {
-            buf.append(",").append(get(i).getId());
-        }
-        return buf.toString();
-    }
-
-    public String toString() {
         StringBuilder buf = new StringBuilder("docs:");
         int size = size();
         if (size == 0) {
             return buf.toString();
         }
-        buf.append(get(0).getId());
+        buf.append(get(0).ref);
         for (int i = 1; i < size; i++) {
-            buf.append(",").append(get(i).getId());
+            buf.append(",").append(get(i).ref);
+        }
+        return buf.toString();
+    }
+
+    public boolean isBinary() {
+        return false;
+    }
+
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        int size = size();
+        if (size == 0) {
+            return buf.toString();
+        }
+        buf.append(get(0).ref);
+        for (int i = 1; i < size; i++) {
+            buf.append(",").append(get(i).ref);
         }
         return buf.toString();
     }

@@ -19,6 +19,8 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
@@ -30,17 +32,18 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class ExecutionRequest {
 
     protected Object input;
-    protected OperationContext ctx;
-    protected Map<String,Object> params;
 
+    protected RestOperationContext ctx;
+
+    protected Map<String, Object> params;
 
     public ExecutionRequest(Object input) {
-        ctx = new OperationContext();
+        ctx = new RestOperationContext();
         this.input = input;
         this.params = new HashMap<String, Object>();
     }
@@ -70,11 +73,13 @@ public class ExecutionRequest {
         }
     }
 
-    public Map<String,Object> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
-    public OperationContext createContext(CoreSession session) throws Exception {
+    public OperationContext createContext(HttpServletRequest request,
+            CoreSession session) throws Exception {
+        ctx.addRequestCleanupHandler(request);
         ctx.setCoreSession(session);
         ctx.setInput(decodeInput(session, input));
         return ctx;
@@ -82,12 +87,14 @@ public class ExecutionRequest {
 
     public OperationChain createChain(OperationType op) {
         OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(op.getId(), params);
+        OperationParameters oparams = new OperationParameters(op.getId(),
+                params);
         chain.add(oparams);
         return chain;
     }
 
-    public static Object decodeInput(CoreSession session, Object input) throws Exception {
+    public static Object decodeInput(CoreSession session, Object input)
+            throws Exception {
         if (input == null) {
             return null;
         }

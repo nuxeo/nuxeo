@@ -19,19 +19,18 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class Blob implements OperationInput {
 
     protected String mimeType;
+
     protected String fileName;
 
-
     public Blob(String fileName) {
-        this (fileName, null);
+        this(fileName, null);
     }
 
     public Blob(String fileName, String mimeType) {
@@ -52,7 +51,8 @@ public abstract class Blob implements OperationInput {
     }
 
     public void setMimeType(String mimeType) {
-        this.mimeType = mimeType == null ? "application/octet-stream" : mimeType;
+        this.mimeType = mimeType == null ? "application/octet-stream"
+                : mimeType;
     }
 
     public int getLength() {
@@ -61,6 +61,10 @@ public abstract class Blob implements OperationInput {
 
     public String getInputType() {
         return "blob";
+    }
+
+    public String getInputRef() {
+        return null;
     }
 
     public boolean isBinary() {

@@ -37,11 +37,12 @@ import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @Provider
-@Produces({"application/json+nxautomation", "application/json"})
-public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInfo> {
+@Produces( { "application/json+nxautomation", "application/json" })
+public class JsonAutomationInfoWriter implements
+        MessageBodyWriter<AutomationInfo> {
 
     public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
@@ -57,7 +58,7 @@ public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInf
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-        //JSON json = JSONExporter.toJSON(arg0.getOperations());
+        // JSON json = JSONExporter.toJSON(arg0.getOperations());
         JSONObject json = new JSONObject();
         JSONObject paths = new JSONObject();
         paths.element("login", "login");
@@ -65,7 +66,7 @@ public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInf
         JSONArray ops = new JSONArray();
         for (OperationDocumentation doc : arg0.getOperations()) {
             JSONObject op = JSONExporter.toJSON(doc);
-            //op.element("url", doc.id);
+            // op.element("url", doc.id);
             ops.add(op);
         }
         json.element("operations", ops);
@@ -73,7 +74,7 @@ public class JsonAutomationInfoWriter implements MessageBodyWriter<AutomationInf
         JSONArray chains = new JSONArray();
         for (OperationDocumentation doc : arg0.getChains()) {
             JSONObject op = JSONExporter.toJSON(doc);
-            //op.element("url", "Chain."+doc.id);
+            op.element("url", "Chain." + doc.id);
             chains.add(op);
         }
         json.element("chains", chains);
