@@ -3,4 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Relations API
 Bundle-SymbolicName: org.nuxeo.ecm.relations.api;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: runtime
+Bundle-Category: platform
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.platform.relations.api,
+ org.nuxeo.ecm.platform.relations.api.ejb,
+ org.nuxeo.ecm.platform.relations.api.event,
+ org.nuxeo.ecm.platform.relations.api.exceptions,
+ org.nuxeo.ecm.platform.relations.api.impl,
+ org.nuxeo.ecm.platform.relations.api.util
