@@ -540,6 +540,8 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("idType", "varchar(36)");
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled",
+                Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {

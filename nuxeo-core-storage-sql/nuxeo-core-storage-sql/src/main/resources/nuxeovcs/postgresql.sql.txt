@@ -25,6 +25,7 @@
 # Conditions used:
 # fulltextEnabled
 # aclOptimizationsEnabled
+# pathOptimizationsEnabled
 
 ############################################################
 
@@ -107,7 +108,7 @@ LANGUAGE sql
 STABLE;
 
 
-#IF: fulltextEnabled
+#IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_DESCENDANTS_CREATE_TRIGGERS()
 RETURNS void
 AS $$
@@ -124,6 +125,7 @@ LANGUAGE sql
 VOLATILE;
 
 
+#IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_INIT_DESCENDANTS()
 RETURNS void
 AS $$
@@ -159,6 +161,7 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
+#IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_DESCENDANTS_INSERT()
 RETURNS trigger
 AS $$
@@ -181,6 +184,7 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
+#IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_DESCENDANTS_UPDATE()
 RETURNS trigger
 AS $$
