@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.storage.sql.ModelSetup;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.management.MonitoringMapper;
 
 /**
  * Network client backend for a repository.
@@ -59,10 +60,10 @@ public class NetBackend implements RepositoryBackend {
     public void initializeModel(Model model) throws StorageException {
     }
 
-    public Mapper newMapper(Model model, PathResolver pathResolver)
+    public Mapper getMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         try {
-            return NetMapper.getMapper(repository, httpClient);
+            return MonitoringMapper.newProxy(NetMapper.getMapper(repository, httpClient));
         } catch (StorageException e) {
             String url = NetMapper.getUrl(repository);
             log.error("Failed to connect to server: " + url, e);

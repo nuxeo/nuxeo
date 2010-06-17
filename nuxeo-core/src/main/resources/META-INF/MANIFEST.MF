@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 5.3.2.qualifier
 Bundle-Name: Nuxeo ECM Core
 Bundle-SymbolicName: org.nuxeo.ecm.core;singleton:=true
 Bundle-Vendor: Nuxeo
@@ -27,14 +28,10 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/SecurityService.xml,
  OSGI-INF/permissions-contrib.xml,
  OSGI-INF/security-policy-contrib.xml
-Require-Bundle: system.bundle,
- org.apache.commons.lang,
- org.apache.commons.logging,
- org.nuxeo.ecm.core.api,
+Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.query,
- org.nuxeo.ecm.core.event,
- org.apache.geronimo.specs.geronimo-jta_1.1_spec
+ org.nuxeo.ecm.core.event
 Nuxeo-Require: org.nuxeo.runtime,
   org.nuxeo.ecm.core.api,
   org.nuxeo.ecm.core.schema,

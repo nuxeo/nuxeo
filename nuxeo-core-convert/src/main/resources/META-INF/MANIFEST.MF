@@ -1,13 +1,15 @@
 Manifest-Version: 1.0
+Bundle-Version: 5.3.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Core Converter Service
-Bundle-SymbolicName: nuxeo-core-convert;singleton:=true
-Bundle-Localization: plugin
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert;singleton:=true
 Require-Bundle: org.nuxeo.common,
  org.nuxeo.runtime,
  org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.convert.api,
- org.apache.commons.logging
+ org.nuxeo.ecm.core.convert.api
+Nuxeo-Require:  org.nuxeo.runtime,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.convert.api
 Bundle-Vendor: Nuxeo SAS
 Export-package: org.nuxeo.ecm.core.convert.cache,
  org.nuxeo.ecm.core.convert.extension,
@@ -15,8 +17,5 @@ Export-package: org.nuxeo.ecm.core.convert.cache,
 Bundle-Category: runtime
 Eclipse-BuddyPolicy: dependent
 Nuxeo-Component: OSGI-INF/convert-service-framework.xml
-Bundle-ClassPath: .,
- relaxngDatatype-1.0.jar,
- xsom-20060306.jar,
- poi-3.5-beta6.jar,
- poi-scratchpad-3.5-beta6.jar
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy

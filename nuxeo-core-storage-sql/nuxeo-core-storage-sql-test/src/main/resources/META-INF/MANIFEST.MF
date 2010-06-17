@@ -1,3 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Name: Test
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.test
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.storage.sql.coremodel,
+ org.nuxeo.ecm.core.storage.sql.listeners,
+ schemas

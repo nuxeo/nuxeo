@@ -1,14 +1,22 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo ECM SQL Storage RA
+Bundle-Version: 1.6.2.SNAPSHOT
+Bundle-Name: Nuxeo Core SQL Storage JCA Resource Adapter
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.ra;singleton:=true
-Bundle-Vendor: Nuxeo
+Bundle-Vendor: Nuxeo SAS
 Bundle-Localization: bundle
-Bundle-ClassPath: .
 Export-Package: org.nuxeo.ecm.core.storage.sql.ra
 Nuxeo-Require: org.nuxeo.ecm.core.storage.sql
-Require-Bundle: org.nuxeo.ecm.core.storage.sql,
- org.apache.geronimo.specs.geronimo-jta_1.1_spec;bundle-version="1.1.1",
- org.apache.geronimo.specs.geronimo-j2ee-connector_1.5_spec;bundle-version="2.0.0"
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.storage.sql
 Bundle-Category: core
+Nuxeo-Require: rg.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.storage.sql
 Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
+Bundle-ClassPath: .

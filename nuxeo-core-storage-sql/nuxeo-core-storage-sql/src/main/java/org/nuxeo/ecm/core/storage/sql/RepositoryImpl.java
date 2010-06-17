@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.management.MonitoringMapper;
 import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
@@ -185,7 +186,7 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver);
+        Mapper mapper = backend.getMapper(model, pathResolver);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -198,7 +199,7 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = backend.newMapper(model, pathResolver);
+                mapper = backend.getMapper(model, pathResolver);
             }
         }
 
@@ -210,7 +211,7 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
-        mapper = new CachingMapper(mapper);
+        mapper = MonitoringMapper.newProxy(new CachingMapper(mapper));
         return new SessionImpl(this, model, mapper, credentials);
     }
 

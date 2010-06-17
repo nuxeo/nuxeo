@@ -2,8 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Core Persistence
 Bundle-SymbolicName: org.nuxeo.ecm.core.persistence;singleton:=true
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Nuxeo
-Bundle-Category: core
 Export-Package: org.nuxeo.ecm.core.persistence
+Bundle-Category: core
 Nuxeo-Component: OSGI-INF/persistence-service.xml
-
+Require-Bundle: org.nuxeo.ecm.core.api,
+ javax.persistence;visibility:=reexport,
+ org.hibernate,
+ org.hibernate.entitymanager,
+ org.hibernate.annotations
+Nuxeo-Require: org.nuxeo.ecm.core.api

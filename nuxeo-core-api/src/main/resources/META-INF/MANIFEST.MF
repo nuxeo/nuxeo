@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 5.3.2.qualifier
 Bundle-Name: NXCoreAPI
 Bundle-SymbolicName: org.nuxeo.ecm.core.api
 Eclipse-ExtensibleAPI: true
-Export-Package: org.nuxeo.ecm.core;split:="api"; mandatory="api",
- org.nuxeo.ecm.core.api;split:="api"; mandatory="api",
- org.nuxeo.ecm.core.api.local;split:="api"; mandatory="api",
+Export-Package: org.nuxeo.ecm.core;mandatory=api;split:=api,
+ org.nuxeo.ecm.core.api;mandatory=api;split:=api,
  org.nuxeo.ecm.core.api.adapter,
  org.nuxeo.ecm.core.api.blobholder,
  org.nuxeo.ecm.core.api.event,
@@ -14,6 +14,7 @@ Export-Package: org.nuxeo.ecm.core;split:="api"; mandatory="api",
  org.nuxeo.ecm.core.api.impl,
  org.nuxeo.ecm.core.api.impl.blob,
  org.nuxeo.ecm.core.api.impl.converter,
+ org.nuxeo.ecm.core.api.local;mandatory=api;split:=api,
  org.nuxeo.ecm.core.api.model,
  org.nuxeo.ecm.core.api.model.impl,
  org.nuxeo.ecm.core.api.model.impl.osm,
@@ -22,7 +23,6 @@ Export-Package: org.nuxeo.ecm.core;split:="api"; mandatory="api",
  org.nuxeo.ecm.core.api.operation,
  org.nuxeo.ecm.core.api.repository,
  org.nuxeo.ecm.core.api.repository.cache,
- org.nuxeo.ecm.core.api.repository.impl,
  org.nuxeo.ecm.core.api.security,
  org.nuxeo.ecm.core.api.security.impl,
  org.nuxeo.ecm.core.api.tree,
@@ -32,7 +32,7 @@ Export-Package: org.nuxeo.ecm.core;split:="api"; mandatory="api",
  org.nuxeo.ecm.core.utils
 Bundle-ClassPath: .
 Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
- org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema;visibility:=reexport,
  org.apache.commons.collections,
  org.apache.commons.logging
 Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
@@ -40,6 +40,5 @@ Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml,
  OSGI-INF/RepositoryManager.xml, 
- OSGI-INF/DocumentProviderService.xml,
- OSGI-INF/blob-holder-service-framework.xml,                 
+ OSGI-INF/blob-holder-service-framework.xml,
  OSGI-INF/blob-holder-adapters-contrib.xml

@@ -14,3 +14,4 @@ Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/SchemaService.xml
 Nuxeo-Require: org.nuxeo.runtime
 Require-Bundle: com.sun.xml.relaxngDatatype, com.sun.xml.xsom, org.nuxeo.runtime
+Bundle-Version: 1.6.2.qualifier

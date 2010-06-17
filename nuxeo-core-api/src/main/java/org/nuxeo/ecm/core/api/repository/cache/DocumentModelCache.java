@@ -41,8 +41,6 @@ public interface DocumentModelCache {
 
     DocumentModel fetchDocument(DocumentRef ref) throws ClientException;
 
-    /** Children Cache */
-
     void cacheChildren(DocumentRef parent, DocumentModelList children);
 
     void uncacheChildren(DocumentRef parent);
@@ -55,14 +53,12 @@ public interface DocumentModelCache {
 
     void uncacheChild(DocumentRef parent, DocumentRef child);
 
-    /**
-     * This can be used to refresh the children cache
-     * @param parent
-     * @return
-     * @throws ClientException
-     */
     DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
     void handleDirtyUpdateTag(Object tag);
+
+    void addListener(DocumentModelCacheListener listener);
+
+    void removeListener(DocumentModelCacheListener listener);
 
 }
