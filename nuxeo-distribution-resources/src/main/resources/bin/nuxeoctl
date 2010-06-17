@@ -101,10 +101,10 @@ fi
 
 
 # Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
+if [ -z "$JAVA" ]; then
+    JAVA="java"
+fi
 if [ -z "$JAVA_HOME" ]; then
-  if [ -z "$JAVA" ]; then
-      JAVA="java"
-  fi
   JAVA=`which $JAVA`
 
   # follow symlinks
