@@ -18,6 +18,7 @@
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm> 
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>users.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
