@@ -199,7 +199,65 @@
       </property>
     </widgetType>
 
+    <widgetType name="summary_current_document_single_tasks">
 
+      <documentation>
+        This widgets displays the single tasks (out of a process instance)
+        attached to current document model.
+
+        It requires the following variables to be present in the EL context:
+        <ul>
+          <li>
+            currentSingleTasks: the single tasks attached to current document
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/single_tasks_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_current_document_description"
+      type="summary_current_document_description" />
+
+    <widget name="summary_current_document_actions"
+      type="summary_current_document_actions" />
+
+    <widget name="summary_current_document_files"
+      type="summary_current_document_files" />
+
+    <widget name="summary_current_document_view"
+      type="summary_current_document_view" />
+
+    <widget name="summary_current_document_tagging"
+      type="summary_current_document_tagging" />
+
+    <widget name="summary_current_document_dublincore"
+      type="summary_current_document_dublincore" />
+
+    <widget name="summary_current_document_relations"
+      type="summary_current_document_relations" />
+
+    <widget name="summary_current_document_comments"
+      type="summary_current_document_comments" />
+
+    <widget name="summary_current_document_publications"
+      type="summary_current_document_publications" />
+
+    <widget name="summary_current_document_lc_and_version"
+      type="summary_current_document_lc_and_version" />
+
+    <widget name="summary_current_document_single_tasks"
+      type="summary_current_document_single_tasks" />
 
   </extension>
 
@@ -227,39 +285,10 @@
         <row>
           <widget>summary_current_document_publications</widget>
         </row>
-
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
       </rows>
-      <widget name="summary_current_document_description"
-        type="summary_current_document_description">
-      </widget>
-      <widget name="summary_current_document_actions"
-        type="summary_current_document_actions">
-      </widget>
-      <widget name="summary_current_document_files"
-        type="summary_current_document_files">
-      </widget>
-      <widget name="summary_current_document_view"
-        type="summary_current_document_view">
-      </widget>
-      <widget name="summary_current_document_tagging"
-        type="summary_current_document_tagging">
-      </widget>
-      <widget name="summary_current_document_dublincore"
-        type="summary_current_document_dublincore">
-      </widget>
-      <widget name="summary_current_document_relations"
-        type="summary_current_document_relations">
-      </widget>
-      <widget name="summary_current_document_comments"
-        type="summary_current_document_comments">
-      </widget>
-      <widget name="summary_current_document_publications"
-        type="summary_current_document_publications">
-      </widget>
-      <widget name="summary_current_document_lc_and_version"
-        type="summary_current_document_lc_and_version">
-      </widget>
-
     </layout>
 
 
@@ -284,17 +313,10 @@
         <row>
           <widget>summary_current_document_publications</widget>
         </row>
-
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
       </rows>
-      <widget name="summary_current_document_description"
-        type="summary_current_document_description">
-      </widget>
-      <widget name="summary_current_document_actions"
-        type="summary_current_document_actions">
-      </widget>
-      <widget name="summary_current_document_files"
-        type="summary_current_document_files">
-      </widget>
       <widget name="note_text" type="richtext_with_mimetype">
         <fields>
           <field>note:note</field>
@@ -307,26 +329,8 @@
           <property name="cssClass">note_content_block</property>
         </properties>
       </widget>
-      <widget name="summary_current_document_tagging"
-        type="summary_current_document_tagging">
-      </widget>
-      <widget name="summary_current_document_dublincore"
-        type="summary_current_document_dublincore">
-      </widget>
-      <widget name="summary_current_document_relations"
-        type="summary_current_document_relations">
-      </widget>
-      <widget name="summary_current_document_comments"
-        type="summary_current_document_comments">
-      </widget>
-      <widget name="summary_current_document_publications"
-        type="summary_current_document_publications">
-      </widget>
-      <widget name="summary_current_document_lc_and_version"
-        type="summary_current_document_lc_and_version">
-      </widget>
-
     </layout>
+
   </extension>
 
 </component>
