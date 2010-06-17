@@ -400,15 +400,6 @@ public interface UserManager extends Serializable {
     String getAnonymousUserId() throws ClientException;
 
     /**
-     * Sets the given configuration on the service
-     *
-     * @param descriptor the descriptor as parsed from xml, merged from the
-     *            previous one if it exists.
-     */
-    void setConfiguration(UserManagerDescriptor descriptor)
-            throws ClientException;
-
-    /**
      * Returns the list of administrators groups
      *
      * @since 5.3 GA

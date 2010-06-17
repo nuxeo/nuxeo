@@ -41,7 +41,7 @@ public class UserService extends DefaultComponent {
 
     private final List<UserManagerDescriptor> descriptors = new LinkedList<UserManagerDescriptor>();
 
-    private UserManager userManager;
+    private UserManagerImpl userManager;
 
     public UserManager getUserManager() throws ClientException {
         if (userManager == null) {
@@ -85,7 +85,7 @@ public class UserService extends DefaultComponent {
         }
         if (klass != null) {
             try {
-                userManager = (UserManager) klass.newInstance();
+                userManager = (UserManagerImpl) klass.newInstance();
             } catch (InstantiationException e) {
                 throw new ClientException("Failed to instantiate class "
                         + klass, e);
