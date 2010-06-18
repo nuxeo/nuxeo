@@ -41,4 +41,5 @@ public class LockException extends ClientException {
         super(msg, e);
         this.resource = resource;
     }
+
 }

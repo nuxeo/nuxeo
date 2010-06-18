@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     \Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>'
+ *     Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.lock;
 
@@ -32,9 +32,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * 
  */
 public class TestLockCoordinator extends NXRuntimeTestCase {
-    
+
     public static final Log log = LogFactory.getLog(TestLockCoordinator.class);
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -45,10 +45,14 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
                 "nxlocks-tests.xml");
     }
 
-    final static long DELAY = 1000;
+    // TODO if we reduced the delay to less that
+    // this value, algorithm is failing
+    final static long DELAY = 800;
 
     /**
-     * Basic lock scenario
+     * Basic lock scenario: there is 2 competitors that want to get a lock.
+     * winner is getting the lock, looser is waiting for the delay, winner
+     * unlock, looser finally loose (AlreadyLockedException)
      * 
      * @throws Exception
      */
@@ -59,9 +63,9 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         URI resourceUri = new URI("nxlockresource://server/resource");
 
         Locker winnerLocker = new Locker(winner, resourceUri, "winner lock",
-                1000);
+                500);
         Locker looserLocker = new Locker(looser, resourceUri, "looser lock",
-                1000);
+                500);
 
         winnerLocker.start();
         Thread.sleep(10);
@@ -71,26 +75,21 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         looserLocker.thread.join();
 
         assertNull("winner should has locked the resource before looser",
-                winnerLocker.isAlreadLocked);
+                winnerLocker.alreadyLocked);
         assertNull("winner should has unlocked the resource successfully",
                 winnerLocker.noSuchLockException);
         assertNull("winner should has unlocked an existing resource",
                 winnerLocker.notOwnerException);
 
         assertNotNull(
-                "looser should has waiting for the lock and has his lock refused",
-                winnerLocker.isAlreadLocked);
-        assertNotNull(
-                "looser shouldn't find the lock : already unlocked by winner",
-                winnerLocker.noSuchLockException);
-        assertNull("looser shouldn't get a notOwnerException",
-                winnerLocker.notOwnerException);
+                "looser should has been waiting for the lock and has his lock refused",
+                looserLocker.alreadyLocked);
 
     }
 
     class Locker implements Runnable {
 
-        AlreadyLockedException isAlreadLocked;
+        AlreadyLockedException alreadyLocked;
 
         NoSuchLockException noSuchLockException;
 
@@ -123,9 +122,11 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
             try {
                 coordinator.lock(selfcompetitor, resource, comment, DELAY);
             } catch (InterruptedException e) {
-                log.error("A unintended InterruptedException has been raised", e);
+                log.error("A unintended InterruptedException has been raised",
+                        e);
             } catch (AlreadyLockedException e) {
-                isAlreadLocked = e;
+                alreadyLocked = e;
+                return;
             }
             try {
                 Thread.sleep(executionTime);
@@ -151,14 +152,6 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
             thread.start();
         }
 
-    }
-
-    /**
-     * Cluster lock: 2 threads, 2 user (session), in the same database
-     * 
-     */
-    public void testClusteredLockService() throws Exception {
-        // TODO
     }
 
 }

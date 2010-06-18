@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +30,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -50,13 +48,13 @@ public class LockRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOCK_ID", nullable = false)
-    protected final long id = 0L;
-    
+    protected Long id;
+
     @Version
-    protected long version;
+    protected Long version;
 
     @Column(name = "LOCK_RESOURCE", unique = true)
-    protected final URI resource;
+    protected URI resource;
 
     @Column(name = "LOCK_LOCK_TIME", nullable = false)
     protected Date lockTime;
@@ -76,6 +74,9 @@ public class LockRecord {
     @Embedded
     @Column(name = "LOCK_WAITINGS", nullable = false)
     protected List<URI> waitingCompetitors = new ArrayList<URI>();
+
+    public LockRecord() {
+    }
 
     protected LockRecord(URI owner, URI resource, String comments,
             Date lockTime, Date expireTime) {

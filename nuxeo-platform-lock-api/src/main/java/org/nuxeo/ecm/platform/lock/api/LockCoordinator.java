@@ -33,6 +33,11 @@ import java.net.URI;
  */
 public interface LockCoordinator {
     
+    void activate();
+    
+    void desactivate();
+    
+    
     /**
      * Enter in the competition. Return immediatly if the resource is availble.
      * Otherwise wait for the expiration. 

@@ -25,7 +25,7 @@ import java.net.URI;
 public class NoSuchLockException extends LockException {
     private static final long serialVersionUID = 1L;
 
-    public NoSuchLockException(URI resource) {
-        super("No Such lock", resource);
+    public NoSuchLockException(Throwable e, URI r) {
+        super("No Such lock", e, r);
     }
 }

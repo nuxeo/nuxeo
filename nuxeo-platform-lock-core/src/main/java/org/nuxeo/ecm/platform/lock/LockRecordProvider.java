@@ -8,7 +8,7 @@ import javax.persistence.Query;
 
 public class LockRecordProvider {
 
-    EntityManager em;
+    protected EntityManager em;
 
     public LockRecordProvider(EntityManager em) {
         this.em = em;

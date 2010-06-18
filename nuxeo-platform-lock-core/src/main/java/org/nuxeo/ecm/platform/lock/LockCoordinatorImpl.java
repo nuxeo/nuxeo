@@ -8,14 +8,14 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 
-import org.mortbay.log.Log;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFriend;
 import org.nuxeo.ecm.platform.lock.api.AlreadyLockedException;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.LockInfo;
@@ -25,68 +25,93 @@ import org.nuxeo.runtime.api.Framework;
 
 public class LockCoordinatorImpl implements LockCoordinator {
 
+    public static final Log log = LogFactory.getLog(LockCoordinatorImpl.class);
+
     PersistenceProvider persistenceProvider;
 
     public PersistenceProvider getOrCreatePersistenceProvider() {
-        if (persistenceProvider != null) {
-            return persistenceProvider;
-        }
         PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        return persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
+        persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
+        return persistenceProvider;
     }
 
-    protected void deactivatePersistenceProvider() {
-        if (persistenceProvider == null) {
-            return;
+    public void activate() {
+    }
+
+    public void desactivate() {
+        if (persistenceProvider != null) {
+            persistenceProvider.closePersistenceUnit();
+            persistenceProvider = null;
         }
-        persistenceProvider.closePersistenceUnit();
-        persistenceProvider = null;
     }
 
-    public LockInfo getInfo(final URI resource) throws NoSuchLockException {
+    protected void debug(String message, URI self, URI resource,
+            String comment, long timeout) {
+        if (log.isDebugEnabled()) {
+            log.debug(message + " owner: " + self + " resource: " + resource
+                    + " comments: " + comment + " timeout: " + timeout);
+        }
+    }
+
+    protected LockRecordProvider open(boolean start) {
+        EntityManager em = PersistenceProviderFriend.acquireEntityManager(getOrCreatePersistenceProvider());
+        if (start == true) {
+            em.getTransaction().begin();
+        }
+        return new LockRecordProvider(em);
+    }
+
+    protected void clear(LockRecordProvider provider) {
+        provider.em.clear();
+    }
+
+    protected void close(LockRecordProvider provider) {
+        EntityManager em = provider.em;
         try {
-            return getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<LockInfo>() {
-                        public LockInfo runWith(EntityManager em)
-                                throws ClientException {
-                            return getInfo(em, resource);
-                        }
-                    });
-        } catch (NoSuchLockException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+            EntityTransaction et = em.getTransaction();
+            if (et != null && et.isActive()) {
+                et.commit();
+            }
+        } finally {
+            em.clear();
+            em.close();
         }
-    }
-
-    protected LockInfo getInfo(EntityManager em, URI resource)
-            throws NoSuchLockException {
-        LockRecord record = new LockRecordProvider(em).getRecord(resource);
-        return new LockInfoImpl(record);
     }
 
     public void lock(final URI self, final URI resource, final String comment,
             final long timeout) throws AlreadyLockedException,
             InterruptedException {
-        try {
-            getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<Integer>() {
-                        public Integer runWith(EntityManager em)
-                                throws ClientException {
-                            lock(em, self, resource, comment, timeout);
-                            return 0;
-                        }
-                    });
-        } catch (AlreadyLockedException e) {
-            throw e;
-        } catch (WrappingInterruptedException e) {
-            throw (InterruptedException) e.getCause();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        debug("Lock", self, resource, comment, timeout);
+        doLock(self, resource, comment, timeout);
     }
 
-    protected void waitFor(LockRecord record) throws InterruptedException {
+    protected void doLock(final URI self, final URI resource,
+            final String comment, final long timeout)
+            throws AlreadyLockedException, InterruptedException {
+
+        LockRecordProvider provider = open(true);
+        try {
+            debug("createRecord", self, resource, comment, timeout);
+            provider.createRecord(self, resource, comment, timeout);
+            close(provider);
+        } catch (EntityExistsException exists) {
+            debug("Couldn't create, entity already exists, fetching resource",
+                    self, resource, comment, timeout);
+
+            LockRecord record = doFetch(resource);
+
+            debug("wait for existing lock timeout", self, resource, comment,
+                    timeout);
+            doWaitFor(record);
+
+            debug("do update", self, resource, comment, timeout);
+            doUpdate(self, resource, comment, timeout);
+
+        }
+
+    }
+
+    protected void doWaitFor(LockRecord record) throws InterruptedException {
         long remaining = remaining(record);
         while (remaining > 0) {
             Thread.sleep(remaining);
@@ -94,85 +119,35 @@ public class LockCoordinatorImpl implements LockCoordinator {
         }
     }
 
-    protected static class WrappingInterruptedException extends ClientException {
-
-        private static final long serialVersionUID = 1L;
-
-        public WrappingInterruptedException(InterruptedException cause) {
-            super(cause);
-        }
-
-    }
-
-    public void lock(EntityManager em, URI self, URI resource, String comment,
-            long timeout) throws AlreadyLockedException,
-            WrappingInterruptedException {
-
-        LockRecordProvider lockProvider = new LockRecordProvider(em);
-
-        EntityTransaction transaction = em.getTransaction();
+    protected LockRecord doFetch(URI resource) throws AlreadyLockedException {
+        LockRecordProvider provider = open(false);
         try {
-            transaction.begin();
-            lockProvider.createRecord(self, resource, comment, timeout);
-            transaction.commit();
-            return;
-        } catch (EntityExistsException exists) {
-            try {
-                waitAndTryRelock(self, resource, comment, timeout);
-            } catch (InterruptedException interrupted) {
-                throw new WrappingInterruptedException(interrupted);
-            }
-        }
-    }
-
-    public void waitAndTryRelock(final URI self, final URI resource,
-            final String comment, final long timeout)
-            throws AlreadyLockedException, InterruptedException {
-        try {
-            getOrCreatePersistenceProvider().run(false,
-                    new RunCallback<Integer>() {
-                        public Integer runWith(EntityManager em)
-                                throws ClientException {
-                            waitAndTryRelock(em, self, resource, comment,
-                                    timeout);
-                            return 0;
-                        }
-                    });
-        } catch (AlreadyLockedException e) {
-            throw e;
-        } catch (WrappingInterruptedException e) {
-            throw (InterruptedException) e.getCause();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-
-    public void waitAndTryRelock(EntityManager em, URI self, URI resource,
-            String comment, long timeout) throws WrappingInterruptedException,
-            AlreadyLockedException {
-        EntityTransaction transaction = em.getTransaction();
-        LockRecordProvider lockProvider = new LockRecordProvider(em);
-
-        LockRecord record = lockProvider.getRecord(resource);
-        try {
-            waitFor(record);
-        } catch (InterruptedException e) {
-            throw new WrappingInterruptedException(e);
-        }
-        try {
-            transaction.begin();
-            lockProvider.updateRecord(self, resource, comment, timeout);
-            transaction.commit();
-        } catch (OptimisticLockException e) {
-            Log.debug("Concurent access detected, trying relocking", e);
-            try {
-                lock(self, resource, comment, timeout);
-            } catch (InterruptedException interrupted) {
-                throw new WrappingInterruptedException(interrupted);
-            }
-        } catch (EntityNotFoundException e) {
+            return provider.getRecord(resource);
+        } catch (EntityNotFoundException notfound) {
             throw new AlreadyLockedException(resource);
+        } finally {
+            close(provider);
         }
+    }
+
+    protected void doUpdate(URI self, URI resource, String comment, long timeout)
+            throws AlreadyLockedException, InterruptedException {
+        LockRecordProvider np = open(true);
+        try {
+            np.updateRecord(self, resource, comment, timeout);
+            close(np);
+        } catch (OptimisticLockException e) {
+            debug("doUpdate: concurent access detected", self, resource,
+                    comment, timeout);
+            log.debug("Concurent access detected, trying relocking", e);
+            doLock(self, resource, comment, timeout);
+        } catch (NoResultException e) {
+            throw new AlreadyLockedException(resource);
+        } catch (Throwable e) {
+            log.warn("Unexpected problem while updating", e);
+            throw new Error("Unexpected problem while updating " + resource, e);
+        }
+
     }
 
     private long remaining(LockRecord record) {
@@ -181,47 +156,61 @@ public class LockCoordinatorImpl implements LockCoordinator {
         return remaining;
     }
 
+    public LockInfo getInfo(final URI resource) throws NoSuchLockException {
+        LockRecordProvider provider = open(false);
+        try {
+            LockRecord record = provider.getRecord(resource);
+            return new LockInfoImpl(record);
+        } finally {
+            close(provider);
+        }
+    }
+
     public void saveInfo(URI self, URI resource, Serializable info)
             throws NotOwnerException {
-
-    }
-
-    public void unlock(final URI self, final URI resource)
-            throws NoSuchLockException, NotOwnerException {
-        try {
-            getOrCreatePersistenceProvider().run(true,
-                    new RunCallback<Integer>() {
-                        public Integer runWith(EntityManager em)
-                                throws ClientException {
-                            unlock(em, self, resource);
-                            return 0;
-                        }
-                    });
-        } catch (NoSuchLockException e) {
-            throw e;
-        } catch (NotOwnerException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-
-    public void unlock(EntityManager em, URI self, URI resource)
-            throws NoSuchLockException, NotOwnerException {
-        LockRecordProvider lockProvider = new LockRecordProvider(em);
-        LockRecord record;
-        // entity there ?
-        try {
-            record = lockProvider.getRecord(resource);
-        } catch (EntityNotFoundException e) {
-            throw new NoSuchLockException(resource);
-        }
-        // same owner ?
+        LockRecordProvider provider = open(true);
+        LockRecord record = provider.getRecord(resource);
         if (!self.equals(record.owner)) {
+            close(provider);
             throw new NotOwnerException(resource);
         }
+        record.info = info;
+        close(provider);
+    }
 
-        lockProvider.delete(resource);
+    public void unlock(URI self, URI resource) throws NoSuchLockException,
+            NotOwnerException {
+        LockRecordProvider lockProvider = open(false);
+        try {
+            LockRecord record;
+            // entity there ?
+            try {
+                record = lockProvider.getRecord(resource);
+            } catch (NoResultException e) {
+                throw new NoSuchLockException(e, resource);
+            }
+            // same owner ?
+            if (!self.equals(record.owner)) {
+                throw new NotOwnerException(resource);
+            }
+        } finally {
+            close(lockProvider);
+        }
+
+        lockProvider = open(true);
+        try {
+            lockProvider.delete(resource);
+        } catch (Throwable e) {
+            log.trace("Caught an exception while updating lock", e);
+            throw new Error("Caught an exception while updating lock", e);
+        } finally {
+            try {
+                close(lockProvider);
+            } catch (EntityNotFoundException notfound) {
+                throw new NoSuchLockException(notfound, resource);
+            }
+        }
+        log.trace("deleted " + resource);
     }
 
 }

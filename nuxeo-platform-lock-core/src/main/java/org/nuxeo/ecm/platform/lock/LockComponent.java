@@ -34,12 +34,12 @@ public class LockComponent extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         coordinator = new LockCoordinatorImpl();
-        // start coordinator thread
+        coordinator.activate();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        // stop coordinator thread
+        coordinator.desactivate();
         coordinator = null;
         super.deactivate(context);
     }
@@ -47,7 +47,7 @@ public class LockComponent extends DefaultComponent {
     public LockCoordinator getLockCoordinator() {
         return coordinator;
     }
-    
+
     @Override
     public <T> T getAdapter(Class<T> clazz) {
         if (LockCoordinator.class.isAssignableFrom(clazz)) {
