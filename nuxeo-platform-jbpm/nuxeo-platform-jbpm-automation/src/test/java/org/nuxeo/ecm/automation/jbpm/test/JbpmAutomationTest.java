@@ -247,6 +247,7 @@ public class JbpmAutomationTest {
         Assert.assertEquals(1, pooledActorIds.size());
         Assert.assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
                 pooledActorIds.get(0));
+
         comments = task2.getComments();
         Assert.assertEquals(0, comments.size());
         Assert.assertNull(task2.getProcessInstance());
@@ -254,7 +255,7 @@ public class JbpmAutomationTest {
         Assert.assertTrue(task2.isOpen());
         Assert.assertFalse(task2.isCancelled());
         Assert.assertFalse(task2.hasEnded());
-        Assert.assertEquals(4, task2.getVariables().size());
+        Assert.assertEquals(6, task2.getVariables().size());
         Assert.assertEquals(
                 document.getRepositoryName(),
                 task2.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -264,6 +265,13 @@ public class JbpmAutomationTest {
                 task2.getVariable(JbpmService.VariableName.initiator.name()));
         Assert.assertEquals(null,
                 task2.getVariable(TaskVariableName.directive.name()));
+        Assert.assertEquals(
+                "true",
+                task2.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        Assert.assertEquals(
+                "true",
+                task2.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
+
 
         TaskInstance task3 = tasks.get(1);
         Assert.assertEquals("several test tasks", task3.getName());
@@ -279,7 +287,7 @@ public class JbpmAutomationTest {
         Assert.assertTrue(task3.isOpen());
         Assert.assertFalse(task3.isCancelled());
         Assert.assertFalse(task3.hasEnded());
-        Assert.assertEquals(4, task3.getVariables().size());
+        Assert.assertEquals(6, task3.getVariables().size());
         Assert.assertEquals(
                 document.getRepositoryName(),
                 task3.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -289,6 +297,13 @@ public class JbpmAutomationTest {
                 task3.getVariable(JbpmService.VariableName.initiator.name()));
         Assert.assertEquals(null,
                 task3.getVariable(TaskVariableName.directive.name()));
+        Assert.assertEquals(
+                "true",
+                task3.getVariable(OperationTaskVariableName.createdFromCreateTaskOperation.name()));
+        Assert.assertEquals(
+                "true",
+                task3.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
+
 
         // check document metadata
         Assert.assertNull(document.getPropertyValue("dc:description"));
