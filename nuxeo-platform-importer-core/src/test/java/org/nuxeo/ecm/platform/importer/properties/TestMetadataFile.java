@@ -72,7 +72,7 @@ public class TestMetadataFile {
         String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
-        assertEquals(6, properties.size()); // we got files:files as a List type too
+        assertEquals(5, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));

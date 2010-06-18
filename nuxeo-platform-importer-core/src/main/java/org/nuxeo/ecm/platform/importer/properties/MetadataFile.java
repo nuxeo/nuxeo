@@ -147,7 +147,9 @@ public class MetadataFile {
         } else if (value instanceof List) {
             try {
                 List<String> list = (List<String>) value;
-                metadataProperties.put(propertyKey, StringUtils.join(list, "|"));
+                if (!list.isEmpty()) {
+                    metadataProperties.put(propertyKey, StringUtils.join(list, "|"));
+                }
             } catch (ClassCastException e) {
                 // do nothing
             }
