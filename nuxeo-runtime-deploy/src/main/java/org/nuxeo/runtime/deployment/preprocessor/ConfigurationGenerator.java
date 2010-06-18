@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- * 
+ *
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -51,9 +51,10 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     * 
+     *
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
+    @Deprecated
     protected static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     /**
@@ -144,7 +145,7 @@ public class ConfigurationGenerator {
 
     /**
      * Run the configuration files generation
-     * 
+     *
      * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {
@@ -176,7 +177,7 @@ public class ConfigurationGenerator {
 
     /**
      * @throws ConfigurationException
-     * 
+     *
      */
     private void setBasicConfiguration() throws ConfigurationException {
         try {
@@ -188,6 +189,8 @@ public class ConfigurationGenerator {
             userConfig.load(new FileInputStream(nuxeoConf));
             forceGeneration = Boolean.parseBoolean(userConfig.getProperty(
                     PARAM_FORCE_GENERATION, "false"));
+        } catch (NullPointerException e) {
+            throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
