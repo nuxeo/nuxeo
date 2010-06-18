@@ -232,7 +232,7 @@ if [ "$jboss" = "true" ]; then
 	# Fix JRE 1.5/1.6 issue with script-api.jar and jaxb-api.jar
 	IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
 	NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
-	JAVA5_APIS="script-api jaxb-api"
+	JAVA5_APIS="script-api"
 	for java5_api in $JAVA5_APIS;
 	do
   	if [ ! -z "$IS_JRE_6" ]; then
