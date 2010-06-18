@@ -224,5 +224,19 @@
       </urlPatterns>
     </restletPlugin>
 
+    <documentation>
+      GET /nuxeo/restAPI/systemLog?token=1234&amp;level=INFO&amp;message=something
+
+      Log something in the system logs of the server. The token has to match
+      the system property org.nuxeo.systemlog.token.
+    </documentation>
+    <restletPlugin name="systemLog"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.SystemLogRestlet"
+        enabled="true" useSeam="false">
+      <urlPatterns>
+        <urlPattern>/systemLog</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
   </extension>
 </component>
