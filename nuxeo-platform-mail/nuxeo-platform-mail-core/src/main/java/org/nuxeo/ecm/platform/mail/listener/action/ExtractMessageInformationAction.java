@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -251,7 +252,8 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
      */
     protected static String decodeMailBody(Part part)
             throws MessagingException, IOException {
-        InputStream is = part.getInputStream();
+        String encoding = MimeUtility.getEncoding(part.getDataHandler());
+        InputStream is = MimeUtility.decode(part.getInputStream(), encoding);
         String contType = part.getContentType();
         final String charsetIdentifier = "charset=";
         final String ISO88591 = "iso-8859-1";
@@ -275,14 +277,16 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             log.debug("Using replacing charset: " + charset);
         }
         String ret;
-        // FIXME new String(FileUtils.readBytes(is), charset) throws exceptions all the time,
-        //commented out for the moment.
-//        if (StringUtils.isBlank(charset)) {
-//            ret = new String(FileUtils.readBytes(is));
-//        } else {
-//            ret = new String(FileUtils.readBytes(is), charset);
-//        }
-        ret = new String(FileUtils.readBytes(is));
+        if ("".equals(charset)) {
+            ret = new String(FileUtils.readBytes(is));
+        } else {
+            try {
+                ret = new String(FileUtils.readBytes(is), charset);
+            } catch (UnsupportedEncodingException e) {
+                // try without encoding
+                ret = new String(FileUtils.readBytes(is));
+            }
+        }
         return ret;
     }
 
