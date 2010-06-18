@@ -26,7 +26,6 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
     <module>nuxeo-platform-classification</module>
-    <module>nuxeo-platform-document-categorization</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-flex</module>
     <module>nuxeo-platform-importer</module>
