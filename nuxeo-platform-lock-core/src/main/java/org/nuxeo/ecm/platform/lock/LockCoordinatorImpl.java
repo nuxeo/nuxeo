@@ -112,30 +112,66 @@ public class LockCoordinatorImpl implements LockCoordinator {
 
         EntityTransaction transaction = em.getTransaction();
         try {
-
             transaction.begin();
             lockProvider.createRecord(self, resource, comment, timeout);
             transaction.commit();
             return;
         } catch (EntityExistsException exists) {
+            try {
+                waitAndTryRelock(self, resource, comment, timeout);
+            } catch (InterruptedException interrupted) {
+                throw new WrappingInterruptedException(interrupted);
+            }
+        }
+    }
 
-            LockRecord record = lockProvider.getRecord(resource);
+    public void waitAndTryRelock(final URI self, final URI resource,
+            final String comment, final long timeout)
+            throws AlreadyLockedException, InterruptedException {
+        try {
+            getOrCreatePersistenceProvider().run(false,
+                    new RunCallback<Integer>() {
+                        public Integer runWith(EntityManager em)
+                                throws ClientException {
+                            waitAndTryRelock(em, self, resource, comment,
+                                    timeout);
+                            return 0;
+                        }
+                    });
+        } catch (AlreadyLockedException e) {
+            throw e;
+        } catch (WrappingInterruptedException e) {
+            throw (InterruptedException) e.getCause();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public void waitAndTryRelock(EntityManager em, URI self, URI resource,
+            String comment, long timeout) throws WrappingInterruptedException,
+            AlreadyLockedException {
+        EntityTransaction transaction = em.getTransaction();
+        LockRecordProvider lockProvider = new LockRecordProvider(em);
+
+        LockRecord record = lockProvider.getRecord(resource);
+        try {
+            waitFor(record);
+        } catch (InterruptedException e) {
+            throw new WrappingInterruptedException(e);
+        }
+        try {
+            transaction.begin();
+            lockProvider.updateRecord(self, resource, comment, timeout);
+            transaction.commit();
+        } catch (OptimisticLockException e) {
+            Log.debug("Concurent access detected, trying relocking", e);
             try {
-                waitFor(record);
-            } catch (InterruptedException e) {
-                throw new WrappingInterruptedException(e);
+                lock(self, resource, comment, timeout);
+            } catch (InterruptedException interrupted) {
+                throw new WrappingInterruptedException(interrupted);
             }
-            try {
-                transaction.begin();
-                lockProvider.updateRecord(self, resource, comment, timeout);
-                transaction.commit();
-            } catch (OptimisticLockException e) {
-                Log.debug("Concurent access detected, trying relocking", e);
-                lock(em, self, resource, comment, timeout);
-            } catch (EntityNotFoundException e) {
-                throw new AlreadyLockedException(resource);
-            }
-            
+        } catch (EntityNotFoundException e) {
+            throw new AlreadyLockedException(resource);
         }
     }
 
