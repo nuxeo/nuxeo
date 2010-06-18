@@ -20,7 +20,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import junit.framework.TestCase;
@@ -33,9 +32,10 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider;
  * 
  */
 public class TestLockRecord extends TestCase {
-    protected PersistenceProvider persistenceProvider;
 
-    protected EntityManager entityManager;
+    LockRecordProvider provider;
+
+    PersistenceProvider persistenceProvider;
 
     @Override
     public void setUp() throws Exception {
@@ -44,7 +44,19 @@ public class TestLockRecord extends TestCase {
         HibernateConfiguration config = HibernateConfiguration.load(resource);
         persistenceProvider = new PersistenceProvider(config);
         persistenceProvider.openPersistenceUnit();
-        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+
+        // The lockrecord provider will manage his own manager
+        // entityManager =
+        // persistenceProvider.acquireEntityManagerWithActiveTransaction();
+        provider = new LockRecordProvider() {
+            @Override
+            public PersistenceProvider getOrCreatePersistenceProvider() {
+
+                return persistenceProvider;
+
+            }
+        };
+
     }
 
     /**
@@ -52,9 +64,10 @@ public class TestLockRecord extends TestCase {
      * 
      * @throws Exception
      */
-    public void testLockRecord() throws Exception {
+    public void testLockRecordProvider() throws Exception {
 
-        LockRecordProvider provider = new LockRecordProvider(entityManager);
+        LockRecordProvider provider = new LockRecordProvider();
+
         URI owner = new URI("nxlockcompetitor://user@server");
         URI resourceUri = new URI("nxlockresource://server/11111111");
 
@@ -76,8 +89,4 @@ public class TestLockRecord extends TestCase {
         assertNotNull(noResultException);
     }
 
-    @Override
-    public void tearDown() {
-        persistenceProvider.releaseEntityManagerWithRollback(entityManager);
-    }
 }

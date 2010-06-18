@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
+ */
 package org.nuxeo.ecm.platform.lock;
 
 import java.io.Serializable;
@@ -5,44 +21,36 @@ import java.net.URI;
 import java.util.Date;
 
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider;
-import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.core.persistence.PersistenceProviderFriend;
 import org.nuxeo.ecm.platform.lock.api.AlreadyLockedException;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.LockInfo;
 import org.nuxeo.ecm.platform.lock.api.NoSuchLockException;
 import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
-import org.nuxeo.runtime.api.Framework;
 
+/**
+ * LockCoordinator implementation.
+ * 
+ * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
+ * 
+ */
 public class LockCoordinatorImpl implements LockCoordinator {
 
     public static final Log log = LogFactory.getLog(LockCoordinatorImpl.class);
 
-    PersistenceProvider persistenceProvider;
-
-    public PersistenceProvider getOrCreatePersistenceProvider() {
-        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
-        return persistenceProvider;
-    }
+    LockRecordProvider provider;
 
     public void activate() {
+        provider = new LockRecordProvider();
     }
 
     public void desactivate() {
-        if (persistenceProvider != null) {
-            persistenceProvider.closePersistenceUnit();
-            persistenceProvider = null;
-        }
+
     }
 
     protected void debug(String message, URI self, URI resource,
@@ -50,31 +58,6 @@ public class LockCoordinatorImpl implements LockCoordinator {
         if (log.isDebugEnabled()) {
             log.debug(message + " owner: " + self + " resource: " + resource
                     + " comments: " + comment + " timeout: " + timeout);
-        }
-    }
-
-    protected LockRecordProvider open(boolean start) {
-        EntityManager em = PersistenceProviderFriend.acquireEntityManager(getOrCreatePersistenceProvider());
-        if (start == true) {
-            em.getTransaction().begin();
-        }
-        return new LockRecordProvider(em);
-    }
-
-    protected void clear(LockRecordProvider provider) {
-        provider.em.clear();
-    }
-
-    protected void close(LockRecordProvider provider) {
-        EntityManager em = provider.em;
-        try {
-            EntityTransaction et = em.getTransaction();
-            if (et != null && et.isActive()) {
-                et.commit();
-            }
-        } finally {
-            em.clear();
-            em.close();
         }
     }
 
@@ -89,11 +72,9 @@ public class LockCoordinatorImpl implements LockCoordinator {
             final String comment, final long timeout)
             throws AlreadyLockedException, InterruptedException {
 
-        LockRecordProvider provider = open(true);
         try {
-            debug("createRecord", self, resource, comment, timeout);
+            debug("Create Record", self, resource, comment, timeout);
             provider.createRecord(self, resource, comment, timeout);
-            close(provider);
         } catch (EntityExistsException exists) {
             debug("Couldn't create, entity already exists, fetching resource",
                     self, resource, comment, timeout);
@@ -106,7 +87,6 @@ public class LockCoordinatorImpl implements LockCoordinator {
 
             debug("do update", self, resource, comment, timeout);
             doUpdate(self, resource, comment, timeout);
-
         }
 
     }
@@ -120,22 +100,17 @@ public class LockCoordinatorImpl implements LockCoordinator {
     }
 
     protected LockRecord doFetch(URI resource) throws AlreadyLockedException {
-        LockRecordProvider provider = open(false);
         try {
             return provider.getRecord(resource);
         } catch (EntityNotFoundException notfound) {
             throw new AlreadyLockedException(resource);
-        } finally {
-            close(provider);
         }
     }
 
     protected void doUpdate(URI self, URI resource, String comment, long timeout)
             throws AlreadyLockedException, InterruptedException {
-        LockRecordProvider np = open(true);
         try {
-            np.updateRecord(self, resource, comment, timeout);
-            close(np);
+            provider.updateRecord(self, resource, comment, timeout);
         } catch (OptimisticLockException e) {
             debug("doUpdate: concurent access detected", self, resource,
                     comment, timeout);
@@ -157,60 +132,42 @@ public class LockCoordinatorImpl implements LockCoordinator {
     }
 
     public LockInfo getInfo(final URI resource) throws NoSuchLockException {
-        LockRecordProvider provider = open(false);
-        try {
-            LockRecord record = provider.getRecord(resource);
-            return new LockInfoImpl(record);
-        } finally {
-            close(provider);
-        }
+
+        LockRecord record = provider.getRecord(resource);
+        return new LockInfoImpl(record);
+
     }
 
     public void saveInfo(URI self, URI resource, Serializable info)
             throws NotOwnerException {
-        LockRecordProvider provider = open(true);
         LockRecord record = provider.getRecord(resource);
         if (!self.equals(record.owner)) {
-            close(provider);
             throw new NotOwnerException(resource);
         }
         record.info = info;
-        close(provider);
     }
 
     public void unlock(URI self, URI resource) throws NoSuchLockException,
             NotOwnerException {
-        LockRecordProvider lockProvider = open(false);
+
+        LockRecord record;
+        // entity there ?
         try {
-            LockRecord record;
-            // entity there ?
-            try {
-                record = lockProvider.getRecord(resource);
-            } catch (NoResultException e) {
-                throw new NoSuchLockException(e, resource);
-            }
-            // same owner ?
-            if (!self.equals(record.owner)) {
-                throw new NotOwnerException(resource);
-            }
-        } finally {
-            close(lockProvider);
+            record = provider.getRecord(resource);
+        } catch (NoResultException e) {
+            throw new NoSuchLockException(e, resource);
+        }
+        // same owner ?
+        if (!self.equals(record.owner)) {
+            throw new NotOwnerException(resource);
         }
 
-        lockProvider = open(true);
         try {
-            lockProvider.delete(resource);
-        } catch (Throwable e) {
-            log.trace("Caught an exception while updating lock", e);
-            throw new Error("Caught an exception while updating lock", e);
-        } finally {
-            try {
-                close(lockProvider);
-            } catch (EntityNotFoundException notfound) {
-                throw new NoSuchLockException(notfound, resource);
-            }
+            provider.delete(resource);
+        } catch (EntityNotFoundException notfound) {
+            throw new NoSuchLockException(notfound, resource);
         }
-        log.trace("deleted " + resource);
+
     }
 
 }
