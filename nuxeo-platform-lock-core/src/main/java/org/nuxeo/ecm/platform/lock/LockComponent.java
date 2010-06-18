@@ -28,19 +28,25 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class LockComponent extends DefaultComponent {
 
-    LockCoordinator coordinator;
+    protected LockCoordinatorImpl coordinator;
+
+    protected ThreadedLockRecordProvider provider;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         coordinator = new LockCoordinatorImpl();
-        coordinator.activate();
+        provider = new ThreadedLockRecordProvider();
+        coordinator.activate(this);
+        provider.activate(this);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        coordinator.desactivate();
+        coordinator.disactivate();
+        provider.disactivate();
         coordinator = null;
+        provider = null;
         super.deactivate(context);
     }
 

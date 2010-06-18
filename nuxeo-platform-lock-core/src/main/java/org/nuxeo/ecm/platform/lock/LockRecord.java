@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     \Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>'
+ *     Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.lock;
 
@@ -34,7 +34,9 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
- * @author \Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>'
+ * JPA Entity for a lock record
+ * 
+ * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 
  */
 @Entity(name = "Lock")

@@ -39,17 +39,18 @@ import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 
  */
-public class LockCoordinatorImpl implements LockCoordinator {
+public class LockCoordinatorImpl implements LockCoordinator,
+        LockComponentDelegate {
 
     public static final Log log = LogFactory.getLog(LockCoordinatorImpl.class);
 
     LockRecordProvider provider;
 
-    public void activate() {
-        provider = new LockRecordProvider();
+    public void activate(LockComponent component) {
+        this.provider = component.provider;
     }
 
-    public void desactivate() {
+    public void disactivate() {
 
     }
 
@@ -99,7 +100,8 @@ public class LockCoordinatorImpl implements LockCoordinator {
         }
     }
 
-    protected LockRecord doFetch(URI resource) throws AlreadyLockedException {
+    protected LockRecord doFetch(URI resource) throws AlreadyLockedException,
+            InterruptedException {
         try {
             return provider.getRecord(resource);
         } catch (EntityNotFoundException notfound) {
@@ -131,7 +133,8 @@ public class LockCoordinatorImpl implements LockCoordinator {
         return remaining;
     }
 
-    public LockInfo getInfo(final URI resource) throws NoSuchLockException {
+    public LockInfo getInfo(final URI resource) throws NoSuchLockException,
+            InterruptedException {
 
         LockRecord record = provider.getRecord(resource);
         return new LockInfoImpl(record);
@@ -139,7 +142,7 @@ public class LockCoordinatorImpl implements LockCoordinator {
     }
 
     public void saveInfo(URI self, URI resource, Serializable info)
-            throws NotOwnerException {
+            throws NotOwnerException, InterruptedException {
         LockRecord record = provider.getRecord(resource);
         if (!self.equals(record.owner)) {
             throw new NotOwnerException(resource);
@@ -148,7 +151,7 @@ public class LockCoordinatorImpl implements LockCoordinator {
     }
 
     public void unlock(URI self, URI resource) throws NoSuchLockException,
-            NotOwnerException {
+            NotOwnerException, InterruptedException {
 
         LockRecord record;
         // entity there ?

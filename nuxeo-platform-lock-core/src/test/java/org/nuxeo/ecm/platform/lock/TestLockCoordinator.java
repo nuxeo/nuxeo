@@ -140,6 +140,8 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
                 noSuchLockException = e;
             } catch (NotOwnerException e) {
                 notOwnerException = e;
+            } catch (Throwable e) {
+                throw new Error("Unexpected error", e);
             }
         }
 

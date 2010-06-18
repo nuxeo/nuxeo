@@ -35,25 +35,23 @@ public class TestLockRecord extends TestCase {
 
     LockRecordProvider provider;
 
-    PersistenceProvider persistenceProvider;
+    PersistenceProvider testPersistenceProvider;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         URL resource = getClass().getResource("/hibernate-tests.xml");
         HibernateConfiguration config = HibernateConfiguration.load(resource);
-        persistenceProvider = new PersistenceProvider(config);
-        persistenceProvider.openPersistenceUnit();
+        testPersistenceProvider = new PersistenceProvider(config);
+        testPersistenceProvider.openPersistenceUnit();
 
         // The lockrecord provider will manage his own manager
         // entityManager =
         // persistenceProvider.acquireEntityManagerWithActiveTransaction();
-        provider = new LockRecordProvider() {
+        provider = new JPALockRecordProvider() {
             @Override
             public PersistenceProvider getOrCreatePersistenceProvider() {
-
-                return persistenceProvider;
-
+                return testPersistenceProvider;
             }
         };
 
@@ -65,8 +63,6 @@ public class TestLockRecord extends TestCase {
      * @throws Exception
      */
     public void testLockRecordProvider() throws Exception {
-
-        LockRecordProvider provider = new LockRecordProvider();
 
         URI owner = new URI("nxlockcompetitor://user@server");
         URI resourceUri = new URI("nxlockresource://server/11111111");

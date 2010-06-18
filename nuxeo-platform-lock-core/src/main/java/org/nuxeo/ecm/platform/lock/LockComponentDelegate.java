@@ -13,27 +13,20 @@
  * 
  * Contributors: Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.lock;
 
-import java.net.URI;
 
 /**
- * LockRecordProvider api for dealing with lock record.
+ * For delegate objects of the LockComponent being activated and disactivated
+ * with the component.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 
  */
-public interface LockRecordProvider {
+public interface LockComponentDelegate {
 
-    void delete(URI resource) throws InterruptedException;
+    void activate(LockComponent component);
 
-    LockRecord getRecord(URI resourceUri) throws InterruptedException;
-
-    LockRecord updateRecord(URI self, URI resource, String comments,
-            long timeout) throws InterruptedException;
-
-    LockRecord createRecord(URI self, URI resource, String comment, long timeout)
-            throws InterruptedException;
+    void disactivate();
 
 }
