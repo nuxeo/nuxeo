@@ -43,6 +43,7 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.logging.Log;
@@ -76,9 +77,25 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
         bodyContent = "";
 
         try {
-            Message message = context.getMessage();
+            Message originalMessage = context.getMessage();
             if (log.isDebugEnabled()) {
-                log.debug("Transforming message" + message.getSubject());
+                log.debug("Transforming message, original subject: "
+                        + originalMessage.getSubject());
+            }
+
+            // fully load the message before trying to parse to
+            // override most of server bugs, see
+            // http://java.sun.com/products/javamail/FAQ.html#imapserverbug
+            Message message;
+            if (originalMessage instanceof MimeMessage) {
+                message = new MimeMessage((MimeMessage) originalMessage);
+                if (log.isDebugEnabled()) {
+                    log.debug("Transforming message after full load: "
+                            + message.getSubject());
+                }
+            } else {
+                // stuck with the original one
+                message = originalMessage;
             }
 
             // Subject
@@ -277,14 +294,15 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             log.debug("Using replacing charset: " + charset);
         }
         String ret;
+        byte[] streamContent = FileUtils.readBytes(is);
         if ("".equals(charset)) {
-            ret = new String(FileUtils.readBytes(is));
+            ret = new String(streamContent);
         } else {
             try {
-                ret = new String(FileUtils.readBytes(is), charset);
+                ret = new String(streamContent, charset);
             } catch (UnsupportedEncodingException e) {
                 // try without encoding
-                ret = new String(FileUtils.readBytes(is));
+                ret = new String(streamContent);
             }
         }
         return ret;
