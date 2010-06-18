@@ -188,6 +188,8 @@ public class ConfigurationGenerator {
             userConfig.load(new FileInputStream(nuxeoConf));
             forceGeneration = Boolean.parseBoolean(userConfig.getProperty(
                     PARAM_FORCE_GENERATION, "false"));
+        } catch (NullPointerException e) {
+            throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
