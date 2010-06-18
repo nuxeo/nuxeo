@@ -51,8 +51,9 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
 
     /**
      * Basic lock scenario: there is 2 competitors that want to get a lock.
-     * winner is getting the lock, looser is waiting for the delay, winner
-     * unlock, looser finally loose (AlreadyLockedException)
+     * winner is getting the lock for a certain time and need to unlock before,
+     * looser is waiting (until the timeout is reached), winner unlocks, looser
+     * finally has lost (AlreadyLockedException)
      * 
      * @throws Exception
      */
