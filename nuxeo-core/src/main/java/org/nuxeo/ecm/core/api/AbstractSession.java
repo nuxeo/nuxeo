@@ -858,6 +858,10 @@ public abstract class AbstractSession implements CoreSession,
                 : resolveReference(parentRef);
         Map<String, Serializable> props = docModel.getContextData().getDefaultScopeValues();
 
+        if (parent != null) {
+            name = generateDocumentName(parent, name);
+        }
+
         // create the document
         Document doc = getSession().importDocument(id, parent, name, typeName,
                 props);
