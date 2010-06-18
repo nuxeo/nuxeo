@@ -153,6 +153,38 @@ public class EventHandler {
         return expression;
     }
 
+    public String getFacet() {
+        return facet;
+    }
+
+    public Filter getAttribute() {
+        return attribute;
+    }
+
+    public String getLifeCycle() {
+        return lifeCycle;
+    }
+
+    public List<String> getMemberOf() {
+        return memberOf;
+    }
+
+    public Boolean getIsAdministrator() {
+        return isAdministrator;
+    }
+
+    public String getPathStartsWith() {
+        return pathStartsWith;
+    }
+
+    public Set<String> getDoctypes() {
+        return doctypes;
+    }
+
+    public Expression getExpr() {
+        return expr;
+    }
+
     public boolean isEnabled(OperationContext ctx, EventContext eventCtx)
             throws Exception {
         Object obj = ctx.getInput();
