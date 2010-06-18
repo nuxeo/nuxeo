@@ -92,13 +92,10 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                             currentUserTasks.add(new DashBoardItemImpl(task,
                                     doc));
                         } else {
-                            log
-                                    .error(String
-                                            .format(
-                                                    "User '%s' has a task of type '%s' on an "
-                                                            + "unexisting or unvisible document",
-                                                    currentUser.getName(), task
-                                                            .getName()));
+                            log.warn(String.format(
+                                    "User '%s' has a task of type '%s' on a "
+                                            + "missing or deleted document",
+                                    currentUser.getName(), task.getName()));
                         }
                     } catch (Exception e) {
                         log.error(e);
@@ -130,15 +127,11 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                                     .add(new DocumentProcessItemImpl(process,
                                             doc));
                         } else {
-                            log
-                                    .error(String
-                                            .format(
-                                                    "User '%s' has a process of type '%s' on an "
-                                                            + "unexisting or unvisible document",
-                                                    currentUser.getName(),
-                                                    process
-                                                            .getProcessDefinition()
-                                                            .getName()));
+                            log.warn(String.format(
+                                    "User '%s' has a process of type '%s' on a "
+                                            + "missing or deleted document",
+                                    currentUser.getName(),
+                                    process.getProcessDefinition().getName()));
                         }
                     } catch (Exception e) {
                         log.error(e);
