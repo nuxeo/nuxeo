@@ -254,6 +254,7 @@
         <include name="jai_codec-*" />
         <include name="jai_core-*" />
         <include name="javacc-*" />
+        <include name="jaxb-api-*" />
         <include name="jenatest-*" />
         <include name="jboss-4.0.4.GA*" />
         <include name="jboss-annotations-ejb3-3.0-RC8*" />
