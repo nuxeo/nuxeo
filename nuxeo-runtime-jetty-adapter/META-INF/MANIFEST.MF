@@ -1,0 +1,38 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.jetty;uses:="org.nuxeo.common,org.mo
+ rtbay.log,org.mortbay.jetty,org.apache.commons.logging,org.mortbay.je
+ tty.webapp,org.mortbay.xml,org.mortbay.jetty.handler,org.osgi.framewo
+ rk,org.nuxeo.runtime.deployment.preprocessor,org.nuxeo.runtime.model,
+ org.nuxeo.runtime.api,org.nuxeo.common.server,javax.servlet,javax.ser
+ vlet.http";version="1.6.2.SNAPSHOT",OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Runtime Jetty Adapter
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276993147012
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/JettyComponent.xml
+Bundle-Description: Emebeds Jetty in Nuxeo
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: javax.servlet,
+ javax.servlet.http,
+ org.apache.commons.logging,
+ org.mortbay.jetty;version="0.0",
+ org.mortbay.jetty.handler;version="0.0",
+ org.mortbay.jetty.webapp;version="0.0",
+ org.mortbay.log;version="0.0",
+ org.mortbay.xml;version="0.0",
+ org.nuxeo.common,
+ org.nuxeo.common.server,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.deployment.preprocessor,
+ org.nuxeo.runtime.jetty;version="1.6",
+ org.nuxeo.runtime.model,
+ org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jetty-adapter
+Nuxeo-Require: org.nuxeo.runtime
+

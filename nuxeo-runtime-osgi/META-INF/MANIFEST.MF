@@ -1,0 +1,49 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.osgi;version="1.6.2.SNAPSHOT";
+  uses:="org.apache.commons.logging,
+   org.osgi.framework,
+   org.nuxeo.common.utils,
+   org.nuxeo.common.collections",
+ org.nuxeo.osgi.application;version="1.6.2.SNAPSHOT";
+  uses:="org.nuxeo.osgi,
+   org.osgi.framework,
+   org.nuxeo.common.utils,
+   org.nuxeo.common,
+   org.apache.commons.logging",
+ org.nuxeo.osgi.application.client;version="1.6.2.SNAPSHOT";uses:="org.nuxeo.common,org.nuxeo.osgi,org.osgi.framework",
+ org.nuxeo.osgi.application.loader;version="1.6.2.SNAPSHOT";
+  uses:="org.nuxeo.common.utils,
+   org.nuxeo.common,
+   org.apache.commons.logging,
+   org.nuxeo.osgi,
+   org.osgi.framework",
+ org.nuxeo.osgi.jboss;version="1.6.2.SNAPSHOT";
+  uses:="org.nuxeo.common.utils,
+   org.jboss.mx.loading,
+   org.nuxeo.osgi,
+   org.jboss.deployment,
+   org.nuxeo.common,
+   javax.management,
+   org.jboss.system.server,
+   org.jboss.system,
+   org.osgi.framework,
+   org.jboss.logging"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: runtime
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Runtime OSGI Adapter
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276993137733
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Runtime: OSGi Framework Adapter.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Import-Package: javax.management,org.apache.commons.logging,o
+ rg.jboss.deployment,org.jboss.logging,org.jboss.mx.loading,org.jboss.
+ system,org.jboss.system.server,org.nuxeo.common,org.nuxeo.common.coll
+ ections,org.nuxeo.common.utils,org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-osgi
+Bundle-DocURL: http://www.nuxeo.com/en
+

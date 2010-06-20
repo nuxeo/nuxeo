@@ -1,11 +1,3 @@
 Manifest-Version: 1.0
-Bundle-Name: OSGiAdapter
 Bundle-SymbolicName: org.nuxeo.osgi
-Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
-Export-Package: org.nuxeo.osgi,
- org.nuxeo.osgi.jboss,
- org.nuxeo.osgi.application,
- org.nuxeo.osgi.application.loader,
- org.nuxeo.osgi.application.client
-Bundle-Version: 1.6.2.qualifier

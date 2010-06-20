@@ -1,0 +1,45 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.management;version="1.6.2.SNAPSHOT";
+  uses:="javax.management,
+   org.nuxeo.runtime.model,
+   javax.management.modelmbean,
+   org.nuxeo.common.xmap.annotation,
+   org.osgi.framework,
+   org.apache.commons.logging,
+   org.nuxeo.runtime.api,
+   org.nuxeo.runtime.management.inspector,
+   org.apache.commons.lang,
+   javax.management.remote,
+   javax.management.remote.rmi",
+ org.nuxeo.runtime.management.inspector;version="1.6.2.SNAPSHOT";uses:="javax.management.modelmbean,org.nuxeo.runtime.management,javax.management"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: runtime
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Runtime Management
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276994275650
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml,OS
+ GI-INF/management-server-locator-service.xml
+Bundle-Description: Nuxeo Runtime: Parent.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: javax.management,
+ javax.management.modelmbean,
+ javax.management.remote,
+ javax.management.remote.rmi,
+ org.apache.commons.collections;version="1.7.0",
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.management;version="1.6",
+ org.nuxeo.runtime.management.inspector;version="1.6",
+ org.nuxeo.runtime.model,
+ org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-management
+Nuxeo-Require: org.nuxeo.runtime
+

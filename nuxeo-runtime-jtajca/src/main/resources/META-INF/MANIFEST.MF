@@ -1,15 +1,4 @@
 Manifest-Version: 1.0
 Nuxeo-Require: org.nuxeo.runtime
-Bundle-Version: 1.6.2.SNAPSHOT
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Runtime JTA/JCA Implementation
 Bundle-SymbolicName: org.nuxeo.runtime.jtajca;singleton:=true
-Bundle-Vendor: Nuxeo SAS
 Bundle-Category: runtime
-Require-Bundle: org.nuxeo.runtime,
- org.apache.commons.beanutils,
- org.apache.geronimo.components.geronimo-transaction,
- org.apache.geronimo.components.geronimo-connector
-Export-Package: org.nuxeo.runtime.jtajca
-Bundle-ClassPath: .,
- jca-api-1.5.jar

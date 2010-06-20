@@ -1,38 +1,9 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Version: 1.6.2.qualifier
-Bundle-Name: Nuxeo Runtime
 Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
-Bundle-Vendor: Nuxeo SAS
 Bundle-Category: runtime
-Export-Package: org.nuxeo.runtime,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.api.login,
- org.nuxeo.runtime.binding,
- org.nuxeo.runtime.config,
- org.nuxeo.runtime.config.v1,
- org.nuxeo.runtime.deploy,
- org.nuxeo.runtime.detection,
- org.nuxeo.runtime.expression,
- org.nuxeo.runtime.model,
- org.nuxeo.runtime.model.impl,
- org.nuxeo.runtime.osgi,
- org.nuxeo.runtime.remoting,
- org.nuxeo.runtime.remoting.transporter,
- org.nuxeo.runtime.service,
- org.nuxeo.runtime.service.proxy,
- org.nuxeo.runtime.service.sample,
- org.nuxeo.runtime.services.adapter,
- org.nuxeo.runtime.services.adapter.extension,
- org.nuxeo.runtime.services.deployment,
- org.nuxeo.runtime.services.event,
- org.nuxeo.runtime.services.streaming,
- org.nuxeo.runtime.transaction,
- org.nuxeo.runtime.util
-Eclipse-LazyStart: true
+Bundle-BuddyPolicy: dependent, global
 Eclipse-ExtensibleAPI: true
-Eclipse-BuddyPolicy: dependent, global
 Nuxeo-Require: org.nuxeo.osgi
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/RemotingService.xml,
@@ -41,12 +12,4 @@ Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/LoginComponent.xml,
  OSGI-INF/ServiceManagement.xml,
  OSGI-INF/DefaultJBossBindings.xml
-Require-Bundle: org.nuxeo.common;visibility:=reexport,
- org.apache.commons.io;visibility:=reexport,
- org.apache.commons.jexl;visibility:=reexport,
- org.jboss.remoting;visibility:=reexport,
- javax.transaction.jta;visibility:=reexport,
- javax.ressource.jca-api;visibility:=reexport,
- javax.ejb;visibility:=reexport,
- jboss.ejb3x;visibility:=reexport,
- EDU.oswego.cs.dl.util.concurrent;visibility:=reexport
+

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import  org.mortbay.jetty.Server;
 import com.google.inject.Inject;
 
 
@@ -30,7 +30,7 @@ import com.google.inject.Inject;
 @Jetty(port=9090)
 public class JettyTest {
 
-    @Inject org.mortbay.jetty.Server server;
+    @Inject Server server;
 
     @Test public void jettyComponentIsDeployed() throws Exception {
         assertNotNull(server);

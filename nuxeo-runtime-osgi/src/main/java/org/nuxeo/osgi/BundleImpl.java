@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Map;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -32,6 +33,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -329,6 +331,16 @@ public class BundleImpl implements Bundle {
     @Override
     public String toString() {
         return symbolicName;
+    }
+
+    public Map getSignerCertificates(int signersType) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    public Version getVersion() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
 }

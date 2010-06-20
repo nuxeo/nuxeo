@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.management.metrics;uses:="org.javasi
+ mon,org.osgi.framework,org.nuxeo.runtime.model,org.javasimon.jmx,org.
+ javasimon.utils,org.apache.commons.logging,javax.management,com.thoug
+ htworks.xstream,org.nuxeo.runtime.api";version="1.6.2.SNAPSHOT",OSGI-
+ INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Unnamed - org.nuxeo.runtime:nuxeo-runtime-management-metr
+ ics:jar:1.6.2-SNAPSHOT
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276993140755
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/runtime-management-metrics-component.xml
+Bundle-Description: Nuxeo Runtime: Parent.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: com.thoughtworks.xstream,
+ javax.management,
+ org.apache.commons.logging,
+ org.javasimon,
+ org.javasimon.jmx,
+ org.javasimon.utils,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.management.metrics;version="1.6",
+ org.nuxeo.runtime.model,
+ org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-management-metric
+ s
+Nuxeo-Require: org.nuxeo.runtime
+

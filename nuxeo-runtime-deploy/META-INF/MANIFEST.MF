@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.deployment.preprocessor;uses:="org.a
+ pache.commons.logging,org.nuxeo.common.xmap.annotation,org.nuxeo.runt
+ ime.deployment.preprocessor.install,org.w3c.dom,org.nuxeo.common.util
+ s,org.nuxeo.common.collections,org.nuxeo.common.xmap,org.nuxeo.runtim
+ e.deployment.preprocessor.template";version="1.6.2.SNAPSHOT",org.nuxe
+ o.runtime.deployment.preprocessor.install;uses:="org.nuxeo.common.uti
+ ls,org.apache.commons.logging,org.nuxeo.runtime.deployment.preprocess
+ or.install.commands,org.nuxeo.common.xmap,org.nuxeo.runtime.deploymen
+ t.preprocessor.install.filters,org.w3c.dom";version="1.6.2.SNAPSHOT",
+ org.nuxeo.runtime.deployment.preprocessor.install.commands;uses:="org
+ .nuxeo.common.utils,org.nuxeo.runtime.deployment.preprocessor.install
+ ";version="1.6.2.SNAPSHOT",org.nuxeo.runtime.deployment.preprocessor.
+ install.filters;uses:="org.nuxeo.common.utils";version="1.6.2.SNAPSHO
+ T",org.nuxeo.runtime.deployment.preprocessor.template;uses:="org.nuxe
+ o.common.utils,org.apache.commons.logging,org.nuxeo.common.xmap.annot
+ ation,org.nuxeo.common.xmap";version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Runtime Deploy
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276993132038
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Runtime: Deployment processors
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Import-Package: org.apache.commons.logging,org.nuxeo.common.collection
+ s,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo.common.xmap.
+ annotation,org.nuxeo.runtime.deployment.preprocessor;version="1.6",or
+ g.nuxeo.runtime.deployment.preprocessor.install;version="1.6",org.nux
+ eo.runtime.deployment.preprocessor.install.commands;version="1.6",org
+ .nuxeo.runtime.deployment.preprocessor.install.filters;version="1.6",
+ org.nuxeo.runtime.deployment.preprocessor.template;version="1.6",org.
+ osgi.framework,org.w3c.dom
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy
+Bundle-DocURL: http://www.nuxeo.com/en
+

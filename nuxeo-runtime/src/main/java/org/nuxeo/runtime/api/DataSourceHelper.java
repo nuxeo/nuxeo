@@ -19,9 +19,12 @@
 
 package org.nuxeo.runtime.api;
 
+import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.naming.Reference;
+import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +38,17 @@ import org.apache.commons.logging.LogFactory;
  * @author Florent Guillaume
  */
 public class DataSourceHelper {
+
+    protected static final class TestingInitialContext extends InitialContext {
+        protected TestingInitialContext() throws NamingException {
+            super(true); // be lazy
+        }
+        // subclass in order to access the protected method
+        @Override
+        public Context getDefaultInitCtx() throws NamingException {
+            return super.getDefaultInitCtx();
+        }
+    }
 
     private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
@@ -67,13 +81,7 @@ public class DataSourceHelper {
 
     public static Context getDefaultInitCtx() {
         try {
-            return new InitialContext() {
-                // subclass in order to access the protected method
-                @Override
-                public Context getDefaultInitCtx() throws NamingException {
-                    return super.getDefaultInitCtx();
-                }
-            }.getDefaultInitCtx();
+            return new TestingInitialContext().getDefaultInitCtx();
         } catch (NamingException e) {
             return null;
         }
@@ -132,7 +140,15 @@ public class DataSourceHelper {
             throws NamingException {
         String jndiName = getDataSourceJNDIName(partialName);
         InitialContext context = new InitialContext();
-        return (DataSource) context.lookup(jndiName);
+        Object resolved = context.lookup(jndiName);
+        if (resolved instanceof Reference) {
+            try {
+                resolved = NamingManager.getObjectInstance(resolved,  new CompositeName(jndiName), context, null);
+            } catch (Exception e) {
+                throw new Error("Cannot get access to " + jndiName, e);
+            }
+        }
+        return (DataSource)resolved;
     }
 
 }

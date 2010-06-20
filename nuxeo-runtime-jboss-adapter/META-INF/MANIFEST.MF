@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Runtime JBoss Adapter
+Bundle-SymbolicName: nuxeo-runtime-jboss-adapter;singleton:=true
+Bundle-Version: 1.6.2.SNAPSHOT
+Export-Package: org.nuxeo.runtime.jboss.adapter,
+ org.nuxeo.runtime.jboss.adapter.deployment,
+ org.nuxeo.runtime.jboss.adapter.security,
+ org.nuxeo.runtime.jboss.util
+Bundle-ClassPath: .

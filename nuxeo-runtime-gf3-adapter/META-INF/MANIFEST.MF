@@ -1,0 +1,41 @@
+Manifest-Version: 1.0
+Export-Package: org.glassfish.embed;version="1.6.2.SNAPSHOT",org.nuxeo
+ .runtime.gf3;uses:="com.sun.enterprise.config.serverbeans,org.apache.
+ commons.logging,org.jvnet.hk2.component,org.glassfish.internal.api,co
+ m.sun.appserv.connectors.internal.api,org.nuxeo.common,org.glassfish.
+ embed,org.nuxeo.common.server,org.nuxeo.runtime.model,javax.resource,
+ com.sun.enterprise.v3.server,org.glassfish.server,org.glassfish.embed
+ .impl,org.glassfish.api.admin,org.glassfish.deployment.autodeploy,com
+ .sun.enterprise.v3.common,com.sun.enterprise.v3.services.impl,com.sun
+ .web.security,org.glassfish.web,com.sun.enterprise.v3.admin.adapter,c
+ om.sun.hk2.component,com.sun.enterprise.web,org.glassfish.api.deploym
+ ent.archive,org.glassfish.api,com.sun.enterprise.security";version="1
+ .6.2.SNAPSHOT",OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Runtime GlassFish3 Adapter
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276993156800
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/GF3Component.xml
+Bundle-Description: Emebeds GlassFish3 in Nuxeo
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: OSGI-INF,com.sun.appserv.connectors.internal.api,com.s
+ un.enterprise.config.serverbeans,com.sun.enterprise.security,com.sun.
+ enterprise.v3.admin.adapter,com.sun.enterprise.v3.common,com.sun.ente
+ rprise.v3.server,com.sun.enterprise.v3.services.impl,com.sun.enterpri
+ se.web,com.sun.hk2.component,com.sun.web.security,javax.resource,org.
+ apache.commons.logging,org.glassfish.api,org.glassfish.api.admin,org.
+ glassfish.api.deployment.archive,org.glassfish.deployment.autodeploy,
+ org.glassfish.embed;version="1.6",org.glassfish.embed.impl,org.glassf
+ ish.internal.api,org.glassfish.server,org.glassfish.web,org.jvnet.hk2
+ .component,org.nuxeo.common,org.nuxeo.common.server,org.nuxeo.runtime
+ .gf3;version="1.6",org.nuxeo.runtime.model,org.osgi.framework;version
+ ="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter
+Nuxeo-Require: system.bundle,org.nuxeo.common,org.nuxeo.runtime
+
