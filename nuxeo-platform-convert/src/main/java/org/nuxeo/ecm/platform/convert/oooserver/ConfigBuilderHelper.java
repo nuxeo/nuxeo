@@ -41,7 +41,11 @@ public class ConfigBuilderHelper {
 
     private static String[] UNIX_OO_PATHS = { "/usr/lib/openoffice/program" };
 
+    private static String[] UNIX_JPIPE_PATHS = { "/usr/lib/ure/lib" };
+
     private static String[] MAC_OO_PATHS = { "/Applications/OpenOffice.org.app/Contents/MacOS" };
+
+    private static String[] MAC_JPIPE_PATHS = { "/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib" };
 
     private static String[] WIN_OO_PATHS = {
             "C:/Program Files/OpenOffice.org 2.2",
@@ -60,13 +64,29 @@ public class ConfigBuilderHelper {
     public ConfigBuilderHelper(OOoServerDescriptor desc) {
         this.desc = desc;
         if (desc.getJpipeLibPath() == null) {
-            if (isMac()) {
-                // we have no hope of working with this set to null, so try
-                // another value
-                this.desc.setJpipeLibPath("/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib");
-            }
+            this.desc.setJpipeLibPath(findJlibPipe());
         }
     }
+
+    protected String findJlibPipe() {
+
+        List<String> possiblePathes = new ArrayList<String>();
+
+        if (isLinux()) {
+            possiblePathes.addAll(Arrays.asList(UNIX_JPIPE_PATHS));
+        }
+        else if (isMac()) {
+            possiblePathes.addAll(Arrays.asList(MAC_JPIPE_PATHS));
+        }
+
+        for (String path : possiblePathes) {
+            if (new File(path).exists()) {
+                return path;
+            }
+        }
+        return null;
+    }
+
 
     protected static List<String> getSystemPaths() {
         String pathStr = System.getenv("PATH");
@@ -82,6 +102,11 @@ public class ConfigBuilderHelper {
     protected static boolean isMac() {
         String osName = System.getProperty("os.name").toLowerCase();
         return osName.toLowerCase().startsWith("mac os x");
+    }
+
+    protected static boolean isLinux() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.toLowerCase().startsWith("linux");
     }
 
     protected String getOOServerPath() {
