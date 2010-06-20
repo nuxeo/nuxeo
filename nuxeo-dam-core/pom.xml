@@ -33,7 +33,6 @@
       <artifactId>nuxeo-platform-imaging-core</artifactId>
     </dependency>
 
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
@@ -65,12 +64,6 @@
       <artifactId>nuxeo-platform-audio-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
 
     <dependency>
       <groupId>javax.transaction</groupId>

@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.core.service;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -40,5 +42,11 @@ public interface InheritedPropertiesService {
      */
     void inheritProperties(DocumentModel from, DocumentModel to)
             throws ClientException;
+
+    /**
+     * Returns an immutable {@code Map} containing the registered {@code
+     * InheritedPropertiesDescriptor}s
+     */
+    Map<String, InheritedPropertiesDescriptor> getInheritedPropertiesDescriptors();
 
 }

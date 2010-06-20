@@ -17,6 +17,7 @@
 
 package org.nuxeo.dam.core.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +69,10 @@ public class InheritedPropertiesServiceImpl extends DefaultComponent implements
             InheritedPropertiesDescriptor descriptor = (InheritedPropertiesDescriptor) contribution;
             inheritedPropertiesDescriptors.remove(descriptor.getSchema());
         }
+    }
+
+    public Map<String, InheritedPropertiesDescriptor> getInheritedPropertiesDescriptors() {
+        return Collections.unmodifiableMap(inheritedPropertiesDescriptors);
     }
 
     public void inheritProperties(DocumentModel from, DocumentModel to)

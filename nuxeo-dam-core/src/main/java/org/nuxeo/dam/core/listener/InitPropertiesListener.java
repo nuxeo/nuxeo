@@ -38,11 +38,13 @@ public class InitPropertiesListener implements EventListener {
      * Used to find the first parent accessible by a user, ie. the first parent
      * where the user has the READ permission.
      */
-    protected static class AccessibleParentFinder extends UnrestrictedSessionRunner {
+    protected static class AccessibleParentFinder extends
+            UnrestrictedSessionRunner {
 
         protected final CoreSession userSession;
 
         public final DocumentModel doc;
+
         public DocumentModel parent;
 
         public AccessibleParentFinder(CoreSession session, DocumentModel doc) {
@@ -56,13 +58,15 @@ public class InitPropertiesListener implements EventListener {
             parent = getFirstParentAccessibleByUser(doc);
         }
 
-        protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc) throws ClientException {
+        protected DocumentModel getFirstParentAccessibleByUser(DocumentModel doc)
+                throws ClientException {
             DocumentModel parent = session.getDocument(doc.getParentRef());
             if (parent == null || "/".equals(parent.getPathAsString())) {
                 return null;
             }
 
-            if (userSession.hasPermission(parent.getRef(), SecurityConstants.READ)) {
+            if (userSession.hasPermission(parent.getRef(),
+                    SecurityConstants.READ)) {
                 return parent;
             } else {
                 return getFirstParentAccessibleByUser(parent);
@@ -87,8 +91,10 @@ public class InitPropertiesListener implements EventListener {
                     && !Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
 
                 DocumentModel importSet = getImportSet(coreSession, doc);
-                if (importSet == null || "/".equals(importSet.getPathAsString())) {
-                    // there is no or no accessible importset parent, don't update
+                if (importSet == null
+                        || "/".equals(importSet.getPathAsString())) {
+                    // there is no or no accessible importset parent, don't
+                    // update
                     // the document.
                     return;
                 }
@@ -105,7 +111,8 @@ public class InitPropertiesListener implements EventListener {
      * Returns the first {@code ImportSet} parent, or {@code null} if no parent
      * is accessible.
      */
-    protected DocumentModel getImportSet(CoreSession session, DocumentModel doc) throws ClientException {
+    protected DocumentModel getImportSet(CoreSession session, DocumentModel doc)
+            throws ClientException {
         if (Constants.IMPORT_SET_TYPE.equals(doc.getType())) {
             return doc;
         } else {
@@ -118,7 +125,8 @@ public class InitPropertiesListener implements EventListener {
         }
     }
 
-    protected DocumentModel getFirstAccessibleParent(CoreSession session, DocumentModel doc) throws ClientException {
+    protected DocumentModel getFirstAccessibleParent(CoreSession session,
+            DocumentModel doc) throws ClientException {
         AccessibleParentFinder finder = new AccessibleParentFinder(session, doc);
         finder.runUnrestricted();
         return finder.parent;
