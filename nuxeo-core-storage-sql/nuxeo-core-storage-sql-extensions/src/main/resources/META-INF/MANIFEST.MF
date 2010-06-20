@@ -1,11 +1,4 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Version: 5.3.2.qualifier
-Bundle-Name: Nuxeo Core SQL Storage Extensions
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singleton:=true
 Fragment-Host: org.nuxeo.ecm.core.storage.sql
-Bundle-Vendor: Nuxeo SAS
-Export-Package: org.nuxeo.ecm.core.storage.sql.db
-Require-Bundle: com.h2database.h2,
- org.apache.lucene.core,
- org.apache.lucene.analyzers
+

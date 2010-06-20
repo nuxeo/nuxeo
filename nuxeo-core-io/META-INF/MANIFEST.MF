@@ -1,0 +1,47 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.io;uses:="org.nuxeo.ecm.core.api,or
+ g.nuxeo.ecm.core.io.exceptions,org.nuxeo.common.utils,org.dom4j";vers
+ ion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.io.exceptions;version="1.6.2.
+ SNAPSHOT",org.nuxeo.ecm.core.io.impl;uses:="org.nuxeo.ecm.core.schema
+ ,org.nuxeo.common.utils,org.nuxeo.ecm.core.api.security,org.nuxeo.ecm
+ .core.io,org.nuxeo.common.collections,org.dom4j,org.nuxeo.runtime.ser
+ vices.streaming,org.nuxeo.ecm.core.api.impl.blob,org.nuxeo.ecm.core.a
+ pi.security.impl,org.nuxeo.ecm.core.api.impl,org.nuxeo.ecm.core.schem
+ a.types,org.nuxeo.runtime.api,org.nuxeo.ecm.core.api,org.apache.commo
+ ns.logging,org.nuxeo.ecm.core.api.repository,org.nuxeo.ecm.core.io.im
+ pl.plugins,javax.security.auth.login,org.nuxeo.ecm.core.io.exceptions
+ ";version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.io.impl.plugins;uses:="
+ org.nuxeo.ecm.core.io,org.nuxeo.ecm.core.io.impl,org.nuxeo.ecm.core.a
+ pi,org.nuxeo.common.utils,org.apache.commons.logging,org.dom4j,org.nu
+ xeo.runtime.services.streaming,org.nuxeo.ecm.core.api.impl.blob,org.d
+ om4j.io";version="1.6.2.SNAPSHOT",OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Core IO
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277061398517
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Core IO.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Import-Package: OSGI-INF,javax.security.auth.login,org.apache.commons.
+ logging,org.dom4j,org.dom4j.io,org.nuxeo.common.collections;version="
+ 1.6.2.SNAPSHOT",org.nuxeo.common.utils;version="1.6.2.SNAPSHOT",org.n
+ uxeo.ecm.core.api;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.imp
+ l;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.impl.blob;version="
+ 1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.repository;version="1.6.2.SNAP
+ SHOT",org.nuxeo.ecm.core.api.security;version="1.6.2.SNAPSHOT",org.nu
+ xeo.ecm.core.api.security.impl;version="1.6.2.SNAPSHOT",org.nuxeo.ecm
+ .core.io;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.io.exceptions;ve
+ rsion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.io.impl;version="1.6.2.SNAP
+ SHOT",org.nuxeo.ecm.core.io.impl.plugins;version="1.6.2.SNAPSHOT",org
+ .nuxeo.ecm.core.schema;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.sc
+ hema.types;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.api;version="1.
+ 6.2.SNAPSHOT",org.nuxeo.runtime.services.streaming;version="1.6.2.SNA
+ PSHOT",org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-io
+Bundle-DocURL: http://www.nuxeo.com/en
+Nuxeo-Require: org.nuxeo.ecm.core.api
+

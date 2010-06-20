@@ -1,61 +1,16 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Version: 1.6.2.SNAPSHOT
-Bundle-Name: Nuxeo Core SQL Storage
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
-Bundle-Vendor: Nuxeo SAS
-Require-Bundle: org.nuxeo.runtime,
- org.nuxeo.runtime.management,
- org.nuxeo.runtime.management.metrics,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.event,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.query,
- org.nuxeo.ecm.core.convert,
- org.nuxeo.ecm.core.convert.api,
- org.nuxeo.ecm.core.convert.plugins,
- org.apache.commons.beanutils,
- org.apache.xmlbeans,
- org.apache.commons.collections,
- org.apache.commons.httpclient,
- org.mortbay.jetty.server,
- org.mortbay.jetty.util,
- javax.servlet.api
-Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
+Bundle-Category: core
+Eclipse-BuddyPolicy: registered
+Eclipse-ExtensibleAPI: true
+Nuxeo-Require: org.nuxeo.runtime,
  org.nuxeo.runtime.management,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.convert,
  org.nuxeo.ecm.core.convert.api,
  org.nuxeo.ecm.core.convert.plugins
-Bundle-Category: core
-Export-Package: org.nuxeo.ecm.core.storage,
- org.nuxeo.ecm.core.storage.sql,
- org.nuxeo.ecm.core.storage.sql.coremodel,
- org.nuxeo.ecm.core.storage.sql.jdbc,
- org.nuxeo.ecm.core.storage.sql.jdbc.db,
- org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
- org.nuxeo.ecm.core.storage.sql.management
-Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/management-contrib.xml,
  OSGI-INF/listener-contrib.xml,
  OSGI-INF/querymaker-service.xml,
  OSGI-INF/querymaker-contrib.xml
-Bundle-ClassPath: .,
- relaxngDatatype-1.0.jar,
- xsom-20060306.jar,
- commons-httpclient-3.1.jar,
- java-cup-0.11a.jar,
- script-api-1.0.jar,
- eval-0.5.jar,
- xmlbeans-2.3.0.jar,
- ooxml-schemas-1.0.jar,
- poi-3.5-beta6.jar,
- poi-ooxml-3.5-beta6.jar,
- poi-scratchpad-3.5-beta6.jar,
- xmlbeans-2.3.0.jar,
- javasimon-core-2.3.0.jar,
- javasimon-jdbc3-2.3.0.jar,
- javasimon-jmx-2.3.0.jar,
- stax-api-1.0.1.jar

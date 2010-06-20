@@ -17,9 +17,13 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector</artifactId>
-      <version>1.0</version>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

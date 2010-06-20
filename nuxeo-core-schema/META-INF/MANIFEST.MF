@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.schema;uses:="org.nuxeo.ecm.core.sc
+ hema.types,org.nuxeo.common.xmap.annotation,org.nuxeo.runtime.api,org
+ .apache.commons.logging,org.nuxeo.runtime.model,org.nuxeo.common.util
+ s,org.nuxeo.runtime,org.xml.sax,com.sun.xml.xsom.parser,com.sun.xml.x
+ som,org.nuxeo.ecm.core.schema.types.primitives";version="1.6.2.SNAPSH
+ OT",org.nuxeo.ecm.core.schema.types;uses:="org.nuxeo.ecm.core.schema,
+ org.nuxeo.runtime.api,org.nuxeo.ecm.core.schema.types.primitives";ver
+ sion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.schema.types.constraints;use
+ s:="org.nuxeo.ecm.core.schema.types";version="1.6.2.SNAPSHOT",org.nux
+ eo.ecm.core.schema.types.primitives;uses:="org.nuxeo.common.utils,org
+ .nuxeo.ecm.core.schema.types,org.nuxeo.ecm.core.schema.utils";version
+ ="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.schema.utils;version="1.6.2.SNAP
+ SHOT",OSGI-INF
+Ignore-Package: OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Core Schema
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1276999048159
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/SchemaService.xml
+Bundle-Description: Nuxeo Core: Schema.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: com.sun.xml.xsom,com.sun.xml.xsom.parser,org.apache.co
+ mmons.logging,org.nuxeo.common.utils,org.nuxeo.common.xmap.annotation
+ ,org.nuxeo.ecm.core.schema;version="1.6",org.nuxeo.ecm.core.schema.ty
+ pes;version="1.6",org.nuxeo.ecm.core.schema.types.constraints;version
+ ="1.6",org.nuxeo.ecm.core.schema.types.primitives;version="1.6",org.n
+ uxeo.ecm.core.schema.utils;version="1.6",org.nuxeo.runtime,org.nuxeo.
+ runtime.api,org.nuxeo.runtime.model,org.osgi.framework;version="1.4",
+ org.xml.sax
+Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-schema
+Nuxeo-Require: org.nuxeo.runtime
+

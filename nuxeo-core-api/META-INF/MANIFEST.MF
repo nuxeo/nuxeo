@@ -1,0 +1,74 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core;api=split;version="1.6.2.SNAPSHOT";mandatory:=api,
+ org.nuxeo.ecm.core.api;api=split;version="1.6.2.SNAPSHOT";mandatory:=api;
+  uses:="org.nuxeo.ecm.core.schema,
+   org.apache.commons.logging,
+   org.nuxeo.runtime.api,
+   org.nuxeo.common.utils,
+   org.nuxeo.common.collections,
+   javax.security.auth.login",
+ org.nuxeo.ecm.core.api.adapter;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.blobholder;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.event;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.event.impl;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.externalblob;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.facet;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.impl;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.impl.blob;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.impl.converter;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.local;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.model;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.model.impl;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.model.impl.osm;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.model.impl.osm.util;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.model.impl.primitives;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.operation;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.repository;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.repository.cache;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.security;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.security.impl;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.api.tree;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.url;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.url.nxdoc;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.url.nxobj;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.utils;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Core API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277068593487
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml,OSGI-INF/Reposito
+ ryManager.xml, OSGI-INF/blob-holder-service-framework.xml,OSGI-INF/bl
+ ob-holder-adapters-contrib.xml
+Bundle-Description: Nuxeo Core: API.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ org.apache.commons.collections.bidimap,
+ org.apache.commons.collections.map,
+ org.apache.commons.logging,
+ org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model,
+ org.nuxeo.runtime.services.streaming,
+ org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.ecm.core.api
+Eclipse-ExtensibleAPI: true
+Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,org.nuxeo.ecm.co
+ re.schema;visibility:=reexport
+

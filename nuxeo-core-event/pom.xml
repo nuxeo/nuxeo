@@ -68,5 +68,11 @@
       <artifactId>groovy</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>commons-lang</groupId>
+    	<artifactId>commons-lang</artifactId>
+    	<optional>false</optional>
+    </dependency>
   </dependencies>
+
 </project>

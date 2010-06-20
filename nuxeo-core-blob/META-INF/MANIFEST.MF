@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.blob.storage;version="1.6.2.SNAPSHO
+ T",org.nuxeo.ecm.core.blob.storage.impl;uses:="org.nuxeo.ecm.core.blo
+ b.storage,javax.resource,javax.resource.spi,javax.transaction.xa,org.
+ apache.commons.logging";version="1.6.2.SNAPSHOT",OSGI-INF
+Ignore-Package: OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Blob Manager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277023554527
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Core: Blob Manager and Storage.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: javax.resource,javax.resource.spi,javax.transaction.xa
+ ;version="1.1",org.apache.commons.logging,org.nuxeo.ecm.core.blob.sto
+ rage;version="1.6",org.nuxeo.ecm.core.blob.storage.impl;version="1.6"
+ ,org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-blob
+Nuxeo-Require: org.nuxeo.runtime

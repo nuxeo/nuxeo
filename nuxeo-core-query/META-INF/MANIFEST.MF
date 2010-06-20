@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.query;uses:="org.nuxeo.ecm.core.api
+ .impl,org.nuxeo.ecm.core.query.sql.model,org.nuxeo.ecm.core,org.nuxeo
+ .ecm.core.api";version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.query.sql;
+ uses:="java_cup.runtime,org.nuxeo.ecm.core.query.sql.parser,org.nuxeo
+ .ecm.core.query.sql.model,org.nuxeo.ecm.core.query";version="1.6.2.SN
+ APSHOT",org.nuxeo.ecm.core.query.sql.model;uses:="org.joda.time,org.j
+ oda.time.format,org.nuxeo.common.collections,org.nuxeo.common.utils";
+ version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.query.sql.parser;uses:="j
+ ava_cup.runtime,org.nuxeo.ecm.core.query.sql.model,org.nuxeo.ecm.core
+ .query";version="1.6.2.SNAPSHOT",OSGI-INF
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Core Query
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277071105538
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Core: Query.
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Import-Package: OSGI-INF,java_cup.runtime,org.joda.time;version="1.6",
+ org.joda.time.format;version="1.6",org.nuxeo.common.collections;versi
+ on="1.6.2.SNAPSHOT",org.nuxeo.common.utils;version="1.6.2.SNAPSHOT",o
+ rg.nuxeo.ecm.core;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api;ver
+ sion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.impl;version="1.6.2.SNAP
+ SHOT",org.nuxeo.ecm.core.query;version="1.6.2.SNAPSHOT",org.nuxeo.ecm
+ .core.query.sql;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.query.sql
+ .model;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.query.sql.parser;v
+ ersion="1.6.2.SNAPSHOT",org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.ecm.core.query
+Bundle-DocURL: http://www.nuxeo.com/en
+Nuxeo-Require: org.nuxeo.ecm.core.api
+

@@ -1,38 +1,7 @@
 Manifest-Version: 1.0
-Bundle-Version: 5.3.2.qualifier
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Core Converter Service default plugins
 Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins;singleton=true
-Bundle-Localization: plugin
-Require-Bundle: org.nuxeo.runtime,
- org.apache.commons.logging,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.convert,
- org.nuxeo.ecm.core.convert.api,
- javax.mail,
- pdfbox,
- org.apache.poi.scratchpad,
- org.apache.poi,
- org.apache.poi.ooxml,
- net.sourceforge.nekohtml,
- org.apache.xmlbeans,
- xerces.xmlParserAPIs,
- xerces.Impl
-Bundle-Vendor: Nuxeo SAS
-Bundle-Category: runtime
+Bundle-Category: core
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
 Nuxeo-Require: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.convert,
  org.nuxeo.ecm.core.convert.api
-Bundle-ClassPath: .,
- relaxngDatatype-1.0.jar,
- xsom-20060306.jar,
- nekohtml-1.9.9.jar,
- xmlbeans-2.3.0.jar,
- ooxml-schemas-1.0.jar,
- poi-3.5-beta6.jar,
- poi-ooxml-3.5-beta6.jar,
- poi-scratchpad-3.5-beta6.jar,
- xmlbeans-2.3.0.jar,
- stax-api-1.0.1.jar,
- xercesImpl-2.9.1.jar

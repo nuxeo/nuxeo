@@ -20,6 +20,12 @@
     </dependency>
 
     <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>

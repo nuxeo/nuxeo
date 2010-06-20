@@ -1,23 +1,7 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Version: 5.3.2.qualifier
-Bundle-Name: Nuxeo ECM Core
 Bundle-SymbolicName: org.nuxeo.ecm.core;singleton:=true
-Bundle-Vendor: Nuxeo
 Bundle-Activator: org.nuxeo.ecm.core.NXCoreActivator
 Bundle-Category: core
-Bundle-ClassPath: .
-Export-Package: org.nuxeo.ecm.core;split:="core"; mandatory:="core",
- org.nuxeo.ecm.core.api;split:="core"; mandatory:="core",
- org.nuxeo.ecm.core.api.local;split:="core"; mandatory:="core",
- org.nuxeo.ecm.core.lifecycle,
- org.nuxeo.ecm.core.lifecycle.extensions,
- org.nuxeo.ecm.core.lifecycle.impl,
- org.nuxeo.ecm.core.model,
- org.nuxeo.ecm.core.repository,
- org.nuxeo.ecm.core.security,
- org.nuxeo.ecm.core.versioning
-Eclipse-LazyStart: true
 Eclipse-ExtensibleAPI: true
 Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/RepositoryService.xml,
@@ -28,10 +12,6 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/SecurityService.xml,
  OSGI-INF/permissions-contrib.xml,
  OSGI-INF/security-policy-contrib.xml
-Require-Bundle: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core.query,
- org.nuxeo.ecm.core.event
 Nuxeo-Require: org.nuxeo.runtime,
   org.nuxeo.ecm.core.api,
   org.nuxeo.ecm.core.schema,

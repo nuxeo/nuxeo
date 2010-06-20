@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.event.jms;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
 
 public class JMSBusNotActiveException extends ClientException {
 
