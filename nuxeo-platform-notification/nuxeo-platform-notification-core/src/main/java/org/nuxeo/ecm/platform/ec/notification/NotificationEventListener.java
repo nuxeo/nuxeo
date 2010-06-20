@@ -275,7 +275,7 @@ public class NotificationEventListener implements PostCommitEventListener {
         try {
             emailHelper.sendmail(mail);
         } catch (MessagingException e) {
-            log.error("Failed to send notification email to '" + email + "': "
+            log.warn("Failed to send notification email to '" + email + "': "
                     + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
             throw new ClientException("Failed to send notification email ", e);
@@ -295,7 +295,7 @@ public class NotificationEventListener implements PostCommitEventListener {
             if (doc.getParentRef() != null && coreSession.exists(doc.getParentRef())) {
                 DocumentModel parent = getDocumentParent(coreSession, doc);
                 gatherConcernedUsersForDocument(coreSession, parent, notifs,
-                        targetUsers);                
+                        targetUsers);
             }
         }
     }
