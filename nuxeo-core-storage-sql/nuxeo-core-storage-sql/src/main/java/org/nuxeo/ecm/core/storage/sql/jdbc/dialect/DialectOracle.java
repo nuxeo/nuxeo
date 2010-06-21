@@ -507,6 +507,8 @@ public class DialectOracle extends Dialect {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR2(36)");
         properties.put("argIdType", "VARCHAR2"); // in function args
+        properties.put("aclOptimizationsEnabled",
+                Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
