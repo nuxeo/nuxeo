@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.invalidations;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -26,7 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author tiry
  */
-public abstract class DocumentContextBoundActionBean {
+public abstract class DocumentContextBoundActionBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private DocumentModel currentDocument;
 
