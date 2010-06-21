@@ -54,6 +54,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @AutomaticDocumentBasedInvalidation
 public class JbpmTaskActionsBean extends DocumentContextBoundActionBean {
 
+    private static final long serialVersionUID = 1L;
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
