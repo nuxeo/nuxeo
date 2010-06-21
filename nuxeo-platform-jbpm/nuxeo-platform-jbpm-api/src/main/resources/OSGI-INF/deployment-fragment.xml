@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <fragment>
-  <extension target="jboss-app#MODULE">
+  <extension target="application#MODULE">
     <module>
       <service>${bundle.fileName}</service>
     </module>
