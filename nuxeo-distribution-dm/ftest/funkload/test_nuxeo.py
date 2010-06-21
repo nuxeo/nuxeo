@@ -86,6 +86,12 @@ class Nuxeo(NuxeoTestCase):
             p = p.viewDocumentPath(self.dir_path)
         p.logout()
 
+    def testDashboard(self):
+        p = (LoginPage(self).view()
+             .login(self.cred_admin[0], self.cred_admin[1]))
+        p = p.dashboardNew()
+        p.logout()
+
     def testReader(self):
         p = (LoginPage(self).view()
              .login(self.cred_member[0], self.cred_member[1]))
@@ -105,6 +111,8 @@ class Nuxeo(NuxeoTestCase):
                  .history())
 
         p.dashboard()
+        p.getRootWorkspaces()
+        p.dashboardNew()
         p.getRootWorkspaces()
         p.personalWorkspace()
         if self.search:

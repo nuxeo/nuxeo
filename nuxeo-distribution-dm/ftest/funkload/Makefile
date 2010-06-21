@@ -90,7 +90,7 @@ bench-longevity: start test-nuxeo bench-writer-long bench-reader-long stop
 
 
 bench-writer-long:
-	-fl-run-bench --simple-fetch -c 10:10:10:10:10 -D 600 -m 0.1 -M 1 -s 0.5 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-run-bench --simple-fetch --label=long -c 10:10:10:10:10 -D 600 -m 0.1 -M 1 -s 0.5 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 bench-reader-long: warmup

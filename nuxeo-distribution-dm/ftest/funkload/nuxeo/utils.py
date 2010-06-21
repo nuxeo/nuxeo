@@ -14,3 +14,18 @@ def extractJsfState(html):
     if not state.startswith('j_id') or len(state)>10:
         raise ValueError('Invalid JSF State found: %s.' % str(state))
     return state
+
+def extractIframes(body):
+    ifr_tag = '/nuxeo/opensocial/gadgets/ifr?'
+    items = body.split(ifr_tag)
+    iframes = [ifr_tag[6:] + item[:item.find('"')] for item in items[1:]]
+    return iframes
+
+def extractJsessionId(fl):
+    jid = None
+    for dom, cookies in fl._browser.cookies.items():
+        for path, cookie in cookies.items():
+            if not cookie.has_key('JSESSIONID'):
+                continue
+            jid = cookie['JSESSIONID'].coded_value
+    return jid
