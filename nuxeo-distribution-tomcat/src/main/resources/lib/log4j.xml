@@ -68,6 +68,11 @@
   <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
     <priority value="INFO" />
   </category>
+  <!-- Limit JSF logging to DEBUG.  FINER and FINEST will not be logged -->
+  <category name="javax.enterprise.resource.webcontainer.jsf"
+    additivity="true">
+    <priority value="DEBUG" />
+  </category>
 
   <root>
     <level value="WARN" />
