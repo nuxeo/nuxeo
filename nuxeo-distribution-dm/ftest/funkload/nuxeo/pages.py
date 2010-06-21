@@ -41,8 +41,10 @@ Document
 * publish(section_uid)
 """
 import random
+import time
+from urllib import quote_plus
 from webunit.utility import Upload
-from utils import extractToken, extractJsfState
+from utils import extractToken, extractJsfState, extractIframes, extractJsessionId
 from funkload.utils import Data
 
 class BasePage:
@@ -235,11 +237,99 @@ class BasePage:
         return self
 
     def dashboard(self):
+        """jsf dashboard"""
         fl = self.fl
         self.viewDocumentUid(self.getDocUid(), outcome='user_dashboard',
-                             description="View dashboard")
+                             description="View JSF dashboard")
         fl.assert_('My workspaces' in fl.getBody(),
                    'Not a dashboard page')
+        return self
+
+    def dashboardNew(self):
+        """open social dashboard"""
+        fl = self.fl
+        server_url = fl.server_url
+        fl.post(server_url + "/view_documents.faces", params=[
+            ['userServicesForm:simpleSearchKeywordsInput', ''],
+            ['userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['userServicesForm_SUBMIT', '1'],
+            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+                description="Dashboard opensocial")
+
+        ts = str(time.time())
+        jid = extractJsessionId(fl)
+        uid = extractToken(fl.getBody(), """return "{docRef:'""", "'")
+        fl.assert_(len(uid) == 36)
+
+        fl.get(server_url + "/org.nuxeo.opensocial.container.ContainerEntryPoint/org.nuxeo.opensocial.container.ContainerEntryPoint.nocache.js",
+                 description="Get container entry point")
+        data =  Data('text/x-gwt-rpc; charset=utf-8', '''5|0|17|''' + server_url + '''/org.nuxeo.opensocial.container.ContainerEntryPoint/|9CCFB53A0997F1E4596C8EE4765CCBAA|org.nuxeo.opensocial.container.client.service.api.ContainerService|getContainer|java.util.Map|java.util.HashMap/962170901|java.lang.String/2004016611|docRef|''' + uid + '''|clientUrl|''' + server_url + '''/|windowWidth|10|nxBaseUrl|userLanguage|fr|locale|1|2|3|4|1|5|6|6|7|8|7|9|7|10|7|11|7|12|7|13|7|14|-5|7|15|7|16|7|17|-10|''')
+        fl.post(server_url + "/gwtcontainer", data,
+                description="dashboard gwt container")
+        fl.assert_('//OK' in fl.getBody())
+         
+        # Extract iframes from the gwtcontainer response
+        iframes = extractIframes(fl.getBody())
+        fl.assert_(len(iframes))
+
+        i = 0
+        for iframe in iframes:
+            i += 1
+            print "iframe: " + iframe
+            fl.get(server_url + iframe,
+                     description="dashboard iframe %d" % i)
+            fl.assert_(fl.getBody().startswith('<html>'))
+
+        fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FUSER_SITES%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046361930.9475744903817575&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3D" + jid + "&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserdocuments%2Fusersites.xml&container=default&bypassSpecCache=1&nocache=0",
+            description="dashboard req1: user sites")
+        fl.assert_('USER_SITES' in fl.getBody())
+
+        fl.post(server_url + "/opensocial/gadgets/makeRequest", params=[
+            ['authz', ''],
+            ['signOwner', 'true'],
+            ['contentType', 'JSON'],
+            ['nocache', '0'],
+            ['postData', ''],
+            ['headers', 'Cache-control=no-cache%2C%20must-revalidate&X-NUXEO-INTEGRATED-AUTH=' + jid],
+            ['url', server_url + '/restAPI/workflowTasks/default?mytasks=false&format=JSON&ts=' + ts + '&lang=en&labels=workflowDirectiveValidation,workflowDirectiveOpinion,workflowDirectiveVerification,workflowDirectiveCheck,workflowDirectiveDiffusion,label.workflow.task.name,label.workflow.task.duedate,label.workflow.task.directive'],
+            ['numEntries', '3'],
+            ['bypassSpecCache', '1'],
+            ['st', ''],
+            ['httpMethod', 'GET'],
+            ['signViewer', 'true'],
+            ['container', 'default'],
+            ['getSummaries', 'false'],
+            ['gadget', server_url + '/site/gadgets/waitingfor/waitingfor.xml']],
+            description="dashboard req2: other tasks")
+        fl.assert_('Tasks for' in fl.getBody())
+
+        fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FUSER_WORKSPACES%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046364186.08350334148753&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3DEB4D8F264629C549917996193637A4F4&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserworkspaces%2Fuserworkspaces.xml&container=default&bypassSpecCache=1&nocache=0",
+            description="dashboard req3: user workspaces")
+        fl.assert_('USER_WORKSPACES' in fl.getBody())
+
+        fl.post(server_url + "/opensocial/gadgets/makeRequest", params=[
+            ['authz', ''],
+            ['signOwner', 'true'],
+            ['contentType', 'JSON'],
+            ['nocache', '0'],
+            ['postData', ''],
+            ['headers', 'Cache-control=no-cache%2C%20must-revalidate&X-NUXEO-INTEGRATED-AUTH=EB4D8F264629C549917996193637A4F4'],
+            ['url', server_url + '/restAPI/workflowTasks/default?mytasks=true&format=JSON&ts=' + ts + '&lang=en&labels=workflowDirectiveValidation,workflowDirectiveOpinion,workflowDirectiveVerification,workflowDirectiveCheck,workflowDirectiveDiffusion,label.workflow.task.name,label.workflow.task.duedate,label.workflow.task.directive'],
+            ['numEntries', '3'],
+            ['bypassSpecCache', '1'],
+            ['st', ''],
+            ['httpMethod', 'GET'],
+            ['signViewer', 'true'],
+            ['container', 'default'],
+            ['getSummaries', 'false'],
+            ['gadget', server_url + '/site/gadgets/tasks/tasks.xml']],
+            description="dashboard req4: my tasks")
+        fl.assert_('Tasks for' in fl.getBody())
+
+        fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FRELEVANT_DOCUMENTS%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046370131.186666326174645&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3DEB4D8F264629C549917996193637A4F4&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserdocuments%2Fuserdocuments.xml&container=default&bypassSpecCache=1&nocache=0",
+            description="dashboard req5: relevant docs")
+        fl.assert_('RELEVANT_DOCUMENTS' in fl.getBody())
         return self
 
     def personalWorkspace(self):
