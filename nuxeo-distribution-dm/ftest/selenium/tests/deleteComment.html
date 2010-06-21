@@ -9,12 +9,17 @@
 <tr><td rowspan="1" colspan="3">deleteComment</td></tr>
 </thead><tbody>
 <!--@Test groups:DeleteComment|depends:CreateNote,off-->
-<!--Identification responsable-->
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
 	<td></td>
 </tr>
+<tr>
+        <td>open</td>
+        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium deleteComment</td>
+        <td></td>
+</tr>
+<!--Identification responsable-->
 <tr>
 	<td>open</td>
 	<td>logout</td>
