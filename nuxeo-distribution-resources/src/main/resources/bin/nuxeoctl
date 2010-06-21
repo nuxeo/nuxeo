@@ -156,7 +156,10 @@ PID="$PID_DIR/nuxeo.pid"
 # DATA_DIR
 # We don't use a default dir so as not to break backward compatibility
 
-if [ ! -z "$DATA_DIR" ] && [[ "$DATA_DIR" != /* ]]; then
+if [ -z "$DATA_DIR" ]; then
+  DATA_DIR=server/default/data
+fi
+if [[ "$DATA_DIR" != /* ]]; then
 	DATA_DIR="$NUXEO_HOME/$DATA_DIR"
 fi
 
@@ -229,7 +232,7 @@ fi
 
 if [ "$jboss" = "true" ]; then
 
-	# Fix JRE 1.5/1.6 issue with script-api.jar and jaxb-api.jar
+	# Fix JRE 1.5/1.6 issue with script-api.jar
 	IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
 	NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
 	JAVA5_APIS="script-api"
@@ -258,9 +261,6 @@ if [ "$jboss" = "true" ]; then
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
 	NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
-	if [ ! -z "$DATA_DIR" ]; then
-		NUXEO_DATA="-Djboss.server.data.dir=\"$DATA_DIR\""
-	fi
 	if [ "$cygwin" = "true" ]; then
 		NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
 		NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
@@ -369,7 +369,7 @@ start() {
   if [ "$jboss" = "true" ]; then
     $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-      $NUXEO_DATA org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
+      -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
   elif [ "$tomcat" = "true" ]; then
     $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
@@ -453,7 +453,7 @@ case "$1" in
     if [ "$jboss" = "true" ]; then
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-        $NUXEO_DATA org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
+        -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS > "$LOG" 2>&1 &
     elif [ "$tomcat" = "true" ]; then
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
@@ -478,10 +478,10 @@ case "$1" in
     if [ "$jboss" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-        $NUXEO_DATA org.jboss.Main -b $BIND_ADDRESS
+        -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-        $NUXEO_DATA org.jboss.Main -b $BIND_ADDRESS
+        -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
     elif [ "$tomcat" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
