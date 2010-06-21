@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-platform-lock-api project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Require: org.nuxeo.runtime
