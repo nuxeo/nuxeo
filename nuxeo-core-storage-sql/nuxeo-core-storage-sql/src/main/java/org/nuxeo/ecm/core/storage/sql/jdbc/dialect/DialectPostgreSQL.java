@@ -268,7 +268,7 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
-        query = query.replaceAll(" +", " ");
+        query = query.replaceAll(" +", " ").trim();
         List<String> res = new LinkedList<String>();
         for (String word : StringUtils.split(query, ' ', false)) {
             if (word.startsWith("-")) {

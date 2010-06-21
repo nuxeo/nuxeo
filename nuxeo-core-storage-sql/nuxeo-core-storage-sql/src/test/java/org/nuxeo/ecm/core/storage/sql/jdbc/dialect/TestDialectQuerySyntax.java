@@ -80,7 +80,8 @@ public class TestDialectQuerySyntax extends TestCase {
     public void testH2() throws Exception {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         check("+foo", "foo");
-        check("+foo +bar", "foo    bar");
+        check("+foo", "foo ");
+        check("+foo +bar", "foo    bar ");
         check("+foo -bar", "foo -bar");
         check("+bar -foo", "-foo bar");
         check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
@@ -90,7 +91,8 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
         check("foo", "foo");
-        check("foo & bar", "foo    bar");
+        check("foo", "foo ");
+        check("foo & bar", "foo    bar ");
         check("foo & bar", "foo  &  bar"); // compat with native queries
         check("foo & !bar", "foo -bar");
         check("!foo & bar", "-foo bar");
@@ -101,8 +103,9 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectOracle(metadata, binaryManager,
                 repositoryDescriptor);
         check("foo", "foo");
+        check("foo", "foo ");
         check("foo%", "foo*");
-        check("foo & bar", "foo    bar");
+        check("foo & bar", "foo    bar ");
         check("foo ~ bar", "foo -bar");
         check("bar ~ foo", "-foo bar");
         check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
@@ -112,7 +115,8 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectSQLServer(metadata, binaryManager,
                 repositoryDescriptor);
         check("foo", "foo");
-        check("foo & bar", "foo    bar");
+        check("foo", "foo ");
+        check("foo & bar", "foo    bar ");
         check("foo &! bar", "foo -bar");
         check("bar &! foo", "-foo bar");
         check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
@@ -122,7 +126,8 @@ public class TestDialectQuerySyntax extends TestCase {
         dialect = new DialectMySQL(metadata, binaryManager,
                 repositoryDescriptor);
         check("+foo", "foo");
-        check("+foo +bar", "foo    bar");
+        check("+foo", "foo ");
+        check("+foo +bar", "foo    bar ");
         check("+foo -bar", "foo -bar");
         check("+bar -foo", "-foo bar");
         check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
