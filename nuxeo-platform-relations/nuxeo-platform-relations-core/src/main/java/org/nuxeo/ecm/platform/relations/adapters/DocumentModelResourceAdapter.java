@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Resource adapter using the document model id.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class DocumentModelResourceAdapter extends AbstractResourceAdapter
@@ -96,8 +96,12 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                                 repoName, session.getSessionId()));
                     }
                 }
+                if (!session.exists(ref)) {
+                    return null;
+                }
                 object = session.getDocument(ref);
             } catch (Exception e) {
+                log.warn("Cannot get resource: " + resource, e);
             } finally {
                 if (session != null && sessionOpened) {
                     CoreInstance core = CoreInstance.getInstance();
