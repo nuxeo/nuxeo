@@ -35,7 +35,7 @@
           <tr>
             <td>
               <c:set var="createdFromCreateTaskOperation"
-                value="#{task.getVariable('createdFromCreateTaskOperation') == 'true'}" />
+                value="#{task.getVariableLocally('createdFromCreateTaskOperation') == 'true'}" />
               <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
               <c:if test="#{createdFromCreateTaskOperation}">
                 #{task.name}
