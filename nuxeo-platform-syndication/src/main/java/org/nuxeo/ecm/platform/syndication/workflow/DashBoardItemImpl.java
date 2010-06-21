@@ -47,7 +47,7 @@ public class DashBoardItemImpl extends
      */
     public String getDocumentLink() {
         TaskInstance taskInstance = getTaskInstance();
-        if ("true".equals(taskInstance.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()))) {
+        if ("true".equals(taskInstance.getVariableLocally(JbpmTaskService.TaskVariableName.createdFromTaskService.name()))) {
             return "/nxdoc/" + getDocument().getRepositoryName() + "/"
                     + getDocument().getId() + "/view_documents";
         } else {

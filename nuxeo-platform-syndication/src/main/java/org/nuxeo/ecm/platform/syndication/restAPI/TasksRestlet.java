@@ -56,7 +56,6 @@ import org.restlet.data.Response;
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
     private JbpmService jbpmService;
 
-
     private final Log log = LogFactory.getLog(TasksRestlet.class);
 
     private static final String defaultFormat = "XML";
@@ -175,8 +174,8 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 }
                 if (doc != null) {
                     Token token = process.getRootToken();
-                    Collection<TaskInstance> notDone = process.getTaskMgmtInstance().getUnfinishedTasks(
-                            token);
+                    Collection<TaskInstance> notDone = jbpmService.getTaskInstances(
+                            process.getId(), null, null);
                     for (TaskInstance task : notDone) {
                         Set<PooledActor> actors = task.getPooledActors();
                         StringBuilder names = new StringBuilder();
