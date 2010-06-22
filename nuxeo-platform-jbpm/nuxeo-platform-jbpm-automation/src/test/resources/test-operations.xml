@@ -6,7 +6,7 @@
 
     <chain id="createSingleTaskChain">
       <operation id="Context.FetchDocument" />
-      <operation id="Document.CreateTask">
+      <operation id="Workflow.CreateTask">
         <param type="string" name="task name">single test task</param>
         <param type="date" name="due date">2006-07-06T15:10:15Z</param>
         <param type="string" name="directive">test directive</param>
@@ -21,7 +21,7 @@
 
     <chain id="createSingleTaskChainWithoutActors">
       <operation id="Context.FetchDocument" />
-      <operation id="Document.CreateTask">
+      <operation id="Workflow.CreateTask">
         <param type="string" name="task name">
           single test task without actors
         </param>
@@ -30,7 +30,7 @@
 
     <chain id="createSeveralTasksChain">
       <operation id="Context.FetchDocument" />
-      <operation id="Document.CreateTask">
+      <operation id="Workflow.CreateTask">
         <param type="string" name="task name">several test tasks</param>
         <!-- define actors here, it's easier for tests -->
         <param type="string" name="additional list of actors prefixed ids">
@@ -42,7 +42,7 @@
 
     <chain id="createSingleTaskAndRunOperationChain">
       <operation id="Context.FetchDocument" />
-      <operation id="Document.CreateTask">
+      <operation id="Workflow.CreateTask">
         <param type="string" name="task name">single test task</param>
         <param type="string" name="accept operation chain">
           taskAcceptedChain
