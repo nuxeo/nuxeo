@@ -115,7 +115,7 @@ public final class ThemeManager implements Registrable {
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
     private final Map<String, byte[]> cachedBinaries = new HashMap<String, byte[]>();
-    
+
     private List<String> resourceOrdering = new ArrayList<String>();
 
     private static final File CUSTOM_THEME_DIR;
@@ -558,7 +558,8 @@ public final class ThemeManager implements Registrable {
     }
 
     public void makeElementUseNamedStyle(final Element element,
-            final String inheritedName, final String currentThemeName) {
+            final String inheritedName, final String currentThemeName)
+            throws ThemeException {
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,
@@ -569,13 +570,16 @@ public final class ThemeManager implements Registrable {
             ThemeManager.removeInheritanceTowards(style);
         } else {
             final String themeName = currentThemeName.split("/")[0];
-            final Style inheritedStyle = (Style) getNamedObject(themeName,
-                    "style", inheritedName);
+            Style inheritedStyle = (Style) getNamedObject(themeName, "style",
+                    inheritedName);
             if (inheritedStyle == null) {
-                log.error("Unknown style: " + inheritedName);
-            } else {
-                makeFormatInherit(style, inheritedStyle);
+                inheritedStyle = (Style) FormatFactory.create("style");
+                inheritedStyle.setName(inheritedName);
+                registerFormat(inheritedStyle);
+                setNamedObject(themeName, "style", inheritedStyle);
+                ThemeParser.loadStyle(inheritedStyle);
             }
+            makeFormatInherit(style, inheritedStyle);
         }
     }
 
@@ -1292,8 +1296,8 @@ public final class ThemeManager implements Registrable {
             String[] parts = path.split("/");
             String collectionName = parts[0];
             String resourceName = parts[1];
-            data = ResourceManager.getBinaryBankResource("image", collectionName,
-                    resourceName);
+            data = ResourceManager.getBinaryBankResource("image",
+                    collectionName, resourceName);
             cachedBinaries.put(key, data);
         }
         return data;
