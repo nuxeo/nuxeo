@@ -141,7 +141,7 @@ public class MetadataFile {
         }
     }
 
-    protected void addProperty(String propertyKey, Object value) {
+    public void addProperty(String propertyKey, Object value) {
         if (value instanceof String) {
             metadataProperties.put(propertyKey, value);
         } else if (value instanceof List) {
