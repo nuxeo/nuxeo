@@ -153,6 +153,11 @@ public class MetadataFile {
             } catch (ClassCastException e) {
                 // do nothing
             }
+        } else if (value instanceof String[]) {
+            String[] list = (String[]) value;
+            if (list.length > 0) {
+                metadataProperties.put(propertyKey, StringUtils.join(list, "|"));
+            }
         } else if (value instanceof Calendar) {
             Date date = ((Calendar) value).getTime();
             metadataProperties.put(propertyKey, DATE_FORMAT.format(date));
