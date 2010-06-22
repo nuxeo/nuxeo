@@ -24,11 +24,12 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Save the input document
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentBlob.ID, category = Constants.CAT_BLOB, label = "Get Document File", description = "Get a file attached on the input document. The file location is specified using an xpath to the blob property of the document. Returns the file")
@@ -41,7 +42,14 @@ public class GetDocumentBlob {
 
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
-        return (Blob) doc.getPropertyValue(xpath);
+        Blob blob = (Blob) doc.getPropertyValue(xpath);
+        // cannot return null since it may break the next operation
+        if (blob == null) { // create an empty blob
+            blob = new StringBlob("");
+            blob.setMimeType("text/plain");
+            blob.setFilename(doc.getName() + ".null");
+        }
+        return blob;
     }
 
     @OperationMethod

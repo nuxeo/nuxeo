@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
 /**
  * Save the input document
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Get a list of files that are attached on the input document. The files location should eb specified using the blob list property xpath. Return a list of files.")
@@ -45,6 +45,9 @@ public class GetDocumentBlobs {
     public BlobList run(DocumentModel doc) throws Exception {
         BlobList blobs = new BlobList();
         ListProperty list = (ListProperty) doc.getProperty(xpath);
+        if (list == null) {
+            return blobs;
+        }
         for (Property p : list) {
             blobs.add((Blob) p.getValue("file"));
         }
