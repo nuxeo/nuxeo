@@ -23,9 +23,9 @@ import java.util.List;
  */
 public interface QueryMakerService {
 
-    void registerQueryMaker(Class<? extends QueryMaker> klass);
+    void registerQueryMaker(QueryMakerDescriptor descriptor);
 
-    void unregisterQueryMaker(Class<? extends QueryMaker> klass);
+    void unregisterQueryMaker(QueryMakerDescriptor descriptor);
 
     List<Class<? extends QueryMaker>> getQueryMakers();
 

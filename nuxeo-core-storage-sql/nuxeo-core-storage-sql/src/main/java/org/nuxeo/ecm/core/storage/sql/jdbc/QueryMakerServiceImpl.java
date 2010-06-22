@@ -18,7 +18,9 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,16 +37,17 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
 
     public static final String XP = "queryMaker";
 
-    public final List<Class<? extends QueryMaker>> queryMakers = new ArrayList<Class<? extends QueryMaker>>(
+    protected final List<QueryMakerDescriptor> descriptors = new ArrayList<QueryMakerDescriptor>(
             2);
+
+    protected List<Class<? extends QueryMaker>> queryMakers;
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP.equals(extensionPoint)) {
-            QueryMakerDescriptor descriptor = (QueryMakerDescriptor) contribution;
-            registerQueryMaker(descriptor.queryMaker);
+            registerQueryMaker((QueryMakerDescriptor) contribution);
         }
     }
 
@@ -53,29 +56,55 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP.equals(extensionPoint)) {
-            QueryMakerDescriptor descriptor = (QueryMakerDescriptor) contribution;
-            unregisterQueryMaker(descriptor.queryMaker);
+            unregisterQueryMaker((QueryMakerDescriptor) contribution);
         }
     }
 
-    public void registerQueryMaker(Class<? extends QueryMaker> klass) {
-        log.info("Registering QueryMaker: " + klass.getName());
-        if (!queryMakers.contains(klass)) {
-            queryMakers.add(klass);
-        }
-    }
-
-    public void unregisterQueryMaker(Class<? extends QueryMaker> klass) {
-        log.info("Unregistering QueryMaker: " + klass.getName());
-        queryMakers.remove(klass);
-    }
-
-    public List<Class<? extends QueryMaker>> getQueryMakers() {
-        if (queryMakers.isEmpty()) {
-            return Collections.<Class<? extends QueryMaker>> singletonList(NXQLQueryMaker.class);
+    public void registerQueryMaker(QueryMakerDescriptor descriptor) {
+        if (descriptor.enabled) {
+            log.info(String.format("Registering QueryMaker '%s': ",
+                    descriptor.name, descriptor.queryMaker.getName()));
         } else {
-            return queryMakers;
+            log.info(String.format("Disabling QueryMaker '%s'", descriptor.name));
         }
+        descriptors.add(descriptor);
+        queryMakers = null;
     }
 
+    public void unregisterQueryMaker(QueryMakerDescriptor descriptor) {
+        if (descriptor.enabled) {
+            log.info(String.format("Unregistering QueryMaker '%s': ",
+                    descriptor.name, descriptor.queryMaker.getName()));
+        } else {
+            log.info(String.format("Unregistering disabled QueryMaker '%s'",
+                    descriptor.name));
+        }
+        descriptors.remove(descriptor);
+        queryMakers = null;
+    }
+
+    public synchronized List<Class<? extends QueryMaker>> getQueryMakers() {
+        if (queryMakers == null) {
+            // recompute queryMakers
+            queryMakers = new ArrayList<Class<? extends QueryMaker>>(2);
+            List<QueryMakerDescriptor> qmdl = new ArrayList<QueryMakerDescriptor>(
+                    descriptors);
+            Collections.reverse(qmdl);
+            Set<String> done = new HashSet<String>();
+            for (QueryMakerDescriptor descriptor : qmdl) {
+                if (!done.add(descriptor.name)) {
+                    continue;
+                }
+                if (descriptor.enabled) {
+                    queryMakers.add(descriptor.queryMaker);
+                }
+            }
+            Collections.reverse(queryMakers);
+            // BBB backward compat
+            if (queryMakers.isEmpty() && !done.contains("NXQL")) {
+                queryMakers.add(NXQLQueryMaker.class);
+            }
+        }
+        return queryMakers;
+    }
 }

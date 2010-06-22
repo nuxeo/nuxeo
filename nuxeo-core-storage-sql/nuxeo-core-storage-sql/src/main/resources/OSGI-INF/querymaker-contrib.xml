@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
     point="queryMaker">
-    <queryMaker>org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker
+    <queryMaker name="NXQL">org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker
     </queryMaker>
   </extension>
 

@@ -29,21 +29,31 @@ public class QueryMakerDescriptor {
 
     private static final Log log = LogFactory.getLog(QueryMakerDescriptor.class);
 
+    @XNode("@name")
+    public String name = "";
+
+    @XNode("@enabled")
+    public boolean enabled = true;
+
     @SuppressWarnings("unchecked")
     @XNode("")
     public void setQueryMaker(String klass) {
-        Class<?> qm;
-        try {
-            qm = Class.forName(klass.trim());
-        } catch (ClassNotFoundException e) {
-            log.error("No such QueryMaker class: " + klass);
-            return;
+        if (klass.trim().equals("")) {
+            queryMaker = null; // when disabling
+        } else {
+            Class<?> qm;
+            try {
+                qm = Class.forName(klass.trim());
+            } catch (ClassNotFoundException e) {
+                log.error("No such QueryMaker class: " + klass);
+                return;
+            }
+            if (!QueryMaker.class.isAssignableFrom(qm)) {
+                log.error("No such QueryMaker class: " + klass);
+                return;
+            }
+            queryMaker = (Class<? extends QueryMaker>) qm;
         }
-        if (!QueryMaker.class.isAssignableFrom(qm)) {
-            log.error("No such QueryMaker class: " + klass);
-            return;
-        }
-        queryMaker = (Class<? extends QueryMaker>) qm;
     }
 
     public Class<? extends QueryMaker> queryMaker;
