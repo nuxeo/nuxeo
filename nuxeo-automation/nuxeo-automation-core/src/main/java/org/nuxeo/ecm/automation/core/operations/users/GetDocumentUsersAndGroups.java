@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.operations.document;
+package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.util.Set;
 
@@ -32,10 +32,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
  * Retrieve the users/groups who have the given permission on given document.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = GetDocumentUsersAndGroups.ID, category = Constants.CAT_DOCUMENT, label = "Get Users and Groups", description = ""
+@Operation(id = GetDocumentUsersAndGroups.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Users and Groups", description = ""
         + "Fetch the users and groups that have a given permission "
         + "on the input document and then set them in the context under the "
         + "given key variable name. The operation returns the input "

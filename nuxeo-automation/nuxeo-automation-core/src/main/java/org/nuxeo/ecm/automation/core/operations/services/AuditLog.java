@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = AuditLog.ID, category = Constants.CAT_SERVICES, label = "Audit Log", description = "Log events into audit for each of the input document. The operation accept as input one ore more documents that are returned back as the output.")
+@Operation(id = AuditLog.ID, category = Constants.CAT_SERVICES, label = "Log Event In Audit", description = "Log events into audit for each of the input document. The operation accept as input one ore more documents that are returned back as the output.")
 public class AuditLog {
 
     public static final String ID = "Audit.Log";

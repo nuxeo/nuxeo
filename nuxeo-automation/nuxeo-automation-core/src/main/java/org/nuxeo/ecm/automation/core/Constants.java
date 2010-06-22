@@ -34,37 +34,46 @@ public interface Constants {
     public final static String T_STRING = "string"; // injectable as String
 
     public final static String T_BOOLEAN = "boolean"; // injectable as
-                                                        // Boolean
+
+    // Boolean
 
     public final static String T_DATE = "date"; // W3C string injectable as
-                                                // Date
+
+    // Date
 
     public final static String T_INTEGER = "integer"; // integer number
-                                                        // injectable as Long
+
+    // injectable as Long
 
     public final static String T_FLOAT = "float"; // float number injectable
-                                                    // as Double
+
+    // as Double
 
     public final static String T_RESOURCE = "resource"; // resource url
-                                                        // injectable as URL
+
+    // injectable as URL
 
     public final static String T_DOCUMENT = "document"; // Document injectable
-                                                        // as DocumentRef /
-                                                        // DocumentModel
+
+    // as DocumentRef /
+    // DocumentModel
 
     public final static String T_DOCUMENTS = "documents"; // Document
-                                                            // injectable as
-                                                            // DocumentRefList
-                                                            // /
-                                                            // DocumentModelList
+
+    // injectable as
+    // DocumentRefList
+    // /
+    // DocumentModelList
 
     public final static String T_SCRIPT = "script"; // inline mvel injectable
-                                                    // script as Script
+
+    // script as Script
 
     public final static String T_PROPERTIES = "properties"; // Java properties
-                                                            // content
-                                                            // injectable as
-                                                            // Properties
+
+    // content
+    // injectable as
+    // Properties
 
     // Category names
     public final static String CAT_FETCH = "Fetch";
@@ -85,6 +94,8 @@ public interface Constants {
 
     public final static String CAT_SERVICES = "Services";
 
+    public final static String CAT_USERS_GROUPS = "Users & Groups";
+
     public final static String CAT_UI = "User Interface";
 
     public final static String SEAM_CONTEXT = "Seam";
@@ -93,21 +104,25 @@ public interface Constants {
 
     // Widget types
     public final static String W_TEXT = "Text"; // the default Widget for
-                                                // String or any other unknown
-                                                // type
+
+    // String or any other unknown
+    // type
 
     public final static String W_MULTILINE_TEXT = "TextArea";
 
     public final static String W_PROPERTIES = "Properties"; // to edit a
-                                                            // properties table
+
+    // properties table
 
     public final static String W_CHECK = "Check"; // the default widget for
-                                                    // Boolean
+
+    // Boolean
 
     public final static String W_RADIO = "Radio";
 
     public final static String W_OPTION = "Option"; // a single selection
-                                                    // listbox
+
+    // listbox
 
     public final static String W_LIST = "List";
 
@@ -116,10 +131,12 @@ public interface Constants {
     public final static String W_DATE = "Date"; // Default widget for Date
 
     public final static String W_DECIMAL = "Decimal"; // Default widget for
-                                                        // Long
+
+    // Long
 
     public final static String W_NUMBER = "Number"; // Default widget for
-                                                    // Double
+
+    // Double
 
     public static final String W_AUDIT_EVENT = "AuditEvent";
 }
