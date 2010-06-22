@@ -118,7 +118,7 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlob.ID);
 
         out = (Blob) service.run(ctx, chain);
-        Assert.assertNull(out);
+        Assert.assertNotNull(out);
     }
 
     @Test
