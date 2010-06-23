@@ -77,7 +77,7 @@ class ImporterExecutorWithListeners extends DefaultImporterExecutor {
         importer.setThreadPolicy(getThreadPolicy());
 
         for (ImporterListener listener : listeners) {
-            importer.addListener(listener);
+            importer.addListeners(listener);
         }
         return doRun(importer, interactive);
     }

@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.importer.base;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -168,8 +170,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         filters.add(filter);
     }
 
-    public void addListener(ImporterListener listener) {
-        listeners.add(listener);
+    public void addListeners(ImporterListener... listeners) {
+        addListeners(Arrays.asList(listeners));
+    }
+
+    public void addListeners(Collection<ImporterListener> listeners) {
+        this.listeners.addAll(listeners);
     }
 
     protected CoreSession getCoreSession() throws Exception {
@@ -227,6 +233,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(
                 null, importSource, targetContainer, skipRootContainerCreation,
                 log, batchSize, getFactory(), getThreadPolicy(), jobName);
+        rootImportTask.addListeners(listeners);
         return rootImportTask;
     }
 

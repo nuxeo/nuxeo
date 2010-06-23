@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.importer.base;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.security.auth.login.LoginContext;
@@ -197,8 +199,10 @@ class GenericThreadedImportTask implements Runnable {
     protected GenericThreadedImportTask createNewTask(DocumentModel parent,
             SourceNode node, ImporterLogger log, Integer batchSize)
             throws Exception {
-        return new GenericThreadedImportTask(null, node, parent,
+        GenericThreadedImportTask newTask = new GenericThreadedImportTask(null, node, parent,
                 skipContainerCreation, log, batchSize, factory, threadPolicy);
+        newTask.addListeners(listeners);
+        return newTask;
     }
 
     protected GenericThreadedImportTask createNewTaskIfNeeded(
@@ -370,6 +374,14 @@ class GenericThreadedImportTask implements Runnable {
 
     protected ImporterDocumentModelFactory getFactory() {
         return factory;
+    }
+
+    public void addListeners(ImporterListener... listeners) {
+        addListeners(Arrays.asList(listeners));
+    }
+
+    public void addListeners(Collection<ImporterListener> listeners) {
+        this.listeners.addAll(listeners);
     }
 
     protected void notifyImportError() throws Exception {
