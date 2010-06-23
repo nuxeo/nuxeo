@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.automation.server.jaxrs.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -26,6 +25,7 @@ import java.util.List;
 
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.SharedFileInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -51,11 +51,11 @@ import org.nuxeo.ecm.webengine.session.UserSession;
  * 
  */
 @Provider
-@Consumes("multipart/related")
-public class MultiPartRequestReader implements
+@Consumes("multipart/form-data")
+public class MultiPartFormRequestReader implements
         MessageBodyReader<ExecutionRequest> {
 
-    private static final Log log = LogFactory.getLog(MultiPartRequestReader.class);
+    private static final Log log = LogFactory.getLog(MultiPartFormRequestReader.class);
 
     @Context
     protected HttpServletRequest request;
@@ -80,7 +80,8 @@ public class MultiPartRequestReader implements
             // perhaps the stream is no more available when javax.mail need it?
             File tmp = File.createTempFile("nx-automation-mp-upload-", ".tmp");
             FileUtils.copyToFile(in, tmp);
-            in = new FileInputStream(tmp); // get the input from the saved file
+            // get the input from the saved file
+            in = new SharedFileInputStream(tmp);
             try {
                 MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(
                         in, ctype));
@@ -108,6 +109,11 @@ public class MultiPartRequestReader implements
                                     + " part in a multipart request"));
                 }
             } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
                 tmp.delete();
             }
         } catch (Throwable e) {
