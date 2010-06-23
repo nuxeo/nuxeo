@@ -64,7 +64,7 @@ public class GetDocumentPrincipalEmails {
     @Param(name = "permission")
     protected String permission;
 
-    @Param(name = "key")
+    @Param(name = "variable name")
     protected String key;
 
     @Param(name = "ignore groups", required = false, values = "false")
