@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.listener.JobHistoryListener;
@@ -90,6 +91,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     protected List<ImporterFilter> filters = new ArrayList<ImporterFilter>();
 
     protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
+
+    protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
 
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
@@ -178,6 +181,14 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.listeners.addAll(listeners);
     }
 
+    public void addImportingDocumentFilters(ImportingDocumentFilter... importingDocumentFilters) {
+        addImportingDocumentFilters(Arrays.asList(importingDocumentFilters));
+    }
+
+    public void addImportingDocumentFilters(Collection<ImportingDocumentFilter> importingDocumentFilters) {
+        this.importingDocumentFilters.addAll(importingDocumentFilters);
+    }
+
     protected CoreSession getCoreSession() throws Exception {
         if (this.session == null) {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
@@ -234,6 +245,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 null, importSource, targetContainer, skipRootContainerCreation,
                 log, batchSize, getFactory(), getThreadPolicy(), jobName);
         rootImportTask.addListeners(listeners);
+        rootImportTask.addImportingDocumentFilters(importingDocumentFilters);
         return rootImportTask;
     }
 
