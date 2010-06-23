@@ -241,6 +241,7 @@ public class OperationTypeImpl implements OperationType {
         doc.label = op.label();
         doc.requires = op.requires();
         doc.category = op.category();
+        doc.since = op.since();
         if (doc.requires.length() == 0) {
             doc.requires = null;
         }

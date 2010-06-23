@@ -61,6 +61,9 @@ public class JSONExporter {
         op.element("category", doc.category);
         op.element("requires", doc.requires);
         op.element("description", doc.description);
+        if (doc.since != null && doc.since.length() > 0) {
+            op.element("since", doc.since);
+        }
         op.element("url", doc.url);
         JSONArray sig = new JSONArray();
         for (String in : doc.signature) {

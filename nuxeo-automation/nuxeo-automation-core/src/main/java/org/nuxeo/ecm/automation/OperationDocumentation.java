@@ -42,6 +42,8 @@ public class OperationDocumentation implements
 
     public String requires;
 
+    public String since;
+
     public String description;
 
     public List<Param> params;
