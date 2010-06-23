@@ -148,7 +148,7 @@ public class MetadataFile {
             try {
                 List<String> list = (List<String>) value;
                 if (!list.isEmpty()) {
-                    metadataProperties.put(propertyKey, StringUtils.join(list, "|"));
+                    metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.LIST_SEPARATOR));
                 }
             } catch (ClassCastException e) {
                 // do nothing
@@ -156,7 +156,7 @@ public class MetadataFile {
         } else if (value instanceof String[]) {
             String[] list = (String[]) value;
             if (list.length > 0) {
-                metadataProperties.put(propertyKey, StringUtils.join(list, "|"));
+                metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.ARRAY_SEPARATOR));
             }
         } else if (value instanceof Calendar) {
             Date date = ((Calendar) value).getTime();

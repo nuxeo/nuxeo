@@ -56,6 +56,12 @@ public class MetadataCollector {
 
     public static String LIST_SEPARATOR = "|";
 
+    public static String REGEXP_LIST_SEPARATOR = "\\|";
+
+    public static String ARRAY_SEPARATOR = "||";
+
+    public static String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
+
     protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<String, Map<String, Serializable>>();
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -113,9 +119,11 @@ public class MetadataCollector {
             throw new UnsupportedOperationException(
                     "Introspection mode not available");
         } else {
-            if (value.contains(LIST_SEPARATOR)) {
+            if (value.contains(ARRAY_SEPARATOR)) {
+                prop = value.split(REGEXP_ARRAY_SEPARATOR);
+            } else if (value.contains(LIST_SEPARATOR)) {
                 List<Serializable> lstprop = new ArrayList<Serializable>();
-                String[] parts = value.split("\\" + LIST_SEPARATOR);
+                String[] parts = value.split(REGEXP_LIST_SEPARATOR);
                 for (String part : parts) {
                     lstprop.add(parseFromString(name, part));
                 }
