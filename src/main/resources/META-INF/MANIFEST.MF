@@ -1,4 +1,2 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.nuxeo.common;singleton:=true
-Nuxeo-Require: system.bundle,
- org.nuxeo.logging;
