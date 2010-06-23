@@ -20,57 +20,26 @@ Export-Package: jetty;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.test;
  ect.binder,org.openqa.selenium.support.ui,com.google.common.base";ver
  sion="1.6.2.SNAPSHOT",org.openqa.selenium.support.ui;uses:="com.googl
  e.common.base,org.openqa.selenium";version="1.6.2.SNAPSHOT"
+Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Runtime Tests
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.test
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1276993148944
+Bnd-LastModified: 1277279152062
 Bundle-ManifestVersion: 2
-Bundle-Description: Nuxeo Runtime: Nuxeo Runtime Tests.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: com.google.common.base,
- com.google.inject,
- com.google.inject.binder,
- javax.naming,
- javax.sql,
- jetty,
- org.apache.commons.logging,
- org.concordion,
- org.concordion.api,
- org.concordion.internal,
- org.jmock,
- org.junit,
- org.junit.runner,
- org.junit.runner.manipulation,
- org.junit.runner.notification,
- org.junit.runners,
- org.junit.runners.model,
- org.mortbay.component;version="6.1.15",
- org.mortbay.jetty;version="6.1.15",
- org.nuxeo.common,
- org.nuxeo.common.utils,
- org.nuxeo.osgi,
- org.nuxeo.osgi.application,
- org.nuxeo.runtime,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.model,
- org.nuxeo.runtime.model.impl,
- org.nuxeo.runtime.osgi,
- org.nuxeo.runtime.test,
- org.nuxeo.runtime.test.runner,
- org.nuxeo.runtime.test.runner.distrib,
- org.nuxeo.runtime.test.runner.web,
- org.openqa.selenium,
- org.openqa.selenium.chrome,
- org.openqa.selenium.firefox,
- org.openqa.selenium.htmlunit,
- org.openqa.selenium.ie,
- org.openqa.selenium.support,
- org.openqa.selenium.support.ui,
- org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-test
+Import-Package: com.google.common.base,com.google.inject;version="1.2"
+ ,com.google.inject.binder;version="1.2",javax.naming,javax.sql,org.ap
+ ache.commons.logging,org.concordion,org.concordion.api,org.concordion
+ .internal,org.jmock,org.junit,org.junit.runner,org.junit.runner.manip
+ ulation,org.junit.runner.notification,org.junit.runners,org.junit.run
+ ners.model,org.nuxeo.common,org.nuxeo.common.utils,org.nuxeo.osgi,org
+ .nuxeo.osgi.application,org.nuxeo.runtime,org.nuxeo.runtime.api,org.n
+ uxeo.runtime.model,org.nuxeo.runtime.model.impl,org.nuxeo.runtime.osg
+ i,org.openqa.selenium,org.openqa.selenium.chrome,org.openqa.selenium.
+ firefox,org.openqa.selenium.htmlunit,org.openqa.selenium.ie,org.openq
+ a.selenium.support,org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.runtime.test;singleton:=true
 

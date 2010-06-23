@@ -5,11 +5,5 @@ Bundle-Category: runtime
 Bundle-BuddyPolicy: dependent, global
 Eclipse-ExtensibleAPI: true
 Nuxeo-Require: org.nuxeo.osgi
-Nuxeo-Component: OSGI-INF/EventService.xml,
- OSGI-INF/RemotingService.xml,
- OSGI-INF/DeploymentService.xml,
- OSGI-INF/StreamingService.xml,
- OSGI-INF/LoginComponent.xml,
- OSGI-INF/ServiceManagement.xml,
- OSGI-INF/DefaultJBossBindings.xml
+Nuxeo-Component: OSGI-INF/EventService.xml, OSGI-INF/RemotingService.xml, OSGI-INF/DeploymentService.xml, OSGI-INF/StreamingService.xml, OSGI-INF/LoginComponent.xml, OSGI-INF/ServiceManagement.xml, OSGI-INF/DefaultJBossBindings.xml
 

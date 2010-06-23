@@ -1,29 +1,24 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.scripti
+Export-Package: lib;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.scripti
  ng;uses:="javax.script,org.nuxeo.common.xmap.annotation,org.nuxeo.run
  time.model,org.nuxeo.runtime.remoting,org.nuxeo.runtime.remoting.tran
  sporter,org.jboss.remoting,org.nuxeo.runtime,org.apache.commons.loggi
  ng,org.nuxeo.runtime.api";version="1.6.2.SNAPSHOT"
-Ignore-Package: OSGI-INF
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Runtime Scripting
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.scripting
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-BuddyPolicy: dependent
-Bundle-Vendor: Nuxeo SAS
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1276994989661
+Bnd-LastModified: 1277279039104
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
-Bundle-Description: Nuxeo Runtime Scripting Support.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: javax.script,org.apache.commons.logg
- ing,org.jboss.remoting,org.nuxeo.common.xmap.annotation,org.nuxeo.run
- time,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runtime.
- remoting,org.nuxeo.runtime.remoting.transporter,org.nuxeo.runtime.scr
- ipting;version="1.6",org.osgi.framework
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-scripting
+Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true
+Import-Package: javax.script,org.apache.commons.logging,org.jboss.remo
+ ting,org.nuxeo.common.xmap.annotation,org.nuxeo.runtime,org.nuxeo.run
+ time.api,org.nuxeo.runtime.model,org.nuxeo.runtime.remoting,org.nuxeo
+ .runtime.remoting.transporter
 Nuxeo-Require: org.nuxeo.runtime
 

@@ -11,23 +11,19 @@ Export-Package: org.nuxeo.runtime.jboss.deployment;uses:="org.nuxeo.co
  ss.remoting";version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Runtime JBoss Extensions
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1276993143049
+Bnd-LastModified: 1277278587735
 Bundle-ManifestVersion: 2
-Bundle-Description: Nuxeo Runtime: JBoss Extensions.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
 Import-Package: javax.management,org.apache.commons.logging,org.javasi
  mon,org.jboss.aop.advice,org.jboss.aop.joinpoint,org.jboss.deployment
  ,org.jboss.ejb3.remoting,org.jboss.logging,org.jboss.mx.util,org.jbos
  s.remoting,org.jboss.system,org.jboss.system.server,org.nuxeo.common.
  collections,org.nuxeo.common.utils,org.nuxeo.runtime.deployment.prepr
- ocessor,org.nuxeo.runtime.jboss.deployment;version="1.6",org.nuxeo.ru
- ntime.jboss.deployment.preprocessor;version="1.6",org.nuxeo.runtime.j
- boss.interceptors;version="1.6",org.osgi.framework
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
-Bundle-DocURL: http://www.nuxeo.com/en
+ ocessor
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions;
+ singleton:=true
 

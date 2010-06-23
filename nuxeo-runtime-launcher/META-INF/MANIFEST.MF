@@ -4,20 +4,14 @@ Export-Package: org.nuxeo.osgi.application;uses:="org.apache.commons.l
  1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Runtime Launcher
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.launcher
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1276993145226
+Bnd-LastModified: 1277278895602
 Bundle-ManifestVersion: 2
-Bundle-Description: A Java Application Launcher that enables the targe
- t application to change it's root class loader
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Import-Package: org.apache.commons.logging,org.nuxeo.osgi.application;
- version="1.6",org.nuxeo.runtime.launcher;version="1.6",org.osgi.frame
- work
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-launcher
-Bundle-DocURL: http://www.nuxeo.com/en
+Import-Package: org.apache.commons.logging
+Bundle-SymbolicName: org.nuxeo.runtime.launcher
 Main-Class: org.nuxeo.runtime.launcher.Main
 

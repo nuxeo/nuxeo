@@ -17,23 +17,16 @@ Export-Package: org.nuxeo.runtime.deployment.preprocessor;uses:="org.a
  ation,org.nuxeo.common.xmap";version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Runtime Deploy
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-deploy
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1276993132038
+Bnd-LastModified: 1277278281761
 Bundle-ManifestVersion: 2
-Bundle-Description: Nuxeo Runtime: Deployment processors
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
 Import-Package: org.apache.commons.logging,org.nuxeo.common.collection
  s,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo.common.xmap.
- annotation,org.nuxeo.runtime.deployment.preprocessor;version="1.6",or
- g.nuxeo.runtime.deployment.preprocessor.install;version="1.6",org.nux
- eo.runtime.deployment.preprocessor.install.commands;version="1.6",org
- .nuxeo.runtime.deployment.preprocessor.install.filters;version="1.6",
- org.nuxeo.runtime.deployment.preprocessor.template;version="1.6",org.
- osgi.framework,org.w3c.dom
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy
-Bundle-DocURL: http://www.nuxeo.com/en
+ annotation,org.w3c.dom
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy;singleton:
+ =true
 

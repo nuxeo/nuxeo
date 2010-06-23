@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.nuxeo.runtime.webapp;singleton:=true
-Nuxeo-Require: system.bundle,
- org.nuxeo.runtime
+Nuxeo-Require: system.bundle, org.nuxeo.runtime
 

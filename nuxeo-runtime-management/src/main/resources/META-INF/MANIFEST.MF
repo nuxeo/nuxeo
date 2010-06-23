@@ -2,5 +2,4 @@ Manifest-Version: 1.0
 Bundle-SymbolicName: org.nuxeo.runtime.management;singleton:=true
 Bundle-Category: runtime
 Nuxeo-Require: org.nuxeo.runtime
-Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml,
- OSGI-INF/management-server-locator-service.xml
+Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml, OSGI-INF/management-server-locator-service.xml

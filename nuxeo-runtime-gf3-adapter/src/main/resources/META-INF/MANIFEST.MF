@@ -1,6 +1,4 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.nuxeo.runtime.gf3;singleton:=true
-Nuxeo-Require: system.bundle,
- org.nuxeo.common,
- org.nuxeo.runtime
+Nuxeo-Require: system.bundle, org.nuxeo.common, org.nuxeo.runtime
 Nuxeo-Component: OSGI-INF/GF3Component.xml
