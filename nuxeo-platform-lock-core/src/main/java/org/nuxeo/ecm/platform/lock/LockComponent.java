@@ -21,7 +21,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Default implementation of the lock service
+ * Default implementation of the lock service.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 

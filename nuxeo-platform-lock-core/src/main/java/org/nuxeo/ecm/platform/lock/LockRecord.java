@@ -18,12 +18,9 @@ package org.nuxeo.ecm.platform.lock;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -72,10 +69,6 @@ public class LockRecord {
 
     @Column(name = "LOCK_INFO")
     protected Serializable info;
-
-    @Embedded
-    @Column(name = "LOCK_WAITINGS", nullable = false)
-    protected List<URI> waitingCompetitors = new ArrayList<URI>();
 
     public LockRecord() {
     }

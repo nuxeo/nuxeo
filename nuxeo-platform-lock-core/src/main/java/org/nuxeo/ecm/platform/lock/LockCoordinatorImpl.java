@@ -47,7 +47,7 @@ public class LockCoordinatorImpl implements LockCoordinator,
     LockRecordProvider provider;
 
     public void activate(LockComponent component) {
-        this.provider = component.provider;
+        provider = component.provider;
     }
 
     public void disactivate() {

@@ -17,9 +17,7 @@
 package org.nuxeo.ecm.platform.lock;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.nuxeo.ecm.platform.lock.api.LockInfo;
 
@@ -42,14 +40,6 @@ public class LockInfoImpl implements LockInfo {
         return record.resource;
     }
 
-    public List<URI> getAlls() {
-        ArrayList<URI> allList = new ArrayList<URI>(
-                record.waitingCompetitors.size() + 1);
-        allList.addAll(record.waitingCompetitors);
-        allList.add(record.owner);
-        return allList;
-    }
-
     public Date getExpireTime() {
         return record.expireTime;
     }
@@ -60,10 +50,6 @@ public class LockInfoImpl implements LockInfo {
 
     public URI getRunning() {
         return record.owner;
-    }
-
-    public List<URI> getWaitings() {
-        return record.waitingCompetitors;
     }
 
     public boolean isExpired() {
