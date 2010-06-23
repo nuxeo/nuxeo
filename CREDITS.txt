@@ -12,6 +12,6 @@ Japanese: Damien Dupraz
 Polish: Adam Lozy
 Portuguese: Jose Luis de la Rosa
 Russian: Jane Smorodnik
-Spanish: Daniel Tellez
+Spanish: Daniel Tellez, Jose Luis de la Rosa
 Vietnamese: Le Tuan Dat and Daniel Tellez
 

@@ -21,8 +21,10 @@
       <supported-locale>de</supported-locale>
       <supported-locale>es</supported-locale>
       <supported-locale>eu</supported-locale>
+      <supported-locale>gl</supported-locale>
       <supported-locale>it</supported-locale>
       <supported-locale>ja</supported-locale>
+      <supported-locale>pl</supported-locale>
       <supported-locale>pt</supported-locale>
       <supported-locale>pt_BR</supported-locale>
       <supported-locale>ru</supported-locale>
