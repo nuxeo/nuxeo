@@ -32,18 +32,20 @@ user-friendly commands for building most used products.
 
 3. Modules listing
 
-  * nuxeo-platform-ear : Nuxeo Enterprise Platform EAR
-  * nuxeo-distribution-dm : Nuxeo Document Management EAR
-  * nuxeo-distribution-shell : Nuxeo Shell
-  * nuxeo-distribution-jboss : JBoss containing Nuxeo EP or DM
-  * nuxeo-distribution-gf3 : GlassFish distribution
-  * nuxeo-distribution-jetty : Jetty containing Nuxeo EP or DM
-  * nuxeo-distribution-tomcat : Tomcat distribution
-  * nuxeo-distribution-windows : Windows installers
-  * nuxeo-distribution-base : template package for use by other modules.
-  * nuxeo-distribution-server : template package for use by other modules.
-  * nuxeo-distribution-jetty-base : template package for use by other modules.
-  * nuxeo-distribution-izpack : DEPRECATED, was used to build IzPack installers.
+  * nuxeo-platform-ear: Nuxeo Enterprise Platform EAR
+  * nuxeo-distribution-dm: Nuxeo Document Management EAR
+  * nuxeo-distribution-shell: Nuxeo Shell
+  * nuxeo-distribution-jboss: JBoss containing Nuxeo EP or DM
+  * nuxeo-distribution-gf3: (DEPRECATED) GlassFish distribution
+  * nuxeo-distribution-jetty: Jetty containing Nuxeo EP or DM
+  * nuxeo-distribution-tomcat: Tomcat distribution
+  * nuxeo-distribution-windows: Windows installers
+  * nuxeo-distribution-base: template package for use by other modules.
+  * nuxeo-distribution-server: template package for use by other modules.
+  * nuxeo-distribution-jetty-base: template package for use by other modules.
+  * nuxeo-distribution-izpack: (DEPRECATED) Used to build IzPack installers.
+  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
+  * nuxeo-distribution-tools: Nuxeo's Ant-like extended tool.
 
 --------------------------------
 Building predefined applications
@@ -132,18 +134,18 @@ Building predefined applications
 Building from nuxeo root won't run nuxeo-distribution.
 Building from nuxeo-distribution with no specific profile will package Nuxeo EP, 
 Nuxeo DM on VCS, JBoss with Nuxeo DM on VCS.
-Meaning "mvn clean package" produces:
+Meaning "mvn clean install" produces:
   * Nuxeo EP EAR
     nuxeo-platform-ear/target/nuxeo.ear.zip
   * Nuxeo EP resource files (for various backends or deployments) for EAR
-    nuxeo-platform-ear/target/nuxeo-platform-ear-5.3.1-SNAPSHOT-*.zip
+    nuxeo-platform-ear/target/nuxeo-platform-ear-5.3.2-SNAPSHOT-*.zip
   * Nuxeo DM EAR with default VCS backend 
-    nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.3.1-SNAPSHOT.zip
+    nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.3.2-SNAPSHOT.zip
   * JBoss 4.2.3.GA containing Nuxeo DM with default VCS backend
-    nuxeo-distribution-jboss/target/nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
+    nuxeo-distribution-jboss/target/nuxeo-distribution-jboss-5.3.2-SNAPSHOT-nuxeo-dm.zip
 
 Building other alternatives for a product is done with Maven profiles:
-  * mvn clean package -P<PRODUCT>,<BACKEND>
+  * mvn clean install -P<PRODUCT>,<BACKEND>
 
 
 3. Understanding Maven profiles and classifiers
@@ -155,8 +157,8 @@ It's widely used by a lot of third-parties (google gwt, json, shindings, ...).
 Think about "classifiers" as "qualifiers" (sources, javadoc, tests, linux, windows, 
 mac, jta, all, ...). For example, the following are two alternatives ("classifiers") 
 for the package ("artifact") named "nuxeo-distribution-tomcat":
-  * nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
-  * nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm.zip
+  * nuxeo-distribution-tomcat-5.3.2-SNAPSHOT-nuxeo-dm-jtajca.zip
+  * nuxeo-distribution-tomcat-5.3.2-SNAPSHOT-nuxeo-dm.zip
 
 Some profiles are used to choose the product to build. Other profiles are used to
 choose which alternatives (classifiers) of the product will be built. Multiple 
@@ -172,16 +174,16 @@ Here are some common profiles and their impact on build result:
 
 Here are some usage examples (ran from nuxeo-distribution):
   * (default) Building Nuxeo EP, nuxeo DM with VCS, JBoss with Nuxeo DM on VCS
-    o mvn clean package
-    o mvn clean package -Pjboss,nuxeo-dm,vcs
+    o mvn clean install
+    o mvn clean install -Pjboss,nuxeo-dm,vcs
   * Building all Nuxeo DM alternatives
-    o mvn clean package -Pnuxeo-dm,all
+    o mvn clean install -Pnuxeo-dm,all
   * Building all JBoss packagings
-    o mvn clean package -Pjboss,all
+    o mvn clean install -Pjboss,all
   * Building a JBoss packaging and a Nuxeo EP EAR based on MySQL
-    o mvn clean package -Pjboss,nuxeo-ep,mysql
+    o mvn clean install -Pjboss,nuxeo-ep,mysql
   * Building all Nuxeo products and their alternatives
-    o mvn clean package -Pall-distributions
+    o mvn clean install -Pall-distributions
 
 Note: because of a Maven bug making things crazy when two classifiers of an
 artifact are not deployed at the same time (i.e. if you deploy only nuxeo-ep 
@@ -202,101 +204,113 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-platform-ear
     o Produced artifacts
-      nuxeo-platform-ear-5.3.1-SNAPSHOT.pom
-      nuxeo-platform-ear-5.3.1-SNAPSHOT.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-common.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-derby.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-h2.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-jcr-postgresql.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-jcr.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-mono.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-mysql.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-oracle.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-platform-stateful.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-postgresql.zip
-      nuxeo-platform-ear-5.3.1-SNAPSHOT-resources-web-stateless.zip
+      nuxeo-platform-ear-5.3.2-SNAPSHOT.pom
+      nuxeo-platform-ear-5.3.2-SNAPSHOT.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-common.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-derby.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-h2.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-jcr-postgresql.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-jcr.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-mono.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-mysql.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-oracle.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-platform-stateful.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-postgresql.zip
+      (DEPRECATED) nuxeo-platform-ear-5.3.2-SNAPSHOT-resources-web-stateless.zip
     o Available profiles
-      derby
-      mysql
-      postgresql
-      oracle
-      h2
-      jcr-profile
-      jcr-postgresql
+      (DEPRECATED) derby
+      (DEPRECATED) mysql
+      (DEPRECATED) postgresql
+      (DEPRECATED) oracle
+      (DEPRECATED) h2
+      (DEPRECATED) jcr-profile
+      (DEPRECATED) jcr-postgresql
       *vcs-profile*
       
   * Module nuxeo-distribution-dm
     o Produced artifacts
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT.pom
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-derby.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-h2.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr-postgresql.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-mysql.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-oracle.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-derby.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-h2.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-mysql.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-oracle.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful-postgresql.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-platform-stateful.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-postgresql.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT-web-stateless.zip
-      nuxeo-distribution-dm-5.3.1-SNAPSHOT.zip
+      nuxeo-distribution-dm-5.3.2-SNAPSHOT.pom
+      nuxeo-distribution-dm-5.3.2-SNAPSHOT.zip
+      (COMPLIANCE) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-jcr-postgresql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-jcr.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-derby.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-h2.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-mysql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-oracle.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-postgresql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources-derby.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources-h2.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources-mysql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources-oracle.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources-postgresql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful-resources.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-platform-stateful.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-derby.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-h2.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-jcr-postgresql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-jcr.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-mysql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-oracle.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-resources-postgresql.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-web-stateless-resources.zip
+      (DEPRECATED) nuxeo-distribution-dm-5.3.2-SNAPSHOT-web-stateless.zip
     o Available profiles
       all-distributions
       all
+      (DEPRECATED) nuxeo-2parts
       (nuxeo-ep)
+      *nuxeo-dm*
       *vcs*
-      derby
-      mysql
-      postgresql
-      oracle
-      h2
-      jcr
-      jcr-postgresql
+      (DEPRECATED) derby
+      (DEPRECATED) mysql
+      (DEPRECATED) postgresql
+      (DEPRECATED) oracle
+      (DEPRECATED) h2
+      (DEPRECATED) jcr
+      (DEPRECATED) jcr-postgresql
       
   * Module nuxeo-distribution-jboss
     o Produced artifacts
-      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-ep.zip
-      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-jboss-5.3.1-SNAPSHOT-nuxeo-dm-cmis.zip
+      nuxeo-distribution-jboss-5.3.2-SNAPSHOT-nuxeo-ep.zip
+      nuxeo-distribution-jboss-5.3.2-SNAPSHOT-nuxeo-dm.zip
     o Available profiles
       all-distributions
       all
       nuxeo-ep
       *nuxeo-dm*
-      cmis
 
   * Module nuxeo-distribution-shell
     o Produced artifacts
-      nuxeo-distribution-shell-5.3.1-SNAPSHOT.zip
+      nuxeo-distribution-shell-5.3.2-SNAPSHOT.zip
     o No available profile
     
   * Module nuxeo-distribution-jetty*
     o Produced artifacts
-      nuxeo-distribution-jetty-5.3.1-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-jetty-5.3.1-SNAPSHOT-nuxeo-ep.zip
+      nuxeo-distribution-jetty-5.3.2-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jetty-5.3.2-SNAPSHOT-nuxeo-ep.zip
     o Available profiles
+      all-distributions
+      all
       *nuxeo-dm*
       nuxeo-ep
       
-  * Module nuxeo-distribution-gf3*
+  * Module nuxeo-distribution-gf3* (DEPRECATED)
     o Produced artifacts
-      nxserver.zip
+      No more build result
     o Available profiles
       ra
       jcr
       *vcs*
 
-  * Module nuxeo-distribution-tomcat*
+  * Module nuxeo-distribution-tomcat
     o Produced artifacts
-      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-nuxeo-dm-jtajca.zip
-      nuxeo-distribution-tomcat-5.3.1-SNAPSHOT-cmis.zip
+      nuxeo-distribution-tomcat-5.3.2-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-tomcat-5.3.2-SNAPSHOT-coreserver.zip
     o No available profile
 
-  * Module nuxeo-distribution-windows*
+  * Module nuxeo-distribution-windows/windows-installer
     o Produced artifacts
       nuxeo-dm-5.3.0-GA-nuxeo-ep-setup.exe
       nuxeo-dm-5.3.0-GA_64-nuxeo-ep-setup.exe
@@ -306,26 +320,41 @@ Default profiles are within asterisks: *foo*
       *nuxeo-dm*
       nuxeo-ep
 
+  * Module nuxeo-distribution-windows/windows-startup
+    o Produced artifacts
+      NuxeoCtl.exe
+    o No available profile
+
+  * Module nuxeo-distribution-resources
+    o Produced artifacts
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-bin.zip
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-doc.zip
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-jetty-base.zip
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-templates-jboss-dm.zip
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-templates-jboss.zip
+      nuxeo-distribution-resources-5.3.2-SNAPSHOT-templates-tomcat.zip
+    o No available profile
+
 
 5. Easy build with Ant
 
+IMPORTANT: backend specific builds are deprecated. Use of <BACKEND> profiles is also deprecated.
+Backend is chosen just before starting the server, while configuring bin/nuxeo.conf. 
+
 With Ant and user input:
-  * from nuxeo-distribution root, run "ant distrib" and choose the distribution
-  you want to build.
+  * from nuxeo-distribution root, run "ant distrib" and choose the distribution you want to build.
 
 With Ant, no user input:
   * run "ant distrib -Ddistrib=<PRODUCT>"
-  * run "ant distrib -Ddistrib=<PRODUCT>,<BACKEND>"
 
 For example:
-  * "ant distrib -Ddistrib=nuxeo-dm,postgresql"
-  * "ant distrib -Ddistrib=nuxeo-ep,mysql"
+  * "ant distrib -Ddistrib=nuxeo-dm"
+  * "ant distrib -Ddistrib=tomcat"
   
 Default repository is VCS but it is possible to set JCR+Derby or JCR+PostgreSQL, 
-see nuxeo-distribution-dm-5.3.1-SNAPSHOT-jcr-postgresql.zip
-Note that this configuration requires some manual changes into
-$JBOSS/server/default/conf/login-config.xml
-
+see nuxeo-distribution-dm-5.3.2-SNAPSHOT-jcr-postgresql.zip
+This configuration requires some manual changes into $JBOSS/server/default/conf/login-config.xml
+It is no more recommended to use JCR, as VCS gives better performance and reliability.
 
 ------------
 Custom build
