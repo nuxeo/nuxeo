@@ -4,11 +4,14 @@ Credits
 Translations
 ------------
 
+Arabic: Taieb Felfel
+Galician: Jose Luis de la Rosa
 German: Georges Racinet
 Italian: Mirto Silvio Busico
-Russian: Jane Smorodnik
-Arabic: Taieb Felfel
 Japanese: Damien Dupraz
+Polish: Adam Lozy
+Portuguese: Jose Luis de la Rosa
+Russian: Jane Smorodnik
 Spanish: Daniel Tellez
 Vietnamese: Le Tuan Dat and Daniel Tellez
-Polish: Adam Lozy
+
