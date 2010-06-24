@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 
 /**
  * Creates a task
- * 
+ *
  * @author Anahide Tchertchian
  */
 @Operation(id = CreateTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.3.2", description = "Enable to create a task binded to the document. "
@@ -95,7 +95,7 @@ public class CreateTask {
     @Param(name = "reject operation chain", required = false, order = 5)
     protected String rejectOperationChain;
 
-    @Param(name = "key for actors prefixed ids", required = false, order = 6)
+    @Param(name = "variable name for actors prefixed ids", required = false, order = 6)
     protected String keyForActors;
 
     @Param(name = "additional list of actors prefixed ids", required = false, order = 7)
