@@ -284,6 +284,10 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 charset = charset.substring(0, offset);
             }
         }
+        // Charset could be like "utf-8" or utf-8
+        if (!"".equals(charset)) {
+            charset = charset.replaceAll("\"", "");
+        }
         log.debug("Content type: " + contType + "; charset: " + charset);
         if (charset.equalsIgnoreCase(ISO88591)) {
             // see
