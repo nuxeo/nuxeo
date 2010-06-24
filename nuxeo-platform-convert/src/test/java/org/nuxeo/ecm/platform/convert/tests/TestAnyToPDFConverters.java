@@ -83,4 +83,53 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         doTestPDFConverter("application/vnd.oasis.opendocument.presentation", "hello.odp");
     }
 
+    protected class ConversionThread extends Thread {
+
+        boolean exception = false;
+        boolean terminated = false;
+
+        @Override
+        public void run() {
+
+            try {
+                testAnyToTextConverter();
+            } catch (Exception e) {
+                exception=false;
+            }
+            finally {
+                terminated=true;
+            }
+
+        }
+    }
+
+    public void testMultiThreadsConverter() throws Exception {
+
+        int t=0;
+        int tMax=120;
+        ConversionThread t1 = new ConversionThread();
+        ConversionThread t2 = new ConversionThread();
+
+        t1.start();
+        t2.start();
+
+        while (!(t1.terminated && t2.terminated)) {
+            Thread.sleep(1000);
+            t+=1;
+            if (t>tMax) {
+                if (!t1.terminated) {
+                    t1.interrupt();
+                }
+                if (!t2.terminated) {
+                    t2.interrupt();
+                }
+                break;
+            }
+        }
+
+        assertFalse(t1.exception);
+        assertFalse(t2.exception);
+
+
+    }
 }

@@ -22,11 +22,9 @@ package org.nuxeo.ecm.platform.convert.plugins;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -41,7 +39,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
-import org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonService;
+import org.nuxeo.ecm.platform.convert.ooolauncher.OOoConnectionManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -67,7 +65,7 @@ public class JODBasedConverter implements ExternalConverter {
     private static final int DEFAULT_OOO_HOST_PORT = 8100;
 
     // OOo doesn't support multi thread connection on the same port.
-    private static OpenOfficeConnection connection;
+//    private static OpenOfficeConnection connection;
 
     private static final Lock conLock = new ReentrantLock();
 
@@ -158,40 +156,40 @@ public class JODBasedConverter implements ExternalConverter {
         }
     }
 
-    public OpenOfficeConnection getOOoConnection() {
-        OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
-        if (ods != null) {
-            if (ods.isEnabled()) {
-                if (ods.isConfigured()) {
-                    if (!ods.isRunning()) {
-                        ods.startDaemonAndWaitUntilReady();
-                    }
-                } else {
-                    log.debug("OOoDaemonService is not configured, expect OOo to be already running");
-                }
-            } else {
-                log.debug("OOoDaemonService is not enabled, expect OOo to be already running");
-            }
-        }
+//    public OpenOfficeConnection getOOoConnection() {
+//        OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
+//        if (ods != null) {
+//            if (ods.isEnabled()) {
+//                if (ods.isConfigured()) {
+//                    if (!ods.isRunning()) {
+//                        ods.startDaemonAndWaitUntilReady();
+//                    }
+//                } else {
+//                    log.debug("OOoDaemonService is not configured, expect OOo to be already running");
+//                }
+//            } else {
+//                log.debug("OOoDaemonService is not enabled, expect OOo to be already running");
+//            }
+//        }
+//
+//        log.debug("OOo connection lock ACQUIRED");
+//        if (connection == null || !connection.isConnected()) {
+//            connection = new SocketOpenOfficeConnection(getOOoHostURL(),
+//                    getOOoHostPort());
+//            if (connection.isConnected()) {
+//                log.info("New Open Office connection established !");
+//            }
+//        }
+//        return connection;
+//    }
+//
+//    public void releaseOOoConnection() {
+//        if (connection != null && connection.isConnected()) {
+//            connection.disconnect();
+//        }
+//    }
 
-        log.debug("OOo connection lock ACQUIRED");
-        if (connection == null || !connection.isConnected()) {
-            connection = new SocketOpenOfficeConnection(getOOoHostURL(),
-                    getOOoHostPort());
-            if (connection.isConnected()) {
-                log.info("New Open Office connection established !");
-            }
-        }
-        return connection;
-    }
-
-    public void releaseOOoConnection() {
-        if (connection != null && connection.isConnected()) {
-            connection.disconnect();
-        }
-    }
-
-    public OpenOfficeDocumentConverter getOOoDocumentConverter()
+    public OpenOfficeDocumentConverter getOOoDocumentConverter(OpenOfficeConnection connection)
             throws Exception {
         if (connection != null && connection.isConnected()) {
             return new OpenOfficeDocumentConverter(connection);
@@ -201,28 +199,27 @@ public class JODBasedConverter implements ExternalConverter {
 
     @Override
     protected void finalize() throws Throwable {
-        releaseOOoConnection();
         super.finalize();
     }
 
-    private boolean acquireLock() {
-        boolean acquired = false;
-        try {
-            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            log.error("Cannot acquire an OOo connection");
-        } finally {
-            if (!acquired) {
-                log.error("Cannot acquire an OOo connection :: timeout");
-            }
-        }
-        return acquired;
-    }
-
-    private void releaseLock() {
-        conLock.unlock();
-        log.debug("Release connection lock");
-    }
+//    private boolean acquireLock() {
+//        boolean acquired = false;
+//        try {
+//            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
+//        } catch (InterruptedException e) {
+//            log.error("Cannot acquire an OOo connection");
+//        } finally {
+//            if (!acquired) {
+//                log.error("Cannot acquire an OOo connection :: timeout");
+//            }
+//        }
+//        return acquired;
+//    }
+//
+//    private void releaseLock() {
+//        conLock.unlock();
+//        log.debug("Release connection lock");
+//    }
 
     private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
             DocumentFormat destinationFormat) {
@@ -267,30 +264,16 @@ public class JODBasedConverter implements ExternalConverter {
             throw new ConversionException("Error while getting Blob", e);
         }
 
-        try {
+        OOoConnectionManager ocm = Framework.getLocalService(OOoConnectionManager.class);
+        SocketOpenOfficeConnection connection=null;
 
-
-            if (inputBlob == null) {
+        if (inputBlob == null) {
                 return null;
             }
-
-            // Acquire connection lock.
-            acquireLock();
-
-            getOOoConnection();
-
             // This plugin do deal only with one input source.
             String sourceMimetype = inputBlob.getMimeType();
-            try {
-                if (connection != null) {
-                    connection.connect();
-                }
-            } catch (ConnectException e) {
-                log.error("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':' + getOOoHostPort());
-                throw new ConversionException("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':' + getOOoHostPort(), e);
-            }
+
+            connection = ocm.getConnection();
 
             if (connection != null && connection.isConnected()) {
                 File sourceFile = null;
@@ -370,7 +353,7 @@ public class JODBasedConverter implements ExternalConverter {
                         log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                         log.debug("Input File = " + outFile.getAbsolutePath());
                         // Perform the actual conversion.
-                        getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                        getOOoDocumentConverter(connection).convert(sourceFile, sourceFormat,
                                 outFile, destinationFormat);
 
                         files = myTmpDir.listFiles();
@@ -393,7 +376,7 @@ public class JODBasedConverter implements ExternalConverter {
                                 '.' + destinationFormat.getFileExtension());
 
                         // Perform the actual conversion.
-                        getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                        getOOoDocumentConverter(connection).convert(sourceFile, sourceFormat,
                                 outFile, destinationFormat);
 
 
@@ -414,7 +397,9 @@ public class JODBasedConverter implements ExternalConverter {
                             sourceMimetype, getDestinationMimeType(), e.getMessage()), e);
                     throw new ConversionException("Error in JODConverter", e);
                 } finally {
-                    releaseOOoConnection();
+                    if (connection!=null) {
+                        ocm.releaseConnection(connection);
+                    }
                     if (sourceFile != null) {
                         sourceFile.delete();
                     }
@@ -431,12 +416,9 @@ public class JODBasedConverter implements ExternalConverter {
                     }
                 }
             } else {
-                throw new ConversionException("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':' + getOOoHostPort());
+                throw new ConversionException("Could not connect to the remote OpenOffice server");
             }
-        } finally {
-            releaseLock();
-        }
+
     }
 
     public void init(ConverterDescriptor descriptor) {
@@ -444,11 +426,15 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     public synchronized ConverterCheckResult isConverterAvailable() {
-        boolean locked = acquireLock();
+        //boolean locked = acquireLock();
+        OOoConnectionManager ocm = Framework.getLocalService(OOoConnectionManager.class);
+        SocketOpenOfficeConnection connection=null;
         try {
-            getOOoConnection();
-            connection.connect();
-            getOOoDocumentConverter();
+            connection = ocm.getConnection();
+            if (connection==null) {
+                return new ConverterCheckResult("OOo must be running in Listen mode", "Can not open connection");
+            }
+            getOOoDocumentConverter(connection);
 
             if (connection.isConnected()) {
                 return new ConverterCheckResult();
@@ -460,13 +446,8 @@ public class JODBasedConverter implements ExternalConverter {
             return new ConverterCheckResult("OOo must be running in Listen mode", e.getMessage());
         }
         finally {
-            try {
-                releaseOOoConnection();
-            }
-            finally {
-                if (locked) {
-                    releaseLock();
-                }
+            if (connection!=null) {
+                ocm.releaseConnection(connection);
             }
         }
     }
