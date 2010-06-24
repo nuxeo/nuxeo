@@ -35,7 +35,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
-import org.hibernate.transaction.JTATransactionFactory;
+import org.hibernate.ejb.transaction.JoinableCMTTransactionFactory;
 import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -120,8 +120,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (txType != null) {
             properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
             if (txType.equals(JTA)) {
+                // properties.put(Environment.TRANSACTION_STRATEGY,
+                // JTATransactionFactory.class.getName());
                 properties.put(Environment.TRANSACTION_STRATEGY,
-                        JTATransactionFactory.class.getName());
+                        JoinableCMTTransactionFactory.class.getName());
                 properties.put(Environment.TRANSACTION_MANAGER_STRATEGY,
                         NuxeoTransactionManagerLookup.class.getName());
             }
