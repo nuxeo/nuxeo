@@ -276,7 +276,7 @@ class BasePage:
         i = 0
         for iframe in iframes:
             i += 1
-            print "iframe: " + iframe
+            # print "iframe: " + iframe
             fl.get(server_url + iframe,
                      description="dashboard iframe %d" % i)
             fl.assert_(fl.getBody().startswith('<html>'))
