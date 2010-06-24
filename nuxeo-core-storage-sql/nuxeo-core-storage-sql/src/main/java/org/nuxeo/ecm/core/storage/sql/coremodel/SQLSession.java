@@ -116,6 +116,10 @@ public class SQLSession implements Session {
         return root;
     }
 
+    public Document getNullDocument() {
+        return new SQLDocumentLive(null, null, this, true);
+    }
+
     // not called
     public XAResource getXAResource() {
         throw new RuntimeException();

@@ -118,17 +118,14 @@ public class Node {
     // cache the isVersion computation
     public boolean isVersion() {
         if (isVersion == null) {
-            SimpleFragment hier = getHierFragment();
-            Serializable parentId;
-            String name;
+            Serializable versionableId;
             try {
-                parentId = hier.get(model.HIER_PARENT_KEY);
-                name = hier.getString(model.HIER_CHILD_NAME_KEY);
+                versionableId = getSimpleProperty(
+                        model.VERSION_VERSIONABLE_PROP).getValue();
             } catch (StorageException e) {
                 throw new RuntimeException(e);
             }
-            isVersion = Boolean.valueOf(parentId == null && name != null
-                    && name.length() > 0);
+            isVersion = Boolean.valueOf(versionableId != null);
         }
         return isVersion.booleanValue();
     }

@@ -1467,6 +1467,34 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testRelation() throws Exception {
+        PartialList<Serializable> res;
+
+        Session session = repository.getConnection();
+        Node rel1 = session.addChildNode(null, "rel", null, "Relation", false);
+        rel1.setSingleProperty("relation:source", "123");
+        rel1.setSingleProperty("relation:target", "456");
+        Node rel2 = session.addChildNode(null, "rel", null, "Relation2", false);
+        rel2.setSingleProperty("relation:source", "123");
+        rel2.setSingleProperty("relation:target", "789");
+        rel2.setSingleProperty("tst:title", "yo");
+        session.save();
+
+        res = session.query(
+                "SELECT * FROM Document WHERE relation:source = '123'",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size()); // Relation is not a Document
+        res = session.query(
+                "SELECT * FROM Relation WHERE relation:source = '123'",
+                QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+        res = session.query("SELECT * FROM Relation2", QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        res = session.query("SELECT * FROM Relation2 WHERE tst:title = 'yo'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
 }
 
 class DummyXid implements Xid, Serializable {

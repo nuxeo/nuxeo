@@ -95,7 +95,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     public boolean isFolder() {
-        return ((DocumentType) type).isFolder();
+        return type == null // null document
+                || ((DocumentType) type).isFolder();
     }
 
     public String getUUID() {

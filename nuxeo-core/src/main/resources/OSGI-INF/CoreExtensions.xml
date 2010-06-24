@@ -22,6 +22,7 @@
     <!-- XXX AT: prefixes should be set, see NXP-1152 -->
     <schema name="core-types" src="schema/core-types.xsd"/>
     <schema name="base" src="schema/base.xsd"/>
+    <schema name="relation" prefix="relation" src="schema/relation.xsd"/>
     <schema name="common" src="schema/common.xsd"/>
     <schema name="dublincore" prefix="dc" src="schema/dublincore.xsd"/>
     <schema name="uid" src="schema/uid.xsd"/>
@@ -47,6 +48,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
       point="doctype">
     <documentation>The core document types</documentation>
+
     <doctype name="Folder" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
@@ -69,6 +71,11 @@
       <subtypes>
         <type>Domain</type>
       </subtypes>
+    </doctype>
+
+    <doctype name="Relation"> <!-- no extends -->
+      <schema name="relation"/>
+      <schema name="dublincore"/>
     </doctype>
 
     <doctype name="Domain" extends="Folder">

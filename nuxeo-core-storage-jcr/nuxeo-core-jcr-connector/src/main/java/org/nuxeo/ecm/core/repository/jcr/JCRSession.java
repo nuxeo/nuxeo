@@ -132,6 +132,11 @@ public class JCRSession implements Session {
         return root;
     }
 
+    public Document getNullDocument() throws DocumentException {
+        throw new UnsupportedOperationException(
+                "Placeless documents not supported");
+    }
+
     public XAResource getXAResource() {
         return session.getXAResource();
     }

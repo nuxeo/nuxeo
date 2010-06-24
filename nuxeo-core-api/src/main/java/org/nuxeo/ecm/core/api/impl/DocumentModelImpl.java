@@ -238,7 +238,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      */
     public DocumentModelImpl(String parentPath, String name, String type,
             DataModelMap data) {
-        path = new Path(parentPath + '/' + name);
+        path = new Path(parentPath == null ? name : parentPath + '/' + name);
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         ref = new PathRef(parentPath, name);
         dataModels = data == null ? new DataModelMapImpl() : data;
@@ -360,8 +360,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public DocumentRef getParentRef() {
         if (parentRef == null && path != null) {
-            Path parentPath = path.removeLastSegments(1);
-            parentRef = new PathRef(parentPath.toString());
+            if (path.isAbsolute()) {
+                Path parentPath = path.removeLastSegments(1);
+                parentRef = new PathRef(parentPath.toString());
+            }
+            // else keep parentRef null
         }
         return parentRef;
     }
@@ -576,7 +579,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public void setPathInfo(String parentPath, String name) {
-        path = new Path(parentPath + '/' + name);
+        path = new Path(parentPath == null ? name : parentPath + '/' + name);
         ref = new PathRef(parentPath, name);
     }
 

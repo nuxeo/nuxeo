@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -173,14 +172,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
     public Object getPropertyValue(String name) throws DocumentException {
         // when called from AbstractSession.getDataModelFields,
         // we may get an unprefixed name...
-        try {
-            return getProperty(name).getValue();
-        } catch (NoSuchPropertyException e) {
-            // XXX we do this because when reading prefetched values,
-            // only DocumentException is expected
-            // (see DocumentModelFactory.createDocumentModel)
-            throw new DocumentException(e);
-        }
+        return getProperty(name).getValue();
     }
 
     public String getString(String name) throws DocumentException {

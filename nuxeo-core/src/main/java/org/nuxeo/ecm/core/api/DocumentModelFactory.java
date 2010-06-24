@@ -220,9 +220,12 @@ public class DocumentModelFactory {
         }
 
         if (schemas != null) {
-            for (String schema : schemas) {
-                DataModel dataModel = exportSchema(sid, docRef, doc,
-                        type.getSchema(schema));
+            for (String schemaName : schemas) {
+                Schema schema = type.getSchema(schemaName);
+                if (schema == null) {
+                    continue;
+                }
+                DataModel dataModel = exportSchema(sid, docRef, doc, schema);
                 docModel.addDataModel(dataModel);
             }
         } else if (prefetchSchemas != null && prefetchSchemas.length > 0) {

@@ -555,8 +555,14 @@ public class SessionImpl implements Session, XAResource {
             node = getParentNode(node);
         }
         if (list.size() == 1) {
-            // root, special case
-            return "/";
+            String name = list.get(0);
+            if (name.length() == 0) {
+                // root, special case
+                return "/";
+            } else {
+                // placeless document, no initial slash
+                return name;
+            }
         }
         Collections.reverse(list);
         return StringUtils.join(list, "/");
@@ -600,7 +606,7 @@ public class SessionImpl implements Session, XAResource {
 
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
-        if (pos == null && !complexProp) {
+        if (pos == null && !complexProp && parent != null) {
             pos = context.getNextPos(parent.getId(), complexProp);
         }
         return addChildNode(null, parent, name, pos, typeName, complexProp);

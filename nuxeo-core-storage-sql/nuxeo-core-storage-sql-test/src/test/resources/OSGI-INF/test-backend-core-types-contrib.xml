@@ -23,6 +23,9 @@
     <doctype name="OFolder" extends="TestDoc">
       <facet name="Orderable"/>
     </doctype>
+    <doctype name="Relation2" extends="Relation">
+      <schema name="testschema"/>
+    </doctype>
   </extension>
 
 </component>

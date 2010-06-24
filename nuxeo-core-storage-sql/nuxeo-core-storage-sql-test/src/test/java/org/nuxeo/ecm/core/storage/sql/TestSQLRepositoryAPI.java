@@ -3196,4 +3196,51 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, set.size());
     }
 
+    public void testPlacelessDocument() throws Exception {
+        DocumentModel doc = new DocumentModelImpl((String) null, "mydoc",
+                "MyDocType");
+        doc.setProperty("dublincore", "title", "The title");
+        doc = session.createDocument(doc);
+        assertNull(doc.getParentRef()); // placeless
+        session.save();
+
+        DocumentModel doc2 = session.createDocumentModel(null, "other",
+                "MyDocType");
+        doc2.setProperty("dublincore", "title", "Other");
+        doc2 = session.createDocument(doc2);
+        assertNull(doc2.getParentRef()); // placeless
+        session.save();
+
+        closeSession();
+        // ----- new session -----
+        openSession();
+        doc = session.getDocument(new IdRef(doc.getId()));
+        assertNull(doc.getParentRef());
+
+        assertEquals("The title", (String) doc.getProperty("dublincore",
+                "title"));
+        assertNull((String) doc.getProperty("dublincore", "description"));
+
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
+        assertNull(doc2.getParentRef());
+    }
+
+    public void testRelation() throws Exception {
+        DocumentModel rel = session.createDocumentModel(null, "myrel",
+                "Relation");
+        rel.setProperty("relation", "source", "1234");
+        rel.setProperty("dublincore", "title", "My Rel");
+        rel = session.createDocument(rel);
+        assertNull(rel.getParentRef()); // placeless
+        session.save();
+
+        // query
+        DocumentModelList list = session.query("SELECT * FROM Relation WHERE relation:source = '1234'");
+        assertEquals(1, list.size());
+
+        DocumentModel doc = list.get(0);
+        assertNull(doc.getParentRef());
+        assertEquals("My Rel", doc.getProperty("dublincore", "title"));
+    }
+
 }

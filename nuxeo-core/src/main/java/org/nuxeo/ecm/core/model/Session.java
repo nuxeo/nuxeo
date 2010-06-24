@@ -178,6 +178,15 @@ public interface Session {
     Document getRootDocument() throws DocumentException;
 
     /**
+     * Gets the null document, to be used as a fake parent to add placeless
+     * children.
+     *
+     * @return the null document
+     * @throws DocumentException
+     */
+    Document getNullDocument() throws DocumentException;
+
+    /**
      * Copies the source document to the given folder.
      * <p>
      * If the destination document is not a folder, an exception is thrown.

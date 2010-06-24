@@ -166,6 +166,10 @@ public final class JCAConnection implements Session {
         return session.getRootDocument();
     }
 
+    public Document getNullDocument() throws DocumentException {
+        return session.getNullDocument();
+    }
+
     public Document copy(Document src, Document dst, String name)
             throws DocumentException {
         return session.copy(src, dst, name);

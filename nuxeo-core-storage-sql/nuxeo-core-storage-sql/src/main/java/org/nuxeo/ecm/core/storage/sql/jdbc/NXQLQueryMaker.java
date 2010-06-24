@@ -140,6 +140,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
     private static final Log log = LogFactory.getLog(NXQLQueryMaker.class);
 
+    public static final String TYPE_DOCUMENT = "Document";
+
+    public static final String TYPE_RELATION = "Relation";
+
     protected static final String TABLE_HIER_ALIAS = "_H";
 
     protected static final String COL_ALIAS_PREFIX = "_C";
@@ -210,15 +214,25 @@ public class NXQLQueryMaker implements QueryMaker {
          */
 
         Set<String> types = new HashSet<String>();
+        boolean onlyRelations = true;
         for (String typeName : info.fromTypes) {
-            if ("document".equals(typeName)) {
-                typeName = "Document";
+            if (TYPE_DOCUMENT.equalsIgnoreCase(typeName)) {
+                typeName = TYPE_DOCUMENT;
             }
             Set<String> subTypes = model.getDocumentSubTypes(typeName);
             if (subTypes == null) {
                 throw new StorageException("Unknown type: " + typeName);
             }
             types.addAll(subTypes);
+            boolean isRelation = false;
+            do {
+                if (TYPE_RELATION.equals(typeName)) {
+                    isRelation = true;
+                    break;
+                }
+                typeName = model.getDocumentSuperType(typeName);
+            } while (typeName != null);
+            onlyRelations = onlyRelations && isRelation;
         }
         types.remove(model.ROOT_TYPE);
 
@@ -284,6 +298,13 @@ public class NXQLQueryMaker implements QueryMaker {
          * Build the FROM / JOIN criteria for each select.
          */
 
+        if (onlyRelations) {
+            if (info.proxyClause == Boolean.TRUE) {
+                // no proxies to relations, query cannot match
+                return null;
+            }
+            info.proxyClause = Boolean.FALSE;
+        }
         DocKind[] docKinds;
         if (info.proxyClause == Boolean.TRUE) {
             if (info.immutableClause == Boolean.FALSE) {
@@ -526,8 +547,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     securityClause = dialect.getReadAclsCheckSql("r.acl_id");
                     securityParams.add(principals);
                     securityJoin = String.format(JOIN_ON,
-                            model.HIER_READ_ACL_TABLE_NAME + " r", id,
-                            "r.id");
+                            model.HIER_READ_ACL_TABLE_NAME + " r", id, "r.id");
                 } else {
                     securityClause = dialect.getSecurityCheckSql(id);
                     securityParams.add(principals);

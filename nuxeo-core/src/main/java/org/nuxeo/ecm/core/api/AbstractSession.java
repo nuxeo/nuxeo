@@ -771,15 +771,16 @@ public abstract class AbstractSession implements CoreSession,
                     "cannot create document '%s' with undefined type name",
                     docModel.getTitle()));
         }
-        if (parentRef == null) {
+        if (parentRef == null && !isAdministrator()) {
             throw new ClientException(
-                    String.format(
-                            "cannot create document '%s' with undefined reference to parent document",
-                            docModel.getTitle()));
+                    "Only Administrators can create placeless documents");
         }
         try {
-            Document folder = resolveReference(parentRef);
-            checkPermission(folder, ADD_CHILDREN);
+            Document folder = parentRef == null ? null
+                    : resolveReference(parentRef);
+            if (folder != null) {
+                checkPermission(folder, ADD_CHILDREN);
+            }
 
             // get initial life cycle state info
             String initialLifecycleState = null;
@@ -793,6 +794,9 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, false, true); // no lifecycle yet
             String name = docModel.getName();
             name = generateDocumentName(folder, name);
+            if (folder == null) {
+                folder = getSession().getNullDocument();
+            }
             Document doc = folder.addChild(name, typeName);
 
             // init document life cycle
@@ -892,7 +896,7 @@ public abstract class AbstractSession implements CoreSession,
         if (name == null || name.length() == 0) {
             name = IdUtils.generateStringId();
         }
-        if (parent.hasChild(name)) {
+        if (parent != null && parent.hasChild(name)) {
             name += '.' + String.valueOf(System.currentTimeMillis());
         }
         return name;
