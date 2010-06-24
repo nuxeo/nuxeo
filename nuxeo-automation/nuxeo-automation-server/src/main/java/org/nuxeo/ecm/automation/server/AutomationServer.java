@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.server;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * A registry of REST bindings. Provides methods for checking if a given
  * operation is allowed to be invoked in a REST call.
@@ -31,12 +30,20 @@ import javax.servlet.http.HttpServletRequest;
 public interface AutomationServer {
 
     /**
-     * Get a binding given an operation or operation chain name.
+     * Get a binding given an operation.
      * 
-     * @param name the operation / operation chain name.
+     * @param name the operation name.
      * @return
      */
-    RestBinding getBinding(String name);
+    RestBinding getOperationBinding(String name);
+
+    /**
+     * Get a binding given a chain name
+     * 
+     * @param name
+     * @return
+     */
+    RestBinding getChainBinding(String name);
 
     /**
      * Get an array of registered bindings.
@@ -58,7 +65,7 @@ public interface AutomationServer {
      * @param name
      * @return the removed binding if any otherwise null
      */
-    RestBinding removeBinding(String name);
+    RestBinding removeBinding(RestBinding binding);
 
     /**
      * Check if the given operation name is allowed in a REST call.
@@ -66,5 +73,5 @@ public interface AutomationServer {
      * @param name
      * @return
      */
-    boolean accept(String name, HttpServletRequest req);
+    boolean accept(String name, boolean isChain, HttpServletRequest req);
 }

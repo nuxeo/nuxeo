@@ -49,4 +49,8 @@ public class ChainResource extends ExecutableResource {
         return chainId;
     }
 
+    @Override
+    public boolean isChain() {
+        return true;
+    }
 }

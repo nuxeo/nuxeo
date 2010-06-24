@@ -52,12 +52,12 @@ public class ContributionTest {
     @Test
     public void testContribution() throws Exception {
         Assert.assertEquals(2, server.getBindings().length);
-        RestBinding binding = server.getBinding("principals");
+        RestBinding binding = server.getChainBinding("principals");
         Assert.assertTrue(binding.isDisabled());
         Assert.assertFalse(binding.isSecure());
         Assert.assertFalse(binding.isAdministrator());
         Assert.assertNull(binding.getGroups());
-        binding = server.getBinding("audit");
+        binding = server.getChainBinding("audit");
         Assert.assertFalse(binding.isDisabled());
         Assert.assertTrue(binding.isSecure());
         Assert.assertTrue(binding.isAdministrator());

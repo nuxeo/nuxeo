@@ -53,7 +53,7 @@ public abstract class ExecutableResource {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
-            if (!srv.accept(getId(), request)) {
+            if (!srv.accept(getId(), isChain(), request)) {
                 return ResponseHelper.notFound();
             }
             Object result = execute(xreq);
@@ -76,5 +76,7 @@ public abstract class ExecutableResource {
     public abstract String getId();
 
     public abstract Object execute(ExecutionRequest req) throws Exception;
+
+    public abstract boolean isChain();
 
 }

@@ -50,4 +50,9 @@ public class OperationResource extends ExecutableResource {
     public String getId() {
         return type.getId();
     }
+
+    @Override
+    public boolean isChain() {
+        return false;
+    }
 }

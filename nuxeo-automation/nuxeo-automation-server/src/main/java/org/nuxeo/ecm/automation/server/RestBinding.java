@@ -33,6 +33,9 @@ public class RestBinding {
     @XNode("@name")
     protected String name;
 
+    @XNode("@chain")
+    protected boolean chain;
+
     @XNode("@disabled")
     protected boolean isDisabled;
 
@@ -66,6 +69,14 @@ public class RestBinding {
 
     public void setGroups(String[] groups) {
         this.groups = groups;
+    }
+
+    public void setChain(boolean chain) {
+        this.chain = chain;
+    }
+
+    public boolean isChain() {
+        return chain;
     }
 
     @XNode("groups")
