@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using Microsoft.Win32;
 
 namespace NuxeoProcess
 {
@@ -64,9 +65,10 @@ namespace NuxeoProcess
 			if (!File.Exists(NUXEO_CONF)) {
 				NUXEO_CONF="nuxeo.conf";
 				if (!File.Exists(NUXEO_CONF)) {
-                    NUXEO_CONF = @"C:\Documents and Settings\Administrateur\Bureau\nuxeo-dm-5.3.2-SNAPSHOT-jboss\bin\nuxeo.conf";
+					String desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+					NUXEO_CONF = Path.Combine(desktop,"nuxeo.conf");
 					if (!File.Exists(NUXEO_CONF)) {
-						Log("Could not find nuxeo configuration");
+						Log("Could not find nuxeo configuration","ERROR");
 						return null;
 					}
 				}
@@ -111,16 +113,36 @@ namespace NuxeoProcess
 			nxEnv.Add("NUXEO_CONF",nxConfig["NUXEO_CONF"]);
 			
 			// Setup the JVM
-			String JAVA="java.exe";
+			String JAVA="javaw.exe";
 			if (platform=="unix") JAVA="java";
 			if (nxConfig.ContainsKey("JAVA_HOME")) {
 				JAVA=Path.Combine(Path.Combine(nxConfig["JAVA_HOME"],"bin"),JAVA);
 			} else if (Environment.GetEnvironmentVariable("JAVA_HOME")!=null) {
 				JAVA=Path.Combine(Path.Combine(Environment.GetEnvironmentVariable("JAVA_HOME"),"bin"),JAVA);
-            }
+			} else if (platform!="unix") {
+				String regJDK=@"SOFTWARE\JavaSoft\Java Development Kit";
+				String regJDK6432=@"SOFTWARE\Wow6432Node\JavaSoft\Java Development Kit";
+				RegistryKey regJDKKey=null;
+				RegistryKey regCurrentJDKKey=null;
+				try {
+					regJDKKey=Registry.LocalMachine.OpenSubKey(regJDK);
+					// The following line is for Java 32bit on a 64bit platform
+					if (regJDKKey==null) regJDKKey=Registry.LocalMachine.OpenSubKey(regJDK6432);
+					String regCurrentJDK=(String)regJDKKey.GetValue("CurrentVersion");
+					regCurrentJDKKey=regJDKKey.OpenSubKey(regCurrentJDK);
+					String regJavaHome=(String)regCurrentJDKKey.GetValue("JavaHome");
+					JAVA=Path.Combine(Path.Combine(regJavaHome,"bin"),JAVA);
+					Log("Current JDK version in Registry : "+regCurrentJDK,"DEBUG");
+					Log("Current JavaHome in Registry : "+regJavaHome,"DEBUG");
+				} catch {
+					Log("Can not find JDK in the registry","ERROR");
+				}
+				if (regCurrentJDKKey!=null) regCurrentJDKKey.Close();
+				if (regJDKKey!=null) regCurrentJDKKey.Close();
+			}
 
             if (!File.Exists(JAVA)) {
-                Log("java.exe doesn't exists in the given path : " + JAVA, "ERROR");
+                Log("Can not find "+JAVA, "ERROR");
                 return false;
             }
 			nxEnv.Add("JAVA",JAVA);
