@@ -113,7 +113,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             log.debug("tcp connect succeeded => socket is not free");
             return false;
         } catch (Throwable t) {
-            log.debug("Error when trying to connect to OOo TCP port" + t.getMessage());
+            log.trace("Error when trying to connect to OOo TCP port " + t.getMessage());
             log.debug("Stocket seems to be free");
             return true;
         } finally {
