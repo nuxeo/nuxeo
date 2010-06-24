@@ -10,8 +10,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonManagerComponent;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.sun.star.frame.XDesktop;
@@ -19,7 +23,9 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 public class OOoLauncherComponent extends DefaultComponent implements
-        OOoLauncherService, OOoConnectionManager {
+        OOoLauncherService, OOoConnectionManager, FrameworkListener {
+
+    protected static String CONFIG_EP = "oooLauncherConfig";
 
     protected OOoLauncherDescriptor descriptor = new OOoLauncherDescriptor();
 
@@ -38,39 +44,29 @@ public class OOoLauncherComponent extends DefaultComponent implements
         return configHelper;
     }
 
+
     public boolean isOOoLaunched() {
         return started;
+    }
+
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint,
+            ComponentInstance contributor) throws Exception {
+        if (CONFIG_EP.equals(extensionPoint)) {
+            OOoLauncherDescriptor desc = (OOoLauncherDescriptor) contribution;
+            descriptor = desc;
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         stopOOo();
     }
-
-    // public boolean isOOoRunning() {
-    // if (!isOOoLaunched() || OOoProcess==null) {
-    // log.debug("Can not check if OOo process is running as it is not started");
-    // return false;
-    // }
-    //
-    // return true;
-    //
-    //
-    //
-    // int exitCode=0;
-    // try {
-    // exitCode = OOoProcess.exitValue();
-    // }
-    // catch (IllegalThreadStateException e) {
-    // return true;
-    // }
-    //
-    // log.info("OOo process exited with return code" + exitCode);
-    // OOoProcess=null;
-    // started=false;
-    //
-    // return false;
-    // }
 
     public boolean waitTillReady() {
         return waitTillReady(descriptor.getOooStartupTimeOut());
@@ -267,6 +263,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
         return getConfigHelper().isConfiguredOk();
     }
 
+    //****************************
     // ConnectionManager interface
 
     protected boolean failedToConnect=false;
@@ -364,6 +361,30 @@ public class OOoLauncherComponent extends DefaultComponent implements
     public void releaseConnection(SocketOpenOfficeConnection connection) {
 
         releaseLock();
+    }
+
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+
+            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+            ClassLoader nuxeoCL = OOoDaemonManagerComponent.class.getClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(nuxeoCL);
+                log.debug("OOoLauncher Service initialization");
+                if (descriptor.getStartOOoAtServicerStartup()) {
+                    if (isConfigured()) {
+                        log.info("Starting OOo server process");
+                        startOOo();
+                    } else {
+                        log.info("OOo Server is not well configured, can not start OpenOffice server processs");
+                    }
+                }
+            }
+            finally {
+                Thread.currentThread().setContextClassLoader(jbossCL);
+                log.debug("JBoss ClassLoader restored");
+            }
+        }
     }
 
 }

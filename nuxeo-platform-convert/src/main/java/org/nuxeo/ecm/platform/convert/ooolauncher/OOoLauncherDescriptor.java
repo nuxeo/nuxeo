@@ -21,6 +21,9 @@ public class OOoLauncherDescriptor {
     @XNode("oooOptions")
     private String oooOptions;
 
+    @XNode("startOOoAtServicerStartup")
+    private boolean startOOoAtServicerStartup=false;
+
     @XNode("enabled")
     private boolean enabled=true;
 
@@ -47,6 +50,10 @@ public class OOoLauncherDescriptor {
 
     public int getOooStartupTimeOut() {
         return oooStartupTimeOut;
+    }
+
+    public boolean getStartOOoAtServicerStartup() {
+        return startOOoAtServicerStartup;
     }
 
 

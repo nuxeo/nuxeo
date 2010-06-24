@@ -59,6 +59,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         result.getBlob().transferTo(pdfFile);
         String text = readPdfText(pdfFile);
         assertTrue(text.contains("Hello"));
+        log.info(srcMT + " to PDF conversion : OK");
     }
 
     public void testAnyToTextConverter() throws Exception {
