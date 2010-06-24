@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * Performs re-rendering of webcontainer layout widgets.
- * 
+ *
  * @author Anahide Tchertchian
  * @author rux added the site name validation
  */
