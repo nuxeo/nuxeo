@@ -292,12 +292,6 @@
         <artifactId>commons-logging</artifactId>
         <version>1.1</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!-- be careful using this dependency as it breaks unit tests logging -->
       <dependency>
@@ -1697,10 +1691,6 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
     </dependency>
 
     <!-- test scope -->
