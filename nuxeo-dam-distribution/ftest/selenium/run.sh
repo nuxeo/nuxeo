@@ -15,7 +15,10 @@ URL=${URL:-http://localhost:8080/nuxeo/}
 CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
       -htmlSuite "*chrome" $URL "
 if [ ! -z $HIDE_FF ]; then
-    CMD="xvfb-run -a $CMD"
+    # we assume that there is a long running xvfb-run process running and
+    # listening on display :1
+    export DISPLAY=${DISPLAY:-":1"}
+#    CMD="xvfb-run -a $CMD"
 fi
 CMD_END="-firefoxProfileTemplate ffprofile -userExtensions user-extensions.js"
 
