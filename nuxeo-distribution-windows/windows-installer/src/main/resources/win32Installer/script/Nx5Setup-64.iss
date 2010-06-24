@@ -153,7 +153,7 @@ begin
 	  regSuccess:=Exec(cmd, cmdParams, cmdDir, SW_SHOW,ewWaitUntilTerminated, regCode);
 	  if regSuccess then
 		begin
-		  MsgBox('Service successfully registred', mbInformation, MB_OK);
+		  MsgBox('Service successfully registered', mbInformation, MB_OK);
 		end
 	  else
 		begin
@@ -201,7 +201,7 @@ begin
 			RegWriteExpandStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment','Path', sysPath);
 			if (needServiceSetup) then
 				begin
-				MsgBox('System Enviroment variable Path has been updated to include Java bin directory, you may need to restart to be able to run Nuxeo5 as service', mbInformation, MB_OK);
+				MsgBox('System Environment variable Path has been updated to include Java bin directory, you may need to restart to be able to run Nuxeo5 as service', mbInformation, MB_OK);
 				end
 			end
 		end
