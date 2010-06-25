@@ -7,6 +7,8 @@
       <repository name="default">
         <schema>
           <field type="largetext">note</field>
+          <field type="largetext">webp:content</field>
+          <field type="largetext">webc:welcomeText</field>
         </schema>
         <indexing>
           <!-- for H2 (Lucene Analyzer): -->
