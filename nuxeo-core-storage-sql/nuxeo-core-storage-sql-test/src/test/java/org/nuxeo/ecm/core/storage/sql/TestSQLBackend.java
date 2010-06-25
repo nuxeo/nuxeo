@@ -1493,6 +1493,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         res = session.query("SELECT * FROM Relation2 WHERE tst:title = 'yo'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
+
+        // remove
+        session.removeNode(rel1);
+        session.save();
+        res = session.query(
+                "SELECT * FROM Relation WHERE relation:source = '123'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
     }
 
 }

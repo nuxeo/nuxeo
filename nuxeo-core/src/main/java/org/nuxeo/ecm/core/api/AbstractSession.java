@@ -1577,6 +1577,9 @@ public abstract class AbstractSession implements CoreSession,
 
     protected boolean canRemoveDocument(Document doc) throws ClientException,
             DocumentException {
+        if (isAdministrator()) {
+            return true;
+        }
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             Collection<Document> proxies = getSession().getProxies(doc, null);
@@ -1594,7 +1597,7 @@ public abstract class AbstractSession implements CoreSession,
                 return hasPermission(working, REMOVE);
             } else {
                 // no working document, only admins can remove
-                return isAdministrator();
+                return false;
             }
         } else {
             if (!hasPermission(doc, REMOVE)) {

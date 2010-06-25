@@ -3223,6 +3223,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertNull(doc2.getParentRef());
+
+        // remove
+        session.removeDocument(doc.getRef());
+        session.save();
     }
 
     public void testRelation() throws Exception {
@@ -3235,12 +3239,19 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // query
-        DocumentModelList list = session.query("SELECT * FROM Relation WHERE relation:source = '1234'");
+        String query = "SELECT * FROM Relation WHERE relation:source = '1234'";
+        DocumentModelList list = session.query(query);
         assertEquals(1, list.size());
 
         DocumentModel doc = list.get(0);
         assertNull(doc.getParentRef());
         assertEquals("My Rel", doc.getProperty("dublincore", "title"));
+
+        // remove
+        session.removeDocument(rel.getRef());
+        session.save();
+        list = session.query(query);
+        assertEquals(0, list.size());
     }
 
 }
