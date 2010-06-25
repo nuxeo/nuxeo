@@ -1,10 +1,7 @@
-<project name="nuxeo-assembly"
-         default="build"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
@@ -28,7 +25,8 @@
 
   <target name="prepare-jetty">
     <unzip dest="${jetty}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${maven.project.version}:zip" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${maven.project.version}:zip" />
       <patternset>
         <exclude name="nxserver.cmd" />
         <exclude name="nxserver.sh" />
@@ -36,8 +34,9 @@
       </patternset>
     </unzip>
     <unzip dest="${jetty}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="doc" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+        classifier="doc" />
     </unzip>
     <copy todir="${jetty}">
       <fileset dir="src/main/resources" />
@@ -45,39 +44,41 @@
     <delete file="${jetty}/config/login-anonymous-config.xml" />
 
     <unzip dest="${jetty}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="bin" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+        classifier="bin" />
     </unzip>
     <chmod dir="${jetty}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
-    <!-- Template configuration not yet implemented for Jetty 
-    <unzip dest="${jetty}/templates">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="templates-jetty" />
-    </unzip>
+    <!--
+      Template configuration not yet implemented for Jetty <unzip
+      dest="${jetty}/templates"> <artifact:resolveFile
+      key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+      classifier="templates-jetty" /> </unzip>
     -->
 
     <copy todir="${jetty}/bundles">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
       <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-core-storage-sql" />
-      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-core-storage-sql-extensions" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.core:nuxeo-core-storage-sql-extensions" />
     </copy>
     <antcall target="jetty-third-party-libraries">
       <param name="lib.dir" value="${jetty}/lib" />
     </antcall>
   </target>
 
-  <target name="build-nuxeo-ep-jetty"
-          unless="maven.profile.nuxeo-dm"
-          description="Build Jetty distribution with Nuxeo EP">
+  <target name="build-nuxeo-ep-jetty" unless="maven.profile.nuxeo-dm"
+    description="Build Jetty distribution with Nuxeo EP">
     <delete failonerror="false"
-            dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty" />
+      dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty" />
     <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jetty">
       <fileset dir="${jetty}" />
     </copy>
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jetty/bundles">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
       <patternset>
         <include name="nuxeo-platform-webapp*.jar" />
         <include name="plugins/*.*" />
@@ -92,29 +93,28 @@
       <mapper type="flatten" />
     </unzip>
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jetty/lib">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
       <patternset>
         <include name="lib/*.*" />
       </patternset>
       <mapper type="flatten" />
     </unzip>
     <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty/bin"
-           perm="ug+x"
-           includes="*.sh,*ctl,*.command" />
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-         basedir="${outdir}"
-         includes="nuxeo-ep-${maven.project.version}-jetty/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-ep"
-                     type="zip" />
+      perm="ug+x" includes="*.sh,*ctl,*.command" />
+    <zip
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+      basedir="${outdir}" includes="nuxeo-ep-${maven.project.version}-jetty/**" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep"
+      type="zip" />
   </target>
 
-  <target name="build-nuxeo-dm-jetty"
-          unless="maven.profile.nuxeo-ep"
-          description="Build jetty distribution with Nuxeo DM">
+  <target name="build-nuxeo-dm-jetty" unless="maven.profile.nuxeo-ep"
+    description="Build jetty distribution with Nuxeo DM">
     <delete failonerror="false"
-            dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty" />
+      dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty" />
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jetty">
       <fileset dir="${jetty}" />
     </copy>
@@ -122,7 +122,8 @@
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler" />
     </copy>
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jetty/bundles">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
         <include name="nuxeo-platform-webapp*.jar" />
         <include name="plugins/*.*" />
@@ -137,33 +138,33 @@
       <mapper type="flatten" />
     </unzip>
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jetty/lib">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
         <include name="lib/*.*" />
       </patternset>
       <mapper type="flatten" />
     </unzip>
     <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty/bin"
-           perm="ug+x"
-           includes="*.sh,*ctl,*.command" />
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-         basedir="${outdir}"
-         includes="nuxeo-dm-${maven.project.version}-jetty/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-dm"
-                     type="zip" />
+      perm="ug+x" includes="*.sh,*ctl,*.command" />
+    <zip
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+      basedir="${outdir}" includes="nuxeo-dm-${maven.project.version}-jetty/**" />
+    <artifact:attach
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-dm"
+      type="zip" />
   </target>
 
   <target name="jetty-third-party-libraries">
     <!-- Remove duplicate, not needed and/or wrong third-parties -->
     <delete>
-      <filelist dir="${lib.dir}">
-        <file name="javassist-3.6.jar" />
-        <file name="servlet-api-2.4.jar" />
-        <file name="el-api-unknown.jar" />
-        <file name="el-ri-unknown.jar" />
-      </filelist>
+      <fileset dir="${lib.dir}">
+        <include name="javassist-3.6.jar" />
+        <include name="servlet-api-*.jar" />
+        <include name="el-api-unknown.jar" />
+        <include name="el-ri-unknown.jar" />
+      </fileset>
     </delete>
     <!-- Add libraries required under jetty (not present in the dependency tree) -->
     <copy todir="${lib.dir}" overwrite="true">
@@ -181,6 +182,7 @@
       <artifact:resolveFile key="org.mortbay.jetty:jetty-util" />
       <artifact:resolveFile key="jotm:jotm" />
       <artifact:resolveFile key="javax.annotation:jsr250-api" />
+      <artifact:resolveFile key="javax.servlet:servlet-api:2.5" />
 
       <artifact:resolveFile key="org.apache.ant:ant" />
       <artifact:resolveFile key="bsh:bsh" />
