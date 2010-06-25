@@ -66,11 +66,13 @@
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-    <threshold>INFO</threshold>
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
     </layout>
+     <filter class="org.apache.log4j.varia.LevelRangeFilter">
+         <param name="levelMin" value="INFO"/>
+     </filter>
   </appender>
 
   <!-- ====================== -->
