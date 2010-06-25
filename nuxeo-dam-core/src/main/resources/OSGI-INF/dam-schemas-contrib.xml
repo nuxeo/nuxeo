@@ -39,6 +39,7 @@
       <schema name="uid" />
       <facet name="Downloadable" />
       <facet name="Versionable" />
+      <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Asset"/>
     </doctype>
