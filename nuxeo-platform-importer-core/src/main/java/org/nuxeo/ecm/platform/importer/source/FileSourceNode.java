@@ -72,4 +72,8 @@ public class FileSourceNode implements SourceNode {
        return file.getAbsolutePath();
     }
 
+    public File getFile() {
+        return file;
+    }
+
 }
