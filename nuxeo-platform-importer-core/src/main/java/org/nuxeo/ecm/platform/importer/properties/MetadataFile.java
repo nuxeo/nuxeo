@@ -22,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -73,9 +75,9 @@ public class MetadataFile {
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromSchemasAndProperties(DocumentModel doc,
-            List<String> allPropertiesSchemas, List<String> properties)
-            throws ClientException {
+    public static MetadataFile createFromSchemasAndProperties(
+            DocumentModel doc, List<String> allPropertiesSchemas,
+            List<String> properties) throws ClientException {
         MetadataFile mdFile = new MetadataFile(doc);
         mdFile.load(allPropertiesSchemas, properties);
         return mdFile;
@@ -101,7 +103,8 @@ public class MetadataFile {
      */
     public static MetadataFile createFromProperties(DocumentModel doc,
             List<String> properties) throws ClientException {
-        return createFromSchemasAndProperties(doc, Collections.<String> emptyList(), properties);
+        return createFromSchemasAndProperties(doc,
+                Collections.<String> emptyList(), properties);
     }
 
     protected MetadataFile(DocumentModel doc) {
@@ -148,15 +151,25 @@ public class MetadataFile {
             try {
                 List<String> list = (List<String>) value;
                 if (!list.isEmpty()) {
-                    metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.LIST_SEPARATOR));
+                    if (list.size() == 1) {
+                        list = new ArrayList<String>(list);
+                        list.add("");
+                    }
+                    metadataProperties.put(propertyKey, StringUtils.join(list,
+                            MetadataCollector.LIST_SEPARATOR));
                 }
             } catch (ClassCastException e) {
                 // do nothing
             }
         } else if (value instanceof String[]) {
-            String[] list = (String[]) value;
-            if (list.length > 0) {
-                metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.ARRAY_SEPARATOR));
+            List<String> list = Arrays.asList((String[]) value);
+            if (!list.isEmpty()) {
+                if (list.size() == 1) {
+                    list = new ArrayList<String>(list);
+                    list.add("");
+                }
+                metadataProperties.put(propertyKey, StringUtils.join(list,
+                        MetadataCollector.ARRAY_SEPARATOR));
             }
         } else if (value instanceof Calendar) {
             Date date = ((Calendar) value).getTime();
