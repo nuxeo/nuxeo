@@ -323,7 +323,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
-        MimetypeEntry mtype = null;
+        MimetypeEntry mtype = mimetypeByNormalisedRegistry.get("application/octet-stream");
         if (mimetype != null) {
             for (String key : mimetypeByNormalisedRegistry.keySet()) {
                 MimetypeEntry entry = mimetypeByNormalisedRegistry.get(key);

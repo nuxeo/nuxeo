@@ -101,6 +101,7 @@
           <excludes>
             <exclude>**/TestOOoServiceManagerService.class</exclude>
             <exclude>**/TestOffice2html.class</exclude>
+            <exclude>**/*$*.java/</exclude>
           </excludes>
         </configuration>
       </plugin>
