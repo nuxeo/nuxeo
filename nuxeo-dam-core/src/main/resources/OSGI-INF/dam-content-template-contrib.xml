@@ -31,6 +31,8 @@
         <ace principal="administrators" permission="Everything" granted="true"/>
         <ace principal="members" permission="Read" granted="true"/>
         <ace principal="members" permission="Version" granted="true"/>
+        <ace principal="members" permission="Write" granted="true"/>
+        <ace principal="members" permission="WriteSecurity" granted="true"/>
       </acl>
       <template>
         <templateItem typeName="Domain" id="default-domain" title="Default domain"

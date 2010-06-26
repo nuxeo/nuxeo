@@ -10,51 +10,14 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-dam-importer</artifactId>
-  <packaging>jar</packaging>
-  <name>Nuxeo DAM Importer</name>
-  <description>Nuxeo DAM Importer</description>
+  <artifactId>nuxeo-dam-importer-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo DAM Importer Parent</name>
+  <description>Nuxeo DAM Importer Parent</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.dam</groupId>
-      <artifactId>nuxeo-dam-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-importer-jaxrs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-video-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audio-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>nuxeo-dam-importer-core</module>
+    <module>nuxeo-dam-importer-jaxrs</module>
+  </modules>
 
 </project>

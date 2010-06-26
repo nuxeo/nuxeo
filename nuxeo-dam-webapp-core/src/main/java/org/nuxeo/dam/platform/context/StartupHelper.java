@@ -49,6 +49,10 @@ public class StartupHelper implements Serializable {
 
     private static final long serialVersionUID = 3248972387619873245L;
 
+    public static final String LANGUAGE_PARAMETER = "language";
+
+    public static final String ASSETS_VIEW = "assets";
+
     protected String localeStr;
 
     protected static final Log log = LogFactory.getLog(StartupHelper.class);
@@ -112,13 +116,13 @@ public class StartupHelper implements Serializable {
         // DAM-173 - Set locale from login page.
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
-        if (request.getParameter("language") != null) {
-            localeStr = request.getParameter("language");
+        if (request.getParameter(LANGUAGE_PARAMETER) != null) {
+            localeStr = request.getParameter(LANGUAGE_PARAMETER);
         }
         localeSelector.selectLanguage(localeStr);
 
         // TODO : REMOVE
-        return "assets";
+        return ASSETS_VIEW;
     }
 
     public void setupCurrentUser() {

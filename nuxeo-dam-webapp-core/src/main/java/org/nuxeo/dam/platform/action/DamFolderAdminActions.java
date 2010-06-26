@@ -18,7 +18,6 @@ package org.nuxeo.dam.platform.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.dam.platform.context.ImportActions.IMPORT_ROOT_PATH;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -143,7 +142,7 @@ public class DamFolderAdminActions implements Serializable {
     public DocumentModel getNewFolder() throws ClientException {
         if (newFolder == null) {
             newFolder = documentManager.createDocumentModel(
-                    IMPORT_ROOT_PATH, IdUtils.generateStringId(),
+                    Constants.IMPORT_ROOT_PATH, IdUtils.generateStringId(),
                     Constants.IMPORT_FOLDER_TYPE);
         }
         return newFolder;

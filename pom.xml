@@ -64,6 +64,16 @@
         <artifactId>nuxeo-dam-lang</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-importer-core</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
@@ -140,6 +150,11 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-importer-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-importer-jaxrs</artifactId>

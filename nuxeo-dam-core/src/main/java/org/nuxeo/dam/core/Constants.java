@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.core;
 
+import org.nuxeo.runtime.api.Framework;
+
 public interface Constants {
 
     String DAM_COMMON_SCHEMA = "dam_common";
@@ -32,4 +34,7 @@ public interface Constants {
     String IMPORT_SET_TYPE = "ImportSet";
 
     String ASSET_FACET = "Asset";
+
+    String IMPORT_ROOT_PATH = Framework.getProperty(
+            "import.root.path", "/default-domain/import-root");
 }

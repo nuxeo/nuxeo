@@ -37,7 +37,10 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.importer.core.DamImporterExecutor;
+import org.nuxeo.dam.importer.core.MetadataFileHelper;
 import org.nuxeo.dam.webapp.filter.FilterActions;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,7 +53,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.importer.properties.MetadataFile;
+import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
@@ -58,6 +62,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
+import de.schlichtherle.io.File;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("importActions")
@@ -67,10 +72,9 @@ public class ImportActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Log log = LogFactory.getLog(ImportActions.class);
+    public static final String ASYNCHRONOUS_IMPORT_PROPERTY = "org.nuxeo.dam.import.async";
 
-    public static final String IMPORT_ROOT_PATH = Framework.getProperty(
-            "import.root.path", "/default-domain/import-root");
+    protected static final Log log = LogFactory.getLog(ImportActions.class);
 
     protected DocumentModel newImportSet;
 
@@ -95,18 +99,9 @@ public class ImportActions implements Serializable {
     @In(create = true)
     protected transient FilterActions filterActions;
 
-    protected FileManager fileManagerService;
-
     protected Blob blob;
 
     protected String importFolderId;
-
-    protected FileManager getFileManagerService() throws Exception {
-        if (fileManagerService == null) {
-            fileManagerService = Framework.getService(FileManager.class);
-        }
-        return fileManagerService;
-    }
 
     public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
@@ -134,7 +129,7 @@ public class ImportActions implements Serializable {
     protected DocumentModel createContainerFolder(String title)
             throws ClientException {
         DocumentModel folder = documentManager.createDocumentModel(
-                IMPORT_ROOT_PATH, IdUtils.generateId(title),
+                Constants.IMPORT_ROOT_PATH, IdUtils.generateId(title),
                 Constants.IMPORT_FOLDER_TYPE);
         folder.setPropertyValue("dc:title", title);
         folder = documentManager.createDocument(folder);
@@ -148,6 +143,88 @@ public class ImportActions implements Serializable {
         if (title == null) {
             title = "";
         }
+
+        String tmpDirectory = System.getProperty("java.io.tmpdir");
+        Path tmpPath = new Path(tmpDirectory).append("import_"
+                + System.nanoTime());
+        File outDir = new File(tmpPath.toString());
+        outDir.mkdirs();
+
+        MetadataFile mdFile = MetadataFileHelper.createFrom(newImportSet);
+        String principalName = documentManager.getPrincipal().getName();
+        mdFile.addProperty("dc:creator", principalName);
+        mdFile.addProperty("dc:contributors", new String[] { principalName });
+        mdFile.writeTo(new File(outDir,
+                FileWithMetadataSourceNode.METADATA_FILENAME));
+
+        java.io.File tmp = null;
+        try {
+            String extension = null;
+            String filename = blob.getFilename();
+            if (filename.contains(".")) {
+                extension = filename.substring(filename.lastIndexOf("."));
+            }
+            tmp = File.createTempFile("import", extension);
+            File archive = new File(tmp);
+            blob.transferTo(archive);
+            if (archive.isArchive()) {
+                archive.archiveCopyAllTo(outDir);
+            } else {
+                archive.copyTo(new File(outDir, blob.getFilename()));
+            }
+        } finally {
+            // delete the temporary file that was made by the richfaces
+            if (blob != null) {
+                ((FileBlob) blob).getFile().delete();
+            }
+            // delete the copied file
+            if (tmp != null) {
+                tmp.delete();
+            }
+        }
+
+        DocumentModel importFolder = getOrCreateImportFolder(title);
+        boolean interactiveMode = !Boolean.parseBoolean(Framework.getProperty(
+                ASYNCHRONOUS_IMPORT_PROPERTY, "false"));
+        try {
+            DamImporterExecutor importer = new DamImporterExecutor(
+                    outDir.getAbsolutePath(), importFolder.getPathAsString(),
+                    title, interactiveMode, true);
+            importer.run();
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+
+        if (interactiveMode) {
+            documentManager.save();
+            sendImportSetCreationEvent();
+            invalidateImportContext();
+
+            // CB: DAM-392 - Create new filter widget for Importset -> When user
+            // finishes an import (and gets back the focus), he must see only
+            // his
+            // importset assets - his last import will be selected by default in
+            // the
+            // filter.
+            if (filterActions != null) {
+                List<SelectItem> userImportSetsSelectItems = filterActions.getUserImportSetsSelectItems();
+                if (userImportSetsSelectItems != null
+                        && !userImportSetsSelectItems.isEmpty()) {
+                    String folderPath = (String) userImportSetsSelectItems.get(
+                            0).getValue();
+                    DocumentModel filterDocument = filterActions.getFilterDocument();
+                    if (filterDocument != null) {
+                        filterDocument.setPropertyValue(
+                                FilterActions.PATH_FIELD_XPATH, folderPath);
+                    }
+                }
+            }
+        }
+        return "nxstartup";
+    }
+
+    protected DocumentModel getOrCreateImportFolder(String title)
+            throws ClientException {
         DocumentModel importFolder;
         if (importFolderId == null) {
             importFolder = createContainerFolder(title);
@@ -155,46 +232,7 @@ public class ImportActions implements Serializable {
         } else {
             importFolder = documentManager.getDocument(new IdRef(importFolderId));
         }
-        String name = IdUtils.generateId(title);
-        // set parent path and name for document model
-        newImportSet.setPathInfo(importFolder.getPathAsString(), name);
-        try {
-            newImportSet = documentManager.createDocument(newImportSet);
-            if (blob != null) {
-                getFileManagerService().createDocumentFromBlob(documentManager,
-                        blob, newImportSet.getPathAsString(), true,
-                        blob.getFilename());
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-        } finally {
-            // delete the temporary file that was made by the richfaces
-            if (blob != null) {
-                ((FileBlob) blob).getFile().delete();
-            }
-        }
-        documentManager.save();
-        sendImportSetCreationEvent();
-        invalidateImportContext();
-
-        // CB: DAM-392 - Create new filter widget for Importset -> When user
-        // finishes an import (and gets back the focus), he must see only his
-        // importset assets - his last import will be selected by default in the
-        // filter.
-        if (filterActions != null) {
-            List<SelectItem> userImportSetsSelectItems = filterActions.getUserImportSetsSelectItems();
-            if (userImportSetsSelectItems != null
-                    && !userImportSetsSelectItems.isEmpty()) {
-                String folderPath = (String) userImportSetsSelectItems.get(0).getValue();
-                DocumentModel filterDocument = filterActions.getFilterDocument();
-                if (filterDocument != null) {
-                    filterDocument.setPropertyValue(
-                            FilterActions.PATH_FIELD_XPATH, folderPath);
-                }
-            }
-        }
-
-        return "nxstartup";
+        return importFolder;
     }
 
     protected void sendImportSetCreationEvent() {
@@ -241,8 +279,8 @@ public class ImportActions implements Serializable {
 
     public List<SelectItem> getImportFolders() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
-        if (documentManager.hasPermission(new PathRef(IMPORT_ROOT_PATH),
-                SecurityConstants.ADD_CHILDREN)) {
+        if (documentManager.hasPermission(new PathRef(
+                Constants.IMPORT_ROOT_PATH), SecurityConstants.ADD_CHILDREN)) {
             items.add(new SelectItem(null, resourcesAccessor.getMessages().get(
                     "label.widget.newFolder")));
         }

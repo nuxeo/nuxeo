@@ -25,6 +25,13 @@
       </template>
     </factoryBinding>
 
+    <factoryBinding name="ImportRootFactory"
+      factoryName="SimpleTemplateFactory" targetType="ImportRoot">
+      <template>
+        <templateItem typeName="ImportFolder" id="import-folder" title="Import Folder" description="Import Folder"/>
+      </template>
+    </factoryBinding>
+
   </extension>
 
 </component>

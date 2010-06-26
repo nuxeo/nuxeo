@@ -26,13 +26,8 @@ public class ImportActionsMock extends ImportActions {
 
     private static final long serialVersionUID = 1L;
 
-    public ImportActionsMock(CoreSession coreSession, FileManager fileManager) {
+    public ImportActionsMock(CoreSession coreSession) {
         documentManager = coreSession;
-        this.fileManagerService = fileManager;
-    }
-
-    public void setFileManagerService(FileManager fileManagerService) {
-        this.fileManagerService = fileManagerService;
     }
 
     // don't need UI messages

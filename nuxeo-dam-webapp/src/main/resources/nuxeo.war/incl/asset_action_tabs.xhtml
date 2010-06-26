@@ -2,19 +2,30 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-  
+
   <a4j:form>
     <ul>
       <nxu:dataList var="tab" value="#{tabsActionsList}">
         <li>
-          <a4j:commandLink styleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" reRender="selectionView">    
-            <h:outputText value="#{messages[tab.label]}" />      
+          <a4j:commandLink styleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" reRender="selectionView">
+            <h:outputText value="#{messages[tab.label]}" />
           </a4j:commandLink>
         </li>
       </nxu:dataList>
     </ul>
+
+    <ul>
+      <nxu:dataList var="button" value="#{buttonsList}">
+        <li>
+          <a4j:commandLink styleClass="button" onclick="#{button.link}" >
+            <h:outputText value="#{messages[button.label]}" />
+          </a4j:commandLink>
+        </li>
+      </nxu:dataList>
+    </ul>
+
   </a4j:form>
-  
+
   <div style="clear:both;"/>
-  
+
 </div>

@@ -15,7 +15,7 @@
 
     <plugin name="OfficeFileImporter"
       class="org.nuxeo.dam.webapp.fileimporter.OfficeFileImporter"
-      order="10">
+      order="8">
       <filter>application/msword</filter>
       <filter>application/vnd.ms-excel</filter>
       <filter>application/vnd.ms-powerpoint</filter>
@@ -31,6 +31,12 @@
       <filter>application/vnd.sun.xml.writer.template</filter>
       <filter>application/vnd.oasis.opendocument.text</filter>
       <filter>application/vnd.oasis.opendocument.text-template</filter>
+
+      <filter>text/plain</filter>
+      <filter>text/html</filter>
+      <filter>application/xhtml+xml</filter>
+      <filter>application/xml</filter>
+      <filter>text/xml</filter>
     </plugin>
 
   </extension>

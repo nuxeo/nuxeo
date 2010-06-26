@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo DAM WebApp Contrib
-Bundle-SymbolicName: org.nuxeo.ecm.webapp.common;singleton=true
+Bundle-SymbolicName: org.nuxeo.dam.webapp.common;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
