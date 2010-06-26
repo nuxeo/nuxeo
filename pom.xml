@@ -52,6 +52,8 @@
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-placeful-facade</module>
     <module>nuxeo-platform-placeful-theme</module>
+    <module>nuxeo-platform-heartbeat-api</module>
+    <module>nuxeo-platform-heartbeat-core</module>
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
@@ -444,6 +446,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-theme</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-core</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
