@@ -13,14 +13,14 @@
      <param-value>blueGrayDam</param-value>
     </context-param>
   </extension>
-  
+
 
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-    
+
   </install>
 
 </fragment>

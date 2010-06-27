@@ -89,10 +89,12 @@
           <artifact artifactId="nuxeo-platform-video-*" />
           <artifact artifactId="nuxeo-platform-audio-core" />
           <artifact artifactId="nuxeo-platform-categorization-*" />
+          <artifact artifactId="nuxeo-platform-importer-core" />
         </includes>
         <excludes>
           <artifact artifactId="nuxeo-dam-webapp" />
           <artifact artifactId="nuxeo-dam-webapp-core" />
+          <artifact artifactId="nuxeo-dam-importer-jaxrs" />
         </excludes>
       </artifact:set>
     </copy>

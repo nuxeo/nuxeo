@@ -50,7 +50,8 @@
     <delete dir="${jbossdir}/server/default/deploy/nuxeo.ear" />
 
     <unzip src="${outdir}/${maven.project.artifactId}-${maven.project.version}-ear.zip"
-         dest="${jbossdir}/server/default/deploy/nuxeo.ear" />
+      dest="${jbossdir}/server/default/deploy/nuxeo.ear" />
+
     <chmod dir="${jbossdir}/bin" perm="750" includes="*.sh,*ctl" />
 
     <antcall target="copy-resources" />
@@ -62,6 +63,25 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="jboss"
                      type="zip" />
+
+    <nx:profile name="http-importer">
+     <copy todir="${jbossdir}/server/default/deploy/nuxeo.ear/system" overwrite="true">
+       <artifact:set>
+         <includes>
+           <artifact artifactId="nuxeo-platform-importer-jaxrs" />
+           <artifact artifactId="nuxeo-dam-importer-jaxrs" />
+         </includes>
+       </artifact:set>
+     </copy>
+    
+     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-jboss-importer.zip"
+          basedir="${stagedir}"
+          includes="${jboss}/**" />
+     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-jboss-importer.zip"
+                      target="${maven.project.groupId}:${maven.project.artifactId}"
+                      classifier="jboss-importer"
+                      type="zip" />
+    </nx:profile>
   </target>
 
   <target name="copy-resources">

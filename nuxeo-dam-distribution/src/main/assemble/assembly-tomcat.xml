@@ -91,10 +91,13 @@
           <artifact artifactId="nuxeo-platform-video-*" />
           <artifact artifactId="nuxeo-platform-audio-core" />
           <artifact artifactId="nuxeo-platform-categorization-*" />
+          <artifact artifactId="nuxeo-platform-importer-core" />
         </includes>
+        <excludes>
+          <artifact artifactId="nuxeo-dam-importer-jaxrs" />
+        </excludes>
       </artifact:set>
     </copy>
-
     <antcall target="third-party-libraries" />
 
     <antcall target="copy-resources" />
@@ -102,10 +105,29 @@
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
          basedir="${stagedir}"
          includes="${tomcat}/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
-                     type="zip"
-                     classifier="tomcat"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+      <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
+                       type="zip"
+                       classifier="tomcat"
+                       target="${maven.project.groupId}:${maven.project.artifactId}" />
+
+    <nx:profile name="http-importer">
+      <copy todir="${nxserver}/bundles" overwrite="true">
+        <artifact:set>
+          <includes>
+            <artifact artifactId="nuxeo-platform-importer-jaxrs" />
+            <artifact artifactId="nuxeo-dam-importer-jaxrs" />
+          </includes>
+        </artifact:set>
+      </copy>
+
+      <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
+           basedir="${stagedir}"
+           includes="${tomcat}/**" />
+      <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat-importer.zip"
+                       type="zip"
+                       classifier="tomcat-importer"
+                       target="${maven.project.groupId}:${maven.project.artifactId}" />
+    </nx:profile>
   </target>
 
   <target name="third-party-libraries">
@@ -130,3 +152,4 @@
   </target>
 
 </project>
+
