@@ -29,6 +29,23 @@ namespace NuxeoProcess
 	partial class NuxeoController
 	{
 		//
+		// Utility : open registry key
+		//
+		
+		private RegistryKey OpenRegistryKey(String key) {
+			String regBase=@"SOFTWARE\";
+			String regBase6432=@"SOFTWARE\Wow6432Node\";
+			try {
+				RegistryKey regKey=Registry.LocalMachine.OpenSubKey(regBase+key);
+				if (regKey==null) regKey=Registry.LocalMachine.OpenSubKey(regBase6432+key);
+				return regKey;
+			} catch {
+				return null;
+			}
+		}
+		
+		
+		//
 		// Utility : check java version
 		//
 		
@@ -61,19 +78,29 @@ namespace NuxeoProcess
 		private Dictionary<String,String> ParseConfig() {
 			Dictionary<String,String> nxConfig=new Dictionary<String, String>();
 			// Get config file location
-			String NUXEO_CONF=Environment.GetEnvironmentVariable("NUXEO_CONF");
-			if (!File.Exists(NUXEO_CONF)) {
-				NUXEO_CONF="nuxeo.conf";
-				if (!File.Exists(NUXEO_CONF)) {
-					String desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-					NUXEO_CONF = Path.Combine(desktop,"nuxeo.conf");
-					if (!File.Exists(NUXEO_CONF)) {
-						Log("Could not find nuxeo configuration","ERROR");
-						return null;
-					}
-				}
+			String NUXEO_CONF=null;
+			// Check registry (on Windows)
+			if (platform == "windows" ) {
+				RegistryKey nuxeoKey=OpenRegistryKey(productName);
+				if (nuxeoKey!=null) NUXEO_CONF=(String)nuxeoKey.GetValue("ConfigFile");
 			}
-			//Log("Using configuration at "+NUXEO_CONF,"INFO");
+			// Check environment
+			if (!File.Exists(NUXEO_CONF))
+				NUXEO_CONF = Environment.GetEnvironmentVariable("NUXEO_CONF");
+			// Check work directory
+			if (!File.Exists(NUXEO_CONF))
+				NUXEO_CONF = "nuxeo.conf";
+			// Check desktop
+		    if (!File.Exists(NUXEO_CONF)) {
+				String desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+				NUXEO_CONF = Path.Combine(desktop,"nuxeo.conf");
+			}
+			// Give up
+			if (!File.Exists(NUXEO_CONF)) {
+				Log("Could not find nuxeo configuration","ERROR");
+				return null;
+			}
+			Log("Using configuration at "+NUXEO_CONF,"DEBUG");
 			// Read config file
 			String line;
 			String[] split;
@@ -119,21 +146,17 @@ namespace NuxeoProcess
 				JAVA=Path.Combine(Path.Combine(nxConfig["JAVA_HOME"],"bin"),JAVA);
 			} else if (Environment.GetEnvironmentVariable("JAVA_HOME")!=null) {
 				JAVA=Path.Combine(Path.Combine(Environment.GetEnvironmentVariable("JAVA_HOME"),"bin"),JAVA);
-			} else if (platform!="unix") {
-				String regJDK=@"SOFTWARE\JavaSoft\Java Development Kit";
-				String regJDK6432=@"SOFTWARE\Wow6432Node\JavaSoft\Java Development Kit";
+			} else if (platform=="windows") {
+				String regJDK=@"JavaSoft\Java Development Kit";
 				RegistryKey regJDKKey=null;
 				RegistryKey regCurrentJDKKey=null;
 				try {
-					regJDKKey=Registry.LocalMachine.OpenSubKey(regJDK);
-					// The following line is for Java 32bit on a 64bit platform
-					if (regJDKKey==null) regJDKKey=Registry.LocalMachine.OpenSubKey(regJDK6432);
+					regJDKKey=OpenRegistryKey(regJDK);
 					String regCurrentJDK=(String)regJDKKey.GetValue("CurrentVersion");
 					regCurrentJDKKey=regJDKKey.OpenSubKey(regCurrentJDK);
 					String regJavaHome=(String)regCurrentJDKKey.GetValue("JavaHome");
 					JAVA=Path.Combine(Path.Combine(regJavaHome,"bin"),JAVA);
-					Log("Current JDK version in Registry : "+regCurrentJDK,"DEBUG");
-					Log("Current JavaHome in Registry : "+regJavaHome,"DEBUG");
+					Log("Using JavaHome from registry : "+regJavaHome,"DEBUG");
 				} catch {
 					Log("Can not find JDK in the registry","ERROR");
 				}

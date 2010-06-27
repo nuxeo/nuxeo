@@ -65,6 +65,7 @@ namespace NuxeoProcess
         public bool Initialized { get; private set; }
 
         private String platform = null;
+        private String productName ="nuxeo";
         private static Process nxProcess = null;
         private static Process stopProcess = null;
         private Dictionary<String, String> nxEnv;
@@ -86,6 +87,16 @@ namespace NuxeoProcess
             {
                 platform = "windows";
             }
+            
+            // Try to specify which product we're running
+            String PRODUCT_NAME_FILE="ProductName.txt";
+            if (File.Exists(PRODUCT_NAME_FILE)) {
+            	using(StreamReader file = new StreamReader(PRODUCT_NAME_FILE)) {
+            		String line=file.ReadLine();
+            		if (line.Length != 0) productName=line;
+            	}
+            }
+            
 		}
 
         public bool Initialize() {
