@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Conflunce Stream Display" height="95" scrolling="true">
+  <ModulePrefs title="Confluence Stream Display" height="95" scrolling="true">
     <Require feature="dynamic-height" />
     <Require feature="oauthpopup" />
     <OAuth>

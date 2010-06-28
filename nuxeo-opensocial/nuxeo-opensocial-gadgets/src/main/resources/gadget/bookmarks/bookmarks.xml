@@ -7,7 +7,7 @@
       <Require feature="settitle" />
       <Require feature="nuxeo" />
   </ModulePrefs>
-  <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#none" datatype="enum" >
+  <UserPref name="COLOR_bgcolor" display_name="Cell Color" default_value="#none" datatype="enum" >
     <EnumValue display_value="ref" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>
     <EnumValue display_value="orange" value="FF6600"/>

@@ -9,12 +9,12 @@
     <Locale lang="fr" country="fr" />
     <Require feature="dynamic-height" />
   </ModulePrefs>
-  <UserPref name="evt" display_name="Afficher les événements"
+  <UserPref name="evt" display_name="Display events"
     datatype="enum" default_value="no">
     <EnumValue value="yes" display_value="oui" />
     <EnumValue value="no" display_value="non" />
   </UserPref>
-  <UserPref name="mappy_region" display_name="Région"
+  <UserPref name="mappy_region" display_name="Region"
     default_value="idf_cg" datatype="enum" required="true">
     <EnumValue value="france_cg" display_value="France" />
     <EnumValue value="france_no" display_value="France - Nord Ouest" />

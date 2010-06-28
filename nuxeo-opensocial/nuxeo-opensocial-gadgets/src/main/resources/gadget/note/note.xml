@@ -6,20 +6,20 @@
   <Require feature="jquery" />
   <Require feature="dynamic-height" />
   </ModulePrefs>
-  <UserPref name="textFont" display_name="Police du texte" default_value="courier" datatype="enum">
+  <UserPref name="textFont" display_name="Text Font" default_value="courier" datatype="enum">
     <EnumValue value="courier" display_value="courier" />
     <EnumValue value="arial" display_value="arial" />
     <EnumValue value="verdana" display_value="verdana" />
     <EnumValue value="Times New Roman" display_value="Times New Roman" />
   </UserPref>
-   <UserPref name="textSize" display_name="Taille du texte" default_value="12px" datatype="enum">
+   <UserPref name="textSize" display_name="Text Size" default_value="12px" datatype="enum">
     <EnumValue value="10px" display_value="10" />
     <EnumValue value="12px" display_value="12" />
     <EnumValue value="14px" display_value="14" />
     <EnumValue value="16px" display_value="16" />
     <EnumValue value="18px" display_value="18" />
   </UserPref>
-    <UserPref name="COLOR_txt" display_name="Couleur du texte" default_value="none" value="none" datatype="enum">
+    <UserPref name="COLOR_txt" display_name="Text Color" default_value="none" value="none" datatype="enum">
     <EnumValue display_value="red" value="FF0000"/>
     <EnumValue display_value="pink" value="FF0066"/>
     <EnumValue display_value="orange" value="FF6600"/>

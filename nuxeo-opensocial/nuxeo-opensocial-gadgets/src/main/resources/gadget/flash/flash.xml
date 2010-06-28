@@ -15,7 +15,7 @@
 
   </ModulePrefs>
 
-    <UserPref name="height" display_name="Hauteur (en px)" default_value="400"/>
+    <UserPref name="height" display_name="Height (px)" default_value="400"/>
     <UserPref name="title-flash" default_value="" datatype="hidden"/>
 
   <Content type="html" view="default">
