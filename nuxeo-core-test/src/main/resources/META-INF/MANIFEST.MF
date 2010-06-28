@@ -1,2 +1,36 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.emc.core.test;singleton:=true
+Export-Package: org.nuxeo.ecm.core.test;uses:="org.apache.commons.logg
+ ing,org.junit.runners.model,org.nuxeo.ecm.core.event,com.google.injec
+ t.binder,org.nuxeo.runtime.api,org.nuxeo.ecm.core.test.annotations,co
+ m.google.inject,org.nuxeo.runtime.test.runner,org.nuxeo.ecm.core.api,
+ org.junit.runner,org.junit.runners,org.junit.runner.notification,org.
+ nuxeo.ecm.core.storage.sql,org.nuxeo.ecm.core,org.nuxeo.ecm.core.mode
+ l,org.nuxeo.ecm.core.repository,org.nuxeo.ecm.core.api.local";version
+ ="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.test.annotations;uses:="org.nuxe
+ o.ecm.core.api";version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.357
+Bundle-Name: Nuxeo Core Test Framework
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277064205323
+Bundle-ManifestVersion: 2
+Bundle-Description: Nuxeo Core: Testing framewok
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Import-Package: com.google.inject;version="1.2",com.google.inject.bind
+ er;version="1.2",org.apache.commons.logging,org.junit.runner,org.juni
+ t.runner.notification,org.junit.runners,org.junit.runners.model,org.n
+ uxeo.ecm.core;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api;version
+ ="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.local;version="1.6.2.SNAPSHO
+ T",org.nuxeo.ecm.core.event;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.co
+ re.model;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.repository;versi
+ on="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.storage.sql;version="1.6.2.SNA
+ PSHOT",org.nuxeo.ecm.core.test;version="1.6.2.SNAPSHOT",org.nuxeo.ecm
+ .core.test.annotations;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.api
+ ;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.test.runner;version="1.6.
+ 2.SNAPSHOT",org.osgi.framework;version="1.4"
+Bundle-SymbolicName: org.nuxeo.ecm.core.test
+Bundle-DocURL: http://www.nuxeo.com/en
+

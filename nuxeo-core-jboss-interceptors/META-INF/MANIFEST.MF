@@ -5,21 +5,18 @@ Export-Package: org.nuxeo.core.jboss.interceptors;uses:="org.nuxeo.com
  .SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
+Tool: Bnd-0.0.394
 Bundle-Category: core
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core
+Bundle-Name: org.nuxeo.ecm.core.jboss.interceptors
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277072240382
+Bnd-LastModified: 1277159523800
 Bundle-ManifestVersion: 2
-Bundle-Description: Nuxeo Core: JBoss Extensions.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-SymbolicName: org.nuxeo.ecm.core.jboss.interceptors;singleton:=
+ true
 Import-Package: org.apache.commons.logging,org.jboss.aop.advice,org.jb
  oss.aop.joinpoint,org.jboss.aop.metadata,org.jboss.ejb3.stateful,org.
- nuxeo.common;version="1.6.2.SNAPSHOT",org.nuxeo.core.jboss.intercepto
- rs;version="1.6",org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-jboss-interceptors
-Bundle-DocURL: http://www.nuxeo.com/en
+ nuxeo.common,org.nuxeo.core.jboss.interceptors
 Nuxeo-Require: org.nuxeo.ecm.core.api
 

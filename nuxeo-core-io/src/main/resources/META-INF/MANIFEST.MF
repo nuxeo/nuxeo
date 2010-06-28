@@ -1,3 +1,25 @@
 Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.io;version="1.6.2.SNAPSHOT",org.nux
+ eo.ecm.core.io.exceptions;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core
+ .io.impl;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.io.impl.plugins;
+ version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.io
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277332366053
+Bundle-ManifestVersion: 2
+Import-Package: javax.security.auth.login,org.apache.commons.logging,o
+ rg.dom4j,org.dom4j.io,org.nuxeo.common.collections,org.nuxeo.common.u
+ tils,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,or
+ g.nuxeo.ecm.core.api.impl,org.nuxeo.ecm.core.api.impl.blob,org.nuxeo.
+ ecm.core.api.repository,org.nuxeo.ecm.core.api.security,org.nuxeo.ecm
+ .core.api.security.impl,org.nuxeo.ecm.core.schema,org.nuxeo.ecm.core.
+ schema.types,org.nuxeo.runtime.api,org.nuxeo.runtime.services.streami
+ ng
 Bundle-SymbolicName: org.nuxeo.ecm.core.io
 Nuxeo-Require: org.nuxeo.ecm.core.api
+

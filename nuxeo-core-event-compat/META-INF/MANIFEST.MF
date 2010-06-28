@@ -1,57 +1,31 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.event.compat;uses:="org.nuxeo.ecm.c
- ore.api.event.impl,org.nuxeo.ecm.core.api.operation,org.nuxeo.ecm.cor
- e.listener,org.nuxeo.ecm.core.event,org.nuxeo.runtime.api,org.nuxeo.e
- cm.core.api.event,org.nuxeo.ecm.core.api";version="1.6.2.SNAPSHOT",or
- g.nuxeo.ecm.core.jms;uses:="javax.naming,org.apache.commons.logging,o
- rg.nuxeo.runtime,javax.jms,org.nuxeo.runtime.api,org.nuxeo.ecm.core.a
- pi.event.impl,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.listener,or
- g.nuxeo.ecm.core.api.operation,org.nuxeo.ecm.core.api,org.nuxeo.ecm.c
- ore.api.event";version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.listener;u
- ses:="org.nuxeo.ecm.core.api.operation,org.nuxeo.ecm.core.api.event,o
- rg.nuxeo.ecm.core.api,org.apache.commons.logging,org.nuxeo.common.col
- lections,org.nuxeo.ecm.core.event,org.nuxeo.runtime.api";version="1.6
- .2.SNAPSHOT",org.nuxeo.ecm.core.listener.extensions;uses:="org.nuxeo.
- common.xmap.annotation";version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.l
- istener.impl;uses:="org.apache.commons.logging,org.nuxeo.common.colle
- ctions,org.nuxeo.ecm.core.model,org.nuxeo.ecm.core.api.operation,org.
- nuxeo.ecm.core.listener,org.nuxeo.runtime.model,org.nuxeo.ecm.core.ap
- i.event,org.nuxeo.ecm.core.listener.extensions,org.nuxeo.runtime.api,
- org.nuxeo.runtime.services.event,org.nuxeo.runtime";version="1.6.2.SN
- APSHOT",OSGI-INF
+Export-Package: org.nuxeo.ecm.core.event.compat;version="1.6.2.SNAPSHO
+ T",org.nuxeo.ecm.core.jms;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core
+ .listener;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.listener.extens
+ ions;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.listener.impl;versio
+ n="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Nuxeo-RequiredBy: org.nuxeo.ecm.core 
 Bundle-Category: core
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core Event Compatibility
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.event.compat
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-LazyStart: true
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277071279869
+Bnd-LastModified: 1277331842502
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/CompatibilityListener.xml,OSGI-INF/CoreEvent
- ListenerService.xml
-Bundle-Description: DEPRECATED - Compatibility Bundle with nuxeo core 
- event model    in versions previous to 5.2.M4.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: OSGI-INF,javax.jms,javax.naming,org.apache.commons.log
- ging,org.nuxeo.common.collections;version="1.6.2.SNAPSHOT",org.nuxeo.
- common.xmap.annotation;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.ap
- i;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api.event;version="1.6.
- 2.SNAPSHOT",org.nuxeo.ecm.core.api.event.impl;version="1.6.2.SNAPSHOT
- ",org.nuxeo.ecm.core.api.operation;version="1.6.2.SNAPSHOT",org.nuxeo
- .ecm.core.event;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.event.com
- pat;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.jms;version="1.6.2.SN
- APSHOT",org.nuxeo.ecm.core.listener;version="1.6.2.SNAPSHOT",org.nuxe
- o.ecm.core.listener.extensions;version="1.6.2.SNAPSHOT",org.nuxeo.ecm
- .core.listener.impl;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.model
- ;version="1.6.2.SNAPSHOT",org.nuxeo.runtime;version="1.6.2.SNAPSHOT",
- org.nuxeo.runtime.api;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.mode
- l;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.services.event;version="
- 1.6.2.SNAPSHOT",org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-event-compat
-Nuxeo-Require: org.nuxeo.ecm.core.api,org.nuxeo.ecm.core.event
+Nuxeo-Component: OSGI-INF/CompatibilityListener.xml, OSGI-INF/CoreEven
+ tListenerService.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.event.compat;singleton:=true
+Import-Package: javax.jms,javax.naming,org.apache.commons.logging,org.
+ nuxeo.common.collections,org.nuxeo.common.xmap.annotation,org.nuxeo.e
+ cm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core
+ .api.event,org.nuxeo.ecm.core.api.event.impl,org.nuxeo.ecm.core.api.o
+ peration,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.model,org.nuxeo.
+ runtime,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runti
+ me.services.event
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event
+Require-Bundle: org.nuxeo.ecm.core.unified
 

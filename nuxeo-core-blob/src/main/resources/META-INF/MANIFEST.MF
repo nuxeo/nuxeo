@@ -1,3 +1,18 @@
 Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.blob.storage;version="1.6.2.SNAPSHO
+ T",org.nuxeo.ecm.core.blob.storage.impl;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.blob
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277312535572
+Bundle-ManifestVersion: 2
+Import-Package: javax.resource,javax.resource.spi,javax.transaction.xa
+ ;version="1.1",org.apache.commons.logging,org.nuxeo.ecm.core;api=spli
+ t,org.nuxeo.ecm.core.api;api=split
 Bundle-SymbolicName: org.nuxeo.ecm.core.blob;singleton:=true
 Nuxeo-Require: org.nuxeo.runtime
+

@@ -1,38 +1,39 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.persistence;uses:="javax.persistenc
- e,javax.naming,org.nuxeo.runtime.transaction,org.hibernate,javax.tran
- saction,org.hibernate.transaction,org.apache.commons.logging,org.nuxe
- o.common.xmap,org.nuxeo.common.xmap.annotation,javax.persistence.spi,
- org.nuxeo.runtime.api,org.hibernate.ejb,org.nuxeo.runtime.model,org.n
- uxeo.ecm.core.api";version="1.6.2.SNAPSHOT",OSGI-INF
+Export-Package: org.nuxeo.ecm.core.persistence;version="1.6.2.SNAPSHOT
+ "
+Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: core
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core Persistence
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.persistence
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277064623311
+Bnd-LastModified: 1277332413423
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/persistence-service.xml
-Bundle-Description: Provide shared logic for accessing to datasources 
-               and transaction management.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: OSGI-INF,javax.naming,javax.persistence,javax.persiste
- nce.spi,javax.transaction;version="1.1",org.apache.commons.logging,or
- g.hibernate,org.hibernate.ejb,org.hibernate.transaction,org.nuxeo.com
- mon.xmap;version="1.6.2.SNAPSHOT",org.nuxeo.common.xmap.annotation;ve
- rsion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api;version="1.6.2.SNAPSHOT
- ",org.nuxeo.ecm.core.persistence;version="1.6.2.SNAPSHOT",org.nuxeo.r
- untime.api;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.model;version="
- 1.6.2.SNAPSHOT",org.nuxeo.runtime.transaction;version="1.6.2.SNAPSHOT
- ",org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.ecm.core.persistence
+Eclipse-BuddyPolicy: registered
+Bundle-SymbolicName: org.nuxeo.ecm.core.persistence;singleton:=true
+Import-Package: javax.naming,
+ javax.persistence,
+ javax.persistence.spi,
+ javax.transaction;version="1.1",
+ org.apache.commons.logging,
+ org.hibernate,
+ org.hibernate.cfg,
+ org.hibernate.ejb,
+ org.hibernate.transaction,
+ org.nuxeo.common.jndi,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.local,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.api.login,
+ org.nuxeo.runtime.datasource,
+ org.nuxeo.runtime.model,
+ org.nuxeo.runtime.transaction
 Nuxeo-Require: org.nuxeo.ecm.core.api
-Require-Bundle: org.hibernate,
- org.hibernate.annotations;bundle-version="3.2.1",
- org.hibernate.entitymanager;bundle-version="3.2.1",
- org.nuxeo.ecm.core.api;bundle-version="1.6.2"
 

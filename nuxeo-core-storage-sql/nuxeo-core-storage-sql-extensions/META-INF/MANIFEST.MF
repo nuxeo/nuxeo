@@ -1,35 +1,32 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.storage.sql.db;uses:="org.apache.co
- mmons.logging,org.h2.api,org.apache.lucene.document,org.apache.lucene
- .index,org.h2.store.fs,org.h2.util,org.apache.lucene.store,org.h2.too
- ls,org.apache.lucene.queryParser,org.apache.lucene.search,org.h2.mess
- age,org.apache.lucene.analysis";version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.ecm.core.storage.sql.db;version="1.6.2.SNAPS
+ HOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core SQL Storage DB Extensions
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.storage.sql.extensions
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Fragment-Host: org.nuxeo.ecm.core.storage.sql
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277062408761
+Bnd-LastModified: 1277332756661
 Bundle-ManifestVersion: 2
-Bundle-Description: Nuxeo Core: SQL Storage DB Extensions.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
 Import-Package: org.apache.commons.logging,
- org.apache.lucene.analysis;version="2.3.2",
- org.apache.lucene.document;version="2.3.2",
- org.apache.lucene.index;version="2.3.2",
- org.apache.lucene.queryParser;version="2.3.2",
- org.apache.lucene.search;version="2.3.2",
- org.apache.lucene.store;version="2.3.2",
+ org.apache.lucene.analysis,
+ org.apache.lucene.analysis.fr,
+ org.apache.lucene.document,
+ org.apache.lucene.index,
+ org.apache.lucene.queryParser,
+ org.apache.lucene.search,
+ org.apache.lucene.store,
  org.h2.api,
  org.h2.message,
  org.h2.store.fs,
  org.h2.tools,
  org.h2.util,
- org.h2.value
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-storage-sql-extensi
- ons
-Bundle-DocURL: http://www.nuxeo.com/en
+ org.h2.value,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singlet
+ on:=true
 

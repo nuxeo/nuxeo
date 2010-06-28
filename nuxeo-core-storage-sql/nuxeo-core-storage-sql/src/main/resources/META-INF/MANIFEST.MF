@@ -3,14 +3,6 @@ Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
 Bundle-Category: core
 Eclipse-BuddyPolicy: registered
 Eclipse-ExtensibleAPI: true
-Nuxeo-Require: org.nuxeo.runtime,
- org.nuxeo.runtime.management,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.convert,
- org.nuxeo.ecm.core.convert.api,
- org.nuxeo.ecm.core.convert.plugins
-Nuxeo-Component: OSGI-INF/management-contrib.xml,
- OSGI-INF/listener-contrib.xml,
- OSGI-INF/querymaker-service.xml,
- OSGI-INF/querymaker-contrib.xml
+Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.runtime.management, org.nuxeo.ecm.core.schema, org.nuxeo.ecm.core, org.nuxeo.ecm.core.convert, org.nuxeo.ecm.core.convert.api, org.nuxeo.ecm.core.convert.plugins
+Nuxeo-Component: OSGI-INF/management-contrib.xml, OSGI-INF/listener-contrib.xml, OSGI-INF/querymaker-service.xml, OSGI-INF/querymaker-contrib.xml
+Import-Package: org.nuxeo.common.collections

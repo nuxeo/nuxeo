@@ -1,4 +1,34 @@
 Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.query.test;uses:="org.nuxeo.ecm.cor
+ e.query.sql.model,org.nuxeo.ecm.core.schema,org.nuxeo.ecm.core.api.se
+ curity,org.nuxeo.ecm.core.model,org.nuxeo.ecm.core.security,org.nuxeo
+ .runtime.test,org.nuxeo.ecm.core.api.security.impl,org.nuxeo.ecm.core
+ .api.impl,org.nuxeo.ecm.core.event,org.nuxeo.runtime.api,org.nuxeo.ec
+ m.core.api.impl.blob,org.nuxeo.ecm.core.api";version="1.6.2.SNAPSHOT"
+ ,schemas;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.query.test
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277143537293
+Bundle-ManifestVersion: 2
+Import-Package: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.api.security.impl,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.model,
+ org.nuxeo.ecm.core.query.sql.model,
+ org.nuxeo.ecm.core.query.test,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.security,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.osgi,
+ org.nuxeo.runtime.test,
+ schemas
 Bundle-SymbolicName: org.nuxeo.ecm.core.query.test;singleton:=true
 Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.query
+

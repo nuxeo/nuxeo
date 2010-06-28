@@ -1,5 +1,20 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.ecm.core.event.jms;singleton:=true
+Export-Package: org.nuxeo.ecm.core.event.jms;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
 Bundle-Category: core
-Nuxeo-Require: org.nuxeo.ecm.core.event
+Bundle-Name: org.nuxeo.ecm.core.event.jms
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277331887958
+Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/jmslistener-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.event.jms;singleton:=true
+Import-Package: javax.jms,javax.naming,org.apache.commons.logging,org.
+ nuxeo.common.utils,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.ap
+ i;api=split,org.nuxeo.ecm.core.api.impl,org.nuxeo.ecm.core.event,org.
+ nuxeo.ecm.core.event.impl
+Nuxeo-Require: org.nuxeo.ecm.core.event
+

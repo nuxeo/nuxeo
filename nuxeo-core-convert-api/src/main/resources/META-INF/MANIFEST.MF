@@ -1,4 +1,17 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-convert-api
+Export-Package: org.nuxeo.ecm.core.convert.api;uses:="org.nuxeo.ecm.co
+ re.api,org.nuxeo.ecm.core.api.blobholder";version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.convert.api
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277305242815
+Bundle-ManifestVersion: 2
+Import-Package: org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;ap
+ i=split,org.nuxeo.ecm.core.api.blobholder
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert.api
 Nuxeo-Require: org.nuxeo.ecm.core.api
 

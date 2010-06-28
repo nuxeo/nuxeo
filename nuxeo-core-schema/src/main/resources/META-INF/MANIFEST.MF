@@ -1,5 +1,23 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.ecm.core.schema;singleton:=true
+Export-Package: org.nuxeo.ecm.core.schema;version="1.6.2.SNAPSHOT",org
+ .nuxeo.ecm.core.schema.types;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.c
+ ore.schema.types.constraints;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.c
+ ore.schema.types.primitives;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.co
+ re.schema.utils;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.schema
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277332638623
+Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/SchemaService.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.schema;singleton:=true
+Import-Package: com.sun.xml.xsom,com.sun.xml.xsom.parser,org.apache.co
+ mmons.logging,org.nuxeo.common.utils,org.nuxeo.common.xmap.annotation
+ ,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.
+ xml.sax
 Nuxeo-Require: org.nuxeo.runtime
 

@@ -1,44 +1,25 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.convert.cache;uses:="org.nuxeo.ecm.
- core.api.blobholder,org.nuxeo.ecm.core.api,org.apache.commons.logging
- ,org.nuxeo.ecm.core.convert.service,org.nuxeo.common.utils,org.nuxeo.
- ecm.core.convert.api,org.nuxeo.ecm.core.api.impl.blob";version="1.6.2
- .SNAPSHOT",org.nuxeo.ecm.core.convert.extension;uses:="org.nuxeo.ecm.
- core.api.blobholder,org.nuxeo.ecm.core.convert.service,org.nuxeo.ecm.
- core.api,org.nuxeo.ecm.core.convert.api,org.nuxeo.common.xmap.annotat
- ion,org.apache.commons.logging";version="1.6.2.SNAPSHOT",org.nuxeo.ec
- m.core.convert.service;uses:="org.apache.commons.logging,org.nuxeo.ec
- m.core.api.blobholder,org.nuxeo.ecm.core.convert.extension,org.nuxeo.
- ecm.core.convert.cache,org.nuxeo.runtime.model,org.nuxeo.ecm.core.api
- ,org.nuxeo.ecm.core.convert.api";version="1.6.2.SNAPSHOT",OSGI-INF
-Ignore-Package: OSGI-INF
+Export-Package: org.nuxeo.ecm.core.convert.cache;version="1.6.2.SNAPSH
+ OT",org.nuxeo.ecm.core.convert.extension;version="1.6.2.SNAPSHOT",org
+ .nuxeo.ecm.core.convert.service;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: core
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core Converter Service
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.convert
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
 Eclipse-BuddyPolicy: dependent
-Bnd-LastModified: 1277069582186
+Bnd-LastModified: 1277312873907
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/convert-service-framework.xml
-Bundle-Description: Nuxeo Core Blob conversion service
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: OSGI-INF,org.apache.commons.logging,org.nuxeo.common.u
- tils;version="1.6.2.SNAPSHOT",org.nuxeo.common.xmap.annotation;versio
- n="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.api;version="1.6.2.SNAPSHOT",or
- g.nuxeo.ecm.core.api.blobholder;version="1.6.2.SNAPSHOT",org.nuxeo.ec
- m.core.api.impl.blob;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.conv
- ert.api;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.convert.cache;ver
- sion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.convert.extension;version="1
- .6.2.SNAPSHOT",org.nuxeo.ecm.core.convert.service;version="1.6.2.SNAP
- SHOT",org.nuxeo.runtime.model;version="1.6.2.SNAPSHOT",org.osgi.frame
- work;version="1.4"
 Bundle-SymbolicName: org.nuxeo.ecm.core.convert
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require:  org.nuxeo.runtime,org.nuxeo.ecm.core.api,org.nuxeo.ecm
- .core.convert.api
+Import-Package: org.apache.commons.logging,org.nuxeo.common.utils,org.
+ nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org.nuxeo.e
+ cm.core.api;api=split,org.nuxeo.ecm.core.api.blobholder,org.nuxeo.ecm
+ .core.api.impl.blob,org.nuxeo.ecm.core.convert.api,org.nuxeo.runtime.
+ model
+Nuxeo-Require: org.nuxeo.runtime,org.nuxeo.ecm.core.api,org.nuxeo.ecm.
+ core.convert.api
 
