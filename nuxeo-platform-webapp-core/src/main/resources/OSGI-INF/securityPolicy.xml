@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.security.policy">
+
+  <implementation class="org.nuxeo.ecm.webapp.security.SecurityDataPolicyComponent" />
+    
+  <documentation>
+    If the default policy used for computing the list of document permissions from the UI is not suitable for you, this is the
+    place where you're able to modify it. You just need to subclass the default security policer and register it
+    using the 'provider' extension.
+
+  </documentation>
+  
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.security.SecurityDataPolicyProvider"/>
+  </service>
+  
+  <extension-point name="policy">
+    <object class="org.nuxeo.ecm.webapp.security.SecurityDataPolicyDescriptor" />
+  </extension-point>
+  
+  <documentation>
+    Policy takes a document and it's associated security data as input and returns user entries that fits
+    with.
+    <policy class="org.nuxeo.ecm.webapp.security.policies.DefaultSecurityDataPolicy"/>
+  </documentation>
+  
+  <extension target="org.nuxeo.ecm.webapp.security.policy" point="policy">
+     <policy class="org.nuxeo.ecm.webapp.security.policies.DefaultSecurityDataPolicy"/>
+  </extension>
+
+</component>

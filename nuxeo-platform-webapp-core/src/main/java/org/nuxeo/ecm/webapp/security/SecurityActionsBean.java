@@ -119,8 +119,6 @@ public class SecurityActionsBean extends InputController implements
 
     protected SecurityData securityData;
 
-    protected boolean obsoleteSecurityData = true;
-
     protected UserPermissionsTableModel tableModel;
 
     protected transient List<String> cachedValidatedUserAndGroups;
@@ -137,35 +135,20 @@ public class SecurityActionsBean extends InputController implements
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void resetSecurityData() {
-        obsoleteSecurityData = true;
+        securityData = null;
         blockRightInheritance = null;
     }
 
     public void rebuildSecurityData() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        try {
-            if (null != currentDocument) {
-                if (null == securityData) {
-                    securityData = new SecurityData();
-                    securityData.setDocumentType(currentDocument.getType());
-                }
-                ACP acp = documentManager.getACP(currentDocument.getRef());
-
-                if (null != acp) {
-                    SecurityDataConverter.convertToSecurityData(acp,
-                            securityData);
-                } else {
-                    securityData.clear();
-                }
-
-                reconstructTableModel();
-                if (blockRightInheritance == null) {
-                    blockRightInheritance = false;
-                }
-                obsoleteSecurityData = false;
-            }
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+        if (currentDocument == null) {
+            securityData = new SecurityData();
+        } else {
+            securityData = new SecurityData(currentDocument);
+        }
+        reconstructTableModel();
+        if (blockRightInheritance == null) {
+            blockRightInheritance = false;
         }
     }
 
@@ -180,7 +163,7 @@ public class SecurityActionsBean extends InputController implements
      * @return update the dataTableModel from the current {@link SecurityData}
      *         this method is automatically called by rebuildSecurityData method
      */
-    protected UserPermissionsTableModel reconstructTableModel()
+    protected void reconstructTableModel()
             throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
@@ -221,7 +204,6 @@ public class SecurityActionsBean extends InputController implements
 
         tableModel = new UserPermissionsTableModel(headers, rows);
 
-        return tableModel;
     }
 
     protected UserPermissionsTableRow createDataTableRow(String user)
@@ -258,7 +240,7 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public UserPermissionsTableModel getDataTableModel() throws ClientException {
-        if (obsoleteSecurityData) {
+        if (securityData == null) {
             // lazy initialization at first time access
             rebuildSecurityData();
         }
@@ -267,49 +249,27 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public SecurityData getSecurityData() throws ClientException {
-        if (obsoleteSecurityData) {
+        if (securityData == null) {
             // lazy initialization at first time access
             rebuildSecurityData();
         }
         return securityData;
     }
 
+    SecurityDataPolicy policy = Framework.getLocalService(SecurityDataPolicyProvider.class).getPolicy();
+
     public String updateSecurityOnDocument() throws ClientException {
-        try {
-            List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
-            ACP acp = currentDocument.getACP();
-
-            if (null == acp) {
-                acp = new ACPImpl();
-            }
-
-            acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
-
-            documentManager.setACP(currentDocument.getRef(), acp, true);
-            documentManager.save();
-            Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
-
-            // Reread data from the backend to be sure the current bean
-            // state is uptodate w.r.t. the real backend state
-            rebuildSecurityData();
-
-            // Type currentType =
-            // typeManager.getType(currentDocument.getType());
-            // return applicationController
-            // .getPageOnEditedDocumentType(currentType);
-
-            // Forward to default view, that's not what we want
-            // return navigationContext.getActionResult(currentDocument,
-            // UserAction.AFTER_EDIT);
-
-            // Temporary fix, to avoid forward to default_view.
-            // The same page is reloaded after submit.
-            // May use UserAction, with new kind of action (AFTER_EDIT_RIGHTS) ?
+        DocumentModel doc =  navigationContext.getCurrentDocument();
+        if (doc == null) {
+            log.warn("no document selected");
             return null;
-
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
         }
+        ACP acp = computeNewACP(doc);
+        documentManager.setACP(currentDocument.getRef(), acp, true);
+        documentManager.save();
+        rebuildSecurityData();
+        Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
+        return null;
     }
 
     public String addPermission(String principalName, String permissionName,
@@ -503,35 +463,26 @@ public class SecurityActionsBean extends InputController implements
     public List<SelectItem> getSettablePermissions() throws ClientException {
         String documentType = navigationContext.getCurrentDocument().getType();
 
-        // BBB: use the platform service if it defines permissions (deprecated)
-        UIPermissionService service = (UIPermissionService) Framework.getRuntime().getComponent(
-                UIPermissionService.NAME);
-        String[] settablePermissions = service.getUIPermissions(documentType);
-
-        if (settablePermissions == null || settablePermissions.length == 0) {
-            // new centralized permission provider at the core level
-
-            List<UserVisiblePermission> visiblePerms = visibleUserPermissions.get(documentType);
-            if (visiblePerms == null) {
-                PermissionProvider pservice;
-                try {
-                    pservice = Framework.getService(PermissionProvider.class);
-                } catch (Exception e) {
-                    throw new ClientException(
-                            "Unable to get PermissionProvider", e);
-                }
-
-                synchronized (visibleUserPermissions) {
-                    visiblePerms = pservice.getUserVisiblePermissionDescriptors(documentType);
-                    visibleUserPermissions.put(documentType, visiblePerms);
-                }
+        String[] settablePermissions;
+        List<UserVisiblePermission> visiblePerms = visibleUserPermissions.get(documentType);
+        if (visiblePerms == null) {
+            PermissionProvider pservice;
+            try {
+                pservice = Framework.getService(PermissionProvider.class);
+            } catch (Exception e) {
+                throw new ClientException("Unable to get PermissionProvider", e);
             }
-            settablePermissions = new String[visiblePerms.size()];
-            int idx = 0;
-            for (UserVisiblePermission uvp : visiblePerms) {
-                settablePermissions[idx] = uvp.getId();
-                idx++;
+
+            synchronized (visibleUserPermissions) {
+                visiblePerms = pservice.getUserVisiblePermissionDescriptors(documentType);
+                visibleUserPermissions.put(documentType, visiblePerms);
             }
+        }
+        settablePermissions = new String[visiblePerms.size()];
+        int idx = 0;
+        for (UserVisiblePermission uvp : visiblePerms) {
+            settablePermissions[idx] = uvp.getId();
+            idx++;
         }
 
         List<SelectItem> permissions = new ArrayList<SelectItem>();
@@ -697,12 +648,7 @@ public class SecurityActionsBean extends InputController implements
         principals.add(currentUser.getName());
         principals.addAll(currentUser.getAllGroups());
 
-        ACP acp = currentDocument.getACP();
-        List<UserEntry> modifiableEntries = new SecurityDataConverter().convertToUserEntries(securityData);
-        if (null == acp) {
-            acp = new ACPImpl();
-        }
-        acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
+        ACP acp = computeNewACP(navigationContext.getCurrentDocument());
 
         final boolean access = acp.getAccess(principals.toArray(new String[0]),
                 getPermissionsToCheck()).toBoolean();
@@ -710,6 +656,26 @@ public class SecurityActionsBean extends InputController implements
             rebuildSecurityData();
         }
         return access;
+    }
+
+    protected ACP getACP(DocumentModel doc) throws ClientException {
+        if (doc == null) {
+            log.warn("no document selected");
+            return new ACPImpl();
+        }
+        ACP acp = currentDocument.getACP();
+        if (acp == null) {
+            log.warn("no acp returned for " + currentDocument.getPathAsString());
+            return new ACPImpl();
+        }
+        return acp;
+    }
+
+    protected ACP computeNewACP(DocumentModel doc) throws ClientException {
+        ACP acp = getACP(currentDocument);
+        List<UserEntry> modifiableEntries = policy.compute(securityData);
+        acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
+        return acp;
     }
 
     protected String[] getPermissionsToCheck() throws ClientException {

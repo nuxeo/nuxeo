@@ -16,7 +16,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.webapp.security;
+package org.nuxeo.ecm.webapp.security.policies;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,11 +27,10 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.webapp.security.SecurityData;
+import org.nuxeo.ecm.webapp.security.SecurityDataPolicy;
 
 /**
  * Attempts to convert the security data received as a list of user entries into
@@ -40,40 +39,11 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
  * @author Razvan Caraghin
  * @author Florent Guillaume
  */
-public class SecurityDataConverter implements Serializable {
+public class DefaultSecurityDataPolicy implements Serializable, SecurityDataPolicy {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(SecurityDataConverter.class);
-
-    /**
-     * Feeds security data object with user entries.
-     */
-    public static void convertToSecurityData(ACP acp, SecurityData securityData) {
-        if (null == acp || null == securityData) {
-            log.error("Null params received, returning...");
-            return;
-        }
-
-        securityData.clear();
-
-        for (ACL acl : acp.getACLs()) {
-            boolean modifiable = acl.getName().equals(ACL.LOCAL_ACL);
-            for (ACE entry : acl.getACEs()) {
-                if (modifiable) {
-                    securityData.addModifiablePrivilege(entry.getUsername(),
-                            entry.getPermission(), entry.isGranted());
-                } else {
-                    securityData.addUnModifiablePrivilege(entry.getUsername(),
-                            entry.getPermission(), entry.isGranted());
-                }
-            }
-        }
-
-        // needed so that the user lists are updated
-        securityData.rebuildUserLists();
-        securityData.setNeedSave(false);
-    }
+    private static final Log log = LogFactory.getLog(DefaultSecurityDataPolicy.class);
 
     /**
      * Reverts back the data contained in SecurityData to a list of user
@@ -84,7 +54,7 @@ public class SecurityDataConverter implements Serializable {
      * <p>
      * Does all grants before all denies.
      */
-    public static List<UserEntry> convertToUserEntries(SecurityData securityData) {
+    public List<UserEntry> compute(SecurityData securityData) {
         if (securityData == null) {
             log.error("Null params received, returning...");
             return Collections.emptyList();
