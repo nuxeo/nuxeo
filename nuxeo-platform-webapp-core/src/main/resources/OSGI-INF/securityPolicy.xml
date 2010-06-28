@@ -11,7 +11,7 @@
   </documentation>
   
   <service>
-    <provide interface="org.nuxeo.ecm.webapp.security.SecurityDataPolicyProvider"/>
+    <provide interface="org.nuxeo.ecm.webapp.security.SecurityDataPolicy"/>
   </service>
   
   <extension-point name="policy">

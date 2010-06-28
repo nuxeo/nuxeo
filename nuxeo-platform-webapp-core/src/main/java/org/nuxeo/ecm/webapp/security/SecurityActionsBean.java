@@ -256,7 +256,7 @@ public class SecurityActionsBean extends InputController implements
         return securityData;
     }
 
-    SecurityDataPolicy policy = Framework.getLocalService(SecurityDataPolicyProvider.class).getPolicy();
+    SecurityDataPolicy policy = Framework.getLocalService(SecurityDataPolicy.class);
 
     public String updateSecurityOnDocument() throws ClientException {
         DocumentModel doc =  navigationContext.getCurrentDocument();

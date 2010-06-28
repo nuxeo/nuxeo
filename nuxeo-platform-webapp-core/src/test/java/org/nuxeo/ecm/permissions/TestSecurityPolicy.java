@@ -4,8 +4,8 @@ import java.net.URL;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.webapp.security.SecurityDataPolicy;
 import org.nuxeo.ecm.webapp.security.SecurityDataPolicyDescriptor;
-import org.nuxeo.ecm.webapp.security.SecurityDataPolicyProvider;
 import org.nuxeo.ecm.webapp.security.policies.LeafWeightComparator;
 import org.nuxeo.ecm.webapp.security.policies.LeafWeightSecurityDataPolicy;
 import org.nuxeo.runtime.api.Framework;
@@ -44,9 +44,8 @@ public class TestSecurityPolicy extends NXRuntimeTestCase {
 
     public void testDeployed() {
         // TODO add required bundles
-        SecurityDataPolicyProvider service = Framework.getLocalService(SecurityDataPolicyProvider.class);
-        assertNotNull(service);
-        assertNotNull(service.getPolicy());
+        SecurityDataPolicy policy = Framework.getLocalService(SecurityDataPolicy.class);
+        assertNotNull(policy);
     }
 
     public void testComparator() {

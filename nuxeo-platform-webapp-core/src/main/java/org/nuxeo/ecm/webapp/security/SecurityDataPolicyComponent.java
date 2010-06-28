@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 
-public class SecurityDataPolicyComponent extends DefaultComponent implements SecurityDataPolicyProvider {
+public class SecurityDataPolicyComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(SecurityDataPolicyComponent.class);
 
@@ -62,4 +62,11 @@ public class SecurityDataPolicyComponent extends DefaultComponent implements Sec
         return policy;
     }
 
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(SecurityDataPolicy.class)){
+            return adapter.cast(policy);
+        }
+        return super.getAdapter(adapter);
+    }
 }
