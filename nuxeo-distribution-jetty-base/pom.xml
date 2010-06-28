@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-I20100628_1446</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
