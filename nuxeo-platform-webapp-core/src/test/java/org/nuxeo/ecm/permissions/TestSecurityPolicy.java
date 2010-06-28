@@ -43,7 +43,6 @@ public class TestSecurityPolicy extends NXRuntimeTestCase {
     }
 
     public void testDeployed() {
-        // TODO add required bundles
         SecurityDataPolicy policy = Framework.getLocalService(SecurityDataPolicy.class);
         assertNotNull(policy);
     }
