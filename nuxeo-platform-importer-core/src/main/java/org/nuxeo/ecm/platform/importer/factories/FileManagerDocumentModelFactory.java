@@ -39,7 +39,7 @@ public class FileManagerDocumentModelFactory extends
             DocumentModel parent, SourceNode node) throws Exception {
         FileManager fileManager = getFileManager();
         return fileManager.createFolder(session,
-                getValidNameFromFileName(node.getName()),
+                node.getName(),
                 parent.getPathAsString());
     }
 
@@ -49,7 +49,7 @@ public class FileManagerDocumentModelFactory extends
         BlobHolder bh = node.getBlobHolder();
         DocumentModel doc = fileManager.createDocumentFromBlob(session,
                 bh.getBlob(), parent.getPathAsString(), true,
-                getValidNameFromFileName(node.getName()));
+                node.getName());
         doc = setDocumentProperties(session, bh.getProperties(), doc);
         return doc;
     }
