@@ -1,4 +1,25 @@
 Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.client;version="1.6.2.SNAPSHOT",org
+ .nuxeo.ecm.core.client.sample;version="1.6.2.SNAPSHOT"
+Ignore-Package: org.nuxeo.ecm.core.api.repository,org.nuxeo.ecm.core.a
+ pi
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.client
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.unified
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277355495620
+Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.client;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.schema
+Import-Package: javax.security.auth.login,org.apache.commons.logging,o
+ rg.jboss.remoting,org.nuxeo.common,org.nuxeo.common.collections,org.n
+ uxeo.ecm.core.schema,org.nuxeo.osgi,org.nuxeo.osgi.application.client
+ ,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runtime.api.login,
+ org.nuxeo.runtime.config,org.nuxeo.runtime.model,org.nuxeo.runtime.re
+ moting,org.nuxeo.runtime.services.streaming,org.osgi.framework;versio
+ n="1.4"
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.schema
+
