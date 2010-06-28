@@ -174,7 +174,6 @@
       <artifact:resolveFile key="metro.webservices:webservices-rt" />
       <artifact:resolveFile key="metro.webservices:webservices-tools" />
 
-      <artifact:resolveFile key="javax.servlet:servlet-api" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty-plus" />
       <artifact:resolveFile key="org.mortbay.jetty:jetty-naming" />
