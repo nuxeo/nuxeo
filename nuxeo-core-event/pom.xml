@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-I20100628_1446</version>
   </parent>
   <artifactId>nuxeo-core-event</artifactId>
   <name>Nuxeo Core Event</name>
