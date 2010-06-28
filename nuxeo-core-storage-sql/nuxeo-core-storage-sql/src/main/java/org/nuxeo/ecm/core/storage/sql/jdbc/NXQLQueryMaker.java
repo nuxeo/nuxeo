@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -166,6 +167,22 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected Model model;
 
+    protected List<String> joins;
+
+    protected List<Serializable> joinsParams;
+
+    protected LinkedList<String> leftJoins;
+
+    protected List<Serializable> leftJoinsParams;
+
+    protected LinkedList<String> implicitJoins;
+
+    protected List<Serializable> implicitJoinsParams;
+
+    protected List<String> whereClauses;
+
+    protected List<Serializable> whereParams;
+
     public String getName() {
         return "NXQL";
     }
@@ -279,7 +296,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find the relevant tables to join with.
          */
 
-        Set<String> fragmentNames = new HashSet<String>();
+        Set<String> fragmentNames = new LinkedHashSet<String>();
         for (String prop : info.props) {
             ModelProperty propertyInfo = model.getPropertyInfo(prop);
             if (propertyInfo == null) {
@@ -343,14 +360,14 @@ public class NXQLQueryMaker implements QueryMaker {
             // Quoted id attached to the data that matches.
             String dataHierId;
 
-            List<String> joins = new LinkedList<String>();
-            List<Serializable> joinsParams = new LinkedList<Serializable>();
-            LinkedList<String> leftJoins = new LinkedList<String>();
-            List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
-            LinkedList<String> implicitJoins = new LinkedList<String>();
-            List<Serializable> implicitJoinsParams = new LinkedList<Serializable>();
-            List<String> whereClauses = new LinkedList<String>();
-            List<Serializable> whereParams = new LinkedList<Serializable>();
+            joins = new LinkedList<String>();
+            joinsParams = new LinkedList<Serializable>();
+            leftJoins = new LinkedList<String>();
+            leftJoinsParams = new LinkedList<Serializable>();
+            implicitJoins = new LinkedList<String>();
+            implicitJoinsParams = new LinkedList<Serializable>();
+            whereClauses = new LinkedList<String>();
+            whereParams = new LinkedList<Serializable>();
 
             switch (docKind) {
             case DIRECT:
@@ -394,10 +411,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 } else {
                     joinId = dataHierId;
                 }
-                leftJoins.add(String.format(JOIN_ON, table.getQuotedName(),
-                        joinId,
-                        table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                addDataJoin(table, joinId);
             }
+            fixJoins();
 
             /*
              * Filter on facets and mixin types, and create the structural WHERE
@@ -498,7 +514,7 @@ public class NXQLQueryMaker implements QueryMaker {
             List<String> whatNames = new LinkedList<String>();
             String mainAlias = hierId;
             for (Column col : whatColumns) {
-                String name = col.getFullQuotedName();
+                String name = getSelectColName(col);
                 String alias = dialect.openQuote() + COL_ALIAS_PREFIX
                         + ++nalias + dialect.closeQuote();
                 name += " AS " + alias;
@@ -508,6 +524,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 whatNames.add(name);
             }
+            fixWhatColumns(whatColumns);
             if (doUnion) {
                 // UNION, so we need all orderable columns aliased as well
                 whereBuilder.nalias = nalias; // used below in visitor accept()
@@ -674,6 +691,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         select.setOrderBy(orderBy);
+        fixSelect(select);
 
         Query q = new Query();
         ColumnMapMaker mapMaker = new ColumnMapMaker(whatColumns, whatKeys);
@@ -681,6 +699,36 @@ public class NXQLQueryMaker implements QueryMaker {
                 mapMaker, null, null);
         q.selectParams = selectParams;
         return q;
+    }
+
+    // overridden by specialized query makers that need to tweak some joins
+    protected void addDataJoin(Table table, String joinId) {
+        leftJoins.add(formatJoin(table, joinId));
+    }
+
+    protected String formatJoin(Table table, String joinId) {
+        return String.format(JOIN_ON, table.getQuotedName(), joinId,
+                table.getColumn(model.MAIN_KEY).getFullQuotedName());
+    }
+
+    // overridden by specialized query makers that need to tweak some joins
+    protected void fixJoins() {
+        // to be overridden
+    }
+
+    // overridden by specialized query makers that need to add COUNT
+    protected String getSelectColName(Column col) {
+        return col.getFullQuotedName();
+    }
+
+    // overridden by specialized query makers that need to add COUNT
+    protected void fixWhatColumns(List<Column> whatColumns) {
+        // to be overridden
+    }
+
+    // overridden by specialized query makers that need to add GROUP BY
+    protected void fixSelect(Select select) {
+        // to be overridden
     }
 
     protected static boolean findFulltextIndexOrField(Model model,
@@ -729,7 +777,7 @@ public class NXQLQueryMaker implements QueryMaker {
         public final Set<String> fromTypes = new HashSet<String>();
 
         /** Single valued properties for which a join is needed. */
-        public final Set<String> props = new HashSet<String>();
+        public final Set<String> props = new LinkedHashSet<String>();
 
         public final Set<String> orderKeys = new HashSet<String>();
 
