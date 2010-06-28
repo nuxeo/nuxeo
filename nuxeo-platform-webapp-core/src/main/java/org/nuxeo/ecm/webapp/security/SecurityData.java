@@ -29,6 +29,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.Labeler;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 
 
 /**
@@ -76,9 +81,32 @@ public class SecurityData implements Serializable {
 
     protected final List<String> parentDocumentsUsers = new ArrayList<String>();
 
-    protected String documentType = "";
+    protected DocumentModel doc = null;;
 
     protected boolean needSave=false;
+
+    protected SecurityData(DocumentModel doc) throws ClientException {
+        this.doc = doc;
+        ACP acp = doc.getACP();
+        for (ACL acl : acp.getACLs()) {
+            boolean modifiable = acl.getName().equals(ACL.LOCAL_ACL);
+            for (ACE entry : acl.getACEs()) {
+                if (modifiable) {
+                    this.addModifiablePrivilege(entry.getUsername(),
+                            entry.getPermission(), entry.isGranted());
+                } else {
+                    this.addUnModifiablePrivilege(entry.getUsername(),
+                            entry.getPermission(), entry.isGranted());
+                }
+            }
+        }
+        // needed so that the user lists are updated
+        this.rebuildUserLists();
+    }
+
+    protected SecurityData() {
+        ;
+    }
 
     public void setNeedSave(boolean needSave) {
         this.needSave = needSave;
@@ -369,25 +397,9 @@ public class SecurityData implements Serializable {
         rebuildUserLists();
     }
 
-    public void clear() {
-        currentDocDeny.clear();
-        currentDocGrant.clear();
-        parentDocsDeny.clear();
-        parentDocsGrant.clear();
-
-        currentDocumentUsers.clear();
-        parentDocumentsUsers.clear();
-
-        log.debug("Cleared data...");
-        needSave=false;
-    }
-
     public String getDocumentType() {
-        return documentType;
+        return doc != null ? doc.getDocumentType().getName() : "";
     }
 
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
-    }
 
 }
