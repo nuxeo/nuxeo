@@ -1,10 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.jetty;uses:="org.nuxeo.common,org.mo
- rtbay.log,org.mortbay.jetty,org.apache.commons.logging,org.mortbay.je
- tty.webapp,org.mortbay.xml,org.mortbay.jetty.handler,org.osgi.framewo
- rk,org.nuxeo.runtime.deployment.preprocessor,org.nuxeo.runtime.model,
- org.nuxeo.runtime.api,org.nuxeo.common.server,javax.servlet,javax.ser
- vlet.http";version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.jetty;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -12,16 +7,24 @@ Bundle-Name: org.nuxeo.runtime.jetty
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278389894
+Bnd-LastModified: 1277312149525
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/JettyComponent.xml
 Bundle-SymbolicName: org.nuxeo.runtime.jetty;singleton:=true
-Import-Package: javax.servlet;version="2.5",javax.servlet.http;version
- ="2.5",org.apache.commons.logging,org.mortbay.jetty;version="0.0",org
- .mortbay.jetty.handler;version="0.0",org.mortbay.jetty.webapp;version
- ="0.0",org.mortbay.log;version="0.0",org.mortbay.xml;version="0.0",or
- g.nuxeo.common,org.nuxeo.common.server,org.nuxeo.runtime.api,org.nuxe
- o.runtime.deployment.preprocessor,org.nuxeo.runtime.model,org.osgi.fr
- amework;version="1.4"
+Import-Package: javax.servlet;version="2.5",
+ javax.servlet.http;version="2.5",
+ org.apache.commons.logging,
+ org.mortbay.component,
+ org.mortbay.jetty,
+ org.mortbay.jetty.handler,
+ org.mortbay.jetty.webapp,
+ org.mortbay.log,
+ org.mortbay.xml,
+ org.nuxeo.common,
+ org.nuxeo.common.server,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.deployment.preprocessor,
+ org.nuxeo.runtime.model,
+ org.osgi.framework;version="1.4"
 Nuxeo-Require: org.nuxeo.runtime
 

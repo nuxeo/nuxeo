@@ -1,12 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.jtajca;uses:="org.apache.commons.bea
- nutils,javax.naming,org.apache.commons.logging,javax.resource.spi,jav
- ax.naming.spi,org.apache.geronimo.transaction.manager,javax.security.
- auth,org.apache.geronimo.connector.outbound,javax.resource,org.apache
- .geronimo.connector.outbound.connectionmanagerconfig,org.apache.geron
- imo.connector.outbound.connectiontracking,org.nuxeo.runtime.transacti
- on,javax.transaction,org.apache.geronimo.transaction";version="1.6.2.
- SNAPSHOT"
+Export-Package: org.nuxeo.runtime.jtajca;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -15,7 +8,7 @@ Bundle-Name: org.nuxeo.runtime.jtajca
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278671490
+Bnd-LastModified: 1277312185061
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.runtime.jtajca;singleton:=true
 Import-Package: javax.naming,javax.naming.spi,javax.resource;version="

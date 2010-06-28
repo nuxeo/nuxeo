@@ -1,9 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: lib;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.scripti
- ng;uses:="javax.script,org.nuxeo.common.xmap.annotation,org.nuxeo.run
- time.model,org.nuxeo.runtime.remoting,org.nuxeo.runtime.remoting.tran
- sporter,org.jboss.remoting,org.nuxeo.runtime,org.apache.commons.loggi
- ng,org.nuxeo.runtime.api";version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.scripting;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -12,7 +8,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-BuddyPolicy: dependent
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277279039104
+Bnd-LastModified: 1277312387154
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
 Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true

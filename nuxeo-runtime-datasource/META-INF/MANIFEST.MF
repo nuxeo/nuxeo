@@ -1,10 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.datasource;uses:="org.nuxeo.common.x
- map.annotation,javax.naming,javax.sql,org.apache.commons.dbcp.managed
- ,javax.naming.spi,org.apache.commons.logging,org.nuxeo.common.jndi,or
- g.nuxeo.runtime.model,org.nuxeo.runtime.api,org.w3c.dom,org.apache.co
- mmons.beanutils,org.apache.commons.dbcp,org.nuxeo.runtime.transaction
- ,javax.transaction";version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.datasource;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -13,7 +8,7 @@ Bundle-Name: org.nuxeo.runtime.datasource
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278204304
+Bnd-LastModified: 1277312061375
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/datasource-component.xml
 Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
@@ -24,4 +19,3 @@ Import-Package: javax.naming,javax.naming.spi,javax.sql,javax.transact
  ation,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runtime
  .transaction,org.w3c.dom
 Nuxeo-Require: org.nuxeo.runtime
-

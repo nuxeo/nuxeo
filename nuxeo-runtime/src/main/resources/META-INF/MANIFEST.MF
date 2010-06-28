@@ -1,9 +1,75 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
-Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
+Export-Package: org.nuxeo.runtime;version="1.6.2.SNAPSHOT",org.nuxeo.r
+ untime.api;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.api.login;versi
+ on="1.6.2.SNAPSHOT",org.nuxeo.runtime.binding;version="1.6.2.SNAPSHOT
+ ",org.nuxeo.runtime.config;version="1.6.2.SNAPSHOT",org.nuxeo.runtime
+ .config.v1;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.deploy;version=
+ "1.6.2.SNAPSHOT",org.nuxeo.runtime.detection;version="1.6.2.SNAPSHOT"
+ ,org.nuxeo.runtime.expression;version="1.6.2.SNAPSHOT",org.nuxeo.runt
+ ime.model;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.model.impl;versi
+ on="1.6.2.SNAPSHOT",org.nuxeo.runtime.osgi;version="1.6.2.SNAPSHOT",o
+ rg.nuxeo.runtime.remoting;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.
+ remoting.transporter;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.servi
+ ce;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.service.proxy;version="
+ 1.6.2.SNAPSHOT",org.nuxeo.runtime.service.sample;version="1.6.2.SNAPS
+ HOT",org.nuxeo.runtime.services.adapter;version="1.6.2.SNAPSHOT",org.
+ nuxeo.runtime.services.adapter.extension;version="1.6.2.SNAPSHOT",org
+ .nuxeo.runtime.services.deployment;version="1.6.2.SNAPSHOT",org.nuxeo
+ .runtime.services.event;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.se
+ rvices.streaming;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.transacti
+ on;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.util;version="1.6.2.SNA
+ PSHOT"
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-Category: runtime
-Bundle-BuddyPolicy: dependent, global
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: dependent, global
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277311539145
+Bundle-ManifestVersion: 2
+Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
+Nuxeo-Component: OSGI-INF/EventService.xml, OSGI-INF/RemotingService.x
+ ml, OSGI-INF/DeploymentService.xml, OSGI-INF/StreamingService.xml, OS
+ GI-INF/LoginComponent.xml, OSGI-INF/ServiceManagement.xml, OSGI-INF/D
+ efaultJBossBindings.xml
+Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
+Import-Package: javax.management,
+ javax.naming,
+ javax.naming.spi,
+ javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ javax.sql,
+ javax.transaction;version="1.1",
+ javax.xml.parsers,
+ org.apache.commons.io;version="1.4",
+ org.apache.commons.jexl,
+ org.apache.commons.logging,
+ org.jboss.remoting,
+ org.jboss.remoting.callback,
+ org.jboss.remoting.detection,
+ org.jboss.remoting.detection.multicast,
+ org.jboss.remoting.invocation,
+ org.jboss.remoting.loading,
+ org.jboss.remoting.marshal,
+ org.jboss.remoting.marshal.serializable,
+ org.jboss.remoting.network,
+ org.jboss.remoting.transport,
+ org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.osgi.framework;version="1.4",
+ org.relaxng.datatype,
+ org.w3c.dom,
+ org.w3c.dom.ranges
 Eclipse-ExtensibleAPI: true
 Nuxeo-Require: org.nuxeo.osgi
-Nuxeo-Component: OSGI-INF/EventService.xml, OSGI-INF/RemotingService.xml, OSGI-INF/DeploymentService.xml, OSGI-INF/StreamingService.xml, OSGI-INF/LoginComponent.xml, OSGI-INF/ServiceManagement.xml, OSGI-INF/DefaultJBossBindings.xml
 

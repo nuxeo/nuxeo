@@ -1,17 +1,8 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.osgi;uses:="org.apache.commons.logging,org.o
- sgi.framework,org.nuxeo.common.utils,org.nuxeo.common.collections";ve
- rsion="1.6.2.SNAPSHOT",org.nuxeo.osgi.application;uses:="org.nuxeo.os
- gi,org.osgi.framework,org.nuxeo.common.utils,org.nuxeo.common,org.apa
- che.commons.logging";version="1.6.2.SNAPSHOT",org.nuxeo.osgi.applicat
- ion.client;uses:="org.nuxeo.common,org.nuxeo.osgi,org.osgi.framework"
- ;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.application.loader;uses:="or
- g.nuxeo.common.utils,org.nuxeo.common,org.apache.commons.logging,org.
- nuxeo.osgi,org.osgi.framework";version="1.6.2.SNAPSHOT",org.nuxeo.osg
- i.jboss;uses:="org.nuxeo.common.utils,org.jboss.mx.loading,org.nuxeo.
- osgi,org.jboss.deployment,org.nuxeo.common,javax.management,org.jboss
- .system.server,org.jboss.system,org.osgi.framework,org.jboss.logging"
- ;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.osgi;version="1.6.2.SNAPSHOT",org.nuxeo.osgi
+ .application;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.application.clie
+ nt;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.application.loader;version
+ ="1.6.2.SNAPSHOT",org.nuxeo.osgi.jboss;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -20,7 +11,7 @@ Bundle-Name: org.nuxeo.osgi
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278126417
+Bnd-LastModified: 1277312275734
 Bundle-ManifestVersion: 2
 Import-Package: javax.management,org.apache.commons.logging,org.jboss.
  deployment,org.jboss.logging,org.jboss.mx.loading,org.jboss.system,or
