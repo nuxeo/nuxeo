@@ -11,3 +11,5 @@ derby.log
 *.iws
 *.ipr
 *.idea
+nuxeo-*/META-INF/*
+nuxeo-*/OSGI-INF/*

@@ -54,6 +54,7 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
         return new MonoThreadBulkExecutor();
     }
 
+    @Override
     protected void handleUnfinishedThread(Thread runner) {
         log.error("Bulk execution of event handlers is too long, exiting by killing thread");
         runner.interrupt();

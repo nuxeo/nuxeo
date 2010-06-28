@@ -39,6 +39,7 @@ import org.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
 import org.pdfbox.pdmodel.encryption.PDStandardEncryption;
 import org.pdfbox.util.PDFTextStripper;
 
+@SuppressWarnings("deprecation")
 public class PDF2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PDF2TextConverter.class);

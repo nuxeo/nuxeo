@@ -41,7 +41,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public class DefaultEventService extends DefaultComponent implements
         CoreEventListenerService {
 

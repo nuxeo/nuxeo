@@ -97,7 +97,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
     public void record(Object event) {
         if (event instanceof CoreEvent) {
             recordEvent((CoreEvent)event);
-        } else if (event instanceof Operation) {
+        } else if (event instanceof Operation<?>) {
             recordOperation((Operation<?>)event);
         } else if (event != null) {
             throw new IllegalArgumentException("Unsupported event type: "+event.getClass().getName());

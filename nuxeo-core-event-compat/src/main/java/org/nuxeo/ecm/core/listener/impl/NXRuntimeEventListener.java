@@ -35,6 +35,7 @@ import org.nuxeo.runtime.services.event.EventService;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
+@SuppressWarnings("deprecation")
 public class NXRuntimeEventListener extends AbstractEventListener implements
         AsynchronousEventListener, DocumentModelEventListener {
 

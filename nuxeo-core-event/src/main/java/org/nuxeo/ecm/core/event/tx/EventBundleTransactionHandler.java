@@ -78,9 +78,8 @@ public class EventBundleTransactionHandler {
         return createUT(transactionTimeout, false);
     }
     protected UserTransaction createUT(Integer transactionTimeout, boolean retry) {
-        InitialContext context = null;
         try {
-            context = new InitialContext();
+            new InitialContext();
         } catch (Exception e) {
             disabled = true;
             return null;
