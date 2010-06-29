@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -109,7 +108,7 @@
     <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
     <jetty.mortbay.version>6.1H.7</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
-    <apache.chemistry.version>0.5-SNAPSHOT</apache.chemistry.version>
+    <apache.chemistry.version>0.5-NX</apache.chemistry.version>
     <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
   </properties>
@@ -264,6 +263,16 @@
         <artifactId>commons-beanutils</artifactId>
         <version>1.6</version>
         <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- used in jboss patch -->
       <dependency>
@@ -1035,12 +1044,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy</artifactId>
-        <version>1.5.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
         <version>2.0.16</version>
@@ -1053,9 +1056,55 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>jexl-engine</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>js-engine</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>jruby-engine</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jruby</groupId>
+        <artifactId>jruby</artifactId>
+        <version>1.0.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>backport-util-concurrent</groupId>
+            <artifactId>backport-util-concurrent</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>jython-engine</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.python</groupId>
+        <artifactId>jython</artifactId>
+        <version>2.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>bsh-engine</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
         <groupId>javax.ressource</groupId>
         <artifactId>jca-api</artifactId>
         <version>1.5</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -1219,6 +1268,12 @@
         <groupId>jline</groupId>
         <artifactId>jline</artifactId>
         <version>0.9.94</version>
+        <exclusions>
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>metro.webservices</groupId>
@@ -1681,9 +1736,9 @@
       </dependency>
 
       <dependency>
-        <groupId>net.sourceforge.htmlunit</groupId>
-        <artifactId>htmlunit</artifactId>
-        <version>2.6</version>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>3.0</version>
       </dependency>
 
       <dependency>
@@ -1741,11 +1796,11 @@
         <scope>compile</scope>
       </dependency>
 
-		  <dependency>
-			  <groupId>org.concordion</groupId>
-			  <artifactId>concordion</artifactId>
-			  <version>1.3.0</version>
-		  </dependency>
+      <dependency>
+        <groupId>org.concordion</groupId>
+        <artifactId>concordion</artifactId>
+        <version>1.3.0</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
