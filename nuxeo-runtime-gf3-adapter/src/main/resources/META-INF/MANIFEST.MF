@@ -1,37 +1,7 @@
 Manifest-Version: 1.0
-Export-Package: org.glassfish.embed;version="1.6.2.SNAPSHOT",org.nuxeo
- .runtime.gf3;uses:="com.sun.enterprise.config.serverbeans,org.apache.
- commons.logging,org.jvnet.hk2.component,org.glassfish.internal.api,co
- m.sun.appserv.connectors.internal.api,org.nuxeo.common,org.glassfish.
- embed,org.nuxeo.common.server,org.nuxeo.runtime.model,javax.resource,
- com.sun.enterprise.v3.server,org.glassfish.server,org.glassfish.embed
- .impl,org.glassfish.api.admin,org.glassfish.deployment.autodeploy,com
- .sun.enterprise.v3.common,com.sun.enterprise.v3.services.impl,com.sun
- .web.security,org.glassfish.web,com.sun.enterprise.v3.admin.adapter,c
- om.sun.hk2.component,com.sun.enterprise.web,org.glassfish.api.deploym
- ent.archive,org.glassfish.api,com.sun.enterprise.security";version="1
- .6.2.SNAPSHOT"
-Private-Package: .
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.gf3
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278439223
-Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/GF3Component.xml
 Bundle-SymbolicName: org.nuxeo.runtime.gf3;singleton:=true
-Import-Package: com.sun.appserv.connectors.internal.api,com.sun.enterp
- rise.config.serverbeans,com.sun.enterprise.security,com.sun.enterpris
- e.v3.admin.adapter,com.sun.enterprise.v3.common,com.sun.enterprise.v3
- .server,com.sun.enterprise.v3.services.impl,com.sun.enterprise.web,co
- m.sun.hk2.component,com.sun.web.security,javax.resource;version="2.0"
- ,org.apache.commons.logging,org.glassfish.api,org.glassfish.api.admin
- ,org.glassfish.api.deployment.archive,org.glassfish.deployment.autode
- ploy,org.glassfish.embed.impl,org.glassfish.internal.api,org.glassfis
- h.server,org.glassfish.web,org.jvnet.hk2.component,org.nuxeo.common,o
- rg.nuxeo.common.server,org.nuxeo.runtime.model
-Nuxeo-Require: system.bundle, org.nuxeo.common, org.nuxeo.runtime
+Nuxeo-Require: system.bundle, 
+ org.nuxeo.common, 
+ org.nuxeo.runtime
 

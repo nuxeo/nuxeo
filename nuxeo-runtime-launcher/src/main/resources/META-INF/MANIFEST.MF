@@ -1,17 +1,4 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.osgi.application;uses:="org.apache.commons.l
- ogging";version="1.6.2.SNAPSHOT",org.nuxeo.runtime.launcher;version="
- 1.6.2.SNAPSHOT"
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.launcher
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278895602
-Bundle-ManifestVersion: 2
-Import-Package: org.apache.commons.logging
 Bundle-SymbolicName: org.nuxeo.runtime.launcher
 Main-Class: org.nuxeo.runtime.launcher.Main
 

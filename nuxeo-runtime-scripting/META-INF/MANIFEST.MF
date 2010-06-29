@@ -1,20 +1,24 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.scripting;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.scripting
+Ignore-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.scripting
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-scripting
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-BuddyPolicy: dependent
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277312387154
+Bnd-LastModified: 1277819668418
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
-Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true
-Import-Package: javax.script,org.apache.commons.logging,org.jboss.remo
- ting,org.nuxeo.common.xmap.annotation,org.nuxeo.runtime,org.nuxeo.run
- time.api,org.nuxeo.runtime.model,org.nuxeo.runtime.remoting,org.nuxeo
- .runtime.remoting.transporter
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-scripting;singlet
+ on:=true
+Import-Package: javax.annotation;version="1.0",javax.script,org.apache
+ .commons.logging,org.jboss.remoting,org.nuxeo.common.xmap.annotation;
+ version="1.6",org.nuxeo.runtime;version="1.6",org.nuxeo.runtime.api;v
+ ersion="1.6",org.nuxeo.runtime.model;version="1.6",org.nuxeo.runtime.
+ remoting;version="1.6",org.nuxeo.runtime.remoting.transporter;version
+ ="1.6"
 Nuxeo-Require: org.nuxeo.runtime
 

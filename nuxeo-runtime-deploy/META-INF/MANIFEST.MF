@@ -8,14 +8,17 @@ Export-Package: org.nuxeo.runtime.deployment.preprocessor;version="1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.deploy
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-deploy
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277312119226
+Bnd-LastModified: 1277817028357
 Bundle-ManifestVersion: 2
-Import-Package: org.apache.commons.logging,org.nuxeo.common.collection
- s,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo.common.xmap.
- annotation,org.w3c.dom
-Bundle-SymbolicName: org.nuxeo.runtime.deploy
+Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
+ ing,org.nuxeo.common.collections;version="1.6",org.nuxeo.common.utils
+ ;version="1.6",org.nuxeo.common.xmap;version="1.6",org.nuxeo.common.x
+ map.annotation;version="1.6",org.w3c.dom
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy;singleton:
+ =true
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 

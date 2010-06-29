@@ -1,21 +1,4 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.osgi;version="1.6.2.SNAPSHOT",org.nuxeo.osgi
- .application;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.application.clie
- nt;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.application.loader;version
- ="1.6.2.SNAPSHOT",org.nuxeo.osgi.jboss;version="1.6.2.SNAPSHOT"
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.394
 Bundle-Category: runtime
-Bundle-Name: org.nuxeo.osgi
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277312275734
-Bundle-ManifestVersion: 2
-Import-Package: javax.management,org.apache.commons.logging,org.jboss.
- deployment,org.jboss.logging,org.jboss.mx.loading,org.jboss.system,or
- g.jboss.system.server,org.nuxeo.common,org.nuxeo.common.collections,o
- rg.nuxeo.common.utils,org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.osgi
 

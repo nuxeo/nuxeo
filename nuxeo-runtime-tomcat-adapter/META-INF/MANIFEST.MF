@@ -1,25 +1,23 @@
 Manifest-Version: 1.0
 Export-Package: WEB-INF;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.applic
- ation;uses:="org.apache.commons.logging";version="1.6.2.SNAPSHOT",org
- .nuxeo.runtime.tomcat;uses:="org.apache.catalina,org.apache.catalina.
- core,org.nuxeo.osgi.application,org.apache.catalina.loader,javax.nami
- ng,org.apache.juli.logging,javax.xml.parsers,org.xml.sax,javax.servle
- t,org.apache.catalina.util,javax.naming.directory,org.apache.tomcat.u
- til.digester,org.apache.catalina.startup";version="1.6.2.SNAPSHOT"
+ ation;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.tomcat;version="1.6.
+ 2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.webapp
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-tomcat-adapter
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277279178329
+Bnd-LastModified: 1277817029685
 Bundle-ManifestVersion: 2
-Import-Package: javax.naming,javax.naming.directory,javax.servlet,java
- x.xml.parsers,org.apache.catalina,org.apache.catalina.core,org.apache
- .catalina.loader,org.apache.catalina.startup,org.apache.catalina.util
- ,org.apache.commons.logging,org.apache.juli.logging,org.apache.tomcat
- .util.digester,org.xml.sax
-Bundle-SymbolicName: org.nuxeo.runtime.webapp;singleton:=true
+Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
+ ng.directory,javax.servlet,javax.xml.parsers,org.apache.catalina,org.
+ apache.catalina.core,org.apache.catalina.loader,org.apache.catalina.s
+ tartup,org.apache.catalina.util,org.apache.commons.logging,org.apache
+ .juli.logging,org.apache.tomcat.util.digester,org.xml.sax
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-tomcat-adapter;si
+ ngleton:=true
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: system.bundle, org.nuxeo.runtime
 

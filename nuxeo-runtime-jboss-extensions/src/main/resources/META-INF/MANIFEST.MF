@@ -1,29 +1,3 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.jboss.deployment;uses:="org.nuxeo.co
- mmon.collections,org.jboss.deployment,org.nuxeo.runtime.deployment.pr
- eprocessor,org.jboss.mx.util,javax.management,org.jboss.system,org.jb
- oss.logging,org.nuxeo.runtime.jboss.deployment.preprocessor,org.apach
- e.commons.logging,org.jboss.system.server";version="1.6.2.SNAPSHOT",o
- rg.nuxeo.runtime.jboss.deployment.preprocessor;uses:="org.nuxeo.commo
- n.utils,org.jboss.deployment,org.jboss.logging";version="1.6.2.SNAPSH
- OT",org.nuxeo.runtime.jboss.interceptors;uses:="org.jboss.aop.joinpoi
- nt,org.javasimon,org.jboss.aop.advice,org.jboss.ejb3.remoting,org.jbo
- ss.remoting";version="1.6.2.SNAPSHOT"
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277278587735
-Bundle-ManifestVersion: 2
-Import-Package: javax.management,org.apache.commons.logging,org.javasi
- mon,org.jboss.aop.advice,org.jboss.aop.joinpoint,org.jboss.deployment
- ,org.jboss.ejb3.remoting,org.jboss.logging,org.jboss.mx.util,org.jbos
- s.remoting,org.jboss.system,org.jboss.system.server,org.nuxeo.common.
- collections,org.nuxeo.common.utils,org.nuxeo.runtime.deployment.prepr
- ocessor
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions;
- singleton:=true
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
 
