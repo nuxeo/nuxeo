@@ -81,7 +81,7 @@ public class HelpCommand implements Command {
             }
         }
         out.println();
-        out.println("For more information on a command run \"applicaton help command\".");
+        out.println("For more information on a command run \"help command\".");
         out.println("For auto-completion press TAB key.");
         out.println();
     }

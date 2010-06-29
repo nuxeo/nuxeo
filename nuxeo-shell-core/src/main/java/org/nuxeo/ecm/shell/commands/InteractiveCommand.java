@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -23,23 +23,25 @@ import java.io.File;
 import java.io.PrintStream;
 import java.text.ParseException;
 
+import javax.ejb.EJBAccessException;
+
 import jline.ConsoleReader;
 import jline.History;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.client.NuxeoClient;
-import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.CommandDescriptor;
 import org.nuxeo.ecm.shell.CommandLine;
 import org.nuxeo.ecm.shell.CommandLineService;
+import org.nuxeo.ecm.shell.commands.repository.AbstractCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author M.-A. Darche
  */
-public class InteractiveCommand implements Command {
+public class InteractiveCommand extends AbstractCommand {
 
     private static final Log log = LogFactory.getLog(InteractiveCommand.class);
 
@@ -49,9 +51,9 @@ public class InteractiveCommand implements Command {
 
     private CommandLineService service;
 
-    private ConsoleReader console;
+    private static ConsoleReader console;
 
-    public ConsoleReader getConsole() {
+    public static ConsoleReader getConsole() {
         return console;
     }
 
@@ -83,6 +85,7 @@ public class InteractiveCommand implements Command {
         // without having to retype the whole line.
         console.setHistory(commandLineHistory);
 
+        context.setInteractive(true);
         while (true) {
             updatePrompt();
             String line = console.readLine();
@@ -116,9 +119,19 @@ public class InteractiveCommand implements Command {
             }
             runCommand(cmdLine);
         } catch (UnknownCommandException e) {
+            log.error(e.getMessage());
             return CommandLineReturn.FAILURE;
         } catch (ParseException e) {
-            log.error("Command failed. "+ e.getMessage());
+            log.error("Command failed. " + e.getMessage());
+            log.debug(e);
+            return CommandLineReturn.FAILURE;
+        } catch (EJBAccessException e) {
+            log.error("Command failed. " + e.getMessage()
+                    + ". Use \"connect\" command to reconnect.");
+            log.debug(e);
+            return CommandLineReturn.FAILURE;
+        } catch (IllegalArgumentException e) {
+            log.error("Command failed." + e.getMessage());
             log.debug(e);
             return CommandLineReturn.FAILURE;
         } catch (Throwable e) {
@@ -131,8 +144,8 @@ public class InteractiveCommand implements Command {
     void runCommand(CommandLine cmdLine) throws Exception {
         CommandDescriptor cd = service.getCommand(cmdLine.getCommand());
         if (cd == null) {
-            log.error("Unknown command: " + cmdLine.getCommand());
-            throw new UnknownCommandException();
+            throw new UnknownCommandException("Unknown command: "
+                    + cmdLine.getCommand());
         } else {
             service.runCommand(cd, cmdLine);
         }
@@ -149,7 +162,7 @@ public class InteractiveCommand implements Command {
 
     /**
      * For now only command auto-completion is available.
-     *
+     * 
      * @param sb
      */
     void autoComplete(StringBuilder sb) {
@@ -186,15 +199,10 @@ public class InteractiveCommand implements Command {
     }
 
     private class UnknownCommandException extends Exception {
-        public UnknownCommandException() {
-        }
+        private static final long serialVersionUID = 1L;
 
         public UnknownCommandException(String message) {
             super(message);
-        }
-
-        public UnknownCommandException(Throwable cause) {
-            super(cause);
         }
 
     }

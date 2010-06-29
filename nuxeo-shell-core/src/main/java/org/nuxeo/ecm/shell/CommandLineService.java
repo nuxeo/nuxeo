@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -43,7 +43,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class CommandLineService extends DefaultComponent implements
         FrameworkListener {
@@ -112,6 +112,12 @@ public class CommandLineService extends DefaultComponent implements
             CommandDescriptor cmd = (CommandDescriptor) contribution;
             String name = cmd.getName();
             cmds.put(name, cmd);
+            if (cmd.getAliases() != null) {
+                for (String alias : cmd.getAliases()) {
+                    cmds.put(alias, cmd);
+                }
+            }
+
             CommandOption[] opts = cmd.getOptions();
             if (opts != null) { // register local options
                 for (CommandOption opt : opts) {

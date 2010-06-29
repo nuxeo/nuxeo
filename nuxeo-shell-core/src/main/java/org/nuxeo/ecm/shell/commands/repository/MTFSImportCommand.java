@@ -62,7 +62,7 @@ public class MTFSImportCommand extends AbstractCommand {
 
     private void printHelp() {
         System.out.println("");
-        System.out.println("Syntax: fsimport local_file_path [remote_path] [batch_size] [nbThreads]");
+        System.out.println("Syntax: mtfsimport local_file_path [remote_path] [batch_size] [nbThreads]");
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MTFSImportCommand extends AbstractCommand {
         String[] elements = cmdLine.getParameters();
         DocumentModel parent;
         if (elements.length == 0) {
-            log.error("SYNTAX ERROR: the fsimport command must take at least one argument: fsimport local_file_path [remote_path] [batch_size] [nbThreads] ");
+            log.error("SYNTAX ERROR: the mtfsimport command must take at least one argument: fsimport local_file_path [remote_path] [batch_size] [nbThreads] ");
             printHelp();
             return;
         }

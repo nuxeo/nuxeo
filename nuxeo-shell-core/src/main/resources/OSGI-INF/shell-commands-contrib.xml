@@ -17,6 +17,7 @@
         This command is useful for debugging command line parser
       </help>
     </command>
+    
     <command name="commands" class="org.nuxeo.ecm.shell.commands.CommandsCommand"
       requireConnection="false" alias="cmds">
       <description>
@@ -30,7 +31,7 @@
     </command>
 
     <command name="help" class="org.nuxeo.ecm.shell.commands.HelpCommand"
-      requireConnection="false" alt="h">
+      requireConnection="false" alias="h">
       <description>The Help</description>
       <help />
       <params>
@@ -39,23 +40,22 @@
     </command>
 
     <command name="reload" class="org.nuxeo.ecm.shell.commands.ReloadCommand"
-      requireConnection="false" alt="r">
+      requireConnection="false" alias="r">
       <description>Reload command scripts</description>
       <help />
     </command>
 
     <command name="interactive" class="org.nuxeo.ecm.shell.commands.InteractiveCommand"
-      requireConnection="false" alt="i,int">
+      requireConnection="false" alias="i,int">
       <description>Enter interactive mode</description>
       <help>TODO</help>
     </command>
 
     <command name="script" class="org.nuxeo.ecm.shell.commands.ScriptCommand"
-      alt="s">
+      alias="s">
       <options>
         <option name="file" shortcut="f" var="true" type="file">
-          A path to the
-          script file to execute
+          Path to a script file to execute
         </option>
       </options>
       <description>Executes scripts</description>
@@ -63,7 +63,7 @@
     </command>
 
     <command name="ls" class="org.nuxeo.ecm.shell.commands.repository.ListCommand"
-      alt="list,l">
+      alias="list,l">
       <description>
         List directory content (on remote)
       </description>
@@ -74,7 +74,7 @@
     </command>
 
     <command name="tree" class="org.nuxeo.ecm.shell.commands.repository.TreeCommand"
-      alt="tree">
+      alias="tree">
       <description>
         List directory content and subdirectory content (on remote),
         represented by a tree
@@ -151,14 +151,16 @@
       <description>
         Remove specified (or current) document
       </description>
+      <params>
+        <param index="0" type="doc" />
+      </params>
       <help>TODO</help>
     </command>
 
     <command name="mkdir" class="org.nuxeo.ecm.shell.commands.repository.MkDirCommand">
       <description>
         Create a document of the specified type (or Folder) at
-        the
-        given path (or in the current path).
+        the given path (or in the current path).
       </description>
       <params>
         <param index="0" type="path" />
@@ -270,7 +272,7 @@
     </command>
 
     <command name="import" class="org.nuxeo.ecm.shell.commands.io.ImportCommand"
-      alt="imp">
+      alias="imp">
       <params>
         <param index="0" type="file" />
       </params>
@@ -316,9 +318,9 @@
     </command>
 
     <command name="export" class="org.nuxeo.ecm.shell.commands.io.ExportCommand"
-      alt="exp">
+      alias="exp">
       <description>
-        List directory content (on remote)
+        Export data from a repository.
       </description>
       <params>
         <param index="0" type="doc" />
@@ -370,6 +372,56 @@
       </params>
       <help>Dynamically define a logger and its parameters (output local
         file, log level, package or class filtered). Start or stop debug mode.</help>
+    </command>
+
+    <command name="connect" class="org.nuxeo.ecm.shell.commands.repository.ConnectCommand"
+      requireConnection="false">
+      <description>
+        (Re-)initialize connection.
+        Usage: connect [username [password]]
+      </description>
+      <help>Initialize a connection on a Nuxeo instance, closing or discarding any 
+      previous connection</help>
+    </command>
+
+    <command name="disconnect" class="org.nuxeo.ecm.shell.commands.repository.DisconnectCommand"
+      requireConnection="true">
+      <description>
+        Close connection.
+      </description>
+      <help>Close current connection if any.</help>
+    </command>
+
+    <command name="tx-init" class="org.nuxeo.ecm.shell.commands.jtajca.InitTXCommand"
+      requireConnection="true" alias="init">
+      <description>
+        Init transaction management.
+      </description>
+      <help>Initialize transaction management.</help>
+    </command>
+
+    <command name="tx-start" class="org.nuxeo.ecm.shell.commands.jtajca.StartTXCommand"
+      requireConnection="true" alias="start">
+      <description>
+        Start a transaction.
+      </description>
+      <help>Start a transaction.</help>
+    </command>
+
+    <command name="tx-commit" class="org.nuxeo.ecm.shell.commands.jtajca.CommitTXCommand"
+      requireConnection="true" alias="commit">
+      <description>
+        Commit current transaction.
+      </description>
+      <help>Commit current transaction.</help>
+    </command>
+
+    <command name="tx-rollback" class="org.nuxeo.ecm.shell.commands.jtajca.RollbackTXCommand"
+      requireConnection="true" alias="rollback">
+      <description>
+        Rollback current transaction.
+      </description>
+      <help>Rollback current transaction.</help>
     </command>
 
   </extension>
