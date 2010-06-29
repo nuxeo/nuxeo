@@ -8,7 +8,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jtajca
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817031566
+Bnd-LastModified: 1277838303257
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jtajca;singleton:
  =true
@@ -21,6 +21,5 @@ Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  .connectiontracking;version="2.1",org.apache.geronimo.transaction;ver
  sion="2.1",org.apache.geronimo.transaction.manager;version="2.1",org.
  nuxeo.runtime.transaction
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: org.nuxeo.runtime
 

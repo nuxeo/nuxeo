@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.glassfish.embed;version="1.6.2.SNAPSHOT",org.nuxeo
- .runtime.gf3;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.gf3;version="1.6.2.SNAPSHOT",org.gla
+ ssfish.embed;version="1.6.2.SNAPSHOT"
 Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -9,7 +9,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817029464
+Bnd-LastModified: 1277838301886
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/GF3Component.xml
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter;singl
@@ -25,6 +25,5 @@ Import-Package: com.sun.appserv.connectors.internal.api,com.sun.enterp
  sfish.internal.api,org.glassfish.server,org.glassfish.web,org.jvnet.h
  k2.component,org.nuxeo.common;version="1.6",org.nuxeo.common.server;v
  ersion="1.6",org.nuxeo.runtime.model
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: system.bundle, org.nuxeo.common, org.nuxeo.runtime
 

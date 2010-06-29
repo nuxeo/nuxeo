@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime.jetty
+Export-Package: org.nuxeo.runtime.jetty;version="1.6.2.BUILD-SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
 Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jetty-adapter
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277820089142
+Bundle-Version: 1.6.2.BUILD-SNAPSHOT
+Bnd-LastModified: 1277838301462
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/JettyComponent.xml
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jetty-adapter;sin
@@ -18,8 +18,7 @@ Import-Package: javax.annotation;version="1.0",javax.servlet;version="
  ortbay.jetty.handler;version="0.0",org.mortbay.jetty.webapp;version="
  0.0",org.mortbay.log;version="0.0",org.mortbay.xml;version="0.0",org.
  nuxeo.common;version="1.6",org.nuxeo.common.server;version="1.6",org.
- nuxeo.runtime.api;version="1.6",org.nuxeo.runtime.deployment.preproce
- ssor;version="1.6",org.nuxeo.runtime.model;version="1.6",org.osgi.fra
- mework;version="1.4"
+ nuxeo.runtime.api,org.nuxeo.runtime.deployment.preprocessor,org.nuxeo
+ .runtime.model,org.osgi.framework;version="1.4"
 Nuxeo-Require: org.nuxeo.runtime
 

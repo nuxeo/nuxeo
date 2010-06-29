@@ -63,4 +63,43 @@
       </resource>
     </resources>
   </build>
+
+  <profiles>
+    <profile>
+      <id>bundlor</id>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>com.springsource.bundlor</groupId>
+	    <artifactId>com.springsource.bundlor.maven</artifactId>
+	    <version>1.0.0.RELEASE</version>
+	    <executions>
+              <execution>
+		<id>bundlor</id>
+		<goals>
+		  <goal>bundlor</goal>
+		</goals>
+              </execution>
+	    </executions>
+	    <configuration>
+	      <manifestTemplate>
+Bundle-ManifestVersion: 2
+Bundle-Name: ${project.name}
+Bundle-Version: ${bundle.version}
+Export-Template:
+ org.nuxeo.*;version="${bundle.version}"
+Import-Template: 
+ javax.tranaction.*;version=1.1,
+ javax.resource.*.*;version=2.0,
+ org.nuxeo.*;version="${bundle.version}"
+Import-Package: javax.transaction;version=1.1
+              </manifestTemplate>
+	      <manifestTemplatePath>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestTemplatePath>
+	      <outputPath>${basedir}</outputPath>
+	    </configuration>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+</profiles>
 </project>

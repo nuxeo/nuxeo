@@ -9,7 +9,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-datasource
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817031897
+Bnd-LastModified: 1277838303450
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/datasource-component.xml
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-datasource;single
@@ -21,6 +21,5 @@ Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  ndi;version="1.6",org.nuxeo.common.xmap.annotation;version="1.6",org.
  nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runtime.transacti
  on,org.w3c.dom
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: org.nuxeo.runtime
 

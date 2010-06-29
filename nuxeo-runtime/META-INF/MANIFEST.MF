@@ -1,23 +1,23 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.runtime;version="1.6.2.SNAPSHOT",org.nuxeo.r
- untime.api;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.api.login;versi
- on="1.6.2.SNAPSHOT",org.nuxeo.runtime.binding;version="1.6.2.SNAPSHOT
- ",org.nuxeo.runtime.config;version="1.6.2.SNAPSHOT",org.nuxeo.runtime
- .config.v1;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.deploy;version=
- "1.6.2.SNAPSHOT",org.nuxeo.runtime.detection;version="1.6.2.SNAPSHOT"
- ,org.nuxeo.runtime.expression;version="1.6.2.SNAPSHOT",org.nuxeo.runt
- ime.model;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.model.impl;versi
- on="1.6.2.SNAPSHOT",org.nuxeo.runtime.osgi;version="1.6.2.SNAPSHOT",o
- rg.nuxeo.runtime.remoting;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.
- remoting.transporter;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.servi
- ce;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.service.proxy;version="
- 1.6.2.SNAPSHOT",org.nuxeo.runtime.service.sample;version="1.6.2.SNAPS
- HOT",org.nuxeo.runtime.services.adapter;version="1.6.2.SNAPSHOT",org.
- nuxeo.runtime.services.adapter.extension;version="1.6.2.SNAPSHOT",org
- .nuxeo.runtime.services.deployment;version="1.6.2.SNAPSHOT",org.nuxeo
- .runtime.services.event;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.se
- rvices.streaming;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.transacti
- on;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.util;version="1.6.2.SNA
+Export-Package: org.nuxeo.runtime.model.impl;version="1.6.2.SNAPSHOT",
+ org.nuxeo.runtime.service.sample;version="1.6.2.SNAPSHOT",org.nuxeo.r
+ untime.config.v1;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.remoting;
+ version="1.6.2.SNAPSHOT",org.nuxeo.runtime.detection;version="1.6.2.S
+ NAPSHOT",org.nuxeo.runtime.config;version="1.6.2.SNAPSHOT",org.nuxeo.
+ runtime.services.adapter;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.m
+ odel;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.services.event;versio
+ n="1.6.2.SNAPSHOT",org.nuxeo.runtime.expression;version="1.6.2.SNAPSH
+ OT",org.nuxeo.runtime.transaction;version="1.6.2.SNAPSHOT",org.nuxeo.
+ runtime.service;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.services.s
+ treaming;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.osgi;version="1.6
+ .2.SNAPSHOT",org.nuxeo.runtime.api.login;version="1.6.2.SNAPSHOT",org
+ .nuxeo.runtime.services.adapter.extension;version="1.6.2.SNAPSHOT",or
+ g.nuxeo.runtime.service.proxy;version="1.6.2.SNAPSHOT",org.nuxeo.runt
+ ime;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.deploy;version="1.6.2.
+ SNAPSHOT",org.nuxeo.runtime.services.deployment;version="1.6.2.SNAPSH
+ OT",org.nuxeo.runtime.remoting.transporter;version="1.6.2.SNAPSHOT",o
+ rg.nuxeo.runtime.binding;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.u
+ til;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.api;version="1.6.2.SNA
  PSHOT"
 Private-Package: .
 Bundle-ActivationPolicy: lazy
@@ -28,8 +28,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Eclipse-BuddyPolicy: dependent, global
-Bnd-LastModified: 1277817027583
+Bnd-LastModified: 1277838300537
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
@@ -51,7 +50,5 @@ Import-Package: javax.annotation;version="1.0",javax.management,javax.
  mmon.utils;version="1.6",org.nuxeo.common.xmap;version="1.6",org.nuxe
  o.common.xmap.annotation;version="1.6",org.osgi.framework;version="1.
  4",org.w3c.dom,org.w3c.dom.ranges
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Eclipse-ExtensibleAPI: true
 Nuxeo-Require: org.nuxeo.osgi
 

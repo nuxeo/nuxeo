@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Export-Package: jetty;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.test;
- version="1.6.2.SNAPSHOT",org.nuxeo.runtime.test.runner;version="1.6.2
- .SNAPSHOT",org.nuxeo.runtime.test.runner.distrib;version="1.6.2.SNAPS
- HOT",org.nuxeo.runtime.test.runner.web;version="1.6.2.SNAPSHOT",org.o
- penqa.selenium.support.ui;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.runtime.test;version="1.6.2.SNAPSHOT",org.nu
+ xeo.runtime.test.runner.web;version="1.6.2.SNAPSHOT",org.nuxeo.runtim
+ e.test.runner.distrib;version="1.6.2.SNAPSHOT",org.openqa.selenium.su
+ pport.ui;version="1.6.2.SNAPSHOT",jetty;version="1.6.2.SNAPSHOT",org.
+ nuxeo.runtime.test.runner;version="1.6.2.SNAPSHOT"
 Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -12,7 +12,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-test
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817030546
+Bnd-LastModified: 1277838302734
 Bundle-ManifestVersion: 2
 Import-Package: com.google.common.base,com.google.inject;version="1.2"
  ,com.google.inject.binder;version="1.2",javax.annotation;version="1.0
@@ -28,5 +28,4 @@ Import-Package: com.google.common.base,com.google.inject;version="1.2"
  .support,org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-test;singleton:=t
  rue
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 

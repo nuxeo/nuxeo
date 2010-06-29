@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: WEB-INF;version="1.6.2.SNAPSHOT",org.nuxeo.osgi.applic
- ation;version="1.6.2.SNAPSHOT",org.nuxeo.runtime.tomcat;version="1.6.
+Export-Package: org.nuxeo.runtime.tomcat;version="1.6.2.SNAPSHOT",org.
+ nuxeo.osgi.application;version="1.6.2.SNAPSHOT",WEB-INF;version="1.6.
  2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -9,7 +9,7 @@ Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-tomcat-adapter
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817029685
+Bnd-LastModified: 1277838302055
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  ng.directory,javax.servlet,javax.xml.parsers,org.apache.catalina,org.
@@ -18,6 +18,5 @@ Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  .juli.logging,org.apache.tomcat.util.digester,org.xml.sax
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-tomcat-adapter;si
  ngleton:=true
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: system.bundle, org.nuxeo.runtime
 

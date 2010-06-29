@@ -9,7 +9,7 @@ Bundle-Name: org.nuxeo.runtime.management
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277817031088
+Bnd-LastModified: 1277838302943
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml, O
  SGI-INF/management-server-locator-service.xml
@@ -20,6 +20,5 @@ Import-Package: javax.annotation;version="1.0",javax.management,javax.
  .rmi,org.apache.commons.lang,org.apache.commons.logging,org.nuxeo.com
  mon.xmap.annotation;version="1.6",org.nuxeo.runtime.api,org.nuxeo.run
  time.model,org.osgi.framework;version="1.4"
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Nuxeo-Require: org.nuxeo.runtime
 
