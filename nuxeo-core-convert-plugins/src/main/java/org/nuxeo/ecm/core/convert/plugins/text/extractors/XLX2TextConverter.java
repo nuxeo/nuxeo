@@ -26,6 +26,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+
 
 public class XLX2TextConverter implements Converter {
 
@@ -55,10 +58,10 @@ public class XLX2TextConverter implements Converter {
             XSSFWorkbook workbook = new XSSFWorkbook(p);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
-                Iterator rows = sheet.rowIterator();
+                Iterator<Row> rows = sheet.rowIterator();
                 while (rows.hasNext()) {
                     XSSFRow row = (XSSFRow) rows.next();
-                    Iterator cells = row.cellIterator();
+                    Iterator<Cell> cells = row.cellIterator();
                     while (cells.hasNext()) {
                         XSSFCell cell = (XSSFCell) cells.next();
                         appendTextFromCell(cell,sb);

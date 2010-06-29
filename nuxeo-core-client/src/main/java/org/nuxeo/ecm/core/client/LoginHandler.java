@@ -29,6 +29,10 @@ import javax.security.auth.login.LoginException;
  */
 public interface LoginHandler {
 
+    boolean isLogged();
+
+    LoginContext loginAsSystem(String username) throws LoginException;
+
     LoginContext login() throws LoginException;
 
     void logout() throws LoginException;

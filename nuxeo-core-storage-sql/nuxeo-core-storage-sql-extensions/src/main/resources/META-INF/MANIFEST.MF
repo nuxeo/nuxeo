@@ -1,1 +1,4 @@
 Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singleton:=true
+Fragment-Host: org.nuxeo.ecm.core.storage.sql
+

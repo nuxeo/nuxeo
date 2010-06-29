@@ -48,7 +48,7 @@ public interface RepositoryBackend {
      * Creates a new instance a {@link Mapper}. Called once for every new
      * session.
      */
-    Mapper newMapper(Model model, PathResolver pathResolver)
+    Mapper getMapper(Model model, PathResolver pathResolver)
             throws StorageException;
 
     /**

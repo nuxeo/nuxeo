@@ -73,7 +73,11 @@ public class PersistenceComponent extends DefaultComponent
             throw new PersistenceError(
                     "no hibernate configuration identified by '" + name + "' is available");
         }
+        try {
         return new PersistenceProvider(emfProvider);
+        } catch (Throwable t) {
+            throw new Error(t);
+        }
     }
 
     public HibernateConfiguration getHibernateConfiguration(String name) {

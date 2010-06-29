@@ -26,6 +26,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
@@ -45,6 +47,7 @@ import org.osgi.framework.BundleException;
  */
 public class NuxeoApp {
 
+    private final static Log log = LogFactory.getLog(NuxeoApp.class);
     protected OSGiAdapter osgi;
     protected final ClassLoader loader;
     protected final Environment env;
@@ -104,6 +107,7 @@ public class NuxeoApp {
                 osgi.install(bundle);
             }
         } catch (NullPointerException t) {
+            log.error("Caught a NPE while loading bundle " + bf.getFileName(), t);
             // do nothing: may happen with non OSGi manifests
             //System.out.println("Ignore: "+file);
         }

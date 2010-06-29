@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
  * @author Max Stepanov
  *
  */
+@SuppressWarnings("deprecation")
 public class OperationEventFactory {
 
     private static final Set<String> acceptedEvents = new HashSet<String>();

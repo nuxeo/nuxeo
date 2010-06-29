@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.core.jboss.interceptors;uses:="org.nuxeo.com
+ mon,org.apache.commons.logging,org.jboss.ejb3.stateful,org.jboss.aop.
+ joinpoint,org.jboss.aop.metadata,org.jboss.aop.advice";version="1.6.2
+ .SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Category: core
+Bundle-Name: org.nuxeo.ecm.core.jboss.interceptors
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277159523800
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.core.jboss.interceptors;singleton:=
+ true
+Import-Package: org.apache.commons.logging,org.jboss.aop.advice,org.jb
+ oss.aop.joinpoint,org.jboss.aop.metadata,org.jboss.ejb3.stateful,org.
+ nuxeo.common,org.nuxeo.core.jboss.interceptors
+Nuxeo-Require: org.nuxeo.ecm.core.api
+
