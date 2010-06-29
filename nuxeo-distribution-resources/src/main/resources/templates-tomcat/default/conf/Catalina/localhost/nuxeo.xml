@@ -57,10 +57,6 @@
     maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
     url="jdbc:derby:nxwebwidgets;create=true" />
 
-  <Resource name="jdbc/nxtags" auth="Container" type="javax.sql.DataSource"
-    maxActive="100" maxIdle="30" maxWait="10000" username="sa" password=""
-    driverClassName="org.h2.jdbcx.JdbcDataSource" url="jdbc:h2:vcsh2repo;AUTO_SERVER=true;create=true" />
-
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="300" />
