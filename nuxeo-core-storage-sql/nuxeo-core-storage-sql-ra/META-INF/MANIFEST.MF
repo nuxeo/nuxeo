@@ -30,7 +30,5 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.runtime.api
 Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
-Nuxeo-Require: org.nuxeo.ecm.core,
-Require-Bundle: org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.storage.sql
+Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.query, org.nuxeo.ecm.core.schema, org.nuxeo.ecm.core.storage.sql
 

@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: nuxeo_core_jboss_interceptors
-Bundle-SymbolicName: nuxeo_core_jboss_interceptors
-Bundle-Version: 1.0.0.qualifier
