@@ -21,12 +21,10 @@ import java.io.Serializable;
 import org.nuxeo.ecm.automation.OperationContext;
 
 /**
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Expression extends Serializable {
 
-   public Object eval(OperationContext ctx) throws Exception; 
-    
+    public Object eval(OperationContext ctx) throws Exception;
+
 }

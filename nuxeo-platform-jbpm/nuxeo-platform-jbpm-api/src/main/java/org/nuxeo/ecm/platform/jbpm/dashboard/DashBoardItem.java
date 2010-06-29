@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.jbpm.dashboard;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -53,7 +54,6 @@ public interface DashBoardItem extends Serializable {
      * Returns the document reference on which the item is bound.
      *
      * @see org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager
-     *
      * @return a document reference instance
      */
     DocumentRef getDocRef();
@@ -107,4 +107,8 @@ public interface DashBoardItem extends Serializable {
      */
     boolean isExpired();
 
+    /**
+     * Returns the underneath task instance
+     */
+    TaskInstance getTaskInstance();
 }

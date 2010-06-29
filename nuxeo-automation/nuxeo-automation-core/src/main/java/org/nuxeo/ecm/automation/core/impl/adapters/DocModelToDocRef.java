@@ -17,17 +17,18 @@
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocModelToDocRef implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        return ((DocumentModel)objectToAdapt).getRef();
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
+        return ((DocumentModel) objectToAdapt).getRef();
     }
 
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.queue">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueHandler" />
+    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueFactory" />
+    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueManagerLocator" />
+  </service>
+
+  <require>org.nuxeo.ecm.platform.lock</require>
+  <require>org.nuxeo.ecm.platform.heartbeat</require>
+  
+  <documentation>
+    Lock service framework
+    @author
+    <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.queue.core.QueueComponent" />
+
+  <extension-point name="queue">
+    <documentation>
+      @author Sun Seng David TAN
+      for a queue, provide which kind of persister and
+      which kind of executor to be used.
+      <code>
+        <extension target="org.nuxeo.ecm.platform.queue" point="queue">
+          <queue name="myQueueType" executor="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
+            persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+        </extension>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.queue.core.QueueDescriptor" />
+  </extension-point>
+
+</component>

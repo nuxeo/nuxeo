@@ -26,42 +26,41 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.core.Constants;
 
 /**
- * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
+ * Inline properties file content. This class exists to have a real type for
+ * parameters accepting properties content.
  *
  * @see Constants
- *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class Properties extends HashMap<String,String> {
+public class Properties extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
     public Properties() {
-        
     }
 
     public Properties(int size) {
-        super (size);
+        super(size);
     }
-    
-    public Properties(Map<String,String> props) {
-        super (props);
+
+    public Properties(Map<String, String> props) {
+        super(props);
     }
 
     public Properties(String content) throws Exception {
-        StringReader reader = new StringReader(content);        
-        loadProperties(reader, this);           
+        StringReader reader = new StringReader(content);
+        loadProperties(reader, this);
     }
 
-    
-    public static Map<String,String> loadProperties(Reader reader) throws Exception {
+    public static Map<String, String> loadProperties(Reader reader)
+            throws Exception {
         HashMap<String, String> map = new HashMap<String, String>();
         loadProperties(reader, map);
         return map;
     }
-    
-    public static void loadProperties(Reader reader, Map<String,String> map) throws Exception {
+
+    public static void loadProperties(Reader reader, Map<String, String> map)
+            throws Exception {
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
@@ -73,13 +72,13 @@ public class Properties extends HashMap<String,String> {
                 continue;
             }
             if (line.endsWith("\\")) {
-                line = line.substring(0, line.length()-1);
+                line = line.substring(0, line.length() - 1);
                 prevLine = prevLine != null ? prevLine + line : line;
                 line = in.readLine();
                 continue;
             }
             if (prevLine != null) {
-                line = prevLine + line; 
+                line = prevLine + line;
             }
             prevLine = null;
             setPropertyLine(map, line);
@@ -89,13 +88,14 @@ public class Properties extends HashMap<String,String> {
             setPropertyLine(map, prevLine);
         }
     }
-    
-    protected static void setPropertyLine(Map<String,String> map, String line) throws Exception {
+
+    protected static void setPropertyLine(Map<String, String> map, String line)
+            throws Exception {
         int i = line.indexOf('=');
         if (i == -1) {
-            throw new IOException("Invalid property line: "+line);
+            throw new IOException("Invalid property line: " + line);
         }
-        map.put(line.substring(0,i).trim(), line.substring(i+1).trim());
+        map.put(line.substring(0, i).trim(), line.substring(i + 1).trim());
     }
 
 }

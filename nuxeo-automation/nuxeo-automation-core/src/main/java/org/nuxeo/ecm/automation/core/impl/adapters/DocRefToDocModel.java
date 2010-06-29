@@ -17,18 +17,24 @@
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocRefToDocModel implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        DocumentRef ref = (DocumentRef)objectToAdapt;
-        return ctx.getCoreSession().getDocument(ref);
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
+        DocumentRef ref = (DocumentRef) objectToAdapt;
+        try {
+            return ctx.getCoreSession().getDocument(ref);
+        } catch (ClientException e) {
+            throw new TypeAdaptException(e);
+        }
     }
 
 }

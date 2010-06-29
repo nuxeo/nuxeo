@@ -23,19 +23,15 @@ import java.io.Serializable;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class HashPersistence implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public void persist(String string) {
-        // TODO Auto-generated method stub
-
     }
 
     public boolean exists(String hash) {
-        // TODO Auto-generated method stub
         return false;
     }
 

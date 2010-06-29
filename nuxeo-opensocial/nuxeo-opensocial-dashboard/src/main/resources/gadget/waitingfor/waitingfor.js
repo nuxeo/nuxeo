@@ -34,13 +34,13 @@ function requestTasks() {
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
   var name = "Name";
-  var duedate = "Due Date";
-  var directive = "Directive";
+  var title = "Title";
+  var startdate = "Start Date";
   var labelInfo = jsonObject.translations;
   if (labelInfo != null && labelInfo != 'undefined') {
     name = labelInfo['label.workflow.task.name'];
-    duedate = labelInfo['label.workflow.task.duedate'];
-    directive = labelInfo['label.workflow.task.directive'];
+    title = labelInfo['label.title'];
+    startdate = labelInfo['label.workflow.task.startdate'];
   }
   var html = "";
   html += "<table class='dataList'>";
@@ -49,8 +49,9 @@ function tableStart(jsonObject) {
   html += "      <th/>";
   html += "      <th>" + name + "</th>";
   html += "      <th/>";
-  html += "      <th>" + duedate + "</th>";
-  html += "      <th>" + directive + "</th>";
+  html += "      <th>" + title + "</th>";
+  html += "      <th>" + startdate + "</th>";
+  html += "      <th/>";
   html += "    </tr>";
   html += "  </thead>";
   html += "  <tbody>";
@@ -76,13 +77,7 @@ function displayTaskList(data) {
   htmlContent += tableEnd();
 
   document.getElementById("nxDocumentListData").innerHTML = htmlContent + "<br/>";
-  // page info
-  // alert("page info " + data.summary.pageNumber)
-  var pageInfoLabel = data.summary.pageNumber + 1;
-  pageInfoLabel += "/";
-  maxPage = data.summary.pages;
-  pageInfoLabel += maxPage + 1;
-  document.getElementById("nxDocumentListPage").innerHTML = pageInfoLabel;
+  // no pagination
 
   gadgets.window.adjustHeight();
 
@@ -112,26 +107,21 @@ function getBaseUrl() {
 }
 
 function mkRow(dashBoardItem, i) {
-  var docTitle = dashBoardItem.name;
+  var docTitle = dashBoardItem.id;
   if ((dashBoardItem.title != null) && (dashBoardItem.title != "")) {
     docTitle = dashBoardItem.title;
   }
-  //console.log("doc title "+docTitle);
 
   var dateToDisplay = null;
-  if ((dashBoardItem.dueDate != null) && (dashBoardItem.dueDate != "")) {
-    dateToDisplay = dashBoardItem.dueDate;
+  if ((dashBoardItem.startDate != null) && (dashBoardItem.startDate != "")) {
+    dateToDisplay = dashBoardItem.startDate;
   }
-
-  //("date to display "+dateToDisplay);
 
   var tooltip = null;
   var comment = dashBoardItem.comment;
   if ((comment != null) && (comment != "")) {
     tooltip = comment;
   }
-
-  //console.log("tooltip "+tooltip+" comment "+comment);
 
   var htmlRow = "<tr class=\"";
   if (i % 2 == 0) {
@@ -140,7 +130,11 @@ function mkRow(dashBoardItem, i) {
     htmlRow += "dataRowOdd";
   }
   htmlRow += "\">";
-  htmlRow += "<td class=\"iconColumn\">"
+  htmlRow += "<td class=\"iconColumn\" />";
+  htmlRow += "<td>";
+  htmlRow += dashBoardItem.nameI18n;
+  htmlRow += "</td>";
+  htmlRow += "<td class=\"iconColumn\">";
   htmlRow += "<img alt=\"File\" src=\""
   htmlRow += getImageBaseUrl();
   htmlRow += "icons/file.gif";
@@ -156,14 +150,11 @@ function mkRow(dashBoardItem, i) {
   htmlRow += dashBoardItem.link.substring(1);
   htmlRow += "\" />";
   htmlRow += docTitle;
-  htmlRow += "</a></td><td class=\"iconColumn\"/>";
+  htmlRow += "</a></td>";
   htmlRow += "<td>";
   if (dateToDisplay != null) {
     htmlRow += getDateForDisplay(dateToDisplay);
   }
-  htmlRow += "</td>";
-  htmlRow += "<td>";
-  htmlRow += dashBoardItem.directiveI18n;
   htmlRow += "</td>";
   htmlRow += "<td class=\"iconColumn\"/>";
   htmlRow += "</tr>";
@@ -238,14 +229,9 @@ function getRestletUrl() {
   }
   url += "&labels=";
   // labels
-  url += "workflowDirectiveValidation,";
-  url += "workflowDirectiveOpinion,";
-  url += "workflowDirectiveVerification,";
-  url += "workflowDirectiveCheck,";
-  url += "workflowDirectiveDiffusion,";
-  url += "label.workflow.task.name,";
-  url += "label.workflow.task.duedate,";
-  url += "label.workflow.task.directive";
+  url += "label.workflow.task.startdate,";
+  url += "label.title,";
+  url += "label.workflow.task.name";
 
   return url;
 }

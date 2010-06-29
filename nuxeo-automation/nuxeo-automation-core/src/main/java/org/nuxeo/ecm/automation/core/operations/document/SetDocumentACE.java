@@ -37,20 +37,29 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SetDocumentACE.ID, category=Constants.CAT_DOCUMENT, label="Set ACL",
-        description="Set Acces Control Entry on the input document(s). Returns the document(s).")
+@Operation(id = SetDocumentACE.ID, category = Constants.CAT_DOCUMENT, label = "Set ACL", description = "Set Acces Control Entry on the input document(s). Returns the document(s).")
 public class SetDocumentACE {
 
     public static final String ID = "Document.SetACE";
 
-    @Context protected CoreSession session;
-    @Param(name="user") protected String user;
-    @Param(name="permission") String permission;
-    @Param(name="acl", required=false, values=ACL.LOCAL_ACL) String aclName = ACL.LOCAL_ACL;
-    @Param(name="grant", required=false, values="true") boolean grant = true;
-    @Param(name="overwrite", required=false, values="true") boolean overwrite = true;
+    @Context
+    protected CoreSession session;
+
+    @Param(name = "user")
+    protected String user;
+
+    @Param(name = "permission")
+    String permission;
+
+    @Param(name = "acl", required = false, values = ACL.LOCAL_ACL)
+    String aclName = ACL.LOCAL_ACL;
+
+    @Param(name = "grant", required = false, values = "true")
+    boolean grant = true;
+
+    @Param(name = "overwrite", required = false, values = "true")
+    boolean overwrite = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -64,10 +73,10 @@ public class SetDocumentACE {
         return doc;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -76,13 +85,13 @@ public class SetDocumentACE {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(session.getDocument(run(doc)));
         }
         return result;
     }
-
 
     protected void setACE(DocumentRef ref) throws ClientException {
         ACPImpl acp = new ACPImpl();

@@ -26,61 +26,62 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * An operation context. Holds context objects, a context parameters map and a list of operations to run.
+ * An operation context. Holds context objects, a context parameters map and a
+ * list of operations to run.
  * <p>
  * Context objects are:
  * <ul>
- * <li> The Operation Chain Input - optional. It will be used as the input
- * for the first operation in the chain. If input is null then only VOID methods in the first operation will be matched.
- * <li> A Core Session - which is optional and should be provided by the caller. (either at creation time as a constructor argument,
- * either using the {@link #setCoreSession(CoreSession)} method.
- * When running the operation chain in asynchronous mode another session will be created by preserving the
+ * <li> The Operation Chain Input - optional. It will be used as the input for
+ * the first operation in the chain. If input is null then only VOID methods in
+ * the first operation will be matched.
+ * <li> A Core Session - which is optional and should be provided by the
+ * caller. (either at creation time as a constructor argument, either using the
+ * {@link #setCoreSession(CoreSession)} method. When running the operation
+ * chain in asynchronous mode another session will be created by preserving the
  * current session credentials.
  * </ul>
- *
  * <p>
- * Each entry in the operation list contains the ID of the operation to be run and a map of operation parameters
- * to use when initializing the operation.
- *
+ * Each entry in the operation list contains the ID of the operation to be run
+ * and a map of operation parameters to use when initializing the operation.
  * <p>
- * The context parameters map can be filled with contextual information by the caller.
- * Each operation will be able to access the contextual data at runtime and to update it if needed.
+ * The context parameters map can be filled with contextual information by the
+ * caller. Each operation will be able to access the contextual data at runtime
+ * and to update it if needed.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class OperationContext extends HashMap<String,Object> {
+public class OperationContext extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 2944230823597903715L;
 
-
     protected transient CoreSession session;
+
     /**
-     * Whether to save the session at the end of the chain execution. The default is true.
+     * Whether to save the session at the end of the chain execution. The
+     * default is true.
      */
     protected boolean commit = true;
 
     protected transient List<CleanupHandler> cleanupHandlers;
 
     /**
-     * Each stack use a key the type of the objects in the stack:
-     * document, documents, blob or blobs
+     * Each stack use a key the type of the objects in the stack: document,
+     * documents, blob or blobs
      */
     protected transient Map<String, List<Object>> stacks;
 
     /**
-     * The execution input that will be updated after an operation run with the operation output
+     * The execution input that will be updated after an operation run with the
+     * operation output
      */
     protected Object input;
 
-
-
     public OperationContext() {
-        this (null);
+        this(null);
     }
 
     public OperationContext(CoreSession session) {
-        stacks = new HashMap<String,List<Object>>();
+        stacks = new HashMap<String, List<Object>>();
         setCoreSession(session);
         cleanupHandlers = new ArrayList<CleanupHandler>();
     }
@@ -118,7 +119,7 @@ public class OperationContext extends HashMap<String,Object> {
         if (stack == null) {
             return null;
         }
-        return stack.isEmpty() ? null : stack.get(stack.size()-1);
+        return stack.isEmpty() ? null : stack.get(stack.size() - 1);
     }
 
     public void push(String type, Object obj) {
@@ -135,7 +136,7 @@ public class OperationContext extends HashMap<String,Object> {
         if (stack == null) {
             return null;
         }
-        return stack.isEmpty() ? null : stack.remove(stack.size()-1);
+        return stack.isEmpty() ? null : stack.remove(stack.size() - 1);
     }
 
     public Object pull(String type) {
@@ -157,7 +158,8 @@ public class OperationContext extends HashMap<String,Object> {
             try {
                 return Framework.getService(type);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to lookup service: "+type, e);
+                throw new RuntimeException("Failed to lookup service: " + type,
+                        e);
             }
         }
     }

@@ -22,26 +22,36 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class OperationDocumentation implements Comparable<OperationDocumentation>, Serializable {
+public class OperationDocumentation implements
+        Comparable<OperationDocumentation>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public String id;
+
     /**
-     * an array of size multiple of 2. Each pair in the array is the input and output type of a method
+     * an array of size multiple of 2. Each pair in the array is the input and
+     * output type of a method
      */
     public String[] signature;
+
     public String category;
+
     public String label;
+
     public String requires;
+
+    public String since;
+
     public String description;
+
     public List<Param> params;
-    // optional URL indicating the relative path (relative to the automation service home)
+
+    // optional URL indicating the relative path (relative to the automation
+    // service home)
     // of the page where the operation is exposed
     public String url;
-
 
     public OperationDocumentation(String id) {
         this.id = id;
@@ -88,37 +98,64 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
     @Override
     public String toString() {
-        return category+" > "+ label +" ["+id+": "+Arrays.asList(signature)+"] ("+params+")\n"+description;
+        return category + " > " + label + " [" + id + ": "
+                + Arrays.asList(signature) + "] (" + params + ")\n"
+                + description;
     }
 
     public static class Param implements Serializable, Comparable<Param> {
         private static final long serialVersionUID = 1L;
+
         public String name;
+
         public String type; // the data type
+
         public String widget; // the widget type
+
         public String[] values; // the default values
+
+        public int order;
+
         public boolean isRequired;
 
         public String getName() {
             return name;
         }
+
         public String getType() {
             return type;
         }
+
         public String getWidget() {
             return widget;
         }
+
         public String[] getValues() {
             return values;
         }
+
         public boolean isRequired() {
             return isRequired;
         }
+
+        public int getOrder() {
+            return order;
+        }
+
         @Override
         public String toString() {
-            return name+" ["+type+"] "+(isRequired?"required":"optional");
+            return name + " [" + type + "] "
+                    + (isRequired ? "required" : "optional");
         }
+
         public int compareTo(Param o) {
+            if (order != 0 && o.order != 0) {
+                if (order < o.order) {
+                    return -1;
+                } else if (order > o.order) {
+                    return 1;
+                }
+            }
             if (isRequired && !o.isRequired) {
                 return -1;
             }

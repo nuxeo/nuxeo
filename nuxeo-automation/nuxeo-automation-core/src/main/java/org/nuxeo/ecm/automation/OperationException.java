@@ -17,25 +17,24 @@
 package org.nuxeo.ecm.automation;
 
 /**
- * The base exception of the operation service.  
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The base exception of the operation service.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     public OperationException(String message) {
-        super (message);
+        super(message);
     }
-    
+
     public OperationException(Throwable cause) {
-        super (cause);
+        super(cause);
     }
 
     public OperationException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

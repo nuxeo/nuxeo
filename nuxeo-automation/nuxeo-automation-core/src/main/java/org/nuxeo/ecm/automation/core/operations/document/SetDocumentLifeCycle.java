@@ -32,16 +32,17 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SetDocumentLifeCycle.ID, category=Constants.CAT_DOCUMENT, label="Follow Life Cycle Transition",
-        description="Follow the given transition on the input document life cycle state")
+@Operation(id = SetDocumentLifeCycle.ID, category = Constants.CAT_DOCUMENT, label = "Follow Life Cycle Transition", description = "Follow the given transition on the input document life cycle state")
 public class SetDocumentLifeCycle {
 
     public static final String ID = "Document.SetLifeCycle";
 
-    @Context protected CoreSession session;
-    @Param(name="value") protected String value;
+    @Context
+    protected CoreSession session;
+
+    @Param(name = "value")
+    protected String value;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -55,10 +56,10 @@ public class SetDocumentLifeCycle {
         return doc;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -67,7 +68,8 @@ public class SetDocumentLifeCycle {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(session.getDocument(run(doc)));
         }

@@ -36,25 +36,22 @@ import org.nuxeo.runtime.api.Framework;
 import freemarker.core.Environment;
 import freemarker.template.Template;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Composer {
 
     private static Log log = LogFactory.getLog(Composer.class);
 
     protected FreemarkerEngine engine;
+
     protected Mailer mailer;
 
     protected ConcurrentMap<String, URL> urls;
 
-
     public Composer() {
-        this (null);
+        this(null);
     }
-
 
     public Composer(Mailer mailer) {
         urls = new ConcurrentHashMap<String, URL>();
@@ -68,12 +65,12 @@ public class Composer {
             public URL getResourceURL(String key) {
                 return urls.get(key);
             }
+
             public File getResourceFile(String key) {
                 return null;
             }
         });
     }
-
 
     protected Mailer createMailer() {
         // first try the local configuration
@@ -90,7 +87,7 @@ public class Composer {
                     } finally {
                         in.close();
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     log.error("Failed to load mail properties", e);
                 }
             }
@@ -123,11 +120,13 @@ public class Composer {
         return engine;
     }
 
-    public void render(String template, Object ctx, Writer writer) throws RenderingException {
+    public void render(String template, Object ctx, Writer writer)
+            throws RenderingException {
         engine.render(template, ctx, writer);
     }
 
-    public void render(URL template, Object ctx, Writer writer) throws RenderingException {
+    public void render(URL template, Object ctx, Writer writer)
+            throws RenderingException {
         String key = template.toExternalForm();
         urls.putIfAbsent(key, template);
         engine.render(key, ctx, writer);
@@ -136,16 +135,18 @@ public class Composer {
     public String render(URL template, Object ctx) throws RenderingException {
         String key = template.toExternalForm();
         urls.putIfAbsent(key, template);
-        StringWriter writer = new  StringWriter();
+        StringWriter writer = new StringWriter();
         engine.render(key, ctx, writer);
         return writer.toString();
     }
 
     public String render(String templateContent, Object ctx) throws Exception {
         java.io.StringReader reader = new java.io.StringReader(templateContent);
-        Template temp = new Template("@inline", reader, engine.getConfiguration(), "UTF-8");
+        Template temp = new Template("@inline", reader,
+                engine.getConfiguration(), "UTF-8");
         StringWriter writer = new StringWriter();
-        Environment env = temp.createProcessingEnvironment(ctx, writer, engine.getObjectWrapper());
+        Environment env = temp.createProcessingEnvironment(ctx, writer,
+                engine.getObjectWrapper());
         env.process();
         return writer.toString();
     }
@@ -154,19 +155,22 @@ public class Composer {
         return mailer.newMessage();
     }
 
-    public Mailer.Message newTextMessage(URL template, Object ctx) throws Exception {
+    public Mailer.Message newTextMessage(URL template, Object ctx)
+            throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(template, ctx), "UTF-8");
         return msg;
     }
 
-    public Mailer.Message newTextMessage(String templateContent, Object ctx) throws Exception {
+    public Mailer.Message newTextMessage(String templateContent, Object ctx)
+            throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(templateContent, ctx), "UTF-8");
         return msg;
     }
 
-    public Mailer.Message newHtmlMessage(URL template, Object ctx) throws Exception {
+    public Mailer.Message newHtmlMessage(URL template, Object ctx)
+            throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(template, ctx), "text/html");
         return msg;
@@ -183,7 +187,8 @@ public class Composer {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("key1", "val1");
 
-        Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom("bs@nuxeo.com").addTo("bstefanescu@nuxeo.com");
+        Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom(
+                "bs@nuxeo.com").addTo("bstefanescu@nuxeo.com");
         msg.setSubject("test2");
         msg.send();
     }

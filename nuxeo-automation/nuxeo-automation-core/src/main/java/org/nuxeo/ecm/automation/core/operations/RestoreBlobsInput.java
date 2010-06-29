@@ -27,29 +27,30 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RestoreBlobsInput.ID, category=Constants.CAT_EXECUTION, label="Restore Files Input",
-    description="Restore the file list input from a context variable given its name. Return the files.")
+@Operation(id = RestoreBlobsInput.ID, category = Constants.CAT_EXECUTION, label = "Restore Files Input", description = "Restore the file list input from a context variable given its name. Return the files.")
 public class RestoreBlobsInput {
 
     public static final String ID = "Context.RestoreBlobsInput";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="name") protected String name;
+    @Param(name = "name")
+    protected String name;
 
     @OperationMethod
     public BlobList run() throws Exception {
         Object obj = ctx.get(name);
         if (obj instanceof BlobList) {
-            return (BlobList)obj;
+            return (BlobList) obj;
         } else if (obj instanceof Blob) {
-            return new BlobList((Blob)obj);
+            return new BlobList((Blob) obj);
         }
-        throw new OperationException("Illegal state error for restore files operation. The context map doesn't contains a file list variable with name "+name);
+        throw new OperationException(
+                "Illegal state error for restore files operation. The context map doesn't contains a file list variable with name "
+                        + name);
     }
 
 }

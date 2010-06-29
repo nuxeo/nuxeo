@@ -29,6 +29,10 @@
             <td class="formValue"><input type="text" name="lastName" value="<#if user>${user.lastName}</#if>"/></td>
           </tr>
           <tr>
+            <td class="formLabel">Email</td>
+            <td class="formValue"><input type="text" name="email" value="<#if user>${user.email}</#if>"/></td>
+          </tr>
+          <tr>
             <td class="formLabel">Groups</td>
             <td class="formValue">
               <select multiple="multiple" name="groups" size="8">

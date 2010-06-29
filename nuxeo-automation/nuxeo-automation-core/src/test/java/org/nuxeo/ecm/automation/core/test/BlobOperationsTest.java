@@ -55,13 +55,12 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-//@RepositoryConfig(cleanup=Granularity.METHOD)
+// @RepositoryConfig(cleanup=Granularity.METHOD)
 public class BlobOperationsTest {
 
     protected DocumentModel src;
@@ -92,23 +91,24 @@ public class BlobOperationsTest {
         dst = session.getDocument(dst.getRef());
     }
 
-
     // ------ Tests comes here --------
 
-
-    @Test public void testSetAndGetAndRemoveBlob() throws Exception {
+    @Test
+    public void testSetAndGetAndRemoveBlob() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file")
-            .set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("file", new StringBlob("blob content"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
+                "properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("file",
+                new StringBlob("blob content"));
         chain.add(GetDocumentBlob.ID);
-        //chain.add(Operations.BLOB_POST).set("url", File.createTempFile("", suffix));
+        // chain.add(Operations.BLOB_POST).set("url", File.createTempFile("",
+        // suffix));
 
-        Blob out = (Blob)service.run(ctx, chain);
+        Blob out = (Blob) service.run(ctx, chain);
         Assert.assertEquals("blob content", out.getString());
 
         // chain 2 is removing the blob created earlier
@@ -117,12 +117,12 @@ public class BlobOperationsTest {
         chain.add(RemoveDocumentBlob.ID);
         chain.add(GetDocumentBlob.ID);
 
-        out = (Blob)service.run(ctx, chain);
-        Assert.assertNull(out);
+        out = (Blob) service.run(ctx, chain);
+        Assert.assertNotNull(out);
     }
 
-
-    @Test public void testCreateAndAttachBlob() throws Exception {
+    @Test
+    public void testCreateAndAttachBlob() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
@@ -131,22 +131,23 @@ public class BlobOperationsTest {
             FileUtils.writeFile(file, "blob content");
             OperationChain chain = new OperationChain("testChain");
             chain.add(FetchContextDocument.ID);
-            chain.add(CreateDocument.ID).set("type", "File").set("name", "file")
-                .set("properties", "dc:title=MyDoc");
+            chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
+                    "properties", "dc:title=MyDoc");
             chain.add(SetInputAsVar.ID).set("name", "doc");
             chain.add(CreateBlob.ID).set("file", file.toURI().toURL());
-            chain.add(AttachBlob.ID).set("document", Scripting.newExpression("doc"));
+            chain.add(AttachBlob.ID).set("document",
+                    Scripting.newExpression("doc"));
             chain.add(RestoreDocumentInput.ID).set("name", "doc");
             chain.add(GetDocumentBlob.ID);
-            Blob out = (Blob)service.run(ctx, chain);
+            Blob out = (Blob) service.run(ctx, chain);
             Assert.assertEquals("blob content", out.getString());
         } finally {
             file.delete();
         }
     }
 
-
-    @Test public void testSetAndGetAndRemoveBlobs() throws Exception {
+    @Test
+    public void testSetAndGetAndRemoveBlobs() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
@@ -157,13 +158,15 @@ public class BlobOperationsTest {
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file")
-            .set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
+                "properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
+                new StringBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
+                new StringBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
-        BlobList out = (BlobList)service.run(ctx, chain);
+        BlobList out = (BlobList) service.run(ctx, chain);
         Assert.assertEquals(2, out.size());
         Assert.assertEquals("blob1", out.get(0).getString());
         Assert.assertEquals("blob2", out.get(1).getString());
@@ -174,12 +177,12 @@ public class BlobOperationsTest {
         chain.add(RemoveDocumentBlob.ID).set("xpath", "files:files");
         chain.add(GetDocumentBlobs.ID);
 
-        out = (BlobList)service.run(ctx, chain);
+        out = (BlobList) service.run(ctx, chain);
         Assert.assertEquals(0, out.size());
     }
 
-
-    @Test public void testRemoveBlobFromList() throws Exception {
+    @Test
+    public void testRemoveBlobFromList() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
@@ -190,13 +193,15 @@ public class BlobOperationsTest {
         // chain 1 is creating a list of 2 blobs.
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "File").set("name", "file")
-            .set("properties", "dc:title=MyDoc");
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob1"));
-        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", new StringBlob("blob2"));
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set(
+                "properties", "dc:title=MyDoc");
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
+                new StringBlob("blob1"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file",
+                new StringBlob("blob2"));
         chain.add(GetDocumentBlobs.ID);
 
-        BlobList out = (BlobList)service.run(ctx, chain);
+        BlobList out = (BlobList) service.run(ctx, chain);
         Assert.assertEquals(2, out.size());
         Assert.assertEquals("blob1", out.get(0).getString());
         Assert.assertEquals("blob2", out.get(1).getString());
@@ -207,9 +212,9 @@ public class BlobOperationsTest {
         chain.add(RemoveDocumentBlob.ID).set("xpath", "files:files/file[0]");
         chain.add(GetDocumentBlobs.ID);
 
-        out = (BlobList)service.run(ctx, chain);
+        out = (BlobList) service.run(ctx, chain);
         Assert.assertEquals(1, out.size());
     }
 
-    //TODO add post and file2pdf tests
+    // TODO add post and file2pdf tests
 }

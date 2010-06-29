@@ -2,10 +2,10 @@
 <fragment>
 
   <extension target="application#MODULE">
-	  <module>
-    	<java>${bundle.fileName}</java>
-	  </module>
-	</extension>
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
 
 </fragment>
 

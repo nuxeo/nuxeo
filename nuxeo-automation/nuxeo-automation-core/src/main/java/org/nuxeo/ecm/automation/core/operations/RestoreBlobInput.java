@@ -26,27 +26,28 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=RestoreBlobInput.ID, category=Constants.CAT_EXECUTION, label="Restore File Input",
-    description="Restore the file input from a context variable given its name. Return the file.")
+@Operation(id = RestoreBlobInput.ID, category = Constants.CAT_EXECUTION, label = "Restore File Input", description = "Restore the file input from a context variable given its name. Return the file.")
 public class RestoreBlobInput {
 
     public static final String ID = "Context.RestoreBlobInput";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="name") protected String name;
+    @Param(name = "name")
+    protected String name;
 
     @OperationMethod
     public Blob run() throws Exception {
         Object obj = ctx.get(name);
         if (obj instanceof Blob) {
-            return (Blob)obj;
+            return (Blob) obj;
         }
-        throw new OperationException("Illegal state error for restore file operation. The context map doesn't contains a file variable with name "+name);
+        throw new OperationException(
+                "Illegal state error for restore file operation. The context map doesn't contains a file variable with name "
+                        + name);
     }
 
 }

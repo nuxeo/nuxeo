@@ -18,14 +18,13 @@ package org.nuxeo.ecm.automation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class OperationNotFoundException extends OperationException {
 
     private static final long serialVersionUID = 1L;
 
     public OperationNotFoundException(String message) {
-        super (message);
+        super(message);
     }
 
 }

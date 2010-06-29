@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -38,6 +39,7 @@
     <module>nuxeo-platform-notification</module>
     <module>nuxeo-platform-preview</module>
     <module>nuxeo-platform-publisher</module>
+    <module>nuxeo-platform-queue</module>
     <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-forum</module>
@@ -55,6 +57,7 @@
     <module>nuxeo-platform-wss-backend</module>
     <module>nuxeo-automation</module>
     <module>nuxeo-features-test</module>
+    <module>nuxeo-platform-jboss-interceptors</module>
   </modules>
 
   <dependencyManagement>
@@ -446,6 +449,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-automation</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -532,6 +540,41 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-preview</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-queue-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-queue-ui</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lock-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lock-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-queue-core</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -964,6 +1007,23 @@
         <artifactId>nuxeo-platform-preview</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-jsf</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-server</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+
 
       <!-- I/O feature -->
       <dependency>

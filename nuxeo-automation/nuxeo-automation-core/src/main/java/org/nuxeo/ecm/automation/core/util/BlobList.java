@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BlobList extends ArrayList<Blob> {
 
@@ -33,11 +32,11 @@ public class BlobList extends ArrayList<Blob> {
     }
 
     public BlobList(int size) {
-        super (size);
+        super(size);
     }
 
     public BlobList(List<Blob> blobs) {
-        super (blobs);
+        super(blobs);
     }
 
     public BlobList(Blob blob) {

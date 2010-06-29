@@ -22,18 +22,21 @@ import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class ExecutableResource {
 
     @Context
     protected HttpServletRequest request;
+
     protected AutomationService service;
 
     public ExecutableResource(AutomationService service) {
@@ -45,26 +48,35 @@ public abstract class ExecutableResource {
     }
 
     @POST
-    public Object doPost(@Context HttpServletRequest request, ExecutionRequest xreq) {
+    public Object doPost(@Context HttpServletRequest request,
+            ExecutionRequest xreq) {
         this.request = request;
         try {
+            AutomationServer srv = Framework.getLocalService(AutomationServer.class);
+            if (!srv.accept(getId(), isChain(), request)) {
+                return ResponseHelper.notFound();
+            }
             Object result = execute(xreq);
             if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
                 return ResponseHelper.emptyContent(); // void response
             }
             if (result instanceof Blob) {
-                return ResponseHelper.blob((Blob)result);
+                return ResponseHelper.blob((Blob) result);
             } else if (result instanceof BlobList) {
-                return ResponseHelper.blobs((BlobList)result);
+                return ResponseHelper.blobs((BlobList) result);
             } else {
                 return result;
             }
         } catch (Throwable e) {
-            throw ExceptionHandler.newException("Failed to execute operation: "+getId(), e);
+            throw ExceptionHandler.newException("Failed to execute operation: "
+                    + getId(), e);
         }
     }
 
     public abstract String getId();
+
     public abstract Object execute(ExecutionRequest req) throws Exception;
+
+    public abstract boolean isChain();
 
 }

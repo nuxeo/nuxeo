@@ -52,7 +52,6 @@ import org.restlet.data.Response;
 /**
  * @author bchaffangeon
  * @author arussel
- * 
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
     private JbpmService jbpmService;
@@ -139,8 +138,12 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 user, getFilter());
         if (tasks != null) {
             for (TaskInstance task : tasks) {
-                DocumentModel doc = getJbpmService().getDocumentModel(task,
-                        user);
+                DocumentModel doc = null;
+                try {
+                    doc = getJbpmService().getDocumentModel(task, user);
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
                 if (doc != null) {
                     results.add(new DashBoardItemImpl(task, doc));
                 } else {
@@ -163,12 +166,16 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 user, getFilter());
         if (processes != null) {
             for (ProcessInstance process : processes) {
-                DocumentModel doc = getJbpmService().getDocumentModel(process,
-                        user);
+                DocumentModel doc = null;
+                try {
+                    doc = getJbpmService().getDocumentModel(process, user);
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
                 if (doc != null) {
                     Token token = process.getRootToken();
-                    Collection<TaskInstance> notDone = process.getTaskMgmtInstance().getUnfinishedTasks(
-                            token);
+                    Collection<TaskInstance> notDone = jbpmService.getTaskInstances(
+                            process.getId(), null, null);
                     for (TaskInstance task : notDone) {
                         Set<PooledActor> actors = task.getPooledActors();
                         StringBuilder names = new StringBuilder();
@@ -254,7 +261,6 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         try {
             session = repo.open();
         } catch (Exception e1) {
-            // TODO Auto-generated catch block
             handleError(result, res, e1);
             return false;
         }

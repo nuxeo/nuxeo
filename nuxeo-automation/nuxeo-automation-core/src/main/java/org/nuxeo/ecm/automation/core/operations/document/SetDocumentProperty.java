@@ -38,28 +38,35 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SetDocumentProperty.ID, category=Constants.CAT_DOCUMENT, label="Update Property",
-        description="Set a single property value on the input document. The property is specified using its xpath. The document is automatically saved if 'save' parameter is true. If you unset the 'save' you need to save it later using Save Document operation. Return the modified document.")
+@Operation(id = SetDocumentProperty.ID, category = Constants.CAT_DOCUMENT, label = "Update Property", description = "Set a single property value on the input document. The property is specified using its xpath. The document is automatically saved if 'save' parameter is true. If you unset the 'save' you need to save it later using Save Document operation. Return the modified document.")
 public class SetDocumentProperty {
 
     public static final String ID = "Document.SetProperty";
 
-    @Context protected CoreSession session;
-    @Param(name="xpath") protected String xpath;
-    @Param(name="value") protected Serializable value;
-    @Param(name="save", required=false, values="true") protected boolean save = true;
+    @Context
+    protected CoreSession session;
+
+    @Param(name = "xpath")
+    protected String xpath;
+
+    @Param(name = "value")
+    protected Serializable value;
+
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         Property p = doc.getProperty(xpath);
         Type type = p.getField().getType();
         if (!type.isSimpleType()) {
-            throw new OperationException("Only scalar types can be set using update operation");
+            throw new OperationException(
+                    "Only scalar types can be set using update operation");
         }
         if (value.getClass() == String.class) {
-            p.setValue(((SimpleType)type).getPrimitiveType().decode((String)value));
+            p.setValue(((SimpleType) type).getPrimitiveType().decode(
+                    (String) value));
         } else {
             p.setValue(value);
         }
@@ -70,10 +77,10 @@ public class SetDocumentProperty {
         return doc;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -82,7 +89,8 @@ public class SetDocumentProperty {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(session.getDocument(doc)));
         }

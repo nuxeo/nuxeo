@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -24,13 +25,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocModelToDocModelList implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
         DocumentModelList docs = new DocumentModelListImpl();
-        docs.add((DocumentModel)objectToAdapt);
+        docs.add((DocumentModel) objectToAdapt);
         return docs;
     }
 

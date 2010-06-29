@@ -26,15 +26,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=FetchDocument.ID, category=Constants.CAT_FETCH, label="Document",
-        description="Fetch a document from the repository given its reference (path or UID). The document will become the input of the next operation.")
+@Operation(id = FetchDocument.ID, category = Constants.CAT_FETCH, label = "Document", description = "Fetch a document from the repository given its reference (path or UID). The document will become the input of the next operation.")
 public class FetchDocument {
 
     public static final String ID = "Document.Fetch";
 
-    protected @Param(name="value") DocumentModel value;
+    @Param(name = "value")
+    protected DocumentModel value;
 
     @OperationMethod
     public DocumentModel run() throws Exception {

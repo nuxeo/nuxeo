@@ -44,11 +44,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class OperationTypeImpl implements OperationType {
 
@@ -68,7 +65,8 @@ public class OperationTypeImpl implements OperationType {
     protected Class<?> type;
 
     /**
-     * Injectable parameters. a map between the parameter name and the Field object
+     * Injectable parameters. a map between the parameter name and the Field
+     * object
      */
     protected Map<String, Field> params;
 
@@ -92,25 +90,25 @@ public class OperationTypeImpl implements OperationType {
      */
     protected Set<Class<?>> produces;
 
-
     public OperationTypeImpl(AutomationService service, Class<?> type) {
-       Operation anno = type.getAnnotation(Operation.class);
-       if (anno == null) {
-           throw new IllegalArgumentException("Invalid operation class: "+type+". No @Operation annotation found on class.");
-       }
-       this.service = service;
-       this.type = type;
-       id = anno.id();
-       if (id.length() == 0) {
-           id = type.getName();
-       }
-       params = new HashMap<String, Field>();
-       methods = new ArrayList<InvokableMethod>();
-       injectableFields = new ArrayList<Field>();
-       produces = new HashSet<Class<?>>();
-       consumes = new HashSet<Class<?>>();
-       initMethods();
-       initFields();
+        Operation anno = type.getAnnotation(Operation.class);
+        if (anno == null) {
+            throw new IllegalArgumentException("Invalid operation class: "
+                    + type + ". No @Operation annotation found on class.");
+        }
+        this.service = service;
+        this.type = type;
+        id = anno.id();
+        if (id.length() == 0) {
+            id = type.getName();
+        }
+        params = new HashMap<String, Field>();
+        methods = new ArrayList<InvokableMethod>();
+        injectableFields = new ArrayList<Field>();
+        produces = new HashSet<Class<?>>();
+        consumes = new HashSet<Class<?>>();
+        initMethods();
+        initFields();
     }
 
     public AutomationService getService() {
@@ -157,30 +155,34 @@ public class OperationTypeImpl implements OperationType {
         return consumes;
     }
 
-    public Object newInstance(OperationContext ctx, Map<String,Object> args) throws Exception {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args)
+            throws Exception {
         Object obj = type.newInstance();
         inject(ctx, args, obj);
         return obj;
     }
 
-    public void inject(OperationContext ctx, Map<String,Object> args, Object target) throws Exception {
+    public void inject(OperationContext ctx, Map<String, Object> args,
+            Object target) throws Exception {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = args.get(entry.getKey());
             if (obj instanceof Expression) {
-                obj = ((Expression)obj).eval(ctx);
+                obj = ((Expression) obj).eval(ctx);
             }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
-                    throw new OperationException("Failed to inject parameter '"+entry.getKey()+"'. Seems it is missing from the context. Operation: "+getId());
-                } // else do nohting
+                    throw new OperationException(
+                            "Failed to inject parameter '"
+                                    + entry.getKey()
+                                    + "'. Seems it is missing from the context. Operation: "
+                                    + getId());
+                } // else do nothing
             } else {
                 Field field = entry.getValue();
                 Class<?> cl = obj.getClass();
-                if (!field.getType().isAssignableFrom(cl)) { // try to adapt
-                    obj = service.getAdapter(ctx, obj, field.getType());
-                    if (obj == null) {
-                        throw new OperationException("Cannot adapt value of type '"+cl+"' to required field type '"+field.getType()+"' when injecting field: "+field);
-                    }
+                if (!field.getType().isAssignableFrom(cl)) {
+                    // try to adapt
+                    obj = service.getAdaptedValue(ctx, obj, field.getType());
                 }
                 field.set(target, obj);
             }
@@ -208,11 +210,11 @@ public class OperationTypeImpl implements OperationType {
             return null;
         }
         if (size == 1) {
-            return new InvokableMethod[] {result.get(0).method};
+            return new InvokableMethod[] { result.get(0).method };
         }
         Collections.sort(result);
         InvokableMethod[] ar = new InvokableMethod[result.size()];
-        for (int i=0; i<ar.length; i++) {
+        for (int i = 0; i < ar.length; i++) {
             ar[i] = result.get(i).method;
         }
         return ar;
@@ -220,11 +222,14 @@ public class OperationTypeImpl implements OperationType {
 
     static class Match implements Comparable<Match> {
         protected InvokableMethod method;
+
         int priority;
+
         Match(InvokableMethod method, int priority) {
             this.method = method;
             this.priority = priority;
         }
+
         public int compareTo(Match o) {
             return o.priority - priority;
         }
@@ -236,6 +241,7 @@ public class OperationTypeImpl implements OperationType {
         doc.label = op.label();
         doc.requires = op.requires();
         doc.category = op.category();
+        doc.since = op.since();
         if (doc.requires.length() == 0) {
             doc.requires = null;
         }
@@ -254,18 +260,19 @@ public class OperationTypeImpl implements OperationType {
             if (param.widget.length() == 0) {
                 param.widget = null;
             }
+            param.order = p.order();
             param.values = p.values();
             param.isRequired = p.required();
             doc.params.add(param);
         }
         Collections.sort(doc.params);
         // load signature
-        ArrayList<String> result = new ArrayList<String>(methods.size()*2);
+        ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         HashSet<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
             String in = getParamDocumentationType(m.getInputType());
             String out = getParamDocumentationType(m.getOutputType());
-            String sigKey = in+":"+out;
+            String sigKey = in + ":" + out;
             if (!collectedSigs.contains(sigKey)) {
                 result.add(in);
                 result.add(out);
@@ -279,9 +286,11 @@ public class OperationTypeImpl implements OperationType {
 
     protected String getParamDocumentationType(Class<?> type) {
         String t;
-        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
+        if (DocumentModel.class.isAssignableFrom(type)
+                || DocumentRef.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENT;
-        } else if(DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
+        } else if (DocumentModelList.class.isAssignableFrom(type)
+                || DocumentRefList.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENTS;
         } else if (URL.class.isAssignableFrom(type)) {
             t = Constants.T_RESOURCE;

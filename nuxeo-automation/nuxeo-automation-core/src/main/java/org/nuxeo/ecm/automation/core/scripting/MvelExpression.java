@@ -23,28 +23,22 @@ import org.nuxeo.ecm.automation.OperationContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MvelExpression implements Expression {
 
     private static final long serialVersionUID = 1L;
 
-//    protected static HashMap<String,Object> imports = new HashMap<String, Object>();
-//    static {
-//        imports.put("Date", java.util.Date.class);
-//    }
-
     protected transient volatile Serializable compiled;
-    protected String expr;
 
+    protected String expr;
 
     public MvelExpression(String expr) {
         this.expr = expr;
     }
 
     public Object eval(OperationContext ctx) throws Exception {
-        if (compiled  == null) {
-            compiled = MVEL.compileExpression(expr);//, imports);
+        if (compiled == null) {
+            compiled = MVEL.compileExpression(expr);
         }
         return MVEL.executeExpression(compiled, Scripting.initBindings(ctx));
     }

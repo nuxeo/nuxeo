@@ -32,16 +32,17 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Wrap a {@link DocumentModel} to expose in a pretty way more information to mvel scripts
+ * Wrap a {@link DocumentModel} to expose in a pretty way more information to
+ * mvel scripts
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class DocumentWrapper extends HashMap<String,Serializable> {
+public class DocumentWrapper extends HashMap<String, Serializable> {
 
     private static final long serialVersionUID = 1L;
 
     protected CoreSession session;
+
     protected DocumentModel doc;
 
     public DocumentWrapper(CoreSession session, DocumentModel doc) {
@@ -95,7 +96,7 @@ public class DocumentWrapper extends HashMap<String,Serializable> {
     }
 
     public String getDescription() throws Exception {
-        return (String)doc.getPropertyValue("dc:description");
+        return (String) doc.getPropertyValue("dc:description");
     }
 
     public boolean hasFacet(String facet) {
@@ -171,7 +172,8 @@ public class DocumentWrapper extends HashMap<String,Serializable> {
     }
 
     public String getVersionLabel() throws Exception {
-        return Framework.getLocalService(VersioningManager.class).getVersionLabel(doc);
+        return Framework.getLocalService(VersioningManager.class).getVersionLabel(
+                doc);
     }
 
     /** property map implementation */
@@ -186,7 +188,8 @@ public class DocumentWrapper extends HashMap<String,Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath has a value attached
+     * The behavior of this method was changed -> it is checking if an xpath
+     * has a value attached
      */
     public boolean containsValue(Object value) {
         try {
@@ -203,7 +206,6 @@ public class DocumentWrapper extends HashMap<String,Serializable> {
             return null;
         }
     }
-
 
     public boolean isEmpty() {
         return false;

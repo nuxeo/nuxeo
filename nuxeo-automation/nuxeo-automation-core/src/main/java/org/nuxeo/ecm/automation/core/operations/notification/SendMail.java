@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 
 import java.util.Map;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -28,38 +27,36 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.mail.Composer;
 import org.nuxeo.ecm.automation.core.mail.Mailer;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-
 
 /**
  * Save the session - TODO remove this?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SendMail.ID, category=Constants.CAT_NOTIFICATION, label="Send E-Mail",
-        description="Send an email using the input document to the specified recipients.")
+@Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients.")
 public class SendMail {
 
     public static final Composer COMPOSER = new Composer();
 
     public static final String ID = "Notification.SendMail";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="message", widget=Constants.W_MULTILINE_TEXT)
+    @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
     protected String message;
 
-    @Param(name="subject")
+    @Param(name = "subject")
     protected String subject;
 
-    @Param(name="from")
+    @Param(name = "from")
     protected String from;
 
-    @Param(name="to")
-    protected String to; // a comma separated list of emails
-
+    @Param(name = "to")
+    protected StringList to; // a comma separated list of emails
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -73,12 +70,12 @@ public class SendMail {
         return docs;
     }
 
-    protected String[] getRecipients() {
-        return StringUtils.split(to, ',', true);
+    protected StringList getRecipients() {
+        return to;
     }
 
-    protected void send(String[] sendTo) throws Exception {
-        Map<String,Object> map = Scripting.initBindings(ctx);
+    protected void send(StringList sendTo) throws Exception {
+        Map<String, Object> map = Scripting.initBindings(ctx);
         Mailer.Message msg = COMPOSER.newTextMessage(message, map);
         msg.setFrom(from);
         msg.setSubject(subject);

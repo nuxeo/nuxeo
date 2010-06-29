@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.scripting.MvelExpression;
 import org.nuxeo.ecm.automation.core.scripting.MvelTemplate;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
@@ -500,5 +501,18 @@ public class OperationChainTest {
 
         Object out = service.run(ctx, chain);
         Assert.assertEquals(src.getTitle(), out);
+    }
+
+    @Test public void testStringListOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+
+        OperationChain chain = new OperationChain("testSlo");
+        chain.add("slo").set("emails", "a,b,c");
+
+        StringList out = (StringList)service.run(ctx, chain);
+        Assert.assertEquals(3, out.size());
+        Assert.assertTrue(out.contains("a"));
+        Assert.assertTrue(out.contains("b"));
+        Assert.assertTrue(out.contains("c"));
     }
 }

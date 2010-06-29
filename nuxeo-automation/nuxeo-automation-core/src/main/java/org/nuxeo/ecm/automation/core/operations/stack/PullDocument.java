@@ -26,27 +26,26 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PullDocument.ID, category=Constants.CAT_EXECUTION_STACK, label="Pull Document",
-    description="Restore the first saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> document.")
+@Operation(id = PullDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document", description = "Restore the first saved input document in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the first <i>pushed</i> document.")
 public class PullDocument {
 
     public static final String ID = "Document.Pull";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModel run() throws Exception {
         Object obj = ctx.pull(Constants.O_DOCUMENT);
         if (obj instanceof DocumentModel) {
-            return (DocumentModel)obj;
+            return (DocumentModel) obj;
         } else if (obj instanceof DocumentRef) {
-            return ctx.getCoreSession().getDocument((DocumentRef)obj);
+            return ctx.getCoreSession().getDocument((DocumentRef) obj);
         }
-        throw new OperationException("Illegal state error for pull document operation. The context stack doesn't contains a document on its bottom");
+        throw new OperationException(
+                "Illegal state error for pull document operation. The context stack doesn't contains a document on its bottom");
     }
 
 }

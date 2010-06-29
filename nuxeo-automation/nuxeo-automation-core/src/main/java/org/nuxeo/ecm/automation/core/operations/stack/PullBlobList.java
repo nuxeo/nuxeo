@@ -26,23 +26,23 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PullBlobList.ID, category=Constants.CAT_EXECUTION_STACK, label="Pull File List",
-    description="Restore the first saved input file list in the context input stack")
+@Operation(id = PullBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull File List", description = "Restore the first saved input file list in the context input stack")
 public class PullBlobList {
 
     public final static String ID = "Blob.PullList";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public BlobList run() throws Exception {
         Object obj = ctx.pull(Constants.O_BLOBS);
         if (obj instanceof BlobList) {
-            return (BlobList)obj;
+            return (BlobList) obj;
         }
-        throw new OperationException("Illegal state error for pull file list operation. The context stack doesn't contains a file list on its bottom");
+        throw new OperationException(
+                "Illegal state error for pull file list operation. The context stack doesn't contains a file list on its bottom");
     }
 
 }

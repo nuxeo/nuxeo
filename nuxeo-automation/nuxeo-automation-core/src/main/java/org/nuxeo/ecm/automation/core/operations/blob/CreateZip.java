@@ -38,10 +38,8 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
  * TODO: detect mine?
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=CreateZip.ID, category=Constants.CAT_BLOB, label="Zip",
-        description="Create a zip file from the input file(s). If no file name is given the first file name in the input will be used. Returns the zip file.")
+@Operation(id = CreateZip.ID, category = Constants.CAT_BLOB, label = "Zip", description = "Create a zip file from the input file(s). If no file name is given the first file name in the input will be used. Returns the zip file.")
 public class CreateZip {
 
     public final static String ID = "Blob.CreateZip";
@@ -49,8 +47,8 @@ public class CreateZip {
     @Context
     protected OperationContext ctx;
 
-    @Param(name="filename", required=false) protected String fileName;
-
+    @Param(name = "filename", required = false)
+    protected String fileName;
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
@@ -89,7 +87,7 @@ public class CreateZip {
     protected String getFileName(Blob blob) {
         String entry = blob.getFilename();
         if (entry == null) {
-            entry = "Unknown_"+System.identityHashCode(blob);
+            entry = "Unknown_" + System.identityHashCode(blob);
         }
         return entry;
     }
@@ -105,12 +103,14 @@ public class CreateZip {
     }
 
     protected void zip(BlobList blobs, ZipOutputStream out) throws Exception {
-        HashSet<String> names = new HashSet<String>(); // use a set to avoid zipping entries with same names
+        HashSet<String> names = new HashSet<String>(); // use a set to avoid
+                                                        // zipping entries with
+                                                        // same names
         int cnt = 1;
         for (Blob blob : blobs) {
             String entry = getFileName(blob);
             if (!names.add(entry)) {
-                entry = "renamed_"+(cnt++)+"_"+entry;
+                entry = "renamed_" + (cnt++) + "_" + entry;
             }
             InputStream in = blob.getStream();
             try {

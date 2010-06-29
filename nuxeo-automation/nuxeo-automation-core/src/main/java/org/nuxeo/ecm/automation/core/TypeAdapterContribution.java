@@ -22,7 +22,6 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("adapter")
 public class TypeAdapterContribution {
@@ -30,10 +29,13 @@ public class TypeAdapterContribution {
     /**
      * Adapter implementation class
      */
-    @XNode("@class") public Class<? extends TypeAdapter> clazz;
-    
-    @XNode("@accept") public Class<?> accept;
-    
-    @XNode("@produce") public Class<?> produce;
-    
+    @XNode("@class")
+    public Class<? extends TypeAdapter> clazz;
+
+    @XNode("@accept")
+    public Class<?> accept;
+
+    @XNode("@produce")
+    public Class<?> produce;
+
 }

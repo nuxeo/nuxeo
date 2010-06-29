@@ -22,16 +22,14 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ClassKeyedRegistry<V> extends SuperKeyedRegistry<Class<?>, V> {
 
-    
     @Override
     protected boolean isRoot(Class<?> key) {
         return key == Object.class;
     }
-    
+
     @Override
     protected List<Class<?>> getSuperKeys(Class<?> key) {
         List<Class<?>> result = new ArrayList<Class<?>>();
@@ -44,10 +42,10 @@ public class ClassKeyedRegistry<V> extends SuperKeyedRegistry<Class<?>, V> {
         }
         return result;
     }
-    
+
     @Override
     protected boolean isCachingEnabled(Class<?> key) {
         return !Proxy.isProxyClass(key);
     }
-    
+
 }

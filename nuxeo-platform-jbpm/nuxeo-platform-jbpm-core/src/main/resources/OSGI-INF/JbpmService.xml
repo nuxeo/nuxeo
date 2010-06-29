@@ -12,6 +12,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.jbpm.JbpmService" />
+    <provide interface="org.nuxeo.ecm.platform.jbpm.JbpmTaskService" />
   </service>
 
   <extension-point name="deployer">

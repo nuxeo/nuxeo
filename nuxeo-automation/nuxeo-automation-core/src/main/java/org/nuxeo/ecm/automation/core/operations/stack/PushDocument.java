@@ -25,17 +25,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PushDocument.ID, category=Constants.CAT_EXECUTION_STACK, label="Push Document",
-    description="Push the input document on the context stack. The document can be restored later as the input using the corrresponding pop operation. Returns the input document.")
+@Operation(id = PushDocument.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push Document", description = "Push the input document on the context stack. The document can be restored later as the input using the corrresponding pop operation. Returns the input document.")
 public class PushDocument {
 
     public static final String ID = "Document.Push";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

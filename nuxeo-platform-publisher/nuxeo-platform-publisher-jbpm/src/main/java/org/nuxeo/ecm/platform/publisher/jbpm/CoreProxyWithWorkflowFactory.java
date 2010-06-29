@@ -37,14 +37,10 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
@@ -63,13 +59,11 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Implementation of the {@link PublishedDocumentFactory} for core
  * implementation using native proxy system with validation workflow.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
  */
 public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         PublishedDocumentFactory {
@@ -214,14 +208,16 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
             DocumentModel sourceVersion = coreSession.getSourceDocument(proxy.getRef());
             DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
-            DocumentModelList brothers = coreSession.getProxies(dm.getRef(), proxy.getParentRef());
-            if(brothers != null && brothers.size() > 1) {
+            DocumentModelList brothers = coreSession.getProxies(dm.getRef(),
+                    proxy.getParentRef());
+            if (brothers != null && brothers.size() > 1) {
                 // we remove the brothers of the published document if any
                 // the use case is:
-                // v1 is published, v2 is waiting for publication and was just validated
+                // v1 is published, v2 is waiting for publication and was just
+                // validated
                 // v1 is removed and v2 is now being published
-                for(DocumentModel doc : brothers) {
-                    if(!doc.getId().equals(proxy.getId())) {
+                for (DocumentModel doc : brothers) {
+                    if (!doc.getId().equals(proxy.getId())) {
                         coreSession.removeDocument(doc.getRef());
                     }
                 }
@@ -324,6 +320,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     protected boolean isPublished(PublishedDocument publishedDocument)
             throws PublishingException {
+        // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
@@ -400,15 +397,18 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
 
     /**
      * @author arussel
-     *
      */
     protected class DocumentPublisherUnrestricted extends
             UnrestrictedSessionRunner {
 
         protected PublishedDocument result;
+
         protected DocumentRef docRef;
+
         protected DocumentRef targetRef;
+
         protected NuxeoPrincipal principal;
+
         protected String comment = "";
 
         public DocumentPublisherUnrestricted(CoreSession session,

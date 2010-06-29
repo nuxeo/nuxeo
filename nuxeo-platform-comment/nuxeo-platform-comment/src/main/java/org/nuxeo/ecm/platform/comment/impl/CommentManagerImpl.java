@@ -163,7 +163,7 @@ public class CommentManagerImpl implements CommentManager {
             }
             if (commentDocModel == null) {
                 // XXX AT: maybe user cannot see the comment
-                log.error("Could not adapt comment relation subject to a document "
+                log.warn("Could not adapt comment relation subject to a document "
                         + "model; check the service relation adapters configuration");
                 continue;
             }
@@ -599,7 +599,7 @@ public class CommentManagerImpl implements CommentManager {
                 log.error("failed to retrieve documents from relations");
             }
             if (docModel == null) {
-                log.error("Could not adapt comment relation subject to a document "
+                log.warn("Could not adapt comment relation subject to a document "
                         + "model; check the service relation adapters configuration");
                 continue;
             }

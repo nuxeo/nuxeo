@@ -32,15 +32,14 @@ import org.nuxeo.ecm.core.api.Blob;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PostBlob.ID, category=Constants.CAT_BLOB, label="HTTP Post",
-        description="Post the input file to a target HTTP URL. Return back the input file")
+@Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Return back the input file")
 public class PostBlob {
 
     public final static String ID = "Blob.Post";
 
-    @Param(name="url") protected String url;
+    @Param(name = "url")
+    protected String url;
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {

@@ -25,17 +25,16 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SetInputAsVar.ID, category=Constants.CAT_EXECUTION, label="Set Context Variable From Input",
-        description="Set a context variable that points to the current input object. You must give a name for the variable. This operation works on any input type and return back the input as the output.")
+@Operation(id = SetInputAsVar.ID, category = Constants.CAT_EXECUTION, label = "Set Context Variable From Input", description = "Set a context variable that points to the current input object. You must give a name for the variable. This operation works on any input type and return back the input as the output.")
 public class SetInputAsVar {
 
     public static final String ID = "Context.SetInputAsVar";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="name")
+    @Param(name = "name")
     protected String name;
 
     @OperationMethod

@@ -43,7 +43,8 @@ public class CommentRemovedEventListener extends AbstractCommentListener
             RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws Exception {
         log.debug("Processing relations cleanup on Comment removal");
-        if ("Comment".equals(docMessage.getDocumentType().getName())) {
+        String typeName = docMessage.getType();
+        if ("Comment".equals(typeName) || "Post".equals(typeName)) {
             onCommentRemoved(relationManager, config, docMessage);
         }
     }
@@ -54,7 +55,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener
         Resource commentRes = relationManager.getResource(
                 config.commentNamespace, docModel, null);
         if (commentRes == null) {
-            log.error("Could not adapt document model to relation resource; "
+            log.warn("Could not adapt document model to relation resource; "
                     + "check the service relation adapters configuration");
             return;
         }

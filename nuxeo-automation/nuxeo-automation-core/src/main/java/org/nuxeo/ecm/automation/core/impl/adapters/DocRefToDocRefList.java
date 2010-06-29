@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
@@ -24,12 +25,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocRefToDocRefList implements TypeAdapter {
 
-    public Object getAdapter(OperationContext ctx, Object objectToAdapt) throws Exception {
-        DocumentRef ref = (DocumentRef)objectToAdapt;
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+            throws TypeAdaptException {
+        DocumentRef ref = (DocumentRef) objectToAdapt;
         DocumentRefList result = new DocumentRefListImpl();
         result.add(ref);
         return result;

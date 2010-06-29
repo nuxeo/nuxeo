@@ -19,15 +19,8 @@
 
 package org.nuxeo.ecm.webengine.admin;
 
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -37,8 +30,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.List;
+
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "UserManager")
 @Produces("text/html;charset=UTF-8")
@@ -63,7 +64,7 @@ public class UserService extends DefaultObject {
     @Path("user/{user}")
     public Object searchUsers(@PathParam("user") String user) throws Exception {
         UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipal principal = userManager.getPrincipal(user);
+        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl)userManager.getPrincipal(user);
         if (principal == null) {
             throw new WebResourceNotFoundException("User not found: " + user);
         }
@@ -88,13 +89,14 @@ public class UserService extends DefaultObject {
         String username = req.getParameter("username");
         UserManager userManager = Framework.getService(UserManager.class);
         if (username != null && !username.equals("")) {
-            NuxeoPrincipal user = userManager.getPrincipal(username);
+            NuxeoPrincipalImpl user = (NuxeoPrincipalImpl)userManager.getPrincipal(username);
             String[] selectedGroups;
             if (user != null) {
                 // update
                 user.setFirstName(req.getParameter("firstName"));
                 user.setLastName(req.getParameter("lastName"));
                 user.setPassword(req.getParameter("password"));
+                user.setEmail(req.getParameter("email"));
 
                 selectedGroups = req.getParameterValues("groups");
                 List<String> listGroups = Arrays.asList(selectedGroups);
@@ -107,6 +109,7 @@ public class UserService extends DefaultObject {
                 user.setFirstName(req.getParameter("firstName"));
                 user.setLastName(req.getParameter("lastName"));
                 user.setPassword(req.getParameter("password"));
+                user.setEmail(req.getParameter("email"));
 
                 selectedGroups = req.getParameterValues("groups");
                 List<String> listGroups = Arrays.asList(selectedGroups);

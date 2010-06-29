@@ -24,26 +24,25 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
- * Generic fetch document operation that can be used on any context that has a document as the input.
- *
- * This operation is taking the context input and it is returning it as a document
- * If the input is not a document an exception is thrown
+ * Generic fetch document operation that can be used on any context that has a
+ * document as the input. This operation is taking the context input and it is
+ * returning it as a document If the input is not a document an exception is
+ * thrown
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SetVar.ID, category=Constants.CAT_EXECUTION, label="Set Context Variable",
-        description="Set a context variable given a name and the value. To compute the value at runtime from the current context you should use an EL expression as the value. This operation works on any input type and return back the input as the output.")
+@Operation(id = SetVar.ID, category = Constants.CAT_EXECUTION, label = "Set Context Variable", description = "Set a context variable given a name and the value. To compute the value at runtime from the current context you should use an EL expression as the value. This operation works on any input type and return back the input as the output.")
 public class SetVar {
 
     public final static String ID = "Context.SetVar";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
-    @Param(name="name")
+    @Param(name = "name")
     protected String name;
 
-    @Param(name="value")
+    @Param(name = "value")
     protected Object value;
 
     @OperationMethod

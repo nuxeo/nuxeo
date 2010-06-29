@@ -29,25 +29,24 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=ReloadDocument.ID, category=Constants.CAT_DOCUMENT, label="Reset",
-        description="Reload the input document from the repository. Any previous modification made by the chain on this document will be lost if these modifications were not saved. Return the reloaded document.")
+@Operation(id = ReloadDocument.ID, category = Constants.CAT_DOCUMENT, label = "Reset", description = "Reload the input document from the repository. Any previous modification made by the chain on this document will be lost if these modifications were not saved. Return the reloaded document.")
 public class ReloadDocument {
 
     public static final String ID = "Document.Reload";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         return ctx.getCoreSession().getDocument(doc.getRef());
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }

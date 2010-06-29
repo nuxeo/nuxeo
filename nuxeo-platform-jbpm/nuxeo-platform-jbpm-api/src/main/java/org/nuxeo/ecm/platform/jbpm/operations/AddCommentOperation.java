@@ -35,11 +35,11 @@ public class AddCommentOperation implements JbpmOperation {
 
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private final long id;
 
-    private String actorId;
+    private final String actorId;
 
-    private String message;
+    private final String message;
 
     public AddCommentOperation(long id, String actorId, String message) {
         this.id = id;

@@ -29,27 +29,24 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=SaveDocument.ID, category=Constants.CAT_DOCUMENT, label="Save",
-        description="Save in the repository any modification that was done on the input document. Returns the saved document.")
+@Operation(id = SaveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Save", description = "Save in the repository any modification that was done on the input document. Returns the saved document.")
 public class SaveDocument {
-
 
     public static final String ID = "Document.Save";
 
-    protected @Context CoreSession session;
-
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         return session.saveDocument(doc);
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }

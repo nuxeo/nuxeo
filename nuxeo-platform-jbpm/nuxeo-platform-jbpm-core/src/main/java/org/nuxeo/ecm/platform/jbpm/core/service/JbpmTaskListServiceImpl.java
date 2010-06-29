@@ -33,7 +33,8 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class JbpmTaskListServiceImpl extends DefaultComponent implements JbpmTaskListService {
+public class JbpmTaskListServiceImpl extends DefaultComponent implements
+        JbpmTaskListService {
 
     private static final String JBPMLISTS = "tasklists";
 
@@ -110,8 +111,8 @@ public class JbpmTaskListServiceImpl extends DefaultComponent implements JbpmTas
     }
 
     /**
-     * Return the folder which contains the lists of tasks. This folder
-     * is named 'jbpmlists' and is located in the personal workspace. *
+     * Return the folder which contains the lists of tasks. This folder is
+     * named 'jbpmlists' and is located in the personal workspace. *
      *
      * @param session Current CoreSession
      * @return The folder containing the lists of tasks
@@ -132,9 +133,8 @@ public class JbpmTaskListServiceImpl extends DefaultComponent implements JbpmTas
         } else {
 
             // Create Root List
-            taskListRootDoc = session.createDocumentModel(
-                    getUserWorkspace(session).getPathAsString(), JBPMLISTS,
-                    "TaskLists");
+            taskListRootDoc = session.createDocumentModel(getUserWorkspace(
+                    session).getPathAsString(), JBPMLISTS, "TaskLists");
 
             taskListRootDoc = session.createDocument(taskListRootDoc);
 

@@ -24,30 +24,35 @@ import org.nuxeo.ecm.automation.OperationType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class OperationResource extends ExecutableResource {
 
     protected OperationType type;
 
     public OperationResource(AutomationService service, OperationType type) {
-        super (service);
+        super(service);
         this.type = type;
     }
 
     @GET
     public Object doGet() {
-        return null;//TODO
+        return null;// TODO
     }
 
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
-        OperationContext ctx = xreq.createContext(getCoreSession());
+        OperationContext ctx = xreq.createContext(request, getCoreSession());
         return service.run(ctx, xreq.createChain(type));
     }
 
     @Override
     public String getId() {
         return type.getId();
+    }
+
+    @Override
+    public boolean isChain() {
+        return false;
     }
 }

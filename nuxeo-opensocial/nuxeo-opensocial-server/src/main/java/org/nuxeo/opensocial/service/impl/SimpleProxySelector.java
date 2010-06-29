@@ -80,7 +80,7 @@ public class SimpleProxySelector extends ProxySelector {
 
     private Proxy getProxySettings() {
         try {
-            if (isProxySet()) {
+            if (Framework.isInitialized() && isProxySet()) {
                 if (proxySettings == null) {
                     setAuthenticator();
                     proxySettings = new Proxy(

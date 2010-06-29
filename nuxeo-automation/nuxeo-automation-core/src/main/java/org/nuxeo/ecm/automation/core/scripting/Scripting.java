@@ -28,14 +28,14 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Scripting {
 
-    protected static Map<String,Script> cache = new ConcurrentHashMap<String, Script>();
+    protected static Map<String, Script> cache = new ConcurrentHashMap<String, Script>();
 
     public static Expression newExpression(String expr) {
         return new MvelExpression(expr);
@@ -55,9 +55,10 @@ public class Scripting {
         String path = script.getPath();
         int p = path.lastIndexOf('.');
         if (p == -1) {
-            throw new OperationException("Script files must have an extension: "+script);
+            throw new OperationException(
+                    "Script files must have an extension: " + script);
         }
-        String ext = path.substring(p+1).toLowerCase();
+        String ext = path.substring(p + 1).toLowerCase();
         if ("mvel".equals(ext)) {
             InputStream in = script.openStream();
             try {
@@ -67,15 +68,16 @@ public class Scripting {
                 in.close();
             }
         } else if ("groovy".equals(ext)) {
-            //Script gs = new GroovyScript();
+            // Script gs = new GroovyScript();
         } else {
-            throw new OperationException("Unsupported script file: "+script+". Only mvel and groovy scripts are supported");
+            throw new OperationException("Unsupported script file: " + script
+                    + ". Only mvel and groovy scripts are supported");
         }
         cache.put(key, cs);
         cs.eval(ctx);
     }
 
-    public static Map<String,Object> initBindings(OperationContext ctx) {
+    public static Map<String, Object> initBindings(OperationContext ctx) {
         Object input = ctx.getInput(); // get last output
         HashMap<String, Object> map = new HashMap<String, Object>(ctx);
         map.put("CurrentDate", new DateWrapper());
@@ -83,22 +85,27 @@ public class Scripting {
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
         map.put("Principal", ctx.getPrincipal());
+        map.put("Env", Framework.getProperties());
+        map.put("Fn", Functions.INSTANCE);
         if (input instanceof DocumentModel) {
-            map.put("Document", new DocumentWrapper(ctx.getCoreSession(), (DocumentModel)input));
+            map.put("Document", new DocumentWrapper(ctx.getCoreSession(),
+                    (DocumentModel) input));
         }
         return map;
     }
 
     public static interface Script {
-        //protected long lastModified;
+        // protected long lastModified;
         void eval(OperationContext ctx) throws Exception;
     }
 
     public static class MvelScript implements Script {
         Serializable c;
+
         public MvelScript(Serializable c) {
             this.c = c;
         }
+
         public void eval(OperationContext ctx) throws Exception {
             MVEL.executeExpression(c, Scripting.initBindings(ctx));
         }
@@ -106,9 +113,11 @@ public class Scripting {
 
     public static class GroovyScript implements Script {
         Serializable c;
+
         public GroovyScript(Serializable c) {
             this.c = c;
         }
+
         public void eval(OperationContext ctx) throws Exception {
 
         }

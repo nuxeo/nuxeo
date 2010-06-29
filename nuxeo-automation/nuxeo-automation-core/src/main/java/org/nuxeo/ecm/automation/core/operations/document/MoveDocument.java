@@ -32,19 +32,20 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=MoveDocument.ID, category=Constants.CAT_DOCUMENT, label="Move",
-    description="Move the input document into the target folder")
+@Operation(id = MoveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Move", description = "Move the input document into the target folder")
 public class MoveDocument {
 
     public static final String ID = "Document.Move";
 
+    @Context
+    protected CoreSession session;
 
-    protected @Context CoreSession session;
+    @Param(name = "target")
+    protected DocumentRef target; // the path or the ID
 
-    @Param(name="target") protected DocumentRef target; // the path or the ID
-    @Param(name="name", required=false) protected String name;
+    @Param(name = "name", required = false)
+    protected String name;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -64,10 +65,10 @@ public class MoveDocument {
         return session.move(ref, target, n);
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -76,7 +77,8 @@ public class MoveDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(run(doc));
         }

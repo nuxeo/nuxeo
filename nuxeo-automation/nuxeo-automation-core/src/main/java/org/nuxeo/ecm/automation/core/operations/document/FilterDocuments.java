@@ -19,6 +19,8 @@ package org.nuxeo.ecm.automation.core.operations.document;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -26,43 +28,53 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.events.AttrFilterFactory;
-import org.nuxeo.ecm.automation.core.events.Filter;
+import org.nuxeo.ecm.automation.core.events.DocumentAttributeFilterFactory;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=FilterDocuments.ID, category=Constants.CAT_DOCUMENT, label="Filter List",
-        description="Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' paramter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
+@Operation(id = FilterDocuments.ID, category = Constants.CAT_DOCUMENT, label = "Filter List", description = "Filter the input list of documents given a condition. The condition can be expressed using 4 parameters: types, facets, lifecycle and condition. If more than one parameter is specified an AND will be used to group conditions. <br>The 'types' paramter can take a comma separated list of document type: File,Note.<br>The 'facet' parameter can take a single facet name.<br> The 'life cycle' parameter takes a name of a life cycle state the document should have.<br>The 'condition' parameter can take any EL expression.<p>Returns the list of documents that match the filter condition.")
 public class FilterDocuments {
+
+    private static final Log log = LogFactory.getLog(FilterDocuments.class);
 
     public static final String ID = "Document.Filter";
 
+    @Context
+    protected OperationContext ctx;
 
-    protected @Context OperationContext ctx;
+    @Param(name = "types", required = false)
+    protected String types; // comma separated list.
 
-    protected @Param(name="types", required=false) String types; // comma separated list.
-    protected @Param(name="facet", required=false) String facet;
-    protected @Param(name="lifecycle", required=false) String lifeCycle;
-    protected @Param(name="condition", required=false) String condition;
-    @Param(name="class", required=false, widget=Constants.W_OPTION, values={
-            AttrFilterFactory.ANY_DOC,
-            AttrFilterFactory.REGULAR_DOC,
-            AttrFilterFactory.LINK_DOC,
-            AttrFilterFactory.PUBLISHED_DOC,
-            AttrFilterFactory.PROXY_DOC,
-            AttrFilterFactory.VERSION_DOC,
-            AttrFilterFactory.IMMUTABLE_DOC,
-            AttrFilterFactory.MUTABLE_DOC
-            })
+    @Param(name = "facet", required = false)
+    protected String facet;
+
+    @Param(name = "lifecycle", required = false)
+    protected String lifeCycle;
+
+    @Param(name = "pathStartsWith", required = false)
+    protected String pathStartsWith;
+
+    @Param(name = "condition", required = false)
+    protected String condition;
+
+    @Param(name = "class", required = false, widget = Constants.W_OPTION, values = {
+            DocumentAttributeFilterFactory.ANY_DOC,
+            DocumentAttributeFilterFactory.REGULAR_DOC,
+            DocumentAttributeFilterFactory.LINK_DOC,
+            DocumentAttributeFilterFactory.PUBLISHED_DOC,
+            DocumentAttributeFilterFactory.PROXY_DOC,
+            DocumentAttributeFilterFactory.VERSION_DOC,
+            DocumentAttributeFilterFactory.IMMUTABLE_DOC,
+            DocumentAttributeFilterFactory.MUTABLE_DOC })
     protected String attr;
 
     @OperationMethod
@@ -77,12 +89,17 @@ public class FilterDocuments {
         return result;
     }
 
-
     protected class Condition implements Filter {
+        private static final long serialVersionUID = 1L;
+
         Set<String> types;
+
         String facet;
+
         String lc;
+
         Expression expr;
+
         Filter attr;
 
         Condition() {
@@ -119,11 +136,11 @@ public class FilterDocuments {
             }
             v = FilterDocuments.this.attr;
             if (v != null) {
-                attr = AttrFilterFactory.getFilter(v);
+                attr = DocumentAttributeFilterFactory.getFilter(v);
             }
         }
 
-        public boolean accept(DocumentModel doc) throws Exception {
+        public boolean accept(DocumentModel doc) {
             if (types != null) {
                 if (!types.contains(doc.getType())) {
                     return false;
@@ -135,8 +152,12 @@ public class FilterDocuments {
                 }
             }
             if (lc != null) {
-                if (!lc.equals(doc.getCurrentLifeCycleState())) {
-                    return false;
+                try {
+                    if (!lc.equals(doc.getCurrentLifeCycleState())) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    log.error(e, e);
                 }
             }
             if (attr != null) {
@@ -145,13 +166,16 @@ public class FilterDocuments {
                 }
             }
             if (expr != null) {
-                if (!(Boolean)expr.eval(ctx)) {
-                    return false;
+                try {
+                    if (!(Boolean) expr.eval(ctx)) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    log.error(e, e);
                 }
             }
             return true;
         }
     }
-
 
 }

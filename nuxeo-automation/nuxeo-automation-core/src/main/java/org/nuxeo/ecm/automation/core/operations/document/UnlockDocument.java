@@ -31,16 +31,14 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=UnlockDocument.ID, category=Constants.CAT_DOCUMENT, label="Unlock",
-        description="Unlock the input document. The unlock will be executed in the name of the current user. An user can unlock a document only if has the UNLOCK permission granted on the document or if it the same user as the one that locked the document. Return the unlocked document")
+@Operation(id = UnlockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Unlock", description = "Unlock the input document. The unlock will be executed in the name of the current user. An user can unlock a document only if has the UNLOCK permission granted on the document or if it the same user as the one that locked the document. Return the unlocked document")
 public class UnlockDocument {
 
     public static final String ID = "Document.Unlock";
 
-    @Context protected CoreSession session;
-
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public DocumentRef run(DocumentRef doc) throws Exception {
@@ -54,10 +52,10 @@ public class UnlockDocument {
         return doc;
     }
 
-
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
         }
@@ -66,7 +64,8 @@ public class UnlockDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl((int)docs.totalSize());
+        DocumentModelListImpl result = new DocumentModelListImpl(
+                (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(session.getDocument(run(doc)));
         }

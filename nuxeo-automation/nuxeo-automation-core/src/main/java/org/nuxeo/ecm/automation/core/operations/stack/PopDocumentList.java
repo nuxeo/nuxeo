@@ -29,37 +29,38 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Pop a document from the context stack and restore the input from the poped document.
- * If on the top of the stack there is no document an exception is thrown
- *
- * This operation contains dynamic logic so it should be handled in a special way by the
- * UI tools to validate the chain (a Pop operation can succeed only if the last push operation has the same type as the pop)
+ * Pop a document from the context stack and restore the input from the poped
+ * document. If on the top of the stack there is no document an exception is
+ * thrown This operation contains dynamic logic so it should be handled in a
+ * special way by the UI tools to validate the chain (a Pop operation can
+ * succeed only if the last push operation has the same type as the pop)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=PopDocumentList.ID, category=Constants.CAT_EXECUTION_STACK, label="Pop Document List",
-    description="Restore the last saved input document list in the context input stack")
+@Operation(id = PopDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop Document List", description = "Restore the last saved input document list in the context input stack")
 public class PopDocumentList {
 
     public static final String ID = "Document.PopList";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
         Object obj = ctx.pop(Constants.O_DOCUMENTS);
         if (obj instanceof DocumentModelList) {
-            return (DocumentModelList)obj;
+            return (DocumentModelList) obj;
         } else if (obj instanceof DocumentRefList) {
             CoreSession session = ctx.getCoreSession();
-            DocumentRefList refs = (DocumentRefList)obj;
-            DocumentModelListImpl list = new DocumentModelListImpl((int)refs.totalSize());
+            DocumentRefList refs = (DocumentRefList) obj;
+            DocumentModelListImpl list = new DocumentModelListImpl(
+                    (int) refs.totalSize());
             for (DocumentRef ref : refs) {
                 list.add(session.getDocument(ref));
             }
         }
-        throw new OperationException("Illegal state error for pop document operation. The context stack doesn't contains a document list on its top");
+        throw new OperationException(
+                "Illegal state error for pop document operation. The context stack doesn't contains a document list on its top");
     }
 
 }

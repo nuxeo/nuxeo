@@ -28,15 +28,14 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id=GetDocumentChildren.ID, category=Constants.CAT_DOCUMENT, label="Get Children",
-        description="Get the children of a document. The list of children will become the input for the next operation")
+@Operation(id = GetDocumentChildren.ID, category = Constants.CAT_DOCUMENT, label = "Get Children", description = "Get the children of a document. The list of children will become the input for the next operation")
 public class GetDocumentChildren {
 
     public static final String ID = "Document.GetChildren";
 
-    protected @Context CoreSession session;
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public DocumentModelList run(DocumentRef doc) throws Exception {
