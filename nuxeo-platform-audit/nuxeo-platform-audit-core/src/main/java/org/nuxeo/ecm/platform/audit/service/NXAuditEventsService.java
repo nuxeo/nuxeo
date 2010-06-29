@@ -66,11 +66,16 @@ import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+import org.nuxeo.runtime.ComponentEvent;
+import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RegistrationInfo;
+import org.osgi.framework.FrameworkEvent;
 
 import com.sun.el.ExpressionFactoryImpl;
 
@@ -111,7 +116,9 @@ public class NXAuditEventsService extends DefaultComponent implements
             return persistenceProvider;
         }
         PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+         persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+         persistenceProvider.openPersistenceUnit();
+         return persistenceProvider;
     }
 
     protected void deactivatePersistenceProvider() {
@@ -120,6 +127,35 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         persistenceProvider.closePersistenceUnit();
         persistenceProvider = null;
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+        final org.osgi.framework.Bundle bundle = context.getRuntimeContext().getBundle();
+        final org.osgi.framework.BundleContext bundleContext = bundle.getBundleContext();
+        if (bundleContext == null) {
+            log.warn("Cannot register framework listener, not correctly initialized");
+            return;
+        }
+        bundleContext.addFrameworkListener(new org.osgi.framework.FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                log.trace("event " + event.getType() + " on " + event.getBundle().getSymbolicName());
+                if (event.getType() != FrameworkEvent.STARTED) {
+                    return;
+                }
+                bundleContext.removeFrameworkListener(this);
+                final Thread thread = Thread.currentThread();
+                ClassLoader originalLoader = thread.getContextClassLoader();
+                thread.setContextClassLoader(Framework.class.getClassLoader());
+                try {
+                    getOrCreatePersistenceProvider();
+                } finally {
+                    thread.setContextClassLoader(originalLoader);
+                }
+                log.debug("nx audit persistence unit initialized");
+            }
+        });
     }
 
     @Override
