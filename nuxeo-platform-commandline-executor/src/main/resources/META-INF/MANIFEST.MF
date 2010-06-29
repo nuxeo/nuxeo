@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.commandline.executor
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
-Nuxeo-Component: OSGI-INF/commandline-framework.xml,
- OSGI-INF/commandline-default-contrib.xml
+Nuxeo-Component: OSGI-INF/commandline-framework.xml, OSGI-INF/commandline-default-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.api
 Export-Package: org.nuxeo.ecm.platform.commandline.executor.api,
  org.nuxeo.ecm.platform.commandline.executor.service,

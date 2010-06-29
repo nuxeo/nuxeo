@@ -67,6 +67,11 @@
       <artifactId>nuxeo-core</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+        <groupId>jmock</groupId>
+        <artifactId>jmock</artifactId>
+    </dependency>
 
   </dependencies>
 

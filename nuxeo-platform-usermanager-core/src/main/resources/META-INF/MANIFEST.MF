@@ -1,17 +1,6 @@
 Manifest-Version: 1.0
-Bundle-Version: 5.3.2.qualifier
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo User Manager Module
 Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager
-Bundle-Localization: plugin
-Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Require-Bundle: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.directory.api,
- org.nuxeo.ecm.platform.usermanager.api
-Export-Package: org.nuxeo.ecm.platform.usermanager;split:="core";mandatory:="core"
-Nuxeo-Component: OSGI-INF/UserService.xml,
- OSGI-INF/computedgroups-framework.xml,
- OSGI-INF/companycomputedgroups-contrib.xml,
- OSGI-INF/UserManagerImpl.xml
-Eclipse-LazyStart: false
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.directory.api, org.nuxeo.ecm.platform.usermanager.api
+Nuxeo-Component: OSGI-INF/UserService.xml, OSGI-INF/computedgroups-framework.xml, OSGI-INF/companycomputedgroups-contrib.xml, OSGI-INF/UserManagerImpl.xml
+
