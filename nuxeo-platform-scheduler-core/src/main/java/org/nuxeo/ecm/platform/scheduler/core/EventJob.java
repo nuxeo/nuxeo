@@ -18,18 +18,17 @@
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
+import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
-import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -48,47 +47,51 @@ public class EventJob implements Job {
         String username = dataMap.getString("username");
 
         // Setup a user session
-        UserSession us = new UserSession(username,
-                dataMap.getString("password"));
+        LoginContext lContext = null;
         try {
-            us.login();
+            lContext = Framework.login(username, dataMap.getString("password"));
         } catch (LoginException e) {
             log.error(e);
             return;
         }
-        UserPrincipal principal = new UserPrincipal(username);
-        EventContext ctx = new EventContextImpl(null, principal);
-        ctx.setProperty("category", eventCategory);
-        Event event = new EventImpl(eventId, ctx);
-        EventService evtService = null;
 
         try {
+            UserPrincipal principal = new UserPrincipal(username);
+            EventContext ctx = new EventContextImpl(null, principal);
+            ctx.setProperty("category", eventCategory);
+            Event event = new EventImpl(eventId, ctx);
+            EventService evtService = null;
+
             evtService = Framework.getService(EventService.class);
-        }
-        catch (Exception e) {
-            log.error("Cannot find EventService", e);
-        }
 
-        if (evtService != null) {
-            log.info("Sending scheduled event id=" + eventId + ", category="
-                    + eventCategory);
+            if (evtService != null) {
+                log.info("Sending scheduled event id=" + eventId
+                        + ", category=" + eventCategory);
 
-            // switch to the Nuxeo classloader so that the event listeners work
-            // as usual
-            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-            ClassLoader nuxeoCL = EventJob.class.getClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(nuxeoCL);
-                evtService.fireEvent(event);
-            } catch (ClientException e) {
-                log.error("Error while sending event to EventService", e);
+                // switch to the Nuxeo classloader so that the event listeners
+                // work as usual
+                ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+                ClassLoader nuxeoCL = EventJob.class.getClassLoader();
+                try {
+                    Thread.currentThread().setContextClassLoader(nuxeoCL);
+                    evtService.fireEvent(event);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(jbossCL);
+                }
+            } else {
+                log.error("Cannot find EventService");
             }
 
-            finally {
-                Thread.currentThread().setContextClassLoader(jbossCL);
+        } catch (Exception e) {
+            log.error(e, e);
+        } finally {
+            if (lContext != null) {
+                try {
+                    lContext.logout();
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
             }
-        } else {
-            log.error("Cannot find EventService");
         }
     }
 
