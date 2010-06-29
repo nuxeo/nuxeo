@@ -11,6 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 
 package org.nuxeo.webengine.sites.fragments;
@@ -19,8 +22,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -34,8 +37,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to the details about
  * the tag cloud.
- *
- * @author rux
  */
 public class TagCloudFragment extends AbstractFragment {
 
@@ -48,31 +49,29 @@ public class TagCloudFragment extends AbstractFragment {
         TagCloudListModel model = new TagCloudListModel();
         try {
             TagService tagService = Framework.getService(TagService.class);
-            if (tagService != null && WebEngine.getActiveContext() != null && tagService.isEnabled()) {
-                WebContext ctx = WebEngine.getActiveContext();
-                CoreSession session = ctx.getCoreSession();
-                DocumentModel documentModel = ctx.getTargetObject().getAdapter(
-                        DocumentModel.class);
-
-                DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
-                        session, documentModel);
-                TagCloudModel tagCloudModel = null;
-                List<WeightedTag> tagCloud = tagService.getPopularCloud(
-                        session, siteDocument);
-                if (tagCloud != null && !tagCloud.isEmpty()) {
-                    for (WeightedTag weightedTag : tagCloud) {
-                        tagCloudModel = new TagCloudModel(
-                                weightedTag.tagLabel,
-                                weightedTag.tagId,
-                                weightedTag.weight);
-                        model.addItem(tagCloudModel);
-                    }
-                }
+            if (tagService == null || WebEngine.getActiveContext() == null
+                    || !tagService.isEnabled()) {
+                return model;
             }
+            WebContext ctx = WebEngine.getActiveContext();
+            CoreSession session = ctx.getCoreSession();
+            DocumentModel documentModel = ctx.getTargetObject().getAdapter(
+                    DocumentModel.class);
+            DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
+                    session, documentModel);
+            // TODO compute cloud only under siteDocument
+            List<Tag> cloud = tagService.getDocumentCloud(session, null, null,
+                    null);
+            if (cloud == null || cloud.isEmpty()) {
+                return null;
+            }
+            for (Tag tag : cloud) {
+                model.addItem(new TagCloudModel(tag.label, tag.weight));
+            }
+            return model;
         } catch (Exception e) {
             throw new ModelException(e);
         }
-        return model;
     }
 
 }

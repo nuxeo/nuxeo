@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -11,58 +11,71 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.tag;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- * Simple class holder for transfer of the Tag id and Label together. It is
- * usually obtained from a query and handled to the caller.
- *
- * @author rux
+ * Aggregates a tag with its weight.
  */
 public class Tag implements Serializable {
 
-    private static final long serialVersionUID = -323612876570705842L;
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Tag ID.
+     * The tag label.
      */
-    public String tagId;
+    public final String label;
 
     /**
-     * Tag Label.
+     * The weight of the tag.
      */
-    public String tagLabel;
+    public long weight;
 
-    public Tag(String tagId, String tagLabel) {
-        this.tagId = tagId;
-        this.tagLabel = tagLabel;
+    public Tag(String label, int weight) {
+        this.label = label;
+        this.weight = weight;
     }
 
-    public Tag() {
+    public String getLabel() {
+        return label;
     }
 
-    public String getTagId() {
-        return tagId;
+    public long getWeight() {
+        return weight;
     }
 
-    public void setTagId(String tagId) {
-        this.tagId = tagId;
+    public void setWeight(long weight) {
+        this.weight = weight;
     }
 
-    public String getTagLabel() {
-        return tagLabel;
+    protected static class TagLabelComparator implements Comparator<Tag> {
+        public int compare(Tag t1, Tag t2) {
+            return t1.label.compareToIgnoreCase(t2.label);
+        }
     }
 
-    public void setTagLabel(String tagLabel) {
-        this.tagLabel = tagLabel;
+    /**
+     * Compare tags by label, case insensitive.
+     */
+    public static final Comparator<Tag> LABEL_COMPARATOR = new TagLabelComparator();
+
+    protected static class TagWeightComparator implements Comparator<Tag> {
+        public int compare(Tag t1, Tag t2) {
+            return t2.weight < t1.weight ? -1
+                    : (t2.weight == t1.weight ? 0 : 1);
+        }
     }
 
-    public String toString() {
-        return tagLabel;
-    }
+    /**
+     * Compare tags by weight, decreasing.
+     */
+    public static final Comparator<Tag> WEIGHT_COMPARATOR = new TagWeightComparator();
 
 }

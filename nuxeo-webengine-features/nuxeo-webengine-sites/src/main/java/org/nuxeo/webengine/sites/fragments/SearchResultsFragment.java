@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     rdarlea
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 package org.nuxeo.webengine.sites.fragments;
 
@@ -50,8 +51,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * certain webPage between all the pages under a <b>WebSite</b> that contains in
  * title, description , main content or attached files the given searchParam, or
  * related to searching all the documents for a certain tag.
- *
- * @author rux
  */
 public class SearchResultsFragment extends AbstractFragment {
 
@@ -96,25 +95,24 @@ public class SearchResultsFragment extends AbstractFragment {
 
                 if (StringUtils.isEmpty(searchParam)
                         && StringUtils.isNotEmpty(tagDocumentId)) {
-                    List<String> docsForTag = tagService.listDocumentsForTag(
-                            session, tagDocumentId,
-                            session.getPrincipal().getName());
-                    for (String docForTagId : docsForTag) {
-                        DocumentModel document = session.getDocument(new IdRef(
-                                docForTagId));
+                    // TODO only search under website ws
+                    List<String> docIds = tagService.getTagDocumentIds(session,
+                            tagDocumentId, null);
+                    for (String docId : docIds) {
+                        DocumentModel doc = session.getDocument(new IdRef(docId));
                         DocumentModel webSite = SiteUtils.getFirstWebSiteParent(
-                                session, document);
+                                session, doc);
                         if (ws.equals(webSite)) {
-                            results.add(session.getDocument(new IdRef(
-                                    docForTagId)));
+                            results.add(session.getDocument(new IdRef(docId)));
                         }
                     }
                 }
 
                 for (DocumentModel document : results) {
-                    GregorianCalendar date = SiteUtils.getGregorianCalendar(document,
-                            "dc:created");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
+                    GregorianCalendar date = SiteUtils.getGregorianCalendar(
+                            document, "dc:created");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                            "dd MMMM yyyy",
                             WebEngine.getActiveContext().getLocale());
                     String created = simpleDateFormat.format(date.getTime());
 
@@ -130,8 +128,8 @@ public class SearchResultsFragment extends AbstractFragment {
                             SiteUtils.getString(document, "dc:description"),
                             nrWordsFromDescription);
 
-                    SearchModel searchModel = new SearchModel(name, description, path,
-                            author, created, modified);
+                    SearchModel searchModel = new SearchModel(name,
+                            description, path, author, created, modified);
                     model.addItem(searchModel);
                 }
 

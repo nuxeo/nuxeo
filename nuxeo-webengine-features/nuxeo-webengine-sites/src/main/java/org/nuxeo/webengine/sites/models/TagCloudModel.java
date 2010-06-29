@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -11,6 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 
 package org.nuxeo.webengine.sites.models;
@@ -19,29 +22,16 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the details about the tag cloud.
- *
- * @author rux
  */
 public class TagCloudModel extends AbstractModel {
 
     private String label;
 
-    private String href;
+    private long weight;
 
-    private int weight;
-
-    public TagCloudModel(String label, String href, int weight) {
+    public TagCloudModel(String label, long weight) {
         this.label = label;
-        this.href = href;
         this.weight = weight;
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    public void setHref(String href) {
-        this.href = href;
     }
 
     public String getLabel() {
@@ -52,11 +42,11 @@ public class TagCloudModel extends AbstractModel {
         this.label = label;
     }
 
-    public int getWeight() {
+    public long getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(long weight) {
         this.weight = weight;
     }
 

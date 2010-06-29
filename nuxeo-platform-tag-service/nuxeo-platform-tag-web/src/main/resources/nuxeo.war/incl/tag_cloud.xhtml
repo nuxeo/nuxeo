@@ -11,8 +11,8 @@
           value="#{tagCloudOnAllDocuments}" var="tag"
           rendered="#{not empty tagCloudOnAllDocuments}">
 
-            <h:commandLink value="#{tag.tagLabel}"
-              action="#{tagActions.listDocumentsForTag(tag.tagId)}" style="font-size: #{tag.weight}%"/>
+            <h:commandLink value="#{tag.label}"
+              action="#{tagActions.listDocumentsForTag(tag.label)}" style="font-size: #{tag.weight}%"/>
 
         </nxu:dataList>
       </h:form>
