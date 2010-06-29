@@ -7,6 +7,7 @@
   </parent>
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-management-metrics</artifactId>
+  <name>Nuxeo Runtime Management Metrics</name>
 
   <dependencies>
   	<dependency>
