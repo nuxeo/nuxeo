@@ -9,3 +9,7 @@ target
 *.iml
 *.iws
 *.orig
+*/META-INF
+*/OSGI-INF
+nuxeo-*/META-INF
+nuxeo-*/OSGI-INF

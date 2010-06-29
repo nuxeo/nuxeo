@@ -90,7 +90,11 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
             if (xmap == null) {
                 xmap = new XMap();
                 for (Class contrib : contributions) {
+                    try {
                     xmap.register(contrib);
+                    } catch (NoClassDefFoundError e) {
+                        throw e;
+                    }
                 }
             }
             contribs = xmap.loadAll(

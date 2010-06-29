@@ -79,11 +79,10 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1H.7</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- for web driver support -->
@@ -92,66 +91,57 @@
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-htmlunit</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
-      <version>2.6</version>
     </dependency>
 
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit-core-js</artifactId>
-      <version>2.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-ie</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-firefox</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-chrome</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-support</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.webdriver
       </groupId>
       <artifactId>webdriver-common</artifactId>
-      <version>${webdriver.version}</version>
     </dependency>
 
     <dependency>
       <groupId>net.sourceforge.cssparser</groupId>
       <artifactId>cssparser</artifactId>
-      <version>0.9.5-NXP-4018</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.w3c</groupId>
       <artifactId>sac</artifactId>
-      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
 
@@ -164,7 +154,6 @@
   <dependency>
     <groupId>org.concordion</groupId>
     <artifactId>concordion</artifactId>
-    <version>1.3.0</version>
   </dependency>
 
    <!--  nuxeo-distribution tools is generating classloader pb - we disabled it for now -->
@@ -176,6 +165,16 @@
     </dependency>
     -->
 
+  <dependency>
+  	<groupId>org.slf4j</groupId>
+  	<artifactId>slf4j-api</artifactId>
+	<scope>test</scope>
+  </dependency>
+  <dependency>
+  	<groupId>org.slf4j</groupId>
+  	<artifactId>slf4j-log4j12</artifactId>
+	<scope>test</scope>
+  </dependency>
   </dependencies>
 
 </project>

@@ -14,6 +14,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
@@ -41,6 +45,11 @@
     <dependency>
     	<groupId>org.nuxeo.runtime</groupId>
     	<artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>jmock</groupId>
+    	<artifactId>jmock</artifactId>
+    	<scope>test</scope>
     </dependency>
   </dependencies>
 

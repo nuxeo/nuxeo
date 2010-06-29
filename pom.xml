@@ -22,20 +22,32 @@
 
   <modules>
     <module>nuxeo-runtime</module>
-    <module>nuxeo-runtime-deploy</module>
-    <module>nuxeo-runtime-jboss-adapter</module>
-    <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
-    <module>nuxeo-runtime-launcher</module>
-    <module>nuxeo-runtime-test</module>
+    <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-jetty-adapter</module>
     <module>nuxeo-runtime-gf3-adapter</module>
     <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-pde</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-runtime-test</module>
+	<module>nuxeo-runtime-jboss-adapter</module>
+	<module>nuxeo-runtime-jboss-extensions</module>
+	<module>nuxeo-runtime-launcher</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -95,6 +107,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-management</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-management-metrics</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>

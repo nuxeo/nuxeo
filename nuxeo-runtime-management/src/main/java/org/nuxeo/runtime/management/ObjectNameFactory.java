@@ -68,8 +68,21 @@ public class ObjectNameFactory {
         return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
     }
 
-    public static String formatMetricQualifiedName(ComponentName name, String metricName, String avas) {
-        return formatQualifiedName(name) + ",metric=" + metricName + "," + avas + ",management=metric";
+    public static String formatAVAs(String... avas) {
+        StringBuffer buffer = new StringBuffer();
+        for (String ava : avas) {
+            if (buffer.length() > 0) {
+                buffer.append(",");
+            }
+            buffer.append(ava);
+        }
+        return buffer.toString();
+    }
+    
+    public static String formatMetricQualifiedName(ComponentName name,
+            String metricName, String... avas) {
+        return formatQualifiedName(name) + ",metric=" + metricName + ","
+                + formatAVAs(avas) + ",management=metric";
     }
 
     public static String formatInventoryQualifiedName(ComponentName name) {
