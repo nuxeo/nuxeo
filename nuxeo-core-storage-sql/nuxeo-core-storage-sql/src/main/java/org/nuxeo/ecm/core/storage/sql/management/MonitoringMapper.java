@@ -8,7 +8,6 @@ import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
-import org.nuxeo.ecm.core.storage.sql.net.NetMapper;
 
 public class MonitoringMapper implements InvocationHandler {
 
@@ -20,7 +19,7 @@ public class MonitoringMapper implements InvocationHandler {
 
     public static Mapper newProxy(Mapper mapper) {
         MonitoringMapper handler = new MonitoringMapper(mapper);
-        return (Mapper) Proxy.newProxyInstance(NetMapper.class.getClassLoader(), new Class<?>[] { Mapper.class }, handler);
+        return (Mapper) Proxy.newProxyInstance(Mapper.class.getClassLoader(), new Class<?>[] { Mapper.class }, handler);
     }
 
     protected String formatParms(Object... parms) {
