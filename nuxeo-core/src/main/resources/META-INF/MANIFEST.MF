@@ -54,5 +54,4 @@ Import-Package: javax.naming,
 Eclipse-ExtensibleAPI: true
 Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.api, org.nuxeo.ec
  m.core.schema, org.nuxeo.ecm.core.query, org.nuxeo.ecm.core.event
-Require-Bundle: org.nuxeo.ecm.core.api
 

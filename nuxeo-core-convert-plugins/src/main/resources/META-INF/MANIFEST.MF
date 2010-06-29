@@ -40,5 +40,4 @@ Import-Package: javax.mail,
  org.xml.sax.helpers
 Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.convert, org
  .nuxeo.ecm.core.convert.api
-Require-Bundle: org.apache.poi.ooxml
 

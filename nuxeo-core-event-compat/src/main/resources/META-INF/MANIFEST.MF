@@ -27,5 +27,4 @@ Import-Package: javax.jms,javax.naming,org.apache.commons.logging,org.
  runtime,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runti
  me.services.event
 Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event
-Require-Bundle: org.nuxeo.ecm.core.unified
 

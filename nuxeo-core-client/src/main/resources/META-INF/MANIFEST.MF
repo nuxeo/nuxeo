@@ -9,7 +9,6 @@ Tool: Bnd-0.0.394
 Bundle-Name: org.nuxeo.ecm.core.client
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.core.unified
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277355495620
 Bundle-ManifestVersion: 2
