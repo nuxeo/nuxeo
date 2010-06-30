@@ -134,3 +134,4 @@ regexp:nuxeo-platform-versioning-core/OSGI-INF
 regexp:nuxeo-platform-versioning-core/META-INF
 regexp:nuxeo-platform-url-facade/OSGI-INF
 regexp:nuxeo-platform-url-facade/META-INF
+regexp:nuxeo-platform-directory/src
