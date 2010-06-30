@@ -34,7 +34,7 @@
   <profiles>
 
     <profile>
-      <id>no-pde</id>
+      <id>no-osgi</id>
       <activation>
 	<activeByDefault>true</activeByDefault>
       </activation>
@@ -50,7 +50,7 @@
     </profile>	
 
     <profile>
-      <id>pde</id>
+      <id>osgi</id>
       <build>
 	<plugins>
 	  <plugin>
