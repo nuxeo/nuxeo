@@ -80,4 +80,20 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
