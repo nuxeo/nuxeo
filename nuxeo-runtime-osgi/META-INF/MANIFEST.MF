@@ -7,17 +7,16 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
 Bundle-Category: runtime
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-osgi
+Bundle-Name: org.nuxeo.osgi
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277838300905
+Bnd-LastModified: 1277883218627
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",javax.management,org.ap
  ache.commons.logging,org.jboss.deployment,org.jboss.logging,org.jboss
  .mx.loading,org.jboss.system,org.jboss.system.server,org.nuxeo.common
- ;version="1.6",org.nuxeo.common.collections;version="1.6",org.nuxeo.c
- ommon.utils;version="1.6",org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-osgi;singleton:=t
- rue
+ ,org.nuxeo.common.collections,org.nuxeo.common.utils,org.osgi.framewo
+ rk;version="1.4"
+Bundle-SymbolicName: org.nuxeo.osgi
 

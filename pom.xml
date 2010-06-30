@@ -27,6 +27,8 @@
     <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
+    <module>nuxeo-runtime-jetty-adapter</module>
+    <module>nuxeo-runtime-scripting</module>
   </modules>
 
   <profiles>
@@ -38,12 +40,10 @@
       </activation>
       <modules>
 	<module>nuxeo-runtime-deploy</module>
-	<module>nuxeo-runtime-scripting</module>
 	<module>nuxeo-runtime-test</module>
 	<module>nuxeo-runtime-jboss-adapter</module>
 	<module>nuxeo-runtime-jboss-extensions</module>
 	<module>nuxeo-runtime-launcher</module>
-	<module>nuxeo-runtime-jetty-adapter</module>
 	<module>nuxeo-runtime-gf3-adapter</module>
 	<module>nuxeo-runtime-tomcat-adapter</module>
       </modules>

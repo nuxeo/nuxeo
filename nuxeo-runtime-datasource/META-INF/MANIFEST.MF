@@ -1,25 +1,22 @@
 Manifest-Version: 1.0
 Export-Package: org.nuxeo.runtime.datasource;version="1.6.2.SNAPSHOT"
-Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Bundle-Category: runtime
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-datasource
+Bundle-Category: runtime
+Bundle-Name: org.nuxeo.runtime.datasource
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277838303450
+Bnd-LastModified: 1277883219981
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/datasource-component.xml
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-datasource;single
- ton:=true
+Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
 Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  ng.spi,javax.sql,javax.transaction;version="1.1",org.apache.commons.b
  eanutils,org.apache.commons.dbcp;version="1.3",org.apache.commons.dbc
  p.managed;version="1.3",org.apache.commons.logging,org.nuxeo.common.j
- ndi;version="1.6",org.nuxeo.common.xmap.annotation;version="1.6",org.
- nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runtime.transacti
- on,org.w3c.dom
+ ndi,org.nuxeo.common.xmap.annotation,org.nuxeo.runtime.api,org.nuxeo.
+ runtime.model,org.nuxeo.runtime.transaction,org.w3c.dom
 Nuxeo-Require: org.nuxeo.runtime
 
