@@ -53,7 +53,7 @@
 
   <profiles>
     <profile>
-      <id>no-pde</id>
+      <id>no-osgi</id>
       <activation>
 	<activeByDefault>true</activeByDefault>
       </activation>
@@ -88,19 +88,6 @@
 	<module>nuxeo-platform-test</module>
       </modules>
     </profile>	
-    <profile>
-      <id>pde</id>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-eclipse-plugin</artifactId>
-	  </plugin>
-	  <plugin>
-	    <artifactId>maven-assembly-plugin</artifactId>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
   </profiles>
 
   <dependencyManagement>
