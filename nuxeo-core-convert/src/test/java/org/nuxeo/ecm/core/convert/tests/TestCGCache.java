@@ -66,9 +66,11 @@ public class TestCGCache extends NXRuntimeTestCase {
         // has run and that the cache is empty
         fireFrameworkStarted();
         // wait for the CHTread to run
-        while ( ConversionCacheGCManager.getGCRuns() == noRuns) {
+        int retryCount = 0;
+        while ( ConversionCacheGCManager.getGCRuns() == noRuns && retryCount++ < 5) {
             Thread.sleep(1000);
         }
+        assertTrue(ConversionCacheGCManager.getGCRuns() > 0);
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
         assertEquals(0, cacheSize3);
