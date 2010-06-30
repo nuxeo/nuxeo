@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -11,28 +11,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.tag;
 
 /**
  * The tag constants.
- *
- * @author rux
  */
 public class TagConstants {
 
-    /** Root Tag directory title */
-    public static final String TAGS_DIRECTORY = "Tags";
-
-    /** For the moment, the Root Tag is hidden. */
-    public static final String HIDDEN_FOLDER_TYPE = "HiddenFolder";
-
-    /** The "is private" property of the tag schema */
-    public static final String TAG_IS_PRIVATE_FIELD = "tag:private";
-
-    /** The "label" property of the tag schema */
-    public static final String TAG_LABEL_FIELD = "tag:label";
+    private TagConstants() {
+    }
 
     public static final String TAG_DOCUMENT_TYPE = "Tag";
+
+    public static final String TAG_LABEL_FIELD = "tag:label";
+
+    public static final String TAGGING_DOCUMENT_TYPE = "Tagging";
+
+    public static final String TAGGING_SOURCE_FIELD = "relation:source";
+
+    public static final String TAGGING_TARGET_FIELD = "relation:target";
 
 }

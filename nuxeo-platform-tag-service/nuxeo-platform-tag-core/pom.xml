@@ -40,12 +40,20 @@
       <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
     </dependency>
 
     <!-- Persistence -->

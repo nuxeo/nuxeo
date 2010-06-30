@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,22 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Radu Darlea
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.tag;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -37,13 +37,7 @@ public class TestTagService extends SQLRepositoryTestCase {
 
     protected static final Log log = LogFactory.getLog(TestTagService.class);
 
-    private TagService tagService;
-
-    private DocumentModel tagRoot;
-
-    private DocumentModel tag1;
-
-    private DocumentModel file1;
+    protected TagService tagService;
 
     public boolean disableTests() {
         return !DatabaseHelper.DATABASE.getClass().equals(DatabaseH2.class);
@@ -55,23 +49,16 @@ public class TestTagService extends SQLRepositoryTestCase {
             log.error("test disabled for non-H2");
             return;
         }
-
         super.setUp();
-
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.tag");
-        deployBundle("org.nuxeo.ecm.platform.tag.tests");
-
         openSession();
-
-        TagServiceImpl service = (TagServiceImpl) Framework.getLocalService(TagService.class);
-        service.updateSchema();
+        tagService = Framework.getLocalService(TagService.class);
     }
-
 
     @Override
     public void tearDown() throws Exception {
@@ -80,80 +67,196 @@ public class TestTagService extends SQLRepositoryTestCase {
         }
         closeSession();
         super.tearDown();
-
     }
 
-    public TagService getTagService() {
-        return Framework.getLocalService(TagService.class);
-    }
-
-    public void testServiceTagInitialization() throws Exception {
+    public void testTags() throws Exception {
         if (disableTests()) {
             return;
         }
-        TagService tagService = getTagService();
-        assertNotNull("Failed to get tag service.", tagService);
-        RepositoryManager repoService = Framework.getLocalService(RepositoryManager.class);
-        assertNotNull("Failed to get repo service", repoService);
-        Repository repo = repoService.getRepository("test");
-        assertNotNull("Failed to acess to test repo", repo);
-    }
 
-    public void testTagCreation() throws Exception {
-        if (disableTests()) {
-            return;
-        }
-        TagService tagService = getTagService();
-        DocumentModel tagRoot = tagService.getRootTag(session);
-        assertNotNull(tagRoot);
-        tagService.getOrCreateTag(session, tagRoot, "tag1", true);
-        session.save();
-        DocumentModel tag = null;
-        for (DocumentModel tagChild : session.getChildren(tagRoot.getRef())) {
-            if (tagChild.getProperty("tag", "label").toString().equals("tag1")) {
-                tag = tagChild;
-                break;
-            }
-        }
-        assertNotNull(
-                "Unable to find created tag. Probably service failing on creation.",
-                tag);
-        assertTrue("Private flag is not correctly set.",
-                ((Long) tag.getProperty("tag", "private")) != 0);
-        assertEquals(tag.getProperty("dublincore", "creator"),
-                session.getPrincipal().getName());
-    }
-
-    protected void createAndTagDocument() throws ClientException {
-        tagService = getTagService();
-        tagRoot = tagService.getRootTag(session);
-        assertNotNull(tagRoot);
-        tag1 = tagService.getOrCreateTag(session, tagRoot, "tag1", true);
-        file1 = session.createDocumentModel("/", "0006", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
-        file1 = session.saveDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/", "bar", "File");
+        file2.setPropertyValue("dc:title", "File2");
+        file2 = session.createDocument(file1);
         session.save();
-        tagService.tagDocument(session, file1, tag1.getId(), false);
+        String file1Id = file1.getId();
+        String file2Id = file2.getId();
+
+        Set<String> file1set = new HashSet<String>(Arrays.asList(file1Id));
+        Set<String> twofiles = new HashSet<String>(Arrays.asList(file1Id,
+                file2Id));
+
+        // add tag
+        tagService.tag(session, file1Id, "mytag", "Administrator");
+        tagService.tag(session, file1Id, "othertag", "Administrator");
+        tagService.tag(session, file2Id, "mytag", "Administrator");
+
+        Set<String> mytag = new HashSet<String>(Arrays.asList("mytag"));
+        Set<String> twotags = new HashSet<String>(Arrays.asList("mytag",
+                "othertag"));
+
+        // find tags for doc
+        List<Tag> tags;
+        // file 1
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertEquals(twotags, labels(tags));
+        tags = tagService.getDocumentTags(session, file1Id, "Administrator");
+        assertEquals(twotags, labels(tags));
+        tags = tagService.getDocumentTags(session, file1Id, "bob");
+        assertTrue(tags.isEmpty());
+        // file 2
+        tags = tagService.getDocumentTags(session, file2Id, null);
+        assertEquals(mytag, labels(tags));
+        tags = tagService.getDocumentTags(session, file2Id, "Administrator");
+        assertEquals(mytag, labels(tags));
+        tags = tagService.getDocumentTags(session, file2Id, "bob");
+        assertTrue(tags.isEmpty());
+
+        // find docs for tag
+        List<String> docIds;
+        // tag 1
+        docIds = tagService.getTagDocumentIds(session, "mytag", null);
+        assertEquals(twofiles, new HashSet<String>(docIds));
+        docIds = tagService.getTagDocumentIds(session, "mytag", "Administrator");
+        assertEquals(twofiles, new HashSet<String>(docIds));
+        docIds = tagService.getTagDocumentIds(session, "mytag", "bob");
+        assertTrue(docIds.isEmpty());
+        // tag 2
+        docIds = tagService.getTagDocumentIds(session, "othertag", null);
+        assertEquals(file1set, new HashSet<String>(docIds));
+        docIds = tagService.getTagDocumentIds(session, "othertag",
+                "Administrator");
+        assertEquals(file1set, new HashSet<String>(docIds));
+        docIds = tagService.getTagDocumentIds(session, "othertag", "bob");
+        assertTrue(docIds.isEmpty());
+
+        // global cloud
+        List<Tag> cloud = tagService.getDocumentCloud(session, null, null, null);
+        assertEquals(2, cloud.size());
+        Collections.sort(cloud, Tag.LABEL_COMPARATOR);
+        Tag tag1 = cloud.get(0);
+        assertEquals("mytag", tag1.getLabel());
+        assertEquals(2, tag1.getWeight());
+        Tag tag2 = cloud.get(1);
+        assertEquals("othertag", tag2.getLabel());
+        assertEquals(1, tag2.getWeight());
+        // specific tagging user
+        cloud = tagService.getDocumentCloud(session, null, "bob", null);
+        assertEquals(0, cloud.size());
+
+        // cloud per doc
+        cloud = tagService.getDocumentCloud(session, file1Id, "Administrator",
+                null);
+        assertEquals(2, cloud.size());
+        Collections.sort(cloud, Tag.LABEL_COMPARATOR);
+        tag1 = cloud.get(0);
+        assertEquals("mytag", tag1.getLabel());
+        assertEquals(1, tag1.getWeight());
+        tag2 = cloud.get(1);
+        assertEquals("othertag", tag2.getLabel());
+        assertEquals(1, tag2.getWeight());
+
+        // suggestions
+        List<Tag> suggestions = tagService.getSuggestions(session, "my", null);
+        assertEquals(mytag, labels(suggestions));
+        suggestions = tagService.getSuggestions(session, "%tag", null);
+        assertEquals(twotags, labels(suggestions));
+
+        // remove explicit tagging
+        tagService.untag(session, file2Id, "mytag", null);
+        tags = tagService.getDocumentTags(session, file2Id, null);
+        assertTrue(tags.isEmpty());
+        docIds = tagService.getTagDocumentIds(session, "mytag", "Administrator");
+        assertEquals(file1set, new HashSet<String>(docIds));
+        // remove all taggings on doc
+        tagService.untag(session, file1Id, null, null);
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertTrue(tags.isEmpty());
     }
 
-    public void testDetachedDocumentList() throws ClientException {
-        if (disableTests()) {
-            return;
+    protected static Set<String> labels(List<Tag> tags) {
+        Set<String> list = new HashSet<String>();
+        for (Tag tag : tags) {
+            list.add(tag.getLabel());
         }
-        createAndTagDocument();
-        ((DocumentModelImpl) file1).detach(true);
-        List<Tag> tags = tagService.listTagsAppliedOnDocument(session, file1);
-        assertNotNull(tags);
-        assertEquals(1, tags.size());
+        return list;
     }
 
-    public void testEnabled() throws ClientException {
-        if (disableTests()) {
-            return;
-        }
-        TagService tagService = getTagService();
-        assertTrue(tagService.isEnabled());
-    }
+    public void testCloudNormalization() throws Exception {
+        List<Tag> cloud;
+        cloud = new ArrayList<Tag>();
+        TagServiceImpl.normalizeCloud(cloud, 0, 0, true);
 
+        // linear
+        cloud.add(new Tag("a", 3));
+        TagServiceImpl.normalizeCloud(cloud, 3, 3, true);
+        assertEquals(100, cloud.get(0).getWeight());
+
+        // logarithmic
+        cloud.add(new Tag("a", 3));
+        TagServiceImpl.normalizeCloud(cloud, 3, 3, false);
+        assertEquals(100, cloud.get(0).getWeight());
+
+        // linear
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 5));
+        TagServiceImpl.normalizeCloud(cloud, 1, 5, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(100, cloud.get(1).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 5));
+        TagServiceImpl.normalizeCloud(cloud, 1, 5, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(100, cloud.get(1).getWeight());
+
+        // linear
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        TagServiceImpl.normalizeCloud(cloud, 1, 5, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(25, cloud.get(1).getWeight());
+        assertEquals(100, cloud.get(2).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        TagServiceImpl.normalizeCloud(cloud, 1, 5, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(43, cloud.get(1).getWeight());
+        assertEquals(100, cloud.get(2).getWeight());
+
+        // linear
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        cloud.add(new Tag("d", 12));
+        TagServiceImpl.normalizeCloud(cloud, 1, 12, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(9, cloud.get(1).getWeight());
+        assertEquals(36, cloud.get(2).getWeight());
+        assertEquals(100, cloud.get(3).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<Tag>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        cloud.add(new Tag("d", 12));
+        TagServiceImpl.normalizeCloud(cloud, 1, 12, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(28, cloud.get(1).getWeight());
+        assertEquals(65, cloud.get(2).getWeight());
+        assertEquals(100, cloud.get(3).getWeight());
+    }
 }

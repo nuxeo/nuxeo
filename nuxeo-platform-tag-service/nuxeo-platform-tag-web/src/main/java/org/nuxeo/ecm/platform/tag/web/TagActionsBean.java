@@ -11,6 +11,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Radu Darlea
+ *     Bogdan Tatar
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.tag.web;
 
@@ -20,19 +24,13 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -47,30 +45,24 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.platform.tag.IdDocumentModel;
 import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.TaggingHelper;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean provides support for tagging related actions which can be made
  * on the current document.
- *
- * @author btatar
  */
 @Name("tagActions")
 @Scope(CONVERSATION)
 public class TagActionsBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String TAG_SEARCH_RESULT_PAGE = "tag_search_results";
-
-    private static final long serialVersionUID = -630033792577162398L;
-
-    private static final Log log = LogFactory.getLog(TagActionsBean.class);
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -84,36 +76,39 @@ public class TagActionsBean implements Serializable {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    protected TaggingHelper taggingHelper;
+    protected String listLabel;
 
-    protected String tagDocumentId;
+    // protected LRUCachingMap<String, Boolean> tagModifyCheckCache = new
+    // LRUCachingMap<String, Boolean>(
+    // 1);
 
-    protected LRUCachingMap<String, Boolean> tagModifyCheckCache = new LRUCachingMap<String, Boolean>(1);
     /**
      * Keeps the tagging information that will be performed on the current
      * document document.
      */
-    private String tagsLabel;
+    private String tagLabel;
 
     /**
      * Controls the presence of the tagging text field in UI.
      */
-    private Boolean addTag;
-
-    @Create
-    public void initialize() throws Exception {
-        log.debug("Initializing 'tagActions' Seam component ...");
-        taggingHelper = new TaggingHelper();
-    }
-
-    @Destroy
-    public void destroy() {
-        log.debug("Removing 'tagActions' Seam component...");
-    }
+    private boolean addTag;
 
     @Factory(value = "tagServiceEnabled", scope = APPLICATION)
     public boolean isTagServiceEnabled() throws ClientException {
-        return taggingHelper.isTagServiceEnabled();
+        return getTagService() != null;
+    }
+
+    protected TagService getTagService() throws ClientException {
+        TagService tagService;
+        try {
+            tagService = Framework.getService(TagService.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        if (tagService == null) {
+            return null;
+        }
+        return tagService.isEnabled() ? tagService : null;
     }
 
     /**
@@ -124,38 +119,42 @@ public class TagActionsBean implements Serializable {
     public List<Tag> getDocumentTags() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
-            return new ArrayList<Tag>();
+            return new ArrayList<Tag>(0);
         } else {
-            if (currentDocument.isProxy()) {
-            	DocumentModel targetDocument = new IdDocumentModel(currentDocument.getSourceId());
-                //DocumentModel targetDocument = documentManager.getDocument(new IdRef(currentDocument.getSourceId()));
-                return taggingHelper.listDocumentTags(documentManager,
-                        targetDocument);
-            } else {
-                return taggingHelper.listDocumentTags(documentManager,
-                        currentDocument);
-            }
+            String docId = getDocIdForTag(currentDocument);
+            List<Tag> tags = getTagService().getDocumentTags(documentManager,
+                    docId, null);
+            Collections.sort(tags, Tag.LABEL_COMPARATOR);
+            return tags;
         }
+    }
+
+    /**
+     * Gets the doc id to use with the tag service for a given document.
+     * <p>
+     * Proxies are not tagged directly, their underlying document is.
+     */
+    public static String getDocIdForTag(DocumentModel doc) {
+        return doc.isProxy() ? doc.getSourceId() : doc.getId();
     }
 
     /**
      * Performs the tagging on the current document.
      */
     public String addTagging() throws ClientException {
-        tagsLabel = cleanTag(tagsLabel);
+        tagLabel = cleanLabel(tagLabel);
         String messageKey;
-        if (StringUtils.isBlank(tagsLabel)) {
+        if (StringUtils.isBlank(tagLabel)) {
             messageKey = "message.add.new.tagging.not.empty";
         } else {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            taggingHelper.addTagging(documentManager, currentDocument,
-                    tagsLabel);
+            String docId = getDocIdForTag(navigationContext.getCurrentDocument());
+            getTagService().tag(documentManager, docId, tagLabel, null);
             messageKey = "message.add.new.tagging";
             // force invalidation
             Contexts.getEventContext().remove("currentDocumentTags");
         }
         facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get(messageKey), tagsLabel);
+                resourcesAccessor.getMessages().get(messageKey), tagLabel);
         reset();
         return null;
     }
@@ -163,200 +162,116 @@ public class TagActionsBean implements Serializable {
     /**
      * Removes a tagging from the current document.
      */
-    public String removeTagging(String taggingId) throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        String deletedTagLabel = taggingId;
-        try {
-            DocumentModel tagToDelete = documentManager.getDocument(new IdRef(taggingId));
-            deletedTagLabel = (String) tagToDelete.getPropertyValue("tag:label");
-        }
-        catch (Exception e) {
-            log.warn("Unable to find deleted tag label", e);
-        }
-
-        taggingHelper.removeTagging(documentManager, currentDocument, taggingId);
+    public String removeTagging(String label) throws ClientException {
+        String docId = getDocIdForTag(navigationContext.getCurrentDocument());
+        getTagService().untag(documentManager, docId, label, null);
         reset();
-
         // force invalidation
         Contexts.getEventContext().remove("currentDocumentTags");
-
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("message.remove.tagging"),
-                deletedTagLabel);
+                label);
         return null;
     }
 
     /**
-     * Returns the details about the tag cloud that have been created under the
-     * current document, which should be a Workspace.
-     */
-    public List<WeightedTag> getPopularCloud() throws ClientException {
-        List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
-        int min, max;
-        min = max = 0;
-
-        for (DocumentModel document : documentManager.getChildren(documentManager.getRootDocument().getRef())) {
-            for (WeightedTag weightedTag : taggingHelper.getPopularCloud(
-                    documentManager, document)) {
-                if (weightedTag.getWeight() > max) {
-                    max = weightedTag.getWeight();
-                }
-                if (weightedTag.getWeight() < min) {
-                    min = weightedTag.getWeight();
-                }
-                tagCloud.add(weightedTag);
-            }
-        }
-        for (WeightedTag tag : tagCloud) {
-            tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
-                    / max))) / 2);
-        }
-
-        return tagCloud;
-    }
-
-    /**
-     * Returns tag cloud info for the whole repository.
-     * For performance reasons, the security on underlying documents is not tested.
+     * Returns tag cloud info for the whole repository. For performance reasons,
+     * the security on underlying documents is not tested.
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
-    public List<WeightedTag> getPopularCloudOnAllDocuments() throws ClientException {
-        List<WeightedTag> tagCloud = new ArrayList<WeightedTag>();
-        int min, max;
-        min = max = 0;
-
-        for (WeightedTag weightedTag : taggingHelper.getPopularCloudOnAllDocuments(documentManager)) {
-            if (weightedTag.getWeight() > max) {
-                max = weightedTag.getWeight();
-            }
-            if (weightedTag.getWeight() < min) {
-                min = weightedTag.getWeight();
-            }
-            tagCloud.add(weightedTag);
+    public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
+        List<Tag> cloud = getTagService().getDocumentCloud(documentManager,
+                null, null, Boolean.TRUE); // logarithmic 0-100 normalization
+        // change weight to a font size
+        double min = 100;
+        double max = 200;
+        for (Tag tag : cloud) {
+            tag.setWeight((long) (min + tag.getWeight() * (max - min) / 100));
         }
-        for (WeightedTag tag : tagCloud) {
-            tag.setWeight((int) Math.round((150.0 * (1.0 + (1.5 * tag.getWeight() - min / 2)
-                    / max))) / 2);
-        }
-
-        return tagCloud;
+        Collections.sort(cloud, Tag.LABEL_COMPARATOR);
+        // Collections.sort(cloud, Tag.WEIGHT_COMPARATOR);
+        return cloud;
     }
 
-    public String listDocumentsForTag(String tagDocumentId)
-            throws ClientException {
-        this.tagDocumentId = tagDocumentId;
+    public String listDocumentsForTag(String listLabel) throws ClientException {
+        this.listLabel = listLabel;
         return TAG_SEARCH_RESULT_PAGE;
     }
 
     @Factory(value = "taggedDocuments", scope = EVENT)
     public DocumentModelList getChildrenSelectModel() throws ClientException {
-        DocumentModelList taggedDocuments = new DocumentModelListImpl();
-        if (!StringUtils.isBlank(tagDocumentId)) {
-            taggedDocuments.addAll(taggingHelper.listDocumentsForTag(
-                    documentManager, tagDocumentId));
+        if (StringUtils.isBlank(listLabel)) {
+            return new DocumentModelListImpl(0);
+        } else {
+            List<String> ids = getTagService().getTagDocumentIds(
+                    documentManager, listLabel, null);
+            DocumentModelList docs = new DocumentModelListImpl(ids.size());
+            for (String id : ids) {
+                docs.add(documentManager.getDocument(new IdRef(id)));
+            }
+            return docs;
         }
-        return taggedDocuments;
     }
-        
+
     /**
      * Returns <b>true</b> if the current logged user has permission to modify a
      * tag that is applied on the current document.
      */
     public boolean canModifyTag(Tag tag) throws ClientException {
-    	if (tag==null) {
-    		return false;
-    	}
-    	String id = tag.getTagId();
-    	String uid = navigationContext.getCurrentDocument().getId();
-    	
-    	String key = id+ "-" + uid;
-    	if (tagModifyCheckCache.containsKey(key)) {
-    		return tagModifyCheckCache.get(key); 
-    	}
-    	
-    	boolean res = computeCanModifyTag(tag);
-    	tagModifyCheckCache.put(key, new Boolean(res));
-    	return res;    	
+        return tag != null;
     }
 
-    
-    protected boolean computeCanModifyTag(Tag tag) throws ClientException {
-        return taggingHelper.canModifyTag(documentManager,
-                navigationContext.getCurrentDocument(), tag);
-    }
-
-    
-    
     /**
      * Resets the fields that are used for managing actions related to tagging.
      */
     public void reset() {
-        tagsLabel = null;
+        tagLabel = null;
     }
 
     /**
      * Used to decide whether the tagging UI field is shown or not.
      */
     public void showAddTag(ActionEvent event) {
-        if (addTag == null) {
-            addTag = Boolean.FALSE;
-        }
         this.addTag = !this.addTag;
     }
 
-    public String getTagsLabel() {
-        return tagsLabel;
+    public String getTagLabel() {
+        return tagLabel;
     }
 
-    public void setTagsLabel(String tagsLabel) {
-        this.tagsLabel = tagsLabel;
+    public void setTagLabel(String tagLabel) {
+        this.tagLabel = tagLabel;
     }
 
-    public Boolean getAddTag() {
+    public boolean getAddTag() {
         return addTag;
     }
 
-    public void setAddTag(Boolean addTag) {
+    public void setAddTag(boolean addTag) {
         this.addTag = addTag;
     }
 
-    // Suggestion
-    public Object getSuggestions(Object input) throws ClientException {
-        String searchPattern = (String) input;
-        searchPattern = cleanTag(searchPattern);
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-
-        // XXX should sort on Tag weight
-        String query = String.format(
-                "SELECT * FROM Tag WHERE tag:label LIKE '%s%%' "
-                        + "ORDER BY tag:label", searchPattern);
-        DocumentModelList tags = documentManager.query(query);
-
-        for (DocumentModel tag : tags) {
-            Serializable label = tag.getPropertyValue("tag:label");
-            Map<String, Object> entry = new HashMap<String, Object>();
-            entry.put("id", label);
-            entry.put("label", label);
-            result.add(entry);
-            if (result.size() > 10) {
-                break;
-            }
+    public List<Tag> getSuggestions(Object input) throws ClientException {
+        String label = (String) input;
+        List<Tag> tags = getTagService().getSuggestions(documentManager, label,
+                null);
+        Collections.sort(tags, Tag.LABEL_COMPARATOR);
+        if (tags.size() > 10) {
+            tags = tags.subList(0, 10);
         }
-
-        return result;
+        return tags;
     }
 
-    protected static String cleanTag(String tag) {
-        tag = tag.toLowerCase();
-        tag = tag.replaceAll(" +", " "); // collapse spaces
-        tag = tag.trim(); // trim spaces
-        tag = tag.replace("\\", ""); // dubious char
-        tag = tag.replace("'", ""); // dubious char
-        tag = tag.replace("%", ""); // dubious char
-        return tag;
+    protected static String cleanLabel(String label) {
+        label = label.toLowerCase(); // lowercase
+        label = label.replace(" ", ""); // no spaces
+        label = label.replace("\\", ""); // dubious char
+        label = label.replace("'", ""); // dubious char
+        label = label.replace("%", ""); // dubious char
+        return label;
     }
 
-    @Observer(value = {EventNames.DOCUMENT_SELECTION_CHANGED}, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void documentChanged() {
         addTag = false;

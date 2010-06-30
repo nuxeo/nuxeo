@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.service.querymaker"
+  version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
+    point="queryMaker">
+    <queryMaker name="NXTAG">org.nuxeo.ecm.platform.tag.TagQueryMaker
+    </queryMaker>
+  </extension>
+
+</component>
