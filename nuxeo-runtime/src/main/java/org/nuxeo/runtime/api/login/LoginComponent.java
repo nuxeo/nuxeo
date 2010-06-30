@@ -273,11 +273,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         @Override
         public boolean equals(Object other) {
             if (other instanceof Principal) {
-                if (userName == null) {
-                    return ((Principal) other).getName() == null;
-                } else {
-                    return userName.hashCode() == other.hashCode();
-                }
+                return hashCode() == other.hashCode();
             } else {
                 return false;
             }
