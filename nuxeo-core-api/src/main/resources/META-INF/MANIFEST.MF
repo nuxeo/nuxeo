@@ -39,6 +39,5 @@ Nuxeo-Require: org.nuxeo.runtime;visibility:=reexport,
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml,
  OSGI-INF/RepositoryManager.xml, 
- OSGI-INF/DocumentProviderService.xml,
  OSGI-INF/blob-holder-service-framework.xml,                 
  OSGI-INF/blob-holder-adapters-contrib.xml
