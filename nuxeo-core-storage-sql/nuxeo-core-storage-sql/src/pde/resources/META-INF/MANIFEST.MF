@@ -1,0 +1,79 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.storage.sql;core=split;version="1.6
+ .2.SNAPSHOT",org.nuxeo.ecm.core.storage.sql.coremodel;version="1.6.2.
+ SNAPSHOT",org.nuxeo.ecm.core.storage.sql.jdbc.db;version="1.6.2.SNAPS
+ HOT",org.nuxeo.ecm.core.storage.sql.jdbc.dialect;version="1.6.2.SNAPS
+ HOT",org.nuxeo.ecm.core.storage;version="1.6.2.SNAPSHOT",org.nuxeo.ec
+ m.core.storage.sql.jdbc;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.s
+ torage.sql.management;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.sto
+ rage.sql.net;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: core
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.storage.sql
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Eclipse-BuddyPolicy: registered
+Bnd-LastModified: 1277573281791
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/management-contrib.xml, OSGI-INF/listener-co
+ ntrib.xml, OSGI-INF/querymaker-service.xml, OSGI-INF/querymaker-contr
+ ib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
+Import-Package: javax.resource,
+ javax.resource.cci,
+ javax.servlet,
+ javax.servlet.http,
+ org.apache.commons.beanutils,
+ org.apache.commons.collections.map,
+ org.apache.commons.httpclient,
+ org.apache.commons.httpclient.methods,
+ org.apache.commons.httpclient.params,
+ org.apache.commons.io,
+ org.apache.commons.logging,
+ org.javasimon,
+ org.mortbay.component,
+ org.mortbay.jetty,
+ org.mortbay.jetty.bio,
+ org.mortbay.jetty.handler,
+ org.mortbay.jetty.servlet,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.blobholder,
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.api.model,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.api.security.impl,
+ org.nuxeo.ecm.core.convert.api,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.lifecycle,
+ org.nuxeo.ecm.core.model,
+ org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
+ org.nuxeo.ecm.core.query.sql.model,
+ org.nuxeo.ecm.core.repository,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.schema.types.primitives,
+ org.nuxeo.ecm.core.security,
+ org.nuxeo.ecm.core.storage.sql,
+ org.nuxeo.ecm.core.utils,
+ org.nuxeo.ecm.core.versioning,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.management,
+ org.nuxeo.runtime.model,
+ org.nuxeo.runtime.services.streaming
+Eclipse-ExtensibleAPI: true
+Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.runtime.management, org.nu
+ xeo.ecm.core.schema, org.nuxeo.ecm.core, org.nuxeo.ecm.core.convert, 
+ org.nuxeo.ecm.core.convert.api, org.nuxeo.ecm.core.convert.plugins
+

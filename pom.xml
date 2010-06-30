@@ -28,13 +28,10 @@
   <modules>
     <module>nuxeo-core</module>
     <module>nuxeo-core-api</module>
-    <module>nuxeo-core-facade</module>
     <module>nuxeo-core-query</module>
-    <module>nuxeo-core-query-test</module>
     <module>nuxeo-core-schema</module>
     <module>nuxeo-core-client</module>
     <module>nuxeo-core-io</module>
-    <module>nuxeo-core-storage-jcr</module>
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
@@ -43,20 +40,33 @@
     <module>nuxeo-core-event-compat</module>
     <module>nuxeo-core-event-jms</module>
     <module>nuxeo-core-persistence</module>
-    <module>nuxeo-core-test</module>
   </modules>
 
   <profiles>
     <profile>
+      <id>no-pde</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+	<activeByDefault>true</activeByDefault>
       </activation>
-    </profile>
+      <modules>
+	<module>nuxeo-core-facade</module>
+	<module>nuxeo-core-query-test</module>
+	<module>nuxeo-core-storage-jcr</module>
+	<module>nuxeo-core-test</module>
+      </modules>
+    </profile>	
     <profile>
-      <id>with-optional-mods</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
   </profiles>
 
@@ -333,5 +343,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
 
 </project>

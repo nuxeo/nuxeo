@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.client.sample;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.client.NuxeoClient;
 
@@ -31,7 +32,8 @@ public class HelloServer {
         try {
             client.tryConnect("localhost", 62474);
             repo =client.openRepository();
-            System.out.println("Hello Server! Here is the repository root: "+repo.getRootDocument());
+            final DocumentModel rootDocument = repo.getRootDocument();
+            System.out.println("Hello Server! Here is the repository root: "+rootDocument);
         } finally {
             repo.close();
             client.tryDisconnect();

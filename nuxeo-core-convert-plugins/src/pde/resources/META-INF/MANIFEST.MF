@@ -1,0 +1,44 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.convert.plugins.text.extractors;ver
+ sion="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Category: core
+Bundle-Name: org.nuxeo.ecm.core.convert.plugins
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277331693919
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins;singleton=true
+Import-Package: javax.mail,
+ javax.mail.internet,
+ javax.xml.parsers,
+ javax.xml.transform,
+ javax.xml.transform.sax,
+ org.apache.commons.logging,
+ org.apache.poi.hslf.extractor,
+ org.apache.poi.hwpf.extractor,
+ org.apache.xerces.parsers,
+ org.apache.xerces.xni,
+ org.apache.xerces.xni.parser,
+ org.apache.xmlbeans,
+ org.cyberneko.html,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.blobholder,
+ org.nuxeo.ecm.core.api.impl.blob,
+ org.nuxeo.ecm.core.convert.api,
+ org.nuxeo.ecm.core.convert.cache,
+ org.nuxeo.ecm.core.convert.extension,
+ org.nuxeo.runtime.api,
+ org.pdfbox.pdmodel,
+ org.pdfbox.pdmodel.encryption,
+ org.pdfbox.util,
+ org.xml.sax,
+ org.xml.sax.helpers
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.convert, org
+ .nuxeo.ecm.core.convert.api
+Require-Bundle: org.apache.poi.ooxml
+

@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.event;version="1.6.2.SNAPSHOT",org.
+ nuxeo.ecm.core.event.impl;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core
+ .event.jmx;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.event.script;v
+ ersion="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.event.tx;version="1.6.2.SN
+ APSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.event
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277331745636
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/EventService.xml, OSGI-INF/management-contri
+ b.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
+Import-Package: javax.naming,javax.script,javax.security.auth.login,ja
+ vax.transaction;version="1.1",org.apache.commons.logging,org.nuxeo.co
+ mmon.collections,org.nuxeo.common.utils,org.nuxeo.common.xmap.annotat
+ ion,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org
+ .nuxeo.ecm.core.api.model,org.nuxeo.ecm.core.api.repository,org.nuxeo
+ .ecm.core.api.security,org.nuxeo.ecm.core.schema,org.nuxeo.runtime.ap
+ i,org.nuxeo.runtime.management,org.nuxeo.runtime.model,org.nuxeo.runt
+ ime.transaction,org.osgi.framework;version="1.4"
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.schema, org.
+ nuxeo.runtime.management
+

@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.storage.sql.db;version="1.6.2.SNAPS
+ HOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.core.storage.sql.extensions
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Fragment-Host: org.nuxeo.ecm.core.storage.sql
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277332756661
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,
+ org.apache.lucene.analysis,
+ org.apache.lucene.analysis.fr,
+ org.apache.lucene.document,
+ org.apache.lucene.index,
+ org.apache.lucene.queryParser,
+ org.apache.lucene.search,
+ org.apache.lucene.store,
+ org.h2.api,
+ org.h2.message,
+ org.h2.store.fs,
+ org.h2.tools,
+ org.h2.util,
+ org.h2.value,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.api
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singlet
+ on:=true
+
