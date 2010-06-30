@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.event.jms;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.ecm.core.event.jms;jms=split;mandatory:=jms;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
