@@ -1504,6 +1504,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testTagsUpgrade() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
         try {
             JDBCMapper.testMode = true;
             Session session = repository.getConnection();
