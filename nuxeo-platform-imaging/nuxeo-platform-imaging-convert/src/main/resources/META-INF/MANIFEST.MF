@@ -1,26 +1,11 @@
 Manifest-Version: 1.0
-Export-Package: 
-Private-Package: org.nuxeo.ecm.platform.picture.convert
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.394
+Bundle-ManifestVersion: 1
 Bundle-Name: Imaging Convert Plugin
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.core.convert,
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.convert;singleton:=true
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: false
-Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277361422176
-Bundle-ManifestVersion: 2
+Export-Package: org.nuxeo.ecm.platform.picture.transform
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
-Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.convert;singleton:
- =true
-Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
- ing,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org
- .nuxeo.ecm.core.api.blobholder,org.nuxeo.ecm.core.convert.api,org.nux
- eo.ecm.core.convert.cache,org.nuxeo.ecm.core.convert.extension,org.nu
- xeo.ecm.directory;api=split,org.nuxeo.ecm.platform.picture.api,org.nu
- xeo.runtime.api
+Require-Bundle: org.nuxeo.ecm.core.convert,
+ org.nuxeo.ecm.platform.picture.api
 Provide-Package: org.nuxeo.ecm.platform.picture.convert
-

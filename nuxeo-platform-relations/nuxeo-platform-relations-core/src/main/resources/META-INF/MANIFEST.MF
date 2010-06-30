@@ -1,5 +1,8 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.ecm.relations;singleton=true
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Relations
+Bundle-SymbolicName: org.nuxeo.ecm.relations;singleton:=true
+Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
+Require-Bundle: org.nuxeo.ecm.relations.api
 Nuxeo-Component: OSGI-INF/nxrelations.xml
-Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.relations.api
