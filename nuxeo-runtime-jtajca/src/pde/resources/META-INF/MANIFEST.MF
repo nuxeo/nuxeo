@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.jtajca;version="1.6.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Category: runtime
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jtajca
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277838303257
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jtajca;singleton:
+ =true
+Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
+ ng.spi,javax.resource;version="2.0",javax.resource.spi;version="2.0",
+ javax.security.auth,javax.transaction;version="1.1",org.apache.common
+ s.beanutils,org.apache.commons.logging,org.apache.geronimo.connector.
+ outbound;version="2.1",org.apache.geronimo.connector.outbound.connect
+ ionmanagerconfig;version="2.1",org.apache.geronimo.connector.outbound
+ .connectiontracking;version="2.1",org.apache.geronimo.transaction;ver
+ sion="2.1",org.apache.geronimo.transaction.manager;version="2.1",org.
+ nuxeo.runtime.transaction
+Nuxeo-Require: org.nuxeo.runtime
+

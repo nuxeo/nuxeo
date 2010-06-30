@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.jboss.interceptors;version="1.6.2.SN
+ APSHOT",org.nuxeo.runtime.jboss.deployment;version="1.6.2.SNAPSHOT",o
+ rg.nuxeo.runtime.jboss.deployment.preprocessor;version="1.6.2.SNAPSHO
+ T"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277838303734
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",javax.management,org.ap
+ ache.commons.logging,org.javasimon,org.jboss.aop.advice,org.jboss.aop
+ .joinpoint,org.jboss.deployment,org.jboss.ejb3.remoting,org.jboss.log
+ ging,org.jboss.mx.util,org.jboss.remoting,org.jboss.system,org.jboss.
+ system.server,org.nuxeo.common.collections;version="1.6",org.nuxeo.co
+ mmon.utils;version="1.6",org.nuxeo.runtime.deployment.preprocessor
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions;
+ singleton:=true
+

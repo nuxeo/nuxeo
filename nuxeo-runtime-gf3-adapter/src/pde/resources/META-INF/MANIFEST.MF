@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.gf3;version="1.6.2.SNAPSHOT",org.gla
+ ssfish.embed;version="1.6.2.SNAPSHOT"
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277838301886
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/GF3Component.xml
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter;singl
+ eton:=true
+Import-Package: com.sun.appserv.connectors.internal.api,com.sun.enterp
+ rise.config.serverbeans,com.sun.enterprise.security,com.sun.enterpris
+ e.v3.admin.adapter,com.sun.enterprise.v3.common,com.sun.enterprise.v3
+ .server,com.sun.enterprise.v3.services.impl,com.sun.enterprise.web,co
+ m.sun.hk2.component,com.sun.web.security,javax.annotation;version="1.
+ 0",javax.resource;version="2.0",org.apache.commons.logging,org.glassf
+ ish.api,org.glassfish.api.admin,org.glassfish.api.deployment.archive,
+ org.glassfish.deployment.autodeploy,org.glassfish.embed.impl,org.glas
+ sfish.internal.api,org.glassfish.server,org.glassfish.web,org.jvnet.h
+ k2.component,org.nuxeo.common;version="1.6",org.nuxeo.common.server;v
+ ersion="1.6",org.nuxeo.runtime.model
+Nuxeo-Require: system.bundle, org.nuxeo.common, org.nuxeo.runtime
+

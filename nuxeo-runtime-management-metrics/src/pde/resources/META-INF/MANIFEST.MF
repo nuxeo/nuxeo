@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.runtime.management.metrics;version="1.6.2.SN
+ APSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-management-metrics
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.6.2.SNAPSHOT
+Bnd-LastModified: 1277838303093
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/runtime-management-metrics-component.xml
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-management-metric
+ s;singleton:=true
+Import-Package: com.thoughtworks.xstream,javax.annotation;version="1.0
+ ",javax.management,org.apache.commons.logging,org.javasimon,org.javas
+ imon.jmx,org.javasimon.utils,org.nuxeo.runtime.api,org.nuxeo.runtime.
+ model,org.osgi.framework;version="1.4"
+Nuxeo-Require: org.nuxeo.runtime
+

@@ -23,11 +23,6 @@
   <modules>
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-osgi</module>
-    <module>nuxeo-runtime-deploy</module>
-    <module>nuxeo-runtime-jetty-adapter</module>
-    <module>nuxeo-runtime-gf3-adapter</module>
-    <module>nuxeo-runtime-tomcat-adapter</module>
-    <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
@@ -35,18 +30,39 @@
   </modules>
 
   <profiles>
+
     <profile>
       <id>no-pde</id>
       <activation>
 	<activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+	<module>nuxeo-runtime-deploy</module>
+	<module>nuxeo-runtime-scripting</module>
 	<module>nuxeo-runtime-test</module>
 	<module>nuxeo-runtime-jboss-adapter</module>
 	<module>nuxeo-runtime-jboss-extensions</module>
 	<module>nuxeo-runtime-launcher</module>
+	<module>nuxeo-runtime-jetty-adapter</module>
+	<module>nuxeo-runtime-gf3-adapter</module>
+	<module>nuxeo-runtime-tomcat-adapter</module>
       </modules>
     </profile>	
+
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+
   </profiles>
 
   <dependencyManagement>
@@ -205,5 +221,6 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
 
 </project>
