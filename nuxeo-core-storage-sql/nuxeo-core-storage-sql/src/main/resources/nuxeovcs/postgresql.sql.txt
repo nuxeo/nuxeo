@@ -667,6 +667,48 @@ SELECT * FROM nx_rebuild_read_acls();
 SELECT nx_vacuum_read_acls();
 
 
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'nxp_tagging';
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+CREATE OR REPLACE FUNCTION nx_upgrade_tags()
+RETURNS void
+AS $$
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = false;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = md5(id)::uuid;
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, false, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private::text
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = false
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = false);
+$$
+LANGUAGE sql
+VOLATILE;
+
+#IF: ! emptyResult
+SELECT nx_upgrade_tags();
+
+
 ############################################################
 
 
