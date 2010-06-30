@@ -17,11 +17,35 @@
 
   <modules>
     <module>nuxeo-platform-audit-api</module>
-    <module>nuxeo-platform-audit-client</module>
     <module>nuxeo-platform-audit-core</module>
-    <module>nuxeo-platform-audit-facade</module>
-    <module>nuxeo-platform-audit-io</module>
-    <module>nuxeo-platform-audit-search</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-pde</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-audit-client</module>
+	<module>nuxeo-platform-audit-facade</module>
+	<module>nuxeo-platform-audit-io</module>
+	<module>nuxeo-platform-audit-search</module>
+      </modules>
+    </profile>	
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

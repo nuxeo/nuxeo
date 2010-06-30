@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.audit.io;version="5.3.2.SNAPSHO
+ T"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Platform Audit Logs IO Fragment
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.api,
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361405235
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/io-audit-contrib.xml
+Import-Package: javax.annotation;version="1.0",javax.security.auth.log
+ in,org.apache.commons.beanutils,org.apache.commons.logging,org.dom4j,
+ org.dom4j.io,org.nuxeo.common.utils,org.nuxeo.ecm.core;api=split,org.
+ nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.repository,org.nu
+ xeo.ecm.core.io,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platf
+ orm.audit.api,org.nuxeo.ecm.platform.audit.service,org.nuxeo.ecm.plat
+ form.io.api,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runtime
+ .model
+Bundle-SymbolicName: org.nuxeo.ecm.audit.io;singleton:=true
+

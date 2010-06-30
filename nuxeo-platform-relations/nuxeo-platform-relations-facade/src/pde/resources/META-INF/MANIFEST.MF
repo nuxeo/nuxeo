@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.relation.ejb;version="5.3.2.SNA
+ PSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: web,stateful
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Relations
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.relations, org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277362065579
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/relation-platform-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.relations.facade;singleton:=true
+Import-Package: javax.annotation;version="1.0",javax.ejb,org.apache.co
+ mmons.logging,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api
+ =split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platform.relat
+ ions.api,org.nuxeo.ecm.platform.relations.api.ejb,org.nuxeo.runtime.a
+ pi
+

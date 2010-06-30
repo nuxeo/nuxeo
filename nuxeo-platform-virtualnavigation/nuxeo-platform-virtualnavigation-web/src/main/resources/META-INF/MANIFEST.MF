@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.nuxeo.platform.virtualnavigation.web;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.platform.virtualnavigation
-Require-Bundle: org.nuxeo.runtime,
+Nuxeo-Require: org.nuxeo.runtime,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.webapp.ui

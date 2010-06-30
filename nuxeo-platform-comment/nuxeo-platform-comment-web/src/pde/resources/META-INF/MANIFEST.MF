@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Export-Package: nuxeo.war.incl;version="5.3.2.SNAPSHOT",nuxeo.war.incl
+ .tabs;version="5.3.2.SNAPSHOT",nuxeo.war.widgets.summary;version="5.3
+ .2.SNAPSHOT",org.nuxeo.ecm.platform.comment.web;version="5.3.2.SNAPSH
+ OT"
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: stateless
+Tool: Bnd-0.0.394
+Bundle-Name: comment web client
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.actions,
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361803314
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/comment-actions-contrib.xml,
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.web
+Import-Package: javax.annotation;version="1.0",javax.faces.event,javax
+ .faces.model,org.apache.commons.logging,org.jboss.seam,org.jboss.seam
+ .annotations,org.jboss.seam.annotations.intercept,org.jboss.seam.anno
+ tations.web,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=s
+ plit,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platform.actions
+ ,org.nuxeo.ecm.platform.comment.api,org.nuxeo.ecm.platform.ui.web.api
+ ,org.nuxeo.ecm.webapp.security
+

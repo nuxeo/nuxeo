@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Export-Package: nuxeo.war.incl;version="5.3.2.SNAPSHOT",nuxeo.war.incl
+ .tabs;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit.web.liste
+ ner;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit.web.listene
+ r.ejb;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit.web.liste
+ ner.ejb.local;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit.w
+ eb.listener.ejb.remote;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platfor
+ m.audit.web.listener.events;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.pl
+ atform.audit.ws;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit
+ .ws.api;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.audit.ws.dele
+ gate;version="5.3.2.SNAPSHOT"
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Bundle-Category: web,stateless
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Audit Web Fragment
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform,
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361401386
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
+Provide-Package: org.nuxeo.ecm.platform.audit.web,
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.web;singleton:=true
+Import-Package: javax.annotation;version="1.0",javax.ejb,javax.jws,jav
+ ax.jws.soap,javax.naming,org.apache.commons.lang,org.apache.commons.l
+ ogging,org.jboss.annotation.ejb,org.jboss.seam,org.jboss.seam.annotat
+ ions,org.jboss.seam.annotations.web,org.nuxeo.ecm.core;api=split,org.
+ nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.schema.utils,org.nuxe
+ o.ecm.directory;api=split,org.nuxeo.ecm.platform.api.ws,org.nuxeo.ecm
+ .platform.api.ws.session,org.nuxeo.ecm.platform.audit.api,org.nuxeo.e
+ cm.platform.ui.web.api,org.nuxeo.ecm.platform.util,org.nuxeo.ecm.plat
+ form.ws,org.nuxeo.runtime.api
+

@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Export-Package: 
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: web,stateless
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Picture Imaging DM
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.types.api,
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 1.0.0
+Bnd-LastModified: 1277361423864
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/imaging-types-contrib.xml,
+Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.jsf;singleton:=tru
+ e
+

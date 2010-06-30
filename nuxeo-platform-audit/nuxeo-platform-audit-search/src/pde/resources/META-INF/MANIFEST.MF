@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Export-Package: 
+Private-Package: org.nuxeo.ecm.platform.audit.search.resources.indexin
+ g.api,org.nuxeo.ecm.platform.audit.search.resources.indexing
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Localization: plugin
+Bundle-Name: NXAudit Search
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361406076
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxsearch-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.search
+Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.securit
+ y,org.nuxeo.ecm.core.search.api.backend.indexing.resources,org.nuxeo.
+ ecm.core.search.api.client,org.nuxeo.ecm.core.search.api.client.index
+ ing.resources,org.nuxeo.ecm.core.search.api.client.indexing.security,
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration,org.nu
+ xeo.ecm.directory;api=split,org.nuxeo.ecm.platform.audit.api,org.nuxe
+ o.runtime.api
+

@@ -19,7 +19,20 @@
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment-core</module>
     <module>nuxeo-platform-comment</module>
-    <module>nuxeo-platform-comment-web</module>
-    <module>nuxeo-platform-comment-workflow</module>
   </modules>
+
+
+  <profiles>
+    <profile>
+      <id>no-pde</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-comment-web</module>
+	<module>nuxeo-platform-comment-workflow</module>
+      </modules>
+    </profile>	
+  </profiles>
+
 </project>

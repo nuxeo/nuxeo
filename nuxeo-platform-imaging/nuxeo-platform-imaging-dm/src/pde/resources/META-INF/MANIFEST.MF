@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.picture.web;version="1.0.0"
+Private-Package: nuxeo.war.cropper,nuxeo.war.icons,nuxeo.war.css,nuxeo
+ .war.incl.tabs,nuxeo.war.incl,nuxeo.war.cropper.lib,nuxeo.war
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Bundle-Category: web,stateless
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Picture Imaging DM
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.picture.api,
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 1.0.0
+Bnd-LastModified: 1277361424893
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.dm
+Import-Package: javax.annotation;version="1.0",javax.ejb,javax.faces.a
+ pplication,javax.faces.context,javax.faces.event,javax.faces.model,ja
+ vax.servlet,javax.servlet.http,org.apache.commons.logging,org.jboss.s
+ eam,org.jboss.seam.annotations,org.jboss.seam.annotations.intercept,o
+ rg.jboss.seam.annotations.remoting,org.jboss.seam.annotations.web,org
+ .jboss.seam.core,org.jboss.seam.faces,org.nuxeo.common.utils,org.nuxe
+ o.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.c
+ ore.api.blobholder,org.nuxeo.ecm.core.api.model,org.nuxeo.ecm.directo
+ ry;api=split,org.nuxeo.ecm.platform.commandline.executor.api,org.nuxe
+ o.ecm.platform.picture.api.adapters,org.nuxeo.ecm.platform.ui.web.api
+ ,org.nuxeo.ecm.platform.ui.web.rest,org.nuxeo.ecm.platform.ui.web.tag
+ .fn,org.nuxeo.ecm.platform.ui.web.util,org.nuxeo.ecm.platform.url.api
+ ,org.nuxeo.ecm.platform.util,org.nuxeo.ecm.webapp.base,org.nuxeo.ecm.
+ webapp.documentsLists,org.nuxeo.ecm.webapp.helpers,org.nuxeo.runtime.
+ api
+

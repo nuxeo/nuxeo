@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.audit.ejb;version="5.3.2.SNAPSH
+ OT"
+Private-Package: org.nuxeo.ecm.platform.audit.ejb.local
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: NXAudit Facade
+Bundle-Localization: plugin
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.audit.api,
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361403661
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxaudit-platform-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.ejb
+Import-Package: javax.annotation;version="1.0",javax.ejb,javax.persist
+ ence,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,or
+ g.nuxeo.ecm.core.event,org.nuxeo.ecm.directory;api=split,org.nuxeo.ec
+ m.platform.audit.api,org.nuxeo.ecm.platform.audit.api.remote,org.nuxe
+ o.ecm.platform.audit.service,org.nuxeo.runtime,org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+

@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Export-Package: nuxeo.war;version="5.3.2.SNAPSHOT",nuxeo.war.icons;ver
+ sion="5.3.2.SNAPSHOT",nuxeo.war.incl.tabs;version="5.3.2.SNAPSHOT",nu
+ xeo.war.widgets.summary;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platfo
+ rm.relations.web;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.rela
+ tions.web.delegate;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.re
+ lations.web.listener;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.
+ relations.web.listener.ejb;version="5.3.2.SNAPSHOT"
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Bundle-Category: stateless
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Relations Web Fragment
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.webapp.core
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277362069074
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+Bundle-SymbolicName: org.nuxeo.ecm.relations.web;singleton:=true
+Import-Package: javax.annotation;version="1.0",javax.ejb,javax.faces.a
+ pplication,javax.faces.component,javax.faces.context,javax.faces.even
+ t,javax.faces.validator,org.apache.commons.lang,org.apache.commons.lo
+ gging,org.jboss.seam,org.jboss.seam.annotations,org.jboss.seam.contex
+ ts,org.jboss.seam.faces,org.nuxeo.common.utils.i18n,org.nuxeo.ecm.cor
+ e;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.event
+ ,org.nuxeo.ecm.core.event.impl,org.nuxeo.ecm.directory;api=split,org.
+ nuxeo.ecm.platform.relations.api,org.nuxeo.ecm.platform.relations.api
+ .impl,org.nuxeo.ecm.platform.relations.api.util,org.nuxeo.ecm.platfor
+ m.ui.web.api,org.nuxeo.ecm.platform.ui.web.invalidations,org.nuxeo.ec
+ m.platform.ui.web.tag.fn,org.nuxeo.ecm.platform.util,org.nuxeo.ecm.we
+ bapp.base,org.nuxeo.ecm.webapp.helpers,org.nuxeo.runtime.api
+

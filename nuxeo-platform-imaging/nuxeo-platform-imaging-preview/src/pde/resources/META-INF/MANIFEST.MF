@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.picture.preview.adapter.factori
+ es;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Platform Imaging Preview
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.preview
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277361427364
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/preview-adapter-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.preview;singleton=
+ true
+Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit,org.nuxeo.ecm.platform.picture.api.adapters,org.nuxeo.ecm.platfor
+ m.preview.adapter,org.nuxeo.ecm.platform.preview.adapter.base,org.nux
+ eo.ecm.platform.preview.api
+
