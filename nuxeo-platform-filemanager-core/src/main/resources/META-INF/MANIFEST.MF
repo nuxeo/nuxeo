@@ -5,25 +5,10 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
-Require-Bundle: org.nuxeo.runtime,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.io,
+Require-Bundle: org.nuxeo.ecm.platform.mimetype.api,
  org.nuxeo.ecm.platform.types.api,
- org.nuxeo.ecm.platform.mimetype.api,
  org.nuxeo.ecm.platform.filemanager.api,
  org.nuxeo.ecm.platform.search.api
 Nuxeo-Component: OSGI-INF/nxfilemanager-service.xml,
  OSGI-INF/nxfilemanager-plugins-contrib.xml,
  OSGI-INF/nxfilemanager-querymodel-contrib.xml
-Export-Package: org.nuxeo.ecm.platform.filemanager;uses:="org.nuxeo.ecm.platform.filemanager.service",
- org.nuxeo.ecm.platform.filemanager.service;
-  uses:="org.nuxeo.ecm.platform.filemanager.api,
-   org.nuxeo.ecm.platform.filemanager.service.extension,
-   org.nuxeo.runtime.model,
-   org.nuxeo.ecm.core.api",
- org.nuxeo.ecm.platform.filemanager.service.extension;
-  uses:="org.nuxeo.ecm.platform.types,
-   org.nuxeo.ecm.platform.filemanager.service,
-   org.nuxeo.ecm.core.search.api.client.querymodel,
-   org.nuxeo.ecm.core.api"
-Eclipse-BuddyPolicy: registered
