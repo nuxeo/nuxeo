@@ -24,18 +24,18 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: runtime
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime
+Bundle-Name: org.nuxeo.runtime
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277838300537
+Bnd-LastModified: 1277883218401
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
  l,OSGI-INF/DeploymentService.xml,OSGI-INF/StreamingService.xml,OSGI-I
  NF/LoginComponent.xml,OSGI-INF/ServiceManagement.xml,OSGI-INF/Default
  JBossBindings.xml
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime;singleton:=true
+Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
 Import-Package: javax.annotation;version="1.0",javax.management,javax.
  naming,javax.naming.spi,javax.security.auth,javax.security.auth.callb
  ack,javax.security.auth.login,javax.security.auth.spi,javax.sql,javax
@@ -45,10 +45,9 @@ Import-Package: javax.annotation;version="1.0",javax.management,javax.
  ,org.jboss.remoting.detection.multicast,org.jboss.remoting.invocation
  ,org.jboss.remoting.loading,org.jboss.remoting.marshal,org.jboss.remo
  ting.marshal.serializable,org.jboss.remoting.network,org.jboss.remoti
- ng.transport,org.nuxeo.common;version="1.6",org.nuxeo.common.collecti
- ons;version="1.6",org.nuxeo.common.logging;version="1.6",org.nuxeo.co
- mmon.utils;version="1.6",org.nuxeo.common.xmap;version="1.6",org.nuxe
- o.common.xmap.annotation;version="1.6",org.osgi.framework;version="1.
- 4",org.w3c.dom,org.w3c.dom.ranges
+ ng.transport,org.nuxeo.common,org.nuxeo.common.collections,org.nuxeo.
+ common.logging,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo
+ .common.xmap.annotation,org.osgi.framework;version="1.4",org.w3c.dom,
+ org.w3c.dom.ranges
 Nuxeo-Require: org.nuxeo.osgi
 
