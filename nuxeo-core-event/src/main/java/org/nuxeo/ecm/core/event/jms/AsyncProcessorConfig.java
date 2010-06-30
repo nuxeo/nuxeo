@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.event;
+package org.nuxeo.ecm.core.event.jms;
 
 import org.nuxeo.runtime.api.Framework;
 
