@@ -18,11 +18,22 @@
     <module>nuxeo-platform-imaging-api</module>
     <module>nuxeo-platform-imaging-core</module>
     <module>nuxeo-platform-imaging-convert</module>
-    <module>nuxeo-platform-imaging-facade</module>
-    <module>nuxeo-platform-imaging-jsf</module>
-    <module>nuxeo-platform-imaging-dm</module>
-    <module>nuxeo-platform-imaging-preview</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-imaging-facade</module>
+	<module>nuxeo-platform-imaging-jsf</module>
+	<module>nuxeo-platform-imaging-dm</module>
+	<module>nuxeo-platform-imaging-preview</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
