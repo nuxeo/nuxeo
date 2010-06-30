@@ -17,7 +17,10 @@ Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,
  org.jboss.remoting,
  org.nuxeo.common.xmap.annotation;version="1.6",
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
  org.nuxeo.runtime.model;version="1.6",
- org.nuxeo.runtime.remoting
+ org.nuxeo.runtime.remoting,
+ org.nuxeo.runtime.remoting.transporter
 Nuxeo-Require: org.nuxeo.runtime
 
