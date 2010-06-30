@@ -51,6 +51,8 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(OOoDaemonManagerComponent.class);
 
+    protected boolean started=false;
+
     // Component impl
 
     @Override
@@ -124,7 +126,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
     protected class ThreadExceptionHandler implements UncaughtExceptionHandler {
 
         public void uncaughtException(Thread t, Throwable e) {
-            log.error("OOo Daemon thread existed", e);
+            log.error("OOo Daemon thread exited", e);
             runner = null;
         }
 
@@ -135,7 +137,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             log.error("Daemon is not available, don't try to start it");
             return -1;
         }
-        if (!isRunning()) {
+        if (!isRunning() && !started) {
             log.debug("Starting new Thread that will handle the Daemon");
             runner = new Thread(new NXOOoServerRunner(getOrBuildConfig()));
             runner.setDaemon(true);
@@ -143,9 +145,9 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             runner.start();
             log.debug("Daemon thread started");
         } else {
-            log.debug("Daemon is already running");
+            log.debug("Daemon is already running or is starting");
         }
-        //runner.run();
+        started=true;
         return 0;
     }
 
@@ -156,9 +158,12 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             return false;
         }
         int nbTry = 0;
+        if (runner==null) {
+            return false;
+        }
         while (!isRunning()) {
             if (!runner.isAlive()) {
-                log.error("Daemon thread exited !!!!");
+                log.warn("OOo server Daemon thread exited : check your OOo config");
                 return false;
             }
             try {
@@ -183,6 +188,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             log.error("No need to stop, Daemon is not Running");
             return;
         }
+        started=false;
         Config ooServerConfig = getOrBuildConfig();
         String urlStop = "uno:" + ooServerConfig.adminAcceptor + ";urp"
                 + ";daemon.stop";
@@ -277,5 +283,8 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             }
         }
     }
+
+
+
 
 }

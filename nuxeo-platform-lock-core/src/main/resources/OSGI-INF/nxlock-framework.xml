@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.lock">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.lock.api.LockCoordinator" />
+  </service>
+
+  <documentation>
+    Lock service framework
+    @author
+    <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.lock.LockComponent" />
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+    point="hibernate">
+    <hibernateConfiguration name="nxlocks">
+      <datasource>nxlocks</datasource>
+      <properties>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+
+</component>

@@ -211,6 +211,9 @@ public class OfficeProcess extends Thread
             Logger.error("couldn't connect to OpenOffice instance");
             Logger.debug(ex);
         }
+        catch (UnsatisfiedLinkError jniEx) {
+            Logger.warning("Unable to access OOo instance, probably wrong UNO JNI lib");
+        }
         return false;
     }
     /**

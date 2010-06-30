@@ -210,7 +210,8 @@ public class MimetypeIconUpdater implements EventListener {
      * If the icon field is empty, initialize it to the document type icon
      */
     public void setDefaultIcon(DocumentModel doc) throws Exception {
-        if (doc.getProperty(ICON_FIELD).getValue(String.class) == null) {
+        if (doc.hasSchema(ICON_SCHEMA)
+                && doc.getProperty(ICON_FIELD).getValue(String.class) == null) {
             updateIconField(null, doc);
         }
     }

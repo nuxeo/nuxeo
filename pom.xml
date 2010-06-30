@@ -39,6 +39,8 @@
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
     <module>nuxeo-platform-filemanager-facade</module>
+    <module>nuxeo-platform-lock-api</module>
+    <module>nuxeo-platform-lock-core</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
@@ -50,6 +52,8 @@
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-placeful-facade</module>
     <module>nuxeo-platform-placeful-theme</module>
+    <module>nuxeo-platform-heartbeat-api</module>
+    <module>nuxeo-platform-heartbeat-core</module>
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
@@ -371,6 +375,16 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lock-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-lock-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -432,6 +446,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-theme</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-heartbeat-core</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

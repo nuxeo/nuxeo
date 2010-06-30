@@ -165,9 +165,15 @@ public class Daemon
     public synchronized void shutdown()
     {
         _isShutdowned 	= true;
+        try {
         if (_acceptor != null)
             _acceptor.stopAccepting();
         _processPool.terminate();
+        }
+        catch (Throwable e) {
+            // NOP
+            // NPE in acceptor
+        }
         //System			.gc();
         //System			.runFinalization();
         logBigMessage	("OPEN OFFICE DAEMON STOPPED");
@@ -268,6 +274,9 @@ public class Daemon
             {
                 Logger.error("Illegal argument for connection accepting");
                 Logger.debug(ex);
+            }
+            catch (Throwable t) {
+                Logger.error("main thread exited " + t.getMessage());
             }
             if (connection == null) break;
 
