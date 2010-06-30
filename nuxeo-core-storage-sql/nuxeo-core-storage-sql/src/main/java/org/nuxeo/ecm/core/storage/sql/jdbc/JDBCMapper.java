@@ -76,7 +76,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
-    public static boolean debugTestUpgrade;
+    public static boolean testMode;
 
     private final QueryMakerService queryMakerService;
 
@@ -118,10 +118,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
         try {
             sqlInfo.executeSQLStatements("beforeTableCreation", this);
-            if (debugTestUpgrade) {
+            if (testMode) {
                 sqlInfo.executeSQLStatements("testUpgrade", this);
             }
             createTables();
+            if (testMode) {
+                sqlInfo.executeSQLStatements("testUpgradeOldTables", this);
+            }
             sqlInfo.executeSQLStatements("afterTableCreation", this);
             sqlInfo.dialect.performAdditionalStatements(connection);
         } catch (SQLException e) {

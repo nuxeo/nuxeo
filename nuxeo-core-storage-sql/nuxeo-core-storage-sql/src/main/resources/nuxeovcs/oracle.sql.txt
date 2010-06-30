@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -42,6 +42,15 @@
 CREATE OR REPLACE TYPE NX_STRING_ARRAY AS VARRAY(100) OF VARCHAR2(32767);
 
 CREATE OR REPLACE TYPE NX_STRING_TABLE AS TABLE OF VARCHAR2(4000);
+
+# needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
+CREATE OR REPLACE FUNCTION nx_hash(string VARCHAR2)
+RETURN VARCHAR2
+IS
+BEGIN
+  -- hash function 1 is MD4 (faster than 2 = MD5)
+  RETURN DBMS_CRYPTO.HASH(UTL_I18N.STRING_TO_RAW(string, 'AL32UTF8'), 1);
+END;
 
 
 ############################################################
@@ -292,16 +301,6 @@ BEGIN
 END;
 
 
-# needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
-CREATE OR REPLACE FUNCTION nx_hash(string VARCHAR2)
-RETURN VARCHAR2
-IS
-BEGIN
-  -- hash function 1 is MD4 (faster than 2 = MD5)
-  RETURN DBMS_CRYPTO.HASH(UTL_I18N.STRING_TO_RAW(string, 'AL32UTF8'), 1);
-END;
-
-
 CREATE OR REPLACE FUNCTION nx_get_read_acl_id(id VARCHAR2)
 RETURN VARCHAR2
 IS
@@ -494,16 +493,3 @@ INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (SYS_CONTEXT('USERENV', 'SI
 #CATEGORY: removeClusterNode
 
 DELETE FROM "CLUSTER_NODES" WHERE NODEID = SYS_CONTEXT('USERENV', 'SID')
-
-
-############################################################
-
-
-#CATEGORY: testUpgrade
-
-# here use a NCLOB instead of a NVARCHAR2 to test compatibility
-CREATE TABLE TESTSCHEMA2 (
-  ID ${idType} NOT NULL PRIMARY KEY,
-  TITLE NCLOB
-)
-

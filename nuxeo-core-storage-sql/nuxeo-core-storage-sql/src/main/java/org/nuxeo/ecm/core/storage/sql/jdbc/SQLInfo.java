@@ -1146,7 +1146,12 @@ public class SQLInfo {
     }
 
     public void initSQLStatements() throws IOException {
-        sqlStatements = SQLStatement.read(dialect.getSQLStatementsFilename());
+        sqlStatements = new HashMap<String, List<SQLStatement>>();
+        SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
+        if (JDBCMapper.testMode) {
+            SQLStatement.read(dialect.getTestSQLStatementsFilename(),
+                    sqlStatements);
+        }
         sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
                 database);
     }

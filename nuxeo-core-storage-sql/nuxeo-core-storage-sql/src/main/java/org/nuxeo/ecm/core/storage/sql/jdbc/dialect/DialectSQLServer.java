@@ -375,6 +375,11 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public String getTestSQLStatementsFilename() {
+        return "nuxeovcs/sqlserver.test.sql.txt";
+    }
+
+    @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();

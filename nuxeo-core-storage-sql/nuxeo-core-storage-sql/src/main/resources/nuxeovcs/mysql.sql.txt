@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -133,15 +133,3 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
-
-
-############################################################
-
-
-#CATEGORY: testUpgrade
-
-# here use a LONGTEXT instead of a VARCHAR to test compatibility
-CREATE TABLE `testschema2` (
-  `id` VARCHAR(36) NOT NULL PRIMARY KEY,
-  `title` LONGTEXT
-) ENGINE=InnoDB;

@@ -509,6 +509,8 @@ public abstract class Dialect {
      */
     public abstract String getSQLStatementsFilename();
 
+    public abstract String getTestSQLStatementsFilename();
+
     /**
      * Gets the properties to use with the SQL statements.
      */

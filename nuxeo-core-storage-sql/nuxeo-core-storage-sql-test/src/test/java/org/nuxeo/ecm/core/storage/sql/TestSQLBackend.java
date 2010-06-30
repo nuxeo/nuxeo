@@ -317,10 +317,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     public void testBasicsUpgrade() throws Exception {
         try {
-            JDBCMapper.debugTestUpgrade = true;
+            JDBCMapper.testMode = true;
             testBasics();
         } finally {
-            JDBCMapper.debugTestUpgrade = false;
+            JDBCMapper.testMode = false;
         }
     }
 

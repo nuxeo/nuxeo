@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -165,16 +165,4 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = @@SPID;
-
-
-############################################################
-
-
-#CATEGORY: testUpgrade
-
-# here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test compatibility
-CREATE TABLE TESTSCHEMA2 (
-  ID VARCHAR(36) NOT NULL PRIMARY KEY,
-  TITLE NVARCHAR(MAX) NULL
-);
 
