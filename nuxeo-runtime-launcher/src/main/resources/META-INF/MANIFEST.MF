@@ -1,4 +1,2 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.runtime.launcher
 Main-Class: org.nuxeo.runtime.launcher.Main
-
