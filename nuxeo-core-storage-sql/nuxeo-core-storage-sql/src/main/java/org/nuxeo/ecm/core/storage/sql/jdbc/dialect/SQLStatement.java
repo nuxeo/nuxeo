@@ -129,7 +129,7 @@ public class SQLStatement {
      */
     public static Map<String, List<SQLStatement>> read(String filename,
             Map<String, List<SQLStatement>> statements) throws IOException {
-        InputStream is = SQLStatement.class.getClassLoader().getResourceAsStream(
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 filename);
         if (is == null) {
             throw new IOException("Cannot open: " + filename);
