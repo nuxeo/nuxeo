@@ -49,6 +49,8 @@
     <module>nuxeo-platform-content-template-manager</module>
     <module>nuxeo-platform-el</module>
     <module>nuxeo-platform-convert</module>
+    <module>nuxeo-platform-search-api</module>
+    <module>nuxeo-platform-search-core</module>
   </modules>
 
   <profiles>
@@ -59,8 +61,8 @@
       </activation>
       <modules>
 	<module>nuxeo-platform-api-test</module>
-	<module>nuxeo-platform-search-api</module>
-	<module>nuxeo-platform-search-core</module>
+        <module>nuxeo-platform-search-api</module>
+        <module>nuxeo-platform-search-core</module>
 	<module>nuxeo-platform-search-facade</module>
 	<module>nuxeo-platform-search-backend-core</module>
 	<module>nuxeo-platform-search-test</module>

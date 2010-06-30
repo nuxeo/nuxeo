@@ -1,0 +1,58 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.search.api.internals;version="5.3.2
+ .SNAPSHOT",org.nuxeo.ecm.core.search.backend;version="5.3.2.SNAPSHOT"
+ ,org.nuxeo.ecm.core.search.blobs;version="5.3.2.SNAPSHOT",org.nuxeo.e
+ cm.core.search.service;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.core.se
+ arch.session;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: search,stateful
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Search Core
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277933012895
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxsearch-framework.xml, OSGI-INF/nxsearch-co
+ ntrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.core
+ ;singleton:=true
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.blobholder,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.convert.api,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.core.schema.types,
+ org.nuxeo.ecm.core.search.api.backend;version="5.3",
+ org.nuxeo.ecm.core.search.api.backend.indexing.resources;version="5.3",
+ org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory;version="5.3",
+ org.nuxeo.ecm.core.search.api.client;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.common;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.indexing.blobs;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.indexing.resources;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.indexing.resources.document.schemas;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.indexing.session;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.query;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.query.impl;version="5.3",
+ org.nuxeo.ecm.core.search.api.client.search.results;version="5.3",
+ org.nuxeo.ecm.core.search.api.events;version="5.3",
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration;version="5.3",
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration.blobs;version="5.3",
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document;version="5.3",
+ org.nuxeo.ecm.core.search.api.security;version="5.3",
+ org.nuxeo.ecm.core.utils,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Nuxeo-Require: org.nuxeo.ecm.platform.search.api,org.nuxeo.ecm.core.ap
+ i,org.nuxeo.ecm.core.convert.api
+
