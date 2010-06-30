@@ -82,7 +82,7 @@
 
   <profiles>
     <profile>
-      <id>pde</id>
+      <id>osgi</id>
       <build>
 	<plugins>
 	  <plugin>
