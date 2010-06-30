@@ -46,6 +46,10 @@
       <groupId>javax.script</groupId>
       <artifactId>script-api</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>commons-lang</groupId>
+    	<artifactId>commons-lang</artifactId>
+    </dependency>
 
     <!-- only for tests -->
     <dependency>
@@ -67,11 +71,6 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
-    	<optional>false</optional>
     </dependency>
   </dependencies>
 

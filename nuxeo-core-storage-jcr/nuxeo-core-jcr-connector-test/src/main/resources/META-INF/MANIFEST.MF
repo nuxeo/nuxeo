@@ -1,54 +1,9 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.jcr.testing;version="1.6.2.SNAPSHOT
- ",org.nuxeo.ecm.core.repository.jcr.testing;uses:="org.nuxeo.runtime.
- test,org.nuxeo.ecm.core.model,org.nuxeo.ecm.core.event.impl,org.nuxeo
- .ecm.core,org.nuxeo.ecm.core.repository,org.nuxeo.ecm.core.event,org.
- nuxeo.runtime.api,org.nuxeo.ecm.core.api,junit.framework,junit.textui
- ";version="1.6.2.SNAPSHOT",OSGI-INF
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Tool: Bnd-0.0.357
-Bundle-Name: Nuxeo Core JCR Storage Tests
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
-Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277059771708
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/DemoRepository.xml,OSGI-INF/CoreSessionFacto
- ry.xml
-Bundle-Description: Nuxeo Core: JCR Storage Tests.
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-DocURL: http://www.nuxeo.com/en
-Import-Package: junit.framework,
- junit.textui,
- org.apache.commons.logging,
- org.apache.jackrabbit;version="1.5.3",
- org.nuxeo.ecm.core;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.api;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.api.blobholder,
- org.nuxeo.ecm.core.api.externalblob,
- org.nuxeo.ecm.core.api.impl.blob,
- org.nuxeo.ecm.core.api.model,
- org.nuxeo.ecm.core.api.model.impl.primitives,
- org.nuxeo.ecm.core.api.security,
- org.nuxeo.ecm.core.api.security.impl,
- org.nuxeo.ecm.core.event;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.event.impl;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.jcr.testing;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.model;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.repository;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.repository.jcr,
- org.nuxeo.ecm.core.repository.jcr.properties,
- org.nuxeo.ecm.core.repository.jcr.testing;version="1.6.2.SNAPSHOT",
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core.schema.types,
- org.nuxeo.ecm.core.schema.types.primitives,
- org.nuxeo.ecm.core.security,
- org.nuxeo.ecm.core.versioning,
- org.nuxeo.osgi;version="1.6.2.SNAPSHOT",
- org.nuxeo.runtime.api;version="1.6.2.SNAPSHOT",
- org.nuxeo.runtime.test;version="1.6.2.SNAPSHOT",
- org.osgi.framework;version="1.4"
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-jcr-connector-test
-Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.core.api
-
+Bundle-Name: Nuxeo ECM JCR connector for tests
+Bundle-SymbolicName: org.nuxeo.ecm.core.jcr-connector;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/DemoRepository.xml,
+ OSGI-INF/CoreSessionFactory.xml
