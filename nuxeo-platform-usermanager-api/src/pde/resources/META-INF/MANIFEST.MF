@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.usermanager.exceptions;mandator
+ y=api;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.usermanager;man
+ datory=api;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.platform.usermanager.api
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886818753
+Bundle-ManifestVersion: 2
+Import-Package: org.apache.commons.logging,org.nuxeo.ecm.core;api=spli
+ t;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",org.nu
+ xeo.ecm.core.api.impl;version="1.6",org.nuxeo.ecm.core.api.model;vers
+ ion="1.6",org.nuxeo.ecm.core.api.security;version="1.6",org.nuxeo.ecm
+ .directory;api=split,org.nuxeo.runtime.api;version="1.6"
+Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager.api;singleton:
+ =true
+Nuxeo-Require: org.nuxeo.ecm.core.api
+

@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.content.template.factories;vers
+ ion="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.content.template.listener
+ ;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.content.template.ser
+ vice;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Content Template Manager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core,org.nuxeo.runtime,org.nuxeo.ecm.cor
+ e.api
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886817224
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/content-template-framework.xml,OSGI-INF/cont
+ ent-template-contrib.xml,OSGI-INF/content-template-listener.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.content.template;singleton
+ =true
+Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
+ ing,org.jboss.util,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.cor
+ e;api=split;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1
+ .6",org.nuxeo.ecm.core.api.security;version="1.6",org.nuxeo.ecm.core.
+ event;version="1.6",org.nuxeo.ecm.core.event.impl;version="1.6",org.n
+ uxeo.ecm.core.repository;version="1.6",org.nuxeo.ecm.directory;api=sp
+ lit,org.nuxeo.runtime.api;version="1.6",org.nuxeo.runtime.model;versi
+ on="1.6"
+

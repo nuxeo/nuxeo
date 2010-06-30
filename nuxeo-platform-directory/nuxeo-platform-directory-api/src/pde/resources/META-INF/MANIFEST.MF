@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.directory;api=split;mandatory:=api;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.directory.impl;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.directory.api;version="5.3.2.SNAPSHOT"
+Ignore-Package: org.nuxeo.ecm.core.api
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.directory.api
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886813334
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.directory.api;singleton:=true
+Import-Package: org.apache.commons.logging,org.nuxeo.common.collection
+ s,org.nuxeo.common.utils,org.nuxeo.ecm.core.api.impl;version="1.6",or
+ g.nuxeo.ecm.core.api.model;version="1.6",org.nuxeo.runtime.api;versio
+ n="1.6",org.nuxeo.runtime.model;version="1.6"
+Nuxeo-Require: org.nuxeo.ecm.core.api
+

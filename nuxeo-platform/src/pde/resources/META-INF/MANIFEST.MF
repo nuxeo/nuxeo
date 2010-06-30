@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.defaultPermissions;version="5.3
+ .2.SNAPSHOT",org.nuxeo.ecm.platform.ejb;version="5.3.2.SNAPSHOT",org.
+ nuxeo.ecm.platform.interfaces.ejb;version="5.3.2.SNAPSHOT",org.nuxeo.
+ ecm.platform.interfaces.local;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.
+ platform.util;version="5.3.2.SNAPSHOT"
+Private-Package: org.nuxeo.ecm.platform.interfaces.local,org.nuxeo.ecm
+ .platform.defaultPermissions,org.nuxeo.ecm.platform.ejb,org.nuxeo.ecm
+ .platform.util,org.nuxeo.ecm.platform.interfaces.ejb
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: web
+Tool: Bnd-0.0.394
+Bundle-Localization: plugin
+Bundle-Name: NXPlatform
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.api
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886812352
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/service-platform-contrib.xml,  OSGI-INF/defa
+ ultPermissions-contrib.xml,  OSGI-INF/locationmanager-contrib.xml,  O
+ SGI-INF/locationmanager-plugins-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform
+Import-Package: javax.annotation;version="1.0",javax.ejb,org.apache.co
+ mmons.logging,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api
+ =split;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",o
+ rg.nuxeo.ecm.core.api.impl;version="1.6",org.nuxeo.ecm.core.api.secur
+ ity;version="1.6",org.nuxeo.ecm.core.api.security.impl;version="1.6",
+ org.nuxeo.ecm.directory;api=split,org.nuxeo.runtime.model;version="1.
+ 6"
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Nuxeo-Require: org.nuxeo.ecm.platform.api
+

@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.login;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Category: runtime
+Bundle-Name: org.nuxeo.ecm.platform.login
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886819286
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/NXLoginModule-framework.xml,OSGI-INF/loginMo
+ dulePlugin-contrib.xml,OSGI-INF/JBossLoginConfig.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login
+Import-Package: javax.annotation;version="1.0",
+ javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split;version="1.6",
+ org.nuxeo.ecm.core.api;api=split;version="1.6",
+ org.nuxeo.ecm.core.api.security;version="1.6",
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.api.login,
+ org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.api.login,
+ org.nuxeo.runtime.model;version="1.6"
+Nuxeo-Require: org.nuxeo.ecm.core.api,org.nuxeo.ecm.platform.api,org.n
+ uxeo.ecm.platform.usermanager.api
+Require-Bundle: org.nuxeo.runtime
+

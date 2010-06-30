@@ -26,58 +26,82 @@
     <module>nuxeo-platform</module>
     <module>nuxeo-platform-actions-core</module>
     <module>nuxeo-platform-api</module>
-    <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-commandline-executor</module>
     <module>nuxeo-platform-directory</module>
     <module>nuxeo-platform-dublincore</module>
-    <module>nuxeo-platform-search-api</module>
-    <module>nuxeo-platform-search-core</module>
-    <module>nuxeo-platform-search-facade</module>
-    <module>nuxeo-platform-search-backend-core</module>
-    <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-filemanager-core</module>
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
-    <module>nuxeo-platform-filemanager-facade</module>
     <module>nuxeo-platform-lock-api</module>
     <module>nuxeo-platform-lock-core</module>
     <module>nuxeo-platform-login</module>
-    <module>nuxeo-platform-login-jboss</module>
-    <module>nuxeo-platform-auth-web-jboss</module>
     <module>nuxeo-platform-management</module>
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
-    <module>nuxeo-platform-mimetype-facade</module>
-    <module>nuxeo-platform-placeful-api</module>
-    <module>nuxeo-platform-placeful-core</module>
-    <module>nuxeo-platform-placeful-facade</module>
-    <module>nuxeo-platform-placeful-theme</module>
     <module>nuxeo-platform-heartbeat-api</module>
     <module>nuxeo-platform-heartbeat-core</module>
-    <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
-    <module>nuxeo-platform-types-facade</module>
-    <module>nuxeo-platform-uidgen-core</module>
-    <module>nuxeo-platform-web-common</module>
-    <module>nuxeo-platform-url-core</module>
-    <module>nuxeo-platform-url-facade</module>
-    <module>nuxeo-platform-url-api</module>
     <module>nuxeo-platform-usermanager-core</module>
     <module>nuxeo-platform-usermanager-api</module>
-    <module>nuxeo-platform-usermanager-facade</module>
     <module>nuxeo-platform-versioning-api</module>
     <module>nuxeo-platform-versioning-core</module>
-    <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-content-template-manager</module>
     <module>nuxeo-platform-el</module>
     <module>nuxeo-platform-convert</module>
-    <module>nuxeo-platform-forms-layout-api</module>
-    <module>nuxeo-platform-rendering</module>
-    <module>nuxeo-platform-htmlsanitizer</module>
-    <module>nuxeo-shell-core</module>
-    <module>nuxeo-platform-test</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-pde</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-api-test</module>
+	<module>nuxeo-platform-search-api</module>
+	<module>nuxeo-platform-search-core</module>
+	<module>nuxeo-platform-search-facade</module>
+	<module>nuxeo-platform-search-backend-core</module>
+	<module>nuxeo-platform-search-test</module>
+	<module>nuxeo-platform-filemanager-facade</module>
+	<module>nuxeo-platform-login-jboss</module>
+	<module>nuxeo-platform-auth-web-jboss</module>
+	<module>nuxeo-platform-mimetype-facade</module>
+	<module>nuxeo-platform-placeful-api</module>
+	<module>nuxeo-platform-placeful-core</module>
+	<module>nuxeo-platform-placeful-facade</module>
+	<module>nuxeo-platform-placeful-theme</module>
+	<module>nuxeo-platform-scheduler-core</module>
+	<module>nuxeo-platform-types-facade</module>
+	<module>nuxeo-platform-uidgen-core</module>
+	<module>nuxeo-platform-web-common</module>
+	<module>nuxeo-platform-url-core</module>
+	<module>nuxeo-platform-url-facade</module>
+	<module>nuxeo-platform-url-api</module>
+	<module>nuxeo-platform-usermanager-facade</module>
+	<module>nuxeo-platform-ws</module>
+	<module>nuxeo-platform-forms-layout-api</module>
+	<module>nuxeo-platform-rendering</module>
+	<module>nuxeo-platform-htmlsanitizer</module>
+	<module>nuxeo-shell-core</module>
+	<module>nuxeo-platform-test</module>
+      </modules>
+    </profile>	
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>

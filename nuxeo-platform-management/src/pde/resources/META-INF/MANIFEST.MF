@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.management.adapters;version="5.
+ 3.2.SNAPSHOT",org.nuxeo.ecm.platform.management.probes;version="5.3.2
+ .SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: nuxeo platform management
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.webengine.core,org.nuxeo.runtime.managem
+ ent,org.nuxeo.ecm.core,org.nuxeo.platform.web.common,org.nuxeo.platfo
+ rm.scheduler.core
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886819886
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,OSGI-
+ INF/management-probe-scheduler-contrib.xml,OSGI-INF/management-resour
+ ce-publisher-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
+Provide-Package: org.nuxeo.ecm.platform.management
+Import-Package: javax.annotation;version="1.0",javax.servlet.http,org.
+ apache.commons.logging,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm
+ .core;api=split;version="1.6",org.nuxeo.ecm.core.api;api=split;versio
+ n="1.6",org.nuxeo.ecm.core.api.security;version="1.6",org.nuxeo.ecm.c
+ ore.event;version="1.6",org.nuxeo.ecm.core.model;version="1.6",org.nu
+ xeo.ecm.core.repository;version="1.6",org.nuxeo.ecm.directory;api=spl
+ it,org.nuxeo.runtime;version="1.6",org.nuxeo.runtime.api;version="1.6
+ ",org.nuxeo.runtime.management;version="1.6",org.nuxeo.runtime.model;
+ version="1.6"
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event,org.nu
+ xeo.runtime.management,org.nuxeo.ecm.platform.scheduler.core
+

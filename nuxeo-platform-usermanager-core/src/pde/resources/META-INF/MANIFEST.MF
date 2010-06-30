@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.usermanager;core=split;version=
+ "5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.computedgroups;version="5.3.2
+ .SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: web,stateful
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.platform.usermanager
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.usermanager.api;visibility:=reexport,
+ org.nuxeo.common
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886819455
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/UserService.xml, OSGI-INF/computedgroups-fra
+ mework.xml, OSGI-INF/companycomputedgroups-contrib.xml, OSGI-INF/User
+ ManagerImpl.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split;version="1.6",
+ org.nuxeo.ecm.core.api;api=split;version="1.6",
+ org.nuxeo.ecm.core.api.impl,
+ org.nuxeo.ecm.core.api.security;version="1.6",
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.runtime.api;version="1.6",
+ org.nuxeo.runtime.model;version="1.6",
+ org.nuxeo.runtime.services.event
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.directory.api, or
+ g.nuxeo.ecm.platform.usermanager.api
+

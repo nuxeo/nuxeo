@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.actions;version="5.3.2.SNAPSHOT
+ ",org.nuxeo.ecm.platform.actions.ejb;version="5.3.2.SNAPSHOT",org.nux
+ eo.ecm.platform.actions.elcache;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: org.nuxeo.ecm.actions
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-LazyStart: false
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886812857
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/actions-framework.xml
+Bundle-SymbolicName: org.nuxeo.ecm.actions;singleton:=true
+Import-Package: javax.annotation;version="1.0",javax.ejb,org.apache.co
+ mmons.logging,org.jboss.seam.pageflow,org.jbpm.graph.def,org.nuxeo.co
+ mmon.xmap.annotation,org.nuxeo.ecm.core;api=split;version="1.6",org.n
+ uxeo.ecm.core.api;api=split;version="1.6",org.nuxeo.ecm.directory;api
+ =split,org.nuxeo.runtime.api;version="1.6",org.nuxeo.runtime.expressi
+ on;version="1.6",org.nuxeo.runtime.model;version="1.6"
+Nuxeo-Require: org.nuxeo.ecm.core.api
+
