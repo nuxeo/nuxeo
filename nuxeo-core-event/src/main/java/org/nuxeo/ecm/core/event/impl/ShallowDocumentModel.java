@@ -67,6 +67,8 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final boolean isFolder;
 
+    private final boolean isVersion;
+
     public ShallowDocumentModel(DocumentModel doc) {
         id = doc.getId();
         repoName = doc.getRepositoryName();
@@ -74,6 +76,7 @@ public class ShallowDocumentModel implements DocumentModel {
         path = doc.getPath();
         type = doc.getType();
         isFolder = doc.isFolder();
+        isVersion = doc.isVersion();
     }
 
     public String getId() {
@@ -116,6 +119,10 @@ public class ShallowDocumentModel implements DocumentModel {
 
     public boolean isFolder() {
         return isFolder;
+    }
+
+    public boolean isVersion() {
+        return isVersion;
     }
 
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
@@ -281,10 +288,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public boolean isImmutable() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isVersion() {
         throw new UnsupportedOperationException();
     }
 
