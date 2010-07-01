@@ -51,6 +51,7 @@
     <module>nuxeo-platform-convert</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-core</module>
+    <module>nuxeo-platform-management</module>
   </modules>
 
   <profiles>

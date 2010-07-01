@@ -8,12 +8,9 @@ Tool: Bnd-0.0.394
 Bundle-Name: nuxeo platform management
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.webengine.core,org.nuxeo.runtime.managem
- ent,org.nuxeo.ecm.core,org.nuxeo.platform.web.common,org.nuxeo.platfo
- rm.scheduler.core
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959048488
+Bnd-LastModified: 1277959811762
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,OSGI-
  INF/management-probe-scheduler-contrib.xml,OSGI-INF/management-resour
