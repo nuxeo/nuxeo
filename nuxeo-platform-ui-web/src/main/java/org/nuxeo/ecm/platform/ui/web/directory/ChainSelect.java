@@ -358,7 +358,15 @@ public class ChainSelect extends UIInput {
         if (onchange != null) {
             return onchange;
         }
-        return (String) getProperty("onchange");
+        ValueExpression ve = getValueExpression("onchange");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        }
+        return null;
     }
 
     public void setOnchange(String onchange) {
