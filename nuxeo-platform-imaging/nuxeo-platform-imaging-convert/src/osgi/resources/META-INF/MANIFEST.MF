@@ -7,12 +7,10 @@ Tool: Bnd-0.0.394
 Bundle-Name: Imaging Convert Plugin
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.core.convert,org.nuxeo.ecm.platform.pict
- ure.api
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: false
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277958792108
+Bnd-LastModified: 1277976997123
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.convert;singleton:

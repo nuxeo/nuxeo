@@ -13,11 +13,9 @@ Bundle-Localization: plugin
 Bundle-Name: NXAudit Core
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.audit.api,org.nuxeo.ecm.platfor
- m.el,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.persistence
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277958787309
+Bnd-LastModified: 1277976978443
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxaudit-service.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.audit

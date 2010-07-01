@@ -10,10 +10,9 @@ Tool: Bnd-0.0.394
 Bundle-Name: Nuxeo ECM Relations
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.relations.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277958788778
+Bnd-LastModified: 1277976985571
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxrelations.xml
 Bundle-SymbolicName: org.nuxeo.ecm.relations;singleton:=true

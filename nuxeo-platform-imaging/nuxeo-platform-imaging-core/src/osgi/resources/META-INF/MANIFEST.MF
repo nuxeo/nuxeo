@@ -18,13 +18,10 @@ Tool: Bnd-0.0.394
 Bundle-Name: Nuxeo Picture Imaging Core
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.types.api,org.nuxeo.ecm.core.ap
- i,org.nuxeo.ecm.platform.picture.api,org.nuxeo.ecm.platform.commandli
- ne.executor
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277958791580
+Bnd-LastModified: 1277976992586
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,OSGI-INF/imagi
  ng-service-contrib.xml,OSGI-INF/picture-schemas-contrib.xml,OSGI-INF/
@@ -49,5 +46,5 @@ Import-Package: com.drew.imaging.jpeg,com.drew.metadata,com.drew.metad
  me.api,org.nuxeo.runtime.model,org.nuxeo.runtime.services.streaming
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,org.nuxeo.ecm.core.api
  ,org.nuxeo.ecm.platform.picture.api,org.nuxeo.ecm.platform.commandlin
- e.executor,org.nuxeo.ecm.platform.filemanager.core
+ e.executor
 
