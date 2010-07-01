@@ -37,7 +37,6 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.properties.OrderedProperties;
-import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public final class Utils {
@@ -295,7 +294,6 @@ public final class Utils {
                     if (resolvePresets) {
                         value = PresetManager.resolvePresets(themeName, value);
                     }
-
                     sb.append(value).append(';');
                     if (indent) {
                         sb.append('\n');
@@ -308,7 +306,6 @@ public final class Utils {
 
             }
         }
-
         return sb.toString();
     }
 
@@ -350,6 +347,18 @@ public final class Utils {
             String found = "#" + optimizeHexColor(rgbToHex(m.group(1)));
             if (found.equals(before)) {
                 text = text.replace(String.format("rgb(%s)", m.group(1)), after);
+            }
+        }
+        return text;
+    }
+
+    public static String replaceImage(String text, String before, String after) {
+        text = text.trim();
+        Matcher m = imageUrlPattern.matcher(text);
+        if (m.matches()) {
+            String found = String.format("url(%s)", m.group(1));
+            if (found.equals(before)) {
+                text = text.replace(String.format("url(%s)", m.group(1)), after);
             }
         }
         return text;

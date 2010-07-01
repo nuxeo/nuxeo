@@ -70,6 +70,7 @@ import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
+import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;
@@ -1382,6 +1383,16 @@ public final class ThemeManager implements Registrable {
         return resourceBanks;
     }
 
+    // Configurable presets   
+    List<PresetType> getPresetsUsedInTheme(String themeName) throws ThemeException {
+        ThemeElement theme = getThemeByName(themeName);
+        if (theme == null) {
+            throw new ThemeException("Theme not found: " + themeName);
+        }
+        
+    }
+    
+    // Theme descriptors
     public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
