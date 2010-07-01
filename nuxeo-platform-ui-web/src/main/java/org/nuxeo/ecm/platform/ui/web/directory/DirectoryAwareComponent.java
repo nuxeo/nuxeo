@@ -41,7 +41,6 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public abstract class DirectoryAwareComponent extends UIInput {
 
@@ -70,6 +69,10 @@ public abstract class DirectoryAwareComponent extends UIInput {
     protected String display;
 
     protected String onchange;
+
+    protected String onclick;
+
+    protected String onselect;
 
     protected String filter;
 
@@ -178,14 +181,16 @@ public abstract class DirectoryAwareComponent extends UIInput {
             optionList = DirectoryHelper.instance().getSelectItems(
                     directoryName, filter, localize);
         } else if (directoryValues != null) {
-            optionList = DirectoryHelper.getSelectItems(directoryValues, filter, localize);
+            optionList = DirectoryHelper.getSelectItems(directoryValues,
+                    filter, localize);
         } else {
             optionList = new ArrayList<DirectorySelectItem>();
         }
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(optionList, new SelectItemComparator(ordering, caseSensitive));
+            Collections.sort(optionList, new SelectItemComparator(ordering,
+                    caseSensitive));
         }
 
         for (DirectorySelectItem item : optionList) {
@@ -276,6 +281,28 @@ public abstract class DirectoryAwareComponent extends UIInput {
         this.onchange = onchange;
     }
 
+    public String getOnclick() {
+        if (onclick != null) {
+            return onclick;
+        }
+        return getStringValue("onclick", null);
+    }
+
+    public void setOnclick(String onclick) {
+        this.onclick = onclick;
+    }
+
+    public String getOnselect() {
+        if (onselect != null) {
+            return onselect;
+        }
+        return getStringValue("onselect", null);
+    }
+
+    public void setOnselect(String onselect) {
+        this.onselect = onselect;
+    }
+
     public String getFilter() {
         if (filter != null) {
             return filter;
@@ -329,7 +356,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[17];
+        Object[] values = new Object[19];
         values[0] = super.saveState(context);
         values[1] = directoryName;
         values[2] = options;
@@ -347,6 +374,8 @@ public abstract class DirectoryAwareComponent extends UIInput {
         values[14] = ordering;
         values[15] = directoryValues;
         values[16] = caseSensitive;
+        values[17] = onclick;
+        values[18] = onselect;
         return values;
     }
 
@@ -371,6 +400,8 @@ public abstract class DirectoryAwareComponent extends UIInput {
         ordering = (String) values[14];
         directoryValues = (VocabularyEntryList) values[15];
         caseSensitive = (Boolean) values[16];
+        onclick = (String) values[17];
+        onselect = (String) values[18];
     }
 
     public Boolean getBooleanProperty(String key, Boolean defaultValue) {

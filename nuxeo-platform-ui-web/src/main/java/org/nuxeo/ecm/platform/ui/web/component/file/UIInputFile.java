@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.ui.web.component.file;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,23 +63,29 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_FAMILY = "javax.faces.Input";
 
-    private static final String CHOICE_FACET_NAME = "choice";
+    protected static final String CHOICE_FACET_NAME = "choice";
 
-    private static final String UPLOAD_FACET_NAME = "upload";
+    protected static final String UPLOAD_FACET_NAME = "upload";
 
-    private static final String DEFAULT_DOWNLOAD_FACET_NAME = "default_download";
+    protected static final String DEFAULT_DOWNLOAD_FACET_NAME = "default_download";
 
-    private static final String DOWNLOAD_FACET_NAME = "download";
+    protected static final String DOWNLOAD_FACET_NAME = "download";
 
-    private static final String EDIT_FILENAME_FACET_NAME = "edit_filename";
+    protected static final String EDIT_FILENAME_FACET_NAME = "edit_filename";
 
-    private static final Log log = LogFactory.getLog(UIInputFile.class);
+    protected static final Log log = LogFactory.getLog(UIInputFile.class);
 
     // value for filename, will disappear when it's part of the blob
-    private String filename;
+    protected String filename;
 
     // used to decide whether filename can be edited
-    private Boolean editFilename;
+    protected Boolean editFilename;
+
+    protected String onchange;
+
+    protected String onclick;
+
+    protected String onselect;
 
     public UIInputFile() {
         // initiate sub components otherwise they won't be available when
@@ -173,6 +180,52 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public InputFileInfo getFileInfoSubmittedValue() {
         return (InputFileInfo) getSubmittedValue();
+    }
+
+    protected String getStringValue(String name, String defaultValue) {
+        ValueExpression ve = getValueExpression(name);
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public String getOnchange() {
+        if (onchange != null) {
+            return onchange;
+        }
+        return getStringValue("onchange", null);
+    }
+
+    public void setOnchange(String onchange) {
+        this.onchange = onchange;
+    }
+
+    public String getOnclick() {
+        if (onclick != null) {
+            return onclick;
+        }
+        return getStringValue("onclick", null);
+    }
+
+    public void setOnclick(String onclick) {
+        this.onclick = onclick;
+    }
+
+    public String getOnselect() {
+        if (onselect != null) {
+            return onselect;
+        }
+        return getStringValue("onselect", null);
+    }
+
+    public void setOnselect(String onselect) {
+        this.onselect = onselect;
     }
 
     // handle submitted values
@@ -548,17 +601,38 @@ public class UIInputFile extends UIInput implements NamingContainer {
             writer.startElement("tr", this);
             writer.startElement("td", this);
             writer.writeAttribute("class", "radioColumn", null);
-            String html;
+            Map<String, String> props = new HashMap<String, String>();
+            props.put("type", "radio");
+            props.put("name", radioClientId);
+            props.put("id", id);
+            props.put("value", radioChoice.name());
             if (radioChoice.equals(currentChoice)) {
-                html = "<input type=\"radio\" name=\"%s\" id=\"%s\" value=\"%s\" checked=\"checked\" />";
-            } else {
-                html = "<input type=\"radio\" name=\"%s\" id=\"%s\" value=\"%s\" />";
+                props.put("checked", "checked");
             }
-            writer.write(String.format(html, radioClientId, id, radioChoice));
+            String onchange = getOnchange();
+            if (onchange != null) {
+                props.put("onchange", onchange);
+            }
+            String onclick = getOnclick();
+            if (onclick != null) {
+                props.put("onclick", onclick);
+            }
+            String onselect = getOnselect();
+            if (onselect != null) {
+                props.put("onselect", onselect);
+            }
+            StringBuffer htmlBuffer = new StringBuffer();
+            htmlBuffer.append("<input");
+            for (Map.Entry<String, String> prop : props.entrySet()) {
+                htmlBuffer.append(String.format(" %s=\"%s\"", prop.getKey(),
+                        prop.getValue()));
+            }
+            htmlBuffer.append(" />");
+            writer.write(htmlBuffer.toString());
             writer.endElement("td");
             writer.startElement("td", this);
             writer.writeAttribute("class", "fieldColumn", null);
-            html = "<label for=\"%s\" style=\"float:left\">%s</label>";
+            String html = "<label for=\"%s\" style=\"float:left\">%s</label>";
             String label = (String) ComponentUtils.getAttributeValue(this,
                     radioChoice + "Label", null);
             if (label == null) {
@@ -684,10 +758,13 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[7];
+        Object[] values = new Object[6];
         values[0] = super.saveState(context);
-        values[3] = filename;
-        values[6] = editFilename;
+        values[1] = filename;
+        values[2] = editFilename;
+        values[3] = onchange;
+        values[4] = onclick;
+        values[5] = onselect;
         return values;
     }
 
@@ -695,8 +772,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
-        filename = (String) values[3];
-        editFilename = (Boolean) values[6];
+        filename = (String) values[1];
+        editFilename = (Boolean) values[2];
+        onchange = (String) values[3];
+        onclick = (String) values[4];
+        onselect = (String) values[5];
     }
 
 }

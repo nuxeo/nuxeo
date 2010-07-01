@@ -133,7 +133,6 @@ public class SelectOneListboxRenderer extends Renderer {
         // default value
         display = display == null ? "" : display;
         String size = comp.getSize();
-        String onchange = comp.getOnchange();
 
         writer.startElement("select", comp);
         writer.writeAttribute("name", id, "name");
@@ -148,8 +147,17 @@ public class SelectOneListboxRenderer extends Renderer {
             writer.writeAttribute("style", cssStyle, "style");
         }
 
+        String onchange = comp.getOnchange();
         if (onchange != null) {
             writer.writeAttribute("onchange", onchange, "onchange");
+        }
+        String onclick = comp.getOnclick();
+        if (onclick != null) {
+            writer.writeAttribute("onclick", onclick, "onclick");
+        }
+        String onselect = comp.getOnselect();
+        if (onselect != null) {
+            writer.writeAttribute("onselect", onselect, "onselect");
         }
 
         Map<String, SelectItem> options = comp.getOptions();

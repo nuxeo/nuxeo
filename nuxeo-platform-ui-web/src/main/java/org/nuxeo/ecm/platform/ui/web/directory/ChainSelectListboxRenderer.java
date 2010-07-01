@@ -67,6 +67,20 @@ public class ChainSelectListboxRenderer extends Renderer {
         String cssStyleClass = comp.getStringProperty("cssStyleClass", null);
         String cssStyle = comp.getStringProperty("cssStyle", null);
         String onchange = comp.getStringProperty("onchange", null);
+        // XXX hack: add onchange set on the chain select
+        String chainOnchange = chain.getOnchange();
+        if (chainOnchange != null) {
+            if (onchange == null) {
+                onchange = chainOnchange;
+            } else {
+                if (onchange.endsWith(";")) {
+                    onchange += chainOnchange;
+                } else {
+                    onchange += "; " + chainOnchange;
+                }
+            }
+        }
+
         boolean multiSelect = comp.getBooleanProperty("multiSelect", false);
         String size = comp.getStringProperty("size", null);
         boolean displayIdAndLabel = comp.getBooleanProperty(

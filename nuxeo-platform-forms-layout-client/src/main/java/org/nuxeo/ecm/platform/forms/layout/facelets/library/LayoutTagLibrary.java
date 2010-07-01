@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.facelets.DocumentLayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowWidgetTagHandler;
@@ -33,9 +36,10 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * Layout tag library
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class LayoutTagLibrary extends AbstractTagLibrary {
+
+    private static final Log log = LogFactory.getLog(LayoutTagLibrary.class);
 
     public static final String Namespace = "http://nuxeo.org/nxforms/layout";
 
@@ -43,7 +47,6 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
 
     public LayoutTagLibrary() {
         super(Namespace);
-
         addTagHandler("widgetType", WidgetTypeTagHandler.class);
         addTagHandler("widget", WidgetTagHandler.class);
         addTagHandler("layout", LayoutTagHandler.class);
@@ -53,6 +56,31 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         addTagHandler("layoutColumnWidget", LayoutRowWidgetTagHandler.class);
         addTagHandler("subWidget", SubWidgetTagHandler.class);
         addTagHandler("documentLayout", DocumentLayoutTagHandler.class);
+
+        try {
+            addFunction("fieldDefinitionsAsString",
+                    LayoutTagLibrary.class.getMethod(
+                            "getFieldDefinitionsAsString",
+                            new Class[] { FieldDefinition[].class }));
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+    }
+
+    // JSF functions
+
+    /**
+     * Returns a String representing each of the field definitions property
+     * name, separated by a space.
+     */
+    public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
+        StringBuffer buff = new StringBuffer();
+        if (defs != null) {
+            for (FieldDefinition def : defs) {
+                buff.append(def.getPropertyName() + " ");
+            }
+        }
+        return buff.toString();
     }
 
 }

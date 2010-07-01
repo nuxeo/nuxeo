@@ -31,6 +31,16 @@
       ui:repeat or a h:dataTable tag. This is true for layout names, modes and
       widget instances.
     </p>
+    <p>
+      Library functions:
+      <ul>
+        <li>
+          fieldDefinitionsAsString(FieldDefinition[]): returns the list of
+          property names for each of the field definitions, separated by a
+          space.
+        </li>
+      </ul>
+    </p>
     ]]>
   </description>
 
@@ -121,6 +131,11 @@
           </li>
         </ul>
       </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to the widget properties, overriding
+        properties that already set in the widget definition.
+      </p>
       ]]>
     </description>
     <attribute>
@@ -171,6 +186,11 @@
           </li>
         </ul>
       </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to the layout properties, overriding
+        properties that already set in the layout definition.
+      </p>
       ]]>
     </description>
     <attribute>
@@ -191,6 +211,15 @@
       <name>value</name>
       <required>true</required>
       <description>The value on which layout will apply.</description>
+    </attribute>
+    <attribute>
+      <name>template</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The template to use for this layout, overriding the template declared in
+        the layout definition.
+      </description>
     </attribute>
     <example>
       <![CDATA[
@@ -392,6 +421,11 @@
         equivalent to rendering each layout in given mode, using document as
         value.
       </p>
+      <p>
+        Any additional property set on the tag and that is not explicitely in the
+        list of handled attributes is added to each of the layouts properties,
+        overriding properties that already set in the layout definitions.
+      </p>
       ]]>
     </description>
     <attribute>
@@ -406,6 +440,15 @@
       <type>org.nuxeo.ecm.core.api.DocumentModel</type>
       <description>
         The document for which layouts will be built and rendered.
+      </description>
+    </attribute>
+    <attribute>
+      <name>template</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The template to use for layouts, overriding each of the templates
+        declared in the layouts definitions.
       </description>
     </attribute>
     <example>

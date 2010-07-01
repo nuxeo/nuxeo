@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.el.ELException;
@@ -63,11 +64,20 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute template;
+
+    protected final TagAttribute[] vars;
+
+    protected final String[] reservedVarsArray = new String[] { "id", "name",
+            "mode", "value", "template" };
+
     public DocumentLayoutTagHandler(TagConfig config) {
         super(config);
         this.config = config;
         mode = getRequiredAttribute("mode");
         value = getRequiredAttribute("value");
+        template = getAttribute("template");
+        vars = tag.getAttributes().getAll();
     }
 
     /**
@@ -96,7 +106,16 @@ public class DocumentLayoutTagHandler extends TagHandler {
         FaceletHandler leaf = new LeafFaceletHandler();
         for (String layoutName : layoutNames) {
             TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(
-                    helper.createAttribute("name", layoutName), modeAttr, value);
+                    helper.createAttribute("name", layoutName), modeAttr,
+                    value, template);
+            // add other variables put on original tag
+            List<String> reservedVars = Arrays.asList(reservedVarsArray);
+            for (TagAttribute var : vars) {
+                String localName = var.getLocalName();
+                if (!reservedVars.contains(localName)) {
+                    FaceletHandlerHelper.addTagAttribute(attributes, var);
+                }
+            }
             TagConfig tagConfig = TagConfigFactory.createTagConfig(config,
                     attributes, leaf);
             handlers.add(new LayoutTagHandler(tagConfig));

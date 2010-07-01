@@ -63,7 +63,6 @@ import com.sun.facelets.tag.TagConfig;
  * Layout service implementation.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class WebLayoutManagerImpl extends DefaultComponent implements
         WebLayoutManager {
@@ -253,8 +252,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it again this is
-     * useful when retrieving the expression from a configuration file.
+     * If the expression resolves to an EL expression, evaluate it again this
+     * is useful when retrieving the expression from a configuration file.
      * <p>
      * If given context is null, do no try to evaluate it and return the
      * expression itself.
@@ -325,7 +324,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         if (wMode == null) {
             if (BuiltinModes.CREATE.equals(layoutMode)
                     || BuiltinModes.EDIT.equals(layoutMode)
-                    || BuiltinModes.SEARCH.equals(layoutMode)) {
+                    || BuiltinModes.SEARCH.equals(layoutMode)
+                    || BuiltinModes.BULK_EDIT.equals(layoutMode)) {
                 wMode = BuiltinWidgetModes.EDIT;
             } else {
                 wMode = BuiltinWidgetModes.VIEW;
@@ -337,8 +337,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Computes a widget from a definition for a mode in a given context.
      * <p>
-     * If the widget is configured not to be rendered in the given mode, returns
-     * null.
+     * If the widget is configured not to be rendered in the given mode,
+     * returns null.
      * <p>
      * Sub widgets are also computed recursively.
      */
@@ -348,7 +348,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         VariableMapper orig = null;
         // avoid variable mapper changes if context is null for tests
         if (context != null) {
-            // expose widget mode so that it can be used in a mode el expression
+            // expose widget mode so that it can be used in a mode el
+            // expression
             orig = context.getVariableMapper();
             VariableMapper vm = new VariableMapperWrapper(orig);
             context.setVariableMapper(vm);
@@ -388,8 +389,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             String valueName) throws LayoutException {
         LayoutDefinition lDef = getLayoutDefinition(layoutName);
         if (lDef == null) {
-            log.debug(String.format("Layout %s not found",
-                    layoutName));
+            log.debug(String.format("Layout %s not found", layoutName));
             return null;
         }
         if (ctx == null) {

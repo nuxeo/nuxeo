@@ -203,6 +203,14 @@
       <description>Javascript onchange event handler</description>
     </attribute>
     <attribute>
+      <name>onclick</name>
+      <description>Javascript onclick event handler</description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>Javascript onselect event handler</description>
+    </attribute>
+    <attribute>
       <name>size</name>
       <description>Html select size attribute</description>
     </attribute>
@@ -297,6 +305,14 @@
     <attribute>
       <name>onchange</name>
       <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>Javascript onclick event handler</description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>Javascript onselect event handler</description>
     </attribute>
     <attribute>
       <name>notDisplayDefaultOption</name>
