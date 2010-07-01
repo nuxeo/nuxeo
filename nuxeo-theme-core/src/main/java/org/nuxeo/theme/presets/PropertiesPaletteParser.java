@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 public class PropertiesPaletteParser extends PaletteParser {
 
     public static boolean checkSanity(byte[] bytes) {
-        Properties properties =getProperties(bytes);
+        Properties properties = getProperties(bytes);
         for (Object value : properties.values()) {
             if (value.equals("")) {
                 return false;
@@ -36,14 +36,14 @@ public class PropertiesPaletteParser extends PaletteParser {
 
     public static Map<String, String> parse(byte[] bytes) {
         Map<String, String> entries = new LinkedHashMap<String, String>();
-        Properties properties =getProperties(bytes);
+        Properties properties = getProperties(bytes);
         for (Object propertyName : properties.keySet()) {
             String key = (String) propertyName;
             entries.put(key, Framework.expandVars((String) properties.get(key)));
         }
         return entries;
     }
-    
+
     private static Properties getProperties(byte[] bytes) {
         Properties properties = new Properties();
         try {

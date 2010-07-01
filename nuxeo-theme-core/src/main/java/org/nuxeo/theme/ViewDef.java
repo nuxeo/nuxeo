@@ -32,7 +32,6 @@ public final class ViewDef {
     @XNode("perspective")
     private String perspective;
 
-
     public String getEngine() {
         return engine;
     }

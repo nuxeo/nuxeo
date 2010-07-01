@@ -26,13 +26,15 @@ public class TestFormatter extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     public void testFormatter() throws ThemeException {
         DummyFragment fragment = new DummyFragment();
-        Format widget= FormatFactory.create("widget");
+        Format widget = FormatFactory.create("widget");
         widget.setName("vertical menu");
 
         // Make the objects identifiable
@@ -50,19 +52,20 @@ public class TestFormatter extends NXRuntimeTestCase {
 
         assertTrue(ElementFormatter.getFormatsFor(fragment).contains(widget));
         assertSame(widget, ElementFormatter.getFormatFor(fragment, "widget"));
-        assertEquals(ElementFormatter.getFormatByType(fragment,
-                widget.getFormatType()), widget);
+        assertEquals(
+                ElementFormatter.getFormatByType(fragment,
+                        widget.getFormatType()), widget);
         assertTrue(ElementFormatter.getElementsFor(widget).contains(fragment));
 
         // Replace format
         Format widget2 = FormatFactory.create("widget");
         widget2.setName("horizontal menu");
         widget2.setUid(3);
-        assertSame(widget, ElementFormatter.getFormatFor(fragment,"widget"));
+        assertSame(widget, ElementFormatter.getFormatFor(fragment, "widget"));
         ElementFormatter.setFormat(fragment, widget2);
         assertTrue(ElementFormatter.getElementsFor(widget2).contains(fragment));
         assertTrue(ElementFormatter.getElementsFor(widget).isEmpty());
-        assertSame(widget2, ElementFormatter.getFormatFor(fragment,"widget"));
+        assertSame(widget2, ElementFormatter.getFormatFor(fragment, "widget"));
 
         // Remove format
         ElementFormatter.removeFormat(fragment, widget2);

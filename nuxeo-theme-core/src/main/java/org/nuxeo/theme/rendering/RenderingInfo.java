@@ -131,7 +131,7 @@ public class RenderingInfo implements Info, Identifiable {
     public TemplateEngineType getTemplateEngine() {
         return ThemeManager.getTemplateEngineByUrl(themeUrl);
     }
-    
+
     public boolean isRenderingPostponed(boolean cache) {
         return cache && isDirty();
     }

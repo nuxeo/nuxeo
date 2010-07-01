@@ -413,10 +413,10 @@ public class Main extends ModuleRoot {
             folderTypeName = "skins";
         }
         folderTypeAttributes.put("rel", folderTypeName);
-        folderTypeAttributes.put("path", String.format("/%s/%s", bankName,
-                typeName));
-        folderTypeAttributes.put("id", BankUtils.getDomId(String.format(
-                "%s-%s", bankName, typeName)));
+        folderTypeAttributes.put("path",
+                String.format("/%s/%s", bankName, typeName));
+        folderTypeAttributes.put("id",
+                BankUtils.getDomId(String.format("%s-%s", bankName, typeName)));
         folderTypeNode.put("attributes", folderTypeAttributes);
         folderTypeNode.put("data", folderTypeMap);
 
@@ -433,8 +433,8 @@ public class Main extends ModuleRoot {
 
                 JSONObject collectionAttributes = new JSONObject();
                 collectionAttributes.put("rel", "collection");
-                collectionAttributes.put("path", String.format("/%s/%s/%s",
-                        bankName, typeName, c));
+                collectionAttributes.put("path",
+                        String.format("/%s/%s/%s", bankName, typeName, c));
                 collectionAttributes.put("id",
                         BankUtils.getDomId(String.format("%s-%s-%s", bankName,
                                 typeName, c)));

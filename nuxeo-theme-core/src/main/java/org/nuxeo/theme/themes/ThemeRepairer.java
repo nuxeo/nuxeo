@@ -96,7 +96,8 @@ public final class ThemeRepairer {
         }
     }
 
-    public static void checkSharedFormats(ThemeElement theme) throws ThemeException {
+    public static void checkSharedFormats(ThemeElement theme)
+            throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         for (Format format : Manager.getThemeManager().listFormats()) {
             Collection<Element> elements = ElementFormatter.getElementsFor(format);
@@ -132,7 +133,8 @@ public final class ThemeRepairer {
         }
     }
 
-    private static void moveLayoutProperties(Element element) throws ThemeException {
+    private static void moveLayoutProperties(Element element)
+            throws ThemeException {
         Widget widget = (Widget) ElementFormatter.getFormatFor(element,
                 "widget");
         Style style = (Style) ElementFormatter.getFormatFor(element, "style");

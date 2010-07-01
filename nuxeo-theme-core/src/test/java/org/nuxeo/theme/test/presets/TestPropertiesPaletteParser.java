@@ -24,7 +24,8 @@ import org.nuxeo.theme.presets.PropertiesPaletteParser;
 public class TestPropertiesPaletteParser extends TestCase {
 
     public void testParser() {
-        URL url = getClass().getClassLoader().getResource("properties-palette.properties");
+        URL url = getClass().getClassLoader().getResource(
+                "properties-palette.properties");
         Map<String, String> entries = PropertiesPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
 

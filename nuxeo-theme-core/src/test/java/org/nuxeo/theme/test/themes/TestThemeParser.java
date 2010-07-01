@@ -39,8 +39,10 @@ public class TestThemeParser extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
 
         ThemeDescriptor themeDef = new ThemeDescriptor();
@@ -88,7 +90,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
         PresetType preset2 = PresetManager.getPresetByName("theme1/nice background");
         assertEquals("theme1", preset2.getGroup());
         assertEquals("nice background", preset2.getName());
-        assertEquals("#fff url(/skin/app/nice-bg.png) top left repeat-y", preset2.getValue());
+        assertEquals("#fff url(/skin/app/nice-bg.png) top left repeat-y",
+                preset2.getValue());
         assertEquals("background", preset2.getCategory());
     }
 
@@ -112,8 +115,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertNotNull(style1);
         assertEquals("default fonts", style1.getName());
         assertTrue(style1.getPathsForView("*").contains("h3"));
-        assertEquals("green", style1.getPropertiesFor("*", "h3").getProperty(
-                "color"));
+        assertEquals("green",
+                style1.getPropertiesFor("*", "h3").getProperty("color"));
 
         // test style inheritance
         Element fragment = (Element) page1.getChildren().get(0).getChildren().get(
@@ -132,8 +135,10 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertNotNull(common1);
         assertEquals("common style 1", common1.getName());
         assertTrue(common1.getPathsForView("*").contains("div"));
-        assertEquals("blue", common1.getPropertiesFor("*", "div").getProperty(
-                "background-color"));
+        assertEquals(
+                "blue",
+                common1.getPropertiesFor("*", "div").getProperty(
+                        "background-color"));
     }
 
     public void testCommonStylesWithInheritance() {
@@ -145,7 +150,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("common style 2", common2.getName());
         assertTrue(common2.getPathsForView("*").contains("table"));
 
-        assertEquals("orange",
+        assertEquals(
+                "orange",
                 common2.getPropertiesFor("*", "table").getProperty(
                         "border-color"));
 

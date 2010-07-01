@@ -24,7 +24,8 @@ import org.nuxeo.theme.presets.PhotoshopPaletteParser;
 public class TestPhotoshopPaletteParser extends TestCase {
 
     public void testAcoV1() {
-        URL url = getClass().getClassLoader().getResource("photoshop-v1-palette.aco");
+        URL url = getClass().getClassLoader().getResource(
+                "photoshop-v1-palette.aco");
         Map<String, String> entries = PhotoshopPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
         assertEquals(336, keys.length);
@@ -46,7 +47,8 @@ public class TestPhotoshopPaletteParser extends TestCase {
     }
 
     public void testAcoV2() {
-        URL url = getClass().getClassLoader().getResource("photoshop-v2-palette.aco");
+        URL url = getClass().getClassLoader().getResource(
+                "photoshop-v2-palette.aco");
         Map<String, String> entries = PhotoshopPaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
         assertEquals(72, keys.length);

@@ -54,10 +54,10 @@ public final class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
 
     private static final String EMPTY_CSS_SELECTOR = "EMPTY";
-    
+
     private static final Pattern emptyCssSelectorPattern = Pattern.compile(
             "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
-    
+
     private Utils() {
         // This class is not supposed to be instantiated.
     }
@@ -159,7 +159,7 @@ public final class Utils {
         }
         return data;
     }
-    
+
     public static void writeFile(URL url, String text) throws IOException {
         // local file system
         if (url.getProtocol().equals("file")) {
@@ -208,7 +208,7 @@ public final class Utils {
         }
 
     }
-    
+
     public static void loadProperties(final Properties properties,
             final String resourceName) {
         if (properties.isEmpty()) {
@@ -231,7 +231,6 @@ public final class Utils {
             }
         }
     }
-    
 
     public static void loadCss(final Style style, String cssSource,
             final String viewName) {
@@ -291,6 +290,5 @@ public final class Utils {
             }
         }
     }
-
 
 }

@@ -131,7 +131,8 @@ public final class Resources extends HttpServlet implements Serializable {
                 if (resourceName.endsWith(".js") && resource.isShrinkable()) {
                     String compressed = JSUtils.compressSource(source);
                     if (compressed == null) {
-                        log.warn("failed to compress javascript for: " + resourceName);
+                        log.warn("failed to compress javascript for: "
+                                + resourceName);
                         source += "\n";
                     } else {
                         source = compressed;

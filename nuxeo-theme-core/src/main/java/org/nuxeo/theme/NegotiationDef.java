@@ -32,7 +32,6 @@ public final class NegotiationDef {
     @XNode("default-perspective")
     private String defaultPerspective;
 
-
     public String getDefaultEngine() {
         return defaultEngine;
     }

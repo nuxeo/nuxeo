@@ -27,6 +27,6 @@ public class TestFormat extends TestCase {
         assertEquals(1, (int) format.getUid());
 
         assertEquals("1", format.hash());
-        }
+    }
 
 }

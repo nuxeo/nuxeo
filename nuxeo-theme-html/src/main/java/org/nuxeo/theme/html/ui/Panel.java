@@ -49,8 +49,10 @@ public class Panel {
             }
         }
         // add context information
-        form.put("org.nuxeo.theme.application.path", params.get("org.nuxeo.theme.application.path"));
-        form.put("org.nuxeo.theme.application.name", params.get("org.nuxeo.theme.application.name"));
+        form.put("org.nuxeo.theme.application.path",
+                params.get("org.nuxeo.theme.application.path"));
+        form.put("org.nuxeo.theme.application.name",
+                params.get("org.nuxeo.theme.application.name"));
 
         data.put("form", form);
         data.put("url", url);

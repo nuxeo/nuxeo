@@ -39,7 +39,8 @@ public final class FragmentType implements Type {
     public FragmentType() {
     }
 
-    public FragmentType(String name, String className, String modelName, boolean dynamic) {
+    public FragmentType(String name, String className, String modelName,
+            boolean dynamic) {
         this.name = name;
         this.className = className;
         this.modelName = modelName;

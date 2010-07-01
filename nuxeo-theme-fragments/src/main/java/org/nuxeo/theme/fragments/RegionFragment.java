@@ -20,16 +20,13 @@ import org.nuxeo.theme.properties.FieldInfo;
 
 public final class RegionFragment extends AbstractFragment {
 
-    @FieldInfo(type = "string", label = "region name",
-            description = "The name of the region from which content is inserted.")
+    @FieldInfo(type = "string", label = "region name", description = "The name of the region from which content is inserted.")
     public String name = "";
 
-    @FieldInfo(type = "text area", label = "default body",
-            description = "The default HTML content to insert if the region is not filled.")
+    @FieldInfo(type = "text area", label = "default body", description = "The default HTML content to insert if the region is not filled.")
     public String defaultBody = "";
 
-    @FieldInfo(type = "string", label = "default source",
-            description = "The source of the HTML content to insert if the region is not filled.")
+    @FieldInfo(type = "string", label = "default source", description = "The source of the HTML content to insert if the region is not filled.")
     public String defaultSrc = "";
 
     public RegionFragment() {

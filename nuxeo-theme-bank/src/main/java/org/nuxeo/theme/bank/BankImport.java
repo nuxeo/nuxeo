@@ -18,11 +18,11 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("import")
-public final class BankImport  {
+public final class BankImport {
 
     @XNode("@dest")
     private String bankName;
-    
+
     @XNode("@src")
     private String srcFilePath;
 
@@ -33,6 +33,5 @@ public final class BankImport  {
     public String getSrcFilePath() {
         return srcFilePath;
     }
-
 
 }

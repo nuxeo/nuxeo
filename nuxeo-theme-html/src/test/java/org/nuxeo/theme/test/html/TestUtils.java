@@ -114,12 +114,12 @@ public class TestUtils extends NXRuntimeTestCase {
                         false // indent
                 ));
 
-        assertEquals("a, a:hover, a:active {color:red;}\n", Utils.styleToCss(
-                style, style.getSelectorViewNames(), false, // resolvePresets
-                true, // ignoreViewName
-                true, // ignoreClassName
-                false // indent
-        ));
+        assertEquals("a, a:hover, a:active {color:red;}\n",
+                Utils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
+                        true, // ignoreViewName
+                        true, // ignoreClassName
+                        false // indent
+                ));
 
         assertEquals("a, a:hover, a:active {\n  color: red;\n}\n\n",
                 Utils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
@@ -142,15 +142,17 @@ public class TestUtils extends NXRuntimeTestCase {
                 "test fonts", "font");
         PresetType customPreset1 = new CustomPresetType("custom color", "#f00",
                 "theme1", "color");
-        PresetType customPreset2 = new CustomPresetType("custom bg", "url(image.png)",
-                "theme1", "background");
+        PresetType customPreset2 = new CustomPresetType("custom bg",
+                "url(image.png)", "theme1", "background");
         Manager.getTypeRegistry().register(preset);
         Manager.getTypeRegistry().register(customPreset1);
         Manager.getTypeRegistry().register(customPreset2);
 
         properties.setProperty("font", "\"default font (test fonts)\"");
-        properties.setProperty("color", "\"custom color\" #dc0 \"custom color\" #123");
-        properties.setProperty("background", "\"custom color\" \"custom bg\" no-repeat");
+        properties.setProperty("color",
+                "\"custom color\" #dc0 \"custom color\" #123");
+        properties.setProperty("background",
+                "\"custom color\" \"custom bg\" no-repeat");
         style.setPropertiesFor("horizontal menu", "a", properties);
 
         assertEquals(
@@ -171,29 +173,29 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     public void testExtractCssImages() {
-        assertEquals("url(image.png)", Utils.extractCssImages("url(image.png)").get(
-                0));
+        assertEquals("url(image.png)",
+                Utils.extractCssImages("url(image.png)").get(0));
         assertEquals("url(/image.png)",
                 Utils.extractCssImages("url( /image.png )").get(0));
         assertEquals("url(/image.png)",
                 Utils.extractCssImages("url  ( /image.png )").get(0));
-        assertEquals("url(/image.png)", Utils.extractCssImages(
-                "url  ( \" /image.png \" )").get(0));
-        assertEquals("url(/image.png)", Utils.extractCssImages(
-                "url  ( \' /image.png \' )").get(0));
-        assertEquals("url(image1.png)", Utils.extractCssImages(
-                "  url(image1.png)  ").get(0));
+        assertEquals("url(/image.png)",
+                Utils.extractCssImages("url  ( \" /image.png \" )").get(0));
+        assertEquals("url(/image.png)",
+                Utils.extractCssImages("url  ( \' /image.png \' )").get(0));
+        assertEquals("url(image1.png)",
+                Utils.extractCssImages("  url(image1.png)  ").get(0));
     }
 
     public void testReplaceColor() {
-        assertEquals("\"orange\"", Utils.replaceColor("#fc0", "#fc0",
-                "\"orange\""));
-        assertEquals("\"yellow\"", Utils.replaceColor(
-                "#FF0", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"", Utils.replaceColor(
-                "#ffff00", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"", Utils.replaceColor(
-                "rgb(255, 255,0)", "#ff0", "\"yellow\""));
+        assertEquals("\"orange\"",
+                Utils.replaceColor("#fc0", "#fc0", "\"orange\""));
+        assertEquals("\"yellow\"",
+                Utils.replaceColor("#FF0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"",
+                Utils.replaceColor("#ffff00", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"",
+                Utils.replaceColor("rgb(255, 255,0)", "#ff0", "\"yellow\""));
     }
 
     public void testNamedStyles() {

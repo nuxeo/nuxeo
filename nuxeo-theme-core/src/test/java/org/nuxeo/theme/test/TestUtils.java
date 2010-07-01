@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test;
 
-
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -27,11 +26,10 @@ public class TestUtils extends TestCase {
     public void testCleanup() {
         assertEquals("a b c", Utils.cleanUp("\n   \t\t a \r\n  \nb  c\t"));
     }
-    
 
     public void testCssToStyle() {
-        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .input{color: #ffffff;}" +
-                "ul a {color: #FFFFFF;} ul {}";
+        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .input{color: #ffffff;}"
+                + "ul a {color: #FFFFFF;} ul {}";
         StyleFormat style = new StyleFormat();
 
         String viewName = "vertical menu";
@@ -74,6 +72,5 @@ public class TestUtils extends TestCase {
         Properties props6 = style.getPropertiesFor(viewName, "");
         assertEquals("violet", props6.getProperty("color"));
     }
-
 
 }

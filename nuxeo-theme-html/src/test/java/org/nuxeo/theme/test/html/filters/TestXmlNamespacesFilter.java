@@ -112,7 +112,7 @@ public class TestXmlNamespacesFilter extends TestCase {
         filter.process(info, false);
         assertEquals("<div></div>", info.getMarkup());
     }
-    
+
     public void testFilter11() {
         info.setMarkup("no tags");
         filter.process(info, false);

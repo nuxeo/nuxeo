@@ -97,7 +97,7 @@ public final class Styles extends HttpServlet implements Serializable {
                         INDENT));
             }
             rendered = sb.toString();
-            
+
             if (basePath != null) {
                 rendered = rendered.replaceAll("\\$\\{basePath\\}",
                         Matcher.quoteReplacement(basePath));
@@ -105,7 +105,8 @@ public final class Styles extends HttpServlet implements Serializable {
 
             // Replace images from resource banks
             for (String path : ResourceManager.getBankImagePaths()) {
-                rendered = rendered.replace(path, String.format("'/nuxeo/nxthemes-images/%s'", path));
+                rendered = rendered.replace(path,
+                        String.format("'/nuxeo/nxthemes-images/%s'", path));
             }
             themeManager.setCachedStyles(themeName, basePath, rendered);
         }

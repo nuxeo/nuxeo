@@ -32,7 +32,7 @@ public final class ModelType implements Type {
     @XNode("class")
     public String className;
 
-    @XNodeList(value = "contains", type =  ArrayList.class, componentType = String.class)
+    @XNodeList(value = "contains", type = ArrayList.class, componentType = String.class)
     public List<String> allowedTypes;
 
     public ModelType() {

@@ -33,7 +33,6 @@ public final class EngineType implements Type {
     @XNodeMap(value = "renderer", key = "@element", type = HashMap.class, componentType = RendererType.class)
     public Map<String, RendererType> renderers;
 
-
     public String getTypeName() {
         return name;
     }

@@ -20,7 +20,7 @@ import java.util.List;
 import org.nuxeo.theme.vocabularies.Vocabulary;
 import org.nuxeo.theme.vocabularies.VocabularyItem;
 
-public final class DummyVocabulary  implements Vocabulary {
+public final class DummyVocabulary implements Vocabulary {
 
     public List<VocabularyItem> getItems() {
         List<VocabularyItem> items = new ArrayList<VocabularyItem>();

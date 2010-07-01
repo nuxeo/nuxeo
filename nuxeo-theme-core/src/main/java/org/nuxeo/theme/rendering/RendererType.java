@@ -32,7 +32,6 @@ public final class RendererType implements Type {
     @XNodeList(value = "filter", type = ArrayList.class, componentType = String.class)
     public Collection<String> filters;
 
-
     public String getTypeName() {
         return name;
     }
