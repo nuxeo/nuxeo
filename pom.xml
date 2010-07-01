@@ -28,11 +28,20 @@
     <nuxeo.distribution.version>${version}</nuxeo.distribution.version>
   </properties>
 
+  <modules>
+    <module>nuxeo-distribution-resources</module>
+  </modules>
+
   <profiles>
+    <profile>
+      <id>mono-installed</id>
+      <modules>
+        <module>nuxeo-windows-startup</module>
+      </modules>
+    </profile>
     <profile>
       <id>shell</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
       </modules>
@@ -40,14 +49,12 @@
     <profile>
       <id>nuxeo-ep</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
       </modules>
     </profile>
     <profile>
       <id>nuxeo-dm</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
@@ -59,7 +66,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -69,7 +75,6 @@
       <!-- Build all Jetty distributions -->
       <id>jetty</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
@@ -80,7 +85,6 @@
     <profile>
       <id>gf3</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -89,7 +93,6 @@
     <profile>
       <id>tomcat</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
@@ -102,7 +105,6 @@
     <profile>
       <id>all-distributions</id>
       <modules>
-        <module>nuxeo-distribution-resources</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
@@ -122,13 +124,7 @@
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
-        <module>nuxeo-distribution-windows</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>windows-startup</id>
-      <modules>
-        <module>nuxeo-distribution-windows</module>
+        <module>nuxeo-windows-oldinstaller</module>
       </modules>
     </profile>
   </profiles>
@@ -1135,6 +1131,12 @@
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
         <classifier>doc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-windows-startup</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

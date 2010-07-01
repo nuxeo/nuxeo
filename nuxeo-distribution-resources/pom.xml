@@ -26,6 +26,14 @@
       <!-- profile for building all classifiers -->
     </profile>
   </profiles>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-windows-startup</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>

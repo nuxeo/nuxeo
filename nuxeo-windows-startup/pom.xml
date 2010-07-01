@@ -4,12 +4,12 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution-windows</artifactId>
+    <artifactId>nuxeo-distribution</artifactId>
     <version>5.3.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>windows-startup</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>nuxeo-windows-startup</artifactId>
+  <packaging>zip</packaging>
   <name>Nuxeo Windows startup script</name>
   <description>Build Nuxeo Windows installer with MSBuild\n
   Requirements:\n
@@ -26,20 +26,11 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <executions>
-          <execution>
-            <id>antbuild</id>
-            <phase>package</phase>
-            <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-              </buildFiles>
-            </configuration>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>
