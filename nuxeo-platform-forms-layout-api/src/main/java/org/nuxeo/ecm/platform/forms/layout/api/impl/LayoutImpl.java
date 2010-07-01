@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
  * Implementation for layouts.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class LayoutImpl implements Layout {
 
@@ -142,6 +141,13 @@ public class LayoutImpl implements Layout {
             return properties.get(name);
         }
         return null;
+    }
+
+    public void setProperty(String name, Serializable value) {
+        if (properties == null) {
+            properties = new HashMap<String, Serializable>();
+        }
+        properties.put(name, value);
     }
 
 }
