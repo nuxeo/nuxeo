@@ -5,14 +5,17 @@ Export-Package: org.nuxeo.ecm.platform.picture.api;version="5.3.2.SNAP
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.platform.picture.api
+Bundle-Name: Nuxeo Platform Imaging API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277366539978
+Bnd-LastModified: 1277958790147
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml, OSGI-INF/pictur
- e-blobholder-contrib.xml, OSGI-INF/picture-config-framework.xml
+Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml,OSGI-INF/picture
+ -blobholder-contrib.xml,OSGI-INF/picture-config-framework.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.api;singleton=true
 Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
  ing,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org

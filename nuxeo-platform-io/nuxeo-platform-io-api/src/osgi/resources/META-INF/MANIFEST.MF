@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Export-Package: org.nuxeo.ecm.platform.io.api;version="5.3.2.SNAPSHOT"
-Private-Package: org.nuxeo.ecm.platform.io.api.util,org.nuxeo.ecm.plat
- form.io.api.ejb
+ ,org.nuxeo.ecm.platform.io.api.ejb;version="5.3.2.SNAPSHOT",org.nuxeo
+ .ecm.platform.io.api.util;version="5.3.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: runtime
@@ -9,10 +9,10 @@ Tool: Bnd-0.0.394
 Bundle-Name: Nuxeo Platform IO API Fragment
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.core.api,
+Require-Bundle: org.nuxeo.ecm.core.api,org.nuxeo.ecm.core.io
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277361404510
+Bnd-LastModified: 1277958792703
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.io.api;singleton:=true
 Import-Package: javax.annotation;version="1.0",javax.naming,org.apache
@@ -20,4 +20,5 @@ Import-Package: javax.annotation;version="1.0",javax.naming,org.apache
  api=split,org.nuxeo.ecm.core.api.impl,org.nuxeo.ecm.core.io,org.nuxeo
  .ecm.core.io.exceptions,org.nuxeo.ecm.directory;api=split,org.nuxeo.r
  untime.api
+Nuxeo-Require: org.nuxeo.ecm.core.api,org.nuxeo.ecm.core.io
 

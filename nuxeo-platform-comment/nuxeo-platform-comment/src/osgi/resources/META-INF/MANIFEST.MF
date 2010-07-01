@@ -10,39 +10,29 @@ Tool: Bnd-0.0.394
 Bundle-Name: Nuxeo Comment project
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.event, org.nuxeo.ecm.relations.api,
+ org.nuxeo.ecm.platform.comment.api
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277911085069
+Bnd-LastModified: 1277958789474
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/CommentService.xml, OSGI-INF/comment-platfor
  m-contrib.xml, OSGI-INF/CommentService.xml, OSGI-INF/comment-listener
  -contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.comment;singleton=true
-Import-Package: javax.annotation;version="1.0",
- javax.ejb,
- javax.security.auth.login,
- org.apache.commons.logging,
- org.nuxeo.common.utils,
- org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split,
- org.nuxeo.ecm.core.api;api=split,
- org.nuxeo.ecm.core.api.event,
- org.nuxeo.ecm.core.api.model,
- org.nuxeo.ecm.core.api.repository,
- org.nuxeo.ecm.core.api.security,
- org.nuxeo.ecm.core.api.security.impl,
- org.nuxeo.ecm.core.event,
- org.nuxeo.ecm.core.event.impl,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core.schema.types,
- org.nuxeo.ecm.directory;api=split,
- org.nuxeo.ecm.platform.comment.api,
- org.nuxeo.ecm.platform.comment.workflow.services,
- org.nuxeo.ecm.platform.relations.api,
- org.nuxeo.ecm.platform.relations.api.impl,
- org.nuxeo.ecm.platform.usermanager,
- org.nuxeo.runtime,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.model
+Import-Package: javax.annotation;version="1.0",javax.ejb,javax.securit
+ y.auth.login,org.apache.commons.logging,org.nuxeo.common.utils,org.nu
+ xeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm
+ .core.api;api=split,org.nuxeo.ecm.core.api.model,org.nuxeo.ecm.core.a
+ pi.repository,org.nuxeo.ecm.core.api.security,org.nuxeo.ecm.core.api.
+ security.impl,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.schema,org.nuxeo.ecm.core.schema.types,org.nuxeo.e
+ cm.directory;api=split,org.nuxeo.ecm.platform.comment.api,org.nuxeo.e
+ cm.platform.comment.workflow.services,org.nuxeo.ecm.platform.relation
+ s.api,org.nuxeo.ecm.platform.relations.api.impl,org.nuxeo.ecm.platfor
+ m.usermanager,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runti
+ me.model
+Nuxeo-Require: org.nuxeo.ecm.core.event, org.nuxeo.ecm.relations.api,o
+ rg.nuxeo.ecm.platform.comment.api
 
