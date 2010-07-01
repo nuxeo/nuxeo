@@ -8,11 +8,9 @@ Tool: Bnd-0.0.394
 Bundle-Name: nuxeo-platform-lock-core project
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org
- .nuxeo.ecm.platform.lock.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959047300
+Bnd-LastModified: 1277976764902
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxlock-framework.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
@@ -20,5 +18,6 @@ Import-Package: javax.annotation;version="1.0",javax.persistence,org.a
  pache.commons.logging,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core
  .api;api=split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platfo
  rm.lock.api,org.nuxeo.runtime.api,org.nuxeo.runtime.model
-Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence
+Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org.
+ nuxeo.ecm.platform.lock.api
 

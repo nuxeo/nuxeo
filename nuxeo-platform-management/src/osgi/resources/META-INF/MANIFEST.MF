@@ -10,7 +10,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959811762
+Bnd-LastModified: 1277976771504
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,OSGI-
  INF/management-probe-scheduler-contrib.xml,OSGI-INF/management-resour
@@ -24,6 +24,7 @@ Import-Package: javax.annotation;version="1.0",javax.servlet.http,org.
  ntime,org.nuxeo.runtime.api,org.nuxeo.runtime.management,org.nuxeo.ru
  ntime.model
 Provide-Package: org.nuxeo.ecm.platform.management
-Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event,org.nu
- xeo.runtime.management,org.nuxeo.ecm.platform.scheduler.core
+Nuxeo-Require: org.nuxeo.ecm.webengine.core,org.nuxeo.runtime.manageme
+ nt,org.nuxeo.ecm.core,org.nuxeo.platform.web.common,org.nuxeo.platfor
+ m.scheduler.core
 

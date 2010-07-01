@@ -9,11 +9,9 @@ Bundle-Localization: plugin
 Bundle-Name: NXFileManager API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.search.api,org.nuxeo.ecm.core.a
- pi
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959044212
+Bnd-LastModified: 1277976744064
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.api
 Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=

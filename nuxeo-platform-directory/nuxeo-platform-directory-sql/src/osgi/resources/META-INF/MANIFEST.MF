@@ -9,11 +9,10 @@ Bundle-Localization: bundle
 Bundle-Name: Nuxeo ECM SQL Directory
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.directory
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959043118
+Bnd-LastModified: 1277976737020
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/SQLDirectoryFactory.xml
 Bundle-SymbolicName: org.nuxeo.ecm.directory.sql;singleton:=true

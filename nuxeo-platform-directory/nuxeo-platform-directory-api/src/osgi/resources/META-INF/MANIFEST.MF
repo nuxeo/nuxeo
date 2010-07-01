@@ -15,7 +15,7 @@ Require-Bundle: org.nuxeo.ecm.core
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959042264
+Bnd-LastModified: 1277976733932
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.directory.api;singleton:=true
 Import-Package: org.apache.commons.logging,org.nuxeo.common.collection

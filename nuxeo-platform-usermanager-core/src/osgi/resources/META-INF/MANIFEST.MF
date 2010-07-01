@@ -15,7 +15,7 @@ Require-Bundle: org.nuxeo.ecm.platform.usermanager.api;visibility:=ree
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: false
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959047999
+Bnd-LastModified: 1277976769215
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/UserService.xml,OSGI-INF/computedgroups-fram
  ework.xml,OSGI-INF/companycomputedgroups-contrib.xml,OSGI-INF/UserMan

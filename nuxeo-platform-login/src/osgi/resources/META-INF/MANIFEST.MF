@@ -8,11 +8,9 @@ Bundle-Localization: plugin
 Bundle-Name: Nuxeo Login Module
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.api,org.nuxeo.ecm.platform.user
- manager.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959047772
+Bnd-LastModified: 1277976767770
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/NXLoginModule-framework.xml,OSGI-INF/loginMo
  dulePlugin-contrib.xml,OSGI-INF/JBossLoginConfig.xml

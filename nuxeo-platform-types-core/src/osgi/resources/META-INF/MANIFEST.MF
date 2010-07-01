@@ -8,12 +8,10 @@ Bundle-Localization: bundle
 Bundle-Name: Nuxeo ECM Type Manager
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform,org.nuxeo.ecm.platform.types.ap
- i,org.nuxeo.ecm.core.api
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959045519
+Bnd-LastModified: 1277976753143
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxtypes-framework.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.types.core;singleton:=true

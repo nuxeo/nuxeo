@@ -12,10 +12,9 @@ Bundle-Localization: plugin
 Bundle-Name: NXPlatform
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277959041095
+Bnd-LastModified: 1277976729054
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/service-platform-contrib.xml,  OSGI-INF/defa
  ultPermissions-contrib.xml,  OSGI-INF/locationmanager-contrib.xml,  O
