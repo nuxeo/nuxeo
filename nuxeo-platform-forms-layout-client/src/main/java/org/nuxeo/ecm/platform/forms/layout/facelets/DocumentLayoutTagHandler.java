@@ -106,8 +106,10 @@ public class DocumentLayoutTagHandler extends TagHandler {
         FaceletHandler leaf = new LeafFaceletHandler();
         for (String layoutName : layoutNames) {
             TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(
-                    helper.createAttribute("name", layoutName), modeAttr,
-                    value, template);
+                    helper.createAttribute("name", layoutName), modeAttr, value);
+            if (template != null) {
+                FaceletHandlerHelper.addTagAttribute(attributes, template);
+            }
             // add other variables put on original tag
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
