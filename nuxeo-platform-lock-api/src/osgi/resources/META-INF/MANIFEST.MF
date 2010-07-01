@@ -9,11 +9,11 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886818317
+Bnd-LastModified: 1277959046978
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.api;singleton:=true
 Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
- split;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",or
- g.nuxeo.ecm.directory;api=split
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit
 Nuxeo-Require: org.nuxeo.runtime
 

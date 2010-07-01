@@ -4,22 +4,21 @@ Export-Package: org.nuxeo.ecm.platform.types;version="5.3.2.SNAPSHOT",
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.platform.types.api
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo ECM Types API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886816573
+Bnd-LastModified: 1277959045001
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxtypes-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.types.api;singleton:=true
-Import-Package: javax.annotation;version="1.0",
- org.apache.commons.logging,
- org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split;version="1.6",
- org.nuxeo.ecm.core.api;api=split;version="1.6",
- org.nuxeo.ecm.core.api.adapter;version="1.6",
- org.nuxeo.ecm.directory;api=split,
- org.nuxeo.ecm.platform.forms.layout.api,
- org.nuxeo.runtime.api;version="1.6"
+Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
+ ing,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org
+ .nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.adapter,org.nuxe
+ o.ecm.directory;api=split,org.nuxeo.runtime.api
 Nuxeo-Require: org.nuxeo.ecm.core.api
 

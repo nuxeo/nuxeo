@@ -16,7 +16,7 @@ Require-Bundle: org.nuxeo.ecm.core.api,org.nuxeo.ecm.platform.api,org.
  nuxeo.ecm.platform.mimetype.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886816783
+Bnd-LastModified: 1277959045281
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxmimetype-service.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.core
@@ -24,11 +24,9 @@ Import-Package: javax.annotation;version="1.0",net.sf.jmimemagic,org.a
  pache.commons.logging,org.apache.poi.hslf,org.apache.poi.hslf.model,o
  rg.apache.poi.hslf.usermodel,org.apache.poi.hssf.usermodel,org.nuxeo.
  common.utils,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=
- split;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",or
- g.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platform.mimetype.inter
- faces,org.nuxeo.runtime;version="1.6",org.nuxeo.runtime.api;version="
- 1.6",org.nuxeo.runtime.model;version="1.6",org.w3c.dom
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.api, org
- .nuxeo.ecm.platform.mimetype.api
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit,org.nuxeo.ecm.platform.mimetype.interfaces,org.nuxeo.runtime,org.
+ nuxeo.runtime.api,org.nuxeo.runtime.model,org.w3c.dom
+Nuxeo-Require: org.nuxeo.ecm.core.api,org.nuxeo.ecm.platform.api,org.n
+ uxeo.ecm.platform.mimetype.api
 

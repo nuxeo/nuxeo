@@ -12,24 +12,20 @@ Require-Bundle: org.nuxeo.ecm.core,org.nuxeo.ecm.core.event,org.nuxeo.
  ecm.platform.filemanager.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886818060
+Bnd-LastModified: 1277959046762
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/filemanager-digestcomputer-event-contrib.xml
  ,OSGI-INF/filemanager-iconupdater-event-contrib.xml,OSGI-INF/filemana
  ger-unicity-event-contrib.xml
-Nuxe-Require: org.nuxeo.ecm.core,
 Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core.listener
 Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
- ing,org.nuxeo.common.utils,org.nuxeo.ecm.core;api=split;version="1.6"
- ,org.nuxeo.ecm.core.api;api=split;version="1.6",org.nuxeo.ecm.core.ap
- i.model;version="1.6",org.nuxeo.ecm.core.api.model.impl.primitives;ve
- rsion="1.6",org.nuxeo.ecm.core.event;version="1.6",org.nuxeo.ecm.core
- .event.impl;version="1.6",org.nuxeo.ecm.core.schema.types;version="1.
- 6",org.nuxeo.ecm.core.utils;version="1.6",org.nuxeo.ecm.directory;api
- =split,org.nuxeo.ecm.platform.filemanager.api,org.nuxeo.ecm.platform.
- mimetype.interfaces,org.nuxeo.ecm.platform.types,org.nuxeo.runtime;ve
- rsion="1.6",org.nuxeo.runtime.api;version="1.6"
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.core.event, org.nuxeo
- .ecm.platform.filemanager.api
+ ing,org.nuxeo.common.utils,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm
+ .core.api;api=split,org.nuxeo.ecm.core.api.model,org.nuxeo.ecm.core.a
+ pi.model.impl.primitives,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.
+ event.impl,org.nuxeo.ecm.core.schema.types,org.nuxeo.ecm.core.utils,o
+ rg.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platform.filemanager.a
+ pi,org.nuxeo.ecm.platform.mimetype.interfaces,org.nuxeo.ecm.platform.
+ types,org.nuxeo.runtime,org.nuxeo.runtime.api
+Nuxeo-Require: org.nuxeo.ecm.core,org.nuxeo.ecm.core.event,org.nuxeo.e
+ cm.platform.filemanager.api
 

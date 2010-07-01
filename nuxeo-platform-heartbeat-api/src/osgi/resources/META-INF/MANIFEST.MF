@@ -9,7 +9,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886820022
+Bnd-LastModified: 1277959048994
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.heartbeat.api;singleton:=t
  rue

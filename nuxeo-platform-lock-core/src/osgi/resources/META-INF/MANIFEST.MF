@@ -12,14 +12,13 @@ Require-Bundle: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org
  .nuxeo.ecm.platform.lock.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886818599
+Bnd-LastModified: 1277959047300
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxlock-framework.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
 Import-Package: javax.annotation;version="1.0",javax.persistence,org.a
- pache.commons.logging,org.nuxeo.ecm.core;api=split;version="1.6",org.
- nuxeo.ecm.core.api;api=split;version="1.6",org.nuxeo.ecm.directory;ap
- i=split,org.nuxeo.ecm.platform.lock.api,org.nuxeo.runtime.api;version
- ="1.6",org.nuxeo.runtime.model;version="1.6"
+ pache.commons.logging,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core
+ .api;api=split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platfo
+ rm.lock.api,org.nuxeo.runtime.api,org.nuxeo.runtime.model
 Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence
 

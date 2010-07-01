@@ -12,16 +12,17 @@ Bundle-Localization: plugin
 Bundle-Name: Nuxeo CommandLine Executor
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.core.api
+Require-Bundle: org.nuxeo.ecm.core.api;bundle-version="1.6.1"
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886813049
+Bnd-LastModified: 1277959041923
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/commandline-framework.xml, OSGI-INF/commandl
- ine-default-contrib.xml
+Nuxeo-Component: OSGI-INF/commandline-framework.xml,OSGI-INF/commandli
+ ne-default-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.commandline.executor
 Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
  ing,org.nuxeo.common.utils,org.nuxeo.common.xmap.annotation,org.nuxeo
  .ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.di
- rectory;api=split,org.nuxeo.runtime.model;version="1.6"
+ rectory;api=split,org.nuxeo.runtime.model
+Nuxeo-Require: org.nuxeo.ecm.core.api;bundle-version="1.6.1"
 

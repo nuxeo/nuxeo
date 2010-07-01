@@ -2,34 +2,29 @@ Manifest-Version: 1.0
 Export-Package: org.nuxeo.ecm.platform.login;version="5.3.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Tool: Bnd-0.0.394
 Bundle-Category: runtime
-Bundle-Name: org.nuxeo.ecm.platform.login
+Tool: Bnd-0.0.394
+Bundle-Localization: plugin
+Bundle-Name: Nuxeo Login Module
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.api,org.nuxeo.ecm.platform.user
+ manager.api
+Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886819286
+Bnd-LastModified: 1277959047772
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/NXLoginModule-framework.xml,OSGI-INF/loginMo
  dulePlugin-contrib.xml,OSGI-INF/JBossLoginConfig.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login
-Import-Package: javax.annotation;version="1.0",
- javax.security.auth,
- javax.security.auth.callback,
- javax.security.auth.login,
- javax.security.auth.spi,
- org.apache.commons.logging,
- org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split;version="1.6",
- org.nuxeo.ecm.core.api;api=split;version="1.6",
- org.nuxeo.ecm.core.api.security;version="1.6",
- org.nuxeo.ecm.directory;api=split,
- org.nuxeo.ecm.platform.api.login,
- org.nuxeo.ecm.platform.usermanager,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.api.login,
- org.nuxeo.runtime.model;version="1.6"
-Nuxeo-Require: org.nuxeo.ecm.core.api,org.nuxeo.ecm.platform.api,org.n
- uxeo.ecm.platform.usermanager.api
-Require-Bundle: org.nuxeo.runtime
+Import-Package: javax.annotation;version="1.0",javax.security.auth,jav
+ ax.security.auth.callback,javax.security.auth.login,javax.security.au
+ th.spi,org.apache.commons.logging,org.nuxeo.common.xmap.annotation,or
+ g.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo
+ .ecm.core.api.security,org.nuxeo.ecm.directory;api=split,org.nuxeo.ec
+ m.platform.api.login,org.nuxeo.ecm.platform.usermanager,org.nuxeo.run
+ time,org.nuxeo.runtime.api,org.nuxeo.runtime.api.login,org.nuxeo.runt
+ ime.model
+Nuxeo-Require: org.nuxeo.ecm.platform.api,org.nuxeo.ecm.platform.userm
+ anager.api
 

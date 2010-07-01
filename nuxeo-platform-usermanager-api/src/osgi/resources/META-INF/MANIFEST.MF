@@ -5,18 +5,20 @@ Export-Package: org.nuxeo.ecm.platform.usermanager.exceptions;mandator
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.platform.usermanager.api
+Bundle-Localization: plugin
+Bundle-Name: Nuxeo User Manager Module API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886818753
+Bnd-LastModified: 1277959047528
 Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager.api
 Import-Package: org.apache.commons.logging,org.nuxeo.ecm.core;api=spli
- t;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",org.nu
- xeo.ecm.core.api.impl;version="1.6",org.nuxeo.ecm.core.api.model;vers
- ion="1.6",org.nuxeo.ecm.core.api.security;version="1.6",org.nuxeo.ecm
- .directory;api=split,org.nuxeo.runtime.api;version="1.6"
-Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager.api;singleton:
- =true
+ t,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.impl,org.nu
+ xeo.ecm.core.api.model,org.nuxeo.ecm.core.api.security,org.nuxeo.ecm.
+ directory;api=split,org.nuxeo.runtime.api
 Nuxeo-Require: org.nuxeo.ecm.core.api
 

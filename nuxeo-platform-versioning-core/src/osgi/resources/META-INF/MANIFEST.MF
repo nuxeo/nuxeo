@@ -7,30 +7,31 @@ Export-Package: org.nuxeo.ecm.platform.versioning;version="5.3.2.SNAPS
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.platform.versioning
+Bundle-Name: Nuxeo Versioning
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.versioning.api,org.nuxeo.ecm.co
+ re.api,org.nuxeo.ecm.core.event
+Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: false
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886817529
+Bnd-LastModified: 1277959046174
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/VersioningService.xml, OSGI-INF/VersioningMo
- difierService.xml, OSGI-INF/VersioningContribs.xml, OSGI-INF/Versioni
- ngRuleContribs.xml, OSGI-INF/VersionManager-platform-contrib.xml, OSG
- I-INF/versioning-initial-version-number-contrib.xml
+Nuxeo-Component: OSGI-INF/VersioningService.xml,OSGI-INF/VersioningMod
+ ifierService.xml,OSGI-INF/VersioningContribs.xml,OSGI-INF/VersioningR
+ uleContribs.xml,OSGI-INF/VersionManager-platform-contrib.xml,OSGI-INF
+ /versioning-initial-version-number-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.versioning
 Import-Package: javax.annotation;version="1.0",javax.ejb,javax.naming,
  javax.persistence,org.apache.commons.logging,org.nuxeo.common.collect
- ions,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split;ve
- rsion="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",org.nuxeo.
- ecm.core.api.event;version="1.6",org.nuxeo.ecm.core.api.facet;version
- ="1.6",org.nuxeo.ecm.core.api.impl;version="1.6",org.nuxeo.ecm.core.a
- pi.security;version="1.6",org.nuxeo.ecm.core.event;version="1.6",org.
- nuxeo.ecm.core.event.impl;version="1.6",org.nuxeo.ecm.core.schema;ver
- sion="1.6",org.nuxeo.ecm.core.schema.types;version="1.6",org.nuxeo.ec
- m.core.utils;version="1.6",org.nuxeo.ecm.directory;api=split,org.nuxe
- o.ecm.platform.versioning.api,org.nuxeo.runtime;version="1.6",org.nux
- eo.runtime.api;version="1.6",org.nuxeo.runtime.model;version="1.6"
-Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.versioni
- ng.api, org.nuxeo.ecm.core.event
+ ions,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,or
+ g.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.event,org.nuxeo
+ .ecm.core.api.facet,org.nuxeo.ecm.core.api.impl,org.nuxeo.ecm.core.ap
+ i.security,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.event.impl,org
+ .nuxeo.ecm.core.schema,org.nuxeo.ecm.core.schema.types,org.nuxeo.ecm.
+ core.utils,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platform.v
+ ersioning.api,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runti
+ me.model
+Nuxeo-Require: org.nuxeo.ecm.platform.versioning.api,org.nuxeo.ecm.cor
+ e.api,org.nuxeo.ecm.core.event
 

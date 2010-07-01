@@ -5,20 +5,22 @@ Export-Package: org.nuxeo.ecm.platform.api;version="5.3.2.SNAPSHOT",or
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.platform.api
+Bundle-Localization: plugin
+Bundle-Name: ECM Platform API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.runtime,org.nuxeo.ecm.core.api
+Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886812017
+Bnd-LastModified: 1277959040721
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/PlatformService.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.api
 Import-Package: javax.annotation;version="1.0",javax.naming,javax.secu
  rity.auth.callback,javax.security.auth.login,org.apache.commons.loggi
- ng,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split;vers
- ion="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",org.nuxeo.ec
- m.core.api.repository;version="1.6",org.nuxeo.ecm.directory;api=split
- ,org.nuxeo.runtime;version="1.6",org.nuxeo.runtime.api;version="1.6",
- org.nuxeo.runtime.model;version="1.6"
+ ng,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org.
+ nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.repository,org.nu
+ xeo.ecm.directory;api=split,org.nuxeo.runtime,org.nuxeo.runtime.api,o
+ rg.nuxeo.runtime.model
 Nuxeo-Require: org.nuxeo.runtime,org.nuxeo.ecm.core.api
 

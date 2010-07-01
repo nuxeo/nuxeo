@@ -2,7 +2,6 @@ Manifest-Version: 1.0
 Export-Package: org.nuxeo.ecm.platform.mimetype;version="5.3.2.SNAPSHO
  T",org.nuxeo.ecm.platform.mimetype.interfaces;version="5.3.2.SNAPSHOT
  "
-Private-Package: org.nuxeo.ecm.platform.mimetype.interfaces
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -12,13 +11,12 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.core.api
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886815952
+Bnd-LastModified: 1277959043951
 Nuxeo-Component: 
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.api
 Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
- split;version="1.6",org.nuxeo.ecm.core.api;api=split;version="1.6",or
- g.nuxeo.ecm.directory;api=split,org.nuxeo.runtime.api;version="1.6"
-Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit,org.nuxeo.runtime.api
 Nuxeo-Require: org.nuxeo.ecm.core.api
 

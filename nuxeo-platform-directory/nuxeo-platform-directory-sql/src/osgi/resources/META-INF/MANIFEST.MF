@@ -5,34 +5,25 @@ Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.directory.sql
+Bundle-Localization: bundle
+Bundle-Name: Nuxeo ECM SQL Directory
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.directory
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
 Bundle-Version: 5.3.2.SNAPSHOT
-Bnd-LastModified: 1277886814094
+Bnd-LastModified: 1277959043118
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/SQLDirectoryFactory.xml
 Bundle-SymbolicName: org.nuxeo.ecm.directory.sql;singleton:=true
-Import-Package: au.com.bytecode.opencsv,
- javax.annotation;version="1.0",
- javax.sql,
- org.apache.commons.lang,
- org.apache.commons.logging,
- org.hibernate.dialect,
- org.nuxeo.common.utils,
- org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split;version="1.6",
- org.nuxeo.ecm.core.api;api=split;version="1.6",
- org.nuxeo.ecm.core.api.impl,
- org.nuxeo.ecm.core.api.model,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core.schema.types;version="1.6",
- org.nuxeo.ecm.core.utils,
- org.nuxeo.ecm.directory,
- org.nuxeo.ecm.directory.api,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.model;version="1.6"
-Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.directory, org.nu
- xeo.ecm.directory.api
-Require-Bundle: org.nuxeo.runtime
+Import-Package: au.com.bytecode.opencsv,javax.annotation;version="1.0"
+ ,javax.sql,org.apache.commons.lang,org.apache.commons.logging,org.hib
+ ernate.dialect,org.nuxeo.common.utils,org.nuxeo.common.xmap.annotatio
+ n,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org.n
+ uxeo.ecm.core.api.impl,org.nuxeo.ecm.core.api.model,org.nuxeo.ecm.cor
+ e.schema,org.nuxeo.ecm.core.schema.types,org.nuxeo.ecm.core.utils,org
+ .nuxeo.ecm.directory;api=split,org.nuxeo.ecm.directory.api,org.nuxeo.
+ runtime,org.nuxeo.runtime.api,org.nuxeo.runtime.model
+Nuxeo-Require: org.nuxeo.ecm.directory
 
