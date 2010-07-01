@@ -22,6 +22,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
@@ -63,6 +64,12 @@ public class ThemeStyles {
                 rendered = rendered.replaceAll("\\$\\{basePath\\}",
                         Matcher.quoteReplacement(basePath));
             }
+            
+            // Replace images from resource banks
+            for (String imagePath : ResourceManager.getBankImagePaths()) {
+                rendered = rendered.replace(imagePath,
+                       String.format("'/nuxeo/nxthemes-images/%s'", imagePath));
+             }            
             return rendered;
         }
         if (cache) {
