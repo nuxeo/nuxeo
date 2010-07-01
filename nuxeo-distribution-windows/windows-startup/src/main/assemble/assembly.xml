@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<project name="nuxeo-assembly"
+         default="package"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <!-- Properties -->
+  <property name="project.build.directory" value="target" />
+  <property name="scripts.path" value="src/main/resources" />
+
+  <condition property="osfamily-macosx">
+    <and>
+      <os family="mac" />
+      <os family="unix" />
+    </and>
+  </condition>
+  <condition property="osfamily-unix">
+    <and>
+      <os family="unix" />
+      <not>
+        <os family="mac" />
+      </not>
+    </and>
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="package"
+          depends="package-macosx,package-unix,package-windows" />
+  <target name="package-macosx" if="osfamily-macosx">
+    <property name="xbuild" value="xbuild" />
+    <copy todir="${project.build.directory}">
+      <fileset dir="${scripts.path}" />
+    </copy>
+    <replace file="${scripts.path}/NuxeoManager.sln"
+             token="x86"
+             value="AnyCPU" />
+    <exec executable="${xbuild}">
+      <arg value="/property:Configuration=Release" />
+      <arg value="${project.build.directory}/NuxeoManager.sln" />
+    </exec>
+    <antcall target="retrieve" />
+  </target>
+  <target name="package-unix" if="osfamily-unix">
+    <property name="xbuild" value="xbuild" />
+    <copy todir="${project.build.directory}">
+      <fileset dir="${scripts.path}" />
+    </copy>
+    <replace file="${scripts.path}/NuxeoManager.sln"
+             token="x86"
+             value="AnyCPU" />
+    <exec executable="${xbuild}">
+      <arg value="/property:Configuration=Release" />
+      <arg value="${project.build.directory}/NuxeoManager.sln" />
+    </exec>
+    <antcall target="retrieve" />
+  </target>
+  <target name="package-windows" if="osfamily-windows">
+    <property name="xbuild" value="MSBuild.exe" />
+    <copy todir="${project.build.directory}">
+      <fileset dir="${scripts.path}" />
+    </copy>
+    <replace file="${scripts.path}/NuxeoManager.sln"
+             token="x86"
+             value="AnyCPU" />
+    <exec executable="${xbuild}">
+      <arg value="/property:Configuration=Release" />
+      <arg value="${project.build.directory}/NuxeoManager.sln" />
+    </exec>
+    <antcall target="retrieve" />
+  </target>
+
+  <target name="retrieve">
+    <zip destfile="${project.build.directory}/NuxeoCtl.zip">
+      <zipfileset file="${project.build.directory}/NuxeoCtl/bin/Release/NuxeoCtl.exe" />
+      <zipfileset file="${project.build.directory}/NuxeoProcess/bin/Release/NuxeoProcess.dll" />
+      <zipfileset file="${project.build.directory}/NuxeoService/bin/Release/NuxeoService.exe" />
+    </zip>
+    <artifact:attach file="${project.build.directory}/NuxeoCtl.zip"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+</project>
