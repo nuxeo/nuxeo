@@ -31,12 +31,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <li>create tags and taggings
  * <li>obtain tag cloud
  * </ul>
- * <p>
- * As general rule, the flag private / public is always applied. It could be
- * ignored in the future: just simplify the queries. The service is using super
- * user, allowing anyone see / creates tags. The service retrieve the user name
- * from the attached document session. If you're using a detached document, you
- * should provide the core session yourself providing it as parameter.
  */
 public interface TagService {
 
@@ -45,12 +39,12 @@ public interface TagService {
     /**
      * Defines if tag service is enable.
      *
-     * @return true is the underlying repository supports tag feature.
+     * @return true if the underlying repository supports the tag feature
      */
     boolean isEnabled() throws ClientException;
 
     /**
-     * Tags a document with a given tag for the current user.
+     * Tags a document with a given tag.
      *
      * @param session the session
      * @param docId the document id
@@ -61,7 +55,7 @@ public interface TagService {
             throws ClientException;
 
     /**
-     * Untags a document of the given tag for the current user.
+     * Untags a document of the given tag
      *
      * @param session the session
      * @param docId the document id
@@ -84,8 +78,7 @@ public interface TagService {
             throws ClientException;
 
     /**
-     * Gets the documents to which a tag is applied by a given user, or by all
-     * users.
+     * Gets the documents to which a tag is applied.
      *
      * @param session the session
      * @param label the tag
@@ -96,21 +89,25 @@ public interface TagService {
             String username) throws ClientException;
 
     /**
-     * Gets the tag cloud for a given document (tags with weight corresponding
+     * Gets the tag cloud for a set of documents (tags with weight corresponding
      * to their popularity).
+     * <p>
+     * If a docId is passed, only documents under it are considered, otherwise
+     * all documents in the database are used.
      * <p>
      * The cloud is returned unsorted.
      *
      * @param session the session
-     * @param docId the document id
+     * @param docId the document id under which to look, or {@code null} for all
+     *            documents
      * @param username the user name, or {@code null} for all users
-     * @param normalize null for no weight normalization, {@code FALSE} for
-     *            0-100 normalization, {@code TRUE} for logarithmic 0-100
-     *            normalization
+     * @param normalize null for no weight normalization (a count is returned),
+     *            {@code FALSE} for 0-100 normalization, {@code TRUE} for
+     *            logarithmic 0-100 normalization
      * @return the cloud (a list of weighted tags)
      */
-    List<Tag> getDocumentCloud(CoreSession session, String docId,
-            String username, Boolean normalize) throws ClientException;
+    List<Tag> getTagCloud(CoreSession session, String docId, String username,
+            Boolean normalize) throws ClientException;
 
     /**
      * Gets suggestions for a given tag label prefix.

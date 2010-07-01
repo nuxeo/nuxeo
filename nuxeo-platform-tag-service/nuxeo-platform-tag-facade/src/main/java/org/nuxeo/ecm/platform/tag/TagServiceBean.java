@@ -79,9 +79,9 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().getTagDocumentIds(session, label, username);
     }
 
-    public List<Tag> getDocumentCloud(CoreSession session, String docId,
+    public List<Tag> getTagCloud(CoreSession session, String docId,
             String username, Boolean normalize) throws ClientException {
-        return getLocalTagService().getDocumentCloud(session, docId, username,
+        return getLocalTagService().getTagCloud(session, docId, username,
                 normalize);
     }
 

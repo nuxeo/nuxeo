@@ -32,6 +32,7 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -367,7 +368,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
     }
 
-    public List<Tag> getDocumentCloud(CoreSession session, String docId,
+    public List<Tag> getTagCloud(CoreSession session, String docId,
             String username, Boolean normalize) throws ClientException {
         UnrestrictedGetDocumentCloud r = new UnrestrictedGetDocumentCloud(
                 session, docId, username, normalize);
@@ -401,8 +402,24 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                     + "SELECT tag:label, relation:source " //
                     + "FROM Tagging";
             if (docId != null) {
-                query += " WHERE ";
-                query += String.format("relation:source = '%s'", docId);
+                // find all docs under docid
+                String path = session.getDocument(new IdRef(docId)).getPathAsString();
+                path = path.replace("'", "");
+                String q = String.format("SELECT ecm:uuid FROM Document "
+                        + "WHERE ecm:path STARTSWITH '%s'", path);
+                List<String> docIds = new ArrayList<String>();
+                docIds.add(docId);
+                IterableQueryResult r = session.queryAndFetch(q, "NXQL");
+                try {
+                    for (Map<String, Serializable> map : r) {
+                        docIds.add((String) map.get(NXQL.ECM_UUID));
+                    }
+                } finally {
+                    r.close();
+                }
+                // now used these docids for the relation source
+                query += String.format(" WHERE relation:source IN ('%s')",
+                        StringUtils.join(docIds, "', '"));
             }
             if (username != null) {
                 if (docId == null) {

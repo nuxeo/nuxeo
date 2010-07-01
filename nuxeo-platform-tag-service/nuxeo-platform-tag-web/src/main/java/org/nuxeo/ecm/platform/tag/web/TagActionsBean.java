@@ -180,7 +180,7 @@ public class TagActionsBean implements Serializable {
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
     public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
-        List<Tag> cloud = getTagService().getDocumentCloud(documentManager,
+        List<Tag> cloud = getTagService().getTagCloud(documentManager,
                 null, null, Boolean.TRUE); // logarithmic 0-100 normalization
         // change weight to a font size
         double min = 100;

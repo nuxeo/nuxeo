@@ -13,7 +13,7 @@
   </appender>
 
   <logger name="org.nuxeo.ecm.core.storage">
-    <level value="TRACE" />
+    <level value="WARN" />
   </logger>
 
   <root>

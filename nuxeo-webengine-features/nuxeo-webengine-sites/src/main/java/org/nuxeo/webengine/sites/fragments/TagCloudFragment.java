@@ -59,9 +59,8 @@ public class TagCloudFragment extends AbstractFragment {
                     DocumentModel.class);
             DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
                     session, documentModel);
-            // TODO compute cloud only under siteDocument
-            List<Tag> cloud = tagService.getDocumentCloud(session, null, null,
-                    null);
+            List<Tag> cloud = tagService.getTagCloud(session,
+                    siteDocument.getId(), null, null);
             if (cloud == null || cloud.isEmpty()) {
                 return null;
             }

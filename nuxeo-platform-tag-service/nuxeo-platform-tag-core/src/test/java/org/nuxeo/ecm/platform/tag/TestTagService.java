@@ -74,12 +74,15 @@ public class TestTagService extends SQLRepositoryTestCase {
             return;
         }
 
+        DocumentModel fold = session.createDocumentModel("/", "fold", "Folder");
+        fold = session.createDocument(fold);
         DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = session.createDocumentModel("/", "bar", "File");
+        DocumentModel file2 = session.createDocumentModel("/fold", "bar",
+                "File");
         file2.setPropertyValue("dc:title", "File2");
-        file2 = session.createDocument(file1);
+        file2 = session.createDocument(file2);
         session.save();
         String file1Id = file1.getId();
         String file2Id = file2.getId();
@@ -133,7 +136,7 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertTrue(docIds.isEmpty());
 
         // global cloud
-        List<Tag> cloud = tagService.getDocumentCloud(session, null, null, null);
+        List<Tag> cloud = tagService.getTagCloud(session, null, null, null);
         assertEquals(2, cloud.size());
         Collections.sort(cloud, Tag.LABEL_COMPARATOR);
         Tag tag1 = cloud.get(0);
@@ -143,17 +146,25 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals("othertag", tag2.getLabel());
         assertEquals(1, tag2.getWeight());
         // specific tagging user
-        cloud = tagService.getDocumentCloud(session, null, "bob", null);
+        cloud = tagService.getTagCloud(session, null, "bob", null);
         assertEquals(0, cloud.size());
 
-        // cloud per doc
-        cloud = tagService.getDocumentCloud(session, file1Id, "Administrator",
-                null);
-        assertEquals(2, cloud.size());
+        // cloud per folder
+        cloud = tagService.getTagCloud(session, fold.getId(), null, null);
+        assertEquals(1, cloud.size()); // only file2 under fold
         Collections.sort(cloud, Tag.LABEL_COMPARATOR);
         tag1 = cloud.get(0);
         assertEquals("mytag", tag1.getLabel());
         assertEquals(1, tag1.getWeight());
+
+        // cloud under root folder
+        cloud = tagService.getTagCloud(session,
+                session.getRootDocument().getId(), null, null);
+        assertEquals(2, cloud.size());
+        Collections.sort(cloud, Tag.LABEL_COMPARATOR);
+        tag1 = cloud.get(0);
+        assertEquals("mytag", tag1.getLabel());
+        assertEquals(2, tag1.getWeight());
         tag2 = cloud.get(1);
         assertEquals("othertag", tag2.getLabel());
         assertEquals(1, tag2.getWeight());
