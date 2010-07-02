@@ -35,11 +35,13 @@
   <profiles>
     <profile>
       <id>xbuild-installed</id>
+      <!-- 
       <activation>
         <file>
           <exists>/usr/bin/xbuild</exists>
         </file>
       </activation>
+       -->
       <modules>
         <module>nuxeo-windows-startup</module>
       </modules>
@@ -49,7 +51,7 @@
       <activation>
         <os><family>windows</family></os>
         <file>
-          <exists>C:\Windows\Microsoft.NET\Framework\v3.5</exists>
+          <exists>C:\Windows\Microsoft.NET\Framework\v3.5\MSBuild.exe</exists>
         </file>
       </activation>
       <modules>
