@@ -34,6 +34,7 @@
 
   <profiles>
     <profile>
+      <!-- Requires mono-build 2.4.x -->
       <id>xbuild-installed</id>
       <activation>
         <file>
