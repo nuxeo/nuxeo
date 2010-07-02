@@ -1,30 +1,32 @@
 Manifest-Version: 1.0
 Export-Package: org.nuxeo.common;version="1.6.2.SNAPSHOT",org.nuxeo.co
- mmon.collections;uses:="org.apache.commons.logging";version="1.6.2.SN
- APSHOT",org.nuxeo.common.debug;version="1.6.2.SNAPSHOT",org.nuxeo.com
- mon.jndi;uses:="javax.naming,javax.naming.spi";version="1.6.2.SNAPSHO
- T",org.nuxeo.common.logging;uses:="org.apache.commons.logging";versio
- n="1.6.2.SNAPSHOT",org.nuxeo.common.persistence;uses:="org.w3c.dom,or
- g.apache.commons.logging,javax.xml.parsers,org.xml.sax";version="1.6.
- 2.SNAPSHOT",org.nuxeo.common.server;uses:="org.nuxeo.common.xmap.anno
- tation";version="1.6.2.SNAPSHOT",org.nuxeo.common.utils;uses:="org.ap
- ache.commons.logging";version="1.6.2.SNAPSHOT",org.nuxeo.common.utils
- .i18n;version="1.6.2.SNAPSHOT",org.nuxeo.common.xmap;uses:="org.w3c.d
- om,javax.xml.parsers,org.xml.sax,org.apache.xml.serialize,org.w3c.dom
- .ranges,org.nuxeo.common.xmap.annotation,org.nuxeo.common.collections
- ,org.nuxeo.common.utils,org.apache.commons.logging";version="1.6.2.SN
- APSHOT",org.nuxeo.common.xmap.annotation;version="1.6.2.SNAPSHOT"
+ mmon.collections;version="1.6.2.SNAPSHOT",org.nuxeo.common.debug;vers
+ ion="1.6.2.SNAPSHOT",org.nuxeo.common.jndi;version="1.6.2.SNAPSHOT",o
+ rg.nuxeo.common.logging;version="1.6.2.SNAPSHOT",org.nuxeo.common.per
+ sistence;version="1.6.2.SNAPSHOT",org.nuxeo.common.server;version="1.
+ 6.2.SNAPSHOT",org.nuxeo.common.utils;version="1.6.2.SNAPSHOT",org.nux
+ eo.common.utils.i18n;version="1.6.2.SNAPSHOT",org.nuxeo.common.xmap;v
+ ersion="1.6.2.SNAPSHOT",org.nuxeo.common.xmap.annotation;version="1.6
+ .2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.common
+Bundle-Name: Nuxeo Common
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277882932337
+Bnd-LastModified: 1278073301764
 Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.common;singleton:=true
 Import-Package: javax.naming,javax.naming.spi,javax.xml.parsers,org.ap
  ache.commons.logging,org.apache.xml.serialize,org.w3c.dom,org.w3c.dom
  .ranges,org.xml.sax
-Bundle-SymbolicName: org.nuxeo.common;singleton:=true
+Provide-Package: org.nuxeo.common,org.nuxeo.common.collections,org.nux
+ eo.common.debug,org.nuxeo.common.logging,org.nuxeo.common.jndi,org.nu
+ xeo.common.persistence,org.nuxeo.common.server,org.nuxeo.common.utils
+ ,org.nuxeo.common.utils.i18n,org.nuxeo.common.xmap,org.nuxeo.common.x
+ map.annotation,org.nuxeo.runtime.util
+Nuxeo-Require: org.apache.xerces;visibility:=reexport,org.nuxeo.loggin
+ g;visibility:=reexport
 
