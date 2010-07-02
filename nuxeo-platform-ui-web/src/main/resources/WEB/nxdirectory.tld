@@ -189,10 +189,16 @@
       <description>The css style class for the component</description>
     </attribute>
     <attribute>
-      <name>sortCriteria</name>
+      <name>ordering</name>
       <description>
         The column to sort on, one of "id" or "label", default "label"
       </description>
+      <attribute>
+        <name>caseSensitive</name>
+        <description>
+          Boolean attribute, to order elements case-sensitively.
+        </description>
+      </attribute>
     </attribute>
     <attribute>
       <name>displayObsoleteEntries</name>
@@ -293,9 +299,15 @@
       <description>The css style class for the component</description>
     </attribute>
     <attribute>
-      <name>sortCriteria</name>
+      <name>ordering</name>
       <description>
         The column to sort on, one of "id" or "label", default "label"
+      </description>
+    </attribute>
+    <attribute>
+      <name>caseSensitive</name>
+      <description>
+        Boolean attribute, to order elements case-sensitively.
       </description>
     </attribute>
     <attribute>
