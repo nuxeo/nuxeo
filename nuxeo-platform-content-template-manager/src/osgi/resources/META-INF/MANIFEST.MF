@@ -25,4 +25,5 @@ Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
  untime.api,org.nuxeo.runtime.model
 Nuxeo-Require: org.nuxeo.ecm.core,org.nuxeo.runtime,org.nuxeo.ecm.core
  .api
+Require-Bundle: org.nuxeo.ecm.core.api
 
