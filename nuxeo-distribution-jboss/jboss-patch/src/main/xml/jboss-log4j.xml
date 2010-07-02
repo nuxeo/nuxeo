@@ -60,6 +60,21 @@
     </layout>
   </appender>
 
+  <!-- ============================= -->
+  <!-- Gather stderr in a local file -->
+  <!-- ============================= -->
+
+  <appender name="STDERR-FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
+    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <param name="File" value="${jboss.server.log.dir}/stderr.log" />
+    <param name="Append" value="false" />
+    <!-- Rollover at midnight every day -->
+    <param name="DatePattern" value="'.'yyyy-MM-dd" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" />
+    </layout>
+  </appender>
+
   <!-- ============================== -->
   <!-- Append messages to the console -->
   <!-- ============================== -->
@@ -394,6 +409,12 @@
   <category name="nuxeo-error-log">
     <priority value="TRACE" />
     <appender-ref ref="ERROR-FILE" />
+  </category>
+
+  <!-- System.err redirected by JBoss to a logger STDERR with level ERROR -->
+  <category name="STDERR" additivity="false">
+    <priority value="ERROR" />
+    <appender-ref ref="STDERR-FILE" />
   </category>
 
   <!-- ======================= -->
