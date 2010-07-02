@@ -72,7 +72,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import com.sun.el.ExpressionFactoryImpl;
+import de.odysseus.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
