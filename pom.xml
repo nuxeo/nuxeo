@@ -35,6 +35,23 @@
   <profiles>
     <profile>
       <id>mono-installed</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/mono</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>nuxeo-windows-startup</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>msbuild-installed</id>
+      <activation>
+        <os><family>windows</family></os>
+        <file>
+          <exists>C:\Windows\Microsoft.NET\Framework\v3.5</exists>
+        </file>
+      </activation>
       <modules>
         <module>nuxeo-windows-startup</module>
       </modules>
