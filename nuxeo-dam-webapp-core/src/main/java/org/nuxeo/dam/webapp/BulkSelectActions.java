@@ -1,10 +1,5 @@
 package org.nuxeo.dam.webapp;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +40,11 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 
 /**
  * @author <a href="mailto:pdilorenzo@nuxeo.com">Peter Di Lorenzo</a>
@@ -161,7 +161,7 @@ public class BulkSelectActions implements Serializable {
                 - docsThatCanBeDeletedOnParent.size();
 
         // FIXME: lockedDocs is never set!
-        int lockedDocs = 0;        
+        int lockedDocs = 0;
         for (DocumentModel docToDelete : docsThatCanBeDeletedOnParent) {
             if (documentManager.hasPermission(docToDelete.getRef(),
                     SecurityConstants.REMOVE)) {
@@ -197,8 +197,7 @@ public class BulkSelectActions implements Serializable {
         List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
 
         for (DocumentRef parentRef : parentRefs) {
-            if (documentManager.hasPermission(parentRef,
-                    REMOVE_CHILDREN)) {
+            if (documentManager.hasPermission(parentRef, REMOVE_CHILDREN)) {
                 for (DocumentModel doc : docsToDelete) {
                     if (doc.getParentRef().equals(parentRef)) {
                         docsThatCanBeDeleted.add(doc);
@@ -224,8 +223,8 @@ public class BulkSelectActions implements Serializable {
      * Tests if a document is in the working list of selected documents.
      *
      * @param docId The DocumentRef of the document
-     * @param listName The name of the working list of selected
-     *            documents. If null, the default list will be used.
+     * @param listName The name of the working list of selected documents. If
+     *            null, the default list will be used.
      * @return boolean true if the document is in the list, false if it isn't.
      */
     @SuppressWarnings("unchecked")
@@ -234,7 +233,8 @@ public class BulkSelectActions implements Serializable {
         if (docId == null) {
             return false;
         }
-        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION : listName;
+        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION
+                : listName;
 
         // Caching the construction of the set of selected document ids so as
         // not to call the document list API 30 times per page rendering
@@ -258,8 +258,8 @@ public class BulkSelectActions implements Serializable {
      * of selected documents.
      *
      * @param providerName The provider name
-     * @param listName The name of the working list of selected
-     *            documents. If null, the default list will be used.
+     * @param listName The name of the working list of selected documents. If
+     *            null, the default list will be used.
      * @return boolean true if the document is in the list, false if it isn't.
      */
     public boolean getIsCurrentPageInWorkingList(String providerName,
@@ -287,11 +287,12 @@ public class BulkSelectActions implements Serializable {
     /**
      * Clears the working list of selected documents.
      *
-     * @param listName The name of the working list of selected documents.
-     *            If null, the default list will be used.
+     * @param listName The name of the working list of selected documents. If
+     *            null, the default list will be used.
      */
     public void clearWorkingList(String listName) {
-        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION : listName;
+        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION
+                : listName;
 
         List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
         selectedDocumentsList.clear();
@@ -301,12 +302,13 @@ public class BulkSelectActions implements Serializable {
     /**
      * Tests whether the current working list of selected documents is empty.
      *
-     * @param listName The name of the working list of selected
-     *            documents. If null, the default list will be used.
+     * @param listName The name of the working list of selected documents. If
+     *            null, the default list will be used.
      * @return true if empty, false otherwise
      */
     public boolean getIsCurrentWorkingListEmpty(String listName) {
-        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION : listName;
+        String lName = (listName == null) ? CURRENT_DOCUMENT_SELECTION
+                : listName;
         List<DocumentModel> selectedDocumentsList = documentsListsManager.getWorkingList(lName);
         if (selectedDocumentsList == null) {
             return true;
@@ -384,10 +386,9 @@ public class BulkSelectActions implements Serializable {
         return false;
     }
 
-    public boolean getCanExport() {
-        List<DocumentModel> docsToExport = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
-
-        return docsToExport != null && !docsToExport.isEmpty();
+    public boolean getIsSelectionNotEmpty() {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        return docs != null && !docs.isEmpty();
     }
 
     public void exportSelection() throws ClientException {
@@ -405,9 +406,19 @@ public class BulkSelectActions implements Serializable {
         return null;
     }
 
+    public List<Action> getActionsForSelection() {
+        return webActions.getUnfiltredActionsList("DAM_"
+                + DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST");
+    }
+
     public List<Action> getActionsForSelectionNoAjax() {
-        return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_SELECTION
-                + "_NOA4J_LIST");
+        return webActions.getUnfiltredActionsList("DAM_"
+                + CURRENT_DOCUMENT_SELECTION + "_NOA4J_LIST");
+    }
+
+    public List<Action> getHrefActionsForSelection() {
+        return webActions.getUnfiltredActionsList("DAM_"
+                + CURRENT_DOCUMENT_SELECTION + "_LIST_HREF");
     }
 
 }

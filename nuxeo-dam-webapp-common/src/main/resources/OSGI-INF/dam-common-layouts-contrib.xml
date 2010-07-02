@@ -5,7 +5,7 @@
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="layouts">
+             point="layouts">
 
     <layout name="dam_common">
       <templates>
@@ -19,31 +19,42 @@
           <widget>authoringDate</widget>
         </row>
       </rows>
-      <widget name="author" type="text">
-        <translated>true</translated>
-        <fields>
-          <field>damc:author</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-
-      <widget name="authoringDate" type="datetime">
-        <translated>true</translated>
-        <fields>
-          <field>damc:authoringDate</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
-          <property name="styleClass">dataInputTextDate</property>
-        </properties>
-      </widget>
-
     </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="widgets">
+
+    <widget name="author" type="text">
+      <labels>
+        <label mode="any">label.dam_common.author</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>damc:author</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="authoringDate" type="datetime">
+      <labels>
+        <label mode="any">label.dam_common.authoringDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>damc:authoringDate</field>
+      </fields>
+      <properties widgetMode="view">
+        <property name="pattern">#{nxu:basicDateFormater()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateFormater()}</property>
+        <property name="styleClass">dataInputTextDate</property>
+      </properties>
+    </widget>
 
   </extension>
 

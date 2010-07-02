@@ -1,0 +1,44 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <rich:modalPanel id="bulkEditPanel" autosized="true"
+        styleClass="ImportSetFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="${messages['popup.label.bulk.edit']}"/>
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="bulkEditHidelink" />
+        <rich:componentControl for="bulkEditPanel" attachTo="bulkEditHidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+
+    <a4j:form id="bulk_edit_form">
+      <c:set var="jsfContainerId" value="bulk_edit_form" />
+      <nxl:layout name="bulk_edit" mode="edit"
+        value="#{bulkEditActions.bulkEditDocumentModel}"/>
+
+      <a4j:commandButton styleClass="button"
+        action="#{bulkEditActions.bulkEditSelectionNoRedirect}" value="#{messages['command.save']}"
+        oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
+        reRender="filterResultTable, selectionView, bulkEditPanel" />
+      <a4j:commandButton styleClass="button"
+        action="#{bulkEditActions.cancel}" value="#{messages['command.cancel']}"
+        oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
+        reRender="bulkEditPanel" />
+    </a4j:form>
+
+  </rich:modalPanel>
+</div>

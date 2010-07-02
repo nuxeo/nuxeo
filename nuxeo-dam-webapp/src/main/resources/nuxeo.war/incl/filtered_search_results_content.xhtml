@@ -5,9 +5,12 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:a4j="http://richfaces.org/a4j">
-  
-     
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:include src="bulk_edit_popup.xhtml" />
+
   <a4j:region>
     <a4j:outputPanel id="filterResultTable">
       <a4j:form id="toggleList">
@@ -23,7 +26,7 @@
                 url="/icons/list_view_selected.png"
                 rendered="#{webActions.showList}" />
             </a4j:commandLink>
-            
+
             <a4j:commandLink id="showThumbnailLink"
               action="#{webActions.showThumbnailLink}"
               reRender="filterResultTable"
@@ -36,19 +39,19 @@
             </a4j:commandLink>
           </div>
           <f:subview id="clipboard">
-            <ui:include src="/incl/clipboard.xhtml" />
+            <ui:include src="/incl/bulk_actions.xhtml" />
           </f:subview>
           <div style="clear:both;" />
         </div>
-      </a4j:form>  
-            
+      </a4j:form>
+
       <div class="documentTableContent">
         <ui:decorate template="/incl/documents_table_content.xhtml">
           <ui:param name="provider" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS')}" />
           <ui:param name="providerName" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS').name}" />
           <ui:param name="documents" value="#{filterSelectModel}"/>
         </ui:decorate>
-      </div>         
+      </div>
     </a4j:outputPanel>
   </a4j:region>
 

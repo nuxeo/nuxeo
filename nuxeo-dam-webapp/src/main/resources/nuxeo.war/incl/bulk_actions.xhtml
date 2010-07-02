@@ -22,7 +22,22 @@
 
   <div>
     <a4j:outputPanel id="selection_buttons">
-      <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
+      <nxu:dataList var="sel_action" value="#{bulkSelectActions.hrefActionsForSelection}">
+      <span id="#{sel_action.id}">
+        <f:subview rendered="#{sel_action.available}">
+          <a href="#{sel_action.getLink()}" class="button">
+            <h:outputText value="#{messages[sel_action.label]}" />
+          </a>
+          </f:subview>
+        <f:subview rendered="#{!sel_action.available}">
+          <span class="linkDisabled">
+            <h:outputText value="#{messages[sel_action.label]}" />
+          </span>
+          </f:subview>
+        </span>
+      </nxu:dataList>
+
+      <nxu:dataList var="sel_action" value="#{bulkSelectActions.actionsForSelection}">
         <span id="#{sel_action.id}">
           <nxa4j:commandButton
             styleClass="button" type="submit"

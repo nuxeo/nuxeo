@@ -24,7 +24,7 @@
     <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
       <nxdir:chainSelect size="2" value="#{field_0}"
         id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
-        allowBranchSelection="false">
+        allowBranchSelection="false" onchange="#{widgetProperty_onchange}">
         <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
           localize="true" id="#{widget.id}_topic">
           <a4j:support event="onchange" reRender="#{widget.id}_subtopic" />

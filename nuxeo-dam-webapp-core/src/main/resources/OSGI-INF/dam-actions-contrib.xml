@@ -21,7 +21,7 @@
       label="action.delivery" icon="/icons/file.gif">
       <category>VIEW_ASSET_ACTION_LIST</category>
     </action>
-    
+
     <action id="TAB_HISTORY" link="/incl/tabs/asset_history.xhtml" order="40"
       label="action.asset.history" icon="/icons/file.gif">
       <category>VIEW_ASSET_ACTION_LIST</category>
@@ -46,10 +46,20 @@
 
 
     <!-- BUTTONS -->
+    <action id="CURRENT_SELECTION_EDIT" link="javascript:Richfaces.showModalPanel('bulkEditPanel');"
+      label="command.bulk.edit" icon="" help="command.bulk.edit.help">
+      <category>DAM_CURRENT_SELECTION_LIST_HREF</category>
+      <filter id="canBulkEdit">
+        <rule grant="true">
+          <condition>#{bulkSelectActions.isSelectionNotEmpty}</condition>
+        </rule>
+      </filter>
+    </action>
+
     <action id="CURRENT_SELECTION_DELETE" link="#{bulkSelectActions.deleteSelection}"
       label="command.delete" icon="" help="command.delete.help"
       confirm="if( !confirmDeleteAssets() ) return false;">
-      <category>CURRENT_SELECTION_LIST</category>
+      <category>DAM_CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
         <rule grant="true">
           <condition>#{bulkSelectActions.canDelete}</condition>
@@ -60,10 +70,10 @@
     <action id="CURRENT_SELECTION_EXPORT" link="#{bulkSelectActions.exportSelection}"
       label="command.export" icon="" help="command.export.help"
       confirm="if( !confirmExportAssets() ) return false;">
-      <category>CURRENT_SELECTION_NOA4J_LIST</category>
+      <category>DAM_CURRENT_SELECTION_NOA4J_LIST</category>
       <filter id="canExport">
         <rule grant="true">
-          <condition>#{bulkSelectActions.canExport}</condition>
+          <condition>#{bulkSelectActions.isSelectionNotEmpty}</condition>
         </rule>
       </filter>
     </action>
