@@ -108,14 +108,16 @@ public class DocumentLayoutTagHandler extends TagHandler {
             TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(
                     helper.createAttribute("name", layoutName), modeAttr, value);
             if (template != null) {
-                FaceletHandlerHelper.addTagAttribute(attributes, template);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        template);
             }
             // add other variables put on original tag
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
                 if (!reservedVars.contains(localName)) {
-                    FaceletHandlerHelper.addTagAttribute(attributes, var);
+                    attributes = FaceletHandlerHelper.addTagAttribute(
+                            attributes, var);
                 }
             }
             TagConfig tagConfig = TagConfigFactory.createTagConfig(config,
