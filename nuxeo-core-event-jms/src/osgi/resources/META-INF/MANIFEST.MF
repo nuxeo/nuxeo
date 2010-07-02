@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.event.jms;jms=split;mandatory:=jms;version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.ecm.core.event.jms;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -11,6 +11,7 @@ Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277331887958
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/jmslistener-contrib.xml
+Fragment-Host: org.nuxeo.ecm.core.event
 Bundle-SymbolicName: org.nuxeo.ecm.core.event.jms;singleton:=true
 Import-Package: javax.jms,javax.naming,org.apache.commons.logging,org.
  nuxeo.common.utils,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.ap
