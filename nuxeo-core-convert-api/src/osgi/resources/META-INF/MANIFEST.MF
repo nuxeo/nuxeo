@@ -1,17 +1,20 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.convert.api;uses:="org.nuxeo.ecm.co
- re.api,org.nuxeo.ecm.core.api.blobholder";version="1.6.2.SNAPSHOT"
+Export-Package: org.nuxeo.ecm.core.convert.api;version="1.6.2.SNAPSHOT
+ "
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.ecm.core.convert.api
+Bundle-Localization: plugin
+Bundle-Name: NXCore Covert API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277305242815
+Bnd-LastModified: 1278073466689
 Bundle-ManifestVersion: 2
-Import-Package: org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;ap
- i=split,org.nuxeo.ecm.core.api.blobholder
 Bundle-SymbolicName: org.nuxeo.ecm.core.convert.api
+Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.blobhol
+ der,org.nuxeo.ecm.directory;api=split
 Nuxeo-Require: org.nuxeo.ecm.core.api
 
