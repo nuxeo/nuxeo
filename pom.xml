@@ -116,17 +116,6 @@
         <module>nuxeo-distribution-jetty-base</module>
       </modules>
     </profile>
-    <profile>
-      <id>installer-windows-nuxeo-dm</id>
-      <modules>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-distribution-jboss</module>
-        <module>nuxeo-windows-oldinstaller</module>
-      </modules>
-    </profile>
   </profiles>
 
   <dependencyManagement>
