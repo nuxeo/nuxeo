@@ -39,14 +39,14 @@ public class JavaUtilLoggingHelper {
 
     private static LogHandler activeHandler;
 
-    //Utility class.
+    // Utility class.
     private JavaUtilLoggingHelper() {
     }
 
     /**
      * Redirects {@code java.util.logging} to Apache Commons Logging
      */
-    public static void redirectToApacheCommons() {
+    public static synchronized void redirectToApacheCommons() {
         if (activeHandler != null) {
             return;
         }
@@ -55,10 +55,11 @@ public class JavaUtilLoggingHelper {
             for (Handler handler : rootLogger.getHandlers()) {
                 rootLogger.removeHandler(handler);
             }
+            Level minLevel = Level.FINE; // never log below that
             activeHandler = new LogHandler();
-            activeHandler.setLevel(Level.ALL);
+            activeHandler.setLevel(minLevel);
             rootLogger.addHandler(activeHandler);
-            rootLogger.setLevel(Level.ALL);
+            rootLogger.setLevel(minLevel);
         } catch (Exception e) {
             log.error("Handler setup failed", e);
         }
@@ -67,7 +68,7 @@ public class JavaUtilLoggingHelper {
     /**
      * Resets {@code java.util.logging} redirections.
      */
-    public static void reset() {
+    public static synchronized void reset() {
         if (activeHandler == null) {
             return;
         }
