@@ -155,6 +155,7 @@ function tableStart(jsonObject) {
     html += "      <th/>";
     html += "      <th>" + modified + "</th>";
     html += "      <th>" + creator + "</th>";
+    html += "      <th/>";
     html += "    </tr>";
     html += "  </thead>";
     html += "  <tbody>";
