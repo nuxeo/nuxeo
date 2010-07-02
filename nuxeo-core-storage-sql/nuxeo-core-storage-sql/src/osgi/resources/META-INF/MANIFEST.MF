@@ -72,7 +72,6 @@ Import-Package: javax.resource,
  org.nuxeo.runtime.management,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.streaming
-Eclipse-ExtensibleAPI: true
 Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.runtime.management, org.nu
  xeo.ecm.core.schema, org.nuxeo.ecm.core, org.nuxeo.ecm.core.convert, 
  org.nuxeo.ecm.core.convert.api, org.nuxeo.ecm.core.convert.plugins

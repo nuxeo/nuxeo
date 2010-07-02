@@ -7,7 +7,6 @@ Tool: Bnd-0.0.394
 Bundle-Name: org.nuxeo.ecm.core.storage.sql.extensions
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Fragment-Host: org.nuxeo.ecm.core.storage.sql
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277332756661
 Bundle-ManifestVersion: 2
@@ -24,9 +23,8 @@ Import-Package: org.apache.commons.logging,
  org.h2.store.fs,
  org.h2.tools,
  org.h2.util,
- org.h2.value,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.api
+ org.h2.value
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singlet
  on:=true
 
