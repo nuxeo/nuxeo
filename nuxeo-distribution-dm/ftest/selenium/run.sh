@@ -30,7 +30,7 @@ rm -rf $HERE/result-*.html
 
 cd $HERE
 # Update path in user-extensions.js
-sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
+sed "s,/path/to/project-ear/ftest/selenium,$PWD,g" < user-extensions.js.sample > user-extensions.js
 
 # Update firefox profile setting target url permission
 sed "s,\(capability.principal.codebase.p0.id...\).*$,\1\"$URL\");,g" < ffprofile/prefs.js.sample > ffprofile/prefs.js

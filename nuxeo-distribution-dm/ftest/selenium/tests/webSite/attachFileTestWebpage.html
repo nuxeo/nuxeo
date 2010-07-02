@@ -12,9 +12,9 @@
 <tr><td rowspan="1" colspan="3">attachFileTestWebpage</td></tr>
 </thead><tbody>
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium attachFileTestWebpage</td>
-        <td></td>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium attachFileTestWebpage</td>
+	<td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -80,6 +80,11 @@
 	<td>storeExpression</td>
 	<td>javascript{storedVars.testfolderpath + 'opera-singer.txt';}</td>
 	<td>filepath</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${filepath}</td>
+	<td></td>
 </tr>
 <tr>
 	<td>type</td>
