@@ -311,7 +311,7 @@
         <include name="gwt-log-*" />
         <include name="gwt-user-*" />
         <include name="gwtext-*" />
-        <include name="h2-1.1.114*" />
+        <include name="h2-*" />
         <include name="hibernate-*" />
         <include name="icu4j-*" />
         <include name="imagej-*" />
