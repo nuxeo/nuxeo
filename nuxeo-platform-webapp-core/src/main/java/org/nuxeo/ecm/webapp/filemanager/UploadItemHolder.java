@@ -34,8 +34,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.richfaces.model.UploadItem;
 
 /**
- * Holds FileUpload data at CONVERSATION scope level
- * (Can not be part of FileManager that can not be CONVERSATION Scoped because of Seam remoting)
+ * Holds FileUpload data at CONVERSATION scope level (Can not be part of
+ * FileManager that can not be CONVERSATION Scoped because of Seam remoting)
  */
 @Name("fileUploadHolder")
 @Scope(ScopeType.CONVERSATION)
@@ -83,18 +83,17 @@ public class UploadItemHolder implements Serializable {
         this.fileUpload = fileUpload;
     }
 
-
-//    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-//            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void reset() {
         uploadedFiles = new ArrayList<UploadItem>();
-        fileUpload=null;
-        fileName=null;
-        if(tempFile != null) {
+        fileUpload = null;
+        fileName = null;
+        if (tempFile != null) {
             tempFile.delete();
         }
-        tempFile=null;
+        tempFile = null;
     }
 
 }
