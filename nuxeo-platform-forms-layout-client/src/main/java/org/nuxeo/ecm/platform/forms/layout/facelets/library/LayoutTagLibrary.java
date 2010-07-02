@@ -80,7 +80,7 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
                 buff.append(def.getPropertyName() + " ");
             }
         }
-        return buff.toString();
+        return buff.toString().trim();
     }
 
 }
