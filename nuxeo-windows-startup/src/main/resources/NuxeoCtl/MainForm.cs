@@ -217,6 +217,16 @@ namespace NuxeoCtl
         }
 		
 		
+		
+		void Label1Click(object sender, EventArgs e)
+		{
+			
+		}
+		
+		void LogBoxTextChanged(object sender, EventArgs e)
+		{
+			
+		}
 	}
 	
 	
