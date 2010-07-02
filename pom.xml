@@ -34,10 +34,10 @@
 
   <profiles>
     <profile>
-      <id>mono-installed</id>
+      <id>xbuild-installed</id>
       <activation>
         <file>
-          <exists>/usr/bin/mono</exists>
+          <exists>/usr/bin/xbuild</exists>
         </file>
       </activation>
       <modules>
