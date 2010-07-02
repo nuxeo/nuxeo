@@ -33,6 +33,7 @@
     <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
+    <module>nuxeo-platform-tag-service</module>
   </modules>
 
   <profiles>
@@ -57,7 +58,6 @@
 	<module>nuxeo-platform-webwidgets</module>
 	<module>nuxeo-platform-userworkspace</module>
 	<module>nuxeo-platform-virtualnavigation</module>
-	<module>nuxeo-platform-tag-service</module>
 	<module>nuxeo-webengine-features</module>
 	<module>nuxeo-opensocial</module>
 	<module>nuxeo-generic-wss-handler</module>
