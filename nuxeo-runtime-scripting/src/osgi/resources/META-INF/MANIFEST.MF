@@ -11,7 +11,7 @@ Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277838402277
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-scripting;singlet
+Bundle-SymbolicName: org.nuxeo.runtime.scripting;singlet
  on:=true
 Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,
