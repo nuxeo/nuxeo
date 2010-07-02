@@ -202,6 +202,10 @@
         <fields>
           <field schema="user">username</field>
         </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
         <properties widgetMode="any">
           <property name="template">
             /widgets/user_vgoups_widget_template.xhtml
