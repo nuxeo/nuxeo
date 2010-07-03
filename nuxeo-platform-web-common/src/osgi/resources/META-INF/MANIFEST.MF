@@ -1,0 +1,41 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.ui.web.auth;version="5.3.2.SNAP
+ SHOT",org.nuxeo.ecm.platform.ui.web.auth.interfaces;version="5.3.2.SN
+ APSHOT",org.nuxeo.ecm.platform.ui.web.auth.plugins;version="5.3.2.SNA
+ PSHOT",org.nuxeo.ecm.platform.ui.web.auth.service;version="5.3.2.SNAP
+ SHOT",org.nuxeo.ecm.platform.ui.web.cache;version="5.3.2.SNAPSHOT",or
+ g.nuxeo.ecm.platform.ui.web.download;version="5.3.2.SNAPSHOT",org.nux
+ eo.ecm.platform.web.common.ajax;version="5.3.2.SNAPSHOT",org.nuxeo.ec
+ m.platform.web.common.ajax.service;version="5.3.2.SNAPSHOT",org.nuxeo
+ .ecm.platform.web.common.exceptionhandling;version="5.3.2.SNAPSHOT",o
+ rg.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor;version
+ ="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.web.common.exceptionhandling
+ .service;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platform.web.common.r
+ equestcontroller.filter;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.platfo
+ rm.web.common.requestcontroller.service;version="5.3.2.SNAPSHOT",org.
+ nuxeo.ecm.platform.web.common.resources;version="5.3.2.SNAPSHOT",org.
+ nuxeo.ecm.platform.web.common.vh;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Web Common framework
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277352898982
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/authentication-framework.xml,
+Import-Package: javax.faces.context,javax.security.auth,javax.security
+ .auth.callback,javax.security.auth.login,javax.servlet,javax.servlet.
+ http,org.apache.commons.httpclient,org.apache.commons.httpclient.meth
+ ods,org.apache.commons.httpclient.params,org.apache.commons.logging,o
+ rg.jboss.remoting.transport.coyote,org.nuxeo.common.utils,org.nuxeo.c
+ ommon.utils.i18n,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;
+ api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.blo
+ bholder,org.nuxeo.ecm.core.api.repository,org.nuxeo.ecm.core.event,or
+ g.nuxeo.ecm.core.event.impl,org.nuxeo.ecm.core.utils,org.nuxeo.ecm.pl
+ atform.api.login,org.nuxeo.ecm.platform.usermanager,org.nuxeo.runtime
+ ,org.nuxeo.runtime.api,org.nuxeo.runtime.model,org.nuxeo.runtime.tran
+ saction
+Bundle-SymbolicName: org.nuxeo.ecm.platform.web.common;singleton:=true
+

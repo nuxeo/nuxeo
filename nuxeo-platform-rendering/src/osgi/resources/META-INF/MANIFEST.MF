@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.rendering.api;version="5.3.2.SN
+ APSHOT",org.nuxeo.ecm.platform.rendering.fm;version="5.3.2.SNAPSHOT",
+ org.nuxeo.ecm.platform.rendering.fm.adapters;version="5.3.2.SNAPSHOT"
+ ,org.nuxeo.ecm.platform.rendering.fm.extensions;version="5.3.2.SNAPSH
+ OT",org.nuxeo.ecm.platform.rendering.fm.i18n;version="5.3.2.SNAPSHOT"
+ ,org.nuxeo.ecm.platform.rendering.wiki;version="5.3.2.SNAPSHOT",org.n
+ uxeo.ecm.platform.rendering.wiki.extensions;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,lib/wem-2.0.2.jar
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo ECM Platform Site Add On
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277352903940
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/freemarker-engine.xml
+Provide-Package: org.nuxeo.ecm.platform.rendering.api,
+Import-Package: freemarker.cache,freemarker.core,freemarker.ext.beans,
+ freemarker.template,org.apache.commons.logging,org.nuxeo.common.xmap.
+ annotation,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=sp
+ lit,org.nuxeo.ecm.core.api.impl.blob,org.nuxeo.ecm.core.api.model,org
+ .nuxeo.ecm.core.api.model.impl,org.nuxeo.ecm.core.api.model.impl.prim
+ itives,org.nuxeo.ecm.core.schema.types,org.nuxeo.ecm.core.schema.type
+ s.primitives,org.nuxeo.runtime.model,org.wikimodel.wem,org.wikimodel.
+ wem.common
+Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
+Nuxeo-Require: org.nuxeo.ecm.core.api
+

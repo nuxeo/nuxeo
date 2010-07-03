@@ -53,6 +53,8 @@
     <module>nuxeo-platform-search-core</module>
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-forms-layout-api</module>
+    <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-platform-web-common</module>
   </modules>
 
   <profiles>
@@ -78,13 +80,11 @@
 	<module>nuxeo-platform-placeful-theme</module>
 	<module>nuxeo-platform-types-facade</module>
 	<module>nuxeo-platform-uidgen-core</module>
-	<module>nuxeo-platform-web-common</module>
 	<module>nuxeo-platform-url-core</module>
 	<module>nuxeo-platform-url-facade</module>
 	<module>nuxeo-platform-url-api</module>
 	<module>nuxeo-platform-usermanager-facade</module>
 	<module>nuxeo-platform-ws</module>
-	<module>nuxeo-platform-rendering</module>
 	<module>nuxeo-platform-htmlsanitizer</module>
 	<module>nuxeo-shell-core</module>
 	<module>nuxeo-platform-test</module>
