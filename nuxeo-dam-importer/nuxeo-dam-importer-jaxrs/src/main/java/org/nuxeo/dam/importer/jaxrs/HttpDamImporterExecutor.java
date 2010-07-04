@@ -58,6 +58,7 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Produces("text/plain; charset=UTF-8")
     public String run(@QueryParam("inputPath") String inputPath,
             @QueryParam("importFolderTitle") String importFolderTitle,
+            @QueryParam("importFolderPath") String importFolderPath,
             @QueryParam("importSetTitle") String importSetTitle,
             @QueryParam("batchSize") Integer batchSize,
             @QueryParam("nbThreads") Integer nbThreads,
@@ -68,8 +69,16 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
                 source, TARGET_PATH, getLogger()).batchSize(batchSize).nbThreads(
                 nbThreads).build();
-        DamMultiThreadedImporter runner = DamMultiThreadedImporter.createWithImportFolderTitle(
+
+        DamMultiThreadedImporter runner;
+        if (importFolderTitle != null) {
+            runner = DamMultiThreadedImporter.createWithImportFolderTitle(
                 configuration, importFolderTitle, importSetTitle);
+        } else {
+            runner = DamMultiThreadedImporter.createWithImportFolderPath(
+                configuration, importFolderPath, importSetTitle);
+        }
+
         runner.setFactory(new FileManagerDocumentModelFactory());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,

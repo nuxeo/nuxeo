@@ -113,7 +113,7 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
     @Override
     protected DocumentModel createTargetContainer() throws Exception {
         TxHelper txHelper = new TxHelper();
-        //txHelper.beginNewTransaction(600);
+        txHelper.beginNewTransaction(600);
         txHelper.grabCurrentTransaction(600);
         DocumentModel importFolder = getOrCreateImportFolder();
         DocumentModel importset = createImportSet(importFolder);
