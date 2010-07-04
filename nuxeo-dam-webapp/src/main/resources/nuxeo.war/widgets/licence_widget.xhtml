@@ -18,7 +18,7 @@
       displayKeySeparator="false"
     />
   </c:if>
-  
+
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
@@ -26,7 +26,7 @@
         <nxdir:chainSelect size="1" value="#{field_0}"
           id="#{widget.id}_editselect"
           allowBranchSelection="true"
-          allowRootSelection="true">
+          allowRootSelection="true" onchange="#{widgetProperty_onchange}">
           <nxdir:chainSelectListbox index="0" size="0" directoryName="dam_licence"
             localize="true" id="#{widget.id}_dam_licence" display="id">
           </nxdir:chainSelectListbox>
@@ -34,7 +34,7 @@
         <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
           id="#{widget.id}_message" />
       </a4j:outputPanel>
-    </a4j:region>  
+    </a4j:region>
 
   </c:if>
 
