@@ -44,7 +44,7 @@
         <exclude name="**/config/opensocial.properties" />
       </patternset>
     </unzip>
-    <nx:rename from="${outdir}/${tomcat}/nuxeo-*"
+    <nx:rename from="${outdir}/${tomcat}/nuxeo-dm-${nuxeo.dm.version}-jetty"
                to="${outdir}/${tomcat}/nxserver" />
     <delete>
       <fileset dir="${outdir}/${tomcat}/nxserver/config"
@@ -214,7 +214,7 @@
         <exclude name="**/logs" />
       </patternset>
     </unzip>
-    <nx:rename from="${outdir}/apache-tomcat*" to="${outdir}/${tomcat}" />
+    <nx:rename from="${outdir}/apache-tomcat-6.0.20" to="${outdir}/${tomcat}" />
     <unzip dest="${outdir}/${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="doc" />
