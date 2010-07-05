@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="document_children" category="default">
+      <resultProvider>CURRENT_DOC_CHILDREN</resultProvider>
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <pagination>numbered</pagination>
+      <availableActions category="CURRENT_SELECTION_LIST" />
+      <searchLayout>search_layout</searchLayout>
+      <resultLayout>document_listing</resultLayout>
+    </contentView>
+
+  </extension>
+
+</component>
