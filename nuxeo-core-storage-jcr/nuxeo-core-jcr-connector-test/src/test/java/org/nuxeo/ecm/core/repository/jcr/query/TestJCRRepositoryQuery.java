@@ -103,4 +103,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
         // not done for JCR
     }
 
+    @Override
+    public void testStartsWithMove() throws Exception {
+        // ecm:path is not updated for children
+    }
+
 }

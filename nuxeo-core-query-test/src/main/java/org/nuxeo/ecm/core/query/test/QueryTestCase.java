@@ -627,16 +627,15 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(sql);
         assertEquals(4, dml.size());
 
+    }
+
+    public void testStartsWithMove() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
         // move folder2 into folder1
-        sql = "SELECT * FROM document WHERE ecm:path = '/testfolder1/'";
-        dml = session.query(sql);
-        DocumentModel folder1 = dml.get(0);
-        assertEquals(1, dml.size());
-        sql = "SELECT * FROM document WHERE ecm:path = '/testfolder2/'";
-        dml = session.query(sql);
-        DocumentModel folder2 = dml.get(0);
-        assertEquals(1, dml.size());
-        session.move(folder2.getRef(), folder1.getRef(), null);
+        session.move(new PathRef("/testfolder2/"), new PathRef("/testfolder1/"), null);
         session.save();
 
         sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/'";
