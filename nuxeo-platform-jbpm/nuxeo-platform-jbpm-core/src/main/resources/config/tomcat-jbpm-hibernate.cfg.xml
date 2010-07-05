@@ -15,9 +15,6 @@
     <property name="hibernate.cache.provider_class">
       org.hibernate.cache.HashtableCacheProvider
     </property>
-    <property name="hibernate.session_factory_name">
-      java:comp/env/jdbc/jbpmHibSessFact
-    </property>
     <!-- DataSource properties (begin) ===
       <property name="hibernate.connection.datasource">java:comp/env/jdbc/JbpmDataSource</property>
       ==== DataSource properties (end) -->
