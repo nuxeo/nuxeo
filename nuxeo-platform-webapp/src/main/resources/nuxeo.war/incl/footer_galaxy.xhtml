@@ -1,4 +1,5 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
      xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:f="http://java.sun.com/jsf/core">
 
@@ -15,7 +16,8 @@
     <h:outputText value="#{messages['label.login.documentation']}" />
   </h:outputLink>
   
-  <!-- to move to login page -->
+<c:if test="false">
+  NXP-3151: move language selector to login page
   <h:form id="langSelectForm">
     <h:outputText value="#{messages['label.selectLocale']}" />
     <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect"
@@ -27,5 +29,6 @@
                      class="langSubmit"
                      id="langSelectSubmitButton" />
   </h:form>
+</c:if>
 </ui:insert>
 </div>

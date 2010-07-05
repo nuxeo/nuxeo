@@ -3,12 +3,14 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="java.util.Locale"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String context = request.getContextPath();
+String language = request.getLocale().toString();
 %>
 <html>
 
@@ -194,96 +196,160 @@ nxthemes css is not used in login.jsp */
 
 <body style="margin:0;text-align:center;">
 
-  <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
-    <tbody>
-      <tr class="topBar">
-        <td>
-          <img width="316" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_login.png"/>
-       </td>
-       <td align="right" class="leftColumn">
-       <div class="labelCorp">
-       <ul>
-                    <li><a onclick="window.open(this.href); return false;" href="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                      <fmt:message bundle="${messages}" key="label.login.getSupport" />
-                    </a></li>
-                    <li><a onclick="window.open(this.href); return false;" href="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                      <fmt:message bundle="${messages}" key="label.login.forums" />
-                    </a></li>
-                    <li><a onclick="window.open(this.href); return false;" href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                      <fmt:message bundle="${messages}" key="label.login.documentation" />
-                    </a></li>
-                </ul>
-                <div style="clear:both;" />
-          </div>
-       </td>
-      </tr>
-      <tr>
-        <td align="center">
-             <form method="post" action="nxstartup.faces"><!-- To prevent caching -->
-<%
-    response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
-    response.setHeader("Pragma", "no-cache"); // HTTP 1.0
-    response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
-%> <!-- ;jsessionid=<%=request.getSession().getId()%> --> <!-- ImageReady Slices (login_cutted.psd) -->
-        <div class="login">
-          <table>
-           <tr>
-             <td class="login_label">
-              <label for="username">
-                  <fmt:message bundle="${messages}" key="label.login.username" />
-                </label>
-                </td>
-                <td>
-                <input class="login_input" type="text"
-                    name="user_name" id="username" size="22">
-            </td>
-            </tr>
-            <tr>
-            <td class="login_label">
-              <label for="password">
-                  <fmt:message bundle="${messages}" key="label.login.password" />
-                </label>
-                </td>
-                <td>
-                <input class="login_input" type="password"
-                    name="user_password" id="password" size="22">
-                 </td>
-                 </tr>
-                 <tr>
-                 <td></td>
-                 <td>
-                                    <% // label.login.logIn %>
-                <input type="hidden" name="requestedUrl"
-                    id="requestedUrl" value="${param.requestedUrl}">
-                <input type="hidden" name="form_submitted_marker"
-                    id="form_submitted_marker">
-                    <input class="login_button" type="submit" name="Submit"
-                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
-
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-          <c:if test="${param.loginFailed}">
-            <div class="errorMessage">
-                  <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
-            </div>
-          </c:if>
-          <c:if test="${param.loginMissing}">
-            <div class="errorMessage">
-                  <fmt:message bundle="${messages}" key="label.login.missingUsername" />
-            </div>
-          </c:if>
-          <c:if test="${param.securityError}">
-            <div class="errorMessage">
-                  <fmt:message bundle="${messages}" key="label.login.securityError" />
-            </div>
-          </c:if>
+<table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
+  <tbody>
+    <tr class="topBar">
+      <td>
+        <img width="316" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_login.png"/>
+      </td>
+      <td align="right" class="leftColumn">
+        <div class="labelCorp">
+          <ul>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.getSupport" />
+              </a>
+            </li>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.forums" />
+              </a>
+            </li>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.documentation" />
+              </a>
+            </li>
+          </ul>
+          <div style="clear:both;" />
+        </div>
       </td>
     </tr>
-    </table>
-      </form>
+    <tr>
+      <td align="center">
+        <form method="post" action="nxstartup.faces">
+          <!-- To prevent caching -->
+          <%
+              response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+              response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+              response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
+          %>
+          <!-- ;jsessionid=<%=request.getSession().getId()%> -->
+          <!-- ImageReady Slices (login_cutted.psd) -->
+          <div class="login">
+            <table>
+             <tr>
+                <td class="login_label">
+                  <label for="username">
+                    <fmt:message bundle="${messages}" key="label.login.username" />
+                  </label>
+                </td>
+                <td>
+                  <input class="login_input" type="text"
+                    name="user_name" id="username" size="22">
+                </td>
+              </tr>
+              <tr>
+                <td class="login_label">
+                  <label for="password">
+                    <fmt:message bundle="${messages}" key="label.login.password" />
+                  </label>
+                </td>
+                <td>
+                  <input class="login_input" type="password"
+                      name="user_password" id="password" size="22">
+                </td>
+              </tr>
+              <tr>
+                <td class="login_label">
+                  <label for="language">
+                    <fmt:message bundle="${messages}" key="label.login.language" />
+                  </label>
+                </td>
+                <td>
+                  <select class="login_input" name="language" id="language">
+                    <option value="en_GB" <%="en_GB".equals(language)?"selected=\"selected\"":""%>>
+                      English (United Kingdom)
+                    </option>
+                    <option value="pt_BR" <%="pt_BR".equals(language)?"selected":""%>>
+                      portugu&ecirc;s (Brasil)
+                    </option>
+                    <option value="eu" <%="eu".equals(language)?"selected":""%>>
+                      Basque
+                    </option>
+                    <option value="pt" <%="pt".equals(language)?"selected":""%>>
+                      portugu&ecirc;s
+                    </option>
+                    <option value="en_US" <%="en_US".equals(language)?"selected":""%>>
+                      English (United States)
+                    </option>
+                    <option value="cn" <%="cn".equals(language)?"selected":""%>>
+                      cn
+                    </option>
+                    <option value="vn" <%="vn".equals(language)?"selected":""%>>
+                      vn
+                    </option>
+                    <option value="ca" <%="ca".equals(language)?"selected":""%>>
+                      catal&agrave;
+                    </option>
+                    <option value="de" <%="de".equals(language)?"selected":""%>>
+                      Deutsch
+                    </option>
+                    <option value="it" <%="it".equals(language)?"selected":""%>>
+                      italiano
+                    </option>                  
+                    <option value="fr" <%="fr".equals(language)?"selected":""%>>
+                      fran&ccedil;ais
+                    </option>
+                    <option value="es" <%="es".equals(language)?"selected":""%>>
+                      espa&ntilde;ol
+                    </option>
+                    <option value="ar" <%="ar".equals(language)?"selected":""%>>
+                      &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
+                    </option>
+                    <option value="ru" <%="ru".equals(language)?"selected":""%>>
+                      &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <% // label.login.logIn %>
+                  <input type="hidden" name="requestedUrl"
+                      id="requestedUrl" value="${param.requestedUrl}">
+                  <input type="hidden" name="form_submitted_marker"
+                      id="form_submitted_marker">
+                  <input class="login_button" type="submit" name="Submit"
+                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <c:if test="${param.loginFailed}">
+                    <div class="errorMessage">
+                      <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
+                    </div>
+                  </c:if>
+                  <c:if test="${param.loginMissing}">
+                    <div class="errorMessage">
+                      <fmt:message bundle="${messages}" key="label.login.missingUsername" />
+                    </div>
+                  </c:if>
+                  <c:if test="${param.securityError}">
+                    <div class="errorMessage">
+                      <fmt:message bundle="${messages}" key="label.login.securityError" />
+                    </div>
+                  </c:if>
+                </td>
+            </tr>
+          </table>
+        </form>
       </td>
       <td class="news_container" align="right" valign="center">
         <% if (!request.getHeader("User-Agent").contains("Nuxeo-Selenium-Tester")) { %>
@@ -293,26 +359,25 @@ nxthemes css is not used in login.jsp */
         <% } %>
       </td>
     </tr>
-      <tr class="footer">
-        <td align="center" valign="bottom">
-         <div class="loginLegal">
-            <fmt:message bundle="${messages}" key="label.login.copyright" />
-        </div>
-        </td>
-        <td align="right" class="version" valign="bottom">
+    <tr class="footer">
+      <td align="center" valign="bottom">
+      <div class="loginLegal">
+        <fmt:message bundle="${messages}" key="label.login.copyright" />
+      </div>
+      </td>
+      <td align="right" class="version" valign="bottom">
         <div class="loginLegal">
-
-
          <%=productName%>
          &nbsp;
          <%=productVersion%>
-
         </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 <!--   Current User = <%=request.getRemoteUser()%> -->
+
 </body>
 </html>
 
