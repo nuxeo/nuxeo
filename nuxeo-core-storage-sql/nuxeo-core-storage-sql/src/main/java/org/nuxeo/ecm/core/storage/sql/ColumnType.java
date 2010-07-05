@@ -46,6 +46,7 @@ public enum ColumnType {
     NODEIDFKMUL, // fk to main node id, not nullable, non-unique
     NODEIDFKNULL, // fk to main node id, nullable
     NODEVAL, // same type as node id, not a fk (versionable, cluster...)
+    NODEARRAY, // array of node if supported
     SYSNAME, // system names (type names etc)
     TINYINT, // cluster inval kind
     INTEGER, // complex prop order, ordered doc

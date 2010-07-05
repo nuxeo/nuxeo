@@ -126,9 +126,9 @@ public class Model {
 
     public static final String HIER_CHILD_ISPROPERTY_KEY = "isproperty";
 
-    public static final String DESCENDANTS_TABLE_NAME = "descendants";
+    public static final String ANCESTORS_TABLE_NAME = "ancestors";
 
-    public static final String DESCENDANTS_DESCENDANT_KEY = "descendantid";
+    public static final String ANCESTORS_ANCESTOR_KEY = "ancestors";
 
     public static final String COLL_TABLE_POS_KEY = "pos";
 

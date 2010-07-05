@@ -460,9 +460,9 @@ public abstract class Dialect {
     public abstract String getSecurityCheckSql(String idColumnName);
 
     /**
-     * Checks if the dialect supports a descendants table.
+     * Checks if the dialect supports an ancestors table.
      */
-    public boolean supportsDescendantsTable() {
+    public boolean supportsAncestorsTable() {
         return false;
     }
 
