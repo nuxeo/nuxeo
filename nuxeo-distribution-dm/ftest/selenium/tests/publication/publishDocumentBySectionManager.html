@@ -13,9 +13,9 @@
 </thead><tbody>
 <!--@Test groups:publishDocumentBySectionManager,upload|depends:introduction-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium publishDocumentBySectionManager</td>
-        <td></td>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium publishDocumentBySectionManager</td>
+	<td></td>
 </tr>
 <!--Identification-->
 <tr>
@@ -44,16 +44,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>//select[@class=&quot;langSelect&quot;]</td>
-	<td>label=English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@class='langSubmit']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyTextPresent</td>
 	<td>You are logged as jdoe</td>
 	<td></td>
@@ -73,11 +63,7 @@
 	<td>link=testFolder1</td>
 	<td></td>
 </tr>
-<tr>
-	<td>mouseDown</td> <!-- no clickAndWait for modal panel -->
-	<td>link=New</td>
-	<td></td>
-</tr>
+<!-- no clickAndWait for modal panel -->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=File</td>
@@ -187,16 +173,6 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//select[@class=&quot;langSelect&quot;]</td>
-	<td>label=English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@class='langSubmit']</td>
 	<td></td>
 </tr>
 <tr>
