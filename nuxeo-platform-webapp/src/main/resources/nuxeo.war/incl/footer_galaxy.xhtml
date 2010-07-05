@@ -3,18 +3,16 @@
      xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:insert name="footer">
-  Copyright <f:verbatim> &amp;copy; </f:verbatim> 2006-2010 Nuxeo. Visit <!-- &nbsp; -->
-  <h:outputLink value="http://www.nuxeo.com/">
-    <h:outputText value="nuxeo.com" />
-  </h:outputLink> | Get <!-- &nbsp; --><h:outputLink value="http://nuxeo.com/subscription/connect/">
-  <h:outputText value="support" />
-    </h:outputLink> | Join the <!-- &nbsp; -->
-  <h:outputLink value="http://www.nuxeo.org/">
-    <h:outputText value="community" />
+  Copyright <f:verbatim> &amp;copy; </f:verbatim> 2006-2010 Nuxeo. 
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.login.getSupport']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.forums']}" />
   </h:outputLink>
   | <!-- &nbsp; -->
-  <h:outputLink value="http://www.nuxeo.org/xwiki/bin/view/Main/QuickStart/">
-    <h:outputText value="QuickStart" />
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.documentation']}" />
   </h:outputLink>
   
   <!-- to move to login page -->

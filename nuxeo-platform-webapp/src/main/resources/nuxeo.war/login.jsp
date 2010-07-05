@@ -21,7 +21,7 @@ String context = request.getContextPath();
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url(<%=context%>/img/theme_galaxy/boston8.jpg) 0 0 no-repeat #000;
+  background: url("<%=context%>/img/theme_galaxy/boston.jpg") no-repeat scroll center -100px #000000;
   color: #343434;
   }
 
@@ -33,7 +33,7 @@ String context = request.getContextPath();
   }
 
 .topBar img {
-  margin-left:70px;
+  margin-left:20px;
   }
 
 table.loginForm {
@@ -156,8 +156,8 @@ nxthemes css is not used in login.jsp */
 
 .labelCorp a {
   text-decoration:none;
-  color:#9a9a9a;
-  font:normal 9px "Lucida Grande", sans-serif;
+  color:#d7d7d7;
+  font:normal 11px "Lucida Grande", sans-serif;
   padding-top:0px;
   }
 
@@ -198,22 +198,19 @@ nxthemes css is not used in login.jsp */
     <tbody>
       <tr class="topBar">
         <td>
-          <img width="116" height="36" alt="Nuxeo DM" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_logo.png"/>
+          <img width="316" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_login.png"/>
        </td>
        <td align="right" class="leftColumn">
        <div class="labelCorp">
        <ul>
-                    <li><a href="http://www.nuxeo.com/">
-                      <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
-                    </a></li>
-                    <li><a href="http://nuxeo.com/subscription/connect">
+                    <li><a onclick="window.open(this.href); return false;" href="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                       <fmt:message bundle="${messages}" key="label.login.getSupport" />
                     </a></li>
-                    <li><a href="http://www.nuxeo.org/">
-                      <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
+                    <li><a onclick="window.open(this.href); return false;" href="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                      <fmt:message bundle="${messages}" key="label.login.forums" />
                     </a></li>
-                    <li><a href="http://www.nuxeo.org/xwiki/bin/view/Main/QuickStart/">
-                      <fmt:message bundle="${messages}" key="label.login.quickStart" />
+                    <li><a onclick="window.open(this.href); return false;" href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                      <fmt:message bundle="${messages}" key="label.login.documentation" />
                     </a></li>
                 </ul>
                 <div style="clear:both;" />
