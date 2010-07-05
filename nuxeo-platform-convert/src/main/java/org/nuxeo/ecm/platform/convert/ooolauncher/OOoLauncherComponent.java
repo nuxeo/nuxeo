@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.platform.convert.ooolauncher;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +35,9 @@ public class OOoLauncherComponent extends DefaultComponent implements
     protected Process OOoProcess = null;
 
     protected boolean started = false;
+
+    protected int connUsageNb=0;
+    protected static final int maxConnUsage=50;
 
     protected OOoConfigHelper getConfigHelper() {
         if (configHelper == null) {
@@ -127,27 +129,60 @@ public class OOoLauncherComponent extends DefaultComponent implements
         }
     }
 
+    protected class OOoConnectorThread implements Runnable {
+
+        private boolean connectedOk=false;
+        protected SocketOpenOfficeConnection conn;
+
+        public OOoConnectorThread(){
+             conn = new SocketOpenOfficeConnection(
+                     descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
+        }
+
+        public void run() {
+            try {
+                conn.connect();
+                connectedOk=true;
+            }
+            catch (Exception e) {
+                log.error("Error while connecting to OOo", e);
+                conn=null;
+            }
+        }
+
+        public SocketOpenOfficeConnection getConn() {
+            if (connectedOk) {
+                return conn;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    protected SocketOpenOfficeConnection safeGetConnection() {
+        OOoConnectorThread thread = new OOoConnectorThread();
+        Thread connThread = new Thread(thread);
+        connThread.start();
+        try {
+            connThread.join(descriptor.getOooStartupTimeOut()*1000);
+        } catch (InterruptedException e) {
+            return null;
+        }
+
+        return thread.getConn();
+    }
+
+
     public boolean isOOoListening() {
 
         if (isPortFree()) {
             return false;
         }
-        SocketOpenOfficeConnection oooConn = new SocketOpenOfficeConnection(
-                descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
-
         try {
-            log.debug("try to connect to OOo server via SocketOpenOfficeConnection");
-            oooConn.connect();
-            log.debug("SocketOpenOfficeConnection succeed");
-        } catch (ConnectException e1) {
-            return false;
-        } finally {
-            if (oooConn != null && oooConn.isConnected()) {
-                oooConn.disconnect();
-                oooConn = null;
-            }
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // NOP
         }
-
         return true;
     }
 
@@ -342,25 +377,27 @@ public class OOoLauncherComponent extends DefaultComponent implements
             }
         }
 
-        sharedConnection = new SocketOpenOfficeConnection(
-                descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
-
-        try {
-            log.debug("try to connect to OOo server via SocketOpenOfficeConnection");
-            sharedConnection.connect();
-            log.debug("SocketOpenOfficeConnection succeed");
-        } catch (ConnectException e) {
-            log.error("Error during Ooo connection", e);
-            sharedConnection=null;
-        } finally {
+        sharedConnection = safeGetConnection();
+        if (sharedConnection==null) {
+            log.error("Unable to connect to OOo server");
         }
 
         return sharedConnection;
     }
 
     public void releaseConnection(SocketOpenOfficeConnection connection) {
-
         releaseLock();
+        connUsageNb+=1;
+        if (connUsageNb>maxConnUsage) {
+            sharedConnection.disconnect();
+            sharedConnection=null;
+            connUsageNb=0;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // NOP
+            }
+        }
     }
 
     public void frameworkEvent(FrameworkEvent event) {
