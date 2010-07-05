@@ -142,12 +142,12 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 try {
                     doc = getJbpmService().getDocumentModel(task, user);
                 } catch (Exception e) {
-                    log.error(e, e);
+                    log.warn(e, e);
                 }
                 if (doc != null) {
                     results.add(new DashBoardItemImpl(task, doc));
                 } else {
-                    log.error(String.format(
+                    log.warn(String.format(
                             "User '%s' has a task of type '%s' on an "
                                     + "unexisting or unvisible document",
                             user.getName(), task.getName()));
@@ -170,7 +170,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 try {
                     doc = getJbpmService().getDocumentModel(process, user);
                 } catch (Exception e) {
-                    log.error(e, e);
+                    log.warn(e, e);
                 }
                 if (doc != null) {
                     Token token = process.getRootToken();
@@ -201,7 +201,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                         results.add(item);
                     }
                 } else {
-                    log.error(String.format(
+                    log.warn(String.format(
                             "User '%s' has a process id of '%ld' on an "
                                     + "unexisting or unvisible document",
                             user.getName(), process.getId()));
