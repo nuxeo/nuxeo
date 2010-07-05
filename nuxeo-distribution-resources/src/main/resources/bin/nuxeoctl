@@ -180,7 +180,7 @@ fi
 
 # Force IPv4
 
-JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true -Djava.awt.headless"
+JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true"
 
 
 # If -server not set in JAVA_OPTS, set it, if supported
