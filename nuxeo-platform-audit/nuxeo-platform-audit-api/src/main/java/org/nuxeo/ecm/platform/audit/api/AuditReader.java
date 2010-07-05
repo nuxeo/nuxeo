@@ -89,6 +89,9 @@ public interface AuditReader {
     List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
             String category, String path, int pageNb, int pageSize);
 
+    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String[] category, String path, int pageNb, int pageSize);
+
     /**
      * Returns the batched list of log entries.
      * <p>
@@ -108,6 +111,9 @@ public interface AuditReader {
      */
     List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
             String category, String path, int pageNb, int pageSize);
+
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String[] category, String path, int pageNb, int pageSize);
 
     /**
      * Returns a batched list of log entries. WhereClause is a native where

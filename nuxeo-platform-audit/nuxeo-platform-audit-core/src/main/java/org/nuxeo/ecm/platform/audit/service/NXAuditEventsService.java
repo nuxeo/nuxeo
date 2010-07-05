@@ -491,7 +491,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final String dateRange, final String category, final String path,
+            final String dateRange, final String[] category, final String path,
             final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false,
@@ -507,14 +507,19 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
-            String dateRange, String category, String path, int pageNb,
+            String dateRange, String[] category, String path, int pageNb,
             int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogs(eventIds,
-                dateRange);
+        try {
+            return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
+                    dateRange,category,path,pageNb,pageSize);
+        }
+        catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final Date limit, final String category, final String path,
+            final Date limit, final String[] category, final String path,
             final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false,
@@ -530,7 +535,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
-            Date limit, String category, String path, int pageNb, int pageSize) {
+            Date limit, String[] category, String path, int pageNb, int pageSize) {
         return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
                 limit, category, path, pageNb, pageSize);
     }
@@ -775,6 +780,36 @@ public class NXAuditEventsService extends DefaultComponent implements
         doPutExtendedInfos(entry, ctx, null, principal);
 
         addLogEntry(em, entry);
+    }
+
+    // Compat APIs
+
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange,
+            String category, String path, int pageNb, int pageSize) {
+        String[] categories = {category};
+        return queryLogsByPage(em,eventIds,dateRange,
+                categories, path,pageNb,pageSize);
+    }
+
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String category, String path, int pageNb, int pageSize) {
+        String[] categories = {category};
+        return queryLogsByPage(eventIds,dateRange,
+                categories, path,pageNb,pageSize);
+    }
+
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String category, String path, int pageNb, int pageSize) {
+        String[] categories = {category};
+        return queryLogsByPage(eventIds,limit,
+                categories, path,pageNb,pageSize);
+    }
+
+    public List<LogEntry> queryLogsByPage(EntityManager em,String[] eventIds, Date limit,
+            String category, String path, int pageNb, int pageSize) {
+        String[] categories = {category};
+        return queryLogsByPage(em,eventIds,limit,
+                categories, path,pageNb,pageSize);
     }
 
 }

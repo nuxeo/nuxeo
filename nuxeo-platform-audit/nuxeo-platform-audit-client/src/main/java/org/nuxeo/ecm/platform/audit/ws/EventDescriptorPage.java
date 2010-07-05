@@ -62,7 +62,7 @@ public class EventDescriptorPage implements Serializable {
         this.pageIndex = pageIndex;
     }
 
-    public void setBHasMorePage(boolean hasMorePage) {
+    public void setHasMorePage(boolean hasMorePage) {
         bHasMorePage = hasMorePage;
     }
 

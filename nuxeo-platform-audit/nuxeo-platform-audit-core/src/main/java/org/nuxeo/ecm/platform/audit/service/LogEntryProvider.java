@@ -194,7 +194,7 @@ public class LogEntryProvider {
             + " AND log.eventDate >= :limit"
             + " ORDER BY log.eventDate DESC";
         }
-        
+
         if (log.isDebugEnabled()) {
             log.debug("queryLogs() =" + queryStr);
         }
@@ -205,7 +205,7 @@ public class LogEntryProvider {
     }
 
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String category, String path, int pageNb, int pageSize)
+            String[] categories, String path, int pageNb, int pageSize)
             throws AuditException {
         Date limit = null;
         try {
@@ -214,16 +214,20 @@ public class LogEntryProvider {
             throw new AuditException("Wrong date range query. Query was "
                     + dateRange, aqe);
         }
-        return queryLogsByPage(eventIds, limit, category, path, pageNb,
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
                 pageSize);
     }
 
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String category, String path, int pageNb, int pageSize) {
+            String[] categories, String path, int pageNb, int pageSize) {
         if (eventIds == null) {
-            throw new IllegalArgumentException("eventIds should be provided");
+            eventIds= new String[0];
         }
+        if (categories == null) {
+            categories= new String[0];
+        }
+
         StringBuilder queryString = new StringBuilder();
 
         queryString.append("from LogEntry log where ");
@@ -239,8 +243,14 @@ public class LogEntryProvider {
             queryString.append(" log.eventId IN ").append(inClause);
             queryString.append(" AND ");
         }
-        if (category != null && !"".equals(category.trim())) {
-            queryString.append(" log.category =:category ");
+        if (categories.length>0) {
+            String inClause = "(";
+            for (String cat : categories) {
+                inClause += "'" + cat + "',";
+            }
+            inClause = inClause.substring(0, inClause.length() - 1);
+            inClause += ")";
+            queryString.append(" log.category IN ").append(inClause);
             queryString.append(" AND ");
         }
 
@@ -254,9 +264,6 @@ public class LogEntryProvider {
 
         Query query = em.createQuery(queryString.toString());
 
-        if (category != null) {
-            query.setParameter("category", category);
-        }
         query.setParameter("limit", limit);
 
         if (pageNb > 1) {

@@ -30,16 +30,18 @@ public class EventDescriptor implements Serializable {
     private  String eventDate;
     private  String docPath;
     private  String docUUID;
+    private  String lifeCycle;
 
     public EventDescriptor() {
 
     }
 
-    public EventDescriptor(String eventId, Date eventDate, String docPath, String docUUID) {
+    public EventDescriptor(String eventId, Date eventDate, String docPath, String docUUID, String lifeCycle) {
         this.eventDate = eventDate.toString();
         this.eventId = eventId;
         this.docPath = docPath;
         this.docUUID = docUUID;
+        this.lifeCycle=lifeCycle;
     }
 
     public String getEventId() {
@@ -72,6 +74,14 @@ public class EventDescriptor implements Serializable {
 
     public void setDocUUID(String docUUID) {
         this.docUUID = docUUID;
+    }
+
+    public String getLifeCycle() {
+        return lifeCycle;
+    }
+
+    public void setLifeCycle(String lifeCycle) {
+        this.lifeCycle = lifeCycle;
     }
 
 }

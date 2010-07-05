@@ -155,4 +155,18 @@ public class LogsBean implements Logs {
         return entry;
     }
 
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String[] categories, String path, int pageNb, int pageSize) {
+        List<LogEntry> entries = service().queryLogsByPage(em, eventIds, dateRange,
+                categories, path, pageNb, pageSize);
+        return mkSerializable(entries);
+    }
+
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String[] categories, String path, int pageNb, int pageSize) {
+        List<LogEntry> entries = service().queryLogsByPage(em, eventIds, limit,
+                categories, path, pageNb, pageSize);
+        return mkSerializable(entries);
+    }
+
 }

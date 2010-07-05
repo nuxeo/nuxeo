@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.audit.ws;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,7 +92,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
                 dateRangeQuery);
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
-                batchInfo.getPageDateRange(), "eventDocumentCategory", null,
+                batchInfo.getPageDateRange(), EVENT_DOCUMENT_CATEGORY, null,
                 batchInfo.getNextPage(), batchInfo.getPageSize());
         if (logEntries.size() < batchInfo.getPageSize()) {
             // we are at the end of the batch
@@ -133,7 +134,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         }
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
-                dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
+                dateRangeQuery, EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
 
         boolean hasMorePage = logEntries.size() >= pageSize;
 
@@ -167,9 +168,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             throw new AuditException(ce.getMessage(), ce);
         }
 
-        String[] eventIds = new String[0];
-
-        eventIds[0]="documentRemoved";
+        String[] eventIds = {"documentRemoved"};
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
                 dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
@@ -205,8 +204,9 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             throw new AuditException(ce.getMessage(), ce);
         }
 
+        String[] categories = new String[0];
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
-                dateRangeQuery, null, null, page, pageSize);
+                dateRangeQuery, categories, null, page, pageSize);
         boolean hasMorePage = logEntries.size() >= pageSize;
 
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
@@ -214,7 +214,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         for (LogEntry logEntry : logEntries) {
             events.add(new EventDescriptor(logEntry.getEventId(),
                     logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID()));
+                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];
@@ -236,14 +236,16 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         } catch (ClientException ce) {
             throw new AuditException(ce.getMessage(), ce);
         }
+        String[] doc_categories = {EVENT_DOCUMENT_CATEGORY, EVENT_LIFE_CYCLE_CATEGORY};
+
         List<LogEntry> logEntries;
         if (dateRangeQuery != null && dateRangeQuery.length() > 0) {
             logEntries = getLogsBean().queryLogsByPage(null, dateRangeQuery,
-                    EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
+                    doc_categories, path, page, pageSize);
         } else {
             Date limit = DateParser.parseW3CDateTime(startDate);
             logEntries = getLogsBean().queryLogsByPage(null, limit,
-                    EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
+                    doc_categories, path, page, pageSize);
         }
         boolean hasMorePage = logEntries.size() >= pageSize;
 
@@ -252,7 +254,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         for (LogEntry logEntry : logEntries) {
             events.add(new EventDescriptor(logEntry.getEventId(),
                     logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID()));
+                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];
@@ -282,7 +284,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         for (LogEntry logEntry : logEntries) {
             events.add(new EventDescriptor(logEntry.getEventId(),
                     logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID()));
+                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];

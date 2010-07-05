@@ -174,7 +174,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
-        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(), limit, "nuch", "/", 1, 1);
+        String[] categories = {"nuch"};
+        List<LogEntry> entries = providerUnderTest.queryLogsByPage(eventIds(), limit, categories , "/", 1, 1);
         assertNotNull(entries);
         int entryCount = entries.size();
         assertEquals(1, entryCount);
