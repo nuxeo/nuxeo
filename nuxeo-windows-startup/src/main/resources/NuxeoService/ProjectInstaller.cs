@@ -12,7 +12,7 @@
 * Lesser General Public License for more details.
 *
 * Contributors:
-*     Mathieu Guillaume
+*     Mathieu Guillaume, Arnaud Kervern, Julien Carsique
 */
 
 using System;
