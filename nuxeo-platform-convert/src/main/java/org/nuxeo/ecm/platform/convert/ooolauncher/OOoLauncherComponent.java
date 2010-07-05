@@ -92,7 +92,6 @@ public class OOoLauncherComponent extends DefaultComponent implements
             }
             try {
                 Thread.sleep(1000);
-                log.debug("Process exit code = " + getProcessExitCode());
                 if (i % 15 == 0) {
                     log.info("re-try to connect to OOo server");
                 }
@@ -112,11 +111,11 @@ public class OOoLauncherComponent extends DefaultComponent implements
                     .getOooListenerIP(), descriptor.getOooListenerPort());
             socket.connect(addr, 100);
             socket.close();
-            log.debug("tcp connect succeeded => socket is not free");
+            log.debug("tcp connect succeeded => socket is not free => Ooo is listening ");
             return false;
         } catch (Throwable t) {
             log.trace("Error when trying to connect to OOo TCP port " + t.getMessage());
-            log.debug("Stocket seems to be free");
+            log.debug("Stocket seems to be free => ooo is not (yet) listening");
             return true;
         } finally {
             if (socket!=null) {
@@ -141,7 +140,9 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
         public void run() {
             try {
+                log.debug("Try to connect using SocketOpenOfficeConnection is a separated thread");
                 conn.connect();
+                log.debug("SocketOpenOfficeConnection succeedd");
                 connectedOk=true;
             }
             catch (Exception e) {
@@ -164,12 +165,24 @@ public class OOoLauncherComponent extends DefaultComponent implements
         Thread connThread = new Thread(thread);
         connThread.start();
         try {
-            connThread.join(descriptor.getOooStartupTimeOut()*1000);
+            connThread.join(3000);
         } catch (InterruptedException e) {
             return null;
         }
 
-        return thread.getConn();
+        SocketOpenOfficeConnection conn =thread.getConn();
+
+        if (conn==null) {
+            log.debug("Killing conn thread");
+            connThread.interrupt();
+            try {
+                connThread.join(1000);
+                log.debug("Conn Thread terminated");
+            } catch (InterruptedException e) {
+                log.error("Error while waiting for connThread to exit");
+            }
+        }
+        return conn;
     }
 
 
@@ -373,13 +386,25 @@ public class OOoLauncherComponent extends DefaultComponent implements
         if (isEnabled()) {
             // use the launcher
             if (!isOOoLaunched()) {
-                startOOoAndWaitTillReady();
+                if (!isPortFree()) {
+                    log.info("OOo port is not free : OOo has been started from outside ?");
+                } else {
+                    log.info("Try to starting OOo process");
+                    boolean ready = startOOoAndWaitTillReady();
+                    if (!ready) {
+                        log.error("Unable to start Ooo process");
+                        failedToConnect=true;
+                        return null;
+                    }
+                }
             }
         }
 
         sharedConnection = safeGetConnection();
         if (sharedConnection==null) {
             log.error("Unable to connect to OOo server");
+            failedToConnect=true;
+            releaseLock();
         }
 
         return sharedConnection;
