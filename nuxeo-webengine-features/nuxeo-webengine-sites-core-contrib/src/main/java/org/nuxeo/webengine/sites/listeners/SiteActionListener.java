@@ -19,6 +19,7 @@ package org.nuxeo.webengine.sites.listeners;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -56,7 +57,22 @@ public class SiteActionListener implements EventListener {
         }
 
         if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
+
+            String url = doc.getName();
+            int sameName = 0;
+            DocumentModelList otherChildren = docCtx.getCoreSession().getChildren(doc.getParentRef());
+            for (DocumentModel child : otherChildren) {
+                if (child.getType().equals(doc.getType())) {
+                    if (child.getName().startsWith(url)) {
+                        sameName+=1;
+                    }
+                }
+            }
+            if (sameName>0) {
+                url = url + "_" + (sameName+1);
+            }
+
+            doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, url);
 
             if (SiteConstants.WEBSITE.equals(documentType)) {
                 // Is WebSite
