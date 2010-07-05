@@ -71,7 +71,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     public static final String MESSAGE_RFC822_MIMETYPE = "message/rfc822";
 
     private String bodyContent;
-
+    
     @Override
     public boolean execute(ExecutionContext context) throws Exception {
         bodyContent = "";
@@ -215,52 +215,96 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             throws Exception {
         String filename = getFilename(part, defaultFilename);
         List<FileBlob> blobs = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
-
-        if (!part.isMimeType("multipart/*")) {
-            String disp = part.getDisposition();
-            // no disposition => mail body, which can be also blob (image for
-            // instance)
-            if (disp == null && // convert only text
-                    part.getContentType().toLowerCase().startsWith("text/")) {
-                bodyContent += decodeMailBody(part);
-            } else {
-                FileBlob fileBlob = new FileBlob(part.getInputStream());
-                String mime = DEFAULT_BINARY_MIMETYPE;
-                try {
-                    if (mimeService != null) {
-                        ContentType contentType = new ContentType(
-                                part.getContentType());
-                        mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                                filename, fileBlob, contentType.getBaseType());
+        
+        if (part.isMimeType("multipart/alternative")) {
+            bodyContent += getText(part);
+        } else {
+            if (!part.isMimeType("multipart/*")) {
+                String disp = part.getDisposition();
+                // no disposition => mail body, which can be also blob (image for
+                // instance)
+                if (disp == null && // convert only text
+                        part.getContentType().toLowerCase().startsWith("text/")) {
+                    bodyContent += decodeMailBody(part);
+                } else {
+                    FileBlob fileBlob = new FileBlob(part.getInputStream());
+                    String mime = DEFAULT_BINARY_MIMETYPE;
+                    try {
+                        if (mimeService != null) {
+                            ContentType contentType = new ContentType(
+                                    part.getContentType());
+                            mime = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
+                                    filename, fileBlob, contentType.getBaseType());
+                        }
+                    } catch (Exception e) {
+                        log.error(e);
                     }
-                } catch (Exception e) {
-                    log.error(e);
+                    fileBlob.setMimeType(mime);
+    
+                    fileBlob.setFilename(filename);
+    
+                    blobs.add(fileBlob);
                 }
-                fileBlob.setMimeType(mime);
-
-                fileBlob.setFilename(filename);
-
-                blobs.add(fileBlob);
             }
-        }
-
-        if (part.isMimeType("multipart/*")) {
-            // This is a Multipart
-            Multipart mp = (Multipart) part.getContent();
-
-            int count = mp.getCount();
-            for (int i = 0; i < count; i++) {
-                getAttachmentParts(mp.getBodyPart(i), defaultFilename,
+    
+            if (part.isMimeType("multipart/*")) {
+                // This is a Multipart
+                Multipart mp = (Multipart) part.getContent();
+    
+                int count = mp.getCount();
+                for (int i = 0; i < count; i++) {
+                    getAttachmentParts(mp.getBodyPart(i), defaultFilename,
+                            mimeService, context);
+                }
+            } else if (part.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
+                // This is a Nested Message
+                getAttachmentParts((Part) part.getContent(), defaultFilename,
                         mimeService, context);
             }
-        } else if (part.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
-            // This is a Nested Message
-            getAttachmentParts((Part) part.getContent(), defaultFilename,
-                    mimeService, context);
         }
 
     }
 
+    /**
+     * Return the primary text content of the message.
+     */
+    private String getText(Part p) throws
+                MessagingException, IOException {
+        if (p.isMimeType("text/*")) {
+            return decodeMailBody(p);
+        }
+
+        if (p.isMimeType("multipart/alternative")) {
+            // prefer html text over plain text
+            Multipart mp = (Multipart)p.getContent();
+            String text = null;
+            for (int i = 0; i < mp.getCount(); i++) {
+                Part bp = mp.getBodyPart(i);
+                if (bp.isMimeType("text/plain")) {
+                    if (text == null)
+                        text = getText(bp);
+                    continue;
+                } else if (bp.isMimeType("text/html")) {
+                    String s = getText(bp);
+                    if (s != null)
+                        return s;
+                } else {
+                    return getText(bp);
+                }
+            }
+            return text;
+        } else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart)p.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                String s = getText(mp.getBodyPart(i));
+                if (s != null)
+                    return s;
+            }
+        }
+
+        return null;
+    }
+    
     /**
      * Interprets the body accordingly to the charset used. It relies on the
      * content type being ****;charset={charset};******
