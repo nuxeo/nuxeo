@@ -3,12 +3,14 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="java.util.Locale"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String context = request.getContextPath();
+String language = request.getLocale().toString();
 %>
 <html>
 
@@ -261,10 +263,63 @@ nxthemes css is not used in login.jsp */
                 <td>
                   <input class="login_input" type="password"
                       name="user_password" id="password" size="22">
-                 </td>
-               </tr>
-               <tr>
-                 <td></td>
+                </td>
+              </tr>
+              <tr>
+                <td class="login_label">
+                  <label for="language">
+                    <fmt:message bundle="${messages}" key="label.login.language" />
+                  </label>
+                </td>
+                <td>
+                  <select class="login_input" name="language" id="language">
+                    <option value="en_GB" <%="en_GB".equals(language)?"selected=\"selected\"":""%>>
+                      English (United Kingdom)
+                    </option>
+                    <option value="pt_BR" <%="pt_BR".equals(language)?"selected":""%>>
+                      portugu&ecirc;s (Brasil)
+                    </option>
+                    <option value="eu" <%="eu".equals(language)?"selected":""%>>
+                      Basque
+                    </option>
+                    <option value="pt" <%="pt".equals(language)?"selected":""%>>
+                      portugu&ecirc;s
+                    </option>
+                    <option value="en_US" <%="en_US".equals(language)?"selected":""%>>
+                      English (United States)
+                    </option>
+                    <option value="cn" <%="cn".equals(language)?"selected":""%>>
+                      cn
+                    </option>
+                    <option value="vn" <%="vn".equals(language)?"selected":""%>>
+                      vn
+                    </option>
+                    <option value="ca" <%="ca".equals(language)?"selected":""%>>
+                      catal&agrave;
+                    </option>
+                    <option value="de" <%="de".equals(language)?"selected":""%>>
+                      Deutsch
+                    </option>
+                    <option value="it" <%="it".equals(language)?"selected":""%>>
+                      italiano
+                    </option>                  
+                    <option value="fr" <%="fr".equals(language)?"selected":""%>>
+                      fran&ccedil;ais
+                    </option>
+                    <option value="es" <%="es".equals(language)?"selected":""%>>
+                      espa&ntilde;ol
+                    </option>
+                    <option value="ar" <%="ar".equals(language)?"selected":""%>>
+                      &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
+                    </option>
+                    <option value="ru" <%="ru".equals(language)?"selected":""%>>
+                      &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
                 <td>
                   <% // label.login.logIn %>
                   <input type="hidden" name="requestedUrl"
@@ -280,17 +335,17 @@ nxthemes css is not used in login.jsp */
                 <td>
                   <c:if test="${param.loginFailed}">
                     <div class="errorMessage">
-                          <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
+                      <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
                     </div>
                   </c:if>
                   <c:if test="${param.loginMissing}">
                     <div class="errorMessage">
-                          <fmt:message bundle="${messages}" key="label.login.missingUsername" />
+                      <fmt:message bundle="${messages}" key="label.login.missingUsername" />
                     </div>
                   </c:if>
                   <c:if test="${param.securityError}">
                     <div class="errorMessage">
-                          <fmt:message bundle="${messages}" key="label.login.securityError" />
+                      <fmt:message bundle="${messages}" key="label.login.securityError" />
                     </div>
                   </c:if>
                 </td>
