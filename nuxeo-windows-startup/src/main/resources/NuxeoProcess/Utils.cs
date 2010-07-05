@@ -338,8 +338,6 @@ namespace NuxeoProcess
 			String NuxeoLib15=Path.Combine(NuxeoEAR,"lib-jre1.5");
 			String ScriptAPI=null;
 			String ScriptAPI15=null;
-			String JaxbAPI=null;
-			String JaxbAPI15=null;
 			DirectoryInfo di;
 			FileInfo[] ls;
 			if (CheckJavaVersion(nxEnv["JAVA"]).StartsWith("1.6")) {
@@ -350,10 +348,6 @@ namespace NuxeoProcess
 					if (shortname.StartsWith("script-api")) {
 				    	ScriptAPI=Path.Combine(NuxeoLib,shortname);
 			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
-			    	}
-					if (shortname.StartsWith("jaxb-api")) {
-				    	JaxbAPI=Path.Combine(NuxeoLib,shortname);
-			    		JaxbAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
 				}
 				if (ScriptAPI!=null) {
@@ -367,27 +361,15 @@ namespace NuxeoProcess
 						return false;
 					}
 				}
-				if (JaxbAPI!=null) {
-					Log("Moving jaxb API out of the way (included in Java 6).","WARN");
-					try {
-						if (!Directory.Exists(NuxeoLib15)) Directory.CreateDirectory(NuxeoLib15);
-						File.Move(JaxbAPI,JaxbAPI15);
-					} catch (Exception e) {
-						Log("Cannot move jaxb API","ERROR");
-						Log(e.Message,"ERROR");
-						return false;
-					}
-				}
 			} else { // Java 5 assumed
 				di=new DirectoryInfo(NuxeoLib15);
+				if (!di.Exists) {
+					di.Create();
+				}
 				ls=di.GetFiles();
 			    foreach (FileInfo fname in ls) {
 					String shortname=Path.GetFileName(fname.ToString());
 					if (shortname.StartsWith("script-api")) {
-			    		ScriptAPI=Path.Combine(NuxeoLib,shortname);
-			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
-			    	}
-					if (shortname.StartsWith("jaxb-api")) {
 			    		ScriptAPI=Path.Combine(NuxeoLib,shortname);
 			    		ScriptAPI15=Path.Combine(NuxeoLib15,shortname);
 			    	}
@@ -398,16 +380,6 @@ namespace NuxeoProcess
 			    		File.Move(ScriptAPI15,ScriptAPI);
 			    	} catch (Exception e) {
 			    		Log("Cannot move scripting API","ERROR");
-			    		Log(e.Message,"ERROR");
-			    		return false;
-			    	}
-			    }
-				if (JaxbAPI!=null) {
-			    	Log("Moving jaxb API to the CLASSPATH.","WARN");
-			    	try {
-			    		File.Move(JaxbAPI15,JaxbAPI);
-			    	} catch (Exception e) {
-			    		Log("Cannot move jaxb API","ERROR");
 			    		Log(e.Message,"ERROR");
 			    		return false;
 			    	}

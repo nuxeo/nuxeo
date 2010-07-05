@@ -78,7 +78,7 @@ namespace NuxeoCtl
 			this.logBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.logBox.Name = "logBox";
 			this.logBox.ReadOnly = true;
-			this.logBox.Size = new System.Drawing.Size(522, 10);
+			this.logBox.Size = new System.Drawing.Size(593, 10);
 			this.logBox.TabIndex = 4;
 			this.logBox.TabStop = false;
 			this.logBox.Text = "";
@@ -86,6 +86,7 @@ namespace NuxeoCtl
 			// 
 			// terminateButton
 			// 
+			this.terminateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.terminateButton.BackColor = System.Drawing.Color.Transparent;
 			this.terminateButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("terminateButton.BackgroundImage")));
 			this.terminateButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -96,9 +97,9 @@ namespace NuxeoCtl
 			this.terminateButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.terminateButton.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.terminateButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.terminateButton.Location = new System.Drawing.Point(460, 225);
+			this.terminateButton.Location = new System.Drawing.Point(530, 225);
 			this.terminateButton.Name = "terminateButton";
-			this.terminateButton.Size = new System.Drawing.Size(120, 35);
+			this.terminateButton.Size = new System.Drawing.Size(110, 35);
 			this.terminateButton.TabIndex = 5;
 			this.terminateButton.Text = "Terminate";
 			this.terminateButton.UseVisualStyleBackColor = false;
@@ -107,21 +108,22 @@ namespace NuxeoCtl
 			// 
 			// label1
 			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.label1.Location = new System.Drawing.Point(27, 294);
+			this.label1.Location = new System.Drawing.Point(37, 294);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(537, 23);
+			this.label1.Size = new System.Drawing.Size(573, 23);
 			this.label1.TabIndex = 6;
 			this.label1.Text = "Copyright © 2001-2010 Nuxeo and respective authors. ";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// pictureBox1
 			// 
+			this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
 			this.pictureBox1.ErrorImage = null;
 			this.pictureBox1.InitialImage = null;
-			this.pictureBox1.Location = new System.Drawing.Point(130, 12);
+			this.pictureBox1.Location = new System.Drawing.Point(163, 12);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(326, 43);
 			this.pictureBox1.TabIndex = 7;
@@ -129,6 +131,7 @@ namespace NuxeoCtl
 			// 
 			// stopButton
 			// 
+			this.stopButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.stopButton.BackColor = System.Drawing.Color.White;
 			this.stopButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("stopButton.BackgroundImage")));
 			this.stopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -140,7 +143,7 @@ namespace NuxeoCtl
 			this.stopButton.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.stopButton.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.stopButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.stopButton.Location = new System.Drawing.Point(230, 127);
+			this.stopButton.Location = new System.Drawing.Point(260, 127);
 			this.stopButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.stopButton.Name = "stopButton";
 			this.stopButton.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
@@ -152,6 +155,7 @@ namespace NuxeoCtl
 			// 
 			// startButton
 			// 
+			this.startButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.startButton.BackColor = System.Drawing.Color.White;
 			this.startButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("startButton.BackgroundImage")));
 			this.startButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -162,7 +166,7 @@ namespace NuxeoCtl
 			this.startButton.Font = new System.Drawing.Font("Tahoma", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.startButton.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.startButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.startButton.Location = new System.Drawing.Point(230, 127);
+			this.startButton.Location = new System.Drawing.Point(260, 127);
 			this.startButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.startButton.Name = "startButton";
 			this.startButton.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
@@ -222,11 +226,11 @@ namespace NuxeoCtl
 			// 
 			// pictureBox2
 			// 
-			this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
-			this.pictureBox2.Location = new System.Drawing.Point(27, 290);
+			this.pictureBox2.Location = new System.Drawing.Point(37, 281);
 			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(525, 1);
+			this.pictureBox2.Size = new System.Drawing.Size(573, 1);
 			this.pictureBox2.TabIndex = 10;
 			this.pictureBox2.TabStop = false;
 			// 
@@ -237,40 +241,22 @@ namespace NuxeoCtl
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(55)))), ((int)(((byte)(55)))));
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.ClientSize = new System.Drawing.Size(592, 335);
+			this.ClientSize = new System.Drawing.Size(652, 335);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.terminateButton);
 			this.Controls.Add(this.logBox);
-			this.Controls.Add(this.startButton);
-			this.Controls.Add(this.stopButton);
 			this.Controls.Add(this.showLogsButton);
 			this.Controls.Add(this.hideLogsButton);
+			this.Controls.Add(this.startButton);
+			this.Controls.Add(this.stopButton);
 			this.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.Name = "MainForm";
 			this.Text = "NuxeoCtl";
 			this.Load += new System.EventHandler(this.MainFormLoad);
-			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-			this.ResumeLayout(false);
-			this.Load += new System.EventHandler(this.MainFormLoad);
-			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-			this.ResumeLayout(false);
-			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-			this.ResumeLayout(false);
-			this.Load += new System.EventHandler(this.MainFormLoad);
-			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-			this.ResumeLayout(false);
 			this.Shown += new System.EventHandler(this.MainForm_Shown);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
@@ -407,10 +393,10 @@ namespace NuxeoCtl
 				statusChanged=StopService();
 			} else {
 				statusChanged=StopApplication();
-				terminateButton.Visible=true;
+				terminateButton.Enabled=true;
+				terminateButton.Show();
 			}
 			if (statusChanged) {
-				startButton.Enabled=true;
 				stopButton.Enabled=false;
 			}
 		}
@@ -419,7 +405,7 @@ namespace NuxeoCtl
 		{
 			if (nxService==null) {
 				TerminateApplication();
-				terminateButton.Visible=false;
+				terminateButton.Hide();
 			}
 		}
 

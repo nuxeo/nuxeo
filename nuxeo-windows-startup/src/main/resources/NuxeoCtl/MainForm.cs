@@ -65,7 +65,7 @@ namespace NuxeoCtl
 			if (logBox.InvokeRequired) {
 				logBox.Invoke(new LogHandler(Log), new object[] {message,loglevel});
 			} else {
-				Color color=Color.White;
+				Color color=Color.FromArgb(234,234,234);
 				if (loglevel=="INFO") color=Color.FromArgb(234,234,234);
 				else if (loglevel=="DEBUG") color=Color.FromArgb(108,183,242);
 				else if (loglevel=="WARN") color=Color.FromArgb(234,138,2);
@@ -77,15 +77,20 @@ namespace NuxeoCtl
 						else if (split[1]=="DEBUG") color=Color.FromArgb(108,183,242);
 						else if (split[1]=="WARN") color=Color.FromArgb(234,138,2);
 						else if (split[1]=="ERROR") color=Color.FromArgb(245,0,63);
-						else color=Color.Black;
+						else color=Color.FromArgb(234,234,234);
 					} else {
-						color=Color.Black;
+						color=Color.FromArgb(234,234,234);
 					}
 				}
 				else Log("NO SUCH LOGLEVEL :"+loglevel,"ERROR");
 				logBox.SelectionStart=logBox.TextLength;
 				logBox.SelectionColor=color;
-				logBox.AppendText("["+loglevel+"] "+message+Environment.NewLine);
+				if (loglevel != "LOG") {
+					logBox.AppendText("["+loglevel+"] "+message+Environment.NewLine);
+				}
+				else {
+					logBox.AppendText(message+Environment.NewLine);
+				}
 				logBox.SelectionStart=logBox.TextLength;
 				logBox.ScrollToCaret();
 			}
@@ -133,12 +138,16 @@ namespace NuxeoCtl
 				startButton.Show();
 				stopButton.Enabled=false;
 				stopButton.Hide();
+				terminateButton.Enabled=false;
+				terminateButton.Hide();
 			}
 			if (nxService.Status == ServiceControllerStatus.Running) {
 				startButton.Enabled=false;
 				startButton.Hide();
 				stopButton.Enabled=true;
 				stopButton.Show();
+				terminateButton.Enabled=true;
+				terminateButton.Show();
 			}
 		}
 		
@@ -156,6 +165,7 @@ namespace NuxeoCtl
 				stopButton.Enabled=false;
 				stopButton.Hide();
 				terminateButton.Enabled=false;
+				terminateButton.Hide();
 			} else {
 				startButton.Enabled=false;
 				startButton.Hide();
