@@ -151,7 +151,7 @@ public class StartupHelper implements Serializable {
 
             if (request.getParameter(LANGUAGE_PARAMETER) != null) {
                 String localeStr = request.getParameter(LANGUAGE_PARAMETER);
-                localeSelector.selectLanguage(localeStr);
+                localeSelector.setLocaleString(localeStr);
             }
 
             if (!documentManager.hasPermission(rootDocument.getRef(),
