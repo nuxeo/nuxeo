@@ -137,6 +137,9 @@ public class WSSFilter implements Filter {
 
     protected void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterBindingConfig config) throws Exception {
 
+        httpRequest.setCharacterEncoding("UTF-8");
+        httpResponse.setCharacterEncoding("UTF-8");
+
         WSSRequest request = new WSSRequest(httpRequest, config.getSiteName());
         WSSResponse response = null;
 

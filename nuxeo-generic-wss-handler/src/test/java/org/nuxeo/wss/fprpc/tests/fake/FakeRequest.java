@@ -360,7 +360,7 @@ public class FakeRequest implements HttpServletRequest {
 
     public void setCharacterEncoding(String env)
             throws UnsupportedEncodingException {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
 }
