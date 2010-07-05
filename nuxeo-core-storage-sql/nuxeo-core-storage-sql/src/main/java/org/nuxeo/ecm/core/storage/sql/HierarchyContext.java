@@ -130,7 +130,6 @@ public class HierarchyContext {
             return;
         }
         childrenCache(parentId, complexProp).addExisting(fragment.getId());
-        modifiedParentsInTransaction.add(parentId);
     }
 
     protected void addCreatedChild(SimpleFragment fragment, boolean complexProp)
