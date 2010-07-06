@@ -48,6 +48,8 @@ public class SitesWikiListener implements EventListener {
 
     private final String closeBracket = "]";
 
+    private final String imageTag = "image:";
+
     public void handleEvent(Event event) {
         String eventName = event.getName();
 
@@ -77,58 +79,97 @@ public class SitesWikiListener implements EventListener {
                 return;
             }
 
-            List<String> relationLinks = new ArrayList<String>();
-
+            WikiProcessingResult result = new WikiProcessingResult();
             if (BEFORE_DOC_UPDATE.equals(event.getName())
                     || ABOUT_TO_CREATE.equals(event.getName())) {
                 String wikiContent = (String) webPage.getPropertyValue(WEBPAGE_CONTENT);
-                String[] wikiLinks = getLinks(wikiContent);
-
                 String basePath = (String) webPage.getContextData("basePath");
+                if (basePath==null) {
+                    basePath = "/nuxeo/site/sites";
+                }
                 String targetObjectPath = (String) webPage.getContextData("targetObjectPath");
 
-                /*WebContext ctx = WebEngine.getActiveContext();
-                Resource resource = ctx.getTargetObject();
-                String basePath = ctx.getModulePath();
-                */
-
-                for (int i = 0; i < wikiLinks.length; i++) {
-                    String[] splitWikiLinks = StringUtils.split(wikiLinks[i]);
-                    String linkString = splitWikiLinks[0];
-                    boolean isNamedLink = splitWikiLinks.length > 1;
-                    if (!(linkString.startsWith("http://") || linkString.startsWith(basePath))) {
-                        // Not an absolute link or not already processed.
-                        String newLinkString;
-                        if (linkString.startsWith(".")) {
-                            // Absolute path
-                            // Just replace . with /
-                            newLinkString = basePath
-                                    + linkString.replace(".", "/");
-                        } else {
-                            // Relative path
-                            newLinkString = linkString.replace(".", "/");
-                            newLinkString = targetObjectPath + "/"
-                                    + newLinkString;
-                        }
-                        relationLinks.add(newLinkString);
-                        if (!isNamedLink) {
-                            newLinkString = newLinkString + " " + linkString;
-                        }
-                        wikiContent = wikiContent.replace(linkString,
-                                newLinkString);
-                    }
-
-                    if (linkString.startsWith(basePath)) {
-                        relationLinks.add(linkString);
-                    }
-                }
-                webPage.setPropertyValue(WEBPAGE_CONTENT, wikiContent);
+                result = processWikiContent(wikiContent, basePath, targetObjectPath);
+                webPage.setPropertyValue(WEBPAGE_CONTENT, result.wikiContent);
+                SitesRelationsWikiHelper.updateRelations(webPage, result.relationLinks);
             }
 
-            SitesRelationsWikiHelper.updateRelations(webPage, relationLinks);
         } catch (ClientException e) {
             log.error("SitesWikiListener error...", e);
         }
+    }
+
+    public class WikiProcessingResult {
+
+        protected List<String> relationLinks = new ArrayList<String>();
+
+        protected String wikiContent;
+
+        public List<String> getRelationLinks() {
+            return relationLinks;
+        }
+
+        public String getWikiContent() {
+            return wikiContent;
+        }
+
+    }
+
+    public WikiProcessingResult processWikiContent(String wikiContent, String basePath, String targetObjectPath) {
+
+        WikiProcessingResult result = new WikiProcessingResult();
+
+        String[] wikiLinks = getLinks(wikiContent);
+
+        for (int i = 0; i < wikiLinks.length; i++) {
+            String[] splitWikiLinks = StringUtils.split(wikiLinks[i]);
+            String linkString = splitWikiLinks[0];
+            boolean isImageLink=false;
+            String orgLinkString = linkString;
+            if (linkString.startsWith(imageTag)) {
+                isImageLink=true;
+                linkString = linkString.substring(6);
+            }
+
+            boolean isNamedLink = splitWikiLinks.length > 1;
+            if (!(linkString.startsWith("http://") || linkString.startsWith("https://") || linkString.startsWith(basePath))) {
+                // Not an absolute link or not already processed.
+                String newLinkString;
+                if (linkString.startsWith(".")) {
+                    // Absolute path
+                    // Just replace . with /
+                    newLinkString = basePath
+                            + linkString.replace(".", "/");
+                } else {
+                    // Relative path
+                    if (targetObjectPath!=null) {
+                        newLinkString = linkString.replace(".", "/");
+                        newLinkString = targetObjectPath + "/"
+                            + newLinkString;
+                    }
+                    else {
+                        // can not process for now ...
+                        newLinkString = linkString;
+                    }
+                }
+                result.relationLinks.add(newLinkString);
+                if (!isNamedLink) {
+                    newLinkString = newLinkString + " " + linkString;
+                }
+                if (isImageLink) {
+                    newLinkString = imageTag + newLinkString;
+                }
+                wikiContent = wikiContent.replace(orgLinkString,
+                        newLinkString);
+            }
+
+            if (linkString.startsWith(basePath)) {
+                result.relationLinks.add(linkString);
+            }
+        }
+
+        result.wikiContent=wikiContent;
+        return result;
     }
 
     private String[] getLinks(String content) {

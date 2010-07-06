@@ -79,7 +79,7 @@ function launchEditor() {
         {name:'Bulleted list', openWith:'(!(- |!|-)!)'},
         {name:'Numeric list', openWith:'(!(+ |!|+)!)'},
         {separator:'---------------' },
-        {name:'Image', key:"T", replaceWith:'[[Image:[![Url:!:http://]!]|[![name]!]]]'},
+        {name:'Image', key:"T", replaceWith:'[image:[![Url:!:http://]!] [![name]!]]'},
         {name:'Link', key:"L", openWith:"[[![Link]!] ", closeWith:']', placeHolder:'Your text to link here...' },
         {name:'Url', openWith:"[[![Url:!:http://]!] ", closeWith:']', placeHolder:'Your text to link here...' },
         {separator:'---------------' },

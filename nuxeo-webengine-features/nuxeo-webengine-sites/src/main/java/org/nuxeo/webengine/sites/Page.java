@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.webengine.sites.utils.ContextTransmitterHelper;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
@@ -110,6 +111,7 @@ public class Page extends AbstractSiteDocumentObject {
             doc.setPropertyValue(WEBPAGE_CONTENT, content);
             doc.setPropertyValue(WEBPAGE_PUSHTOMENU,
                     Boolean.valueOf(pushToMenu));
+            ContextTransmitterHelper.feedContext(doc);
             session.saveDocument(doc);
             session.save();
             DocumentModel webContainer = SiteUtils.getFirstWebSiteParent(
