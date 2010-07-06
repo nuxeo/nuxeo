@@ -70,7 +70,7 @@ class Pages(NuxeoTestCase):
 
     def testFolderPage(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
-        description = self.tag + ' ' + self._lipsum.getParagraph()
+        description = self.tag + ' ' + self._lipsum.getParagraph(1)
         p = (LoginPage(self).login(*self.cred_admin)
              .getRootWorkspaces()
              .createWorkspace(self.ws_title, 'A description')
@@ -90,7 +90,7 @@ class Pages(NuxeoTestCase):
 
     def testFileTabs(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
-        description = self.tag + ' ' + self._lipsum.getParagraph()
+        description = self.tag + ' ' + self._lipsum.getParagraph(1)
         p = (LoginPage(self).login(*self.cred_admin)
              .getRootWorkspaces()
              .createWorkspace(self.ws_title, 'A description')
