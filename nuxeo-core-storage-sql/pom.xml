@@ -24,12 +24,10 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
-	<modules>
-	  <module>nuxeo-core-storage-sql-test</module>
-	</modules>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>nuxeo-core-storage-sql-test</module>
       </modules>
     </profile>	
   </profiles>
