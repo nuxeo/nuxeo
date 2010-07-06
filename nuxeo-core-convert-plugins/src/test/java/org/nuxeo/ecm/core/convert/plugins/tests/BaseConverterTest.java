@@ -20,12 +20,16 @@
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.plugins.text.extractors.Html2TextConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -63,7 +67,9 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
 
-        BlobHolder result = cs.convert(converterName, hg, null);
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        parameters.put(Html2TextConverter.TAG_FILTER_PARAMETER, "body");
+        BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
         String textContent = result.getBlob().getString();
@@ -76,10 +82,13 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        parameters.put(Html2TextConverter.TAG_FILTER_PARAMETER, "body");
+
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName);
         hg.getBlob().setMimeType(srcMT);
 
-        BlobHolder result = cs.convert(converterName, hg, null);
+        BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
         assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
     }
