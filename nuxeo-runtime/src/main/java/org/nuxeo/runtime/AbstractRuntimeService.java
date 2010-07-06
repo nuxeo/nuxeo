@@ -108,8 +108,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
-                // FIXME: NXP-5217
-                // JavaUtilLoggingHelper.redirectToApacheCommons();
+                JavaUtilLoggingHelper.redirectToApacheCommons();
             }
             log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
                     + getVersion());
