@@ -41,7 +41,8 @@ Import-Package: de.odysseus.el;version="2.1.2",
  org.nuxeo.ecm.platform.el,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.management,
- org.nuxeo.runtime.model
+ org.nuxeo.runtime.model,
+ org.osgi.framework;version="1.5.0"
 Nuxeo-Require: org.nuxeo.ecm.platform.audit.api,org.nuxeo.ecm.platform
  .el,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.persistence
 
