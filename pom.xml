@@ -71,6 +71,7 @@
     </pluginRepository>
   </pluginRepositories>
 
+
   <dependencies>
     <dependency>
       <groupId>xerces</groupId>
@@ -78,5 +79,21 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>osgi</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
