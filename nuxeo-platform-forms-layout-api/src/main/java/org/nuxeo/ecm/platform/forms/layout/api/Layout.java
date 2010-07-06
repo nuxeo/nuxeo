@@ -94,6 +94,7 @@ public interface Layout extends Serializable {
      * <p>
      * The way that properties will be mapped to rendered components is managed
      * by the widget type.
+     *
      * @since 5.3.1
      */
     Map<String, Serializable> getProperties();
@@ -106,5 +107,15 @@ public interface Layout extends Serializable {
      * @since 5.3.1
      */
     Serializable getProperty(String name);
+
+    /**
+     * Sets property with given name on the layout. If there is already a
+     * property with this name on the layout, it will be overriden.
+     *
+     * @param name the property name.
+     * @param the property value or null if not found.
+     * @since 5.3.2
+     */
+    void setProperty(String name, Serializable value);
 
 }

@@ -195,10 +195,23 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                     && !sanitizer.types.contains(doc.getType())) {
                 continue;
             }
-            for (String field : sanitizer.fields) {
+            for (FieldDescriptor field : sanitizer.fields) {
                 Property prop;
+                String fieldName = field.getContentField();
+                String filterField = field.getFilterField();
+                if (filterField!=null) {
+                    Property filterProp;
+                    try {
+                        filterProp = doc.getProperty(filterField);
+                    } catch (PropertyNotFoundException e) {
+                        continue;
+                    }
+                    if (!field.getFilterValue().equals(filterProp.getValue().toString())) {
+                        continue;
+                    }
+                }
                 try {
-                    prop = doc.getProperty(field);
+                    prop = doc.getProperty(fieldName);
                 } catch (PropertyNotFoundException e) {
                     continue;
                 }

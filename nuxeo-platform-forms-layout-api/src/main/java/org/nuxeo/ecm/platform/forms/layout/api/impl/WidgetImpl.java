@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -35,33 +36,33 @@ public class WidgetImpl implements Widget {
 
     private static final long serialVersionUID = -2954101230598440812L;
 
-    String id;
+    protected String id;
 
-    final String layoutName;
+    protected final String layoutName;
 
-    final String name;
+    protected final String name;
 
-    final String mode;
+    protected final String mode;
 
-    final String type;
+    protected final String type;
 
-    final FieldDefinition[] fields;
+    protected final FieldDefinition[] fields;
 
-    final String helpLabel;
+    protected final String helpLabel;
 
-    final Widget[] subWidgets;
+    protected final Widget[] subWidgets;
 
-    final Map<String, Serializable> properties;
+    protected Map<String, Serializable> properties;
 
-    final boolean required;
+    protected final boolean required;
 
-    String valueName;
+    protected String valueName;
 
-    String label;
+    protected String label;
 
-    boolean translated = false;
+    protected boolean translated = false;
 
-    int level;
+    protected int level;
 
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
@@ -135,6 +136,13 @@ public class WidgetImpl implements Widget {
             return properties.get(name);
         }
         return null;
+    }
+
+    public void setProperty(String name, Serializable value) {
+        if (properties == null) {
+            properties = new HashMap<String, Serializable>();
+        }
+        properties.put(name, value);
     }
 
     public boolean isRequired() {

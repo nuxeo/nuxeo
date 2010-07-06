@@ -22,10 +22,12 @@ public class OOoConfigHelper {
     protected String ooCommandPath=null;
 
     private static String[] WIN_OO_PATHS = {
-            "C:/Program Files/OpenOffice.org 2.2",
-            "C:/Program Files/OpenOffice.org 2.3",
-            "C:/Program Files/OpenOffice.org 2.4",
-            "C:/Program Files/OpenOffice.org 2.5" };
+            "C:/Program Files/OpenOffice.org 2.5",
+            "C:/Program Files (x86)/OpenOffice.org 2.5",
+            "C:/Program Files/OpenOffice.org 3.0",
+            "C:/Program Files (x86)/OpenOffice.org 3.0",
+            "C:/Program Files/OpenOffice.org 3.1",
+            "C:/Program Files (x86)/OpenOffice.org 3.1"};
 
     public OOoConfigHelper(OOoLauncherDescriptor desc) {
         this.desc = desc;
@@ -89,6 +91,10 @@ public class OOoConfigHelper {
                     break;
                 }
             }
+        }
+        if (ooCommandPath == null) {
+            // OpenOffice.org was not found
+            return null;
         }
         return ooCommandPath + fileSep + exeName;
     }

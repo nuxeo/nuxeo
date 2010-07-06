@@ -33,6 +33,8 @@ public class BuiltinModes {
 
     public static final String EDIT = "edit";
 
+    public static final String BULK_EDIT = "bulkEdit";
+
     public static final String CREATE = "create";
 
     public static final String SEARCH = "search";

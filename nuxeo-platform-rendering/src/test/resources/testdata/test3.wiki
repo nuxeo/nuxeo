@@ -1,0 +1,6 @@
+
+This is text
+
+[image:http://server/path/image.jpg My Image]
+
+<script>alert("Hello XSS");</script>

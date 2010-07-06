@@ -68,4 +68,26 @@ public class TestWiki extends TestCase {
         // System.out.println(writer.getBuffer());
     }
 
+    public void test3() throws IOException, WikiParserException {
+        InputStream in = TestWiki.class.getResourceAsStream("/testdata/test3.wiki");
+        Reader reader = new InputStreamReader(in);
+
+        WikiSerializer engine = new WikiSerializer();
+        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+",
+                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+
+        StringWriter writer = new StringWriter();
+        engine.serialize(reader, writer);
+
+        String out = writer.toString();
+
+        assertTrue(out.contains("<img src="));
+        assertFalse(out.contains("<script"));
+
+        System.out.println(out);
+    }
+
+
 }

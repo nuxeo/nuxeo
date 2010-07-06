@@ -28,7 +28,6 @@ import java.util.Map;
  * A widget is built from a {@link WidgetDefinition} in a given mode.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface Widget extends Serializable {
 
@@ -109,6 +108,16 @@ public interface Widget extends Serializable {
      * @return the property value or null if not found.
      */
     Serializable getProperty(String name);
+
+    /**
+     * Sets property with given name on the layout. If there is already a
+     * property with this name on the widget, it will be overridden.
+     *
+     * @param name the property name.
+     * @param the property value or null if not found.
+     * @since 5.3.2
+     */
+    void setProperty(String name, Serializable value);
 
     /**
      * Returns true if the widget is required.

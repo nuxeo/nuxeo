@@ -45,6 +45,21 @@
       <code>
         <sanitizer name="default" enabled="false" />
       </code>
+
+      Sanitizing can also be enabled on a field only if a field has a given value.
+      This is useful when the same document field can contain text, html or wiki markup.
+      For a webpage, you may want to only sanitize the webpages that are using HTML.
+      Here is an example configuration.
+
+     <code>
+       <sanitizer name="foo">
+         <field filter="webp:isRichtext" filterValue="true">webp:content</field>
+       </sanitizer>
+     </code>
+
+     In this example the field webp:content will be sanitized only when
+     the String representation of the webp:isRichtext is "true".
+
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerDescriptor" />
