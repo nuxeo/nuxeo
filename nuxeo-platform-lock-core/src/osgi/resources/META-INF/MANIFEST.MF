@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.persistence;version="5.3.2.SNAPSHOT
- ",org.nuxeo.ecm.platform.lock;version="5.3.2.SNAPSHOT"
-Private-Package: .
+Export-Package: org.nuxeo.ecm.platform.lock;version="5.3.2.SNAPSHOT"
+Private-Package: .,org.nuxeo.ecm.core.peristence
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Tool: Bnd-0.0.394
@@ -14,10 +13,16 @@ Bnd-LastModified: 1277976764902
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nxlock-framework.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
-Import-Package: javax.annotation;version="1.0",javax.persistence,org.a
- pache.commons.logging,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core
- .api;api=split,org.nuxeo.ecm.directory;api=split,org.nuxeo.ecm.platfo
- rm.lock.api,org.nuxeo.runtime.api,org.nuxeo.runtime.model
+Import-Package: javax.annotation;version="1.0",
+ javax.persistence,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.persistence,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.lock.api,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
 Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org.
  nuxeo.ecm.platform.lock.api
 
