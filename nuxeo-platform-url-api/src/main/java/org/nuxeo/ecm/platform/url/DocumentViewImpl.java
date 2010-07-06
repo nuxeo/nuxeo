@@ -172,4 +172,13 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         this.patternName = patternName;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "DocumentViewImpl [documentLocation=%s, "
+                        + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]",
+                documentLocation, parameters, patternName, subURI, tabId,
+                viewId);
+    }
+
 }
