@@ -63,6 +63,9 @@ public class TesteMailInjection extends
         deployBundle("org.nuxeo.ecm.platform.mail.types");
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
         mailService = Framework.getService(MailService.class);
         assertNotNull(mailService);
         openSession();

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HTML_TEXT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_MESSAGE_TYPE;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MESSAGE_ID_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MESSAGE_ID_PROPERTY_NAME;
@@ -50,8 +51,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Creates a MailMessage document for every new email found in the INBOX. The
@@ -110,8 +116,16 @@ public class CreateDocumentsAction extends AbstractMailAction {
         }
         documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME,
                 ccRecipients);
-        documentModel.setPropertyValue(TEXT_PROPERTY_NAME, text);
 
+        StringBlob sb = new StringBlob(text);
+        BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        parameters.put("tagFilter", "body");
+        BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
+        String simpleText = simpleTextBH.getBlob().getString();
+        documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);
+        documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(
                 documentModel, session);
         unrestrictedCreateDocument.runUnrestricted();

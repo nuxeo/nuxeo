@@ -12,4 +12,5 @@
   <xs:element name="recipients" type="mail:stringList"/>
   <xs:element name="cc_recipients" type="mail:stringList"/>
   <xs:element name="text" type="xs:string"/>
+  <xs:element name="htmlText" type="xs:string"/>
 </xs:schema>

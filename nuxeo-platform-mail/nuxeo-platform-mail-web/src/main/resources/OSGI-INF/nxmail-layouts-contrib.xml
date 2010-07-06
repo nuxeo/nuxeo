@@ -13,10 +13,17 @@
         It requires the following fields configuration:
         <ul>
           <li>
-            first field mapping the mail body property.
+            first field mapping the mail text property.
+          </li>
+          <li>
+            first field mapping the mail htmlText property.
+          </li>
+          <li>
+            first field mapping the document title property.
           </li>
         </ul>
       </documentation>
+      
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -65,9 +72,6 @@
           <li>
             first field mapping the dublincore title property.
           </li>
-          <li>
-            second field mapping the mail sending_date property.
-          </li>
         </ul>
       </documentation>
 
@@ -76,6 +80,27 @@
       </handler-class>
       <property name="template">
         /widgets/listing/listing_mail_object_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_mail_sending_date">
+
+      <documentation>
+        This widget type displays the sending date.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            First field mapping the mail sending_date property.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_mail_sending_date_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -127,6 +152,7 @@
         </column>
         <column>
           <widget>listing_mail_object</widget>
+          <widget>listing_mail_sending_date</widget>
           <widget>listing_mail_contact</widget>
           <widget>listing_mail_body</widget>
         </column>
@@ -143,15 +169,21 @@
         <fields>
           <field>data</field>
           <field>data.ref</field>
-          <field>data.mail.sending_date</field>
         </fields>
-        <properties mode="any">
-          <property name="file_property_name">file:content</property>
-          <property name="file_schema">file</property>
-        </properties>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
+      </widget>
+      <widget name="listing_mail_sending_date" type="listing_mail_sending_date">
+        <labels>
+          <label mode="any">label.mail.sendingDate</label>
+        </labels>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field>data.mail.sending_date</field>
+        </fields>
       </widget>
       <widget name="listing_mail_contact" type="listing_mail_contact">
         <labels>
@@ -168,13 +200,15 @@
       </widget>
       <widget name="listing_mail_body" type="listing_mail_body">
         <labels>
-          <label mode="any">label.mail.sender</label>
+          <label mode="any">label.mail.text</label>
         </labels>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
         <fields>
           <field>data.mail.text</field>
+          <field>data.mail.htmlText</field>
+          <field>data.dc.title</field>
         </fields>
       </widget>
       <widget name="listing_mail_attachments" type="listing_mail_attachments">

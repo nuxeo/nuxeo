@@ -40,6 +40,8 @@ public final class MailCoreConstants {
 
     public static final String TEXT_PROPERTY_NAME = "mail:text";
 
+    public static final String HTML_TEXT_PROPERTY_NAME = "mail:htmlText";
+
     public static final String MESSAGE_ID_PROPERTY_NAME = "mail:messageId";
 
     public static final String EMAIL_PROPERTY_NAME = "prot:email";
