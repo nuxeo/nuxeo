@@ -83,6 +83,7 @@
   </ciManagement>
 
   <modules>
+    <module>nuxeo-build/nuxeo-maven-assemblies</module>
     <module>nuxeo-common</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-core</module>
