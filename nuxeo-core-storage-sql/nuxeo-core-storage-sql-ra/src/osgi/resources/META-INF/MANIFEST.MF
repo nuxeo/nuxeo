@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.storage.sql;ra=split;version="1.6.2
- .SNAPSHOT"
-Private-Package: org.nuxeo.ecm.core.storage.sql.ra
+Export-Package: org.nuxeo.ecm.core.storage.sql;version="1.6.2.SNAPSHOT",
+ org.nuxeo.ecm.core.storage.sql.ra
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: core
@@ -12,9 +11,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277378649077
 Bundle-ManifestVersion: 2
+Fragment-Host: org.nuxeo.ecm.core.storage.sql
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.ra;singleton:=true
-Import-Package: javax.annotation;version="1.0",
- javax.naming,
+Import-Package: javax.naming,
  javax.resource;version="2.0",
  javax.resource.cci;version="2.0",
  javax.resource.spi;version="2.0",
@@ -31,10 +30,6 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.repository,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.security,
- org.nuxeo.ecm.core.storage,
- org.nuxeo.ecm.core.storage.sql,
- org.nuxeo.ecm.core.storage.sql.coremodel,
  org.nuxeo.runtime.api
-Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
 Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.query, org.nuxeo.ecm.core.schema, org.nuxeo.ecm.core.storage.sql
 

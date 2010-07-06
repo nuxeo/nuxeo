@@ -30,6 +30,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277313014435
+Eclipse-RegisterBuddy: org.nuxeo.runtime
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml, OSGI-INF/Reposit
  oryManager.xml,  OSGI-INF/blob-holder-service-framework.xml, OSGI-INF
