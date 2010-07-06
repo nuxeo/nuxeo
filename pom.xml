@@ -34,6 +34,7 @@
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-tag-service</module>
+    <module>nuxeo-webengine-features</module>
   </modules>
 
   <profiles>
