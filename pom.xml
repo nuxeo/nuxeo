@@ -86,14 +86,25 @@
     <module>nuxeo-common</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-core</module>
-    <module>nuxeo-theme</module>
     <module>nuxeo-services</module>
     <module>nuxeo-jsf</module>
     <module>nuxeo-features</module>
     <module>nuxeo-webengine</module>
-    <module>nuxeo-dm</module>
-    <module>nuxeo-gwt</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-theme</module>
+	<module>nuxeo-dm</module>
+	<module>nuxeo-gwt</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <properties>
     <webdriver.version>0.9.7376</webdriver.version>
