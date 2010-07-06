@@ -2404,7 +2404,7 @@
             <version>2.8-NXP-SNAPSHOT</version>
             <configuration>
 	      <pde>true</pde>
-              <notests>true</notests>
+              <notests>false</notests>
 	      <forceosgi>true</forceosgi>
             </configuration>
           </plugin>
