@@ -391,7 +391,8 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
-        return String.format("%s IN (SELECT COLUMN_VALUE FROM TABLE(nx_get_read_acls_for(?)))",
+        return String.format(
+                "%s IN (SELECT COLUMN_VALUE FROM TABLE(nx_get_read_acls_for(?)))",
                 idColumnName);
     }
 
@@ -502,6 +503,11 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public String getTestSQLStatementsFilename() {
+        return "nuxeovcs/oracle.test.sql.txt";
+    }
+
+    @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
@@ -535,7 +541,8 @@ public class DialectOracle extends Dialect {
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permsList.add(String.format("  INTO READ_ACL_PERMISSIONS VALUES ('%s')", perm));
+            permsList.add(String.format(
+                    "  INTO READ_ACL_PERMISSIONS VALUES ('%s')", perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         return properties;

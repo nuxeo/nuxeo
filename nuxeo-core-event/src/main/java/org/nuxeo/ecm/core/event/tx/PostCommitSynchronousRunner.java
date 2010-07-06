@@ -42,7 +42,9 @@ public class PostCommitSynchronousRunner {
     private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
 
     protected final List<EventListenerDescriptor> listeners;
+
     protected final ReconnectedEventBundle event;
+
     protected long timeout = 0;
 
     public PostCommitSynchronousRunner(List<EventListenerDescriptor> listeners,
@@ -71,20 +73,24 @@ public class PostCommitSynchronousRunner {
     }
 
     protected void runSync() {
-        log.debug("Starting sync executor from Thread "
-                + Thread.currentThread().getId());
-        Thread runner = new Thread(getExecutor());
-        runner.start();
         try {
-            runner.join(timeout);
-            if (runner.isAlive()) {
-                handleUnfinishedThread(runner);
+            log.debug("Starting sync executor from Thread "
+                    + Thread.currentThread().getId());
+            Thread runner = new Thread(getExecutor());
+            runner.start();
+            try {
+                runner.join(timeout);
+                if (runner.isAlive()) {
+                    handleUnfinishedThread(runner);
+                }
+            } catch (InterruptedException e) {
+                log.error("Exit before the end of processing", e);
             }
-        } catch (InterruptedException e) {
-            log.error("Exit before the end of processing", e);
+            log.debug("Terminated sync executor from Thread "
+                    + Thread.currentThread().getId());
+        } finally {
+            event.disconnect();
         }
-        log.debug("Terminated sync executor from Thread "
-                + Thread.currentThread().getId());
     }
 
     protected Runnable getExecutor() {
@@ -104,8 +110,10 @@ public class PostCommitSynchronousRunner {
                     txh.beginNewTransaction();
                     listener.asPostCommitListener().handleEvent(event);
                     txh.commitOrRollbackTransaction();
-                    EventStatsHolder.logAsyncExec(listener, System.currentTimeMillis()-t1);
-                    log.debug("End of post commit sync execution for listener " + listener.getName() + " "
+                    EventStatsHolder.logAsyncExec(listener,
+                            System.currentTimeMillis() - t1);
+                    log.debug("End of post commit sync execution for listener "
+                            + listener.getName() + " "
                             + (System.currentTimeMillis() - t1) + "ms");
                 } catch (Throwable t) {
                     log.error(

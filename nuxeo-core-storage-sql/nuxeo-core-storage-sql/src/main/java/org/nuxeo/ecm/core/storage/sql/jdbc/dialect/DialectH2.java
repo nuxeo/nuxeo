@@ -327,16 +327,8 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public boolean supportsDescendantsTable() {
-        return true;
-    }
-
-    @Override
     public String getInTreeSql(String idColumnName) {
-        return String.format(
-                "EXISTS(SELECT 1 FROM DESCENDANTS WHERE ID = ? AND DESCENDANTID = %s)",
-                idColumnName);
-        // return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+        return String.format("NX_IN_TREE(%s, ?)", idColumnName);
     }
 
     @Override
@@ -347,6 +339,11 @@ public class DialectH2 extends Dialect {
     @Override
     public String getSQLStatementsFilename() {
         return "nuxeovcs/h2.sql.txt";
+    }
+
+    @Override
+    public String getTestSQLStatementsFilename() {
+        return "nuxeovcs/h2.test.sql.txt";
     }
 
     @Override
@@ -366,18 +363,7 @@ public class DialectH2 extends Dialect {
                 "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
         properties.put("h2Fulltext",
                 "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
-        properties.put("h2TrigDesc",
-                "org.nuxeo.ecm.core.storage.sql.db.H2TriggerDescendants");
         return properties;
-    }
-
-    @Override
-    public List<String> getPostCreateTableSqls(Table table, Model model,
-            Database database) {
-        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toUpperCase())) {
-            return Arrays.asList("CALL NX_INIT_DESCENDANTS()");
-        }
-        return Collections.emptyList();
     }
 
     @Override

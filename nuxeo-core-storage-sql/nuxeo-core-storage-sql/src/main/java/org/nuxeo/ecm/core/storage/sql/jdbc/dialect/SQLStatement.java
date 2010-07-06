@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -128,10 +127,9 @@ public class SQLStatement {
      *
      * An empty line terminates a statement.
      */
-    public static Map<String, List<SQLStatement>> read(String filename)
-            throws IOException {
-        Map<String, List<SQLStatement>> statements = new HashMap<String, List<SQLStatement>>();
-        InputStream is = SQLStatement.class.getClassLoader().getResourceAsStream(
+    public static Map<String, List<SQLStatement>> read(String filename,
+            Map<String, List<SQLStatement>> statements) throws IOException {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 filename);
         if (is == null) {
             throw new IOException("Cannot open: " + filename);

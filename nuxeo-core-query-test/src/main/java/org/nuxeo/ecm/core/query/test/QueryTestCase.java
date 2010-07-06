@@ -615,6 +615,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(sql);
         assertEquals(3, dml.size());
 
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder2/'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+
         sql = "SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:path STARTSWITH '/'";
         dml = session.query(sql);
         assertEquals(1, dml.size());
@@ -622,6 +626,29 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile%' AND ecm:path STARTSWITH '/'";
         dml = session.query(sql);
         assertEquals(4, dml.size());
+
+    }
+
+    public void testStartsWithMove() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        // move folder2 into folder1
+        session.move(new PathRef("/testfolder2/"), new PathRef("/testfolder1/"), null);
+        session.save();
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/'";
+        dml = session.query(sql);
+        assertEquals(6, dml.size());
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/testfolder2/'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder2/'";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
     }
 
     public void testStartsWithNonPath() throws Exception {

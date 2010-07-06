@@ -123,14 +123,16 @@ public class HierarchyContext {
         return ((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
     }
 
-    protected void addExistingChild(SimpleFragment fragment, boolean complexProp)
-            throws StorageException {
+    protected void addExistingChild(SimpleFragment fragment,
+            boolean complexProp, boolean invalidate) throws StorageException {
         Serializable parentId = fragment.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             return;
         }
         childrenCache(parentId, complexProp).addExisting(fragment.getId());
-        modifiedParentsInTransaction.add(parentId);
+        if (invalidate) {
+            modifiedParentsInTransaction.add(parentId);
+        }
     }
 
     protected void addCreatedChild(SimpleFragment fragment, boolean complexProp)
@@ -410,7 +412,7 @@ public class HierarchyContext {
         }
         removeChild(hierFragment, complexProp);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
-        addExistingChild(hierFragment, complexProp);
+        addExistingChild(hierFragment, complexProp, true);
     }
 
     /**
@@ -499,7 +501,7 @@ public class HierarchyContext {
         }
         // add as a child of its parent
         addExistingChild((SimpleFragment) fragment,
-                complexProp((SimpleFragment) fragment));
+                complexProp((SimpleFragment) fragment), false);
     }
 
     /** Recursively checks if any of a fragment's parents has been deleted. */

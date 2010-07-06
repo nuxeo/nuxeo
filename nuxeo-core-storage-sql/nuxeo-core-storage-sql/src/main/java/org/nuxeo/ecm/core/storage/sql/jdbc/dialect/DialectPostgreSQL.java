@@ -133,6 +133,8 @@ public class DialectPostgreSQL extends Dialect {
         case NODEIDFKNULL:
         case NODEVAL:
             return jdbcInfo("varchar(36)", Types.VARCHAR);
+        case NODEARRAY:
+            return jdbcInfo("varchar(36)[]", Types.ARRAY);
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case TINYINT:
@@ -382,7 +384,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean supportsDescendantsTable() {
+    public boolean supportsAncestorsTable() {
         return true;
     }
 
@@ -390,12 +392,11 @@ public class DialectPostgreSQL extends Dialect {
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsEnabled) {
             return String.format(
-                    "EXISTS(SELECT 1 FROM descendants WHERE id = ? AND descendantid = %s)",
+                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?] <@ ancestors)",
                     idColumnName);
         } else {
             return String.format("NX_IN_TREE(%s, ?)", idColumnName);
         }
-
     }
 
     @Override
@@ -534,6 +535,11 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public String getTestSQLStatementsFilename() {
+        return "nuxeovcs/postgresql.test.sql.txt";
+    }
+
+    @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
@@ -582,7 +588,7 @@ public class DialectPostgreSQL extends Dialect {
             hierarchyCreated = true;
             return true;
         }
-        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
             if (hierarchyCreated) {
                 // database initialization
                 return true;
@@ -596,12 +602,12 @@ public class DialectPostgreSQL extends Dialect {
             long count = rs.getLong(1);
             rs.close();
             s.close();
-            if (count > 1000) {
+            if (count > 100000) {
                 // if the hierarchy table is too big, tell the admin to do the
                 // init by hand
                 pathOptimizationsEnabled = false;
-                log.error("Table DESCENDANTS not initialized automatically because table HIERARCHY is too big. "
-                        + "Upgrade by hand by calling: SELECT NX_INIT_DESCENDANTS()");
+                log.error("Table ANCESTORS not initialized automatically because table HIERARCHY is too big. "
+                        + "Upgrade by hand by calling: SELECT nx_init_ancestors()");
             }
             return true;
         }
@@ -611,10 +617,10 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public List<String> getPostCreateTableSqls(Table table, Model model,
             Database database) {
-        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
             List<String> sqls = new ArrayList<String>();
             if (pathOptimizationsEnabled) {
-                sqls.add("SELECT NX_INIT_DESCENDANTS()");
+                sqls.add("SELECT nx_init_ancestors()");
             } else {
                 log.info("Path optimizations disabled");
             }
@@ -626,14 +632,14 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public void existingTableDetected(Connection connection, Table table,
             Model model, Database database) throws SQLException {
-        if (table.getName().equals(Model.DESCENDANTS_TABLE_NAME.toLowerCase())) {
+        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
             if (!pathOptimizationsEnabled) {
                 log.info("Path optimizations disabled");
                 return;
             }
             // check if we want to initialize the descendants table now, or log
             // a warning if the hierarchy table is too big
-            String sql = "SELECT id FROM descendants LIMIT 1";
+            String sql = "SELECT id FROM ancestors LIMIT 1";
             Statement s = connection.createStatement();
             ResultSet rs = s.executeQuery(sql);
             boolean empty = !rs.next();
@@ -641,8 +647,8 @@ public class DialectPostgreSQL extends Dialect {
             s.close();
             if (empty) {
                 pathOptimizationsEnabled = false;
-                log.error("Table DESCENDANTS empty, must be upgraded by hand by calling: "
-                        + "SELECT NX_INIT_DESCENDANTS()");
+                log.error("Table ANCESTORS empty, must be upgraded by hand by calling: "
+                        + "SELECT nx_init_ancestors()");
                 log.info("Path optimizations disabled");
             }
         }

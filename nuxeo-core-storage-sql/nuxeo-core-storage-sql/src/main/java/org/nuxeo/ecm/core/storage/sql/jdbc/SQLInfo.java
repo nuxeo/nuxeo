@@ -460,8 +460,8 @@ public class SQLInfo {
         }
         initHierarchySQL();
         initRepositorySQL();
-        if (dialect.supportsDescendantsTable()) {
-            initDescendantsSQL();
+        if (dialect.supportsAncestorsTable()) {
+            initAncestorsSQL();
         }
 
         for (String tableName : model.getFragmentNames()) {
@@ -585,17 +585,15 @@ public class SQLInfo {
     }
 
     /**
-     * Creates the SQL for the table holding descendants information.
+     * Creates the SQL for the table holding ancestors information.
      * <p>
      * This table holds trigger-updated information extracted from the recursive
      * parent-child relationship in the hierarchy table.
      */
-    protected void initDescendantsSQL() {
-        TableMaker maker = new TableMaker(model.DESCENDANTS_TABLE_NAME);
+    protected void initAncestorsSQL() {
+        TableMaker maker = new TableMaker(model.ANCESTORS_TABLE_NAME);
         maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
-        maker.newColumn(model.DESCENDANTS_DESCENDANT_KEY,
-                ColumnType.NODEIDFKMUL);
-        maker.table.addIndex(model.MAIN_KEY, model.DESCENDANTS_DESCENDANT_KEY);
+        maker.newColumn(model.ANCESTORS_ANCESTOR_KEY, ColumnType.NODEARRAY);
     }
 
     /**
@@ -1146,7 +1144,12 @@ public class SQLInfo {
     }
 
     public void initSQLStatements() throws IOException {
-        sqlStatements = SQLStatement.read(dialect.getSQLStatementsFilename());
+        sqlStatements = new HashMap<String, List<SQLStatement>>();
+        SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
+        if (JDBCMapper.testMode) {
+            SQLStatement.read(dialect.getTestSQLStatementsFilename(),
+                    sqlStatements);
+        }
         sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
                 database);
     }

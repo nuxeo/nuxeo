@@ -317,10 +317,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     public void testBasicsUpgrade() throws Exception {
         try {
-            JDBCMapper.debugTestUpgrade = true;
+            JDBCMapper.testMode = true;
             testBasics();
         } finally {
-            JDBCMapper.debugTestUpgrade = false;
+            JDBCMapper.testMode = false;
         }
     }
 
@@ -1501,6 +1501,72 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "SELECT * FROM Relation WHERE relation:source = '123'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
+    }
+
+    public void testTagsUpgrade() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        try {
+            JDBCMapper.testMode = true;
+            Session session = repository.getConnection();
+
+            PartialList<Serializable> res;
+
+            res = session.query("SELECT * FROM Tag WHERE ecm:isProxy = 0",
+                    QueryFilter.EMPTY, false);
+            assertEquals(2, res.list.size());
+            String tagId = "11111111-2222-3333-4444-555555555555";
+            Serializable tagId1 = res.list.get(0);
+            Serializable tagId2 = res.list.get(1);
+            if (tagId.equals(tagId2)) {
+                // swap
+                Serializable t = tagId1;
+                tagId1 = tagId2;
+                tagId2 = t;
+            }
+            assertEquals(tagId, tagId1);
+            Node tag1 = session.getNodeById(tagId1);
+            assertEquals("mytag",
+                    tag1.getSimpleProperty("tag:label").getString());
+            assertEquals("mytag",
+                    tag1.getSimpleProperty("dc:title").getString());
+            assertEquals("Administrator",
+                    tag1.getSimpleProperty("dc:creator").getString());
+            assertEquals("mytag", tag1.getName());
+
+            Node tag2 = session.getNodeById(tagId2);
+            assertEquals("othertag",
+                    tag2.getSimpleProperty("tag:label").getString());
+            assertEquals("othertag",
+                    tag2.getSimpleProperty("dc:title").getString());
+            assertEquals("Administrator",
+                    tag2.getSimpleProperty("dc:creator").getString());
+            assertEquals("othertag", tag2.getName());
+
+            res = session.query("SELECT * FROM Tagging", QueryFilter.EMPTY,
+                    false);
+            assertEquals(1, res.list.size());
+            Serializable taggingId = res.list.get(0);
+            Node tagging = session.getNodeById(taggingId);
+            assertEquals("dddddddd-dddd-dddd-dddd-dddddddddddd",
+                    tagging.getSimpleProperty("relation:source").getValue());
+            assertEquals(tagId,
+                    tagging.getSimpleProperty("relation:target").getValue());
+            assertEquals("mytag",
+                    tagging.getSimpleProperty("dc:title").getString());
+            assertEquals("Administrator", tagging.getSimpleProperty(
+                    "dc:creator").getString());
+            assertEquals("mytag", tagging.getName());
+            assertNotNull(tagging.getSimpleProperty("dc:created").getValue());
+
+            // hidden tags root is gone
+            Node tags = session.getNodeByPath("/tags", null);
+            assertNull(tags);
+        } finally {
+            JDBCMapper.testMode = false;
+        }
     }
 
 }

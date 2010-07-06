@@ -1,0 +1,95 @@
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Lesser General Public License
+# (LGPL) version 2.1 which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/lgpl.html
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} NVARCHAR(36)
+# ${fulltextCatalog} configured catalog
+# ${fulltextTriggerStatements} repeated for all suffixes SFX:
+#   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
+
+# Conditions used:
+# fulltextEnabled
+
+############################################################
+
+
+#CATEGORY: testUpgrade
+
+# here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test compatibility
+CREATE TABLE TESTSCHEMA2 (
+  ID VARCHAR(36) NOT NULL PRIMARY KEY,
+  TITLE NVARCHAR(MAX) NULL
+);
+
+# create the old structure for tags tables
+
+CREATE TABLE tag (
+  id ${idType} NOT NULL,
+  private BIGINT,
+  label VARCHAR(255)
+);
+
+CREATE TABLE nxp_tagging (
+  id VARCHAR(255) NOT NULL,
+  tag_id VARCHAR(255),
+  author VARCHAR(255),
+  document_id VARCHAR(255),
+  creation_date DATETIME,
+  is_private INTEGER
+);
+
+
+
+#CATEGORY: testUpgradeOldTables
+
+# create old values in old tables
+
+# root & repository
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('00000000-0000-0000-0000-000000000000', null, '', 0, 'Root')
+
+INSERT INTO repositories (id, name) VALUES ('00000000-0000-0000-0000-000000000000', 'default')
+
+# fake doc to tag
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', null, 'mydoc', 0, 'TestDoc')
+
+# tags root
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '00000000-0000-0000-0000-000000000000', 'tags', 0, 'HiddenFolder')
+
+# tag hier
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('11111111-2222-3333-4444-555555555555', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'mytag', 0, 'Tag')
+
+# tag
+INSERT INTO tag (id, private, label) VALUES ('11111111-2222-3333-4444-555555555555', 0, 'mytag')
+
+# tag dublincore
+INSERT INTO dublincore (id, creator, title) VALUES ('11111111-2222-3333-4444-555555555555', 'Administrator', 'mytag')
+
+# tag 2 (unused) hier
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'othertag', 0, 'Tag')
+
+# tag 2
+INSERT INTO tag (id, private, label) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 0, 'othertag')
+
+# tag 2 dublincore
+INSERT INTO dublincore (id, creator, title) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'Administrator', 'othertag')
+
+# tagging
+INSERT INTO nxp_tagging (id, tag_id, author, document_id, creation_date, is_private)
+  VALUES (123123123, '11111111-2222-3333-4444-555555555555', 'Administrator', 'dddddddd-dddd-dddd-dddd-dddddddddddd', '2010-06-01', 0)

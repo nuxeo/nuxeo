@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -109,60 +109,62 @@ STABLE;
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_DESCENDANTS_CREATE_TRIGGERS()
+CREATE OR REPLACE FUNCTION nx_ancestors_create_triggers()
 RETURNS void
 AS $$
+  -- drop old deprecated triggers
   DROP TRIGGER IF EXISTS NX_TRIG_DESC_INSERT ON hierarchy;
-  CREATE TRIGGER NX_TRIG_DESC_INSERT
-    AFTER INSERT ON hierarchy
-    FOR EACH ROW EXECUTE PROCEDURE NX_DESCENDANTS_INSERT();
   DROP TRIGGER IF EXISTS NX_TRIG_DESC_UPDATE ON hierarchy;
-  CREATE TRIGGER NX_TRIG_DESC_UPDATE
+  -- setup new triggers
+  DROP TRIGGER IF EXISTS nx_trig_ancestors_insert ON hierarchy;
+  CREATE TRIGGER nx_trig_ancestors_insert
+    AFTER INSERT ON hierarchy
+    FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_insert();
+  DROP TRIGGER IF EXISTS NX_TRIG_ANCESTORS_UPDATE ON hierarchy;
+  CREATE TRIGGER nx_trig_ancestos_update
     AFTER UPDATE ON hierarchy
-    FOR EACH ROW EXECUTE PROCEDURE NX_DESCENDANTS_UPDATE();
+    FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_update();
 $$
 LANGUAGE sql
 VOLATILE;
 
-
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_INIT_DESCENDANTS()
-RETURNS void
-AS $$
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id character varying) RETURNS character varying[]
+    AS $$
 DECLARE
-  curid ${idType};
-  curparentid ${idType};
+  curid varchar(36) := id;
+  newid varchar(36);
+  ret varchar(36)[];
 BEGIN
-  CREATE TEMP TABLE nxtodo (id ${idType}, parentid ${idType}) ON COMMIT DROP;
-  CREATE INDEX nxtodo_idx ON nxtodo (id);
-  INSERT INTO nxtodo SELECT id, NULL FROM repositories;
-  TRUNCATE TABLE descendants;
-  LOOP
-    -- get next node in queue
-    SELECT id, parentid INTO curid, curparentid FROM nxtodo LIMIT 1;
-    IF NOT FOUND THEN
-      EXIT;
+  WHILE curid IS NOT NULL LOOP
+    IF curid IS DISTINCT FROM id THEN
+      ret = array_prepend(curid, ret);
     END IF;
-    DELETE FROM nxtodo WHERE id = curid;
-    -- add children to queue
-    INSERT INTO nxtodo SELECT id, curid FROM hierarchy
-      WHERE parentid = curid and NOT isproperty;
-    IF curparentid IS NULL THEN
-      CONTINUE;
-    END IF;
-    -- process the node
-    INSERT INTO descendants (id, descendantid)
-      SELECT id, curid FROM descendants WHERE descendantid = curparentid;
-    INSERT INTO descendants (id, descendantid) VALUES (curparentid, curid);
+    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    curid := newid;
   END LOOP;
-  PERFORM NX_DESCENDANTS_CREATE_TRIGGERS();
+  RETURN ret;
 END $$
-LANGUAGE plpgsql
-VOLATILE;
+    LANGUAGE plpgsql STABLE;
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_DESCENDANTS_INSERT()
+CREATE OR REPLACE FUNCTION nx_init_ancestors()
+RETURNS void
+    AS $$
+BEGIN
+  TRUNCATE TABLE ancestors;
+  INSERT INTO ancestors
+    SELECT id, nx_get_ancestors(id)
+    FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;
+  PERFORM nx_ancestors_create_triggers();
+  RETURN;
+END $$
+    LANGUAGE plpgsql;
+
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION nx_ancestors_insert()
 RETURNS trigger
 AS $$
 BEGIN
@@ -175,9 +177,7 @@ BEGIN
   IF NEW.id IS NULL THEN
     RAISE EXCEPTION 'Cannot have NULL id';
   END IF;
-  INSERT INTO descendants (id, descendantid)
-    SELECT id, NEW.id FROM descendants WHERE descendantid = NEW.parentid;
-  INSERT INTO descendants (id, descendantid) VALUES (NEW.parentid, NEW.id);
+  INSERT INTO ancestors VALUES (NEW.id, nx_get_ancestors(NEW.id));
   RETURN NULL;
 END $$
 LANGUAGE plpgsql
@@ -185,53 +185,22 @@ VOLATILE;
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_DESCENDANTS_UPDATE()
+CREATE OR REPLACE FUNCTION nx_ancestors_update()
 RETURNS trigger
 AS $$
 BEGIN
   IF NEW.isproperty THEN
     RETURN NULL;
   END IF;
-  IF OLD.id IS DISTINCT FROM NEW.id THEN
-    RAISE EXCEPTION 'Cannot change id';
-  END IF;
   IF OLD.parentid IS NOT DISTINCT FROM NEW.parentid THEN
     RETURN NULL;
   END IF;
-  IF NEW.id IS NULL THEN
-    RAISE EXCEPTION 'Cannot have NULL id';
+  IF OLD.id IS DISTINCT FROM NEW.id THEN
+    RAISE EXCEPTION 'Cannot change id';
   END IF;
-  IF OLD.parentid IS NOT NULL THEN
-    IF NEW.parentid IS NOT NULL THEN
-      IF NEW.parentid = NEW.id THEN
-        RAISE EXCEPTION 'Cannot move a node under itself';
-      END IF;
-      IF EXISTS(SELECT 1 FROM descendants WHERE id = NEW.id AND descendantid = NEW.parentid) THEN
-        RAISE EXCEPTION 'Cannot move a node under one of its descendants';
-      END IF;
-    END IF;
-    -- the old parent and its ancestors lose some descendants
-    DELETE FROM descendants
-      WHERE id IN (SELECT id FROM descendants WHERE descendantid = NEW.id)
-      AND descendantid IN (SELECT descendantid FROM descendants WHERE id = NEW.id
-                           UNION ALL SELECT NEW.id);
-  END IF;
-  IF NEW.parentid IS NOT NULL THEN
-    -- the new parent's ancestors gain as descendants
-    -- the descendants of the moved node (cross join)
-    INSERT INTO descendants (id, descendantid)
-      (SELECT A.id, B.descendantid FROM descendants A CROSS JOIN descendants B
-       WHERE A.descendantid = NEW.parentid AND B.id = NEW.id);
-    -- the new parent's ancestors gain as descendant the moved node
-    INSERT INTO descendants (id, descendantid)
-      SELECT id, NEW.id FROM descendants WHERE descendantid = NEW.parentid;
-    -- the new parent gains as descendants the descendants of the moved node
-    INSERT INTO descendants (id, descendantid)
-      SELECT NEW.parentid, descendantid FROM descendants WHERE id = NEW.id;
-    -- the new parent gains as descendant the moved node
-    INSERT INTO descendants (id, descendantid)
-      VALUES (NEW.parentid, NEW.id);
-  END IF;
+  UPDATE ancestors SET ancestors = nx_get_ancestors(id)
+    WHERE id IN (SELECT id FROM ancestors
+                   WHERE ARRAY[NEW.id] <@ ancestors OR id = NEW.id);
   RETURN NULL;
 END $$
 LANGUAGE plpgsql
@@ -667,6 +636,56 @@ SELECT * FROM nx_rebuild_read_acls();
 SELECT nx_vacuum_read_acls();
 
 
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'nxp_tagging';
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+CREATE OR REPLACE FUNCTION nx_upgrade_tags()
+RETURNS void
+AS $$
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = false;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = md5(id)::uuid;
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, false, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private::text
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = false
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = false);
+$$
+LANGUAGE sql
+VOLATILE;
+
+#IF: ! emptyResult
+SELECT nx_upgrade_tags();
+
+
+# Add index for ancestors
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'ancestors_ancestors_idx';
+
+#IF: emptyResult
+CREATE INDEX ancestors_ancestors_idx ON ancestors USING gin(ancestors);
+
+
 ############################################################
 
 
@@ -682,15 +701,3 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TI
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
-
-
-############################################################
-
-
-#CATEGORY: testUpgrade
-
-# here use a TEXT instead of a VARCHAR to test compatibility
-CREATE TABLE testschema2 (
-  id ${idType} NOT NULL PRIMARY KEY,
-  title text
-);

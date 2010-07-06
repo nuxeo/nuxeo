@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -147,6 +147,50 @@ BEGIN
 END;
 
 
+# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
+
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NXP_TAGGING' AND TABLE_CATALOG = db_name();
+
+#IF: ! emptyResult
+LOG.INFO Upgrading tags
+
+#IF: ! emptyResult
+IF OBJECT_ID('dbo.NX_UPGRADE_TAGS', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_UPGRADE_TAGS;
+
+#IF: ! emptyResult
+CREATE PROCEDURE NX_UPGRADE_TAGS
+AS
+BEGIN
+  -- make tags placeless
+  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
+  -- make tagging hierarchy
+  UPDATE nxp_tagging SET id = lower(newid());
+  INSERT INTO hierarchy (id, name, isproperty, primarytype)
+    SELECT tg.id, t.label, 0, 'Tagging'
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- make tagging relation
+  INSERT INTO relation (id, source, target)
+    SELECT id, document_id, tag_id FROM nxp_tagging;
+  -- make tagging dublincore (save is_private into coverage just in case)
+  INSERT INTO dublincore (id, title, creator, created, coverage)
+    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
+      FROM nxp_tagging tg
+      JOIN tag t ON tg.tag_id = t.id;
+  -- drop now useless table
+  DROP TABLE nxp_tagging;
+  -- remove old tags root
+  DELETE FROM hierarchy
+    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
+      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+END;
+
+#IF: ! emptyResult
+EXEC NX_UPGRADE_TAGS
+
+
 ############################################################
 
 
@@ -165,16 +209,4 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = @@SPID;
-
-
-############################################################
-
-
-#CATEGORY: testUpgrade
-
-# here use a NVARCHAR(MAX) instead of a NVARCHAR(4000) to test compatibility
-CREATE TABLE TESTSCHEMA2 (
-  ID VARCHAR(36) NOT NULL PRIMARY KEY,
-  TITLE NVARCHAR(MAX) NULL
-);
 
