@@ -256,6 +256,18 @@
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-test</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-types-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

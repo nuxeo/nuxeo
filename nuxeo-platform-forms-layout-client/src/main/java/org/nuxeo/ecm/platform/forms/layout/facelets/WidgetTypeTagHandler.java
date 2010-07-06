@@ -21,7 +21,9 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
@@ -53,7 +55,6 @@ import com.sun.facelets.tag.TagHandler;
  * Does not handle sub widgets.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class WidgetTypeTagHandler extends TagHandler {
 
@@ -69,6 +70,9 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagAttribute value;
 
     protected final TagAttribute[] vars;
+
+    protected final String[] reservedVarsArray = new String[] { "id", "mode",
+            "type" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -89,10 +93,11 @@ public class WidgetTypeTagHandler extends TagHandler {
         }
 
         // build handler
+        List<String> reservedVars = Arrays.asList(reservedVarsArray);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
-            if ("mode" != localName && "type" != localName) {
+            if (!reservedVars.contains(localName)) {
                 properties.put(localName, var.getValue());
             }
         }

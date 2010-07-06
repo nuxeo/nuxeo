@@ -20,6 +20,10 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -53,8 +57,8 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Computes a layout in given facelet context, for given mode and value
  * attributes.
  * <p>
- * If a template is found for this widget, include the corresponding facelet and
- * use facelet template features to iterate over rows and widgets.
+ * If a template is found for this widget, include the corresponding facelet
+ * and use facelet template features to iterate over rows and widgets.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -70,12 +74,21 @@ public class LayoutTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute template;
+
+    protected final TagAttribute[] vars;
+
+    protected final String[] reservedVarsArray = new String[] { "id", "name",
+            "mode", "value", "template" };
+
     public LayoutTagHandler(TagConfig config) {
         super(config);
         this.config = config;
         name = getRequiredAttribute("name");
         mode = getRequiredAttribute("mode");
         value = getRequiredAttribute("value");
+        template = getAttribute("template");
+        vars = tag.getAttributes().getAll();
     }
 
     /**
@@ -138,17 +151,39 @@ public class LayoutTagHandler extends TagHandler {
             return;
         }
 
+        // set unique id on layout
+        layout.setId(helper.generateLayoutId(layout.getName()));
+        // add additional properties put on tag
+        List<String> reservedVars = Arrays.asList(reservedVarsArray);
+        for (TagAttribute var : vars) {
+            String localName = var.getLocalName();
+            if (!reservedVars.contains(localName)) {
+                layout.setProperty(localName, var.getValue());
+            }
+        }
+
         // expose layout value
         ValueExpression layoutVe = eFactory.createValueExpression(layout,
                 Layout.class);
         vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
+        // expose layout properties
+        for (Map.Entry<String, Serializable> prop : layout.getProperties().entrySet()) {
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.layoutVariables.layoutProperty.name(),
+                    prop.getKey()), eFactory.createValueExpression(
+                    prop.getValue(), Serializable.class));
+        }
 
-        // set unique id on layout
-        layout.setId(helper.generateLayoutId(layout.getName()));
-        String template = layout.getTemplate();
+        String templateValue = null;
+        if (template != null) {
+            templateValue = template.getValue(ctx);
+        }
+        if (templateValue == null || "".equals(templateValue)) {
+            templateValue = layout.getTemplate();
+        }
         try {
-            if (template != null) {
-                ctx.includeFacelet(parent, template);
+            if (templateValue != null && !"".equals(templateValue)) {
+                ctx.includeFacelet(parent, templateValue);
             } else {
                 log.error("Missing template property for layout " + layoutName
                         + " => applying basic template");
@@ -164,5 +199,4 @@ public class LayoutTagHandler extends TagHandler {
         }
 
     }
-
 }

@@ -109,8 +109,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     public boolean isCandidateForDecoding(HttpServletRequest httpRequest) {
-        // only rewrite GET URLs
-        if (!httpRequest.getMethod().equals("GET")) {
+        // only rewrite GET/HEAD URLs
+        String method = httpRequest.getMethod();
+        if (!method.equals("GET") && !method.equals("HEAD")) {
             return false;
         }
 

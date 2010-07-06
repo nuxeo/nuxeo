@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,6 +98,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return leaf;
         }
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
+        // expose field variables
         for (Integer i = 0; i < fieldDefs.length; i++) {
             if (i == 0) {
                 paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
@@ -104,6 +107,19 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
                     leaf, widget, fieldDefs[i], i));
         }
+        // expose widget properties too
+        for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
+            TagAttribute name = helper.createAttribute("name", String.format(
+                    "%s_%s",
+                    RenderVariables.widgetVariables.widgetProperty.name(),
+                    prop.getKey()));
+            TagAttribute value = helper.createAttribute("value",
+                    prop.getValue());
+            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
+                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
+            paramHandlers.add(new ParamHandler(config));
+        }
+
         return new CompositeFaceletHandler(
                 paramHandlers.toArray(new ParamHandler[] {}));
     }

@@ -10,4 +10,12 @@
     </sessionManager>
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="openUrl">
+    <openUrl name="SystemLogRestlet">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/restAPI/systemLog</grantPattern>
+    </openUrl>
+  </extension>
+
 </component>

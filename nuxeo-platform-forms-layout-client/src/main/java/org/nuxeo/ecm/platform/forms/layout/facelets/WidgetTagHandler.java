@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
@@ -48,7 +50,6 @@ import com.sun.facelets.tag.TagConfig;
  * for given value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class WidgetTagHandler extends MetaTagHandler {
 
@@ -65,11 +66,17 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute[] vars;
+
+    protected final String[] reservedVarsArray = new String[] { "id", "widget",
+            "value" };
+
     public WidgetTagHandler(TagConfig config) {
         super(config);
         this.config = config;
         widget = getRequiredAttribute("widget");
         value = getRequiredAttribute("value");
+        vars = tag.getAttributes().getAll();
     }
 
     /**
@@ -85,11 +92,19 @@ public class WidgetTagHandler extends MetaTagHandler {
         // build handler
         Widget widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
         if (widgetInstance != null) {
-            // set value name on widget instance in case it's changed from first
-            // computation
+            // set value name on widget instance in case it's changed from
+            // first computation
             String valueName = value.getValue();
             if (ComponentTagUtils.isValueReference(valueName)) {
                 valueName = valueName.substring(2, valueName.length() - 1);
+            }
+            // add additional properties put on tag
+            List<String> reservedVars = Arrays.asList(reservedVarsArray);
+            for (TagAttribute var : vars) {
+                String localName = var.getLocalName();
+                if (!reservedVars.contains(localName)) {
+                    widgetInstance.setProperty(localName, var.getValue());
+                }
             }
             widgetInstance.setValueName(valueName);
             applyWidgetHandler(ctx, parent, config, widgetInstance, value, true);

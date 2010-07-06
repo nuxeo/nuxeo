@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
  * Component that displays a javascript calendar for date/time selection.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class UIInputDateTime extends UIInput {
 
@@ -60,6 +59,10 @@ public class UIInputDateTime extends UIInput {
     private String triggerLabel;
 
     protected String onchange;
+
+    protected String onclick;
+
+    protected String onselect;
 
     public UIInputDateTime() {
         setRendererType(COMPONENT_TYPE);
@@ -192,13 +195,6 @@ public class UIInputDateTime extends UIInput {
         this.triggerLabel = triggerLabel;
     }
 
-    public String getOnchange() {
-        if (onchange != null) {
-            return onchange;
-        }
-        return getStringValue("onchange", null);
-    }
-
     protected String getStringValue(String name, String defaultValue) {
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
@@ -212,16 +208,45 @@ public class UIInputDateTime extends UIInput {
         }
     }
 
+    public String getOnchange() {
+        if (onchange != null) {
+            return onchange;
+        }
+        return getStringValue("onchange", null);
+    }
+
     public void setOnchange(String onchange) {
         this.onchange = onchange;
+    }
+
+    public String getOnclick() {
+        if (onclick != null) {
+            return onclick;
+        }
+        return getStringValue("onclick", null);
+    }
+
+    public void setOnclick(String onclick) {
+        this.onclick = onclick;
+    }
+
+    public String getOnselect() {
+        if (onselect != null) {
+            return onselect;
+        }
+        return getStringValue("onselect", null);
+    }
+
+    public void setOnselect(String onselect) {
+        this.onselect = onselect;
     }
 
     // state holder
 
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), format,
-                showsTime, locale, timeZone, triggerLabel, onchange };
+        return new Object[] { super.saveState(context), format, showsTime,
+                locale, timeZone, triggerLabel, onchange, onclick, onselect };
     }
 
     @Override
@@ -234,6 +259,8 @@ public class UIInputDateTime extends UIInput {
         timeZone = (String) values[4];
         triggerLabel = (String) values[5];
         onchange = (String) values[6];
+        onclick = (String) values[7];
+        onselect = (String) values[8];
     }
 
 }

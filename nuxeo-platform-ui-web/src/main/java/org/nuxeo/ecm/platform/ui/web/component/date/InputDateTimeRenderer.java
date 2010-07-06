@@ -31,13 +31,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
+
 import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 
 /**
  * Renderer for input date time component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
 
@@ -51,7 +51,6 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         UIInputDateTime dateTimeComp = (UIInputDateTime) component;
         ResponseWriter writer = context.getResponseWriter();
         String localeString = dateTimeComp.getLocale();
-        String onchange = dateTimeComp.getOnchange();
         if (localeString == null) {
             // get local string
             Locale locale = context.getViewRoot().getLocale();
@@ -73,8 +72,17 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         // input text
         writer.startElement("input", dateTimeComp);
         writer.writeAttribute("type", "text", null);
+        String onchange = dateTimeComp.getOnchange();
         if (onchange != null) {
             writer.writeAttribute("onchange", onchange, "onchange");
+        }
+        String onclick = dateTimeComp.getOnclick();
+        if (onclick != null) {
+            writer.writeAttribute("onclick", onclick, "onclick");
+        }
+        String onselect = dateTimeComp.getOnselect();
+        if (onselect != null) {
+            writer.writeAttribute("onselect", onselect, "onselect");
         }
         writer.writeAttribute("id", inputTextId, null);
         writer.writeAttribute("name", inputTextId, null);
@@ -127,9 +135,8 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
     }
 
     /**
-     * Converts format as used by the converter to the javascript syntax.
-     *
-     * TODO: translation is basic for now...
+     * Converts format as used by the converter to the javascript syntax. TODO:
+     * translation is basic for now...
      */
     protected static String convertFormat(String format) {
         String jsFormat = format;

@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-
+  
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-
+  
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -452,6 +452,24 @@
         text, and will attempt to be translated.
       </description>
     </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>
+        Javascript onchange event handler, set on the radio buttons
+      </description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>
+        Javascript onclick event handler, set on the radio button
+      </description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>
+        Javascript onselect event handler, set on the radio button
+      </description>
+    </attribute>
     <example>
       <![CDATA[
 <nxu:inputFile value="#{document.file.content"
@@ -696,6 +714,24 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>style class to set on the trigger button tag.</description>
+    </attribute>
+    <attribute>
+      <name>onchange</name>
+      <description>
+        Javascript onchange event handler, set on the text input
+      </description>
+    </attribute>
+    <attribute>
+      <name>onclick</name>
+      <description>
+        Javascript onclick event handler, set on the text input
+      </description>
+    </attribute>
+    <attribute>
+      <name>onselect</name>
+      <description>
+        Javascript onselect event handler, set on the text input
+      </description>
     </attribute>
     <example>
       <![CDATA[

@@ -22,7 +22,8 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 /**
  * List of render variables.
  * <p>
- * Variables which names will be available in a layout/widget rendering context.
+ * Variables which names will be available in a layout/widget rendering
+ * context.
  * <p>
  * This allows to use them in properties definitions.
  *
@@ -31,11 +32,11 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 public class RenderVariables {
 
     public enum globalVariables {
-        value, document, layoutValue, mode, layoutMode,
+        value, document, layoutValue, mode, layoutMode
     }
 
     public enum layoutVariables {
-        layout,
+        layout, layoutProperty
     }
 
     public enum rowVariables {
@@ -47,7 +48,7 @@ public class RenderVariables {
     }
 
     public enum widgetVariables {
-        widget, widgetIndex, field,
+        widget, widgetIndex, field, widgetProperty
     }
 
 }

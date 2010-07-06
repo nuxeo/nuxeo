@@ -29,7 +29,9 @@ import javax.faces.webapp.UIComponentTag;
  * Tag for directory entry component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated facelets do not use the tag class
  */
+@Deprecated
 public class DirectoryEntryOutputTag extends UIComponentTag {
 
     /**

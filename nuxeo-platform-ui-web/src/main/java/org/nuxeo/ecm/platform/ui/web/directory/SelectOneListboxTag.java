@@ -30,8 +30,9 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @deprecated facelets do not use the tag class
  */
+@Deprecated
 public class SelectOneListboxTag extends UIComponentTag {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SelectOneListboxTag.class);
@@ -59,7 +60,6 @@ public class SelectOneListboxTag extends UIComponentTag {
     Boolean localize = Boolean.FALSE;
 
     String size;
-
 
     @Override
     protected void setProperties(UIComponent component) {
