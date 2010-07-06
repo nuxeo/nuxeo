@@ -27,7 +27,7 @@ public class ContentViewImpl implements ContentView {
 
     protected String category;
 
-    protected String resultProvider;
+    protected String resultProviderName;
 
     protected String selectionList;
 
@@ -35,11 +35,27 @@ public class ContentViewImpl implements ContentView {
 
     protected String availableActions;
 
-    protected String searchLayout;
+    protected String searchLayoutName;
 
-    protected String resultLayout;
+    protected String resultLayoutName;
 
     protected Integer max;
+
+    public ContentViewImpl(String name, String category,
+            String resultProviderName, String selectionList, String pagination,
+            String availableActions, String searchLayoutName,
+            String resultLayoutName, Integer max) {
+        super();
+        this.name = name;
+        this.category = category;
+        this.resultProviderName = resultProviderName;
+        this.selectionList = selectionList;
+        this.pagination = pagination;
+        this.availableActions = availableActions;
+        this.searchLayoutName = searchLayoutName;
+        this.resultLayoutName = resultLayoutName;
+        this.max = max;
+    }
 
     public String getName() {
         return name;
@@ -57,15 +73,15 @@ public class ContentViewImpl implements ContentView {
         this.category = category;
     }
 
-    public String getResultProvider() {
-        return resultProvider;
+    public String getResultProviderName() {
+        return resultProviderName;
     }
 
-    public void setResultProvider(String resultProvider) {
-        this.resultProvider = resultProvider;
+    public void setResultProviderName(String resultProviderName) {
+        this.resultProviderName = resultProviderName;
     }
 
-    public String getSelectionList() {
+    public String getSelectionListName() {
         return selectionList;
     }
 
@@ -89,20 +105,20 @@ public class ContentViewImpl implements ContentView {
         this.availableActions = availableActions;
     }
 
-    public String getSearchLayout() {
-        return searchLayout;
+    public String getSearchLayoutName() {
+        return searchLayoutName;
     }
 
-    public void setSearchLayout(String searchLayout) {
-        this.searchLayout = searchLayout;
+    public void setSearchLayoutName(String searchLayoutName) {
+        this.searchLayoutName = searchLayoutName;
     }
 
-    public String getResultLayout() {
-        return resultLayout;
+    public String getResultLayoutName() {
+        return resultLayoutName;
     }
 
-    public void setResultLayout(String resultLayout) {
-        this.resultLayout = resultLayout;
+    public void setResultLayoutName(String resultLayoutName) {
+        this.resultLayoutName = resultLayoutName;
     }
 
     public Integer getMax() {

@@ -26,38 +26,25 @@ public interface ContentView extends Serializable {
 
     String getName();
 
-    void setName(String name);
-
     String getCategory();
 
-    void setCategory(String category);
+    String getResultProviderName();
 
-    String getResultProvider();
-
-    void setResultProvider(String resultProvider);
-
-    String getSelectionList();
-
-    void setSelectionList(String selectionList);
+    String getSelectionListName();
 
     String getPagination();
 
-    void setPagination(String pagination);
-
     String getAvailableActionsCategory();
 
-    void setAvailableActionsCategory(String availableActions);
+    String getSearchLayoutName();
 
-    String getSearchLayout();
-
-    void setSearchLayout(String searchLayout);
-
-    String getResultLayout();
-
-    void setResultLayout(String resultLayout);
+    String getResultLayoutName();
 
     Integer getMax();
 
     void setMax(Integer max);
+
+
+
 
 }

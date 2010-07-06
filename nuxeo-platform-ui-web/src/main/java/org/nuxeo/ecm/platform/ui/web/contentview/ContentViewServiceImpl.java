@@ -56,7 +56,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
-            ContentView desc = (ContentViewDescriptor) contribution;
+            ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             String name = desc.getName();
             if (name == null) {
                 log.error("Cannot register content view without a name");
@@ -65,7 +65,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             if (contentViews.containsKey(name)) {
                 log.info("Overriding content view with name " + name);
             }
-            contentViews.put(name, desc);
+            ContentViewImpl contentView = new ContentViewImpl(name,
+                    desc.getCategory(), desc.getResultProviderName(),
+                    desc.getSelectionListName(), desc.getPagination(),
+                    desc.getAvailableActionsCategory(),
+                    desc.getSearchLayoutName(), desc.getResultLayoutName(),
+                    desc.getMax());
+            contentViews.put(name, contentView);
         }
     }
 
@@ -74,7 +80,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
-            ContentView desc = (ContentViewDescriptor) contribution;
+            ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             contentViews.remove(desc.getName());
         }
     }

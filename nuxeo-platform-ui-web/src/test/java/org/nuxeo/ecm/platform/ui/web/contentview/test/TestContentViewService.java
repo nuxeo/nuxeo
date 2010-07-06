@@ -47,11 +47,12 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 contentView.getAvailableActionsCategory());
         assertEquals("default", contentView.getCategory());
         assertEquals("numbered", contentView.getPagination());
-        assertEquals("document_listing", contentView.getResultLayout());
-        assertEquals("CURRENT_DOC_CHILDREN", contentView.getResultProvider());
-        assertEquals("search_layout", contentView.getSearchLayout());
-        assertEquals("CURRENT_SELECTION", contentView.getSelectionList());
-        assertEquals((Integer) 0, contentView.getMax());
+        assertEquals("document_listing", contentView.getResultLayoutName());
+        assertEquals("CURRENT_DOC_CHILDREN",
+                contentView.getResultProviderName());
+        assertEquals("search_layout", contentView.getSearchLayoutName());
+        assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
+        assertEquals(new Integer(0), contentView.getMax());
 
     }
 

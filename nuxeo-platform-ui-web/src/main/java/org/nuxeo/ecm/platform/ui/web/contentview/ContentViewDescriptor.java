@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Anahide Tchertchian
  */
 @XObject("contentView")
-public class ContentViewDescriptor implements ContentView {
+public class ContentViewDescriptor {
 
     private static final long serialVersionUID = 1L;
 
@@ -58,72 +58,36 @@ public class ContentViewDescriptor implements ContentView {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getResultProvider() {
+    public String getResultProviderName() {
         return resultProvider;
     }
 
-    public void setResultProvider(String resultProvider) {
-        this.resultProvider = resultProvider;
-    }
-
-    public String getSelectionList() {
+    public String getSelectionListName() {
         return selectionList;
-    }
-
-    public void setSelectionList(String selectionList) {
-        this.selectionList = selectionList;
     }
 
     public String getPagination() {
         return pagination;
     }
 
-    public void setPagination(String pagination) {
-        this.pagination = pagination;
-    }
-
     public String getAvailableActionsCategory() {
         return availableActions;
     }
 
-    public void setAvailableActionsCategory(String availableActions) {
-        this.availableActions = availableActions;
-    }
-
-    public String getSearchLayout() {
+    public String getSearchLayoutName() {
         return searchLayout;
     }
 
-    public void setSearchLayout(String searchLayout) {
-        this.searchLayout = searchLayout;
-    }
-
-    public String getResultLayout() {
+    public String getResultLayoutName() {
         return resultLayout;
-    }
-
-    public void setResultLayout(String resultLayout) {
-        this.resultLayout = resultLayout;
     }
 
     public Integer getMax() {
         return max;
-    }
-
-    public void setMax(Integer max) {
-        this.max = max;
     }
 
 }
