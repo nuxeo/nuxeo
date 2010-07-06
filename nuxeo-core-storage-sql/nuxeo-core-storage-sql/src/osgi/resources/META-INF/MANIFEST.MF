@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.storage.sql;version="1.6
+Export-Package: org.nuxeo.ecm.core.storage.sql;core=split;version="1.6
  .2.SNAPSHOT",org.nuxeo.ecm.core.storage.sql.coremodel;version="1.6.2.
  SNAPSHOT",org.nuxeo.ecm.core.storage.sql.jdbc.db;version="1.6.2.SNAPS
  HOT",org.nuxeo.ecm.core.storage.sql.jdbc.dialect;version="1.6.2.SNAPS
@@ -15,7 +15,6 @@ Bundle-Name: org.nuxeo.ecm.core.storage.sql
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
-Eclipse-ExtensibleAPI: true
 Eclipse-BuddyPolicy: registered
 Bnd-LastModified: 1277573281791
 Bundle-ManifestVersion: 2
@@ -65,6 +64,7 @@ Import-Package: javax.resource,
  org.nuxeo.ecm.core.schema.types,
  org.nuxeo.ecm.core.schema.types.primitives,
  org.nuxeo.ecm.core.security,
+ org.nuxeo.ecm.core.storage.sql,
  org.nuxeo.ecm.core.utils,
  org.nuxeo.ecm.core.versioning,
  org.nuxeo.runtime,

@@ -24,6 +24,7 @@ Import-Package: org.apache.commons.logging,
  org.h2.tools,
  org.h2.util,
  org.h2.value
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singlet
  on:=true
 

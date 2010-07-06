@@ -20,7 +20,6 @@ Import-Package: javax.mail,
  javax.xml.transform.sax,
  org.apache.commons.logging,
  org.apache.poi,
- org.apache.poi.extractor,
  org.apache.poi.hslf.extractor,
  org.apache.poi.hssf.usermodel,
  org.apache.poi.hwpf.extractor,
@@ -45,7 +44,5 @@ Import-Package: javax.mail,
  org.xml.sax.helpers
 Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.convert, org
  .nuxeo.ecm.core.convert.api
-Require-Bundle: org.apache.poi;bundle-version="3.5.0",
- org.apache.poi.ooxml;bundle-version="3.5.0",
- org.apache.poi.scratchpad;bundle-version="3.5.0"
+Require-Bundle: org.apache.poi.ooxml
 
