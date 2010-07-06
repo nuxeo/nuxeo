@@ -92,20 +92,6 @@
     <module>nuxeo-webengine</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-	<activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-	<module>nuxeo-theme</module>
-	<module>nuxeo-dm</module>
-	<module>nuxeo-gwt</module>
-      </modules>
-    </profile>	
-  </profiles>
-
   <properties>
     <webdriver.version>0.9.7376</webdriver.version>
     <jboss.version>4.0.4.GA</jboss.version>
@@ -2328,6 +2314,17 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-theme</module>
+	<module>nuxeo-dm</module>
+	<module>nuxeo-gwt</module>
+      </modules>
+    </profile>	
     <profile>
      <id>pde2src</id>
       <build>
