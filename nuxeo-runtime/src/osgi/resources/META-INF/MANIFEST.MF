@@ -36,18 +36,37 @@ Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
  NF/LoginComponent.xml,OSGI-INF/ServiceManagement.xml,OSGI-INF/Default
  JBossBindings.xml
 Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
-Import-Package: javax.annotation;version="1.0",javax.management,javax.
- naming,javax.naming.spi,javax.security.auth,javax.security.auth.callb
- ack,javax.security.auth.login,javax.security.auth.spi,javax.sql,javax
- .transaction;version="1.1",javax.xml.parsers,org.apache.commons.io;ve
- rsion="1.4",org.apache.commons.jexl,org.apache.commons.logging,org.jb
- oss.remoting,org.jboss.remoting.callback,org.jboss.remoting.detection
- ,org.jboss.remoting.detection.multicast,org.jboss.remoting.invocation
- ,org.jboss.remoting.loading,org.jboss.remoting.marshal,org.jboss.remo
- ting.marshal.serializable,org.jboss.remoting.network,org.jboss.remoti
- ng.transport,org.nuxeo.common,org.nuxeo.common.collections,org.nuxeo.
- common.logging,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo
- .common.xmap.annotation,org.osgi.framework;version="1.4",org.w3c.dom,
+Import-Package: javax.management,
+ javax.naming,
+ javax.naming.spi,
+ javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.spi,
+ javax.sql,
+ javax.transaction;version="1.1",
+ javax.xml.parsers,
+ org.apache.commons.io;version="1.4",
+ org.apache.commons.jexl,
+ org.apache.commons.logging,
+ org.jboss.remoting,
+ org.jboss.remoting.callback,
+ org.jboss.remoting.detection,
+ org.jboss.remoting.detection.multicast,
+ org.jboss.remoting.invocation,
+ org.jboss.remoting.loading,
+ org.jboss.remoting.marshal,
+ org.jboss.remoting.marshal.serializable,
+ org.jboss.remoting.network,
+ org.jboss.remoting.transport,
+ org.nuxeo.common,
+ org.nuxeo.common.collections,
+ org.nuxeo.common.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
+ org.nuxeo.common.xmap.annotation,
+ org.osgi.framework;version="1.4",
+ org.w3c.dom,
  org.w3c.dom.ranges
 Nuxeo-Require: org.nuxeo.osgi
 
