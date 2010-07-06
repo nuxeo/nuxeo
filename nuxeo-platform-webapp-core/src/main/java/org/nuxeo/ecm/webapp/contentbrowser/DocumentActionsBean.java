@@ -254,6 +254,10 @@ public class DocumentActionsBean extends InputController implements
             if (doc != null) {
                 // get properties from document view
                 Blob blob = DocumentFileCodec.getBlob(doc, docView);
+                if (blob == null) {
+                    log.warn("No blob for docView: " + docView);
+                    return;
+                }
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
