@@ -76,24 +76,6 @@
     </filter-mapping>
   </extension>
 
-  <extension target="faces-config#APPLICATION">
-    <locale-config>
-      <default-locale>en</default-locale>
-      <supported-locale>en_GB</supported-locale>
-      <supported-locale>en_US</supported-locale>
-      <supported-locale>fr</supported-locale>
-      <supported-locale>de</supported-locale>
-      <supported-locale>es</supported-locale>
-      <supported-locale>it</supported-locale>
-      <supported-locale>ar</supported-locale>
-      <supported-locale>ru</supported-locale>
-      <supported-locale>ja</supported-locale>
-      <supported-locale>vn</supported-locale>
-    </locale-config>
-
-    <message-bundle>messages</message-bundle>
-  </extension>
-
   <extension target="faces-config#NAVIGATION">
 
     <navigation-case>
