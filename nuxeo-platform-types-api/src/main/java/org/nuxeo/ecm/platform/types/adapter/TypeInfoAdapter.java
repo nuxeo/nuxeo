@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TypeInfoAdapter implements TypeInfo {
 
@@ -180,6 +179,13 @@ public class TypeInfoAdapter implements TypeInfo {
             return type.getViews();
         }
 
+        return null;
+    }
+
+    public String[] getContentViews() {
+        if (type != null) {
+            return type.getContentViews();
+        }
         return null;
     }
 

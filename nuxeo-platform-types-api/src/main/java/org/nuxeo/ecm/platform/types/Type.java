@@ -114,6 +114,14 @@ public class Type implements Serializable {
     @XNodeMap(value = "layouts", key = "@mode", type = HashMap.class, componentType = Layouts.class)
     Map<String, Layouts> layouts;
 
+    // <views>
+    // <view id="edit_detail" value="edit_detail_view" />
+    // <view id="metadata" value="metadata_view" />
+    // </views>
+
+    @XNodeList(value = "contentViews/contentView", type = String[].class, componentType = String.class)
+    protected String[] contentViews;
+
     // for bundle update::
     @XNode("@remove")
     protected boolean remove = false;
@@ -313,6 +321,15 @@ public class Type implements Serializable {
 
     public void setIconExpanded(String iconExpanded) {
         this.iconExpanded = iconExpanded;
+    }
+
+    /**
+     * Return content views defined on this document type
+     *
+     * @since 5.3.3
+     */
+    public String[] getContentViews() {
+        return contentViews;
     }
 
 }
