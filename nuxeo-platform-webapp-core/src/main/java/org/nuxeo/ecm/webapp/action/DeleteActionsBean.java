@@ -572,6 +572,10 @@ public class DeleteActionsBean extends InputController implements
 
             // Change state
             undeleteDocumentsFromTrash(docsThatCanBeUndeleted);
+            documentManager.save();
+            // above save() is needed with jetty to avoid
+            // ConcurrentModificationException from the
+            // BulkLifeCycleChangeListener triggered by what follows
             for (DocumentModel document : docsThatCanBeUndeleted) {
                 undeleteDocument(documentManager.getParentDocuments(document.getRef()));
             }
