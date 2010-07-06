@@ -135,19 +135,15 @@ DECLARE
   curid varchar(36) := id;
   newid varchar(36);
   ret varchar(36)[];
-  ret2 varchar(36)[];
-  r record;
 BEGIN
   WHILE curid IS NOT NULL LOOP
-    ret = ret || curid;
-    -- RAISE DEBUG ' curid %', curid;
+    IF curid IS DISTINCT FROM id THEN
+      ret = array_prepend(curid, ret);
+    END IF;
     SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
     curid := newid;
   END LOOP;
-  FOR r IN SELECT unnest(ret) AS val OFFSET 1 LOOP
-    ret2 = r.val || ret2;
-  END LOOP;
-  RETURN ret2;
+  RETURN ret;
 END $$
     LANGUAGE plpgsql STABLE;
 
