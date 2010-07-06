@@ -30,14 +30,16 @@
       <nxl:layout name="bulk_edit" mode="edit"
         value="#{bulkEditActions.bulkEditDocumentModel}"/>
 
-      <a4j:commandButton styleClass="button"
-        action="#{bulkEditActions.bulkEditSelectionNoRedirect}" value="#{messages['command.save']}"
-        oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
-        reRender="filterResultTable, selectionView, bulkEditPanel" />
-      <a4j:commandButton styleClass="button"
-        action="#{bulkEditActions.cancel}" value="#{messages['command.cancel']}"
-        oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
-        reRender="bulkEditPanel" />
+      <p class="buttonsGadget">
+        <a4j:commandButton styleClass="button"
+          action="#{bulkEditActions.bulkEditSelectionNoRedirect}" value="#{messages['command.save']}"
+          oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
+          reRender="filterResultTable, selectionView, bulkEditPanel" />
+        <a4j:commandButton styleClass="button"
+          action="#{bulkEditActions.cancel}" value="#{messages['command.cancel']}"
+          oncomplete="Richfaces.hideModalPanel('bulkEditPanel');"
+          reRender="bulkEditPanel" />
+      </p>
     </a4j:form>
 
   </rich:modalPanel>

@@ -208,7 +208,12 @@
         <padding>2px 5px 2px 5px</padding>
         <cursor>pointer</cursor>
       </selector>
-      <selector path="a.button, a.button:hover">
+      <selector path=".clipboard .button">
+        <margin>1px 3px</margin>
+        <padding>1px 5px</padding>
+        <font-size>9px</font-size>
+      </selector>
+      <selector path=".clipboard a.button, .clipboard a.button:hover">
         <padding>2px 5px 2px 5px</padding>
         <text-decoration>none</text-decoration>
       </selector>
@@ -225,12 +230,17 @@
         <padding>1px 5px</padding>
       </selector>
       <selector path=".linkDisabled">
-        <font preset="default (DAM fonts)"/>
+        <font preset="tiny (DAM fonts)"/>
         <color>#ccc</color>
         <border preset="buttons (DAM borders)"/>
         <background preset="buttons (DAM backgrounds)"/>
-        <margin>5px 10px 10px 0px</margin>
         <padding>2px 5px 2px 5px</padding>
+        <margin>1px 3px</margin>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".clipboard span span span, .clipboard span span input, .clipboard span span a">
+        <float>right</float>
+        <display>block</display>
       </selector>
     </style>
     <style name="common style" inherit="default buttons">
@@ -267,12 +277,11 @@
         <left>48%</left>
         <top>10%</top>
       </selector>
-      <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
+      <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, warningMessage ul, .errorFeedback ul">
         <list-style-type>none</list-style-type>
         <width>200px</width>
         <padding>10px</padding>
       </selector>
-
       <selector path="table, .dataInput, .dataOutput, .dataList">
         <border-collapse>collapse</border-collapse>
         <font preset="default (DAM fonts)"/>
@@ -301,6 +310,9 @@
         <padding-left>5px</padding-left>
         <white-space>normal</white-space>
         <color preset="black (DAM colors)"/>
+      </selector>
+      <selector path=".detail">
+         <font preset="small (DAM Nyse fonts)"/>
       </selector>
       <selector path=".iconColumn">
         <width>20px</width>
@@ -514,11 +526,6 @@
       </selector>
       <selector path=".clipboard">
         <float>right</float>
-      </selector>
-      <selector path=".clipboard .button, .clipboard .linkDisabled">
-        <margin>1px 3px</margin>
-        <padding>1px 5px</padding>
-        <font-size>9px</font-size>
       </selector>
       <selector path=".warningMessage">
         <border>1px solid #445B71</border>
