@@ -12,7 +12,7 @@
 * Lesser General Public License for more details.
 *
 * Contributors:
-*     Mathieu Guillaume
+*     Mathieu Guillaume, Arnaud Kervern, Julien Carsique
 */
 
 using System;
@@ -110,27 +110,6 @@ namespace NuxeoProcess
             // Return if The process is already started
             if (nxProcess != null) return false;
 
-            // Parse Nuxeo configuration file
-            Dictionary<String, String> nxConfig = new Dictionary<string,string>();
-            if ((nxConfig = ParseConfig()) == null)
-            {
-                Log("Could not parse nuxeo.conf", "ERROR");
-                return false;
-            }
-
-            // Set up environment (nxEnv)
-            if (SetupEnv(nxConfig) == false)
-            {
-                Log("Could not set up environment", "ERROR");
-                return false;
-            }
-
-            // Setup up application server paths
-            if (SetupApplicationServer() == false)
-            {
-                Log("Could not set up the application server", "ERROR");
-                return false;
-            }
             return true;
         }
 		
@@ -175,7 +154,29 @@ namespace NuxeoProcess
 		// ********** STARTUP **********
 		
 		public bool Start() {			
-			// Run
+            // Parse Nuxeo configuration file
+            Dictionary<String, String> nxConfig = new Dictionary<string,string>();
+            if ((nxConfig = ParseConfig()) == null)
+            {
+                Log("Could not parse nuxeo.conf", "ERROR");
+                return false;
+            }
+
+            // Set up environment (nxEnv)
+            if (SetupEnv(nxConfig) == false)
+            {
+                Log("Could not set up environment", "ERROR");
+                return false;
+            }
+
+            // Setup up application server paths
+            if (SetupApplicationServer() == false)
+            {
+                Log("Could not set up the application server", "ERROR");
+                return false;
+            }
+
+            // Run
 			nxProcess=new Process();
 			nxProcess.StartInfo.FileName=nxEnv["JAVA"];
 			nxProcess.StartInfo.Arguments=startArgs;
