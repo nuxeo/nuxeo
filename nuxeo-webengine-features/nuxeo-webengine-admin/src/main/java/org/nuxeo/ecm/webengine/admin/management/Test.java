@@ -24,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -39,7 +40,8 @@ public class Test {
         File cfile = new File("/Users/bstefanescu/MyListener.class");
 
         String userPassword = "Administrator" + ":" + "Administrator";
-        encoding = new sun.misc.BASE64Encoder().encode (userPassword.getBytes());
+
+        encoding = new String(new Base64().encode (userPassword.getBytes()));
 
 
         Authenticator.setDefault(new Authenticator() {

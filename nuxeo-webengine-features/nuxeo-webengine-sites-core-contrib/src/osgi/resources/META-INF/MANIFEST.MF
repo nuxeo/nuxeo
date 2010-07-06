@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.webengine.sites.listeners;version="5.3.2.SNA
+ PSHOT",schemas;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: core
+Tool: Bnd-0.0.394
+Bundle-Name: WebEngine Sites Module core contribution
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1278068624688
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,OSGI-INF/permissions-
+ contrib.xml,OSGI-INF/webengine-nxsearch-contrib.xml,OSGI-INF/webengin
+ e-sites-listener-contrib.xml,OSGI-INF/webengine-sites-relation-contri
+ b.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.core.contr
+ ib
+Import-Package: javax.annotation;version="1.0",
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.event,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.webengine.sites.utils
+Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.platform.webengine.si
+ tes.api
+

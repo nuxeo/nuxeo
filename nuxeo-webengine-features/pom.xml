@@ -18,14 +18,25 @@
   </description>
 
   <modules>
-    <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-base</module>
-    <module>nuxeo-webengine-blogs</module>
-    <module>nuxeo-webengine-blogs-api</module>
-    <module>nuxeo-webengine-blogs-core</module>
+    <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-webengine-sites-api</module>
     <module>nuxeo-webengine-sites-core-contrib</module>
   </modules>
   
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-webengine-blogs</module>
+	<module>nuxeo-webengine-blogs-api</module>
+	<module>nuxeo-webengine-blogs-core</module>
+      </modules>
+    </profile>	
+  </profiles>
+
 </project>

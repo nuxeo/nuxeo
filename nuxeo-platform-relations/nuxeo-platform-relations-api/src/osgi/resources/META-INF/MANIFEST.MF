@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.relations.api;version="5.3.2.SN
+ APSHOT",org.nuxeo.ecm.platform.relations.api.ejb;version="5.3.2.SNAPS
+ HOT",org.nuxeo.ecm.platform.relations.api.event;version="5.3.2.SNAPSH
+ OT",org.nuxeo.ecm.platform.relations.api.exceptions;version="5.3.2.SN
+ APSHOT",org.nuxeo.ecm.platform.relations.api.impl;version="5.3.2.SNAP
+ SHOT",org.nuxeo.ecm.platform.relations.api.util;version="5.3.2.SNAPSH
+ OT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Category: runtime
+Bundle-Name: Nuxeo ECM Relations API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277976984176
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.relations.api;singleton:=true
+Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
+ ing,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,org
+ .nuxeo.ecm.core.api.impl,org.nuxeo.ecm.directory;api=split,org.nuxeo.
+ runtime.api
+

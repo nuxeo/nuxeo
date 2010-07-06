@@ -94,6 +94,11 @@
       <artifactId>nuxeo-platform-comment-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
