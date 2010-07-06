@@ -11,6 +11,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.3.2.SNAPSHOT
 Bnd-LastModified: 1277976767770
+Eclipse-RegisterBuddy: org.nuxeo.runtime
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/NXLoginModule-framework.xml,OSGI-INF/loginMo
  dulePlugin-contrib.xml,OSGI-INF/JBossLoginConfig.xml
