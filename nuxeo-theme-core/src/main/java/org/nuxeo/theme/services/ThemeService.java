@@ -460,7 +460,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 String value = PresetManager.resolvePresets(null,
                         entry.getValue());
                 PresetType preset = new PresetType(entry.getKey(), value,
-                        paletteName, category);
+                        paletteName, category, "", "");
                 typeRegistry.register(preset);
             }
         }

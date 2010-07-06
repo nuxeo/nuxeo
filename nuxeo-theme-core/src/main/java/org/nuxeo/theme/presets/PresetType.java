@@ -34,14 +34,23 @@ public class PresetType implements Type {
     @XNode("@category")
     protected String category = "";
 
+    @XNode("@label")
+    protected String label = "";
+
+    @XNode("@description")
+    protected String description = "";
+
     public PresetType() {
     }
 
-    public PresetType(String name, String value, String group, String category) {
+    public PresetType(String name, String value, String group, String category,
+            String label, String description) {
         this.name = name;
         this.value = value;
         this.group = group;
         this.category = category;
+        this.label = label;
+        this.description = description;
     }
 
     public TypeFamily getTypeFamily() {
@@ -90,4 +99,21 @@ public class PresetType implements Type {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

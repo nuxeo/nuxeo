@@ -139,11 +139,11 @@ public class TestUtils extends NXRuntimeTestCase {
         Properties properties = new Properties();
 
         PresetType preset = new PresetType("default font", "11px Verdana",
-                "test fonts", "font");
+                "test fonts", "font", "", "");
         PresetType customPreset1 = new CustomPresetType("custom color", "#f00",
-                "theme1", "color");
+                "theme1", "color", "", "");
         PresetType customPreset2 = new CustomPresetType("custom bg",
-                "url(image.png)", "theme1", "background");
+                "url(image.png)", "theme1", "background", "", "");
         Manager.getTypeRegistry().register(preset);
         Manager.getTypeRegistry().register(customPreset1);
         Manager.getTypeRegistry().register(customPreset2);

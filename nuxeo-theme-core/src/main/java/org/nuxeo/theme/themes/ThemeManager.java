@@ -1382,15 +1382,6 @@ public final class ThemeManager implements Registrable {
         }
         return resourceBanks;
     }
-
-    // Configurable presets   
-    List<PresetType> getPresetsUsedInTheme(String themeName) throws ThemeException {
-        ThemeElement theme = getThemeByName(themeName);
-        if (theme == null) {
-            throw new ThemeException("Theme not found: " + themeName);
-        }
-        
-    }
     
     // Theme descriptors
     public static List<ThemeDescriptor> getThemeDescriptors() {

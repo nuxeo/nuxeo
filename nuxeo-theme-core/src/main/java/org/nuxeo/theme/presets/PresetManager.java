@@ -187,16 +187,16 @@ public class PresetManager {
                 String value = PresetManager.resolvePresets(null,
                         entry.getValue());
                 PresetType preset = new PresetType(entry.getKey(), value,
-                        paletteName, category);
+                        paletteName, category, "", "");
                 typeRegistry.register(preset);
             }
         }
     }
 
     public static void createCustomPreset(String themeName, String presetName,
-            String category, String value) {
+            String category, String value, String label, String description) {
         CustomPresetType preset = new CustomPresetType(presetName, value,
-                themeName, category);
+                themeName, category, label, description);
         Manager.getTypeRegistry().register(preset);
     }
 

@@ -336,8 +336,21 @@ public class ThemeParser {
                     n.getTextContent());
             final String group = themeName; // use the theme's name as
             // group name
+            
+            final Node labelAttr = attrs.getNamedItem("label");
+            String label = "";
+            if (labelAttr != null) {
+                 label = labelAttr.getNodeValue();
+            }
+            
+            final Node descriptionAttr = attrs.getNamedItem("description");
+            String description = "";
+            if (descriptionAttr != null) {
+                description = descriptionAttr.getNodeValue();
+            }
+            
             PresetType preset = new CustomPresetType(name, value, group,
-                    category);
+                    category, label, description);
             typeRegistry.register(preset);
         }
     }
