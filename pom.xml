@@ -83,7 +83,6 @@
   </ciManagement>
 
   <modules>
-    <module>nuxeo-build/nuxeo-maven-assemblies</module>
     <module>nuxeo-common</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-core</module>
@@ -2327,13 +2326,6 @@
       </modules>
     </profile>	
     <profile>
-     <id>pde2src</id>
-      <build>
-	<plugins>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>src2pde</id>
       <activation>
 	<file><exists>META-INF/MANIFEST.MF</exists></file>
@@ -2352,7 +2344,7 @@
 		<configuration>
 		  <tasks>
 		    <mkdir dir="${basedir}/src/main/resources"/>
-		    <copy todir="${basedir}">
+		    <copy todir="${basedir}" overwrite="true">
 		      <fileset dir="${basedir}/src/main/resources">
 			<include name="OSGI-INF/**"/>
 			<include name="META-INF/**"/>
@@ -2360,7 +2352,7 @@
 		      </fileset>
 		    </copy>
 		    <mkdir dir="${basedir}/src/osgi/resources"/>
-		    <copy todir="${basedir}">
+		    <copy todir="${basedir}" overwrite="true">
 		      <fileset dir="${basedir}/src/osgi/resources">
 			<include name="OSGI-INF/**"/>
 			<include name="META-INF/**"/>
