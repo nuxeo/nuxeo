@@ -22,6 +22,8 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.queue.api.QueueContent;
 import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
+import org.nuxeo.ecm.platform.queue.api.QueueManager;
+import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,11 +47,11 @@ public class TestQueueHandler extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
         deployBundle("org.nuxeo.ecm.platform.queue");
         deployBundle("org.nuxeo.ecm.platform.queue.test");
+        super.fireFrameworkStarted();
         openSession();
     }
 
     public void testQueueService() throws Exception {
-
         URI owner1 = new URI("queueowner:owner1");
         URI owner2 = new URI("queueowner:owner2");
         // Thread 1 and 2:
@@ -66,6 +68,12 @@ public class TestQueueHandler extends SQLRepositoryTestCase {
         assertEquals(
                 "Should has executed only one task/job (1 succeed, 1 failed)",
                 1, FakeExecutor.executed);
+
+        // Make sure that we don't have any job running
+        QueueManagerLocator queueManagerLocator = Framework.getLocalService(QueueManagerLocator.class);
+        QueueManager queueManager = queueManagerLocator.locateQueue("myQueueDestination");
+        assertEquals("The number of handled item is", 0,
+                queueManager.listHandledItems().size());
 
     }
 
