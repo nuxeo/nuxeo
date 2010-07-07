@@ -60,6 +60,10 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
     }
 
     public void firstPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         if (offset != 0) {
             offset = 0;
             pageChanged();
@@ -142,18 +146,34 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
     }
 
     public void lastPage() {
-        offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
+        if (getResultsCount() % pageSize == 0) {
+            offset = getResultsCount() - pageSize;
+        } else {
+            offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+        }
         pageChanged();
         refresh();
     }
 
     public void nextPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         offset += pageSize;
         pageChanged();
         refresh();
     }
 
     public void previousPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         if (offset >= pageSize) {
             offset -= pageSize;
             pageChanged();
