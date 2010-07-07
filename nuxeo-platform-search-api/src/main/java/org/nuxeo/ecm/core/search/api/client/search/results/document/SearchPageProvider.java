@@ -136,6 +136,8 @@ public class SearchPageProvider extends
         schemaCache = new HashMap<String, String>();
         if (searchResults != null) {
             resultsCount = searchResults.getTotalHits();
+            pageSize = searchResults.getRange();
+            offset = searchResults.getOffset();
         }
     }
 
@@ -262,6 +264,9 @@ public class SearchPageProvider extends
         }
 
         initSearchService();
+        if (service == null) {
+            return null;
+        }
         IndexableResourceConf conf = service.getIndexableResourceConfByPrefix(
                 prefix, true);
         if (conf == null || !conf.getType().equals(ResourceType.SCHEMA)) {
@@ -280,8 +285,8 @@ public class SearchPageProvider extends
         }
         int pageHits = searchResults.getPageHits();
 
-        List<DocumentModel> res = new ArrayList<DocumentModel>(pageHits);
-        for (int i = 0; i < pageHits; i++) {
+        List<DocumentModel> res = new ArrayList<DocumentModel>();
+        for (int i = 0; i < pageHits && i < searchResults.size(); i++) {
             try {
                 res.add(constructDocumentModel(searchResults.get(i)));
             } catch (SearchException e) {
