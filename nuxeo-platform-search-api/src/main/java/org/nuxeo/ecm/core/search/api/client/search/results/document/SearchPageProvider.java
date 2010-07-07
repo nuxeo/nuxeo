@@ -125,9 +125,9 @@ public class SearchPageProvider extends
     public SearchPageProvider(ResultSet set, boolean sortable,
             SortInfo sortInfo, String query) {
         searchResults = set;
-        this.sortInfo = new ArrayList<SortInfo>();
+        this.sortInfos = new ArrayList<SortInfo>();
         if (sortInfo != null) {
-            this.sortInfo.add(sortInfo);
+            this.sortInfos.add(sortInfo);
         }
         this.sortable = sortable;
         this.query = query;
