@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.queue.core;
 
 import java.net.URI;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -25,6 +26,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.queue.api.QueueContent;
+import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,13 +54,22 @@ public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
         QueueContent content = new QueueContent(owner, "myQueue", "myQueueItem");
         content.setDelay(800);
         content.setComments("test content");
+        MockAdditionalInfo info = new MockAdditionalInfo("test add info");
+        content.setAdditionalInfo(info);
 
         persister.saveContent(content);
 
+        // Testing the document is in the nuxeo repo
         TestRunner runner = new TestRunner(Framework.getLocalService(
                 RepositoryManager.class).getDefaultRepository().getName());
-
         runner.runUnrestricted();
+
+        // testing retrieving content from the persister
+        List<QueueItem> items = persister.listKnownItems("myQueue");
+
+        MockAdditionalInfo newInfo = (MockAdditionalInfo) items.get(0).getHandledContent().getAdditionalInfo();
+        assertEquals("Additional info is", "test add info", newInfo.info);
+
     }
 
     class TestRunner extends UnrestrictedSessionRunner {

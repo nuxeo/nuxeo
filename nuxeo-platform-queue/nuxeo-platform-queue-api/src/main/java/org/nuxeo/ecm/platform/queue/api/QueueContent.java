@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.queue.api;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -7,7 +8,7 @@ import java.net.URISyntaxException;
  * Content that needs long processing. Asynchronous operation is started by the
  * queue when the content is handled. Content will remain in queue until it's
  * removed by an end of asynchronous operation call.
- *
+ * 
  * @see QueueManager
  **/
 
@@ -32,9 +33,11 @@ final public class QueueContent {
 
     String comments;
 
+    Serializable additionalInfo;
+
     /**
      * return the
-     *
+     * 
      * @return
      */
     public URI getResourceURI() throws URISyntaxException {
@@ -43,7 +46,7 @@ final public class QueueContent {
 
     /**
      * Gives the user who is performing the job
-     *
+     * 
      * @return
      */
     public URI getOwner() {
@@ -52,7 +55,7 @@ final public class QueueContent {
 
     /**
      * Gives the queue name on which the content should be handled
-     *
+     * 
      * @return
      */
 
@@ -62,7 +65,7 @@ final public class QueueContent {
 
     /**
      * Uniquely names the content inside a queue.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -71,7 +74,7 @@ final public class QueueContent {
 
     /**
      * Gives the delay for locking purpose
-     *
+     * 
      * @return
      */
     public long getDelay() {
@@ -84,7 +87,7 @@ final public class QueueContent {
 
     /**
      * Gives information about the task being processed
-     *
+     * 
      * @return
      */
     public String getComments() {
@@ -95,5 +98,17 @@ final public class QueueContent {
         this.comments = comments;
     }
 
+    /**
+     * Additional info for any queue job having to re run the test.
+     * 
+     * @return
+     */
+    public Serializable getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(Serializable additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
 }

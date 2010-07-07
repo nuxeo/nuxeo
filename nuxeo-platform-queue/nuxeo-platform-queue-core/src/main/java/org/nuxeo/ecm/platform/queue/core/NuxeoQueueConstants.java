@@ -18,4 +18,6 @@ public interface NuxeoQueueConstants {
 
     public static final String QUEUEITEM_EXECUTE_TIME = "executeTime";
 
+    public static final String QUEUEITEM_ADDITIONAL_INFO = "additionalInfo";
+
 }

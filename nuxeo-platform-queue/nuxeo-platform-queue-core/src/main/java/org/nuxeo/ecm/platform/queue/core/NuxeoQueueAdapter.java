@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
@@ -37,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
+ * 
  */
 public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
@@ -49,9 +52,14 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     public NuxeoQueueAdapter(DocumentModel doc) throws ClientException {
         this.doc = doc;
-        lastHandledTime = ((Calendar) doc.getProperty(QUEUEITEM_SCHEMA,QUEUEITEM_EXECUTE_TIME)).getTime();
+        Calendar calendar = (Calendar) doc.getProperty(QUEUEITEM_SCHEMA,
+                QUEUEITEM_EXECUTE_TIME);
+        if (calendar != null) {
+            lastHandledTime = calendar.getTime();
+        }
         try {
-            serverURI = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA,QUEUEITEM_SERVERID));
+            serverURI = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA,
+                    QUEUEITEM_SERVERID));
         } catch (URISyntaxException e) {
             throw new Error("Cannot build server uri for "
                     + doc.getPathAsString());
@@ -62,29 +70,14 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     Date lastHandledTime;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getAdditionalnfos()
-     */
     public Map<String, Serializable> getAdditionalnfos() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getFirstHandlingDate()
-     */
     public Date getFirstHandlingDate() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getHandledContent()
-     */
     public QueueContent getHandledContent() {
         if (content != null) {
             return content;
@@ -96,7 +89,28 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
             String[] segments = doc.getPath().segments();
             String queueName = segments[segments.length - 2];
             String queueItemName = doc.getName();
+            Serializable serializable = null;
+
+            String serializedAdditionalInfo = (String) doc.getProperty(
+                    QUEUEITEM_SCHEMA, QUEUEITEM_ADDITIONAL_INFO);
+
+            // deserilizing additional info from a string
+            if (serializedAdditionalInfo != null) {
+                try {
+                    ObjectInputStream in = new ObjectInputStream(
+                            new ByteArrayInputStream(
+                                    Base64.decode(serializedAdditionalInfo)));
+                    serializable = (Serializable) in.readObject();
+                    in.close();
+                } catch (Exception e) {
+                    throw new Error(
+                            "An error occured while trying to read the additional info",
+                            e);
+                }
+            }
+
             content = new QueueContent(owner, queueName, queueItemName);
+            content.setAdditionalInfo(serializable);
         } catch (URISyntaxException e) {
             throw new Error(
                     "unexected error while trying to get the content queue", e);
@@ -109,7 +123,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getHandlingCount()
      */
     public int getHandlingCount() {
@@ -118,7 +132,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getLastHandlingDate()
      */
     public Date getLastHandlingDate() {
@@ -127,7 +141,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getStatus()
      */
     public QueueItemState getStatus() {
@@ -136,7 +150,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)serverId
-     *
+     * 
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#isOrphaned()
      */
     public boolean isOrphaned() {
@@ -158,8 +172,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
             return true;
         }
         // is execute time before the restart of the server
-        return lastHandledTime.before(
-                heartbeatserverinfo.getStartTime());
+        return lastHandledTime.before(heartbeatserverinfo.getStartTime());
     }
 
     public URI getHandlingServerID() {

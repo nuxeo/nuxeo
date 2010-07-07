@@ -16,12 +16,17 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,13 +51,6 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     public static final Log log = LogFactory.getLog(NuxeoQueuePersister.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicPersister#forgetContent(org.nuxeo
-     * .ecm.platform.queue.api.AtomicContent)
-     */
     public void forgetContent(QueueContent content) {
         try {
             String defaultRepositoryName = Framework.getLocalService(
@@ -217,6 +215,24 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
                     content.getOwner().toASCIIString());
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID,
                     heartbeat.getMyURI().toASCIIString());
+
+            // serializing addtional info to a string
+            Serializable additionalInfo = content.getAdditionalInfo();
+            String addinfo = null;
+            if (additionalInfo != null) {
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = new ObjectOutputStream(baos);
+                    out.writeObject(additionalInfo);
+                    out.flush();
+                    addinfo = Base64.encodeBytes(baos.toByteArray());
+                } catch (IOException e) {
+                    log.error("Couldn't write object to String", e);
+                }
+            }
+
+            doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_ADDITIONAL_INFO,
+                    addinfo);
             doc = session.createDocument(doc);
             session.save();
 
@@ -278,6 +294,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
      * .ecm.platform.queue.api.AtomicItem)
      */
     public void updateItem(QueueItem item) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
     public DocumentModel getOrCreateQueue(CoreSession session, String queueName)
