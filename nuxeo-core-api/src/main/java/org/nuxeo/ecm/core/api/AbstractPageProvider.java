@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     protected int currentEntryIndex = 0;
 
-    protected List<SortInfo> sortInfo;
+    protected List<SortInfo> sortInfos;
 
     protected boolean sortable = false;
 
@@ -103,12 +104,26 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
         return pageSize;
     }
 
-    public List<SortInfo> getSortInfo() {
-        return sortInfo;
+    public List<SortInfo> getSortInfos() {
+        return sortInfos;
     }
 
-    public void setSortInfo(List<SortInfo> sortInfo) {
-        this.sortInfo = sortInfo;
+    public SortInfo getSortInfo() {
+        if (sortInfos != null && !sortInfos.isEmpty()) {
+            return sortInfos.get(0);
+        }
+        return null;
+    }
+
+    public void setSortInfos(List<SortInfo> sortInfo) {
+        this.sortInfos = sortInfo;
+    }
+
+    public void setSortInfo(SortInfo sortInfo) {
+        this.sortInfos = new ArrayList<SortInfo>();
+        if (sortInfo != null) {
+            this.sortInfos.add(sortInfo);
+        }
     }
 
     public boolean isNextPageAvailable() {

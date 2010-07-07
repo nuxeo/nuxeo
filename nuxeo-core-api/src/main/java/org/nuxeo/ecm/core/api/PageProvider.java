@@ -195,13 +195,27 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     boolean isSortable();
 
     /**
-     * Returns the sorting info for this provider
+     * Returns the complete list of sorting info for this provider
      */
-    List<SortInfo> getSortInfo();
+    List<SortInfo> getSortInfos();
 
     /**
-     * Sets the sorting info for this provider
+     * Returns the main sorting info for this provider
+     * <p>
+     * Also kept for compatibility with existing code.
      */
-    void setSortInfo(List<SortInfo> sortInfo);
+    SortInfo getSortInfo();
+
+    /**
+     * Sets the complete list of sorting info for this provider
+     */
+    void setSortInfos(List<SortInfo> sortInfo);
+
+    /**
+     * Sets the main sorting info for this provider
+     * <p>
+     * Also kept for compatibility with existing code.
+     */
+    void setSortInfo(SortInfo sortInfo);
 
 }
