@@ -280,9 +280,27 @@ public class LDAPSession extends BaseSession implements EntrySource {
             return null;
         }
         SearchResult result = results.next();
-        if (results.hasMore()) {
-            log.debug("More than one entry found for: " + id);
-            throw new DirectoryException("more than one entry found for: " + id);
+        try {
+            String dn = result.getNameInNamespace();
+            if (results.hasMore()) {
+                result = results.next();
+                String dn2 = result.getNameInNamespace();
+                String msg = String.format(
+                        "More than one entry found for id '%s': for instance: '%s' and '%s'",
+                        id, dn, dn2);
+                log.error(msg);
+                throw new DirectoryException(msg);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                                + " args='%s' scope='%s' => found: %s [%s]",
+                        id, fetchAllAttributes, searchBaseDn, filterExpr, id,
+                        scts.getSearchScope(), dn, this));
+            }
+        } catch (UnsupportedOperationException e) {
+            // ignore unsupported operation thrown by the Apache DS server in
+            // the tests in embedded mode
         }
         return result;
     }
