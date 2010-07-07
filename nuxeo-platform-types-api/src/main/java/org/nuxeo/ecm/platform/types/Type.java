@@ -326,7 +326,7 @@ public class Type implements Serializable {
     /**
      * Return content views defined on this document type
      *
-     * @since 5.3.3
+     * @since 5.4
      */
     public String[] getContentViews() {
         return contentViews;
