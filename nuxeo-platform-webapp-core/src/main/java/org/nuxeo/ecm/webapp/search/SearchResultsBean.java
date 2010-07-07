@@ -120,11 +120,7 @@ public class SearchResultsBean extends InputController implements
         String sortColumn = null;
         boolean sortAscending = true;
 
-        List<SortInfo> sortInfos = getProvider(newProviderName).getSortInfo();
-        SortInfo sortInfo = null;
-        if (sortInfos != null && !sortInfos.isEmpty()) {
-            sortInfo = sortInfos.get(0);
-        }
+        SortInfo sortInfo = getProvider(newProviderName).getSortInfo();
         if (sortInfo != null) {
             sortColumn = sortInfo.getSortColumn();
             sortAscending = sortInfo.getSortAscending();
@@ -164,21 +160,13 @@ public class SearchResultsBean extends InputController implements
         return provider;
     }
 
-    protected SortInfo getMainSortInfo() throws ClientException {
-        List<SortInfo> sortInfo = getProvider().getSortInfo();
-        if (sortInfo != null && !sortInfo.isEmpty()) {
-            return sortInfo.get(0);
-        }
-        return null;
-    }
-
     public String getSortColumn() throws ClientException {
-        SortInfo sortInfo = getMainSortInfo();
+        SortInfo sortInfo = getProvider().getSortInfo();
         return sortInfo == null ? null : sortInfo.getSortColumn();
     }
 
     public boolean isSortAscending() throws ClientException {
-        SortInfo sortInfo = getMainSortInfo();
+        SortInfo sortInfo = getProvider().getSortInfo();
         return sortInfo == null ? true : sortInfo.getSortAscending();
     }
 
