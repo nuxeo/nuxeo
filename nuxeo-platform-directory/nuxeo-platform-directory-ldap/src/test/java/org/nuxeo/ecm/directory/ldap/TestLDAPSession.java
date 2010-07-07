@@ -59,6 +59,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
+                assertEquals("uid=Administrator,ou=people,dc=example,dc=com",
+                        entry.getProperty(USER_SCHEMANAME, "dn"));
             }
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "firstName"));
@@ -429,6 +431,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 map.put("firstName", "User");
                 map.put("lastName", "");
                 map.put("intField", Long.valueOf(0));
+
+                // special DN read only field should be ignored
+                map.put("dn", "cn=this,ou=is,ou=a,ou=fake,o=dn");
+
                 map.put("email", "nobody@nowhere.com");
                 map.put("employeeType", Arrays.asList("item1", "item2"));
                 if (USE_EXTERNAL_TEST_LDAP_SERVER) {
@@ -456,6 +462,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertEquals("", dm.getProperty(USER_SCHEMANAME, "lastName"));
                 assertEquals(Long.valueOf(0), dm.getProperty(USER_SCHEMANAME,
                         "intField"));
+                assertEquals("uid=user0,ou=people,dc=example,dc=com",
+                        dm.getProperty(USER_SCHEMANAME, "dn"));
                 assertEquals("nobody@nowhere.com", dm.getProperty(
                         USER_SCHEMANAME, "email"));
                 assertEquals(Arrays.asList("item1", "item2"), dm.getProperty(
@@ -552,6 +560,11 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 entry.setProperty(USER_SCHEMANAME, "password", "toto");
                 entry.setProperty(USER_SCHEMANAME, "intField",
                         Long.valueOf(123));
+
+                // try to tweak the DN read-only field
+                entry.setProperty(USER_SCHEMANAME, "dn",
+                        "cn=this,ou=is,ou=a,ou=fake,o=dn");
+
                 entry.setProperty(USER_SCHEMANAME, "employeeType",
                         Arrays.asList("item3", "item4"));
                 List<String> groups = Arrays.asList("administrators", "members");

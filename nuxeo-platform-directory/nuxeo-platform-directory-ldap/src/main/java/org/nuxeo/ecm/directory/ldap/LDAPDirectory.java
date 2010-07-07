@@ -60,6 +60,9 @@ public class LDAPDirectory extends AbstractDirectory {
 
     private static final Log log = LogFactory.getLog(LDAPDirectory.class);
 
+    // special field key to be able to read the DN of an LDAP entry
+    public static final String DN_SPECIAL_ATTRIBUTE_KEY = "dn";
+
     protected final LDAPDirectoryDescriptor config;
 
     protected final Properties contextProperties;
