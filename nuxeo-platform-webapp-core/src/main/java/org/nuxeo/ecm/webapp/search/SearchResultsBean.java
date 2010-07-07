@@ -38,17 +38,16 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.FieldWidget;
@@ -100,13 +99,13 @@ public class SearchResultsBean extends InputController implements
     protected transient ClipboardActions clipboardActions;
 
     // Should never be access for read directly
-    protected transient PagedDocumentsProvider provider;
+    protected transient PageProvider<DocumentModel> provider;
 
     public void reset() {
         provider = null;
     }
 
-    public void init(){
+    public void init() {
         log.debug("Initializing...");
     }
 
@@ -121,7 +120,11 @@ public class SearchResultsBean extends InputController implements
         String sortColumn = null;
         boolean sortAscending = true;
 
-        SortInfo sortInfo = getProvider(newProviderName).getSortInfo();
+        List<SortInfo> sortInfos = getProvider(newProviderName).getSortInfo();
+        SortInfo sortInfo = null;
+        if (sortInfos != null && !sortInfos.isEmpty()) {
+            sortInfo = sortInfos.get(0);
+        }
         if (sortInfo != null) {
             sortColumn = sortInfo.getSortColumn();
             sortAscending = sortInfo.getSortAscending();
@@ -141,7 +144,7 @@ public class SearchResultsBean extends InputController implements
         return null;
     }
 
-    public PagedDocumentsProvider getProvider() throws ClientException {
+    public PageProvider<DocumentModel> getProvider() throws ClientException {
         if (providerName == null) {
             throw new ClientException("No provider name has been specified yet");
         }
@@ -151,7 +154,7 @@ public class SearchResultsBean extends InputController implements
     /**
      * Has the effect of setting the <code>providerName</code> field.
      */
-    public PagedDocumentsProvider getProvider(String providerName)
+    public PageProvider<DocumentModel> getProvider(String providerName)
             throws ClientException {
         provider = resultsProvidersCache.get(providerName);
         if (provider == null) {
@@ -161,13 +164,21 @@ public class SearchResultsBean extends InputController implements
         return provider;
     }
 
+    protected SortInfo getMainSortInfo() throws ClientException {
+        List<SortInfo> sortInfo = getProvider().getSortInfo();
+        if (sortInfo != null && !sortInfo.isEmpty()) {
+            return sortInfo.get(0);
+        }
+        return null;
+    }
+
     public String getSortColumn() throws ClientException {
-        SortInfo sortInfo = getProvider().getSortInfo();
+        SortInfo sortInfo = getMainSortInfo();
         return sortInfo == null ? null : sortInfo.getSortColumn();
     }
 
     public boolean isSortAscending() throws ClientException {
-        SortInfo sortInfo = getProvider().getSortInfo();
+        SortInfo sortInfo = getMainSortInfo();
         return sortInfo == null ? true : sortInfo.getSortAscending();
     }
 
@@ -208,8 +219,7 @@ public class SearchResultsBean extends InputController implements
         if (providerName == null) {
             throw new ClientException("providerName has not been set yet");
         }
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);
@@ -284,7 +294,7 @@ public class SearchResultsBean extends InputController implements
             if (newProviderName == null) {
                 throw new ClientException("providerName not set");
             }
-            PagedDocumentsProvider provider = getProvider(newProviderName);
+            PageProvider<DocumentModel> provider = getProvider(newProviderName);
             HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
             response.setContentType("text/csv");
             response.setHeader("Content-Disposition",
@@ -312,12 +322,12 @@ public class SearchResultsBean extends InputController implements
             }
             writer.writeNext(columnNames);
 
-            // GR dump all pages... why not, but we need to restore current page
-            // number.
-            int currentPage = provider.getCurrentPageIndex();
-            int pageCount = provider.getNumberOfPages();
+            // GR dump all pages... why not, but we need to restore current
+            // page number.
+            long currentPage = provider.getCurrentPageIndex();
+            long pageCount = provider.getNumberOfPages();
             for (int page = 0; page < pageCount; page++) {
-                DocumentModelList docModelList = provider.getPage(page);
+                List<DocumentModel> docModelList = provider.getPage(page);
                 for (DocumentModel docModel : docModelList) {
                     String[] columns = new String[widgetList.size()];
                     i = 0;

@@ -44,7 +44,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
@@ -60,8 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -71,7 +69,6 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
-import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.ui.web.pathelements.ArchivedVersionsPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.DocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
@@ -145,10 +142,6 @@ public class NavigationContextBean implements NavigationContextLocal,
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @Out(required = false)
-    @Deprecated
-    protected PagedDocumentsProvider resultsProvider;
-
     @Create
     @PostActivate
     public void init() {
@@ -163,7 +156,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Implementation details: the path to current domain is deduced from the
-     * path of current document (hardcoded rule that it'd be the first element).
+     * path of current document (hardcoded rule that it'd be the first
+     * element).
      * <p>
      * If current document is null, then the first document found is used
      * instead.
@@ -262,7 +256,6 @@ public class NavigationContextBean implements NavigationContextLocal,
                 && !currentDocument.getRef().equals(targetDoc.getRef())) {
             return;
         }
-        resultsProvider = null;
     }
 
     @Deprecated
@@ -281,18 +274,6 @@ public class NavigationContextBean implements NavigationContextLocal,
 
         currentDocumentChildren = documentManager.query(query);
         return currentDocumentChildren;
-    }
-
-    public PagedDocumentsProvider getCurrentResultsProvider() {
-        return resultsProvider;
-    }
-
-    /**
-     * @see NavigationContext#setCurrentResultsProvider(PagedDocumentsProvider)
-     */
-    @Deprecated
-    public void setCurrentResultsProvider(PagedDocumentsProvider resultsProvider) {
-        this.resultsProvider = resultsProvider;
     }
 
     public void invalidateChildrenProvider() {
@@ -317,9 +298,13 @@ public class NavigationContextBean implements NavigationContextLocal,
 
         try {
             ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
-            resultsProvider = resultsProvidersCache.get(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
+            PageProvider<DocumentModel> resultsProvider = resultsProvidersCache.get(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
 
-            currentDocumentChildren = resultsProvider.getCurrentPage();
+            currentDocumentChildren = new DocumentModelListImpl();
+            List<DocumentModel> docs = resultsProvider.getCurrentPage();
+            if (docs != null) {
+                currentDocumentChildren.addAll(docs);
+            }
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -418,8 +403,8 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     /**
-     * Switches to a new server location by updating the context and updating to
-     * the CoreSession (DocumentManager).
+     * Switches to a new server location by updating the context and updating
+     * to the CoreSession (DocumentManager).
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
@@ -446,8 +431,8 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     /**
-     * Returns the current documentManager if any or create a new session to the
-     * current location.
+     * Returns the current documentManager if any or create a new session to
+     * the current location.
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -919,7 +904,6 @@ public class NavigationContextBean implements NavigationContextLocal,
             }
         }
 
-        resultsProvider = null;
     }
 
     @SuppressWarnings("unused")
@@ -972,19 +956,6 @@ public class NavigationContextBean implements NavigationContextLocal,
                 log.error(e);
             }
         }
-    }
-
-    public PagedDocumentsProvider getResultsProvider(String name)
-            throws ClientException, ResultsProviderFarmUserException {
-        // TODO remove if useless...
-        return null;
-    }
-
-    public PagedDocumentsProvider getResultsProvider(String name,
-            SortInfo sortInfo) throws ClientException,
-            ResultsProviderFarmUserException {
-        // TODO remove if useless...
-        return null;
     }
 
 }

@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
@@ -284,7 +284,7 @@ public class SearchActionsBean extends InputController implements
             }
 
             String page;
-            PagedDocumentsProvider resultsProvider;
+            PageProvider<DocumentModel> resultsProvider;
             if (searchTypeId == SearchType.NXQL) {
                 if (nxql == null) {
                     log.warn("Direct NXQL search: no nxql query "
@@ -358,7 +358,7 @@ public class SearchActionsBean extends InputController implements
     public List<DocumentModel> getResultDocuments(String providerName)
             throws ClientException {
 
-        PagedDocumentsProvider provider = resultsProvidersCache.get(providerName);
+        PageProvider<DocumentModel> provider = resultsProvidersCache.get(providerName);
         if (provider == null) {
             log.warn("resultsProvider not available for getResultDocuments");
             return new ArrayList<DocumentModel>();
@@ -480,13 +480,13 @@ public class SearchActionsBean extends InputController implements
     /**
      * ResultsProviderFarm interface implementation.
      */
-    public PagedDocumentsProvider getResultsProvider(String name)
+    public PageProvider<DocumentModel> getResultsProvider(String name)
             throws ClientException, ResultsProviderFarmUserException {
         // SQLQueryParser + QueryParseException
         return getResultsProvider(name, null);
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name,
+    public PageProvider<DocumentModel> getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
         // TODO param!
@@ -506,7 +506,7 @@ public class SearchActionsBean extends InputController implements
             case KEYWORDS:
                 Object[] sK = { simpleSearchKeywords };
                 QueryModel qm = queryModelActions.get(QM_SIMPLE);
-                PagedDocumentsProvider simpleProvider = qm.getResultsProvider(
+                PageProvider<DocumentModel> simpleProvider = qm.getResultsProvider(
                         documentManager, sK, sortInfo);
                 simpleProvider.setName(name);
                 return simpleProvider;

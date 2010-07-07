@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,7 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -79,9 +82,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -286,7 +286,6 @@ public class DocumentActionsBean extends InputController implements
     // XXX AT: broken right now
     public String downloadFromList() throws ClientException {
         try {
-            // DocumentModel docMod = getDataTableModel().getSelectedDocModel();
             DocumentModel docMod = null;
             if (docMod == null || fileFieldFullName == null) {
                 return null;
@@ -526,9 +525,8 @@ public class DocumentActionsBean extends InputController implements
     // SelectModelListener interface
 
     public void processSelectRowEvent(SelectDataModelRowEvent event) {
-        // could use source to get to the SelectModel and retrieve its name, but
-        // useless here as only one table is involved.
-        // SelectModelRow row = event.getRow();
+        // could use source to get to the SelectModel and retrieve its name,
+        // but useless here as only one table is involved.
         Boolean selection = event.getSelected();
         DocumentModel data = (DocumentModel) event.getRowData();
         if (selection) {
@@ -566,7 +564,7 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        PagedDocumentsProvider provider;
+        PageProvider<DocumentModel> provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
@@ -596,8 +594,8 @@ public class DocumentActionsBean extends InputController implements
 
     /**
      * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
+     * navigation context stills points to currentDocumentRef to protect
+     * against browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
      */
@@ -615,13 +613,13 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectPage(String providerName, String listName,
             Boolean selection) {
-        PagedDocumentsProvider provider;
+        PageProvider<DocumentModel> provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
             return handleError(e.getMessage());
         }
-        DocumentModelList documents = provider.getCurrentPage();
+        List<DocumentModel> documents = provider.getCurrentPage();
         String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
         if (selection) {

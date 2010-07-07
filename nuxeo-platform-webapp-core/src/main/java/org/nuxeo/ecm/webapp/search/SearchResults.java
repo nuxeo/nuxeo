@@ -21,7 +21,8 @@ package org.nuxeo.ecm.webapp.search;
 
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 
@@ -45,7 +46,7 @@ public interface SearchResults extends SelectDataModelListener {
 
     String repeatSearch() throws ClientException;
 
-    PagedDocumentsProvider getProvider(String providerName) throws ClientException;
+    PageProvider<DocumentModel> getProvider(String providerName) throws ClientException;
 
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
 

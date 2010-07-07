@@ -53,7 +53,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -125,7 +125,7 @@ public class DeleteActionsBean extends InputController implements
 
     @Out(required = false)
     @Deprecated
-    private PagedDocumentsProvider resultsProvider;
+    private PageProvider<DocumentModel> resultsProvider;
 
     private DocumentModelList currentDocumentChildren;
 
@@ -668,7 +668,11 @@ public class DeleteActionsBean extends InputController implements
         try {
             ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
             resultsProvider = resultsProvidersCache.get(DELETED_CHILDREN_BY_COREAPI);
-            currentDocumentChildren = resultsProvider.getCurrentPage();
+            currentDocumentChildren = new DocumentModelListImpl();
+            List<DocumentModel> docs = resultsProvider.getCurrentPage();
+            if (docs != null) {
+                currentDocumentChildren.addAll(docs);
+            }
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -707,15 +711,15 @@ public class DeleteActionsBean extends InputController implements
     public void destroy() {
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name)
+    public PageProvider<DocumentModel> getResultsProvider(String name)
             throws ClientException, ResultsProviderFarmUserException {
         return getResultsProvider(name, null);
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name,
+    public PageProvider<DocumentModel> getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
-        PagedDocumentsProvider provider = null;
+        PageProvider<DocumentModel> provider = null;
 
         if (BOARD_USER_DELETED.equals(name)) {
             Object[] params = { currentUser.getName() };
@@ -734,12 +738,12 @@ public class DeleteActionsBean extends InputController implements
         return provider;
     }
 
-    private PagedDocumentsProvider getResultsProviderForDeletedDocs(
+    private PageProvider<DocumentModel> getResultsProviderForDeletedDocs(
             String name, SortInfo sortInfo) throws ClientException {
         final DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
         if (DELETED_CHILDREN_BY_COREAPI.equals(name)) {
-            PagedDocumentsProvider provider = getChildrenResultsProviderQMPattern(
+            PageProvider<DocumentModel> provider = getChildrenResultsProviderQMPattern(
                     name, currentDoc, sortInfo);
             provider.setName(name);
             return provider;
@@ -748,7 +752,7 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
-    protected PagedDocumentsProvider getQmDocuments(String qmName,
+    protected PageProvider<DocumentModel> getQmDocuments(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         return queryModelActions.get(qmName).getResultsProvider(
                 documentManager, params, sortInfo);
@@ -757,7 +761,7 @@ public class DeleteActionsBean extends InputController implements
     /**
      * Usable with a queryModel that defines a pattern NXQL.
      */
-    private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
+    private PageProvider<DocumentModel> getChildrenResultsProviderQMPattern(
             String queryModelName, DocumentModel parent, SortInfo sortInfo)
             throws ClientException {
 
@@ -766,7 +770,7 @@ public class DeleteActionsBean extends InputController implements
         return getResultsProvider(queryModelName, params, sortInfo);
     }
 
-    private PagedDocumentsProvider getResultsProvider(String qmName,
+    private PageProvider<DocumentModel> getResultsProvider(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         QueryModel qm = queryModelActions.get(qmName);
         return qm.getResultsProvider(documentManager, params, sortInfo);

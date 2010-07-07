@@ -39,8 +39,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
@@ -179,7 +180,7 @@ public class DashBoardActionsBean implements DashboardActions {
         }
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name,
+    public PageProvider<DocumentModel> getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
 
@@ -208,7 +209,7 @@ public class DashBoardActionsBean implements DashboardActions {
             throw new ClientException("Unknown board: " + name);
         }
 
-        PagedDocumentsProvider provider;
+        PageProvider<DocumentModel> provider;
         try {
             provider = getQmDocuments(name, params, sortInfo);
         } catch (Exception e) {
@@ -221,12 +222,12 @@ public class DashBoardActionsBean implements DashboardActions {
         return provider;
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name)
+    public PageProvider<DocumentModel> getResultsProvider(String name)
             throws ClientException, ResultsProviderFarmUserException {
         return getResultsProvider(name, null);
     }
 
-    protected PagedDocumentsProvider getQmDocuments(String qmName,
+    protected PageProvider<DocumentModel> getQmDocuments(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         return queryModelActions.get(qmName).getResultsProvider(
                 documentManager, params, sortInfo);
@@ -241,7 +242,12 @@ public class DashBoardActionsBean implements DashboardActions {
     }
 
     public DocumentModelList getLastModifiedDocuments() throws ClientException {
-        return resultsProvidersCache.get("DOMAIN_DOCUMENTS").getCurrentPage();
+        List<DocumentModel> docs = resultsProvidersCache.get("DOMAIN_DOCUMENTS").getCurrentPage();
+        DocumentModelList res = new DocumentModelListImpl();
+        if (docs != null) {
+            res.addAll(docs);
+        }
+        return res;
     }
 
     public DocumentModelList getUserDocuments() {
