@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.pagination;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,13 +91,7 @@ public class SortActionsBean implements SortActions, Serializable {
             }
         }
 
-        List<SortInfo> sortInfos = resultsProvidersCache.get(providerName).getSortInfo();
-        SortInfo sortInfo = null;
-        // handle only first sort
-        if (sortInfos != null && !sortInfos.isEmpty()) {
-            sortInfo = sortInfos.get(0);
-        }
-
+        SortInfo sortInfo = resultsProvidersCache.get(providerName).getSortInfo();
         if (sortInfo == null) {
             sortInfo = new SortInfo(newSortColumn,
                     getDefaultSortOrder(newSortColumn));
