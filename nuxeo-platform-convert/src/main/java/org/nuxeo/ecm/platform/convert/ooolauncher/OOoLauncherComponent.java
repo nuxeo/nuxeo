@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.convert.ooolauncher;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -9,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonManagerComponent;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -39,6 +41,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
     protected int connUsageNb=0;
     protected static final int maxConnUsage=50;
 
+    public OOoLauncherDescriptor getDescriptor() {
+        return descriptor;
+    }
+
     protected OOoConfigHelper getConfigHelper() {
         if (configHelper == null) {
             configHelper = new OOoConfigHelper(descriptor);
@@ -68,6 +74,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         stopOOo();
+        File oooDir = new File(OOoConfigHelper.getUserDir());
+        if (oooDir.exists()) {
+            FileUtils.deleteTree(oooDir);
+        }
     }
 
     public boolean waitTillReady() {
@@ -433,7 +443,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             try {
                 Thread.currentThread().setContextClassLoader(nuxeoCL);
                 log.debug("OOoLauncher Service initialization");
-                if (descriptor.getStartOOoAtServicerStartup()) {
+                if (descriptor.getStartOOoAtServiceStartup()) {
                     if (isConfigured()) {
                         log.info("Starting OOo server process");
                         startOOo();
