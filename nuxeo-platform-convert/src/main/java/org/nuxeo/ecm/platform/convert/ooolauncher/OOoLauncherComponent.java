@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.convert.ooolauncher;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -249,7 +250,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
         boolean stoped = stopOOo();
         if (!stoped) {
-            return false;
+            log.warn("Unable to kill propertly Ooo process, ... testing if it it still running ...");
         }
 
         for (int i = 0; i < timeOutS; i++) {
@@ -275,37 +276,52 @@ public class OOoLauncherComponent extends DefaultComponent implements
             return false;
         }
 
-        if (sharedConnection!=null && sharedConnection.isConnected()) {
-            sharedConnection.disconnect();
-        }
-
-        SocketOpenOfficeConnection oooConn = new SocketOpenOfficeConnection(
-                descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
+        SocketOpenOfficeConnection oooConn = null;
 
         try {
-            oooConn.connect();
-            Object od = oooConn.getDesktop();
-            XComponentContext ctx = oooConn.getComponentContext();
-            Object desktopObj = ctx.getServiceManager()
-                    .createInstanceWithContext("com.sun.star.frame.Desktop",
-                            ctx);
-            XDesktop desktop = (XDesktop) UnoRuntime.queryInterface(
-                    XDesktop.class, desktopObj);
-            desktop.terminate();
-            oooConn.disconnect();
-        } catch (Exception e) {
-            log.error("Error while killing OOo", e);
-            return false;
-        } finally {
+            // in order to stop OOo, we need to connect to it !!!
+
+            if (sharedConnection!=null && sharedConnection.isConnected()) {
+                oooConn = sharedConnection;
+            } else {
+                oooConn = new SocketOpenOfficeConnection(
+                        descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
+                try {
+                    oooConn.connect();
+                } catch (ConnectException e) {
+                    log.error("Unable to connect to Ooo in order to kill it !!!", e);
+                    return false;
+                }
+            }
+
+            try {
+                Object od = oooConn.getDesktop();
+                XComponentContext ctx = oooConn.getComponentContext();
+                Object desktopObj = ctx.getServiceManager()
+                        .createInstanceWithContext("com.sun.star.frame.Desktop",
+                                ctx);
+                XDesktop desktop = (XDesktop) UnoRuntime.queryInterface(
+                        XDesktop.class, desktopObj);
+                desktop.terminate();
+                oooConn.disconnect();
+            } catch (Exception e) {
+                log.error("Error while killing OOo", e);
+                return false;
+            }
+        }
+        finally {
             if (oooConn != null && oooConn.isConnected()) {
                 oooConn.disconnect();
             }
             oooConn = null;
+            if (sharedConnection!=null && sharedConnection.isConnected()) {
+                sharedConnection.disconnect();
+            }
+            sharedConnection=null;
+            OOoProcess.destroy();
+            started = false;
+            OOoProcess = null;
         }
-
-        OOoProcess.destroy();
-        started = false;
-        OOoProcess = null;
         return true;
     }
 
