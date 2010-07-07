@@ -153,7 +153,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             try {
                 log.debug("Try to connect using SocketOpenOfficeConnection is a separated thread");
                 conn.connect();
-                log.debug("SocketOpenOfficeConnection succeedd");
+                log.debug("SocketOpenOfficeConnection succeeded");
                 connectedOk=true;
             }
             catch (Exception e) {
@@ -415,7 +415,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
                 if (!isPortFree()) {
                     log.info("OOo port is not free : OOo has been started from outside ?");
                 } else {
-                    log.info("Try to starting OOo process");
+                    log.info("Try to start OOo process");
                     boolean ready = startOOoAndWaitTillReady();
                     if (!ready) {
                         log.error("Unable to start Ooo process");
