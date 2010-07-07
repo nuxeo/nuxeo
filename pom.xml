@@ -32,6 +32,8 @@
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-imaging</module>
     <module>nuxeo-platform-relations</module>
+    <module>nuxeo-platform-domsync-core</module>
+    <module>nuxeo-platform-io</module>
   </modules>
 
   <profiles>
@@ -41,8 +43,8 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-platform-queue</module>
 	<module>nuxeo-platform-annotations</module>
+        <module>nuxeo-platform-queue</module>
 	<module>nuxeo-platform-imaging-tiling</module>
 	<module>nuxeo-platform-syndication</module>
 	<module>nuxeo-platform-jbpm</module>
