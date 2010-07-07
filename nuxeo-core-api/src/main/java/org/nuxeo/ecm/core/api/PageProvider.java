@@ -66,14 +66,29 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     /**
      * Returns the current page of results.
      * <p>
-     * This method is designed to be called from JSF. It therefore ensures
-     * cheapness of repeated calls, rather than data consistency. There is a
-     * refresh() method for that.
+     * This method is designed to be called from higher levels. It therefore
+     * ensures cheapness of repeated calls, rather than data consistency. There
+     * is a refresh() method for that.
      * <p>
      *
      * @return the current page
      */
     List<T> getCurrentPage();
+
+    /**
+     * Returns the current page of results wrapped in a {@link PageSelection}
+     * item.
+     * <p>
+     * By default, no entry is selected, unless
+     * {@link #setSelectedEntries(List)} has been called before.
+     */
+    List<PageSelection<T>> getCurrentSelectPage();
+
+    /**
+     * Sets the list of selected entries to take into account in
+     * {@link #getCurrentSelectPage()}
+     */
+    void setSelectedEntries(List<T> entries);
 
     /**
      * Sets the current page of results to the required one and return it.

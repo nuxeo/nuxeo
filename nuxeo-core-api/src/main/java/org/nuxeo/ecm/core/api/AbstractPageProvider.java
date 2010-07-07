@@ -46,13 +46,17 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     protected boolean sortable = false;
 
+    protected List<T> seletectedEntries;
+
+    protected List<PageSelection<T>> currentSelectPage;
+
     public abstract List<T> getCurrentPage();
 
     /**
-     * Page change hook
+     * Page change hook, to override for custom behaviour
      */
     protected void pageChanged() {
-        // nothing to do here, to override for custom behaviour
+        currentSelectPage = null;
     }
 
     public void firstPage() {
@@ -159,6 +163,7 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public void refresh() {
         currentEntryIndex = 0;
+        currentSelectPage = null;
     }
 
     public void setName(String name) {
@@ -246,6 +251,34 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public boolean isSortable() {
         return sortable;
+    }
+
+    public List<PageSelection<T>> getCurrentSelectPage() {
+        if (currentSelectPage == null) {
+            currentSelectPage = new ArrayList<PageSelection<T>>();
+            List<T> currentPage = getCurrentPage();
+            if (currentPage != null && !currentPage.isEmpty()) {
+                if (seletectedEntries == null || seletectedEntries.isEmpty()) {
+                    // no selection at all
+                    for (int i = 0; i < currentPage.size(); i++) {
+                        currentSelectPage.add(new PageSelection<T>(
+                                currentPage.get(i), Boolean.FALSE));
+                    }
+                } else {
+                    for (int i = 0; i < currentPage.size(); i++) {
+                        T entry = currentPage.get(i);
+                        currentSelectPage.add(new PageSelection<T>(
+                                entry,
+                                Boolean.valueOf(seletectedEntries.contains(entry))));
+                    }
+                }
+            }
+        }
+        return currentSelectPage;
+    }
+
+    public void setSelectedEntries(List<T> entries) {
+        this.seletectedEntries = entries;
     }
 
 }
