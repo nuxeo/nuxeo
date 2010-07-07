@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,32 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Anahide Tchertchian
  */
-
 package org.nuxeo.ecm.core.api.impl;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.AbstractLegacyDocumentPageProvider;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.AbstractPageProvider;
 
 /**
- * @deprecated use {@link EmptyPageProvider}
+ * @author Anahide Tchertchian
  */
-@Deprecated
-public class EmptyResultsProvider extends
-        AbstractLegacyDocumentPageProvider<DocumentModel> implements
-        PagedDocumentsProvider {
+public class EmptyPageProvider<T extends Serializable> extends
+        AbstractPageProvider<T> {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public List<DocumentModel> getCurrentPage() {
-        return new DocumentModelListImpl();
+    public List<T> getCurrentPage() {
+        return Collections.emptyList();
     }
 
 }

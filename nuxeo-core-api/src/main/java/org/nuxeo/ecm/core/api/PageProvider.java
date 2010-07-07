@@ -28,6 +28,7 @@ import java.util.List;
  * @author arussel
  * @author Anahide Tchertchian
  * @param <T> any Serializable item
+ * @since 5.4
  */
 public interface PageProvider<T extends Serializable> extends Serializable {
 

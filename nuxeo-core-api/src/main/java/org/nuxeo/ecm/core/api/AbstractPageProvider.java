@@ -21,6 +21,8 @@ import java.util.List;
 
 /**
  * Basic implementation for a {@link PageProvider}
+ * <p>
+ * Fields to fill at construction: name, pageSize, resultsCount, sortable?
  *
  * @author Anahide Tchertchian
  */
@@ -41,13 +43,21 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     protected List<SortInfo> sortInfo;
 
+    protected boolean sortable = false;
+
     public abstract List<T> getCurrentPage();
 
-    public abstract boolean isSortable();
+    /**
+     * Page change hook
+     */
+    protected void pageChanged() {
+        // nothing to do here, to override for custom behaviour
+    }
 
     public void firstPage() {
         if (offset != 0) {
             offset = 0;
+            pageChanged();
             refresh();
         }
     }
@@ -84,6 +94,7 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public List<T> getPage(long page) {
         offset = page * pageSize;
+        pageChanged();
         refresh();
         return getCurrentPage();
     }
@@ -113,17 +124,20 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public void lastPage() {
         offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+        pageChanged();
         refresh();
     }
 
     public void nextPage() {
         offset += pageSize;
+        pageChanged();
         refresh();
     }
 
     public void previousPage() {
         if (offset >= pageSize) {
             offset -= pageSize;
+            pageChanged();
             refresh();
         }
     }
@@ -213,6 +227,10 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public long getResultsCount() {
         return resultsCount;
+    }
+
+    public boolean isSortable() {
+        return sortable;
     }
 
 }
