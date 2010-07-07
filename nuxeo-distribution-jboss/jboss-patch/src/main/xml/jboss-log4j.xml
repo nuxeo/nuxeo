@@ -111,7 +111,7 @@
       <param name="Threshold" value="ERROR" />
       <param name="To" value="admin@myhost.domain.com" />
       <param name="From" value="nobody@myhost.domain.com" />
-      <param name="Subject" value="JBoss Sever Errors" />
+      <param name="Subject" value="JBoss Server Errors" />
       <param name="SMTPHost" value="localhost" />
       <param name="BufferSize" value="10" />
       <layout class="org.apache.log4j.PatternLayout">
@@ -334,22 +334,6 @@
   <!--
     Enable JBossWS message tracing
     <category name="org.jboss.ws.core.MessageTrace">
-      <priority value="TRACE" />
-    </category>
-  -->
-
-  <!--
-    An example of enabling the custom TRACE level priority that is used by the
-    JBoss internals to diagnose low level details. This example turns on TRACE
-    level msgs for the org.jboss.ejb.plugins package and its subpackages. This
-    will produce A LOT of logging output. Note: since jboss AS 4.2.x, the trace
-    level is supported natively by log4j, so although the custom
-    org.jboss.logging.XLevel priority will still work, there is no need to use
-    it. The two examples that follow will both enable trace logging.
-    <category name="org.jboss.system">
-      <priority value="TRACE" class="org.jboss.logging.XLevel" />
-    </category>
-    <category name="org.jboss.ejb.plugins">
       <priority value="TRACE" />
     </category>
   -->
