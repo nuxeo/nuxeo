@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.DocumentsPageProvider;
@@ -64,7 +64,7 @@ public class DocumentChildrenStdFarm extends InputController implements
     @In(create = true)
     private DocumentChildrenSearchFarm documentChildrenSearchFarm;
 
-    public PagedDocumentsProvider getResultsProvider(String name,
+    public PageProvider<DocumentModel> getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException {
 
         final DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -73,7 +73,7 @@ public class DocumentChildrenStdFarm extends InputController implements
 
             final boolean browseViaSearch = currentDoc.hasFacet(FacetNames.BROWSE_VIA_SEARCH);
 
-            PagedDocumentsProvider provider;
+            PageProvider<DocumentModel> provider;
             if (browseViaSearch) {
                 provider = documentChildrenSearchFarm.getResultsProvider(name,
                         sortInfo);
@@ -88,7 +88,7 @@ public class DocumentChildrenStdFarm extends InputController implements
         }
     }
 
-    private PagedDocumentsProvider getResProviderForDocChildren(
+    private PageProvider<DocumentModel> getResProviderForDocChildren(
             DocumentRef docRef) throws ClientException {
         FacetFilter facetFilter = new FacetFilter(
                 FacetNames.HIDDEN_IN_NAVIGATION, false);
@@ -101,7 +101,7 @@ public class DocumentChildrenStdFarm extends InputController implements
         return new DocumentsPageProvider(resultDocsIt, 10);
     }
 
-    public PagedDocumentsProvider getResultsProvider(String name)
+    public PageProvider<DocumentModel> getResultsProvider(String name)
             throws ClientException, ResultsProviderFarmUserException {
         return getResultsProvider(name, null);
     }

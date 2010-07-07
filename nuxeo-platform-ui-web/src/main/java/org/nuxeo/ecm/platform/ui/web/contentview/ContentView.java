@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  * @author Anahide Tchertchian
- * @since 5.3.3
+ * @since 5.4
  */
 public interface ContentView extends Serializable {
 

@@ -36,14 +36,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
@@ -108,7 +107,7 @@ public class QueryModelActionsBean implements
         return model;
     }
 
-    public PagedDocumentsProvider getResultsProvider(String queryModelName)
+    public PageProvider<DocumentModel> getResultsProvider(String queryModelName)
             throws ClientException, ResultsProviderFarmUserException {
         try {
             return getResultsProvider(queryModelName, null);
@@ -117,7 +116,7 @@ public class QueryModelActionsBean implements
         }
     }
 
-    public PagedDocumentsProvider getResultsProvider(String queryModelName,
+    public PageProvider<DocumentModel> getResultsProvider(String queryModelName,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
         QueryModel model = get(queryModelName);
@@ -131,7 +130,7 @@ public class QueryModelActionsBean implements
             throw new SortNotSupportedException();
         }
 
-        PagedDocumentsProvider provider = model.getResultsProvider(
+        PageProvider<DocumentModel> provider = model.getResultsProvider(
                 documentManager, null, sortInfo);
         provider.setName(queryModelName);
         return provider;
