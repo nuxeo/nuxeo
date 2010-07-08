@@ -113,7 +113,7 @@
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
-      <max>10</max>
+      <max>20</max>
 
       <!--
         <whereClause>
@@ -133,7 +133,7 @@
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
-      <max>10</max>
+      <max>20</max>
 
       <!--
         <whereClause>
@@ -152,7 +152,7 @@
         ecm:currentLifeCycleState != 'deleted' ORDER BY ecm:pos
       </pattern>
       <sortable value="false" />
-      <max>10</max>
+      <max>20</max>
     </queryModel>
 
     <!-- This query model may be used to list children in the tree navigation
@@ -190,12 +190,12 @@
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
-      <max>10</max>
+      <max>20</max>
       <sortable value="true" />
     </queryModel>
 
     <queryModel name="ADVANCED_SEARCH" docType="AdvancedSearch">
-      <max>10</max>
+      <max>20</max>
       <whereClause>
 
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
