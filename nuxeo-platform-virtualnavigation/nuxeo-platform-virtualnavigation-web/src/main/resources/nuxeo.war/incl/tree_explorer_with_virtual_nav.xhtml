@@ -24,7 +24,7 @@
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
             reRender="MultiTreeView">
             <nxu:graphicImage value="img/#{tree.treeId}.png"
-              title="#{messages[docList.title]}"
+              title="#{messages[tree.treeLabel]}"
               styleClass="smallIcon" />
           </a4j:commandLink>
          </nxu:dataList>

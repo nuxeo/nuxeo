@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.platform.virtualnavigation.NavTreeService"
       point="navigationTree">
 
-    <navTree treeId="TAG_CLOUD" xhtmlview="/incl/tag_cloud.xhtml">
+    <navTree treeId="TAG_CLOUD" treeLabel="label.byTagNavigation" xhtmlview="/incl/tag_cloud.xhtml">
     </navTree>
 
   </extension>
