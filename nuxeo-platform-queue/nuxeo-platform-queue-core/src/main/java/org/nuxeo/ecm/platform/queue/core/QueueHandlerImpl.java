@@ -89,6 +89,7 @@ public class QueueHandlerImpl implements QueueHandler {
 
         QueueFactory factory = Framework.getLocalService(QueueFactory.class);
         LockCoordinator coordinator = Framework.getLocalService(LockCoordinator.class);
+
         QueuePersister persister = factory.getPersister(content);
 
         try {
@@ -99,8 +100,7 @@ public class QueueHandlerImpl implements QueueHandler {
                     + ":" + content.getName(), e);
             return;
         } catch (Throwable e) {
-            throw new QueueException("Couldn't lock the resource "
-                    + content.getDestination() + ":" + content.getName(), e);
+            throw new QueueException("Couldn't lock the resource", e, content);
         }
 
         try {

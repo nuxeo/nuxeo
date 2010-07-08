@@ -99,7 +99,8 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
             return runner.hasContent;
         } catch (ClientException e) {
             throw new QueueException(
-                    "A problem occured while trying to save the content", e);
+                    "A problem occured while trying to save the content", e,
+                    content);
         }
 
     }
@@ -180,7 +181,8 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
             new SaveContentRunner(defaultRepositoryName, content).runUnrestricted();
         } catch (ClientException e) {
             throw new QueueException(
-                    "A problem occured while trying to save the content", e);
+                    "A problem occured while trying to save the content", e,
+                    content);
         }
         return null;
     }

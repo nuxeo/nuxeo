@@ -24,6 +24,10 @@ package org.nuxeo.ecm.platform.queue.api;
  */
 public class QueueException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
+    QueueContent content;
+
     public QueueException(String message, Throwable e) {
         super(message, e);
     }
@@ -31,7 +35,17 @@ public class QueueException extends Exception {
     public QueueException(String message) {
         super(message);
     }
-    
-    private static final long serialVersionUID = 1L;
+
+    public QueueException(String message, Throwable e, QueueContent content) {
+        super("Queue exception on queue " + content.getDestination() + ":"
+                + content.getName() + "\n" + message, e);
+        this.content = content;
+    }
+
+    public QueueException(String message, QueueContent content) {
+        super("Queue exception on queue " + content.getDestination() + ":"
+                + content.getName() + "\n" + message);
+        this.content = content;
+    }
 
 }
