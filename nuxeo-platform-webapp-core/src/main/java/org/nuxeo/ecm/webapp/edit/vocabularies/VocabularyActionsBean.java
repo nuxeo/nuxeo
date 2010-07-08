@@ -639,7 +639,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     @Destroy
     @Remove
     public void destroy() {
-        log.debug("Removing SEAM component: vocabularyActions");
+        log.debug("Removing Seam component: vocabularyActions");
     }
 
 }

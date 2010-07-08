@@ -390,15 +390,15 @@ public class SearchActionsBean extends InputController implements
         DocumentModel data = null;
         List<DocumentModel> currentDocs = getResultDocuments(providerName);
 
-        for (DocumentModel d : currentDocs) {
-            DocumentRef docRef = d.getRef();
+        for (DocumentModel doc : currentDocs) {
+            DocumentRef docRef = doc.getRef();
             // the search backend might have a bug filling the docref
             if (docRef == null) {
-                log.error("null DocumentRef for doc: " + d);
+                log.error("null DocumentRef for doc: " + doc);
                 continue;
             }
             if (docRef.reference().equals(selectedDocRef)) {
-                data = d;
+                data = doc;
                 break;
             }
         }
@@ -521,7 +521,7 @@ public class SearchActionsBean extends InputController implements
         }
     }
 
-    @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
     public void refreshCache() {
         // XXX invalidate both because no way to know in which list it appended
         resultsProvidersCache.invalidate(QM_SIMPLE);

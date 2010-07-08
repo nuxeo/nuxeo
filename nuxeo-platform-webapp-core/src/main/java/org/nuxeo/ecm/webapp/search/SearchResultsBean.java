@@ -223,15 +223,15 @@ public class SearchResultsBean extends InputController implements
         DocumentModel data = null;
         List<DocumentModel> currentDocs = getResultDocuments(providerName);
 
-        for (DocumentModel d : currentDocs) {
-            DocumentRef docRef = d.getRef();
+        for (DocumentModel doc : currentDocs) {
+            DocumentRef docRef = doc.getRef();
             // the search backend might have a bug filling the docref
             if (docRef == null) {
-                log.error("null DocumentRef for doc: " + d);
+                log.error("null DocumentRef for doc: " + doc);
                 continue;
             }
             if (docRef.reference().equals(selectedDocRef)) {
-                data = d;
+                data = doc;
                 break;
             }
         }

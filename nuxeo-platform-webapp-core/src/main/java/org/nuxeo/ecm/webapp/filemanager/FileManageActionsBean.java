@@ -128,7 +128,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public void destroy() {
-        log.debug("Removing SEAM action listener...");
+        log.debug("Removing Seam action listener...");
     }
 
     public String display() {

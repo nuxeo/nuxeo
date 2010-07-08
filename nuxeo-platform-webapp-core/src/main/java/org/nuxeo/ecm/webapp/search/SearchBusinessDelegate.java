@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 
 /**
- * This business delegate is available on session instance as a SEAM component
+ * This business delegate is available on session instance as a Seam component
  * and offers services to different action beans (like search action bean).
  * <p>
  * It delegates the calls to the server side and insure consistency over
