@@ -273,8 +273,22 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     fetchAllAttributes, searchBaseDn, filterExpr, id,
                     scts.getSearchScope(), this));
         }
-        NamingEnumeration<SearchResult> results = dirContext.search(
-                searchBaseDn, filterExpr, filterArgs, scts);
+        NamingEnumeration<SearchResult> results;
+        try {
+            results = dirContext.search(searchBaseDn, filterExpr, filterArgs,
+                    scts);
+        } catch (NameNotFoundException nnfe) {
+            // sometimes ActiveDirectory have some query fail with: LDAP:
+            // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
+            // 2001 (NO_OBJECT).
+            // To keep the application usable return no results instead of
+            // crashing but log the error so that the AD admin
+            // can fix the issue.
+            log.error(
+                    "Unexpected response from server while performing query: "
+                            + nnfe.getMessage(), nnfe);
+            return null;
+        }
 
         if (!results.hasMore()) {
             log.debug("Entry not found: " + id);
