@@ -141,7 +141,7 @@ public class UserAddCommand extends AbstractCommand {
                 if (nextLine.length == USERS_CSV_COLUMN_COUNT) {
                     users.add(nextLine);
                 } else {
-                    log.error("The following CSV line will not be imported because it hasn't the requiread "
+                    log.error("The following CSV line will not be imported because it hasn't the required "
                             + USERS_CSV_COLUMN_COUNT
                             + " fields "
                             + Arrays.asList(USERS_CSV_FIELD_NAMES)
