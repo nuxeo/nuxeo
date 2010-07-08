@@ -121,8 +121,8 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
                 // LDAP references do not work with the internal test server
                 if (HAS_DYNGROUP_SCHEMA) {
                     assertEquals(Arrays.asList("dyngroup1", "dyngroup2",
-                            "members"), entry2.getProperty(USER_SCHEMANAME,
-                            "groups"));
+                            "members", "subgroup"), entry2.getProperty(
+                            USER_SCHEMANAME, "groups"));
                 } else {
                     assertEquals(Arrays.asList("members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));

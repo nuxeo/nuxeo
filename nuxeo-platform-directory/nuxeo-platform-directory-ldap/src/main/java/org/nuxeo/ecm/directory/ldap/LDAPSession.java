@@ -38,6 +38,7 @@ import java.util.SimpleTimeZone;
 
 import javax.naming.Context;
 import javax.naming.LimitExceededException;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.SizeLimitExceededException;
@@ -286,10 +287,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 result = results.next();
                 String dn2 = result.getNameInNamespace();
                 String msg = String.format(
-                        "More than one entry found for id '%s': for instance: '%s' and '%s'",
-                        id, dn, dn2);
+                        "Unable to fetch entry for '%s': found more than one match,"
+                                + " for instance: '%s' and '%s'", id, dn, dn2);
                 log.error(msg);
-                throw new DirectoryException(msg);
+                // ignore entries that are ambiguous while giving enough info in
+                // the logs to let the LDAP admin be able to fix the issue
+                return null;
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
@@ -519,17 +522,28 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         searchBaseDn, filterExpr, StringUtils.join(filterArgs,
                                 ","), scts.getSearchScope(), this));
             }
-            NamingEnumeration<SearchResult> results = dirContext.search(
-                    searchBaseDn, filterExpr, filterArgs, scts);
+            try {
+                NamingEnumeration<SearchResult> results = dirContext.search(
+                        searchBaseDn, filterExpr, filterArgs, scts);
+                DocumentModelList entries = ldapResultsToDocumentModels(
+                        results, fetchReferences);
 
-            DocumentModelList entries = ldapResultsToDocumentModels(results,
-                    fetchReferences);
-
-            if (orderBy != null && !orderBy.isEmpty()) {
-                directory.orderEntries(entries, orderBy);
+                if (orderBy != null && !orderBy.isEmpty()) {
+                    directory.orderEntries(entries, orderBy);
+                }
+                return entries;
+            } catch (NameNotFoundException nnfe) {
+                // sometimes ActiveDirectory have some query fail with: LDAP:
+                // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
+                // 2001 (NO_OBJECT).
+                // To keep the application usable return no results instead of
+                // crashing but log the error so that the AD admin
+                // can fix the issue.
+                log.error(
+                        "Unexpected response from server while performing query: "
+                                + nnfe.getMessage(), nnfe);
+                return new DocumentModelListImpl();
             }
-
-            return entries;
         } catch (LimitExceededException e) {
             throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
         } catch (NamingException e) {
