@@ -101,8 +101,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 // LDAP references do not work with the internal test server
                 if (HAS_DYNGROUP_SCHEMA) {
                     assertEquals(Arrays.asList("dyngroup1", "dyngroup2",
-                            "members"), entry2.getProperty(USER_SCHEMANAME,
-                            "groups"));
+                            "members", "subgroup"), entry2.getProperty(
+                            USER_SCHEMANAME, "groups"));
                 } else {
                     assertEquals(Arrays.asList("members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
@@ -228,7 +228,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             List<String> subGroups = (List<String>) entry.getProperty(
                     GROUP_SCHEMANAME, "subGroups");
-            assertEquals(Arrays.asList("submembers"), subGroups);
+            assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup",
+                    "subsubsubgroup"), subGroups);
 
             List<String> parentGroups = (List<String>) entry.getProperty(
                     GROUP_SCHEMANAME, "parentGroups");
@@ -338,7 +339,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             List<String> parentGroups = (List<String>) entry.getProperty(
                     GROUP_SCHEMANAME, "parentGroups");
             assertNotNull(parentGroups);
-            assertEquals(0, parentGroups.size());
+            if (HAS_DYNGROUP_SCHEMA) {
+                assertEquals(1, parentGroups.size());
+                assertEquals(Arrays.asList("dyngroup1"), parentGroups);
+            } else {
+                assertEquals(0, parentGroups.size());
+            }
 
             List<String> ldapDirectChildren = (List<String>) entry.getProperty(
                     GROUP_SCHEMANAME, "ldapDirectChildren");
@@ -673,8 +679,14 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertNotNull(entry);
                 assertEquals(Arrays.asList("user1", "user3"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
-                assertEquals(Arrays.asList("submembers"), entry.getProperty(
-                        GROUP_SCHEMANAME, "subGroups"));
+                if (HAS_DYNGROUP_SCHEMA) {
+                    assertEquals(Arrays.asList("subgroup", "submembers",
+                            "subsubgroup", "subsubsubgroup"),
+                            entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
+                } else {
+                    assertEquals(Arrays.asList("submembers"),
+                            entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
+                }
 
                 // try to edit dynamic references values along with regular
                 // fields
@@ -692,11 +704,17 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertEquals("blablabla", (String) entry.getProperty(
                         GROUP_SCHEMANAME, "description"));
 
-                // dynamicly resolved references have not been edited
+                // dynamically resolved references have not been edited
                 assertEquals(Arrays.asList("user1", "user3"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
-                assertEquals(Arrays.asList("submembers"), entry.getProperty(
-                        GROUP_SCHEMANAME, "subGroups"));
+                if (HAS_DYNGROUP_SCHEMA) {
+                    assertEquals(Arrays.asList("subgroup", "submembers",
+                            "subsubgroup", "subsubsubgroup"),
+                            entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
+                } else {
+                    assertEquals(Arrays.asList("submembers"),
+                            entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
+                }
 
                 // edit both members and subGroups at the same time
                 entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList(
@@ -767,7 +785,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModelList entries = session.getEntries();
             if (HAS_DYNGROUP_SCHEMA) {
                 // 2 dynamic groups
-                assertEquals(4, entries.size());
+                assertEquals(8, entries.size());
             } else {
                 assertEquals(6, entries.size());
             }

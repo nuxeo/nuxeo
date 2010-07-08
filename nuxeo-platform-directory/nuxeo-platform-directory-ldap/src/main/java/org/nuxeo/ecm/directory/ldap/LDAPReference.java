@@ -759,9 +759,11 @@ public class LDAPReference extends AbstractReference {
                     LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
                     String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
                     String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
-                    int scope = "subtree".equalsIgnoreCase(ldapUrl.getScope()) ? SearchControls.SUBTREE_SCOPE
-                            : SearchControls.ONELEVEL_SCOPE;
-
+                    int scope = SearchControls.ONELEVEL_SCOPE;
+                    String scopePart = ldapUrl.getScope();
+                    if (scopePart != null && scopePart.toLowerCase().startsWith("sub")) {
+                        scope = SearchControls.SUBTREE_SCOPE;
+                    }
                     if (!linkDn.endsWith(directoryDn)
                             && !directoryDn.endsWith(linkDn)) {
                         // optim #1: if the dns do not match, abort
