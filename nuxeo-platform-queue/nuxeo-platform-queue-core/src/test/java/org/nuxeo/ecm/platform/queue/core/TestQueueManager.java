@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.queue.core;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
 import org.nuxeo.ecm.platform.heartbeat.core.NuxeoServerHeartBeat;
@@ -37,6 +39,8 @@ import org.nuxeo.runtime.api.Framework;
  * 
  */
 public class TestQueueManager extends SQLRepositoryTestCase {
+
+    public static final Log log = LogFactory.getLog(TestQueueManager.class);
 
     @Override
     public void setUp() throws Exception {
@@ -83,7 +87,10 @@ public class TestQueueManager extends SQLRepositoryTestCase {
 
         // sleep 2 times the defaultheartbeattime to be sure that it is detected
         // as orphan by the queueManager
-        Thread.sleep(heartbeat.getHeartBeatDelay() * 2);
+
+        long delay = heartbeat.getHeartBeatDelay() * 2;
+        log.info("Sleeping for " + delay);
+        Thread.sleep(delay);
 
         QueueManagerLocator queueManagerLocator = Framework.getLocalService(QueueManagerLocator.class);
         QueueManager queueManager = queueManagerLocator.locateQueue(content);
@@ -101,6 +108,6 @@ public class TestQueueManager extends SQLRepositoryTestCase {
         assertEquals("An orphaned item should be listed", 1, orphans.size());
         assertEquals("The orphan name is", "myContent",
                 orphans.get(0).getHandledContent().getName());
-
     }
+
 }
