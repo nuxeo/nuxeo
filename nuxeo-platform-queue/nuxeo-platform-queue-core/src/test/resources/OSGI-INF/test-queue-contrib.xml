@@ -8,7 +8,7 @@
   
   <!-- test to provide a executor for the orphans test -->
   <extension target="org.nuxeo.ecm.platform.queue" point="queue">
-    <queue name="testOrphansQueue" executor="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
+    <queue name="testOrphansQueue" executor="org.nuxeo.ecm.platform.queue.core.FakeOrphansExecutor"
       persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
   </extension>
 
