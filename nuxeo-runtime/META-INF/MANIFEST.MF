@@ -32,7 +32,7 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 1.6.2.SNAPSHOT
 Eclipse-BuddyPolicy: dependent, global
-Bnd-LastModified: 1278692845802
+Bnd-LastModified: 1278692904360
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
