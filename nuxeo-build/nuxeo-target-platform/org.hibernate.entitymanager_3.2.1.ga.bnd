@@ -1,0 +1,3 @@
+Export-Package: org.hibernate.*
+Fragment-Host: org.hibernate
+Import-Package: !org.hibernate.*,*;resolution:=optional

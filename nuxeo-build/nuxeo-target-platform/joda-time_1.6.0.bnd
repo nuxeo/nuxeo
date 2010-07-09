@@ -1,0 +1,2 @@
+Bundle-SymbolicName: joda-time
+Import-Package: org.osgi.framework,javax.transaction.*;version=1.1,org.joda.time.*;version="1.6.0",*;resolution:=optional

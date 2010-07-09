@@ -1,0 +1,2 @@
+-nouses: true
+Import-Package: org.osgi.framework,javax.resource.*;version=2.0,javax.transaction.*;version=1.1,*;resolution:=optional

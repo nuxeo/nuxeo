@@ -1,0 +1,2 @@
+Export-Package: !org.w3c,*
+Import-Package: *;resolution:=optional
