@@ -31,6 +31,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277313014435
 Bundle-ManifestVersion: 2
+Eclipse-RegisterBuddy: org.nuxeo.runtime
 Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml, OSGI-INF/Reposit
  oryManager.xml,  OSGI-INF/blob-holder-service-framework.xml, OSGI-INF
  /blob-holder-adapters-contrib.xml
