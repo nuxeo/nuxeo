@@ -210,6 +210,12 @@ namespace NuxeoProcess
 
 			nxEnv.Add("NUXEO_HOME",NUXEO_HOME);
 			
+			// Add 3rdparty dir to PATH
+			
+			String PathValue = System.Environment.GetEnvironmentVariable("Path");
+			PathValue = PathValue + ";" + Path.Combine(NUXEO_HOME,"3rdparty");
+			System.Environment.SetEnvironmentVariable("Path",PathValue);
+			
 			// Setup LOG_DIR
 			String LOG_DIR=null;
 			if (nxConfig.ContainsKey("nuxeo.log.dir")) {
