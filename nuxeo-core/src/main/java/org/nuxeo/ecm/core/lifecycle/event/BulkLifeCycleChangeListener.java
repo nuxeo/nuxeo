@@ -40,17 +40,24 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * <p>
  * If the transition event is about marking documents as "deleted", and a child
  * cannot perform the transition, it will be removed.
+ * <p>
+ * Undelete transitions are not processed, but this listener instead looks for a
+ * specific documentUndeleted event. This is because we want to undelete
+ * documents (parents) under which we don't want to recurse.
  */
 public class BulkLifeCycleChangeListener implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
     public void handleEvent(EventBundle events) throws ClientException {
-        if (!events.containsEventName(LifeCycleConstants.TRANSITION_EVENT)) {
+        if (!events.containsEventName(LifeCycleConstants.TRANSITION_EVENT)
+                && !events.containsEventName(LifeCycleConstants.DOCUMENT_UNDELETED)) {
             return;
         }
         for (Event event : events) {
-            if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
+            String name = event.getName();
+            if (LifeCycleConstants.TRANSITION_EVENT.equals(name)
+                    || LifeCycleConstants.DOCUMENT_UNDELETED.equals(name)) {
                 processTransition(event);
             }
         }
@@ -59,32 +66,44 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected void processTransition(Event event) {
         log.debug("Processing lifecycle change in async listener");
         EventContext ctx = event.getContext();
-        if (ctx instanceof DocumentEventContext) {
-            DocumentEventContext docCtx = (DocumentEventContext) ctx;
-
-            DocumentModel doc = docCtx.getSourceDocument();
-            if (doc.isFolder()) {
-                CoreSession session = docCtx.getCoreSession();
-                if (session == null) {
-                    log.error("Can not process lifeCycle change since session is null");
-                    return;
-                } else {
-                    try {
-                        DocumentModelList docModelList = session.getChildren(doc.getRef());
-                        String transition = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
-                        String targetState = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO);
-                        changeDocumentsState(session, docModelList, transition,
-                                targetState);
-                        session.save();
-                    } catch (ClientException e) {
-                        log.error("Unable to get children", e);
-                        return;
-                    }
-                }
+        if (!(ctx instanceof DocumentEventContext)) {
+            return;
+        }
+        DocumentEventContext docCtx = (DocumentEventContext) ctx;
+        DocumentModel doc = docCtx.getSourceDocument();
+        if (!doc.isFolder()) {
+            return;
+        }
+        CoreSession session = docCtx.getCoreSession();
+        if (session == null) {
+            log.error("Can not process lifeCycle change since session is null");
+            return;
+        }
+        String transition;
+        String targetState;
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
+            transition = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
+            if (LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)) {
+                // not processed (as we can undelete also parents)
+                // a specific event documentUndeleted will be used instead
+                return;
             }
+            targetState = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO);
+        } else { // LifeCycleConstants.DOCUMENT_UNDELETED
+            transition = LifeCycleConstants.UNDELETE_TRANSITION;
+            targetState = ""; // unused
+        }
+        try {
+            DocumentModelList docs = session.getChildren(doc.getRef());
+            changeDocumentsState(session, docs, transition, targetState);
+            session.save();
+        } catch (ClientException e) {
+            log.error("Unable to get children", e);
+            return;
         }
     }
 
+    // change doc state and recurse in children
     protected void changeDocumentsState(CoreSession documentManager,
             DocumentModelList docModelList, String transition,
             String targetState) throws ClientException {

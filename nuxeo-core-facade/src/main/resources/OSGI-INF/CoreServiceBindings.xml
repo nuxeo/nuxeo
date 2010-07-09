@@ -15,9 +15,13 @@
   <service class="org.nuxeo.ecm.core.api.security.PermissionProvider" group="core">
     <locator>%PermissionProviderBean</locator>
   </service>
-  
+
   <service class="org.nuxeo.ecm.core.event.EventProducer" group="core">
     <locator>%EventProducerBean</locator>
+  </service>
+
+  <service class="org.nuxeo.ecm.core.trash.TrashService" group="core">
+    <locator>%TrashServiceBean</locator>
   </service>
 
   <!--

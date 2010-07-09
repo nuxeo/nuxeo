@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.lifecycle.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -89,8 +90,7 @@ public class LifeCycleImpl implements LifeCycle {
         if (lifeCycleState != null) {
             return lifeCycleState.getAllowedStateTransitions();
         } else {
-            throw new LifeCycleException("State <" + stateName
-                    + "> does not exist !");
+            return Collections.emptyList();
         }
     }
 

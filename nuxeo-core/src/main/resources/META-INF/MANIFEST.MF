@@ -29,6 +29,7 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/lifecycle-listener-contrib.xml,
  OSGI-INF/SecurityService.xml,
  OSGI-INF/permissions-contrib.xml,
+ OSGI-INF/trash-service.xml,
  OSGI-INF/security-policy-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport,
  org.nuxeo.ecm.core.schema;visibility:=reexport,
