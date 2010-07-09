@@ -17,8 +17,8 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
@@ -58,8 +58,7 @@ public class JDBCConnection {
     private final long instanceNumber = instanceCounter.incrementAndGet();
 
     // for debug
-    public final JDBCMapperLogger logger = new JDBCMapperLogger(
-            instanceNumber);
+    public final JDBCMapperLogger logger = new JDBCMapperLogger(instanceNumber);
 
     /**
      * Creates a new Mapper.
@@ -136,10 +135,9 @@ public class JDBCConnection {
         }
     }
 
-    protected void closePreparedStatement(PreparedStatement ps)
-            throws SQLException {
+    protected void closeStatement(Statement s) throws SQLException {
         try {
-            ps.close();
+            s.close();
         } catch (IllegalArgumentException e) {
             // ignore
             // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
