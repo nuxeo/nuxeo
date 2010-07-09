@@ -11,6 +11,7 @@ Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277883219981
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/datasource-component.xml
+Eclipse-RegisterBuddy: org.nuxeo.runtime, org,nuxeo.common
 Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
 Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  ng.spi,javax.sql,javax.transaction;version="1.1",org.apache.commons.b

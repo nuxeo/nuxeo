@@ -36,6 +36,7 @@ Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
  NF/LoginComponent.xml,OSGI-INF/ServiceManagement.xml,OSGI-INF/Default
  JBossBindings.xml
 Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
+Eclipse-BuddyPolicy: registered
 Import-Package: javax.management,
  javax.naming,
  javax.naming.spi,

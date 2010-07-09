@@ -20,5 +20,6 @@ Import-Package: javax.annotation;version="1.0",javax.naming,javax.nami
  .connectiontracking;version="2.1",org.apache.geronimo.transaction;ver
  sion="2.1",org.apache.geronimo.transaction.manager;version="2.1",org.
  nuxeo.runtime.transaction
+Eclipse-BuddyPolicy: registered
 Nuxeo-Require: org.nuxeo.runtime
 
