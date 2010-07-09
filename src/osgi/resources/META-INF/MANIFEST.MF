@@ -18,6 +18,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1278073301764
 Bundle-ManifestVersion: 2
+Eclipse-BuddyPolicy: registered
 Bundle-SymbolicName: org.nuxeo.common;singleton:=true
 Import-Package: javax.naming,javax.naming.spi,javax.xml.parsers,org.ap
  ache.commons.logging,org.apache.xml.serialize,org.w3c.dom,org.w3c.dom
