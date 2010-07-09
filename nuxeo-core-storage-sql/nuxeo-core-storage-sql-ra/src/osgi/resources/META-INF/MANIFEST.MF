@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.storage.sql;ra=split;version="1.6.2
- .SNAPSHOT"
+Export-Package: org.nuxeo.ecm.core.storage.sql;ra=split,
+ org.nuxeo.ecm.core.storage.sql.ra
 Private-Package: org.nuxeo.ecm.core.storage.sql.ra
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -35,6 +35,6 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.storage.sql,
  org.nuxeo.ecm.core.storage.sql.coremodel,
  org.nuxeo.runtime.api
-Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql, org.nuxeo.runtime
 Nuxeo-Require: org.nuxeo.ecm.core, org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.query, org.nuxeo.ecm.core.schema, org.nuxeo.ecm.core.storage.sql
 
