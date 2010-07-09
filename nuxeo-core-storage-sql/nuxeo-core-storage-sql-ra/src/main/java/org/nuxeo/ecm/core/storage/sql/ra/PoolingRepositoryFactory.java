@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.ra;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
-import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionFactoryImpl;
 
 /**
  * Pooling repository factory.
