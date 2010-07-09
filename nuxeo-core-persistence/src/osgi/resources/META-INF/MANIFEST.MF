@@ -13,7 +13,7 @@ Bundle-Version: 1.6.2.SNAPSHOT
 Bnd-LastModified: 1277332413423
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/persistence-service.xml
-Eclipse-BuddyPolicy: registered
+Eclipse-BuddyPolicy: dependent
 Bundle-SymbolicName: org.nuxeo.ecm.core.persistence;singleton:=true
 Import-Package: javax.naming,
  javax.persistence,
@@ -24,6 +24,7 @@ Import-Package: javax.naming,
  org.hibernate.cfg,
  org.hibernate.ejb,
  org.hibernate.ejb.transaction,
+ org.hibernate.proxy,
  org.hibernate.transaction,
  org.nuxeo.common.jndi,
  org.nuxeo.common.xmap,
