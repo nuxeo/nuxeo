@@ -24,11 +24,15 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Category: runtime
 Tool: Bnd-0.0.394
-Bundle-Name: org.nuxeo.runtime
+Bundle-Name: Nuxeo Eclipse Runtime
+Bundle-Localization: bundle
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
 Bundle-Version: 1.6.2.SNAPSHOT
-Bnd-LastModified: 1277883218401
+Eclipse-BuddyPolicy: dependent, global
+Bnd-LastModified: 1278692845802
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Nuxeo-Component: OSGI-INF/EventService.xml,OSGI-INF/RemotingService.xm
@@ -49,5 +53,8 @@ Import-Package: javax.annotation;version="1.0",javax.management,javax.
  common.logging,org.nuxeo.common.utils,org.nuxeo.common.xmap,org.nuxeo
  .common.xmap.annotation,org.osgi.framework;version="1.4",org.w3c.dom,
  org.w3c.dom.ranges
-Nuxeo-Require: org.nuxeo.osgi
+Eclipse-ExtensibleAPI: true
+Nuxeo-Require: commons-jexl.commons-jexl,commons-io.commons-io,system.
+ bundle,org.nuxeo.common;visibility:=reexport,org.nuxeo.logging;visibi
+ lity:=reexport
 
