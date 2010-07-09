@@ -32,7 +32,12 @@ public class DummyEventListener implements EventListener {
         if (event.getName().equals("testEvent")) {
             log.info("Received event!");
             // note we were called
-            Whiteboard.getWhiteboard().incrementCount();
+            String flag = (String) event.getContext().getProperty("flag");
+            if ("1".equals(flag)) {
+                Whiteboard.getWhiteboard().decreaseCount();
+            } else {
+                Whiteboard.getWhiteboard().incrementCount();
+            }
         }
     }
 
