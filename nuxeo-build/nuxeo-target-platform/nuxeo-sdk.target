@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Nuxeo SDK Target">
+<locations>
+<location path="${project_loc:nuxeo-target-platform}/target/plugins" type="Directory"/>
+</locations>
+</target>
