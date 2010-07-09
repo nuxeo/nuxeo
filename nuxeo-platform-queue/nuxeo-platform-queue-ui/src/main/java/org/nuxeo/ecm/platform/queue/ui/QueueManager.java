@@ -27,7 +27,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Display the
+ * Display the queues item.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 
@@ -48,6 +48,10 @@ public class QueueManager extends ModuleRoot {
     @Path("{queueName}")
     public Object queue() {
         return newObject("Queue");
+    }
+
+    public List<String> getListQueues() {
+        return listQueues;
     }
 
 }

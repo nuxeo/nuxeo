@@ -8,7 +8,7 @@
     List of available queues:
     <ul>
       <#list This.listQueues as queueName>
-      <li><a href="${queueName}">${queueName}</a></li>
+      <li><a href="${This.name}/${queueName}">${queueName}</a></li>
       </#list>
     </ul>
 

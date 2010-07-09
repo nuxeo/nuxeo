@@ -66,10 +66,12 @@ public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
 
         // testing retrieving content from the persister
         List<QueueItem> items = persister.listKnownItems("myQueue");
-
+        // additional info
         MockAdditionalInfo newInfo = (MockAdditionalInfo) items.get(0).getHandledContent().getAdditionalInfo();
         assertEquals("Additional info is", "test add info", newInfo.info);
-
+        // owner
+        assertEquals("Owner is", "nxprincipal:test",
+                items.get(0).getHandledContent().getOwner().toASCIIString());
     }
 
     class TestRunner extends UnrestrictedSessionRunner {

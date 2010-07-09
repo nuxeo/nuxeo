@@ -19,7 +19,10 @@ package org.nuxeo.ecm.platform.queue.ui;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
+import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
@@ -33,10 +36,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * 
  */
-@WebObject(type = "Queue")
+@WebObject(type = "Queue", guard = "group=administrators")
 public class QueueObject extends DefaultObject {
 
-    List<QueueItem> queueItem;
+    List<QueueItem> queueItems;
 
     @GET
     public Object doGet() {
@@ -47,8 +50,35 @@ public class QueueObject extends DefaultObject {
         } catch (QueueNotFoundException e) {
             throw WebException.wrap("Couldn't get the queue", e);
         }
-        queueItem = queuemgr.listHandledItems();
+        queueItems = queuemgr.listHandledItems();
         return getView("index");
     }
 
+    public List<QueueItem> getQueueItems() {
+        return queueItems;
+    }
+
+    @GET
+    @Path("{queueItemName}/start")
+    public Object relaunch(@PathParam("queueItemName") String name) {
+        QueueManagerLocator locator = Framework.getLocalService(QueueManagerLocator.class);
+        QueueManager queuemgr;
+        try {
+            queuemgr = locator.locateQueue(getName());
+        } catch (QueueNotFoundException e) {
+            throw WebException.wrap("Couldn't get the queue", e);
+        }
+        queueItems = queuemgr.listHandledItems();
+        for (QueueItem queueitem : queueItems) {
+            if (queueitem.getHandledContent().getName().equals(name)) {
+
+                QueueHandler handler = Framework.getLocalService(QueueHandler.class);
+                handler.handleNewContent(queueitem.getHandledContent());
+                return redirect(getPath());
+            }
+        }
+
+        return null;
+
+    }
 }
