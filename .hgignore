@@ -22,3 +22,5 @@ nuxeo-dam-distribution/ftest/selenium/ffprofile/prefs.js
 nuxeo-dam-distribution/ftest/selenium/selenium-server.jar
 nuxeo-dam-distribution/ftest/funkload/*.pyc
 nuxeo-dam-distribution/ftest/funkload/input-files.txt
+nuxeo-dam-distribution/ftest/selenium/data/toImport
+

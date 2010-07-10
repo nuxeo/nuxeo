@@ -71,12 +71,12 @@ public class HttpDamImporterExecutor extends AbstractJaxRSImporterExecutor {
                 nbThreads).build();
 
         DamMultiThreadedImporter runner;
-        if (importFolderTitle != null) {
-            runner = DamMultiThreadedImporter.createWithImportFolderTitle(
-                configuration, importFolderTitle, importSetTitle);
-        } else {
+        if (importFolderPath != null) {
             runner = DamMultiThreadedImporter.createWithImportFolderPath(
                 configuration, importFolderPath, importSetTitle);
+        } else {
+            runner = DamMultiThreadedImporter.createWithImportFolderTitle(
+                configuration, importFolderTitle, importSetTitle);
         }
 
         runner.setFactory(new FileManagerDocumentModelFactory());

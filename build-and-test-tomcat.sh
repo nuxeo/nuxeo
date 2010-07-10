@@ -1,11 +1,18 @@
 #!/bin/bash -x
 
 # Build Nuxeo DAM
-ant -f ft-build.xml make-tomcat-distribution -Dmvn.profiles=$MAVEN_PROFILES || exit 1
+ant -f ft-build.xml make-tomcat-distribution -Dmvn.profiles=$MAVEN_PROFILES,http-importer || exit 1
 
 # Start Tomcat
-(cd nuxeo-dam-distribution/target && unzip nuxeo-dam-distribution-*-tomcat.zip && mv nuxeo-dam-*-tomcat tomcat) || exit 1
+(cd nuxeo-dam-distribution/target && unzip nuxeo-dam-distribution-*-tomcat-importer.zip && mv nuxeo-dam-*-tomcat tomcat) || exit 1
 ant -f ft-build.xml start-tomcat || exit 1
+
+# Unzip assets to import
+(cd nuxeo-dam-distribution/ftest/selenium/data && unzip toImport.zip) || exit 1
+cp nuxeo-dam-distribution/ftest/selenium/data/metadata.properties nuxeo-dam-distribution/ftest/selenium/data/toImport/
+
+# Import assets
+curl -uAdministrator:Administrator "http://localhost:8080/nuxeo/site/damImporter/run?inputPath=/Users/troger/coding/nuxeo/nuxeo-dam/nuxeo-dam-distribution/ftest/selenium/data/toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title"
 
 # Run selenium tests
 HIDE_FF=true ./nuxeo-dam-distribution/ftest/selenium/run.sh
