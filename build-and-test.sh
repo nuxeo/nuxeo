@@ -13,7 +13,8 @@ nuxeo-dam-distribution/target/jboss/bin/nuxeoctl start || exit 1
 cp nuxeo-dam-distribution/ftest/selenium/data/metadata.properties nuxeo-dam-distribution/ftest/selenium/data/toImport/
 
 # Import assets
-curl -uAdministrator:Administrator "http://localhost:8080/nuxeo/site/damImporter/run?inputPath=/Users/troger/coding/nuxeo/nuxeo-dam/nuxeo-dam-distribution/ftest/selenium/data/toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title"
+PWD=`pwd`
+curl -uAdministrator:Administrator "http://localhost:8080/nuxeo/site/damImporter/run?inputPath=$PWD/nuxeo-dam-distribution/ftest/selenium/data/toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title"
 
 # Run selenium tests
 HIDE_FF=true ./nuxeo-dam-distribution/ftest/selenium/run.sh
