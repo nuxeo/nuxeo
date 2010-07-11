@@ -23,6 +23,11 @@
       <artifactId>nuxeo-platform-heartbeat-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
