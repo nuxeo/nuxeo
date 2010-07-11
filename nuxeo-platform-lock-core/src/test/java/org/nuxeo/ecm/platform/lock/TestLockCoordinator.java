@@ -27,9 +27,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
+ * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
+ * 
  */
 public class TestLockCoordinator extends NXRuntimeTestCase {
 
@@ -41,7 +41,9 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.lock.api");
         deployBundle("org.nuxeo.ecm.platform.lock.core");
-        deployTestContrib("org.nuxeo.ecm.platform.lock.core", "nxlocks-tests.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.lock.core",
+                "nxlocks-tests.xml");
+        super.fireFrameworkStarted();
     }
 
     // TODO if we reduced the delay to less that
@@ -53,7 +55,7 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
      * winner is getting the lock for a certain time and need to unlock before,
      * looser is waiting (until the timeout is reached), winner unlocks, looser
      * finally has lost (AlreadyLockedException)
-     *
+     * 
      * @throws Exception
      */
     public void testLockService() throws Exception {

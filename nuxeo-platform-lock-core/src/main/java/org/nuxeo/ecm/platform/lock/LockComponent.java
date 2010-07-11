@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.lock;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * Default implementation of the lock service.
@@ -35,10 +38,20 @@ public class LockComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        coordinator = new LockCoordinatorImpl();
-        provider = new ThreadedLockRecordProvider();
-        coordinator.activate(this);
-        provider.activate(this);
+        final BundleContext bundleContext = context.getRuntimeContext().getBundle().getBundleContext();
+        bundleContext.addFrameworkListener(new FrameworkListener() {
+
+            public void frameworkEvent(FrameworkEvent event) {
+                if (FrameworkEvent.STARTED != event.getType()) {
+                    return;
+                }
+                bundleContext.removeFrameworkListener(this);
+                coordinator = new LockCoordinatorImpl();
+                provider = new ThreadedLockRecordProvider();
+                coordinator.activate(LockComponent.this);
+                provider.activate(LockComponent.this);
+            }
+        });
     }
 
     @Override

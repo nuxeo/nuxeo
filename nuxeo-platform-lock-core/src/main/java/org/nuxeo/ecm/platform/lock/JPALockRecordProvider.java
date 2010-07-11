@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.lock;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -25,6 +26,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFriend;
@@ -44,12 +46,19 @@ public class JPALockRecordProvider implements LockRecordProvider,
     public static final Log log = LogFactory.getLog(JPALockRecordProvider.class);
 
     public void activate(LockComponent component) {
+        persistenceProvider = openProvider();
     }
 
     public void disactivate() {
+        persistenceProvider.closePersistenceUnit();
+        persistenceProvider = null;
     };
 
     PersistenceProvider persistenceProvider;
+
+    protected PersistenceProvider persistenceProvider() {
+        return persistenceProvider;
+    }
 
     /**
      * Lazy initialisation for solving datasource not being published at
@@ -58,14 +67,30 @@ public class JPALockRecordProvider implements LockRecordProvider,
      * 
      * @return
      */
-    public PersistenceProvider getOrCreatePersistenceProvider() {
-        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
-        return persistenceProvider;
+    protected PersistenceProvider openProvider() {
+        Properties props = Framework.getProperties();
+        String txType = props.getProperty(HibernateConfiguration.TXTYPE_PROPERTY_NAME);
+        props.setProperty(HibernateConfiguration.TXTYPE_PROPERTY_NAME,
+                HibernateConfiguration.RESOURCE_LOCAL);
+        try {
+            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+            persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
+            try {
+                persistenceProvider.closePersistenceUnit();
+            } catch (Throwable t) {
+                ;
+            }
+            return persistenceProvider;
+        } finally {
+            if (txType != null) {
+                props.setProperty(HibernateConfiguration.TXTYPE_PROPERTY_NAME,
+                        txType);
+            }
+        }
     }
 
     protected EntityManager open(boolean start) {
-        EntityManager em = PersistenceProviderFriend.acquireEntityManager(getOrCreatePersistenceProvider());
+        EntityManager em = PersistenceProviderFriend.acquireEntityManager(persistenceProvider());
         if (start == true) {
             em.getTransaction().begin();
         }
