@@ -1,9 +1,5 @@
 <@extends src="base.ftl">
   <@block name="title">Queue ${This.queueName}</@block>
-
-  <@block name="header">
-    Queue ${This.queueName}
-  </@block>
   <@block name="content">
     List of queueItem:
     <table>

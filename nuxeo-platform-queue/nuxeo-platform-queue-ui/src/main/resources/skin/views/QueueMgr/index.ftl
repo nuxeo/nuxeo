@@ -1,9 +1,5 @@
 <@extends src="base.ftl">
   <@block name="title">Queues Management</@block>
-  
-  <@block name="header">
-  	Queues Management
-  </@block>
   <@block name="content">
     List of available queues:
     <ul>

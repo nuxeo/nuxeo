@@ -118,6 +118,9 @@ public class QueueHandlerImpl implements QueueHandler {
                 log.warn("Resource is unexpectedly locked by another user", e);
                 return;
             } catch (InterruptedException e) {
+                log.error(
+                        "Unexpected error while trying to unlock the resource",
+                        e);
                 throw new Error(
                         "Unexpected error while trying to unlock the resource",
                         e);
