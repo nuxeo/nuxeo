@@ -3,14 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>1.6.2-NXP-5053-SNAPSHOT</version>
+    <relativePath>../nuxeo-runtime/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>1.6.2-NXP-5053-SNAPSHOT</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -19,10 +20,10 @@
   </description>
 
   <properties>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.platform.version>5.3.2-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.runtime.version>1.6.2-NXP-5053-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>1.6.2-NXP-5053-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.core.version>1.6.2-NXP-5053-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.platform.version>5.3.2-NXP-5053-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <modules>
@@ -174,6 +175,7 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-test</artifactId>
         <version>${nuxeo.core.version}</version>
+	<scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -253,26 +255,6 @@
         <classifier>tests</classifier>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-osgi</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-management</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jtajca</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
 
       <!-- scope: provided -->
       <dependency>
@@ -318,13 +300,6 @@
         <scope>provided</scope>
       </dependency>
 
-      <!-- scope: test -->
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-jcr-connector-test</artifactId>
@@ -333,5 +308,18 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+      <dependency>
+        <groupId>jmock</groupId>
+        <artifactId>jmock</artifactId>
+	<scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+	<scope>test</scope>
+      </dependency>
+  </dependencies>
 
 </project>
