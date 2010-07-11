@@ -1,0 +1,23 @@
+Export-Package: org.nuxeo.ecm.platform.types.ejb
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateless
+Bundle-Name: Nuxeo ECM Type Manager Facade
+Bundle-Localization: bundle
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/TypeManager-platform-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation,
+ javax.ejb,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.platform.types,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.types.facade;singleton:=true

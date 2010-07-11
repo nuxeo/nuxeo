@@ -1,0 +1,19 @@
+Export-Package: org.nuxeo.ecm.platform.ec.placeful;api=split;mandatory:=api,
+ org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces,
+ org.nuxeo.ecm.platform.ec.placeful.interfaces
+Private-Package: org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces,
+ org.nuxeo.ecm.platform.ec.placeful.interfaces
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM PlacefulService API
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.ejb,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.api;singleton:=true
