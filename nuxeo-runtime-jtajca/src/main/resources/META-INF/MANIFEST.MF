@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Runtime JTA/JCA Implementation
-Bundle-SymbolicName: org.nuxeo.runtime.jtajca;singleton:=true
-Bundle-Localization: plugin
-Bundle-Vendor: Nuxeo
-Bundle-Category: runtime
-Require-Bundle: org.nuxeo.runtime
-Export-Package: org.nuxeo.runtime.jtajca

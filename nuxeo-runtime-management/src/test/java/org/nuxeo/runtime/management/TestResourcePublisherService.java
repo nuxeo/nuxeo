@@ -25,8 +25,11 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-
 import org.nuxeo.runtime.api.Framework;
+
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 public class TestResourcePublisherService extends ManagementTestCase {
 
