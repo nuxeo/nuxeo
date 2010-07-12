@@ -62,7 +62,7 @@ public class TagCloudFragment extends AbstractFragment {
             List<Tag> cloud = tagService.getTagCloud(session,
                     siteDocument.getId(), null, null);
             if (cloud == null || cloud.isEmpty()) {
-                return null;
+                return model;
             }
             for (Tag tag : cloud) {
                 model.addItem(new TagCloudModel(tag.label, tag.weight));
