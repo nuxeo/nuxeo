@@ -108,11 +108,7 @@ public class InteractiveCommand extends AbstractCommand {
         }
     }
 
-    /**
-     * @return the {@link CommandLineReturn} corresponding to the execution
-     *         result of the command.
-     */
-    CommandLineReturn processInput(String input) {
+    public static String[] splitArgs(String input) {
         Pattern p = Pattern.compile("\\s*\"(.*?)\"\\s*|(?<=^| )[^ ]*");
         Matcher m = p.matcher(input);
         List<String> result = new ArrayList<String>();
@@ -120,7 +116,15 @@ public class InteractiveCommand extends AbstractCommand {
             //strip off quotes:
             result.add(m.group(1) != null ? m.group(1) : m.group());
         }
-        String[] args = result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
+    }
+
+    /**
+     * @return the {@link CommandLineReturn} corresponding to the execution
+     *         result of the command.
+     */
+    CommandLineReturn processInput(String input) {
+        String[] args = splitArgs(input);
         try {
             CommandLine cmdLine = service.parse(args, true);
             String cmdName = cmdLine.getCommand();
