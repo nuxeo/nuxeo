@@ -22,6 +22,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
@@ -29,6 +32,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueNotFoundException;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "Queue", guard = "group=administrators")
 public class QueueObject extends DefaultObject {
+
+    public static final Log log = LogFactory.getLog(QueueObject.class);
 
     List<QueueItem> queueItems;
 
@@ -73,12 +79,17 @@ public class QueueObject extends DefaultObject {
             if (queueitem.getHandledContent().getName().equals(name)) {
 
                 QueueHandler handler = Framework.getLocalService(QueueHandler.class);
-                handler.handleNewContent(queueitem.getHandledContent());
+                try {
+                    handler.handleNewContentIfUnknown(queueitem.getHandledContent());
+                } catch (QueueException e) {
+                    log.error("An error occured while handling content", e);
+                    throw WebException.wrap(e);
+                }
                 return redirect(getPath());
             }
         }
-
-        return null;
+        throw new WebResourceNotFoundException("Couldn't find the queue "
+                + name);
 
     }
 }
