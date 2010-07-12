@@ -556,8 +556,9 @@ public class SessionImpl implements Session, XAResource {
         }
         if (list.size() == 1) {
             String name = list.get(0);
-            if (name.length() == 0) {
+            if (name == null || name.length() == 0) {
                 // root, special case
+                // (empty string for normal databases, null for Oracle)
                 return "/";
             } else {
                 // placeless document, no initial slash
