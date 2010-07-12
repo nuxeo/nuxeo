@@ -170,7 +170,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         getJbpmService().saveTaskInstances(Collections.singletonList(ti));
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 document);
-        ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, actorIds);
+        ctx.setProperty(NotificationConstants.RECIPIENTS_KEY,
+             prefixedActorIds.toArray(new String[prefixedActorIds.size()]));
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
