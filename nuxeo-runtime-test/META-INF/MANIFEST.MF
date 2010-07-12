@@ -11,10 +11,11 @@ Bundle-Name: org.nuxeo.runtime.test
 Bundle-ManifestVersion: 2
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Import-Package: com.google.common.base,
- com.google.inject;version="1.2",
- com.google.inject.binder;version="1.2",
- javax.annotation;version="1.0",
+ com.google.inject,
+ com.google.inject.binder,
+ javax.annotation,
  javax.naming,
+ javax.servlet,
  javax.sql,
  junit.framework,
  org.apache.commons.logging,

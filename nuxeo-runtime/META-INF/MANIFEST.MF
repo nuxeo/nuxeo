@@ -30,7 +30,7 @@ Bundle-Category: runtime
 Bundle-Name: org.nuxeo.runtime
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 0.0.1.SNAPSHOT
 Eclipse-BuddyPolicy: registered
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/EventService.xml,
@@ -52,7 +52,7 @@ Import-Package: javax.management,
  javax.sql,
  javax.transaction;version="1.1",
  javax.xml.parsers,
- org.apache.commons.io;version="1.4",
+ org.apache.commons.io,
  org.apache.commons.jexl,
  org.apache.commons.logging,
  org.jboss.remoting,
@@ -71,7 +71,7 @@ Import-Package: javax.management,
  org.nuxeo.common.utils,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
- org.osgi.framework;version="1.4",
+ org.osgi.framework,
  org.w3c.dom,
  org.w3c.dom.ranges
 Nuxeo-Require: org.nuxeo.osgi

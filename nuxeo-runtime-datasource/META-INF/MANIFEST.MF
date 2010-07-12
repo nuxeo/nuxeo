@@ -20,6 +20,7 @@ Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging,
  org.nuxeo.common.jndi,
  org.nuxeo.common.utils,
+ org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
@@ -30,4 +31,3 @@ Import-Package: javax.annotation;version="1.0",
 Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
 Eclipse-RegisterBuddy: org.nuxeo.runtime
 Nuxeo-Require: org.nuxeo.runtime
-Require-Bundle: org.nuxeo.common
