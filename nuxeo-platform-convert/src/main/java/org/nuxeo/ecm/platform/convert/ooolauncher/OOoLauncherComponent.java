@@ -53,7 +53,6 @@ public class OOoLauncherComponent extends DefaultComponent implements
         return configHelper;
     }
 
-
     public boolean isOOoLaunched() {
         return started;
     }
@@ -154,11 +153,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
                 log.debug("Try to connect using SocketOpenOfficeConnection is a separated thread");
                 conn.connect();
                 log.debug("SocketOpenOfficeConnection succeeded");
-                connectedOk=true;
-            }
-            catch (Exception e) {
+                connectedOk = true;
+            } catch (Exception e) {
                 log.error("Error while connecting to OOo", e);
-                conn=null;
+                conn = null;
             }
         }
 
@@ -271,8 +269,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
     public boolean stopOOo() {
         if (!isOOoLaunched() || OOoProcess == null) {
-            log
-                    .debug("Can not stop OOo as it is not running (or not started by the launcher)");
+            log.debug("Can not stop OOo as it is not running (or not started by the launcher)");
             return false;
         }
 
@@ -289,7 +286,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
                 try {
                     oooConn.connect();
                 } catch (ConnectException e) {
-                    log.error("Unable to connect to Ooo in order to kill it !!!", e);
+                    log.error("Unable to connect to Ooo in order to kill it !!!");
                     return false;
                 }
             }
@@ -317,7 +314,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             if (sharedConnection!=null && sharedConnection.isConnected()) {
                 sharedConnection.disconnect();
             }
-            sharedConnection=null;
+            sharedConnection = null;
             OOoProcess.destroy();
             started = false;
             OOoProcess = null;
@@ -364,10 +361,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
         } else {
             if (!isPortFree()) {
                 log.info("Launcher is not enabled, but port is listening, assuming manual startup");
-                canGetConnection =  true;
+                canGetConnection = true;
             } else {
                 log.warn("Launcher is not enabled, no OOo instance seems to be listening on the target port");
-                canGetConnection =  false;
+                canGetConnection = false;
             }
         }
         return canGetConnection;
@@ -405,7 +402,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             return null;
         }
 
-        if (sharedConnection!=null) {
+        if (sharedConnection != null) {
             return sharedConnection;
         }
 
@@ -427,9 +424,9 @@ public class OOoLauncherComponent extends DefaultComponent implements
         }
 
         sharedConnection = safeGetConnection();
-        if (sharedConnection==null) {
+        if (sharedConnection == null) {
             log.error("Unable to connect to OOo server");
-            failedToConnect=true;
+            failedToConnect = true;
             releaseLock();
         }
 
@@ -438,11 +435,11 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
     public void releaseConnection(SocketOpenOfficeConnection connection) {
         releaseLock();
-        connUsageNb+=1;
-        if (connUsageNb>maxConnUsage) {
+        connUsageNb += 1;
+        if (connUsageNb > maxConnUsage) {
             sharedConnection.disconnect();
-            sharedConnection=null;
-            connUsageNb=0;
+            sharedConnection = null;
+            connUsageNb = 0;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandl
 
 /**
  * @author arussel
- *
  */
 public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
