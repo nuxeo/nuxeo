@@ -14,7 +14,7 @@ English: Nuxeo Team
 French: Nuxeo Team
 Galician: Jose Luis de la Rosa
 German: Georges Racinet
-Italian: Mirto Silvio Busico
+Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier
 Japanese: Damien Dupraz
 Polish: Adam Lozy
 Portuguese: Jose Luis de la Rosa
