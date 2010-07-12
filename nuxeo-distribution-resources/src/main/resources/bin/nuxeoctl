@@ -374,7 +374,7 @@ start() {
     $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
       -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-      org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
+      -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
   elif [ "$jetty" = "true" ]; then
     $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
@@ -458,7 +458,7 @@ case "$1" in
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
         -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-        org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
+        -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
     elif [ "$jetty" = "true" ]; then
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
@@ -486,11 +486,11 @@ case "$1" in
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
         -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-        org.apache.catalina.startup.Bootstrap start
+        -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
         -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-        org.apache.catalina.startup.Bootstrap start
+        -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start
     elif [ "$jetty" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
