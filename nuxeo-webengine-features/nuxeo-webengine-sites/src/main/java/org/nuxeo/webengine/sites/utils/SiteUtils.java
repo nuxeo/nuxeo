@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -148,8 +149,16 @@ public class SiteUtils {
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append('/');
-        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
-                '/');
+
+        if (ws.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)) {
+            try {
+                path.append(ws.getPropertyValue(SiteConstants.WEBCONTAINER_URL)).append("/");
+            } catch (Exception e) {
+                path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+            }
+        } else {
+            path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+        }
         path.append(JsonAdapter.getRelativePath(ws, documentModel));
         return path.toString();
     }
