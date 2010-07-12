@@ -64,11 +64,35 @@
 # Author: Bogdan Stefanescu <bs@nuxeo.com>
 #
 ################################################
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false;
+darwin=false;
+linux=false;
+case "`uname`" in
+    CYGWIN*)
+        cygwin=true
+        ;;
+
+    Darwin*)
+        darwin=true
+        ;;
+
+    Linux)
+        linux=true
+        ;;
+esac
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if $cygwin ; then
+    [ -n "$JAVA_HOME" ] &&
+        JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+fi
+
 if [ -z "$JAVA_HOME" ]; then
     echo 'Missing JAVA_HOME' >&2;
     exit 2
 fi
-if [ ! -x $JAVA_HOME/bin/java ]; then
+if [ ! -x "$JAVA_HOME/bin/java" ]; then
     echo 'Can not execute $JAVA_HOME/bin/java' >&2;
     exit 2
 fi
@@ -94,6 +118,6 @@ NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
 #the eclipse plugin is using this option to start webengine.
 #POST_BUNDLES="-post-bundles /path/to/your/external/bundle:/path/to/second/bundle:/etc"
 
-$JAVA_HOME/bin/java $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
+"$JAVA_HOME/bin/java" $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
     bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
     bundles/.:lib/.:config $POST_BUNDLES -home . $DEV_OPTS "$@"
