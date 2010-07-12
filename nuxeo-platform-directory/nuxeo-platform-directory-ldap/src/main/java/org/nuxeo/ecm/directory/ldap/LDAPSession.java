@@ -38,6 +38,7 @@ import java.util.SimpleTimeZone;
 
 import javax.naming.Context;
 import javax.naming.LimitExceededException;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.SizeLimitExceededException;
@@ -168,6 +169,11 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         attrs.put(attr);
                     }
                     referenceFieldList.add(fieldId);
+                } else if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendFieldId)) {
+                    // ignore special DN field
+                    log.warn(String.format(
+                            "field %s is mapped to read only DN field: ignored",
+                            fieldId));
                 } else {
                     Object value = fieldMap.get(fieldId);
                     if ((value != null) && !value.equals("")) {
@@ -267,17 +273,51 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     fetchAllAttributes, searchBaseDn, filterExpr, id,
                     scts.getSearchScope(), this));
         }
-        NamingEnumeration<SearchResult> results = dirContext.search(
-                searchBaseDn, filterExpr, filterArgs, scts);
+        NamingEnumeration<SearchResult> results;
+        try {
+            results = dirContext.search(searchBaseDn, filterExpr, filterArgs,
+                    scts);
+        } catch (NameNotFoundException nnfe) {
+            // sometimes ActiveDirectory have some query fail with: LDAP:
+            // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
+            // 2001 (NO_OBJECT).
+            // To keep the application usable return no results instead of
+            // crashing but log the error so that the AD admin
+            // can fix the issue.
+            log.error(
+                    "Unexpected response from server while performing query: "
+                            + nnfe.getMessage(), nnfe);
+            return null;
+        }
 
         if (!results.hasMore()) {
             log.debug("Entry not found: " + id);
             return null;
         }
         SearchResult result = results.next();
-        if (results.hasMore()) {
-            log.debug("More than one entry found for: " + id);
-            throw new DirectoryException("more than one entry found for: " + id);
+        try {
+            String dn = result.getNameInNamespace();
+            if (results.hasMore()) {
+                result = results.next();
+                String dn2 = result.getNameInNamespace();
+                String msg = String.format(
+                        "Unable to fetch entry for '%s': found more than one match,"
+                                + " for instance: '%s' and '%s'", id, dn, dn2);
+                log.error(msg);
+                // ignore entries that are ambiguous while giving enough info in
+                // the logs to let the LDAP admin be able to fix the issue
+                return null;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                                + " args='%s' scope='%s' => found: %s [%s]",
+                        id, fetchAllAttributes, searchBaseDn, filterExpr, id,
+                        scts.getSearchScope(), dn, this));
+            }
+        } catch (UnsupportedOperationException e) {
+            // ignore unsupported operation thrown by the Apache DS server in
+            // the tests in embedded mode
         }
         return result;
     }
@@ -320,7 +360,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 }
             }
 
-            if (!isReadOnly() && !updateList.isEmpty()) {
+            if (!isReadOnlyEntry(docModel) && !updateList.isEmpty()) {
                 Attributes attrs = new BasicAttributes();
                 SearchResult ldapEntry = getLdapEntry(docModel.getId());
                 if (ldapEntry == null) {
@@ -335,6 +375,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     Object value = docModel.getProperty(schemaName, f);
                     String backendField = directory.getFieldMapper().getBackendField(
                             f);
+                    if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendField)) {
+                        // skip special LDAP DN field that is readonly
+                        log.warn(String.format(
+                                "field %s is mapped to read only DN field: ignored",
+                                f));
+                        continue;
+                    }
                     if (value == null || value.equals("")) {
                         Attribute attr;
                         if (getMandatoryAttributes().contains(backendField)) {
@@ -489,17 +536,28 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         searchBaseDn, filterExpr, StringUtils.join(filterArgs,
                                 ","), scts.getSearchScope(), this));
             }
-            NamingEnumeration<SearchResult> results = dirContext.search(
-                    searchBaseDn, filterExpr, filterArgs, scts);
+            try {
+                NamingEnumeration<SearchResult> results = dirContext.search(
+                        searchBaseDn, filterExpr, filterArgs, scts);
+                DocumentModelList entries = ldapResultsToDocumentModels(
+                        results, fetchReferences);
 
-            DocumentModelList entries = ldapResultsToDocumentModels(results,
-                    fetchReferences);
-
-            if (orderBy != null && !orderBy.isEmpty()) {
-                directory.orderEntries(entries, orderBy);
+                if (orderBy != null && !orderBy.isEmpty()) {
+                    directory.orderEntries(entries, orderBy);
+                }
+                return entries;
+            } catch (NameNotFoundException nnfe) {
+                // sometimes ActiveDirectory have some query fail with: LDAP:
+                // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
+                // 2001 (NO_OBJECT).
+                // To keep the application usable return no results instead of
+                // crashing but log the error so that the AD admin
+                // can fix the issue.
+                log.error(
+                        "Unexpected response from server while performing query: "
+                                + nnfe.getMessage(), nnfe);
+                return new DocumentModelListImpl();
             }
-
-            return entries;
         } catch (LimitExceededException e) {
             throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
         } catch (NamingException e) {
@@ -776,13 +834,24 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 // manage directly stored fields
                 String attributeId = directory.getFieldMapper().getBackendField(
                         fieldName);
-                attribute = attributes.get(attributeId);
-                if (fieldName.equals(passwordFieldId)) {
-                    // do not try to fetch the password attribute
-                    continue;
+                if (attributeId.equals(LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY)) {
+                    // this is the special DN readonly attribute
+                    try {
+                        fieldMap.put(fieldName, result.getNameInNamespace());
+                    } catch (UnsupportedOperationException e) {
+                        // ignore ApacheDS partial implementation when running
+                        // in embedded mode
+                    }
                 } else {
-                    fieldMap.put(fieldName, getFieldValue(attribute, fieldName,
-                            entryId, fetchReferences));
+                    // this is a regular attribute
+                    attribute = attributes.get(attributeId);
+                    if (fieldName.equals(passwordFieldId)) {
+                        // do not try to fetch the password attribute
+                        continue;
+                    } else {
+                        fieldMap.put(fieldName, getFieldValue(attribute,
+                                fieldName, entryId, fetchReferences));
+                    }
                 }
             }
         }

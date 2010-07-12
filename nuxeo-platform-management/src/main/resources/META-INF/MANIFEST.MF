@@ -7,6 +7,7 @@ Provide-Package: org.nuxeo.ecm.platform.management
 Require-Bundle: org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management,
  org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.event,
  org.nuxeo.platform.web.common,
  org.nuxeo.platform.scheduler.core
 Nuxeo-Require: org.nuxeo.ecm.core.api, 

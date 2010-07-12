@@ -23,7 +23,7 @@ import java.util.Set;
  */
 public interface ProbeSchedulerMBean {
 
-    Set<String> getScheduledProbes();
+    Set<String> getProbeNames();
 
     int getScheduledProbesCount();
 

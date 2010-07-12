@@ -137,7 +137,7 @@ public class GroupModCommand extends AbstractCommand {
                 if (nextLine.length == CSV_COLUMN_COUNT) {
                     userNames.add(nextLine[0]);
                 } else {
-                    log.error("The following CSV line will not be imported because it hasn't the requiread "
+                    log.error("The following CSV line will not be imported because it hasn't the required "
                             + CSV_COLUMN_COUNT
                             + " field "
                             + "\n"
@@ -160,12 +160,15 @@ public class GroupModCommand extends AbstractCommand {
                     + "\" doesn't exist in the directory.");
             return;
         }
+        List<String> groupMemberNames;
         if (appendUsers) {
-            List<String> previousUserNames = (List<String>) entry.getProperty(
+            groupMemberNames = (List<String>) entry.getProperty(
                     "group", "members");
-            userNames.addAll(previousUserNames);
+            groupMemberNames.addAll(userNames);
+        } else {
+            groupMemberNames = userNames;
         }
-        entry.setProperty("group", "members", userNames);
+        entry.setProperty("group", "members", groupMemberNames);
         directorySession.updateEntry(entry);
         log.info("Group " + groupName + " updated successfully.");
     }

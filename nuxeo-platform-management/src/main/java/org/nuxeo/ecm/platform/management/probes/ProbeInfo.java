@@ -21,13 +21,13 @@ import java.util.Date;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
-public class ProbeContext implements ProbeMBean {
+public class ProbeInfo implements ProbeMBean {
 
     @SuppressWarnings("unused")
-    private final ProbeSchedulerService scheduler;
+    private final ProbeComponent scheduler;
 
-    protected ProbeContext(ProbeSchedulerService usecaseSchedulerService,
-            Probe usecase, String repositoryName) {
+    protected ProbeInfo(ProbeComponent usecaseSchedulerService, Probe usecase,
+            String repositoryName) {
         scheduler = usecaseSchedulerService;
         this.usecase = usecase;
         runner = new RepositoryRunner(repositoryName);
@@ -56,6 +56,8 @@ public class ProbeContext implements ProbeMBean {
     protected Date lastFailedDate;
 
     protected Exception lastFailedCause;
+
+    protected ProbeStatus probeStatus;
 
     public long getFailedCount() {
         return failedCount;
@@ -90,15 +92,15 @@ public class ProbeContext implements ProbeMBean {
     }
 
     public void disable() {
-        ProbeContext.this.isEnabled = false;
+        ProbeInfo.this.isEnabled = false;
     }
 
     public void enable() {
-        ProbeContext.this.isEnabled = true;
+        ProbeInfo.this.isEnabled = true;
     }
 
     public boolean isEnabled() {
-        return ProbeContext.this.isEnabled;
+        return ProbeInfo.this.isEnabled;
     }
 
     public boolean isInError() {
@@ -109,6 +111,19 @@ public class ProbeContext implements ProbeMBean {
             return lastFailedDate.after(lastSucceedDate);
         }
         return true;
+    }
+
+    public ProbeStatus getProbeStatus() {
+        return probeStatus;
+    }
+    
+    public String getShortcutName(){
+        return shortcutName;
+        
+    }
+
+    public void setProbeStatus(ProbeStatus probeStatus) {
+        this.probeStatus = probeStatus;
     }
 
     protected static Long doGetDuration(Date fromDate, Date toDate) {
@@ -126,7 +141,7 @@ public class ProbeContext implements ProbeMBean {
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(RepositoryRunner.class.getClassLoader());
             try {
-                ProbeContext.this.runner.runUnrestricted();
+                ProbeInfo.this.runner.runUnrestricted();
             } finally {
                 currentThread.setContextClassLoader(lastLoader);
             }
@@ -140,6 +155,7 @@ public class ProbeContext implements ProbeMBean {
             Date startingDate = new Date();
             try {
                 usecase.runProbe(session);
+                setProbeStatus(usecase.getProbeStatus());
                 succeedCount += 1;
                 lastSucceedDate = startingDate;
             } catch (ClientException e) {
@@ -165,7 +181,7 @@ public class ProbeContext implements ProbeMBean {
     public void run() {
         Thread currentThread = Thread.currentThread();
         ClassLoader lastLoader = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(ProbeContext.class.getClassLoader());
+        currentThread.setContextClassLoader(ProbeInfo.class.getClassLoader());
         try {
             runner.runUnrestricted();
         } catch (ClientException e) {

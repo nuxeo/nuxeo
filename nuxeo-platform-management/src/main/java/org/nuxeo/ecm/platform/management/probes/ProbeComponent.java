@@ -17,13 +17,10 @@
 package org.nuxeo.ecm.platform.management.probes;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ManagementRuntimeException;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.management.ResourcePublisherService;
@@ -34,30 +31,29 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
+ * 
  */
-public class ProbeSchedulerService extends DefaultComponent implements
-        ProbeScheduler, ProbeSchedulerMBean {
+public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
+        ProbeSchedulerMBean, ProbeRunner {
 
     protected static final ComponentName NAME = new ComponentName(
             ProbeScheduler.class.getCanonicalName());
 
     protected static String SCHEDULE_ID = "ProbeSchedule";
 
-    public ProbeSchedulerService() {
+    public ProbeComponent() {
         super(); // enables breaking
     }
 
-    protected Set<String> doExtractProbesName(
-            Collection<ProbeContext> runners) {
+    protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
-        for (ProbeContext runner : runners) {
+        for (ProbeInfo runner : runners) {
             names.add(runner.shortcutName);
         }
         return names;
     }
 
-    public Set<String> getScheduledProbes() {
+    public Set<String> getProbeNames() {
         return doExtractProbesName(runnerRegistry.scheduledProbesContext.values());
     }
 
@@ -77,6 +73,10 @@ public class ProbeSchedulerService extends DefaultComponent implements
         return doExtractProbesName(runnerRegistry.succeedProbesContext);
     }
 
+    public Set<ProbeInfo> getProbesInfoInSuccess() {
+        return runnerRegistry.succeedProbesContext;
+    }
+    
     public int getProbesInSuccessCount() {
         return runnerRegistry.succeedProbesContext.size();
     }
@@ -100,28 +100,27 @@ public class ProbeSchedulerService extends DefaultComponent implements
         protected void doPublish() {
             service.registerResource("probe-scheduler",
                     ObjectNameFactory.formatProbeQualifiedName(NAME),
-                    ProbeSchedulerMBean.class, ProbeSchedulerService.this);
+                    ProbeSchedulerMBean.class, ProbeComponent.this);
         }
 
         protected void doUnpublish() {
             service.unregisterResource("probe-scheduler",
                     ObjectNameFactory.formatProbeQualifiedName(NAME));
-            for (ProbeContext context : runnerRegistry.scheduledProbesContext.values()) {
+            for (ProbeInfo context : runnerRegistry.scheduledProbesContext.values()) {
                 doUnpublishContext(context);
             }
             service = null;
         }
 
-        protected void doPublishContext(ProbeContext context) {
+        protected void doPublishContext(ProbeInfo context) {
             if (service == null) {
                 return;
             }
             service.registerResource(context.shortcutName,
-                    context.qualifiedName, ProbeMBean.class,
-                    context);
+                    context.qualifiedName, ProbeMBean.class, context);
         }
 
-        protected void doUnpublishContext(ProbeContext context) {
+        protected void doUnpublishContext(ProbeInfo context) {
             if (service == null) {
                 return;
             }
@@ -129,7 +128,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
                     context.qualifiedName);
         }
 
-        protected void doQualifyNames(ProbeContext context,
+        protected void doQualifyNames(ProbeInfo context,
                 ProbeDescriptor descriptor) {
             context.shortcutName = ObjectNameFactory.formatProbeShortName(descriptor.getShortcutName());
             context.qualifiedName = descriptor.getQualifiedName();
@@ -142,76 +141,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     protected final ManagementPublisher managementPublisher = new ManagementPublisher();
 
-    protected class RunnerRegistry {
-
-        protected final Map<Class<? extends Probe>, ProbeContext> scheduledProbesContext
-                = new HashMap<Class<? extends Probe>, ProbeContext>();
-
-        protected final Set<ProbeContext> failedProbesContext = new HashSet<ProbeContext>();
-
-        protected final Set<ProbeContext> succeedProbesContext = new HashSet<ProbeContext>();
-
-        protected void doRegisterProbe(ProbeDescriptor descriptor) {
-            Class<? extends Probe> probeClass = descriptor.getProbeClass();
-            Class<?> serviceClass = descriptor.getServiceClass();
-            Object service = Framework.getLocalService(serviceClass);
-            Probe probe;
-            try {
-                probe = probeClass.newInstance();
-            } catch (Exception e) {
-                throw new ManagementRuntimeException(
-                        "Cannot create management probe for " + descriptor);
-            }
-            probe.init(service);
-            ProbeContext context = new ProbeContext(
-                    ProbeSchedulerService.this, probe, "default");
-            managementPublisher.doQualifyNames(context, descriptor);
-            managementPublisher.doPublishContext(context);
-            scheduledProbesContext.put(probeClass, context);
-        }
-
-        protected void doUnregisterProbe(ProbeDescriptor descriptor) {
-            Class<? extends Probe> probeClass = descriptor.getProbeClass();
-            ProbeContext context = scheduledProbesContext.remove(probeClass);
-            if (context == null) {
-                throw new IllegalArgumentException("not registered probe"
-                        + descriptor);
-            }
-            managementPublisher.doUnpublishContext(context);
-        }
-
-        protected void doRun() {
-            if (!isEnabled) {
-                return;
-            }
-            for (ProbeContext context : scheduledProbesContext.values()) {
-                try {
-                    context.runner.runWithSafeClassLoader();
-                    failedProbesContext.remove(context);
-                    succeedProbesContext.add(context);
-                } catch (Exception e) {
-                    succeedProbesContext.remove(context);
-                    failedProbesContext.add(context);
-                }
-            }
-        }
-
-        protected boolean isEnabled = true;
-
-        public void enable() {
-            isEnabled = true;
-        }
-
-        public void disable() {
-            isEnabled = false;
-        }
-
-        public boolean isEnabled() {
-            return isEnabled;
-        }
-    }
-
-    protected final RunnerRegistry runnerRegistry = new RunnerRegistry();
+    protected final ProbeRegistry runnerRegistry = new ProbeRegistry(this);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -232,7 +162,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals(PROBES_EXT_KEY)) {
-            runnerRegistry.doRegisterProbe((ProbeDescriptor) contribution);
+            runnerRegistry.registerProbe((ProbeDescriptor) contribution);
         }
     }
 
@@ -241,13 +171,12 @@ public class ProbeSchedulerService extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals(PROBES_EXT_KEY)) {
-            runnerRegistry.doUnregisterProbe((ProbeDescriptor) contribution);
+            runnerRegistry.unregisterProbe((ProbeDescriptor) contribution);
         }
     }
 
-    public ProbeContext getScheduledRunner(
-            Class<? extends Probe> usecaseClass) {
-        ProbeContext runner = runnerRegistry.scheduledProbesContext.get(usecaseClass);
+    public ProbeInfo getScheduledRunner(Class<? extends Probe> usecaseClass) {
+        ProbeInfo runner = runnerRegistry.scheduledProbesContext.get(usecaseClass);
         if (runner == null) {
             throw new IllegalArgumentException("no probe scheduled for "
                     + usecaseClass);
@@ -255,8 +184,38 @@ public class ProbeSchedulerService extends DefaultComponent implements
         return runner;
     }
 
-    public Collection<ProbeContext> getScheduledProbesContext() {
+    public Collection<ProbeInfo> getScheduledProbesContext() {
         return runnerRegistry.scheduledProbesContext.values();
+    }
+
+    public boolean run() {
+        runnerRegistry.doRun();
+        if (getProbesInErrorCount() > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean runProbe(ProbeInfo probe) {
+        runnerRegistry.doRunProbe(probe);
+        if (getProbesInSuccess().contains(probe.shortcutName)) {
+            return true;
+        }
+        return false;
+    }
+
+    public Collection<ProbeInfo> getRunWithSucessProbesInfo() {
+        return runnerRegistry.succeedProbesContext;
+    }
+
+    public ProbeInfo getProbeInfo(String probeQualifiedName) {
+        Collection<ProbeInfo> runners = runnerRegistry.scheduledProbesContext.values();
+        for (ProbeInfo runner : runners) {
+            if (probeQualifiedName.equals(runner.shortcutName)) {
+                return runner;
+            }
+        }
+        return null;
     }
 
 }

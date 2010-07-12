@@ -23,11 +23,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ProbeScheduleListener implements EventListener {
 
-    protected ProbeSchedulerService service;
+    protected ProbeComponent service;
 
     public void handleEvent(Event event)  {
         if (service == null) {
-            service = (ProbeSchedulerService) Framework.getLocalService(ProbeScheduler.class);
+            service = (ProbeComponent) Framework.getLocalService(ProbeScheduler.class);
         }
         service.runnerRegistry.doRun();
     }

@@ -47,4 +47,8 @@ final class Whiteboard {
         count += 1;
     }
 
+    public synchronized void decreaseCount() {
+        count -= 1;
+    }
+
 }

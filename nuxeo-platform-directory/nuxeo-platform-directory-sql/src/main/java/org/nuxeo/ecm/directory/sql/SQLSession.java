@@ -200,8 +200,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = insert.getStatement();
 
         DocumentModel entry;
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql);
             int index = 1;
             for (Column column : columnList) {
                 String fieldName = column.getName();
@@ -213,6 +214,14 @@ public class SQLSession extends BaseSession implements EntrySource {
             entry = fieldMapToDocumentModel(fieldMap);
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
 
         // second step: add references fields
@@ -292,8 +301,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         select.setWhere(whereClause);
         String sql = select.getStatement();
 
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, idField, id);
             addFilterValues(ps, 2);
 
@@ -325,6 +335,14 @@ public class SQLSession extends BaseSession implements EntrySource {
             return entry;
         } catch (SQLException e) {
             throw new DirectoryException("getEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 
@@ -377,8 +395,9 @@ public class SQLSession extends BaseSession implements EntrySource {
             update.setWhere(whereString);
             String sql = update.getStatement();
 
+            PreparedStatement ps = null;
             try {
-                PreparedStatement ps = sqlConnection.prepareStatement(sql);
+                ps = sqlConnection.prepareStatement(sql);
 
                 int index = 1;
                 // TODO: how can I reset dirty fields?
@@ -393,6 +412,14 @@ public class SQLSession extends BaseSession implements EntrySource {
             } catch (SQLException e) {
                 throw new DirectoryException("updateEntry failed for "
                         + docModel.getId(), e);
+            } finally {
+                try {
+                    if (ps != null) {
+                        ps.close();
+                    }
+                } catch (SQLException sqle) {
+                    throw new DirectoryException(sqle);
+                }
             }
         }
 
@@ -437,6 +464,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
 
         // second step: clean stored fields
+        PreparedStatement ps = null;
         try {
             Delete delete = new Delete(dialect);
             delete.setTable(table);
@@ -444,11 +472,19 @@ public class SQLSession extends BaseSession implements EntrySource {
                     + " = ?";
             delete.setWhere(whereString);
             String sql = delete.getStatement();
-            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, idField, id);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException("deleteEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
         directory.invalidateCaches();
     }
@@ -464,7 +500,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
 
         // Assume in this case that there are no References to this entry.
-
+        PreparedStatement ps = null;
         try {
             Delete delete = new Delete(dialect);
             delete.setTable(table);
@@ -491,7 +527,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
             }
             delete.setWhere(whereClause.toString());
-            PreparedStatement ps = sqlConnection.prepareStatement(delete.getStatement());
+            ps = sqlConnection.prepareStatement(delete.getStatement());
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     setFieldValue(ps, 1, idField, values.get(i));
@@ -502,6 +538,14 @@ public class SQLSession extends BaseSession implements EntrySource {
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException("deleteEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
         directory.invalidateCaches();
     }
@@ -901,13 +945,22 @@ public class SQLSession extends BaseSession implements EntrySource {
         select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
                 + " = ?");
         String sql = select.getStatement();
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, idField, id);
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
             throw new DirectoryException("hasEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 

@@ -161,8 +161,9 @@ public class TableReference extends AbstractReference {
 
         String selectSql = select.getStatement();
 
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = session.sqlConnection.prepareStatement(selectSql);
+            ps = session.sqlConnection.prepareStatement(selectSql);
             ps.setString(1, sourceId);
             ps.setString(2, targetId);
             ResultSet rs = ps.executeQuery();
@@ -171,6 +172,14 @@ public class TableReference extends AbstractReference {
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "error reading link from %s to %s", sourceId, targetId), e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 
@@ -203,14 +212,23 @@ public class TableReference extends AbstractReference {
         insert.addColumn(table.getColumn(targetColumn));
         String insertSql = insert.getStatement();
 
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = session.sqlConnection.prepareStatement(insertSql);
+            ps = session.sqlConnection.prepareStatement(insertSql);
             ps.setString(1, sourceId);
             ps.setString(2, targetId);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "error adding link from %s to %s", sourceId, targetId), e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 
@@ -264,12 +282,21 @@ public class TableReference extends AbstractReference {
         String sql = String.format("DELETE FROM %s WHERE %s = ?",
                 table.getQuotedName(dialect),
                 table.getColumn(column).getQuotedName(dialect));
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = session.sqlConnection.prepareStatement(sql);
+            ps = session.sqlConnection.prepareStatement(sql);
             ps.setString(1, entryId);
             ps.execute();
         } catch (SQLException e) {
             throw new DirectoryException("error remove links to " + entryId, e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 
@@ -320,8 +347,9 @@ public class TableReference extends AbstractReference {
                 table.getColumn(idsColumn).getQuotedName(dialect),
                 table.getQuotedName(dialect),
                 table.getColumn(filterColumn).getQuotedName(dialect));
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = session.sqlConnection.prepareStatement(selectSql);
+            ps = session.sqlConnection.prepareStatement(selectSql);
             ps.setString(1, filterValue);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -337,6 +365,14 @@ public class TableReference extends AbstractReference {
         } catch (SQLException e) {
             throw new DirectoryException("failed to fetch existing links for "
                     + filterValue, e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
 
         if (!idsToDelete.isEmpty()) {
@@ -354,7 +390,7 @@ public class TableReference extends AbstractReference {
             String deleteSql = delete.getStatement();
 
             try {
-                PreparedStatement ps = session.sqlConnection.prepareStatement(deleteSql);
+                ps = session.sqlConnection.prepareStatement(deleteSql);
                 for (String unwantedId : idsToDelete) {
                     ps.setString(1, filterValue);
                     ps.setString(2, unwantedId);
@@ -363,6 +399,14 @@ public class TableReference extends AbstractReference {
             } catch (SQLException e) {
                 throw new DirectoryException(
                         "failed to remove unwanted links for " + filterValue, e);
+            } finally {
+                try {
+                    if (ps != null) {
+                        ps.close();
+                    }
+                } catch (SQLException sqle) {
+                    throw new DirectoryException(sqle);
+                }
             }
         }
 
