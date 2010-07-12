@@ -1422,6 +1422,12 @@
         <version>1.6</version>
       </dependency>
       <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+	<classifier>osgi</classifier>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.hp.hpl.jena</groupId>
         <artifactId>jena</artifactId>
         <version>2.5.4</version>
@@ -1620,6 +1626,32 @@
 	<groupId>org.apache.tomcat</groupId>
 	<artifactId>catalina</artifactId>
 	<version>6.0.20</version>
+	<exclusions>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>juli</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>annotations-api</artifactId>
+          </exclusion>
+	</exclusions>
+      </dependency>
+
+      <dependency>
+	<groupId>org.apache.tomcat</groupId>
+	<artifactId>juli</artifactId>
+	<version>6.0.20</version>
+	<exclusions>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>annotations-api</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
 
       <dependency>
@@ -1877,6 +1909,9 @@
 	</excludes>
       </resource>	
       <resource>
+	<directory>OSGI-INF</directory>
+      </resource>	
+      <resource>
 	<directory>src/main/resources</directory>
       </resource>
     </resources>
@@ -1948,10 +1983,6 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
           <downloadSources>false</downloadSources>
-          <pde>true</pde>
-          <osgideps>true</osgideps>
-          <notests>false</notests>
-          <osgify>false</osgify>
         </configuration>
       </plugin>
       <plugin>
@@ -2337,6 +2368,26 @@
   </reporting>
 
   <profiles>
+
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	    <version>2.9-NXP-SNAPSHOT</version>
+            <configuration>
+              <downloadSources>false</downloadSources>
+              <pde>true</pde>
+              <osgideps>true</osgideps>
+              <notests>false</notests>
+              <osgify>false</osgify>
+            </configuration>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
 
     <profile>
       <id>tycho</id>
