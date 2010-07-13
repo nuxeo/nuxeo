@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
-    
+
     <layout name="webcontainer">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -55,7 +55,8 @@
 
       <widget name="url" type="template">
         <widgetModes>
-          <mode value="any">view</mode>
+         <mode value="create">hidden</mode>
+         <mode value="any">view</mode>
         </widgetModes>
         <translated>true</translated>
         <fields>
@@ -67,7 +68,7 @@
           </property>
         </properties>
       </widget>
-      
+
       <widget name="baseline" type="text">
         <translated>true</translated>
         <fields>
@@ -132,7 +133,7 @@
       </widget>
 
     </layout>
-    
+
     <layout name="webpage">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -143,10 +144,10 @@
         </row>
         <row>
           <widget>contentWiki</widget>
-        </row> 
+        </row>
         <row>
           <widget>contentRich</widget>
-        </row> 
+        </row>
       </rows>
 
       <widget name="pushtomenu" type="template">
@@ -187,10 +188,10 @@
           <mode value="create">hidden</mode>
         </widgetModes>
       </widget>
-      
+
 
     </layout>
-    
+
     <!-- ContextualLink layout definition  -->
     <layout name="contextualLink">
       <templates>
@@ -199,7 +200,7 @@
       <rows>
         <row>
           <widget>link</widget>
-        </row>        
+        </row>
       </rows>
       <widget name="link" type="text">
         <translated>true</translated>
@@ -210,16 +211,16 @@
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
-      </widget>      
-    </layout>  
-    
+      </widget>
+    </layout>
+
     <layout name="WebSite">
       <templates>
         <template mode="any">
           /layouts/layout_site_url_link.xhtml
         </template>
-      </templates>      
-    </layout>          
+      </templates>
+    </layout>
 
   </extension>
 
