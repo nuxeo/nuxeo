@@ -75,11 +75,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.dojotoolkit</groupId>
-      <artifactId>custom_rhino</artifactId>
-      <version>0.9.0</version>
+      <groupId>com.yahoo</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>

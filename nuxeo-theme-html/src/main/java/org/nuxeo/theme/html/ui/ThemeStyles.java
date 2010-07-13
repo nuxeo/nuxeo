@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
-import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
@@ -48,12 +48,12 @@ public class ThemeStyles {
             sb.append("<style type=\"text/css\">");
             final ThemeManager themeManager = Manager.getThemeManager();
             for (Style style : themeManager.getNamedStyles(themeName)) {
-                sb.append(Utils.styleToCss(style, style.getSelectorViewNames(),
+                sb.append(CSSUtils.styleToCss(style, style.getSelectorViewNames(),
                         RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME,
                         INDENT));
             }
             for (Style style : themeManager.getStyles(themeName)) {
-                sb.append(Utils.styleToCss(style, style.getSelectorViewNames(),
+                sb.append(CSSUtils.styleToCss(style, style.getSelectorViewNames(),
                         RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME,
                         INDENT));
             }

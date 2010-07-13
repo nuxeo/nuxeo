@@ -25,13 +25,11 @@
       sure fix for NXP-2586, NXP-3782 and for NXP-3600 are applied -->
     <resource name="prototype.js">
       <path>nxthemes/html/scripts/prototype.js</path>
-      <shrinkable>false</shrinkable>
     </resource>
 
     <!-- JQuery 1.2.3 -->
     <resource name="jquery.js">
       <path>nxthemes/html/scripts/jquery.js</path>
-      <shrinkable>false</shrinkable>
     </resource>
 
 
