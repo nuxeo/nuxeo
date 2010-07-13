@@ -25,6 +25,7 @@
     <nuxeo.webengine.version>5.3.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
     <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.addons.version>5.3.2-SNAPSHOT</nuxeo.addons.version>
   </properties>
 
   <modules>
@@ -1186,6 +1187,11 @@
         <artifactId>nuxeo-platform-test</artifactId>
         <version>${nuxeo.services.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-platform-lang-ext</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
