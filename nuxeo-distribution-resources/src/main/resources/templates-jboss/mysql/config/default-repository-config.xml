@@ -9,6 +9,7 @@
           <field type="largetext">note</field>
           <field type="largetext">webp:content</field>
           <field type="largetext">webc:welcomeText</field>
+          <field type="largetext">comment:comment</field>
         </schema>
         <indexing>
           <fulltext>
