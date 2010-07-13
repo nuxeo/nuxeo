@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="test"
-      factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository>
         <indexing>
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">

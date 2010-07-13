@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.ra;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
