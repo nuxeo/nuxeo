@@ -30,7 +30,6 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -56,7 +55,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("commentActions")
 @Scope(CONVERSATION)
-@SerializedConcurrentAccess
 @Install(precedence = FRAMEWORK)
 public class CommentActions implements Serializable {
 

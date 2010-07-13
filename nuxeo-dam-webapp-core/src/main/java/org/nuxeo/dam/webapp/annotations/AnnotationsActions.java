@@ -21,7 +21,6 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -40,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("annotationsActions")
 @Scope(ScopeType.CONVERSATION)
-@SerializedConcurrentAccess
 @Install(precedence = FRAMEWORK)
 public class AnnotationsActions {
 
