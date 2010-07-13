@@ -439,10 +439,12 @@ namespace NuxeoProcess
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
+				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+
 				" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"+
 				" -Dcatalina.base=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dcatalina.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Djava.io.tmpdir=\""+CATALINA_TEMP+"\""+
+				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR"]+"\""+
 				" org.apache.catalina.startup.Bootstrap start";
 			
 			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
