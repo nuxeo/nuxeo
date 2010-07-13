@@ -35,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.InverseReference;
 import org.nuxeo.ecm.directory.Reference;
 
@@ -116,6 +117,29 @@ public class LDAPDirectoryDescriptor {
 
     @XNode("queryTimeLimit")
     private int queryTimeLimit = 0; // default to wait indefinitely
+
+    protected EntryAdaptor entryAdaptor;
+
+    @XObject(value = "entryAdaptor")
+    public static class EntryAdaptorDescriptor {
+
+        @XNode("@class")
+        public Class<? extends EntryAdaptor> adaptorClass;
+
+        @XNodeMap(value = "parameter", key = "@name", type = HashMap.class, componentType = String.class)
+        public Map<String, String> parameters;
+
+    }
+
+    @XNode("entryAdaptor")
+    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor)
+            throws InstantiationException, IllegalAccessException {
+        entryAdaptor = adaptorDescriptor.adaptorClass.newInstance();
+        for (Map.Entry<String, String> paramEntry : adaptorDescriptor.parameters.entrySet()) {
+            entryAdaptor.setParameter(paramEntry.getKey(),
+                    paramEntry.getValue());
+        }
+    }
 
     // XXX: passwordEncryption?
     // XXX: ignoredFields?
@@ -307,6 +331,10 @@ public class LDAPDirectoryDescriptor {
 
     public int getQueryTimeLimit() {
         return queryTimeLimit;
+    }
+
+    public EntryAdaptor getEntryAdaptor() {
+        return entryAdaptor;
     }
 
 }

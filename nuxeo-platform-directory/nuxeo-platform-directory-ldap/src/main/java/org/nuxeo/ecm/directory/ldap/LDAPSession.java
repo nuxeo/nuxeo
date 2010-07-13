@@ -67,6 +67,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
+import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.Reference;
 
@@ -344,6 +345,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
+        if (isReadOnlyEntry(docModel)) {
+            // do not edit readonly entries
+            return;
+        }
         List<String> updateList = new ArrayList<String>();
         List<String> referenceFieldList = new LinkedList<String>();
 
@@ -637,11 +642,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return result;
     }
 
-    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap)
+            throws DirectoryException {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid,
                     schemaName, id, fieldMap, isReadOnly());
+            EntryAdaptor adaptor = directory.getConfig().getEntryAdaptor();
+            if (adaptor != null) {
+                docModel = adaptor.adapt(directory, docModel);
+            }
             return docModel;
         } catch (PropertyException e) {
             log.error(e, e);
