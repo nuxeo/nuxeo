@@ -210,7 +210,7 @@ public class PredicateDescriptor {
                 // value not provided: ignore predicate
                 return "";
             }
-            String lhs = parameter.equals(NXQL.ECM_FULLTEXT) ? parameter
+            String lhs = parameter.startsWith(NXQL.ECM_FULLTEXT) ? parameter
                     : NXQL.ECM_FULLTEXT + '.' + parameter;
             return lhs + ' ' + serializeFullText(escaper.escape(value));
         } else {
