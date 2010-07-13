@@ -1,98 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo</groupId>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.3.2-SNAPSHOT</version>
+  </parent>
+
   <artifactId>nuxeo-platform-lang-ext</artifactId>
-  <version>5.3.2-SNAPSHOT</version>
-  <packaging>jar</packaging>
   <name>Nuxeo EP Language Extensions</name>
   <description>
     Nuxeo Enterprise Platform: The Nuxeo Language Extensions package.
   </description>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
-          <configuration>
-            <archive>
-              <manifestFile>
-                src/main/resources/META-INF/MANIFEST.MF
-              </manifestFile>
-              <manifestEntries>
-                <Bundle-Version>${eclipseVersion}</Bundle-Version>
-                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-              </manifestEntries>
-            </archive>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
-  <profiles>
-    <!-- For use by Nuxeo internal QA -->
-    <profile>
-      <id>qa</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <repositories>
-        <repository>
-          <id>internal-releases</id>
-          <url>
-          http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
-          </url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>internal-snapshots</id>
-          <url>
-          http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
-          </url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-      </repositories>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>daily-snapshots</id>
-          <url>
-          http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
-          </url>
-          <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-  </profiles>
-
-  <distributionManagement>
+  <repositories>
     <repository>
-      <id>public-releases</id>
-      <url>
-      http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
-      </url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
-    <snapshotRepository>
-      <id>public-snapshots</id>
-      <url>
-      http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
-      </url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>
