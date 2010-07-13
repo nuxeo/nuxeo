@@ -39,7 +39,7 @@
  }
 
 .topBar img {
-  margin-left:50px;
+  margin-left:20px;
   }
 
 table.loginForm {
@@ -48,7 +48,7 @@ table.loginForm {
   }
 
 .leftColumn {
-  width:300px;
+  width:400px;
   }
 
 H1 {
@@ -87,11 +87,10 @@ H2 {
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
+  text-align: right;
   color: #454545;
   margin:0 4px 0 0;
   width:70px;
-  padding:5px 3px 0px 0px;
-  vertical-align:top;
   }
 
 .login_input {
@@ -174,20 +173,23 @@ nxthemes css is not used in login.jsp */
 
 .labelCorp a {
   text-decoration:none;
-  color:#9a9a9a;
-  font:normal 9px "Lucida Grande", sans-serif;
+  color:#d7d7d7;
+  font:normal 11px "Lucida Grande", sans-serif;
   padding-top:0px;
   }
 
 .labelCorp a:hover {
   text-decoration:underline;
   }
+  
+.news_container {
+ text-align:left;
+} 
 
 .block_container {
-  margin-right:50px;
   border:none;
   height:500px;
-  width:350px;
+  width:365px;
   overflow:auto;
   background-color:#ffffff;
   opacity:0.8;
@@ -234,28 +236,31 @@ nxthemes css is not used in login.jsp */
     <tr class="topBar">
       <td colspan="2" class="loginLogo">
         <div>
-          <img width="125" height="30" alt="Nuxeo DAM" src="/nuxeo/img/dam_logo.png"/>
+          <img width="305" height="30" alt="Nuxeo DAM" src="/nuxeo/img/dam_logo_login.png"/>
         </div>
       </td>
       <td align="right" class="leftColumn">
         <div class="labelCorp">
            <ul>
-             <li>
-               <a href="http://www.nuxeo.com/en">
-                 <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
-               </a>
-             </li>
-             <li>
-               <a href="http://www.nuxeo.com/en/services/support">
-                 <fmt:message bundle="${messages}" key="label.login.getSupport" />
-               </a>
-             </li>
-             <li>
-               <a href="http://www.nuxeo.org/sections/community/">
-                 <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
-               </a>
-             </li>
-           </ul>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://nuxeo.com/subscription/connect?utm_source=dam&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.getSupport" />
+              </a>
+            </li>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://www.nuxeo.org/discussions/index.jspa?utm_source=dam&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.forums" />
+              </a>
+            </li>
+            <li>
+              <a onclick="window.open(this.href); return false;"
+                href="http://doc.nuxeo.com/?utm_source=dam&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                <fmt:message bundle="${messages}" key="label.login.documentation" />
+              </a>
+            </li>
+          </ul>
            <div style="clear:both;" />
           </div>
        </td>
