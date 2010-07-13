@@ -88,20 +88,15 @@ class BasePage:
     def login(self, user, password):
         fl = self.fl
         fl.post(fl.server_url + "/nxstartup.faces", params=[
+            ['language', 'en_US'],
             ['user_name', user],
             ['user_password', password],
             ['form_submitted_marker', ''],
+            ['requestedUrl', ''],
             ['Submit', 'Connexion']],
             description="Login " + user)
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['langSelectForm', 'langSelectForm'],
-            ['langSelectForm:langSelectMenu', 'en_GB'],
-            ['langSelectForm:langSelectSubmitButton', 'Change'],
-            ['langSelectForm_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()]],
-            description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
                    "No log out link found on the welcome page")
         fl.current_login = user
@@ -157,6 +152,9 @@ class BasePage:
 
     def getRootWorkspaces(self):
         return self.viewDocumentPath("workspaces")
+
+    def getRootSections(self):
+        return self.viewDocumentPath("sections")
 
     def memberManagement(self):
         fl = self.fl
@@ -385,6 +383,32 @@ class BasePage:
         self.fl.assert_('Sections' in self.fl.getBody())
         return ret
 
+    def publishOnFirstSection(self):
+        """Publish in the first section"""
+        fl = self.fl
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['publishTreeForm', 'publishTreeForm'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeAjaxExpanded', 'true'],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeNodeExpanded', 'true'],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['AJAXREQUEST', '_viewRoot'],
+            ['publishTreeForm:publishTree:input', ''],
+            ['autoScroll', '']],
+            description="Publish view section root")
+
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['publishTreeForm', 'publishTreeForm'],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['AJAXREQUEST', '_viewRoot'],
+            ['publishTreeForm:publishTree:input', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:1::publishTreeNode'],
+            ['autoScroll', ''],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink']],
+            description="Publish document")
+        fl.assert_("Unpublish" in fl.getBody())
+        return self
+
     def relations(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
                                    description="View relations tab")
@@ -470,6 +494,28 @@ class FolderPage(BasePage):
         fl.assert_('Workspace saved' in fl.getBody())
         return self
 
+    def createSection(self, title, description):
+        fl = self.fl
+        server_url = fl.server_url
+        fl.post(server_url + "/view_documents.faces", params=[
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['documentActionSubviewUpperListForm_SUBMIT', '1'],
+            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
+            description="Create a section form")
+        fl.assert_('nxw_title' in fl.getBody(),
+                   "Workspace creation form not found.")
+        
+        fl.post(server_url + "/create_document.faces", params=[
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['document_create:nxl_heading:nxw_description', description],
+            ['document_create:nxl_heading:nxw_title', title],
+            ['document_create:button_create', 'Create'],
+            ['document_create_SUBMIT', '1']],
+            description="Create a section submit")
+        fl.assert_('Section saved' in fl.getBody())
+        return self
+        
+
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
@@ -519,7 +565,7 @@ class FolderPage(BasePage):
         fl.assert_('File saved' in fl.getBody())
         return self
 
-    def selectItem(self, title):
+    def selectItem(self, title, item_type="Workspace"):
         fl = self.fl
         conversation_id = self.getConversationId()
         folder_uid = self.getDocUid()
@@ -530,26 +576,32 @@ class FolderPage(BasePage):
         start = html.rfind('<tr class', start, end)
         doc_uid = extractToken(html[start:end], 'docRef:', '"')
         fl.assert_(doc_uid, 'item "%s" not found.' % title)
+        sel = 'CURRENT_SELECTION'
+        if item_type == "Section":
+            sel = 'CURRENT_SELECTION_SECTIONS'
         xml = '''<envelope><header><context><conversationId>%s</conversationId></context></header><body><call component="documentActions" method="checkCurrentDocAndProcessSelectRow" id="0">
-<params><param><str>%s</str></param><param><str>CURRENT_DOC_CHILDREN</str></param><param><str>CURRENT_SELECTION</str></param><param><bool>true</bool></param><param><str>%s</str></param></params><refs></refs></call></body></envelope>''' % (
-            conversation_id, doc_uid, folder_uid)
+<params><param><str>%s</str></param><param><str>CURRENT_DOC_CHILDREN</str></param><param><str>%s</str></param><param><bool>true</bool></param><param><str>%s</str></param></params><refs></refs></call></body></envelope>''' % (
+            conversation_id, doc_uid, sel, folder_uid)
         #print "%s" % xml
         fl.post(fl.server_url + "/seam/resource/remoting/execute",
                 Data('application/xml; charset=UTF-8',
                      xml),
                 description="Select document")
-        fl.assert_('SELECTION_ADDTOLIST' in fl.getBody())
+        fl.assert_(sel + "_TRASH" in fl.getBody())
         return self
 
-    def deleteItem(self, title):
+    def deleteItem(self, title, item_type="Workspace"):
         fl = self.fl
         folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
-        self.selectItem(title)
+        self.selectItem(title, item_type)
+        pos = '1'
+        if item_type == 'Section':
+            pos = '0'
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
-            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:1:clipboardActionsButton', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:' + pos + ':clipboardActionsButton', 'Delete'],
             ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1']],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())

@@ -61,6 +61,7 @@ namespace NuxeoCtl
 			this.hideLogsButton = new System.Windows.Forms.Button();
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.pictureBox2 = new System.Windows.Forms.PictureBox();
+			this.nxCtlState = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
@@ -234,6 +235,17 @@ namespace NuxeoCtl
 			this.pictureBox2.TabIndex = 10;
 			this.pictureBox2.TabStop = false;
 			// 
+			// nxCtlState
+			// 
+			this.nxCtlState.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.nxCtlState.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.nxCtlState.Location = new System.Drawing.Point(37, 194);
+			this.nxCtlState.Name = "nxCtlState";
+			this.nxCtlState.Size = new System.Drawing.Size(573, 23);
+			this.nxCtlState.TabIndex = 11;
+			this.nxCtlState.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,6 +254,7 @@ namespace NuxeoCtl
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
 			this.ClientSize = new System.Drawing.Size(652, 335);
+			this.Controls.Add(this.nxCtlState);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.label1);
@@ -258,10 +271,12 @@ namespace NuxeoCtl
 			this.Text = "NuxeoCtl";
 			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.Shown += new System.EventHandler(this.MainForm_Shown);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Label nxCtlState;
 		private System.Windows.Forms.Button showLogsButton;
 		private System.Windows.Forms.Button hideLogsButton;
 		private System.Windows.Forms.PictureBox pictureBox2;
@@ -289,10 +304,16 @@ namespace NuxeoCtl
 
 		}
 
+		private void DisplayCtlStateText(String text) {
+			nxCtlState.Text = text;
+		}
+		
 		bool StartApplication() {
 			if (nxControl == null)
 			{
 				nxControl = new NuxeoProcess.NuxeoController();
+				DisplayCtlStateText(null);
+				nxControl.ProcessStarted += new ProcessStartedHandler(nxControl_ProcessStarted);
 			}
 
 			if (!nxControl.IsLogDelegated()) {
@@ -310,6 +331,7 @@ namespace NuxeoCtl
 				return false;
 			}
 
+			DisplayCtlStateText("Nuxeo is starting ...");
 			Process nxProcess=nxControl.getProcess();
 			nxProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
 			nxProcess.BeginOutputReadLine();
@@ -319,8 +341,26 @@ namespace NuxeoCtl
 			return true;
 		}
 
+		void nxControl_ProcessStarted(object sender, EventArgs e)
+		{
+			if (CliUse)
+            {
+                Environment.Exit(0);
+                this.Close();
+            }
+			
+			String address = nxControl.nxEnv["NUXEO_BIND_ADDRESS"];
+			if (address == "0.0.0.0") {
+				address = "127.0.0.1";
+			}
+			
+			DisplayCtlStateText(String.Format("Nuxeo is now accessible at http://{0}:8080", address));
+		}
+
 		bool StopService() {
 			Log("Stopping "+nxSvcName+" service...","WARN");
+			DisplayCtlStateText("");
+			
 			try {
 				nxService.Stop();
 				return true;
@@ -350,6 +390,7 @@ namespace NuxeoCtl
 				stopProcess.ErrorDataReceived += new DataReceivedEventHandler(ErrorLog);
 				stopProcess.BeginErrorReadLine();
 
+				DisplayCtlStateText("");
 				return true;
 			}
 			else
@@ -362,6 +403,8 @@ namespace NuxeoCtl
 		bool TerminateApplication() {
 			if (nxControl!=null) {
 				nxControl.Terminate();
+				DisplayCtlStateText("");
+				
 				Log("Terminating "+nxSvcName+" application...","WARN");
 				return true;
 			} else {

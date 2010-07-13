@@ -68,6 +68,49 @@ class Pages(NuxeoTestCase):
              .search('workspaces')
              .logout())
 
+    def testSections(self):
+        title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
+        description = self.tag + ' ' + self._lipsum.getParagraph(1)
+        p = (LoginPage(self).login(*self.cred_admin)
+             .getRootSections()
+             .createSection(title, description)
+             )
+        p = (p.getRootSections()
+             .deleteItem(title, "Section")
+             .logout())
+
+
+    def dbgtestPublish(self):
+        p = LoginPage(self).login(*self.cred_admin)
+        p.viewDocumentPath('workspaces/flnxtest-page-workspace/flnxtest-page-folder/flnxtest-tsoc1g7-tris')
+        p.publish().publishOnFirstSection()
+        p.logout()
+    
+    def testPublish(self):
+        title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
+        description = self.tag + ' ' + self._lipsum.getParagraph(1)
+        title_section = self._lipsum.getSubject(uniq=True, prefix=self.tag)
+
+        p = (LoginPage(self).login(*self.cred_admin)
+             .getRootSections()
+             .createSection(title_section, description)
+             .rights().grant('ReadWrite', 'members')
+             .view()
+             )
+        p = (LoginPage(self).login(*self.cred_admin)
+             .getRootWorkspaces()
+             .createWorkspace(self.ws_title, 'A description')
+             .view()
+             .createFolder(self.dir_title, 'A description')
+             .createFile(title, description))
+        p = (p.publish().publishOnFirstSection())
+        p = (p.getRootWorkspaces()
+             .deleteItem(self.ws_title)
+             .getRootSections()
+             .deleteItem(title_section, "Section"))
+        p.logout()
+
+
     def testFolderPage(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
         description = self.tag + ' ' + self._lipsum.getParagraph(1)

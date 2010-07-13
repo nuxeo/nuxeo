@@ -29,3 +29,4 @@ def extractJsessionId(fl):
                 continue
             jid = cookie['JSESSIONID'].coded_value
     return jid
+

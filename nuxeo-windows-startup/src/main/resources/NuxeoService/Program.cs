@@ -27,7 +27,7 @@ namespace NuxeoService
 		/// <summary>
 		/// This method starts the service.
 		/// </summary>
-		static void Main()
+		static void Main(String[] args)
 		{
 			// To run more than one service you have to add them here
 			ServiceBase.Run(new ServiceBase[] { new NuxeoService() });

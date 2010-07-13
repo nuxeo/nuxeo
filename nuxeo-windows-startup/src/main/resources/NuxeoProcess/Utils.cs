@@ -95,6 +95,10 @@ namespace NuxeoProcess
 				String desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 				NUXEO_CONF = Path.Combine(desktop,"nuxeo.conf");
 			}
+			if (!File.Exists(NUXEO_CONF)) {
+				String binDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+				NUXEO_CONF = Path.Combine(binDir, "nuxeo.conf");
+			}
 			// Give up
 			if (!File.Exists(NUXEO_CONF)) {
 				Log("Could not find nuxeo configuration","ERROR");
