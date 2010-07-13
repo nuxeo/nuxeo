@@ -33,14 +33,4 @@
     </pluginManagement>
   </build>
 
-  <distributionManagement>
-    <repository>
-      <id>nuxeo-release</id>
-      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-snapshot</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
