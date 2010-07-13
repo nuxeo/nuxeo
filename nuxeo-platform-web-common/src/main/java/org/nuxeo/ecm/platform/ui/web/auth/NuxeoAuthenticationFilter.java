@@ -588,6 +588,10 @@ public class NuxeoAuthenticationFilter implements Filter {
             requestPage = getRequestedUrl(httpRequest);
         }
 
+        if (requestPage==null) {
+            return false;
+        }
+
         // avoid redirect if not useful
         if (requestPage.startsWith(DEFAULT_START_PAGE)) {
             return true;
@@ -662,6 +666,9 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected boolean isStartPageValid(String startPage) {
+        if (startPage==null) {
+            return false;
+        }
         for (String prefix : service.getStartURLPatterns()) {
             if (startPage.startsWith(prefix)) {
                 return true;
