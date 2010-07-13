@@ -233,8 +233,8 @@ namespace NuxeoCtl
 		
 		void MainFormFormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (!CliUse) {
-				if (nxService == null && !startButton.Visible) {
+			if (!(CliUse || nxService != null)) {
+				if (!startButton.Visible) {
 					DialogResult res = MessageBox.Show("Are you sure to exit ? Nuxeo will be shut down.", 
 						"Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 					e.Cancel = res == DialogResult.No;
