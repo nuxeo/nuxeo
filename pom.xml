@@ -33,20 +33,66 @@
     </pluginManagement>
   </build>
 
- <distributionManagement>
-   <repository>
-     <id>public-releases</id>
-     <url>
-     http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
-     </url>
-   </repository>
-   <snapshotRepository>
-     <id>public-snapshots</id>
-     <url>
-     http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
-     </url>
-     <uniqueVersion>true</uniqueVersion>
-   </snapshotRepository>
- </distributionManagement>
+  <profiles>
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>internal-releases</id>
+          <url>
+          http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>internal-snapshots</id>
+          <url>
+          http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>daily-snapshots</id>
+          <url>
+          http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
+          </url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
+  <distributionManagement>
+    <repository>
+      <id>public-releases</id>
+      <url>
+      http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+      http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
