@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 
@@ -55,6 +56,8 @@ namespace NuxeoProcess
 	}
 	
 	public delegate void LogEventHandler(object sender, LogEventArgs e);
+
+	public delegate void ProcessStartedHandler(object sender, EventArgs e);
 	
 	/// <summary>
 	/// This class starts and stop a Nuxeo server in the background.
@@ -68,15 +71,17 @@ namespace NuxeoProcess
         private String productName ="nuxeo";
         private static Process nxProcess = null;
         private static Process stopProcess = null;
-        private Dictionary<String, String> nxEnv;
+        public Dictionary<String, String> nxEnv;
         private String startArgs = null;
         private String stopArgs = null;
         public bool running = false;
+        
+        private bool countActive = false;
+		private int countStatus = 0;
 		
 		// Constructor
 		
 		public NuxeoController() {
-			
 			// Detect platform
 			int p = (int) Environment.OSVersion.Platform;
             if ((p == 4) || (p == 6) || (p == 128))
@@ -88,15 +93,26 @@ namespace NuxeoProcess
                 platform = "windows";
             }
             
-            // Try to specify which product we're running
-            String PRODUCT_NAME_FILE="ProductName.txt";
-            if (File.Exists(PRODUCT_NAME_FILE)) {
-            	using(StreamReader file = new StreamReader(PRODUCT_NAME_FILE)) {
-            		String line=file.ReadLine();
-            		if (line.Length != 0) productName=line;
-            	}
-            }
-            
+            productName = ProductName;
+            Log("Registered product name : " + productName);
+		}
+		
+		public static String ProductName { 
+			get {
+				String location = Assembly.GetEntryAssembly().Location;
+				
+	            // Try to specify which product we're running
+	            String PRODUCT_NAME_FILE = Path.Combine(Directory.GetParent(location).FullName, "ProductName.txt");
+	            
+	            if (File.Exists(PRODUCT_NAME_FILE)) {
+	            	using(StreamReader file = new StreamReader(PRODUCT_NAME_FILE)) {
+	            		String line=file.ReadLine();
+	            		if (line.Length != 0) 
+	            			return line;
+	            	}
+	            }
+	            return "nuxeo";
+			}
 		}
 
         public bool Initialize() {
@@ -121,10 +137,14 @@ namespace NuxeoProcess
 		public void SetDelegateLog(bool sdl) {
 			delegateLog=sdl;
 		}
+		
 		public bool IsLogDelegated() {
 			return delegateLog;
 		}
+		
 		public event LogEventHandler DelegatedLog;
+		
+		public event ProcessStartedHandler ProcessStarted;
 		
 		private void Log(String message) {
 			Log(message,"INFO");
@@ -153,8 +173,8 @@ namespace NuxeoProcess
 		
 		// ********** STARTUP **********
 		
-		public bool Start() {			
-            // Parse Nuxeo configuration file
+		public bool SetupEnv() {
+			// Parse Nuxeo configuration file
             Dictionary<String, String> nxConfig = new Dictionary<string,string>();
             if ((nxConfig = ParseConfig()) == null)
             {
@@ -175,7 +195,17 @@ namespace NuxeoProcess
                 Log("Could not set up the application server", "ERROR");
                 return false;
             }
-
+            
+            return true;
+		}
+		
+		public bool Start() {
+			if (!SetupEnv()) {
+				return false;
+			}
+			
+            countActive = false;
+            
             // Run
 			nxProcess=new Process();
 			nxProcess.StartInfo.FileName=nxEnv["JAVA"];
@@ -187,11 +217,40 @@ namespace NuxeoProcess
 			nxProcess.EnableRaisingEvents=true;
 			nxProcess.Exited+=new EventHandler(Process_Exited);
 			nxProcess.Start();
+			
+			nxProcess.OutputDataReceived += new DataReceivedEventHandler(nxProcess_OutputDataReceived);
+			
 			running=true;
 			return true;
 		}
+
+		void nxProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+		{
+			foreach(String line in e.Data.Split("\n".ToCharArray())) {
+				if (!countActive && e.Data.Contains("[OSGiRuntimeService] Nuxeo EP Started")) {
+					countActive = true;
+					countStatus = 0;
+				}
+				if (!countActive) {  
+					return;
+				}
+				
+				if (e.Data.Contains("====================================================")) {
+					countStatus += 1;
+				}
+				
+				if (countStatus >= 3) {
+					ProcessStarted(sender, new EventArgs());
+					nxProcess.OutputDataReceived -= new DataReceivedEventHandler(nxProcess_OutputDataReceived);
+				}
+			}
+		}
 		
 		public bool Stop() {
+			if (nxEnv == null && !SetupEnv()) {
+				return false;
+			}
+			
 			stopProcess=new Process();
 			stopProcess.StartInfo.FileName=nxEnv["JAVA"];
 			stopProcess.StartInfo.Arguments=stopArgs;
