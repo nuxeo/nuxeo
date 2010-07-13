@@ -22,6 +22,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core;api=split,
  org.nuxeo.ecm.core.api;api=split,
  org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.osgi,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.commandline.executor

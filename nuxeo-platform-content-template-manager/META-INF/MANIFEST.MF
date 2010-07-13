@@ -14,7 +14,8 @@ Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/content-template-framework.xml,
  OSGI-INF/content-template-contrib.xml,
  OSGI-INF/content-template-listener.xml
-Import-Package: javax.annotation;version="1.0",
+Import-Package: com.google.inject;version="2.0.0",
+ javax.annotation;version="1.0",
  org.apache.commons.logging,
  org.jboss.util,
  org.nuxeo.common.xmap.annotation,
@@ -25,6 +26,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.event.impl,
  org.nuxeo.ecm.core.repository,
  org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.osgi,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.content.template;singleton=true

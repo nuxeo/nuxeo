@@ -34,6 +34,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.utils,
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.ecm.platform.versioning.api,
+ org.nuxeo.osgi,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model

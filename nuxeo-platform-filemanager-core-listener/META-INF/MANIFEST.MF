@@ -29,6 +29,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.platform.filemanager.api,
  org.nuxeo.ecm.platform.mimetype.interfaces,
  org.nuxeo.ecm.platform.types,
+ org.nuxeo.osgi,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core.listener

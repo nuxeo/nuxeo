@@ -37,6 +37,7 @@ Import-Package: javax.annotation.security,
  org.nuxeo.ecm.platform.mimetype,
  org.nuxeo.ecm.platform.mimetype.interfaces,
  org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.osgi,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model

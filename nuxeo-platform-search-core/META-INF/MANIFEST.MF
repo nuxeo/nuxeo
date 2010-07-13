@@ -56,6 +56,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.search.api.security,
  org.nuxeo.ecm.core.utils,
  org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.osgi,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.search;singleton:=true

@@ -27,5 +27,6 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.ecm.core.search.api.client.query.impl,
  org.nuxeo.ecm.core.search.api.client.search.results,
  org.nuxeo.ecm.core.search.api.client.search.results.impl,
+ org.nuxeo.osgi,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.search.backend.core
