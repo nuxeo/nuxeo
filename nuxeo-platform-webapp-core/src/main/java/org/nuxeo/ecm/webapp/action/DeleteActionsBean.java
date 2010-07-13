@@ -156,7 +156,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() {
-        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         try {
             return getTrashService().canDelete(docs, currentUser, true);
         } catch (ClientException e) {
