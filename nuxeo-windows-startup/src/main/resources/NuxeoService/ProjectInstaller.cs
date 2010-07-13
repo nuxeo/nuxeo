@@ -36,8 +36,53 @@ namespace NuxeoService
 			// Here you can set properties on serviceProcessInstaller or register event handlers
 			serviceProcessInstaller.Account = ServiceAccount.LocalService;
 			
-			serviceInstaller.ServiceName = NuxeoService.MyServiceName;
 			this.Installers.AddRange(new Installer[] { serviceProcessInstaller, serviceInstaller });
+		}
+		
+		protected override void OnBeforeUninstall(System.Collections.IDictionary savedState)
+		{
+			base.OnBeforeUninstall(savedState);
+			
+			String serviceName = GetContextParameter("servicename");
+			
+			if (String.IsNullOrEmpty(serviceName)) {
+				serviceInstaller.ServiceName = NuxeoService.MyServiceName;
+			} else {
+				serviceInstaller.ServiceName = serviceName;
+			}
+		}
+		
+		protected override void OnBeforeInstall(System.Collections.IDictionary savedState)
+		{
+			base.OnBeforeInstall(savedState);
+			
+			String serviceName = GetContextParameter("servicename");
+			String startType = GetContextParameter("starttype");
+			
+			if (String.IsNullOrEmpty(serviceName)) {
+				serviceInstaller.ServiceName = NuxeoService.MyServiceName;
+			} else {
+				serviceInstaller.ServiceName = serviceName;
+			}
+			
+			if (!String.IsNullOrEmpty(startType)) {
+				serviceInstaller.StartType = startType == "automatic" ? 
+					ServiceStartMode.Automatic : ServiceStartMode.Manual;
+			}
+		}
+		
+		private string GetContextParameter(string key)
+        {
+            string sValue = "";
+            try
+            {
+  				sValue = this.Context.Parameters[key].ToString();
+            }
+            catch
+            {
+                sValue = "";
+            }
+            return sValue.Trim();
 		}
 	}
 }

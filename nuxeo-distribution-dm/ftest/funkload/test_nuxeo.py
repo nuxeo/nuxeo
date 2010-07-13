@@ -32,6 +32,8 @@ class Nuxeo(NuxeoTestCase):
     ws_title = "FLNXTEST Bench workspace"
     dir_title = "FLNXTEST Bench folder"
     dir_path = "workspaces/flnxtest-bench-workspace/flnxtest-bench-folder"
+    section_title = "FLNXTEST Bench section"
+    section_path = "sections/flnxtest-bench-section"
     tag = "FLNXTEST"
 
     def setUp(self):
@@ -45,6 +47,12 @@ class Nuxeo(NuxeoTestCase):
 
     def testInit(self):
         p = LoginPage(self).login(self.cred_admin[0], self.cred_admin[1])
+        ret = p.viewDocumentPath(self.section_path, raiseOn404=False)
+        if ret is None:
+            # create a section, grant rights to members
+            p = (p.getRootSections()
+                 .createSection(self.section_title, 'A description')
+                 .rights().grant('ReadWrite', 'members'))
         ret = p.viewDocumentPath(self.dir_path, raiseOn404=False)
         if ret is None:
             # create a workspace and a folder, grant rights to members
@@ -53,6 +61,7 @@ class Nuxeo(NuxeoTestCase):
                  .rights().grant('ReadWrite', 'members')
                  .view()
                  .createFolder(self.dir_title, 'A description'))
+
         # create users
         login = self.cred_member[0]
         pwd = self.cred_member[1]
@@ -76,13 +85,14 @@ class Nuxeo(NuxeoTestCase):
         p = (BasePage(self)
              .viewDocumentPath(self.dir_path)
              .login(self.cred_member[0], self.cred_member[1]))
-        # create files
+        # create files and publish
         for i in range(self.nb_write):
             file_path = random.choice(self.files)
             extension = os.path.splitext(file_path)[1][1:].upper()
             title = lipsum.getSubject(uniq=True, prefix=tag) + " " + extension
             description = tag + ' ' + self._lipsum.getParagraph(1)
             p.createFile(title, description, file_path)
+            p.publish().publishOnFirstSection()
             p = p.viewDocumentPath(self.dir_path)
         p.logout()
 

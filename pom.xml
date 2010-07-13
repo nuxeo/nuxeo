@@ -26,6 +26,7 @@
     <nuxeo.dm.version>5.3.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.chemistry.version>1.6.2-SNAPSHOT</nuxeo.chemistry.version>
     <nuxeo.distribution.version>${version}</nuxeo.distribution.version>
+    <nuxeo.addons.version>5.3.2-SNAPSHOT</nuxeo.addons.version>
   </properties>
 
   <modules>
@@ -1052,16 +1053,6 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-chemistry-impl</artifactId>
-        <version>${nuxeo.chemistry.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-chemistry-bindings</artifactId>
-        <version>${nuxeo.chemistry.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
         <version>${nuxeo.services.version}</version>
@@ -1144,6 +1135,23 @@
         <artifactId>nuxeo-windows-startup</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
+      </dependency>
+
+      <!-- addons -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-impl</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-bindings</artifactId>
+        <version>${nuxeo.chemistry.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-platform-lang-ext</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

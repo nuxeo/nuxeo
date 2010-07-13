@@ -13,10 +13,13 @@
 *
 * Contributors:
 *     Mathieu Guillaume, Arnaud Kervern, Lise Kemen, Julien Carsique
-*/
+*/ 
 
 using System;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace NuxeoCtl
 {
@@ -31,6 +34,7 @@ namespace NuxeoCtl
 		[STAThread]
 		private static void Main(string[] args)
 		{
+			
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
@@ -40,7 +44,7 @@ namespace NuxeoCtl
             {
                 frm.Arg = args[0];
             }
-            Application.Run(frm);    
+            Application.Run(frm);
 		}
 
         static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)

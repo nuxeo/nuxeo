@@ -101,11 +101,6 @@ namespace NuxeoCtl
 		private void OutputLog(object sender, DataReceivedEventArgs outLine) {
 			if (!String.IsNullOrEmpty(outLine.Data)) {
 				Log(outLine.Data,"LOG");
-
-                if (CliUse && outLine.Data.Contains("[OSGiRuntimeService] Nuxeo EP Started"))
-                {
-                    Environment.Exit(0);
-                }
 			}
 		}
 		
@@ -186,6 +181,8 @@ namespace NuxeoCtl
 			//
 			InitializeComponent();
 			
+			nxSvcName = NuxeoController.ProductName;
+			
 			// Check whether Nuxeo is installed as a service or standalone.
 			nxService = new ServiceController(nxSvcName);
 			try {
@@ -204,14 +201,12 @@ namespace NuxeoCtl
 				log.EntryWritten+=new EntryWrittenEventHandler(ServiceLog);
 			} catch {
 				nxService=null;
-				Log(nxSvcName+" is not defined as a service","WARN");
+				Log(nxSvcName + " is not defined as a service", "WARN");
 				nxAppTimer=new System.Windows.Forms.Timer();
 				nxAppTimer.Interval=5000;
 				nxAppTimer.Tick+=new EventHandler(nxAppTimer_Elapsed);
 				nxAppTimer.Start();
 			}
-						
-			
 		}
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -226,6 +221,7 @@ namespace NuxeoCtl
                     case "stop":
                         StopClick(this, new EventArgs());
                         Environment.Exit(0);
+                        this.Close();
                         break;
                     default:
                         Log(String.Format("Invalid argument \"{0}\"", Arg), "ERROR");
@@ -234,6 +230,23 @@ namespace NuxeoCtl
             }
         }
 		
+		
+		void MainFormFormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (!CliUse) {
+				if (nxService == null && !startButton.Visible) {
+					DialogResult res = MessageBox.Show("Are you sure to exit ? Nuxeo will be shut down.", 
+						"Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+					e.Cancel = res == DialogResult.No;
+				}
+				
+				try {
+					if (!e.Cancel) {
+						StopClick(this, new EventArgs());
+					}
+				} catch {}
+			}
+		}
 	}
 	
 	
