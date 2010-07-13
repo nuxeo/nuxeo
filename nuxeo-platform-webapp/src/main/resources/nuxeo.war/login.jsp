@@ -59,7 +59,7 @@ table.loginForm {
   }
 
 .leftColumn {
-  width:300px;
+  width:400px;
   }
 
 H1 {
@@ -182,12 +182,14 @@ nxthemes css is not used in login.jsp */
   text-decoration:underline;
   }
 
+.news_container {
+  text-align:left;
+}
 
 .block_container {
-  margin-right:50px;
   border:none;
   height:500px;
-  width:350px;
+  width:365px;
   overflow:auto;
   background-color:#ffffff;
   opacity:0.8;
