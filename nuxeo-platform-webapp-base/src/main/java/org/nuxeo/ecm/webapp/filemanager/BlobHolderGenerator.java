@@ -32,19 +32,22 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 @Scope(ScopeType.EVENT)
 public class BlobHolderGenerator {
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     private NavigationContext navigationContext;
 
-    @Factory(value="currentDocumentAsBlobHolder", scope = ScopeType.EVENT)
+    @Factory(value = "currentDocumentAsBlobHolder", scope = ScopeType.EVENT)
     public BlobHolder getCurrentBlobHolder() {
-        if (navigationContext==null) {
+        if (navigationContext == null) {
             return null;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument!=null) {
-            return currentDocument.getAdapter(BlobHolder.class);
-        }
-        else {
+        return getBlobHolder(currentDocument);
+    }
+
+    public BlobHolder getBlobHolder(DocumentModel document) {
+        if (document != null) {
+            return document.getAdapter(BlobHolder.class);
+        } else {
             return null;
         }
     }
