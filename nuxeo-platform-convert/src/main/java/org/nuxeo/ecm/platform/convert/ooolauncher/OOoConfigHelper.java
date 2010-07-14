@@ -24,12 +24,10 @@ public class OOoConfigHelper {
     protected static String oooUserPath=null;
 
     private static String[] WIN_OO_PATHS = {
-            "C:/Program Files/OpenOffice.org 2.5",
-            "C:/Program Files (x86)/OpenOffice.org 2.5",
-            "C:/Program Files/OpenOffice.org 3.0",
-            "C:/Program Files (x86)/OpenOffice.org 3.0",
-            "C:/Program Files/OpenOffice.org 3.1",
-            "C:/Program Files (x86)/OpenOffice.org 3.1"};
+            "C:/Program Files/OpenOffice.org 2.5/program",
+            "C:/Program Files (x86)/OpenOffice.org 2.5/program",
+            "C:/Program Files/OpenOffice.org 3/program",
+            "C:/Program Files (x86)/OpenOffice.org 3/program"};
 
     public OOoConfigHelper(OOoLauncherDescriptor desc) {
         this.desc = desc;
