@@ -24,32 +24,26 @@
   <property name="seam.hotdeploy.dir" value="${nuxeo.war.dir}/WEB-INF/dev" />
 
   <property name="dam.distribution.root" value="nuxeo-dam-distribution" />
-  <property name="dam.ear.root" value="${dam.distribution.root}/nuxeo-dam-ear" />
   <property name="dam.build.dir" value="${dam.distribution.root}/target" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="deploy.lib.dir" value="${jboss.dir}/server/${jboss.config}/lib" />
-  <property name="build.lib.dir" value="lib" />
 
   <!-- these properties will need to be overridden at execution time -->
   <target name="set.jboss.home" unless="jboss.home">
     <property name="jboss.home" value="${jboss.dir}" />
   </target>
-  <target name="set.assembly.name" unless="assembly.name">
-    <property name="assembly.name" value="dam-dev" />
-  </target>
-  <target name="setproperties" unless="jboss.server" depends="set.jboss.home, set.assembly.name">
-    <property name="assembly.ear" value="${assembly.name}" />
+  <target name="setproperties" unless="jboss.server" depends="set.jboss.home">
     <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
     <property name="jboss.deploy" value="${jboss.server}/deploy" />
     <property name="jboss.lib" value="${jboss.server}/lib" />
     <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
-    <property name="dam.ear.build" value="${dam.ear.root}/target/${assembly.ear}" />
+    <property name="dam.ear.build" value="${dam.distribution.root}/target/nuxeo.ear" />
   </target>
 
   <target name="usage">
     <echo message="usage: ant [install|package|deploy|web]" />
     <echo message="ant install         => Build Nuxeo DAM components" />
-    <echo message="ant package         => Package Nuxeo DAM to ${build.dir}/${nuxeo.ear}" />
+    <echo message="ant package         => Package Nuxeo DAM to ${dam.build.dir}/${nuxeo.ear}" />
     <echo message="ant deploy          => Package Nuxeo DAM and copy to ${deploy.dir}" />
     <echo message="ant web             => Copy web files to a live JBoss (${deploy.dir})" />
     <echo message="ant seam            => Copy local Seam Components describes in seam.properties to the live JBoss (${deploy.dir}) and call restApi to reload these components" />
@@ -62,7 +56,7 @@
     <os family="windows" />
   </condition>
 
-  <target name="deploy" depends="install-ear,package,copy,copy-lib" description="Build and copy to JBoss">
+  <target name="deploy" depends="install-ear,package,copy" description="Build and copy to JBoss">
     <echo message="Deployed ${ant.project.name} to ${deploy.dir}" />
   </target>
 
@@ -72,16 +66,16 @@
 
   <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo DAM" />
   <target name="package-unix" if="osfamily-unix">
-    <echo message="assembly NAME ${assembly.name}" />
     <exec executable="mvn" failonerror="true">
       <arg value="clean" />
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-f" />
-      <arg value="${dam.ear.root}/pom.xml" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="ear" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
-      <arg value="-Ddam.ear.assembly=${assembly.name}" />
       <arg value="${mvn.opts}" />
     </exec>
     <echo message="Packaged ${ant.project.name} into ${dam.ear.build}" />
@@ -94,12 +88,14 @@
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-f" />
-      <arg value="${dam.ear.root}/pom.xml" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="ear" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
-      <arg value="-Ddam.ear.assembly=${assembly.name}" />
       <arg value="${mvn.opts}" />
     </exec>
+    <echo message="Packaged ${ant.project.name} into ${dam.ear.build}" />
   </target>
 
   <target name="install-ear" depends="install-ear-unix,install-ear-windows" description="Run mvn install for Nuxeo DAM ear">
@@ -109,7 +105,6 @@
       <arg value="clean" />
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
-      <arg value="-Pnuxeo-dam-wo-distribution" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
@@ -122,7 +117,6 @@
       <arg value="clean" />
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
-      <arg value="-Pnuxeo-dam-wo-distribution" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
@@ -162,32 +156,18 @@
   <target name="web" description="Copy web files to a live JBoss">
     <copy todir="${nuxeo.war.dir}">
       <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
 
   <target name="web-tomcat" description="Copy web files to a live Tomcat">
     <copy todir="${tomcat.dir}/nxserver/nuxeo.war">
       <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
 
-  <target name="rename">
-    <delete dir="${build.dir}/${nuxeo.ear}" failonerror="false" />
-    <move file="${build.dir}/dam.ear" tofile="${build.dir}/${nuxeo.ear}" />
-  </target>
-
-  <target name="copy-lib">
-    <delete failonerror="false">
-      <fileset dir="${deploy.lib.dir}/">
-        <include name="nuxeo*.jar" />
-      </fileset>
-    </delete>
-    <copy todir="${deploy.lib.dir}/" failonerror="true">
-      <fileset dir="${dam.build.dir}/${build.lib.dir}/" />
-    </copy>
-  </target>
-
-  <target name="copy" depends="delete-ear,copy-ear,copy-lib" description="Replace ear and copy libs to jboss" />
+  <target name="copy" depends="delete-ear,copy-ear" description="Replace ear and copy libs to jboss" />
   <target name="delete-ear" depends="setproperties">
     <delete dir="${jboss.nuxeo.ear}" failonerror="false" />
   </target>
