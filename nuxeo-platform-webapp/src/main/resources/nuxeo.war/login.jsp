@@ -224,7 +224,7 @@ nxthemes css is not used in login.jsp */
           <ul>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="http://www.nuxeo.com/en/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.getSupport" />
               </a>
             </li>
@@ -236,7 +236,7 @@ nxthemes css is not used in login.jsp */
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="https://doc.nuxeo.com/display/DMDOC/Nuxeo+DM+-+Documentation+Center?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.documentation" />
               </a>
             </li>
