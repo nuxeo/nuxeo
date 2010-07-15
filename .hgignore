@@ -9,3 +9,5 @@ target
 *.ipr
 *.iml
 *.iws
+META-INF/*
+OSGI-INF/*

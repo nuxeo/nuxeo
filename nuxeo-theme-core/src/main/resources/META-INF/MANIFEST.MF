@@ -1,8 +1,43 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: NXThemes core
-Bundle-SymbolicName: org.nuxeo.theme.core;singleton:=true
-Bundle-Vendor: Chalmers
-Bundle-Localization: bundle
+Export-Package: org.nuxeo.theme;version="5.3.2.SNAPSHOT",org.nuxeo.the
+ me.elements;version="5.3.2.SNAPSHOT",org.nuxeo.theme.engines;version=
+ "5.3.2.SNAPSHOT",org.nuxeo.theme.formats;version="5.3.2.SNAPSHOT",org
+ .nuxeo.theme.formats.layouts;version="5.3.2.SNAPSHOT",org.nuxeo.theme
+ .formats.styles;version="5.3.2.SNAPSHOT",org.nuxeo.theme.formats.widg
+ ets;version="5.3.2.SNAPSHOT",org.nuxeo.theme.fragments;version="5.3.2
+ .SNAPSHOT",org.nuxeo.theme.models;version="5.3.2.SNAPSHOT",org.nuxeo.
+ theme.negotiation;version="5.3.2.SNAPSHOT",org.nuxeo.theme.nodes;vers
+ ion="5.3.2.SNAPSHOT",org.nuxeo.theme.perspectives;version="5.3.2.SNAP
+ SHOT",org.nuxeo.theme.presets;version="5.3.2.SNAPSHOT",org.nuxeo.them
+ e.properties;version="5.3.2.SNAPSHOT",org.nuxeo.theme.protocol.nxthem
+ e;version="5.3.2.SNAPSHOT",org.nuxeo.theme.relations;version="5.3.2.S
+ NAPSHOT",org.nuxeo.theme.rendering;version="5.3.2.SNAPSHOT",org.nuxeo
+ .theme.resources;version="5.3.2.SNAPSHOT",org.nuxeo.theme.services;ve
+ rsion="5.3.2.SNAPSHOT",org.nuxeo.theme.templates;version="5.3.2.SNAPS
+ HOT",org.nuxeo.theme.themes;version="5.3.2.SNAPSHOT",org.nuxeo.theme.
+ types;version="5.3.2.SNAPSHOT",org.nuxeo.theme.uids;version="5.3.2.SN
+ APSHOT",org.nuxeo.theme.views;version="5.3.2.SNAPSHOT",org.nuxeo.them
+ e.vocabularies;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,OSGI-INF/nxthemes-core-contrib.xml
+Tool: Bnd-0.0.394
+Bundle-Localization: bundle
+Bundle-Name: NXThemes core
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Chalmers
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1278083605504
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,OSGI-INF/nxthemes-
+ core-contrib.xml
+Bundle-SymbolicName: org.nuxeo.theme.core;singleton:=true
+Import-Package: au.com.bytecode.opencsv,javax.annotation;version="1.0"
+ ,javax.xml.namespace,javax.xml.parsers,javax.xml.xpath,org.apache.com
+ mons.logging,org.apache.xml.serialize,org.codehaus.plexus.util.dag,or
+ g.nuxeo.common.utils,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.c
+ ore;api=split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.director
+ y;api=split,org.nuxeo.runtime,org.nuxeo.runtime.api,org.nuxeo.runtime
+ .model,org.osgi.framework;version="1.4",org.w3c.dom,org.xml.sax
+
