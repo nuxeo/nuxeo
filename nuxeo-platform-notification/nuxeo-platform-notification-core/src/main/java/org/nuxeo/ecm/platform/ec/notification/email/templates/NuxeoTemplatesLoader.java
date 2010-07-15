@@ -37,7 +37,7 @@ public class NuxeoTemplatesLoader extends URLTemplateLoader {
 
     @Override
     protected URL getURL(String name) {
-        log.debug("Searching for template with name : " + name);
+        log.debug("Searching for template with name: " + name);
         return NotificationServiceHelper.getNotificationService()
                 .getTemplateURL(name);
     }

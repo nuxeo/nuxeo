@@ -32,7 +32,6 @@ import org.nuxeo.runtime.model.Adaptable;
  * other type of contexts (like the freemarker one).
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public interface RenderingContext extends Map<String, Object>, Adaptable, Serializable {
 

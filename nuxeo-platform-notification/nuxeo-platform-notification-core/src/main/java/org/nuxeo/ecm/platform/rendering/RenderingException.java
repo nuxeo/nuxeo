@@ -42,5 +42,4 @@ public class RenderingException extends Exception {
         super(cause);
     }
 
-
 }

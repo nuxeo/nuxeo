@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 /**
  * Propagate previously set notifications when a proxy is replaced by a new
  * version.
- * 
+ *
  * @author ogrisel
  */
 public class ProxySubscriptionPropagationListener implements EventListener {

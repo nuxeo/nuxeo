@@ -404,10 +404,10 @@ public class NotificationService extends DefaultComponent implements
 
         Notification notif = getNotificationByName(notificationName);
 
-        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(
+        NuxeoPrincipal recipient = NotificationServiceHelper.getUsersService().getPrincipal(
                 userPrincipal);
         // XXX hack, principals have only one model
-        DataModel model = recepient.getModel().getDataModels().values().iterator().next();
+        DataModel model = recipient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
         String mailTemplate = notif.getTemplate();
 
@@ -423,14 +423,13 @@ public class NotificationService extends DefaultComponent implements
 
         // mail.put("doc", docMessage); - should be already there
 
-        String subject = notif.getSubject() == null ? "Notification"
-                : notif.getSubject();
+        String subject = notif.getSubject() == null ? "Alert" : notif.getSubject();
         if (notif.getSubjectTemplate() != null) {
             subject = notif.getSubjectTemplate();
         }
 
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
-                + subject;
+                + " " + subject;
 
         infoMap.put("subject", subject);
         infoMap.put("template", mailTemplate);
