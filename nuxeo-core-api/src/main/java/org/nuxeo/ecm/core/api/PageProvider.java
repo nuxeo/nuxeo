@@ -125,7 +125,7 @@ public interface PageProvider<T> extends Serializable {
      *
      * @param page the page index, starting from 0
      */
-    List<T> getPage(long page);
+    List<T> setCurrentPage(long page);
 
     /**
      * Forces refresh of the current page.

@@ -107,7 +107,7 @@ public abstract class AbstractPageProvider<T> implements
         return (int) (1 + (getResultsCount() - 1) / pageSize);
     }
 
-    public List<T> getPage(long page) {
+    public List<T> setCurrentPage(long page) {
         offset = page * pageSize;
         pageChanged();
         refresh();
