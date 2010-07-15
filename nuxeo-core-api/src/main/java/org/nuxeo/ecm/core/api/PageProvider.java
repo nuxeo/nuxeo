@@ -28,6 +28,7 @@ import java.util.List;
  * @author arussel
  * @author Anahide Tchertchian
  * @param <T> any Serializable item
+ * @since 5.4
  */
 public interface PageProvider<T extends Serializable> extends Serializable {
 
@@ -65,14 +66,29 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     /**
      * Returns the current page of results.
      * <p>
-     * This method is designed to be called from JSF. It therefore ensures
-     * cheapness of repeated calls, rather than data consistency. There is a
-     * refresh() method for that.
+     * This method is designed to be called from higher levels. It therefore
+     * ensures cheapness of repeated calls, rather than data consistency. There
+     * is a refresh() method for that.
      * <p>
      *
      * @return the current page
      */
     List<T> getCurrentPage();
+
+    /**
+     * Returns the current page of results wrapped in a {@link PageSelection}
+     * item.
+     * <p>
+     * By default, no entry is selected, unless
+     * {@link #setSelectedEntries(List)} has been called before.
+     */
+    List<PageSelection<T>> getCurrentSelectPage();
+
+    /**
+     * Sets the list of selected entries to take into account in
+     * {@link #getCurrentSelectPage()}
+     */
+    void setSelectedEntries(List<T> entries);
 
     /**
      * Sets the current page of results to the required one and return it.
@@ -194,13 +210,27 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     boolean isSortable();
 
     /**
-     * Returns the sorting info for this provider
+     * Returns the complete list of sorting info for this provider
      */
-    List<SortInfo> getSortInfo();
+    List<SortInfo> getSortInfos();
 
     /**
-     * Sets the sorting info for this provider
+     * Returns the main sorting info for this provider
+     * <p>
+     * Also kept for compatibility with existing code.
      */
-    void setSortInfo(List<SortInfo> sortInfo);
+    SortInfo getSortInfo();
+
+    /**
+     * Sets the complete list of sorting info for this provider
+     */
+    void setSortInfos(List<SortInfo> sortInfo);
+
+    /**
+     * Sets the main sorting info for this provider
+     * <p>
+     * Also kept for compatibility with existing code.
+     */
+    void setSortInfo(SortInfo sortInfo);
 
 }

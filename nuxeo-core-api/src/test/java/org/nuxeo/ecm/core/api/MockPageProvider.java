@@ -56,11 +56,6 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
     }
 
     @Override
-    public boolean isSortable() {
-        return false;
-    }
-
-    @Override
     public void refresh() {
         super.refresh();
         currentItems = null;

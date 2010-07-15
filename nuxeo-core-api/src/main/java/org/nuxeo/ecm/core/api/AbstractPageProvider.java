@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,15 +40,31 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     protected int currentEntryIndex = 0;
 
-    protected List<SortInfo> sortInfo;
+    protected List<SortInfo> sortInfos;
+
+    protected boolean sortable = false;
+
+    protected List<T> seletectedEntries;
+
+    protected List<PageSelection<T>> currentSelectPage;
 
     public abstract List<T> getCurrentPage();
 
-    public abstract boolean isSortable();
+    /**
+     * Page change hook, to override for custom behaviour
+     */
+    protected void pageChanged() {
+        currentSelectPage = null;
+    }
 
     public void firstPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         if (offset != 0) {
             offset = 0;
+            pageChanged();
             refresh();
         }
     }
@@ -84,6 +101,7 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public List<T> getPage(long page) {
         offset = page * pageSize;
+        pageChanged();
         refresh();
         return getCurrentPage();
     }
@@ -92,12 +110,26 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
         return pageSize;
     }
 
-    public List<SortInfo> getSortInfo() {
-        return sortInfo;
+    public List<SortInfo> getSortInfos() {
+        return sortInfos;
     }
 
-    public void setSortInfo(List<SortInfo> sortInfo) {
-        this.sortInfo = sortInfo;
+    public SortInfo getSortInfo() {
+        if (sortInfos != null && !sortInfos.isEmpty()) {
+            return sortInfos.get(0);
+        }
+        return null;
+    }
+
+    public void setSortInfos(List<SortInfo> sortInfo) {
+        this.sortInfos = sortInfo;
+    }
+
+    public void setSortInfo(SortInfo sortInfo) {
+        this.sortInfos = new ArrayList<SortInfo>();
+        if (sortInfo != null) {
+            this.sortInfos.add(sortInfo);
+        }
     }
 
     public boolean isNextPageAvailable() {
@@ -112,24 +144,44 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
     }
 
     public void lastPage() {
-        offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
+        if (getResultsCount() % pageSize == 0) {
+            offset = getResultsCount() - pageSize;
+        } else {
+            offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+        }
+        pageChanged();
         refresh();
     }
 
     public void nextPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         offset += pageSize;
+        pageChanged();
         refresh();
     }
 
     public void previousPage() {
+        if (pageSize == 0) {
+            // do nothing
+            return;
+        }
         if (offset >= pageSize) {
             offset -= pageSize;
+            pageChanged();
             refresh();
         }
     }
 
     public void refresh() {
         currentEntryIndex = 0;
+        currentSelectPage = null;
     }
 
     public void setName(String name) {
@@ -213,6 +265,38 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public long getResultsCount() {
         return resultsCount;
+    }
+
+    public boolean isSortable() {
+        return sortable;
+    }
+
+    public List<PageSelection<T>> getCurrentSelectPage() {
+        if (currentSelectPage == null) {
+            currentSelectPage = new ArrayList<PageSelection<T>>();
+            List<T> currentPage = getCurrentPage();
+            if (currentPage != null && !currentPage.isEmpty()) {
+                if (seletectedEntries == null || seletectedEntries.isEmpty()) {
+                    // no selection at all
+                    for (int i = 0; i < currentPage.size(); i++) {
+                        currentSelectPage.add(new PageSelection<T>(
+                                currentPage.get(i), Boolean.FALSE));
+                    }
+                } else {
+                    for (int i = 0; i < currentPage.size(); i++) {
+                        T entry = currentPage.get(i);
+                        currentSelectPage.add(new PageSelection<T>(
+                                entry,
+                                Boolean.valueOf(seletectedEntries.contains(entry))));
+                    }
+                }
+            }
+        }
+        return currentSelectPage;
+    }
+
+    public void setSelectedEntries(List<T> entries) {
+        this.seletectedEntries = entries;
     }
 
 }

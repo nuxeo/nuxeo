@@ -160,6 +160,7 @@ public class TestPageProvider extends TestCase {
         assertEquals(5, provider.getPageSize());
         assertEquals(10, provider.getResultsCount());
         assertEquals(2, provider.getNumberOfPages());
+        assertEquals(0, provider.getCurrentPageIndex());
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
         assertEquals(5, currentItems.size());
         assertEquals(0, currentItems.get(0).getPosition());
@@ -172,6 +173,10 @@ public class TestPageProvider extends TestCase {
         assertTrue(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousEntryAvailable());
         assertTrue(provider.isNextEntryAvailable());
+        provider.lastPage();
+        assertEquals(1, provider.getCurrentPageIndex());
+        provider.firstPage();
+        assertEquals(0, provider.getCurrentPageIndex());
     }
 
     public void testPageProviderWithoutPagination() {
@@ -179,6 +184,7 @@ public class TestPageProvider extends TestCase {
         assertEquals(0, provider.getPageSize());
         assertEquals(13, provider.getResultsCount());
         assertEquals(1, provider.getNumberOfPages());
+        assertEquals(0, provider.getCurrentPageIndex());
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
         assertEquals(13, currentItems.size());
         assertEquals(0, currentItems.get(0).getPosition());
@@ -191,5 +197,9 @@ public class TestPageProvider extends TestCase {
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousEntryAvailable());
         assertTrue(provider.isNextEntryAvailable());
+        provider.lastPage();
+        assertEquals(0, provider.getCurrentPageIndex());
+        provider.firstPage();
+        assertEquals(0, provider.getCurrentPageIndex());
     }
 }
