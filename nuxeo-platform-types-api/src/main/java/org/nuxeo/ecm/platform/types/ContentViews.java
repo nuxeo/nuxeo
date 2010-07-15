@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: Layouts.java 26053 2007-10-16 01:45:43Z atchertchian $
+ *     Anahide Tchertchian
  */
-
 package org.nuxeo.ecm.platform.types;
 
 import java.io.Serializable;
@@ -26,23 +23,24 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Layout list descriptor
+ * Content view descriptor put on document types.
  *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @author Anahide Tchertchian
+ * @since 5.4
  */
-@XObject("layouts")
-public class Layouts implements Serializable {
+@XObject("contentViews")
+public class ContentViews implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @XNode("@append")
     boolean append;
 
-    @XNodeList(value = "layout", type = String[].class, componentType = String.class)
-    String[] layouts = new String[0];
+    @XNodeList(value = "contentView", type = String[].class, componentType = String.class)
+    String[] contentViews = new String[0];
 
-    public String[] getLayouts() {
-        return layouts;
+    public String[] getContentViews() {
+        return contentViews;
     }
 
     public boolean getAppend() {

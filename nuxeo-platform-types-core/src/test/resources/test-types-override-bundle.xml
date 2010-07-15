@@ -26,9 +26,15 @@
       <layouts mode="any">
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="create">
-      </layouts>
+      <layouts mode="create"></layouts>
       <!-- XXX: views actions override not ready yet -->
+      <contentViews category="default" append="true">
+        <contentView>cv_3</contentView>
+      </contentViews>
+      <contentViews category="other">
+        <contentView>cv_4</contentView>
+        <contentView>cv_5</contentView>
+      </contentViews>
     </type>
 
     <type id="MyOtherDocType" remove="true" />

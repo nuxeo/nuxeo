@@ -77,6 +77,18 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals(2, createLayouts.length);
         assertEquals("dublincore", createLayouts[0]);
         assertEquals("file", createLayouts[1]);
+
+        String[] cv = type.getContentViews("default");
+        assertNotNull(cv);
+        assertEquals(2, cv.length);
+        assertEquals("cv_1", cv[0]);
+        assertEquals("cv_2", cv[1]);
+        cv = type.getContentViews("other");
+        assertNotNull(cv);
+        assertEquals(1, cv.length);
+        assertEquals("cv_3", cv[0]);
+        cv = type.getContentViews("foo");
+        assertNull(cv);
     }
 
     public void testTypeViews() {
@@ -150,14 +162,31 @@ public class TypeTest extends NXRuntimeTestCase {
         // new layout override done
         Map<String, Layouts> layouts = type.getLayouts();
         assertEquals(2, layouts.size());
-        assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
-        assertEquals(0, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(0,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
 
         // Override not ready but test that nothing's changed
         String[] actions = type.getActions();
         assertEquals(3, actions.length);
         TypeView[] views = type.getViews();
         assertEquals(2, views.length);
+
+        // content views override
+        String[] cv = type.getContentViews("default");
+        assertNotNull(cv);
+        assertEquals(3, cv.length);
+        assertEquals("cv_1", cv[0]);
+        assertEquals("cv_2", cv[1]);
+        assertEquals("cv_3", cv[2]);
+        cv = type.getContentViews("other");
+        assertNotNull(cv);
+        assertEquals(2, cv.length);
+        assertEquals("cv_4", cv[0]);
+        assertEquals("cv_5", cv[1]);
+        cv = type.getContentViews("foo");
+        assertNull(cv);
     }
 
     public void testLayoutOverride() throws Exception {
@@ -165,8 +194,10 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals("doc type with layout", type.getLabel());
         assertEquals(2, type.getLayout().length);
         assertEquals(2, type.getLayouts().size());
-        assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
-        assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
 
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "test-types-override-bundle.xml");
@@ -177,26 +208,33 @@ public class TypeTest extends NXRuntimeTestCase {
                 type.getLabel());
         assertEquals(2, type.getLayout().length);
         assertEquals(2, type.getLayouts().size());
-        assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
-        assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
     }
 
     public void testLayoutOverrideWithAppend() throws Exception {
-        Type type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        Type type = typeService.getTypeRegistry().getType(
+                "DocTypeTestLayoutOverride");
         assertEquals("doc type with layout to override", type.getLabel());
         assertEquals(2, type.getLayouts().size());
-        assertEquals(1, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
-        assertEquals(2, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
 
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "test-types-override-bundle.xml");
 
-        type = typeService.getTypeRegistry().getType("DocTypeTestLayoutOverride");
+        type = typeService.getTypeRegistry().getType(
+                "DocTypeTestLayoutOverride");
         // Test layout is left unchanged
         assertEquals(2, type.getLayouts().size());
-        assertEquals(2, type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
-        assertEquals(1, type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
     }
-
 
 }

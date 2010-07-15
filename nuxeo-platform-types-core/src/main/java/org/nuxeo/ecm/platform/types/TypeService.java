@@ -142,7 +142,8 @@ public class TypeService extends DefaultComponent implements TypeManager {
             Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
             Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
             for (String newTypeKey : newTypeKeySet) {
-                oldTypeAllowedSubTypes.put(newTypeKey, newTypeAllowedSubTypes.get(newTypeKey));
+                oldTypeAllowedSubTypes.put(newTypeKey,
+                        newTypeAllowedSubTypes.get(newTypeKey));
             }
         }
 
@@ -225,6 +226,31 @@ public class TypeService extends DefaultComponent implements TypeManager {
                 }
             }
             oldType.setLayouts(layoutsMerged);
+        }
+
+        Map<String, ContentViews> contentViews = newType.getContentViews();
+        if (contentViews != null) {
+            Map<String, ContentViews> cvMerged = new HashMap<String, ContentViews>(
+                    oldType.getContentViews());
+            for (Map.Entry<String, ContentViews> entry : contentViews.entrySet()) {
+                String key = entry.getKey();
+                ContentViews newContentViews = entry.getValue();
+                if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
+                    List<String> allContentViews = new ArrayList<String>();
+                    for (String layoutName : cvMerged.get(key).getContentViews()) {
+                        allContentViews.add(layoutName);
+                    }
+                    for (String layoutName : newContentViews.getContentViews()) {
+                        allContentViews.add(layoutName);
+                    }
+                    ContentViews mergedContentViews = new ContentViews();
+                    mergedContentViews.contentViews = allContentViews.toArray(new String[allContentViews.size()]);
+                    cvMerged.put(key, mergedContentViews);
+                } else {
+                    cvMerged.put(key, newContentViews);
+                }
+            }
+            oldType.setContentViews(cvMerged);
         }
 
         // TODO: actions

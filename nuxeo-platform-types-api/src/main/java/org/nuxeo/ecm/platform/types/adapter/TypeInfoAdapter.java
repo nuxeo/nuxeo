@@ -182,9 +182,9 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
-    public String[] getContentViews() {
+    public String[] getContentViews(String category) {
         if (type != null) {
-            return type.getContentViews();
+            return type.getContentViews(category);
         }
         return null;
     }

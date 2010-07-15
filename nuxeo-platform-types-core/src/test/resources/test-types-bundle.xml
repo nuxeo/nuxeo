@@ -41,6 +41,13 @@
         <action>action_id2</action>
         <action>action_id3</action>
       </actions>
+      <contentViews category="default">
+        <contentView>cv_1</contentView>
+        <contentView>cv_2</contentView>
+      </contentViews>
+      <contentViews category="other">
+        <contentView>cv_3</contentView>
+      </contentViews>
     </type>
 
     <type id="MyOtherDocType" />
