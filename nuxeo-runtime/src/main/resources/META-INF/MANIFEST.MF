@@ -30,9 +30,8 @@ Bundle-Category: runtime
 Bundle-Name: org.nuxeo.runtime
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.1.SNAPSHOT
+Bundle-Version: 0.0.0.SNAPSHOT
 Eclipse-BuddyPolicy: registered
-Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/RemotingService.xml,
  OSGI-INF/DeploymentService.xml,
@@ -41,7 +40,7 @@ Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ServiceManagement.xml,
  OSGI-INF/DefaultJBossBindings.xml
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
-Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
+Bundle-ManifestVersion: 2
 Import-Package: javax.management,
  javax.naming,
  javax.naming.spi,
@@ -52,7 +51,7 @@ Import-Package: javax.management,
  javax.sql,
  javax.transaction;version="1.1",
  javax.xml.parsers,
- org.apache.commons.io,
+ org.apache.commons.io;version="1.4",
  org.apache.commons.jexl,
  org.apache.commons.logging,
  org.jboss.remoting,
@@ -71,7 +70,8 @@ Import-Package: javax.management,
  org.nuxeo.common.utils,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
- org.osgi.framework,
+ org.osgi.framework;version="1.4",
  org.w3c.dom,
  org.w3c.dom.ranges
+Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
 Nuxeo-Require: org.nuxeo.osgi

@@ -1,4 +1,5 @@
-Export-Package: org.nuxeo.runtime.gf3
+Export-Package: org.nuxeo.runtime.gf3,
+ org.glassfish.embed
 Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

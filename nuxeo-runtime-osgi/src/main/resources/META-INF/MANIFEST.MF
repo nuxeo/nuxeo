@@ -1,6 +1,7 @@
 Export-Package: org.nuxeo.osgi,
  org.nuxeo.osgi.application.loader,
  org.nuxeo.osgi.application.client,
+ org.nuxeo.osgi.application,
  org.nuxeo.osgi.application;osgi=split;mandatory:=true,
  org.nuxeo.osgi.jboss
 Bundle-ActivationPolicy: lazy
@@ -13,7 +14,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.osgi
-Eclipse-ExtensibleAPI: true
 Import-Package: javax.annotation;version="1.0",
  javax.management,
  org.apache.commons.logging,
@@ -25,4 +25,4 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.common,
  org.nuxeo.common.collections,
  org.nuxeo.common.utils,
- org.osgi.framework
+ org.osgi.framework;version="1.4"

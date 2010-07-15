@@ -10,7 +10,6 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
 Import-Package: javax.annotation;version="1.0",
- junit.framework,
  org.apache.commons.logging,
  org.jboss.remoting,
  org.nuxeo.common.xmap.annotation,

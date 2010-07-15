@@ -6,6 +6,7 @@ Bundle-Category: runtime
 Bundle-Name: org.nuxeo.runtime.datasource
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/datasource-component.xml
@@ -19,15 +20,12 @@ Import-Package: javax.annotation;version="1.0",
  org.apache.commons.dbcp.managed;version="1.3",
  org.apache.commons.logging,
  org.nuxeo.common.jndi,
- org.nuxeo.common.utils,
- org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
- org.nuxeo.runtime,
  org.nuxeo.runtime.api,
- org.nuxeo.runtime.jtajca,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.transaction,
  org.w3c.dom
 Bundle-SymbolicName: org.nuxeo.runtime.datasource;singleton:=true
-Eclipse-RegisterBuddy: org.nuxeo.runtime
+Eclipse-RegisterBuddy: org.nuxeo.runtime,
+ org.nuxeo.common
 Nuxeo-Require: org.nuxeo.runtime

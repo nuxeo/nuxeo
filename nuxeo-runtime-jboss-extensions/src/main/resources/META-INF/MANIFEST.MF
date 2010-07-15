@@ -4,7 +4,7 @@ Export-Package: org.nuxeo.runtime.jboss.interceptors,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions
+Bundle-Name: org.nuxeo.runtime.jboss-extensions
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
@@ -17,6 +17,7 @@ Import-Package: javax.annotation;version="1.0",
  org.javasimon,
  org.jboss.aop.advice,
  org.jboss.aop.joinpoint,
+ org.jboss.aspects.remoting,
  org.jboss.deployment,
  org.jboss.ejb3.remoting,
  org.jboss.logging,
@@ -32,6 +33,5 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.common.collections,
  org.nuxeo.common.utils,
  org.nuxeo.runtime.deployment.preprocessor
-Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-jboss-extensions;singleton:=true
-Require-Bundle: org.jboss.system,
- org.jboss.aspects
+Bundle-SymbolicName: org.nuxeo.runtime.jboss-extensions;singleton:=true
+Require-Bundle: org.jboss.aspects;bundle-version="1.5.0"

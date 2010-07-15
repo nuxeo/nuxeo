@@ -1,5 +1,5 @@
 Export-Package: org.nuxeo.runtime.launcher,
- org.nuxeo.osgi.application;launcher=split;mandatory:=launcher
+ org.nuxeo.osgi.application;launcher=split
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
@@ -10,6 +10,6 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  org.apache.commons.logging
+Require-Bundle: org.nuxeo.osgi; visibility:="reexport"
 Bundle-SymbolicName: org.nuxeo.runtime.launcher;singleton:=true
 Main-Class: org.nuxeo.runtime.launcher.Main
-Require-Bundle: org.nuxeo.osgi;bundle-version="0.0.0";visibility:=reexport
