@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Basic interface for a page provider, independent of type of items in the
@@ -30,7 +31,7 @@ import java.util.List;
  * @param <T> any Serializable item
  * @since 5.4
  */
-public interface PageProvider<T extends Serializable> extends Serializable {
+public interface PageProvider<T> extends Serializable {
 
     /**
      * Constant to express that the total number of result elements is unknown.
@@ -48,15 +49,44 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     void setName(String name);
 
     /**
-     * Returns the number of requested page size.
+     * Gets properties set on the provider.
+     * <p>
+     * Useful to retrieve a provider specific field attributes after
+     * instantiation. Other contextual parameters can be passed through API
+     * constructing the result provider.
+     */
+    Map<String, Serializable> getProperties();
+
+    /**
+     * Sets properties set on the provider.
+     * <p>
+     * Useful to initialize a provider specific field attributes after
+     * instantiation. Other contextual parameters can be passed through API
+     * constructing the result provider.
+     */
+    void setProperties(Map<String, Serializable> properties);
+
+    Object[] getParameters();
+
+    void setParameters(Object[] parameters);
+
+    /**
+     * Returns the number of results per page. 0 means no pagination.
      */
     long getPageSize();
+
+    /**
+     * Sets the number results per page. 0 means no pagination.
+     */
+    void setPageSize(long pageSize);
 
     /**
      * Returns the number of result elements if available or
      * <code>UNKNOWN_SIZE</code> if it is unknown
      */
     long getResultsCount();
+
+    void setResultsCount(long resultsCount);
 
     /**
      * Returns the total number of pages
@@ -82,7 +112,7 @@ public interface PageProvider<T extends Serializable> extends Serializable {
      * By default, no entry is selected, unless
      * {@link #setSelectedEntries(List)} has been called before.
      */
-    List<PageSelection<T>> getCurrentSelectPage();
+    PageSelections<T> getCurrentSelectPage();
 
     /**
      * Sets the list of selected entries to take into account in
@@ -166,6 +196,13 @@ public interface PageProvider<T extends Serializable> extends Serializable {
     void setCurrentEntry(T entry) throws ClientException;
 
     /**
+     * Sets the current entry index
+     *
+     * @throws ClientException if index is not found within current page.
+     */
+    void setCurrentEntryIndex(long index) throws ClientException;
+
+    /**
      * Tells if there is a next entry.
      * <p>
      * The next entry might be in next page. If no current entry is set, this
@@ -209,6 +246,8 @@ public interface PageProvider<T extends Serializable> extends Serializable {
      */
     boolean isSortable();
 
+    void setSortable(boolean sortable);
+
     /**
      * Returns the complete list of sorting info for this provider
      */
@@ -232,5 +271,15 @@ public interface PageProvider<T extends Serializable> extends Serializable {
      * Also kept for compatibility with existing code.
      */
     void setSortInfo(SortInfo sortInfo);
+
+    void setSortInfo(String sortColumn, boolean sortAscending);
+
+    void addSortInfo(String sortColumn, boolean sortAscending);
+
+    boolean hasSortInfo(String sortColumn, boolean sortAscending);
+
+    DocumentModel getSearchDocumentModel();
+
+    void setSearchDocumentModel(DocumentModel doc);
 
 }

@@ -23,7 +23,7 @@ import java.io.Serializable;
  *
  * @author Anahide Tchertchian
  */
-public class PageSelection<T extends Serializable> implements Serializable {
+public class PageSelection<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

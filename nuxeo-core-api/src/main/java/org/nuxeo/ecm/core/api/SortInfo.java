@@ -57,4 +57,24 @@ public class SortInfo implements Serializable {
         return sortColumn;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SortInfo) {
+            SortInfo other = (SortInfo) obj;
+            if (sortColumn != null && sortColumn.equals(other.sortColumn)) {
+                return sortAscending == other.sortAscending;
+            } else if (sortColumn == null && other.sortColumn == null) {
+                return sortAscending == other.sortAscending;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s", sortColumn, sortAscending);
+    }
+
 }

@@ -18,14 +18,16 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Basic implementation for a {@link PageProvider}
  *
  * @author Anahide Tchertchian
  */
-public abstract class AbstractPageProvider<T extends Serializable> implements
+public abstract class AbstractPageProvider<T> implements
         PageProvider<T> {
 
     private static final long serialVersionUID = 1L;
@@ -44,14 +46,20 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     protected boolean sortable = false;
 
-    protected List<T> seletectedEntries;
+    protected List<T> selectedEntries;
 
-    protected List<PageSelection<T>> currentSelectPage;
+    protected PageSelections<T> currentSelectPage;
+
+    protected Map<String, Serializable> properties;
+
+    protected Object[] parameters;
+
+    protected DocumentModel searchDocumentModel;
 
     public abstract List<T> getCurrentPage();
 
     /**
-     * Page change hook, to override for custom behaviour
+     * Page change hook, to override for custom behavior
      */
     protected void pageChanged() {
         currentSelectPage = null;
@@ -110,8 +118,15 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
         return pageSize;
     }
 
+    public void setPageSize(long pageSize) {
+        // FIXME: current page index may not be valid anymore
+        this.pageSize = pageSize;
+        refresh();
+    }
+
     public List<SortInfo> getSortInfos() {
-        return sortInfos;
+        // break reference
+        return new ArrayList<SortInfo>(sortInfos);
     }
 
     public SortInfo getSortInfo() {
@@ -123,12 +138,40 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
 
     public void setSortInfos(List<SortInfo> sortInfo) {
         this.sortInfos = sortInfo;
+        refresh();
     }
 
     public void setSortInfo(SortInfo sortInfo) {
         this.sortInfos = new ArrayList<SortInfo>();
         if (sortInfo != null) {
             this.sortInfos.add(sortInfo);
+        }
+        refresh();
+    }
+
+    public void setSortInfo(String sortColumn, boolean sortAscending) {
+        SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
+        setSortInfo(sortInfo);
+    }
+
+    public void addSortInfo(String sortColumn, boolean sortAscending) {
+        SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
+        List<SortInfo> sortInfos = getSortInfos();
+        if (sortInfos == null) {
+            setSortInfo(sortInfo);
+        } else {
+            sortInfos.add(sortInfo);
+            setSortInfos(sortInfos);
+        }
+    }
+
+    public boolean hasSortInfo(String sortColumn, boolean sortAscending) {
+        List<SortInfo> sortInfos = getSortInfos();
+        if (sortInfos == null || sortInfos.isEmpty()) {
+            return false;
+        } else {
+            SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
+            return sortInfos.contains(sortInfo);
         }
     }
 
@@ -180,7 +223,7 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
     }
 
     public void refresh() {
-        currentEntryIndex = 0;
+        resultsCount = UNKNOWN_SIZE;
         currentSelectPage = null;
     }
 
@@ -222,7 +265,8 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
         }
 
         nextPage();
-        if (getCurrentPage().isEmpty()) {
+        List<T> currentPage = getCurrentPage();
+        if (currentPage == null || currentPage.isEmpty()) {
             // things have changed since last query
             currentEntryIndex = 0;
         } else {
@@ -240,7 +284,8 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
         }
 
         previousPage();
-        if (getCurrentPage().isEmpty()) {
+        List<T> currentPage = getCurrentPage();
+        if (currentPage == null || currentPage.isEmpty()) {
             // things may have changed
             currentEntryIndex = 0;
         } else {
@@ -249,54 +294,119 @@ public abstract class AbstractPageProvider<T extends Serializable> implements
     }
 
     public T getCurrentEntry() {
-        if (getCurrentPage().isEmpty()) {
+        List<T> currentPage = getCurrentPage();
+        if (currentPage == null || currentPage.isEmpty()) {
             return null;
         }
-        return getCurrentPage().get(currentEntryIndex);
+        return currentPage.get(currentEntryIndex);
     }
 
     public void setCurrentEntry(T entry) throws ClientException {
-        int i = getCurrentPage().indexOf(entry);
+        List<T> currentPage = getCurrentPage();
+        if (currentPage == null || currentPage.isEmpty()) {
+            throw new ClientException(String.format(
+                    "Entry '%s' not found in current page", entry));
+        }
+        int i = currentPage.indexOf(entry);
         if (i == -1) {
-            throw new ClientException("Entry not found in current page");
+            throw new ClientException(String.format(
+                    "Entry '%s' not found in current page", entry));
         }
         currentEntryIndex = i;
+    }
+
+    public void setCurrentEntryIndex(long index) throws ClientException {
+        int intIndex = new Long(index).intValue();
+        List<T> currentPage = getCurrentPage();
+        if (currentPage == null || currentPage.isEmpty()) {
+            throw new ClientException(
+                    String.format("Index %s not found in current page",
+                            new Integer(intIndex)));
+        }
+        if (index >= currentPage.size()) {
+            throw new ClientException(
+                    String.format("Index %s not found in current page",
+                            new Integer(intIndex)));
+        }
+        currentEntryIndex = intIndex;
     }
 
     public long getResultsCount() {
         return resultsCount;
     }
 
+    public Map<String, Serializable> getProperties() {
+        // break reference
+        return new HashMap<String, Serializable>(properties);
+    }
+
+    public void setProperties(Map<String, Serializable> properties) {
+        this.properties = properties;
+    }
+
+    public void setResultsCount(long resultsCount) {
+        this.resultsCount = resultsCount;
+    }
+
+    public void setSortable(boolean sortable) {
+        this.sortable = sortable;
+    }
+
     public boolean isSortable() {
         return sortable;
     }
 
-    public List<PageSelection<T>> getCurrentSelectPage() {
+    public PageSelections<T> getCurrentSelectPage() {
         if (currentSelectPage == null) {
-            currentSelectPage = new ArrayList<PageSelection<T>>();
+            currentSelectPage = new PageSelections<T>();
+            currentSelectPage.setName(name);
+            ArrayList<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
             List<T> currentPage = getCurrentPage();
             if (currentPage != null && !currentPage.isEmpty()) {
-                if (seletectedEntries == null || seletectedEntries.isEmpty()) {
+                if (selectedEntries == null || selectedEntries.isEmpty()) {
                     // no selection at all
                     for (int i = 0; i < currentPage.size(); i++) {
-                        currentSelectPage.add(new PageSelection<T>(
-                                currentPage.get(i), Boolean.FALSE));
+                        entries.add(new PageSelection<T>(currentPage.get(i),
+                                Boolean.FALSE));
                     }
                 } else {
+                    boolean allSelected = true;
                     for (int i = 0; i < currentPage.size(); i++) {
                         T entry = currentPage.get(i);
-                        currentSelectPage.add(new PageSelection<T>(
-                                entry,
-                                Boolean.valueOf(seletectedEntries.contains(entry))));
+                        Boolean selected = Boolean.valueOf(selectedEntries.contains(entry));
+                        if (!Boolean.TRUE.equals(selected)) {
+                            allSelected = false;
+                        }
+                        entries.add(new PageSelection<T>(entry, selected));
+                    }
+                    if (allSelected) {
+                        currentSelectPage.setSelected(Boolean.TRUE);
                     }
                 }
             }
+            currentSelectPage.setEntries(entries);
         }
         return currentSelectPage;
     }
 
     public void setSelectedEntries(List<T> entries) {
-        this.seletectedEntries = entries;
+        this.selectedEntries = entries;
+    }
+
+    public Object[] getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Object[] parameters) {
+        this.parameters = parameters;
+    }
+
+    public DocumentModel getSearchDocumentModel() {
+        return searchDocumentModel;
+    }
+
+    public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
+        this.searchDocumentModel = searchDocumentModel;
     }
 
 }
