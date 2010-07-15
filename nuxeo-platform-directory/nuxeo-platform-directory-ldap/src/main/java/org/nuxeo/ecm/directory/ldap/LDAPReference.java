@@ -681,7 +681,6 @@ public class LDAPReference extends AbstractReference {
             }
             if (staticAttribute != null) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
-                String[] attributeIdsToCollect = { targetSession.idAttribute };
 
                 while (targetDns.hasMore()) {
                     String targetDn = targetDns.next().toString();
@@ -705,34 +704,8 @@ public class LDAPReference extends AbstractReference {
                         final int endIndex = targetDn.indexOf(',');
                         id = targetDn.substring(beginIndex, endIndex).trim();
                     } else {
-                        // the entry id is not based on the rdn, we thus need to
-                        // fetch the LDAP entry to grab it
-                        Attributes entry;
-                        try {
-
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format(
-                                        "LDAPReference.getLdapTargetIds(%s): LDAP get attributtes dn='%s'"
-                                                + " attribute ids to collect='%s' [%s]",
-                                        attributes, targetDn, StringUtils.join(
-                                                attributeIdsToCollect, ", "),
-                                        this));
-                            }
-
-                            Name name = new CompositeName().add(targetDn);
-                            entry = targetSession.dirContext.getAttributes(
-                                    name, attributeIdsToCollect);
-                        } catch (NamingException e) {
-                            log.warn(String.format(
-                                    "could not find target '%s' while fetching reference '%s'",
-                                    targetDn, this));
-                            continue;
-                        }
-                        // NXP-2461: check that id field is filled
-                        Attribute attr = entry.get(targetSession.idAttribute);
-                        if (attr != null) {
-                            id = attr.get().toString();
-                        } else {
+                        id = getIdForDn(targetSession, targetDn);
+                        if (id == null) {
                             log.warn(String.format(
                                     "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
                                     targetDn, targetSession.idAttribute, this));
@@ -853,6 +826,38 @@ public class LDAPReference extends AbstractReference {
         }
     }
 
+    protected String getIdForDn(LDAPSession session, String dn) {
+        // the entry id is not based on the rdn, we thus need to
+        // fetch the LDAP entry to grab it
+        String[] attributeIdsToCollect = { session.idAttribute };
+        Attributes entry;
+        try {
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "LDAPReference.getIdForDn(session, %s): LDAP get dn='%s'"
+                                + " attribute ids to collect='%s' [%s]",
+                        dn, dn, StringUtils.join(
+                                attributeIdsToCollect, ", "), this));
+            }
+
+            Name name = new CompositeName().add(dn);
+            entry = session.dirContext.getAttributes(
+                    name, attributeIdsToCollect);
+        } catch (NamingException e) {
+            return null;
+        }
+        // NXP-2461: check that id field is filled
+        Attribute attr = entry.get(session.idAttribute);
+        if (attr != null) {
+            try {
+                return attr.get().toString();
+            } catch (NamingException e) {
+            }
+        }
+        return null;
+    }
+
     /**
      * Retrieve the elements referenced by the filter/BaseDN/Scope request.
      *
@@ -937,6 +942,7 @@ public class LDAPReference extends AbstractReference {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
         LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
+        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         String attributeId = getStaticAttributeId();
         try {
             if (sourceSession.isReadOnly() || attributeId == null) {
@@ -966,7 +972,13 @@ public class LDAPReference extends AbstractReference {
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
                 String dn = pseudoNormalizeDn(oldAttrs.next().toString());
-                if (dn.endsWith(targetBaseDn)) {
+                if (forceDnConsistencyCheck) {
+                    String id = getIdForDn(targetSession, dn);
+                    if (id != null && targetSession.hasEntry(id)) {
+                        // this is an entry managed by the current reference
+                        attrToRemove.add(dn);
+                    }
+                } else if (dn.endsWith(targetBaseDn)) {
                     // this is an entry managed by the current reference
                     attrToRemove.add(dn);
                 }
@@ -1015,6 +1027,7 @@ public class LDAPReference extends AbstractReference {
                     + e.getMessage(), e);
         } finally {
             sourceSession.close();
+            targetSession.close();
         }
     }
 
