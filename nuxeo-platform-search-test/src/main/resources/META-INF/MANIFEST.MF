@@ -11,6 +11,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Import-Package: junit.framework,
+ org.jmock,
  org.junit,
  org.nuxeo.common.utils,
  org.nuxeo.ecm.core;api=split,

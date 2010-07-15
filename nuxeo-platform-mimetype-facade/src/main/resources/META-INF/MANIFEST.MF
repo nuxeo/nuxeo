@@ -19,6 +19,5 @@ Import-Package: javax.ejb;version="3.0.0",
  org.nuxeo.ecm.core.api,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.facade
-Export-Package: org.nuxeo.ecm.platform.mimetype,
- org.nuxeo.ecm.platform.mimetype.ejb,
+Export-Package: org.nuxeo.ecm.platform.mimetype.ejb,
  org.nuxeo.ecm.platform.mimetype.ejb.interfaces.local
