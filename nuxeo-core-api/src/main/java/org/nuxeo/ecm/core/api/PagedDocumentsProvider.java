@@ -28,7 +28,6 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
- * @since 5.4
  */
 public interface PagedDocumentsProvider extends Serializable {
 
