@@ -1,4 +1,4 @@
-Export-Package: org.nuxeo.ecm.core.storage.sql;core=split,
+Export-Package: org.nuxeo.ecm.core.storage.sql,
  org.nuxeo.ecm.core.storage.sql.coremodel,
  org.nuxeo.ecm.core.storage.sql.jdbc.db,
  org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
