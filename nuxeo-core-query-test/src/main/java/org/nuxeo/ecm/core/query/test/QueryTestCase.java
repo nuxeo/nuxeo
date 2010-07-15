@@ -159,7 +159,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
-        file1.setPropertyValue("dc:coverage", "foo/bar");
+        file1.setPropertyValue("dc:coverage", "football");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
@@ -172,7 +172,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2.setPropertyValue("dc:created", cal2);
         file2.setPropertyValue("dc:contributors",
                 new String[] { "bob", "pete" });
-        file2.setPropertyValue("dc:coverage", "football");
+        file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
@@ -430,6 +430,30 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(4, dml.size());
         assertEquals("testfile4_DESCRIPTION4", dml.get(0).getPropertyValue(
                 "dc:description"));
+    }
+
+    public void testOrderBySeveralColumns() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        // avoid null dc:coverage, null sort first/last is db-dependent
+        sql = "SELECT * FROM File "
+                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+                + " ORDER BY dc:title, dc:coverage";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+        assertEquals("testfile1", dml.get(0).getName());
+        assertEquals("testfile2", dml.get(1).getName());
+
+        // swap columns
+        sql = "SELECT * FROM File "
+                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+                + " ORDER BY dc:coverage, dc:title";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+        assertEquals("testfile2", dml.get(0).getName());
+        assertEquals("testfile1", dml.get(1).getName());
     }
 
     public void testOrderByPath() throws Exception {

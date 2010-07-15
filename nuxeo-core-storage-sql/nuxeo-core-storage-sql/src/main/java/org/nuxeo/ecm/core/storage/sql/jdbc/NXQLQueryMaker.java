@@ -779,7 +779,7 @@ public class NXQLQueryMaker implements QueryMaker {
         /** Single valued properties for which a join is needed. */
         public final Set<String> props = new LinkedHashSet<String>();
 
-        public final Set<String> orderKeys = new HashSet<String>();
+        public final Set<String> orderKeys = new LinkedHashSet<String>();
 
         public boolean needsVersionsTable;
 
