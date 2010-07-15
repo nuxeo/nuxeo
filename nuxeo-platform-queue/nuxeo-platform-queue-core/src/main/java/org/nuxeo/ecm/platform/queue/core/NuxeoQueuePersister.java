@@ -76,9 +76,17 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
         @Override
         public void run() throws ClientException {
-            session.removeDocument(new PathRef("/" + QUEUE_ROOT_NAME + "/"
-                    + content.getDestination() + "/" + content.getName()));
+            PathRef pathRef = new PathRef("/" + QUEUE_ROOT_NAME + "/"
+                    + content.getDestination() + "/" + content.getName());
+            if (log.isTraceEnabled()) {
+                log.trace("Content:" + content.getName());
+                log.trace("Dest:" + content.getDestination());
+                log.trace("PathRef" + pathRef.toString());
+
+            }
+            session.removeDocument(pathRef);
             session.save();
+
         }
     }
 
@@ -249,7 +257,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
      * .ecm.platform.queue.api.QueueContent, java.util.Date)
      */
     public void setExecuteTime(QueueContent content, Date date) {
-        SetExecuteTimeRunner runner = new SetExecuteTimeRunner(
+        SetExecutionInfoRunner runner = new SetExecutionInfoRunner(
                 Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName(),
                 content, date);
         try {
@@ -260,12 +268,12 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
         }
     }
 
-    class SetExecuteTimeRunner extends UnrestrictedSessionRunner {
+    class SetExecutionInfoRunner extends UnrestrictedSessionRunner {
         QueueContent content;
 
         Date executeTime;
 
-        public SetExecuteTimeRunner(String repository, QueueContent content,
+        public SetExecutionInfoRunner(String repository, QueueContent content,
                 Date executeTime) {
             super(repository);
             this.content = content;
@@ -280,8 +288,16 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
                     queueFolder.getPathAsString() + "/" + content.getName());
 
             DocumentModel model = session.getDocument(queueItemRef);
+            Integer executionCount = (Integer) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
+            if (executionCount == null) {
+                executionCount = 1;
+            } else {
+                executionCount++;
+            }
             model.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_EXECUTE_TIME,
                     executeTime);
+            model.setPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY,
+                    executionCount);
             model = session.saveDocument(model);
             session.save();
         }

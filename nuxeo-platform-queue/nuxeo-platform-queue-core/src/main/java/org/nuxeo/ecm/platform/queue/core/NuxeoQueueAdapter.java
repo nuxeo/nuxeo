@@ -75,7 +75,15 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
     }
 
     public Date getFirstHandlingDate() {
-        throw new UnsupportedOperationException("Not implemented");
+        try {
+            Calendar modified = (Calendar) doc.getPropertyValue("dc:created");
+            if (modified != null) {
+                return modified.getTime();
+            }
+        } catch (ClientException e) {
+            log.error("Unable to get creation date", e);
+        }
+        throw new Error("unexected error while trying to get the c date");
     }
 
     public QueueContent getHandledContent() {
@@ -127,7 +135,18 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getHandlingCount()
      */
     public int getHandlingCount() {
-        throw new UnsupportedOperationException("Not implemented");
+        try {
+            Integer handlingCount = (Integer) doc.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
+            if (handlingCount != null) {
+                return handlingCount.intValue();
+            } else {
+                return 0;
+            }
+
+        } catch (ClientException e) {
+            log.error("Unable to get handling count no", e);
+        }
+        throw new Error("nable to get handling count no");
     }
 
     /*
@@ -136,7 +155,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getLastHandlingDate()
      */
     public Date getLastHandlingDate() {
-        throw new UnsupportedOperationException("Not implemented");
+        return lastHandledTime;
     }
 
     /*
@@ -145,7 +164,10 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getStatus()
      */
     public QueueItemState getStatus() {
-        throw new UnsupportedOperationException("Not implemented");
+        if (isOrphaned()) {
+            return QueueItemState.Orphaned;
+        }
+        return QueueItemState.Handled;
     }
 
     /*

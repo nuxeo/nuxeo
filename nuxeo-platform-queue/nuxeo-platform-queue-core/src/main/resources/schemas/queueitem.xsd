@@ -5,6 +5,7 @@
   <xs:element name="owner" type="xs:string" />
   <xs:element name="serverId" type="xs:string" />
   <xs:element name="executeTime" type="xs:date" />
+  <xs:element name="executionCount" type="xs:integer" />
 
   <xs:element name="additionalInfo" type="xs:string" />
 
