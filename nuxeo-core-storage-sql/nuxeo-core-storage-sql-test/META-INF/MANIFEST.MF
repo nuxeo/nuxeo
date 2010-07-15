@@ -12,6 +12,7 @@ Bundle-Description: Nuxeo Core: SQL Storage Tests.
 Bundle-DocURL: http://www.nuxeo.com/en
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.test
 Import-Package: javax.naming,
+ javax.resource.cci;version="1.0.0",
  javax.resource.spi;version="1.5.0",
  javax.transaction;version="1.1",
  junit.framework,
@@ -33,6 +34,7 @@ Import-Package: javax.naming,
  org.nuxeo.ecm.core.api.security.impl,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core.query.sql,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.schema.types,
  org.nuxeo.ecm.core.security,
@@ -41,9 +43,11 @@ Import-Package: javax.naming,
  org.nuxeo.ecm.core.storage.sql.coremodel,
  org.nuxeo.ecm.core.storage.sql.jdbc,
  org.nuxeo.osgi,
+ org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.jtajca,
  org.nuxeo.runtime.services.streaming,
  org.nuxeo.runtime.test,
  org.nuxeo.runtime.transaction,
  org.osgi.framework;version="1.4"
+Require-Bundle: org.nuxeo.ecm.core
