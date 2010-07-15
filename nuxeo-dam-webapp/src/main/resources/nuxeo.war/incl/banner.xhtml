@@ -8,9 +8,8 @@
   xmlns:rich="http://richfaces.org/rich">
 
 <div class="banner_actions">
-    
-   <rich:modalPanel id="importSetFormPanel" autosized="true"
-     onshow="javascript:initImportSetForm();" styleClass="ImportSetFormPanel">
+
+   <rich:modalPanel id="importSetFormPanel" autosized="true" styleClass="ImportSetFormPanel">
       <f:facet name="header">
         <h:panelGroup>
           <h:outputText value="${messages['popup.label.creation.importSet']}"/>
@@ -31,7 +30,7 @@
     <a4j:region>
       <a4j:outputPanel id="administrationTable">
         <a4j:form><ul>
-          <li>  
+          <li>
             <h:outputText styleClass="userName" value="#{messages['label.loggedAsUser']} #{documentActions.fullUserName}" />
           </li>
           <li>

@@ -1,27 +1,20 @@
 function processInProgress() {
-  //alert('Process In progress');
-  document.getElementById('importSetFormPanelDiv').style.zIndex=10;
-  document.getElementById('importsetCreationWaiter').style.display="inline";
+  jQuery("#importSetFormPanelDiv").css("z-index", 10);
+  jQuery("#importsetCreationWaiter").show();
 }
 
 function processFinished() {
-  //alert('Process finished');
-  document.getElementById('importSetFormPanelDiv').style.zIndex=1;
+  jQuery("#importSetFormPanelDiv").css("z-index", 1);
   Richfaces.hideModalPanel('importSetFormPanel');
-  document.getElementById('importsetCreationWaiter').style.display="none";
+  jQuery("#importsetCreationWaiter").hide();
 }
 
 function fileUploadComplete() {
-  //alert('File Upload complete');
-  document.getElementById("importset_form:importSetFormOk").disabled = false;
-}
-
-function initImportSetForm() {
-  //alert('Initialize ImportSet Form');
-  document.getElementById('importset_form:importSetFormOk').disabled = true;
+  jQuery("#importset_form\\:importSetFormOk").disabled = false;
+  jQuery("#importset_form\\:importSetFormOk").removeAttr("disabled");
 }
 
 function hideWaiter() {
-  document.getElementById('importSetFormPanelDiv').style.zIndex=1; 
-  document.getElementById('importsetCreationWaiter').style.display='none';
+  jQuery("#importSetFormPanelDiv").css("z-index", 1);
+  jQuery("#importsetCreationWaiter").hide();
 }

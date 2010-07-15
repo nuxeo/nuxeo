@@ -65,6 +65,12 @@
         immediate="true"/>
     </p>
   </a4j:form>
+
+    <script type="text/javascript">
+      // Disable create button, will be enabled after uploading a file
+      jQuery("#importset_form\\:importSetFormOk").attr("disabled", "disabled");
+    </script>
+
   </a4j:outputPanel>
   </a4j:region>
 </div>
