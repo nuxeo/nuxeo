@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="document_children">
+
+
+      <coreQueryPageProvider>
+        <pageSize>2</pageSize>
+        <property name="coreSession">#{documentManager}</property>
+
+        <property name="document">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+      </coreQueryPageProvider>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <pagination>numbered</pagination>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <actions category="CURRENT_SELECTION_LIST_2" />
+      <searchLayout>search_layout</searchLayout>
+      <resultLayout>document_listing</resultLayout>
+      <refresh>
+        <event>foo</event>
+        <event>bar</event>
+      </refresh>
+
+
+
+    </contentView>
+
+    <contentView name="coreQueryAndFetch">
+
+      <!-- 
+        <genericPageProvider
+        class="org.nuxeo.ecm.platform.ui.web.contentview.CoreQueryAndFetchPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        </genericPageProvider>
+        
+        
+        <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType = 'Section' AND
+        ecm:mixinType != 'HiddenInNavigation' AND ecm:path STARTSWITH ?
+        </pattern>
+        </coreQueryPageProvider>
+      -->
+
+      <coreQueryPageProvider docType="AdvancedSearch">
+        <property name="coreSession">#{documentManager}</property>
+
+
+        <whereClause>
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+            AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+
+          <predicate parameter="ecm:isCheckedInVersion" operator="=">
+            <field schema="advanced_search" name="isCheckedInVersion" />
+          </predicate>
+
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="advanced_search" name="searchpath" />
+          </predicate>
+
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+
+          <predicate parameter="dc:description" operator="FULLTEXT">
+            <field schema="advanced_search" name="description" />
+          </predicate>
+
+          <predicate parameter="dc:rights" operator="LIKE">
+            <field schema="advanced_search" name="rights" />
+          </predicate>
+
+          <predicate parameter="dc:source" operator="LIKE">
+            <field schema="advanced_search" name="source" />
+          </predicate>
+
+          <predicate parameter="dc:coverage" operator="IN">
+            <field schema="advanced_search" name="coverage" />
+          </predicate>
+
+          <predicate parameter="dc:subjects" operator="IN">
+            <field schema="advanced_search" name="subjects" />
+          </predicate>
+
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="advanced_search" name="created_min" />
+            <field schema="advanced_search" name="created_max" />
+          </predicate>
+
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+
+          <predicate parameter="dc:issued" operator="BETWEEN">
+            <field schema="advanced_search" name="issued_min" />
+            <field schema="advanced_search" name="issued_max" />
+          </predicate>
+
+          <predicate parameter="dc:valid" operator="BETWEEN">
+            <field schema="advanced_search" name="valid_min" />
+            <field schema="advanced_search" name="valid_max" />
+          </predicate>
+
+          <predicate parameter="dc:expired" operator="BETWEEN">
+            <field schema="advanced_search" name="expired_min" />
+            <field schema="advanced_search" name="expired_max" />
+          </predicate>
+
+          <predicate parameter="dc:format" operator="LIKE">
+            <field schema="advanced_search" name="format" />
+          </predicate>
+
+          <predicate parameter="dc:language" operator="LIKE">
+            <field schema="advanced_search" name="language" />
+          </predicate>
+
+          <predicate parameter="ecm:currentLifeCycleState" operator="IN">
+            <field schema="advanced_search" name="currentLifeCycleStates" />
+          </predicate>
+        </whereClause>
+      </coreQueryPageProvider>
+
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <pagination>numbered</pagination>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <actions category="CURRENT_SELECTION_LIST_2" />
+      <searchLayout>search_layout</searchLayout>
+      <resultLayout>document_listing</resultLayout>
+
+    </contentView>
+
+
+
+  </extension>
+
+</component>
