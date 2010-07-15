@@ -43,6 +43,18 @@
 	<td>Submit</td>
 	<td></td>
 </tr>
+<!-- debug: log page content -->
+<tr>
+    <td>storeEval</td>
+    <td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
+    <td>innerhtml</td>
+</tr>
+<tr>
+    <td>echo</td>
+    <td>${innerhtml}</td>
+    <td></td>
+</tr>
+<!-- end debug -->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>You are logged as jsmith</td>
