@@ -31,12 +31,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.AbstractLegacyDocumentPageProvider;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -63,10 +62,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
+ *
  */
-public class SearchPageProvider extends
-        AbstractLegacyDocumentPageProvider<DocumentModel> implements
-        PageProvider<DocumentModel> {
+public class SearchPageProvider implements PagedDocumentsProvider {
 
     // to be used by the blob filter to transform maps into blob instances
 
@@ -104,6 +102,12 @@ public class SearchPageProvider extends
 
     private transient SearchService service;
 
+    private String providerName;
+
+    private SortInfo sortInfo;
+
+    private boolean sortable;
+
     private boolean pendingRefresh = false;
 
     // has the current page changed since last time it has been built
@@ -117,28 +121,19 @@ public class SearchPageProvider extends
      * with sortInfo not null will succeed.
      *
      * @param set the resultset
-     * @param sortable if sortable, a subsequent call that provides sorting
-     *            info
+     * @param sortable if sortable, a subsequent call that provides sorting info
      * @param sortInfo the sorting info or null if the resultset is not sorted
      * @param query the query that produced this result. will succeed.
      */
     public SearchPageProvider(ResultSet set, boolean sortable,
             SortInfo sortInfo, String query) {
         searchResults = set;
-        this.sortInfos = new ArrayList<SortInfo>();
-        if (sortInfo != null) {
-            this.sortInfos.add(sortInfo);
-        }
+        this.sortInfo = sortInfo;
         this.sortable = sortable;
         this.query = query;
 
         initSearchService();
         schemaCache = new HashMap<String, String>();
-        if (searchResults != null) {
-            resultsCount = searchResults.getTotalHits();
-            pageSize = searchResults.getRange();
-            offset = searchResults.getOffset();
-        }
     }
 
     /**
@@ -170,22 +165,6 @@ public class SearchPageProvider extends
             // if page has changed, no need to refresh.
             if (pendingRefresh && !pageChanged) {
                 performRefresh();
-            } else {
-                try {
-                    int page = new Long(getCurrentPageIndex()).intValue();
-                    // result set is one-based => add +1
-                    page += 1;
-                    if (searchResults == null) {
-                        log.error("Result set is null");
-                    } else {
-                        ResultSet res = searchResults.goToPage(page);
-                        if (res != null) {
-                            searchResults = res;
-                        }
-                    }
-                } catch (SearchException e) {
-                    log.error(e, e);
-                }
             }
             currentPageDocList = constructDocumentModels();
             return currentPageDocList;
@@ -195,31 +174,121 @@ public class SearchPageProvider extends
         }
     }
 
-    @Override
-    protected void pageChanged() {
-        super.pageChanged();
-        pageChanged = true;
+    public int getCurrentPageIndex() {
+        int pag = searchResults.getPageNumber();
+        // pag is 1 based
+        // we need 0 based
+        return pag - 1;
+    }
+
+    public String getCurrentPageStatus() {
+        int total = getNumberOfPages();
+        int current = getCurrentPageIndex() + 1;
+        if (total == UNKNOWN_SIZE) {
+            return String.format("%d", current);
+        } else {
+            return String.format("%d/%d", current, total);
+        }
+    }
+
+    public DocumentModelList getNextPage() {
+        next();
+        return getCurrentPage();
+    }
+
+    public void goToPage(int page) {
+        // 1 based
+        page += 1;
+        // TODO if the page is over the limit maybe go to the last page/ or
+        // first
+        try {
+            ResultSet res = searchResults.goToPage(page);
+            if (res == null) {
+                return; // keep the same one to avoid NPEs
+            }
+            searchResults = res;
+            // invalidate cache
+            currentPageDocList = null;
+            pageChanged = true;
+        } catch (SearchException e) {
+            log.error("getPage failed", e);
+        }
+    }
+
+    public DocumentModelList getPage(int page) {
+        goToPage(page);
+        return getCurrentPage();
+    }
+
+    public long getResultsCount() {
+        return searchResults.getTotalHits();
+    }
+
+    public boolean isNextPageAvailable() {
+        return searchResults.hasNextPage();
     }
 
     public String getQuery() {
         return query;
     }
 
-    protected void performRefresh() throws SearchException {
-        if (searchResults != null) {
-            searchResults = searchResults.replay();
+    public void last() {
+        goToPage(getNumberOfPages() - 1);
+    }
+
+    public void next() {
+        if (isNextPageAvailable()) {
+            goToPage(getCurrentPageIndex() + 1);
         }
+    }
+
+    public void previous() {
+        int i = getCurrentPageIndex();
+        if (i > 0) {
+            goToPage(i - 1);
+        }
+    }
+
+    public void rewind() {
+        goToPage(0);
+    }
+
+    public boolean isPreviousPageAvailable() {
+        return getCurrentPageIndex() > 0;
+    }
+
+    public int getNumberOfPages() {
+        int range = searchResults.getRange();
+        if (range == 0) {
+            return 1;
+        }
+        return (int) (1 + (getResultsCount() - 1) / range);
+    }
+
+    protected void performRefresh() throws SearchException {
+        searchResults = searchResults.replay();
         pendingRefresh = false;
     }
 
     /**
-     * Actual refresh will be next time the page is really needed. Better
-     * suited for Seam/JSF (avoid useless multiple requests)
+     * Actual refresh will be next time the page is really needed. Better suited
+     * for Seam/JSF (avoid useless multiple requests)
      */
     public void refresh() {
-        super.refresh();
         pendingRefresh = true;
         currentPageDocList = null;
+    }
+
+    public int getCurrentPageOffset() {
+        return searchResults.getOffset();
+    }
+
+    public int getCurrentPageSize() {
+        return searchResults.getPageHits();
+    }
+
+    public int getPageSize() {
+        return searchResults.getRange();
     }
 
     private String getSchemaNameForField(String key) {
@@ -264,9 +333,6 @@ public class SearchPageProvider extends
         }
 
         initSearchService();
-        if (service == null) {
-            return null;
-        }
         IndexableResourceConf conf = service.getIndexableResourceConfByPrefix(
                 prefix, true);
         if (conf == null || !conf.getType().equals(ResourceType.SCHEMA)) {
@@ -285,8 +351,8 @@ public class SearchPageProvider extends
         }
         int pageHits = searchResults.getPageHits();
 
-        List<DocumentModel> res = new ArrayList<DocumentModel>();
-        for (int i = 0; i < pageHits && i < searchResults.size(); i++) {
+        List<DocumentModel> res = new ArrayList<DocumentModel>(pageHits);
+        for (int i = 0; i < pageHits; i++) {
             try {
                 res.add(constructDocumentModel(searchResults.get(i)));
             } catch (SearchException e) {
@@ -415,6 +481,7 @@ public class SearchPageProvider extends
      *
      * @param value raw value as returned by the search service backend
      * @param field Field instance of the matching core Schema
+     *
      * @return the filter Object with Blob instances instead of Map instances
      *         when required
      */
@@ -498,6 +565,30 @@ public class SearchPageProvider extends
             // SimpleType or builtin type
             return value;
         }
+    }
+
+    public SortInfo getSortInfo() {
+        return sortInfo;
+    }
+
+    public boolean isSortable() {
+        return sortable;
+    }
+
+    public void setSortInfo(SortInfo sortInfo) {
+        this.sortInfo = sortInfo;
+    }
+
+    public void setSortable(boolean sortable) {
+        this.sortable = sortable;
+    }
+
+    public String getName() {
+        return providerName;
+    }
+
+    public void setName(String name) {
+        providerName = name;
     }
 
 }

@@ -31,10 +31,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
@@ -81,8 +80,7 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
-            max = descriptor.getMax() == null ? 0
-                    : descriptor.getMax().intValue();
+            max = descriptor.getMax() == null ? 0 : descriptor.getMax().intValue();
         }
 
         this.documentModel = documentModel;
@@ -136,12 +134,7 @@ public class QueryModel implements Serializable {
 
     public DocumentModelList getDocuments(CoreSession session, Object[] params)
             throws ClientException {
-        DocumentModelList res = new DocumentModelListImpl();
-        List<DocumentModel> docs = getResultsProvider(session, params).getCurrentPage();
-        if (docs != null) {
-            res.addAll(docs);
-        }
-        return res;
+        return getResultsProvider(session, params).getCurrentPage();
     }
 
     /**
@@ -157,12 +150,12 @@ public class QueryModel implements Serializable {
         }
     }
 
-    public PageProvider<DocumentModel> getResultsProvider(CoreSession session,
+    public PagedDocumentsProvider getResultsProvider(CoreSession session,
             Object[] params) throws ClientException {
         return getResultsProvider(session, params, null);
     }
 
-    public PageProvider<DocumentModel> getResultsProvider(CoreSession session,
+    public PagedDocumentsProvider getResultsProvider(CoreSession session,
             Object[] params, SortInfo sortInfo) throws ClientException {
         checkDescriptor();
 

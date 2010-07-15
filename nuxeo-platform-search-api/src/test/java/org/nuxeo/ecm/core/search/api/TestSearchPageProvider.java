@@ -45,6 +45,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
+ *
  */
 public class TestSearchPageProvider extends NXRuntimeTestCase {
 
@@ -115,28 +116,14 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
                 Collections.EMPTY_LIST, 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
-        set = new ResultSetImpl((SQLQuery) null, null, 10, 7,
-                Collections.EMPTY_LIST, 17, 10);
-        provider = new SearchPageProvider(set);
-        assertEquals(3, provider.getNumberOfPages());
-        set = new ResultSetImpl((SQLQuery) null, null, 10, 0,
-                Collections.EMPTY_LIST, 17, 10);
-        provider = new SearchPageProvider(set);
-        assertEquals(1, provider.getNumberOfPages());
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetCurrentPageSize() {
+    public void testGetCurerntPageSize() {
         ResultSet set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
                 Collections.EMPTY_LIST, 17, 7);
         SearchPageProvider provider = new SearchPageProvider(set);
-        // no item available
-        assertEquals(0, provider.getCurrentPageSize());
-        set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
-                Arrays.asList(resultItem), 17, 7);
-        provider = new SearchPageProvider(set);
-        // only one item available
-        assertEquals(1, provider.getCurrentPageSize());
+        assertEquals(7, provider.getCurrentPageSize());
     }
 
     // A result item that lacks docRef
@@ -184,8 +171,8 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      */
     @SuppressWarnings("unchecked")
     public void testEmptyResults() {
-        SearchPageProvider provider = new SearchPageProvider(new ResultSetImpl(
-                (SQLQuery) null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
+        SearchPageProvider provider =
+            new SearchPageProvider(new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousPageAvailable());
         assertEquals(0, provider.getCurrentPageIndex());
