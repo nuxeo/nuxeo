@@ -1,5 +1,8 @@
 <component name="org.nuxeo.ecm.platform.publisher.web.actions">
 
+  <!-- make sure action buttons are always in the same order -->
+  <require>org.nuxeo.ecm.platform.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
              point="actions">
 
