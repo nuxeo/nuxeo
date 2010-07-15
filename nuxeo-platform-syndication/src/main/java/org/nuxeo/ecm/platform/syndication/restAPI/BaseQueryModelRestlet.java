@@ -277,7 +277,9 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                 String fValue = req.getResourceRef().getQueryAsForm().getFirstValue(
                         fName);
                 if (fValue != null) {
-                    if (localName.equalsIgnoreCase("coverage")) {
+                    if (localName.equalsIgnoreCase("coverage")
+                            || localName.equalsIgnoreCase("subjects")
+                            || localName.equalsIgnoreCase("currentLifeCycleStates")) {
                         dm.setData(localName, new Object[] { fValue });
                     } else {
                         dm.setData(localName, fValue);
