@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public class SortActionsBean implements SortActions, Serializable {
 
     private static final long serialVersionUID = 6824092797019313562L;
-
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
     @RequestParameter("defaultSortAscending")
@@ -69,7 +68,7 @@ public class SortActionsBean implements SortActions, Serializable {
     }
 
     protected boolean getDefaultSortOrder(String column) {
-        if (defaultSortAscending != null) {
+        if (defaultSortAscending!=null) {
             return defaultSortAscending;
         }
         return true;
@@ -86,15 +85,15 @@ public class SortActionsBean implements SortActions, Serializable {
 
         if (invalidateSeamVariables != null) {
             String[] variables = invalidateSeamVariables.split(",");
-            for (String variable : variables) {
+            for (String variable: variables) {
                 Contexts.removeFromAllContexts(variable);
             }
         }
 
         SortInfo sortInfo = resultsProvidersCache.get(providerName).getSortInfo();
+
         if (sortInfo == null) {
-            sortInfo = new SortInfo(newSortColumn,
-                    getDefaultSortOrder(newSortColumn));
+            sortInfo = new SortInfo(newSortColumn, getDefaultSortOrder(newSortColumn));
         } else {
             // toggle newOrderDirection
             String sortColumn = sortInfo.getSortColumn();

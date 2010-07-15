@@ -20,18 +20,17 @@
 package org.nuxeo.ecm.platform.ui.web.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 
 /**
  * A Results Provider Farm registers methods to create named
- * {@link PageProvider<DocumentModel>}.
+ * {@link PagedDocumentsProvider}.
  * <p>
- * Typically, results provider implementations can vary a lot: we'll have the
- * search service, the document repository. This interface allows to register
- * and call factories for them.
+ * Typically, results provider implementations can vary a lot: we'll have
+ * the search service, the document repository. This interface allows to
+ * register and call factories for them.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  */
@@ -44,13 +43,13 @@ public interface ResultsProviderFarm {
      * @return a PagedDocumentsProvider
      * @throws ClientException
      */
-    // TODO: remake an distinction between malformed queries and internal
-    // errors
+    // TODO: remake an distinction between malformed queries and internal errors
     // in the process/server that honors them
-    PageProvider<DocumentModel> getResultsProvider(String name)
-            throws ClientException, ResultsProviderFarmUserException;
+    PagedDocumentsProvider getResultsProvider(String name)
+                throws ClientException, ResultsProviderFarmUserException;
 
     /**
+     *
      * @param name the name of the ResultsProvider instance to create
      * @param sortInfo an object containing the sort details
      * @return a PagedDocumentsProvider
@@ -58,8 +57,7 @@ public interface ResultsProviderFarm {
      * @throws ResultsProviderFarmUserException
      * @throws SortNotSupportedException if the provider cannot sort the result
      */
-    PageProvider<DocumentModel> getResultsProvider(String name,
-            SortInfo sortInfo) throws ClientException,
-            ResultsProviderFarmUserException;
+    PagedDocumentsProvider getResultsProvider(String name, SortInfo sortInfo)
+            throws ClientException, ResultsProviderFarmUserException;
 
 }

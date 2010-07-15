@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,18 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
  */
-package org.nuxeo.ecm.platform.ui.web.contentview;
 
-import java.io.Serializable;
+package org.nuxeo.ecm.platform.ui.web.pagination;
+
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 
 /**
- * @author Anahide Tchertchian
- * @since 5.3.3
+ * Backwards compatibility after interface renaming.
+ * Will be removed in Nuxeo 5.2
+ *
+ * @deprecated use PagedDocumentsProvider
+ * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
+ *
  */
-public interface ContentViewService extends Serializable {
-
-    ContentView getContentView(String name);
+@Deprecated
+public interface LazyResultsProvider extends PagedDocumentsProvider {
 
 }

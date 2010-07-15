@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.webapp.pagination;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.PhaseId;
@@ -44,12 +43,9 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.EmptyPageProvider;
 import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
@@ -61,23 +57,22 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam component named 'resultsProvidersCache'. Implements actions available
- * in UI for navigating forward and backward through the pages of a result
+ * Seam component named 'resultsProvidersCache'. Implements actions available in
+ * UI for navigating forward and backward through the pages of a result
  * containing Document(models).
  * <p>
- * This compononent maintains a cache of {@link PageProvider<DocumentModel>}
+ * This compononent maintains a cache of {@link PagedDocumentsProvider}
  * instances.
  * <p>
- * It's also capable of instantiating the cache by calling provider farms:
- * other Seam components that also implement the ResultsProviderFarm interface.
+ * It's also capable of instantiating the cache by calling provider farms: other
+ * Seam components that also implement the ResultsProviderFarm interface.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
  */
 @Name("resultsProvidersCache")
 @Scope(ScopeType.CONVERSATION)
-public class ResultsProvidersCacheBean implements ResultsProvidersCache,
-        Serializable {
+public class ResultsProvidersCacheBean implements ResultsProvidersCache, Serializable {
 
     private static final long serialVersionUID = 8632024396770685542L;
 
@@ -89,7 +84,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    private transient Map<String, PageProvider<DocumentModel>> resultsProvidersCache;
+    private transient Map<String, PagedDocumentsProvider> resultsProvidersCache;
 
     /**
      * Used to indicate that providers have already been refreshed within this
@@ -109,14 +104,16 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         initCache();
     }
 
+
     public void destroy() {
         log.debug("Destroy...");
     }
 
+
     private void initCache() {
         if (resultsProvidersCache == null) {
             log.debug("Constructing a new, empty cache");
-            resultsProvidersCache = new HashMap<String, PageProvider<DocumentModel>>();
+            resultsProvidersCache = new HashMap<String, PagedDocumentsProvider>();
         }
     }
 
@@ -124,7 +121,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
      * API
      */
 
-    public PageProvider<DocumentModel> get(String name) throws ClientException {
+    public PagedDocumentsProvider get(String name) throws ClientException {
         try {
             return get(name, null);
         } catch (SortNotSupportedException e) {
@@ -132,10 +129,10 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         }
     }
 
-    public PageProvider<DocumentModel> get(String name, SortInfo sortInfo)
+    public PagedDocumentsProvider get(String name, SortInfo sortInfo)
             throws ClientException, SortNotSupportedException {
         PhaseId lifeCycleId = FacesLifecycle.getPhaseId();
-        PageProvider<DocumentModel> provider = resultsProvidersCache.get(name);
+        PagedDocumentsProvider provider = resultsProvidersCache.get(name);
         if (cleanProviders == null) {
             cleanProviders = new HashSet<String>();
         }
@@ -166,8 +163,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
                         // otherwise they will be displayed in next page !
 
                         facesMessages.add(FacesMessage.SEVERITY_WARN,
-                                resourcesAccessor.getMessages().get(
-                                        "feedback.search.invalid"));
+                                resourcesAccessor.getMessages().get("feedback.search.invalid"));
                     }
                     resultsProvidersCache.put(name, new EmptyResultsProvider());
                     return resultsProvidersCache.get(name);
@@ -177,11 +173,11 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         } else if (!cleanProviders.contains(name)) {
             // avoid refreshing twice if someone calls provider changing from
             // jsf: used to be refreshed in APPLY_REQUEST_VALUES for nothing
-            if (lifeCycleId == PhaseId.RENDER_RESPONSE
-                    || lifeCycleId == PhaseId.INVOKE_APPLICATION) {
+            if (lifeCycleId == PhaseId.RENDER_RESPONSE ||
+                    lifeCycleId == PhaseId.INVOKE_APPLICATION) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Refreshing dirty provider %s "
-                            + "(jsf phase='%s')", name, lifeCycleId));
+                    log.debug(String.format("Refreshing dirty provider %s " +
+                            "(jsf phase='%s')", name, lifeCycleId));
                 }
                 provider.refresh();
             }
@@ -197,8 +193,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
      * @return the empty provider
      * @throws ClientException
      */
-    protected PageProvider<DocumentModel> getEmptyResultsProvider(String name)
-            throws ClientException {
+    protected PagedDocumentsProvider getEmptyResultsProvider(String name) throws ClientException {
         ResultsProviderFarm farm = getProviderFarmFor(name);
 
         // Using reflection to maintain BBB.
@@ -206,19 +201,18 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         Method method;
 
         try {
-            method = farm.getClass().getMethod("getEmptyResultsProvider",
-                    String.class);
+            method = farm.getClass().getMethod("getEmptyResultsProvider", String.class);
         } catch (SecurityException e) {
-            return new EmptyPageProvider<DocumentModel>();
+            return new EmptyResultsProvider();
         } catch (NoSuchMethodException e) {
-            log.warn(farm.getClass().getName() + " will have to "
-                    + "implement getEmptyResultsProvider() for Nuxeo 5.2");
-            return new EmptyPageProvider<DocumentModel>();
+            log.warn(farm.getClass().getName() +" will have to " +
+                    "implement getEmptyResultsProvider() for Nuxeo 5.2");
+            return new EmptyResultsProvider();
         }
         try {
-            return (PageProvider<DocumentModel>) method.invoke(farm, name);
+            return (PagedDocumentsProvider) method.invoke(farm, name);
         } catch (Exception e) {
-            return new EmptyPageProvider<DocumentModel>();
+            return new EmptyResultsProvider();
         }
     }
 
@@ -229,20 +223,16 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         resultsProvidersCache.remove(name);
     }
 
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create=false,inject=false)
     @BypassInterceptors
-    public void invalidateChildrenProvider() {
+    public void invalidateChildrenProvider()
+    {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
     }
 
     public DocumentModelList getCurrentPageOf(String name)
             throws ClientException {
-        List<DocumentModel> docs = get(name).getCurrentPage();
-        if (docs == null) {
-            return null;
-        }
-        return new DocumentModelListImpl(docs);
+        return get(name).getCurrentPage();
     }
 
     /**
@@ -255,7 +245,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache,
         String numberOfPagesStr;
         // GR TODO just there so that it stops breaking te stuff
         int numberOfPages = 10;
-        if (numberOfPages == PageProvider.UNKNOWN_SIZE) {
+        if (numberOfPages == PagedDocumentsProvider.UNKNOWN_SIZE) {
             numberOfPagesStr = "unknown";
         } else {
             numberOfPagesStr = Integer.toString(numberOfPages);
