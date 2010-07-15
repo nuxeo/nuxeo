@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.codec.DocumentPathCodec;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>

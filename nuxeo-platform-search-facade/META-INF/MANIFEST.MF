@@ -1,0 +1,34 @@
+Export-Package: org.nuxeo.ecm.platform.search.ejb,
+ org.nuxeo.ecm.platform.search.ejb.local
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo ECM Search facade
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/nxsearch-platform-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation,
+ javax.ejb,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.search.api.backend.impl,
+ org.nuxeo.ecm.core.search.api.backend.indexing.resources,
+ org.nuxeo.ecm.core.search.api.client,
+ org.nuxeo.ecm.core.search.api.client.indexing.blobs,
+ org.nuxeo.ecm.core.search.api.client.indexing.resources,
+ org.nuxeo.ecm.core.search.api.client.indexing.session,
+ org.nuxeo.ecm.core.search.api.client.query,
+ org.nuxeo.ecm.core.search.api.client.search.results,
+ org.nuxeo.ecm.core.search.api.ejb.remote,
+ org.nuxeo.ecm.core.search.api.events,
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration,
+ org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document,
+ org.nuxeo.ecm.core.search.service,
+ org.nuxeo.runtime.api
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.ejb;singleton:=true

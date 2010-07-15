@@ -1,0 +1,26 @@
+Export-Package: org.nuxeo.ecm.platform.ec.placeful;core=split
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: web,
+ stateful
+Bundle-Name: Nuxeo ECM PlacefulService
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/nxplacefulservice-framework.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.persistence,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.persistence,
+ org.nuxeo.ecm.platform.ec.placeful.interfaces,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.core;singleton:=true
+Require-Bundle: org.nuxeo.ecm.platform.placeful.api;visibility:=reexport

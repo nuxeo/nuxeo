@@ -1,0 +1,17 @@
+Export-Package: org.nuxeo.ecm.webapp.theme.negotiation
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: runtime
+Bundle-Name: Nuxeo ECM PlacefulService Theme config
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Nuxeo-Component: OSGI-INF/nxplacefulservice-contrib.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.persistence,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.platform.ec.placeful
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.theme;singleton:=true
