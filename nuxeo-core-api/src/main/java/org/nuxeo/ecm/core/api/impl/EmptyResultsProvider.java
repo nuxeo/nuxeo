@@ -19,25 +19,90 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.AbstractLegacyDocumentPageProvider;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 
-/**
- * @deprecated use {@link EmptyPageProvider}
- */
-@Deprecated
-public class EmptyResultsProvider extends
-        AbstractLegacyDocumentPageProvider<DocumentModel> implements
-        PagedDocumentsProvider {
+public class EmptyResultsProvider implements PagedDocumentsProvider {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1090501391257515681L;
 
-    @Override
-    public List<DocumentModel> getCurrentPage() {
+    public DocumentModelList getCurrentPage() {
         return new DocumentModelListImpl();
+    }
+
+    public int getCurrentPageIndex() {
+        return 0;
+    }
+
+    public int getCurrentPageOffset() {
+        return 0;
+    }
+
+    public int getCurrentPageSize() {
+        return 0;
+    }
+
+    public String getCurrentPageStatus() {
+        return "";
+    }
+
+    public DocumentModelList getNextPage() {
+        return null;
+    }
+
+    public int getNumberOfPages() {
+        return 0;
+    }
+
+    public DocumentModelList getPage(int page) {
+        return null;
+    }
+
+    public long getResultsCount() {
+        return 0;
+    }
+
+    public boolean isNextPageAvailable() {
+        return false;
+    }
+
+    public boolean isPreviousPageAvailable() {
+        return false;
+    }
+
+    public void last() {
+    }
+
+    public void next() {
+    }
+
+    public void previous() {
+    }
+
+    public void refresh() {
+    }
+
+    public void rewind() {
+    }
+
+    public int getPageSize() {
+        return 0;
+    }
+
+    public String getName() {
+        return null;
+    }
+
+    public SortInfo getSortInfo() {
+        return null;
+    }
+
+    public boolean isSortable() {
+        return false;
+    }
+
+    public void setName(String name) {
     }
 
 }
