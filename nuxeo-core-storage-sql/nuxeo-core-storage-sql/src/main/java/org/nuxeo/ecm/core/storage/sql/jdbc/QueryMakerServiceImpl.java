@@ -62,7 +62,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
 
     public void registerQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Registering QueryMaker '%s': ",
+            log.info(String.format("Registering QueryMaker '%s': %s",
                     descriptor.name, descriptor.queryMaker.getName()));
         } else {
             log.info(String.format("Disabling QueryMaker '%s'", descriptor.name));
@@ -73,7 +73,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
 
     public void unregisterQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
-            log.info(String.format("Unregistering QueryMaker '%s': ",
+            log.info(String.format("Unregistering QueryMaker '%s': %s",
                     descriptor.name, descriptor.queryMaker.getName()));
         } else {
             log.info(String.format("Unregistering disabled QueryMaker '%s'",

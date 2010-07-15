@@ -141,11 +141,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jboss-interceptors</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-jcr-connector</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>

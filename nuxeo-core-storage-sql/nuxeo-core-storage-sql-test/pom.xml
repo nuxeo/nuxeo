@@ -99,17 +99,23 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- TODO: Use the dep from the central repo -->
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.components</groupId>
       <artifactId>geronimo-connector</artifactId>
+      <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.components</groupId>
+      <artifactId>geronimo-transaction</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+
 
     <dependency>
       <groupId>com.h2database</groupId>
