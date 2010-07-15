@@ -83,7 +83,7 @@
 
       <searchBaseDn>ou=groups</searchBaseDn>
       <searchClass>groupOfUniqueNames</searchClass>
-      <searchScope>onelevel</searchScope>
+      <searchScope>subtree</searchScope>
 
       <readOnly>false</readOnly>
 
