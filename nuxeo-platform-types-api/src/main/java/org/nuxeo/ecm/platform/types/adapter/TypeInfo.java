@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.types.TypeView;
  * Basically presents all useful Type getters.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface TypeInfo {
 
@@ -66,8 +65,8 @@ public interface TypeInfo {
      * Returns layout names for this mode, defaulting to layouts defined for
      * given default mode name.
      * <p>
-     * If parameter "defaultMode" is null, returns only layout defined for given
-     * mode.
+     * If parameter "defaultMode" is null, returns only layout defined for
+     * given mode.
      *
      * @Since 5.3.1
      */
@@ -84,5 +83,12 @@ public interface TypeInfo {
     String getView(String viewId);
 
     Map<String, SubType> getAllowedSubTypes();
+
+    /**
+     * Return content views defined on this document type
+     *
+     * @since 5.4
+     */
+    String[] getContentViews();
 
 }
