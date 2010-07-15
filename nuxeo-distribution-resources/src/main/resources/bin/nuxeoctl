@@ -153,15 +153,6 @@ elif [[ "$PID_DIR" != /* ]]; then
 fi
 PID="$PID_DIR/nuxeo.pid"
 
-# DATA_DIR
-# We don't use a default dir so as not to break backward compatibility
-
-if [ -z "$DATA_DIR" ]; then
-  DATA_DIR=server/default/data
-fi
-if [[ "$DATA_DIR" != /* ]]; then
-	DATA_DIR="$NUXEO_HOME/$DATA_DIR"
-fi
 
 # Where possible, increase the maximum number of file descriptors
 
@@ -258,6 +249,8 @@ if [ "$jboss" = "true" ]; then
   	fi
 	done
 
+  DATA_DIR=${DATA_DIR:-server/default/data}
+
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
 	NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
@@ -277,6 +270,8 @@ elif [ "$tomcat" = "true" ]; then
 	# Paths and specific options
 	NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
 	CATALINA_TEMP="$NUXEO_HOME/temp"
+  DATA_DIR=${DATA_DIR:-data}
+
 	if [ "$cygwin" = "true" ]; then
 		NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
 		CATALINA_TEMP==`cygpath --absolute --windows "$CATALINA_TEMP"`
@@ -291,12 +286,13 @@ elif [ "$tomcat" = "true" ]; then
 elif [ "$jetty" = "true" ]; then
 
 	# Paths and specific options
+  DATA_DIR=${DATA_DIR:-data}
 	NXC_VERSION=`basename $jettyjar | cut -d"-" -f4-`
 	NUXEO_CLASSPATH="$CLASSPATH:$jettyjar"
 	NUXEO_BUNDLES="$NUXEO_HOME/bundles/.:$NUXEO_HOME/lib/.:$NUXEO_HOME/config"
 	JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader"
 	JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true"
-	JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
+	JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=$DATA_DIR/derby"
 	JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.launcher.libdirs=lib"
 	if [ "$cygwin" = "true" ]; then
 		NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
@@ -311,6 +307,11 @@ elif [ "$jetty" = "true" ]; then
 
 else
 	die "Oops, something went very wrong, I'm not supposed to be here !"
+fi
+
+# Set absolute path for data directory
+if [[ "$DATA_DIR" != /* ]]; then
+  DATA_DIR="$NUXEO_HOME/$DATA_DIR"
 fi
 
 
@@ -377,7 +378,7 @@ start() {
       -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
   elif [ "$jetty" = "true" ]; then
     $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-      -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+      -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
       "$NUXEO_BUNDLES" -home "$NUXEO_HOME" > "$LOG" 2>&1 &
   fi
 
@@ -461,7 +462,7 @@ case "$1" in
         -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start > "$LOG" 2>&1 &
     elif [ "$jetty" = "true" ]; then
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-        -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+        -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME" > "$LOG" 2>&1 &
     fi
 		NUXEO_PID=$!
@@ -493,10 +494,10 @@ case "$1" in
         -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start
     elif [ "$jetty" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-        -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+        -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-        -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
+        -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
     fi
 		;;
