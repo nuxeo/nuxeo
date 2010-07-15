@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="default"
-      factory="org.nuxeo.ecm.core.storage.sql.PoolingRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository name="default">
         <schema>
           <field type="largetext">note</field>
