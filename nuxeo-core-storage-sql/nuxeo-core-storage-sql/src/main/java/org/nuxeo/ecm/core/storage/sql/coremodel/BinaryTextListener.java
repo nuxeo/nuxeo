@@ -127,7 +127,11 @@ public class BinaryTextListener implements PostCommitEventListener {
             
             // Iterate on each index to set the binaryText column
             for (String indexName : fulltextInfo.indexNames) {
-                // only extracting to default index is working
+                if (!fulltextInfo.indexesAllBinary.contains(indexName)
+                        && fulltextInfo.propPathsByIndexBinary.get(indexName) == null) {
+                    // nothing to do: index not configured for blob
+                    continue;
+                }
                 extractor.setExtractorProperties(
                         fulltextInfo.propPathsByIndexBinary.get(indexName),
                         fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
