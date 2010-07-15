@@ -483,11 +483,15 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                         DocumentModel proxy = session.publishDocument(
                                 session.getDocument(docRef),
                                 session.getDocument(targetRef), false);
+                        // save needed to have the proxy visible from other
+                        // sessions in non-JCA mode
+                        session.save();
                         SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
                                 proxy);
                         notifyEvent(PublishingEvent.documentWaitingPublication,
                                 proxy, coreSession);
                         restrictPermission(proxy, principal, coreSession, null);
+                        session.save(); // process invalidations (non-JCA)
                         createTask(proxy, coreSession, principal);
                         publishedDocument.setPending(true);
                         result = publishedDocument;
@@ -495,6 +499,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                         DocumentModel proxy = session.publishDocument(
                                 session.getDocument(docRef),
                                 session.getDocument(targetRef));
+                        // save needed to have the proxy visible from other
+                        // sessions in non-JCA mode
+                        session.save();
                         notifyEvent(PublishingEvent.documentPublished, proxy,
                                 coreSession);
                         SimpleCorePublishedDocument publishedDocument = new SimpleCorePublishedDocument(
@@ -504,6 +511,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
                 }
             } else if (list.size() == 2) {
                 DocumentModel waitingForPublicationDoc = null;
+                session.save(); // process invalidations (non-JCA)
                 for (DocumentModel dm : list) {
                     if (session.getACP(dm.getRef()).getACL(ACL_NAME) != null) {
                         waitingForPublicationDoc = dm;
