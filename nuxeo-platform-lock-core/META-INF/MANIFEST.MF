@@ -20,7 +20,8 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.ecm.platform.lock.api,
  org.nuxeo.runtime.api,
- org.nuxeo.runtime.model
+ org.nuxeo.runtime.model,
+ org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
 Nuxeo-Require: org.nuxeo.runtime,
   org.nuxeo.ecm.core.persistence,
