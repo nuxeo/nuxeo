@@ -1,15 +1,4 @@
-Export-Package: org.nuxeo.ecm.core.query.test;uses:="org.nuxeo.ecm.core.query.sql.model,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.ecm.core.api.security,
- org.nuxeo.ecm.core.model,
- org.nuxeo.ecm.core.security,
- org.nuxeo.runtime.test,
- org.nuxeo.ecm.core.api.security.impl,
- org.nuxeo.ecm.core.api.impl,
- org.nuxeo.ecm.core.event,
- org.nuxeo.runtime.api,
- org.nuxeo.ecm.core.api.impl.blob,
- org.nuxeo.ecm.core.api",
+Export-Package: org.nuxeo.ecm.core.query.test,
  schemas
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -33,8 +22,7 @@ Import-Package: org.nuxeo.ecm.core.api,
  org.nuxeo.osgi,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.osgi,
- org.nuxeo.runtime.test,
- schemas
+ org.nuxeo.runtime.test
 Bundle-SymbolicName: org.nuxeo.ecm.core.query.test;singleton:=true
 Nuxeo-Require: org.nuxeo.ecm.core.api,
  
