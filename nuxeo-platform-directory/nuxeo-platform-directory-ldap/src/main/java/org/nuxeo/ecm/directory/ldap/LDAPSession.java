@@ -197,7 +197,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 reference.addLinks((String) fieldMap.get(getIdField()),
                         targetIds);
             }
-
+            String dnFieldName = directory.getFieldMapper().getDirectoryField(
+                    LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
+            if (directory.getSchemaFieldMap().containsKey(dnFieldName)) {
+                // add the DN special attribute to the fieldmap of the new entry
+                fieldMap.put(dnFieldName, dn);
+            }
             directory.invalidateCaches();
             return fieldMapToDocumentModel(fieldMap);
         } catch (Exception e) {
