@@ -53,7 +53,7 @@ public interface ContentView extends Serializable {
     String getSelectionListName();
 
     /**
-     * Returns the pagination type ('default' or 'numbered')
+     * Returns the pagination type to be used in pagination rendering
      */
     String getPagination();
 

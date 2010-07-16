@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -66,7 +67,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
         GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
         ContentViewPageProvider<?> pageProvider = null;
-        if (coreDesc != null && genDesc != null) {
+        if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
+                && genDesc.isEnabled()) {
             log.error(String.format(
                     "Only one page provider should be registered on "
                             + "content view '%s': take the core query "
@@ -75,10 +77,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
 
         PageProviderDescriptor pageDesc = null;
-        if (coreDesc != null) {
+        if (coreDesc != null && coreDesc.isEnabled()) {
             pageProvider = new CoreQueryDocumentPageProvider();
             pageDesc = coreDesc;
-        } else if (genDesc != null) {
+        } else if (genDesc != null && genDesc.isEnabled()) {
             Class<ContentViewPageProvider<?>> klass = genDesc.getPageProviderClass();
             try {
                 pageProvider = klass.newInstance();
@@ -154,9 +156,57 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             }
             if (contentViews.containsKey(name)) {
                 log.info("Overriding content view with name " + name);
+                desc = mergeContentViews(contentViews.get(name), desc);
             }
             contentViews.put(name, desc);
         }
+    }
+
+    protected ContentViewDescriptor mergeContentViews(
+            ContentViewDescriptor oldDesc, ContentViewDescriptor newDesc) {
+        List<String> actions = newDesc.getActionCategories();
+        if (actions != null && !actions.isEmpty()) {
+            oldDesc.actionCategories = actions;
+        }
+
+        String cacheKey = newDesc.getCacheKey();
+        if (cacheKey != null) {
+            oldDesc.cacheKey = cacheKey;
+        }
+
+        CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
+        if (coreDesc != null && coreDesc.isEnabled()) {
+            oldDesc.coreQueryPageProvider = coreDesc;
+        }
+
+        GenericPageProviderDescriptor genDesc = newDesc.getGenericPageProvider();
+        if (genDesc != null && genDesc.isEnabled()) {
+            oldDesc.genericPageProvider = genDesc;
+        }
+
+        String pagination = newDesc.getPagination();
+        if (pagination != null) {
+            oldDesc.pagination = pagination;
+        }
+
+        List<String> events = newDesc.getRefreshEventNames();
+        if (events != null && !events.isEmpty()) {
+            oldDesc.eventNames = events;
+        }
+        String resultLayout = newDesc.getResultLayoutName();
+        if (resultLayout != null) {
+            oldDesc.resultLayout = resultLayout;
+        }
+        String searchLayout = newDesc.getSearchLayoutName();
+        if (searchLayout != null) {
+            oldDesc.searchLayout = searchLayout;
+        }
+        String selectionList = newDesc.getSelectionListName();
+        if (selectionList != null) {
+            oldDesc.selectionList = selectionList;
+        }
+
+        return oldDesc;
     }
 
     @Override

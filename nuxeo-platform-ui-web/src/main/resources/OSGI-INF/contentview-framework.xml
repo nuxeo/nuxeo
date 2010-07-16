@@ -26,44 +26,4 @@
       class="org.nuxeo.ecm.platform.ui.web.contentview.ContentViewDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
-    point="contentViews">
-
-    <contentView name="CURRENT_DOCUMENT_CHILDREN">
-
-      <coreQueryPageProvider>
-        <pageSize>2</pageSize>
-        <property name="coreSession">#{documentManager}</property>
-        <property name="checkQueryCache">true</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
-        </pattern>
-        <sort column="dc:title" ascending="true" />
-      </coreQueryPageProvider>
-
-      <selectionList>CURRENT_SELECTION</selectionList>
-      <pagination>simple</pagination>
-      <actions category="CURRENT_SELECTION_LIST" />
-      <actions category="CURRENT_SELECTION_LIST" />
-      <resultLayout>document_listing</resultLayout>
-      <!-- <cacheKey>#{currentDocument.cacheKey}</cacheKey> -->
-      <refresh>
-        <event>documentChildrenChanged</event>
-      </refresh>
-    </contentView>
-
-    <contentView name="coreQueryAndFetch">
-      <coreQueryPageProvider>
-        <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:primaryType = 'Section' AND
-          ecm:mixinType != 'HiddenInNavigation' AND ecm:path STARTSWITH ?
-        </pattern>
-      </coreQueryPageProvider>
-    </contentView>
-
-  </extension>
-
 </component>

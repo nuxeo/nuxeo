@@ -38,27 +38,49 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 "test-contentview-contrib.xml");
     }
 
-    public void testExtensionPoint() throws Exception {
+    public void testRegistration() throws Exception {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
-        ContentView contentView = service.getContentView("document_children");
+        assertNull(service.getContentView("foo"));
+
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         // check content view attributes
-        assertEquals("document_children", contentView.getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
         assertEquals("CURRENT_SELECTION_LIST",
                 contentView.getActionsCategories().get(0));
-        assertEquals("CURRENT_SELECTION_LIST_2",
-                contentView.getActionsCategories().get(1));
-        assertEquals("numbered", contentView.getPagination());
+        assertEquals("simple", contentView.getPagination());
         assertEquals("document_listing", contentView.getResultLayoutName());
         assertEquals("search_layout", contentView.getSearchLayoutName());
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
         assertNotNull(eventNames);
-        assertEquals(2, eventNames.size());
-        assertEquals("foo", eventNames.get(0));
-        assertEquals("bar", eventNames.get(1));
-
-        // TODO: test provider registration
+        assertEquals(1, eventNames.size());
+        assertEquals("documentChildrenChanged", eventNames.get(0));
     }
+
+    public void testOverride() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.ui.test",
+                "test-contentview-override-contrib.xml");
+
+        ContentViewService service = Framework.getService(ContentViewService.class);
+        assertNotNull(service);
+
+        assertNull(service.getContentView("foo"));
+
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        // check content view attributes
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
+        assertEquals("CURRENT_SELECTION_LIST_2",
+                contentView.getActionsCategories().get(0));
+        assertEquals("simple_2", contentView.getPagination());
+        assertEquals("document_listing_2", contentView.getResultLayoutName());
+        assertEquals("search_layout", contentView.getSearchLayoutName());
+        assertEquals("CURRENT_SELECTION_2", contentView.getSelectionListName());
+        List<String> eventNames = contentView.getRefreshEventNames();
+        assertNotNull(eventNames);
+        assertEquals(1, eventNames.size());
+        assertEquals("documentChildrenChanged", eventNames.get(0));
+    }
+
 }

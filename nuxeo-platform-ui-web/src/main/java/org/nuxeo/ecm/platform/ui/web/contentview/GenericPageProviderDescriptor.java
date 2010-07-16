@@ -37,6 +37,11 @@ import org.nuxeo.ecm.core.api.SortInfo;
 @XObject("genericPageProvider")
 public class GenericPageProviderDescriptor implements PageProviderDescriptor {
 
+    private static final long serialVersionUID = 1L;
+
+    @XNode("@enabled")
+    private final boolean enabled = true;
+
     @XNode("@class")
     private Class<ContentViewPageProvider<?>> klass;
 
@@ -104,6 +109,10 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
 
     public long getPageSize() {
         return pageSize;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

@@ -52,7 +52,7 @@ public class ContentViewImpl implements ContentView {
 
     protected String selectionList;
 
-    protected String pagination = "default";
+    protected String pagination;
 
     protected List<String> actionCategories;
 

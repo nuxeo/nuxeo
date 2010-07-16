@@ -58,10 +58,25 @@ public class CoreQueryDocumentPageProvider extends
 
     protected List<DocumentModel> currentPageDocuments;
 
+    public void setPageProviderDescriptor(
+            PageProviderDescriptor providerDescriptor) {
+        this.descriptor = providerDescriptor;
+    }
+
     @Override
     public List<DocumentModel> getCurrentPage() {
         checkQueryCache();
         if (currentPageDocuments == null) {
+
+            CoreSession coreSession = getCoreSession();
+            if (query == null) {
+                buildQuery(coreSession);
+            }
+            if (query == null) {
+                throw new ClientRuntimeException(String.format(
+                        "Cannot perform null query: check provider '%s'",
+                        getName()));
+            }
 
             currentPageDocuments = new ArrayList<DocumentModel>();
 
@@ -70,7 +85,6 @@ public class CoreQueryDocumentPageProvider extends
             }
 
             try {
-                CoreSession coreSession = getCoreSession();
                 DocumentModelList docs = coreSession.query(query, null,
                         getPageSize(), offset, true);
                 resultsCount = docs.totalSize();
@@ -82,42 +96,42 @@ public class CoreQueryDocumentPageProvider extends
         return currentPageDocuments;
     }
 
-    public void setPageProviderDescriptor(
-            PageProviderDescriptor providerDescriptor) {
-        this.descriptor = providerDescriptor;
-    }
-
-    protected void buildQuery(CoreSession coreSession) throws ClientException {
-        String newQuery = null;
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[] {});
-        }
-        if (descriptor.getDocType() == null) {
-            newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
-                    getParameters(), sortArray);
-        } else {
-            DocumentModel searchDocumentModel = getSearchDocumentModel();
-            if (searchDocumentModel == null) {
-                // try to retrieve it from properties
-                Map<String, Serializable> props = getProperties();
-                if (props.containsKey(SEARCH_DOCUMENT_PROPERTY)) {
-                    searchDocumentModel = (DocumentModel) props.get(SEARCH_DOCUMENT_PROPERTY);
+    protected void buildQuery(CoreSession coreSession) {
+        try {
+            String newQuery = null;
+            SortInfo[] sortArray = null;
+            if (sortInfos != null) {
+                sortArray = sortInfos.toArray(new SortInfo[] {});
+            }
+            if (descriptor.getDocType() == null) {
+                newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
+                        getParameters(), sortArray);
+            } else {
+                DocumentModel searchDocumentModel = getSearchDocumentModel();
+                if (searchDocumentModel == null) {
+                    // try to retrieve it from properties
+                    Map<String, Serializable> props = getProperties();
+                    if (props.containsKey(SEARCH_DOCUMENT_PROPERTY)) {
+                        searchDocumentModel = (DocumentModel) props.get(SEARCH_DOCUMENT_PROPERTY);
+                    }
                 }
+                if (searchDocumentModel == null) {
+                    throw new ClientException(String.format(
+                            "Cannot build query of provider '%s': "
+                                    + "no search document model is set",
+                            getName()));
+                }
+                newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
+                        descriptor.getWhereClause(), sortArray);
             }
-            if (searchDocumentModel == null) {
-                throw new ClientException(String.format(
-                        "Cannot build query of provider '%s': "
-                                + "no search document model is set", getName()));
-            }
-            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
-                    descriptor.getWhereClause(), sortArray);
-        }
 
-        if (newQuery != null && !newQuery.equals(query)) {
-            query = newQuery;
-            // query has changed => refresh
-            refresh();
+            if (newQuery != null && !newQuery.equals(query)) {
+                query = newQuery;
+                // query has changed => refresh
+                refresh();
+            }
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 
@@ -127,11 +141,7 @@ public class CoreQueryDocumentPageProvider extends
         if (props.containsKey(CHECK_QUERY_CACHE_PROPERTY)
                 && Boolean.TRUE.equals(Boolean.valueOf((String) props.get(CHECK_QUERY_CACHE_PROPERTY)))) {
             CoreSession coreSession = getCoreSession();
-            try {
-                buildQuery(coreSession);
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
-            }
+            buildQuery(coreSession);
         }
 
     }

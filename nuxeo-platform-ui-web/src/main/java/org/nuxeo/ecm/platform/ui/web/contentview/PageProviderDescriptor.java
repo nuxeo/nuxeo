@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.ui.web.contentview;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  *
  * @author Anahide Tchertchian
  */
-public interface PageProviderDescriptor {
+public interface PageProviderDescriptor extends Serializable {
 
     Map<String, String> getProperties();
 

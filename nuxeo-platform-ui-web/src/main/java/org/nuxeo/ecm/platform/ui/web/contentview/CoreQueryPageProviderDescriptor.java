@@ -35,6 +35,11 @@ import org.nuxeo.ecm.core.api.SortInfo;
 @XObject("coreQueryPageProvider")
 public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
+    private static final long serialVersionUID = 1L;
+
+    @XNode("@enabled")
+    boolean enabled = true;
+
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<String, String>();
 
@@ -46,10 +51,6 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
     List<SortInfoDescriptor> sortInfos;
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
 
     @XNode("@docType")
     protected String docType;
@@ -65,6 +66,10 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
         if (pattern != null) {
             this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
         }
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     public String getDocType() {
@@ -95,6 +100,10 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     public long getPageSize() {
         return pageSize;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

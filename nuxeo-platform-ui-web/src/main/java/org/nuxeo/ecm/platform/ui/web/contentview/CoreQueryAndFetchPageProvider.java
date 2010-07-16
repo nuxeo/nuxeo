@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PageSelections;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -36,26 +35,38 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public class CoreQueryAndFetchPageProvider extends
         AbstractPageProvider<Map<String, Serializable>> implements
-        PageProvider<Map<String, Serializable>> {
+        ContentViewPageProvider<Map<String, Serializable>> {
 
     private static final long serialVersionUID = 1L;
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
-    public static final String QUERY_PROPERTY = "query";
+    public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
+
+    protected PageProviderDescriptor descriptor;
 
     protected String query;
 
     protected List<Map<String, Serializable>> currentItems;
 
+    public void setPageProviderDescriptor(
+            PageProviderDescriptor providerDescriptor) {
+        this.descriptor = providerDescriptor;
+    }
+
     @Override
     public List<Map<String, Serializable>> getCurrentPage() {
-        try {
-            buildQuery();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        checkQueryCache();
         if (currentItems == null) {
+
+            if (query == null) {
+                buildQuery();
+            }
+            if (query == null) {
+                throw new ClientRuntimeException(String.format(
+                        "Cannot perform null query: check provider '%s'",
+                        getName()));
+            }
 
             currentItems = new ArrayList<Map<String, Serializable>>();
 
@@ -93,43 +104,41 @@ public class CoreQueryAndFetchPageProvider extends
         return currentItems;
     }
 
-    protected void buildQuery() throws ClientException {
-        Map<String, Serializable> props = getProperties();
+    protected void buildQuery() {
+        try {
+            String originalQuery = descriptor.getPattern();
 
-        String originalQuery = (String) props.get(QUERY_PROPERTY);
-        if (originalQuery != null) {
-            // remove new lines and following spaces
-            originalQuery = originalQuery.replaceAll("\r?\n\\s*", " ");
-        }
+            SortInfo[] sortArray = null;
+            if (sortInfos != null) {
+                sortArray = sortInfos.toArray(new SortInfo[] {});
+            }
+            String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
+                    getParameters(), sortArray);
 
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[] {});
-        }
-        String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
-                getParameters(), sortArray);
-
-        if (!newQuery.equals(query)) {
-            // query has changed => refresh
-            refresh();
+            if (!newQuery.equals(query)) {
+                // query has changed => refresh
+                query = newQuery;
+                refresh();
+            }
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 
     @Override
     public PageSelections<Map<String, Serializable>> getCurrentSelectPage() {
-        // handle refresh of select page according to query
+        checkQueryCache();
+        return super.getCurrentSelectPage();
+    }
+
+    protected void checkQueryCache() {
+        // maybe handle refresh of select page according to query
         Map<String, Serializable> props = getProperties();
-        CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
-        if (coreSession == null) {
-            throw new ClientRuntimeException("cannot find core session");
+        if (props.containsKey(CHECK_QUERY_CACHE_PROPERTY)
+                && Boolean.TRUE.equals(Boolean.valueOf((String) props.get(CHECK_QUERY_CACHE_PROPERTY)))) {
+            buildQuery();
         }
 
-        try {
-            buildQuery();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-        return super.getCurrentSelectPage();
     }
 
     @Override
