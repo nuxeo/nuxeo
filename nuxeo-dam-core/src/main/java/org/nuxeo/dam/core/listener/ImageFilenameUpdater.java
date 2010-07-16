@@ -17,7 +17,7 @@
 
 package org.nuxeo.dam.core.listener;
 
-import static org.nuxeo.dam.core.Constants.PICTURE_SCHEMA;
+import static org.nuxeo.dam.Constants.PICTURE_SCHEMA;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import java.util.List;

@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.junit.runner.RunWith;
-import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.junit.Test;

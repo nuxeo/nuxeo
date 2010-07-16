@@ -19,7 +19,7 @@ package org.nuxeo.dam.core.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.core.service.InheritedPropertiesService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

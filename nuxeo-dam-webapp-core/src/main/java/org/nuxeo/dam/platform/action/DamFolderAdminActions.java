@@ -34,7 +34,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
