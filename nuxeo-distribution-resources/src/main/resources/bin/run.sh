@@ -7,6 +7,12 @@
 
 DIRNAME=`dirname "$0"`
 
-echo WARNING: run.sh is DEPRECATED, please use 'nuxeoctl console' instead.
+echo
+echo WARNING: run.sh is DEPRECATED, please use \"nuxeoctl console\" instead.
+echo
+
+sleep 2
+
+echo Trying to start anyway using \"nuxeoctl console\"
 
 "$DIRNAME"/nuxeoctl console $*
