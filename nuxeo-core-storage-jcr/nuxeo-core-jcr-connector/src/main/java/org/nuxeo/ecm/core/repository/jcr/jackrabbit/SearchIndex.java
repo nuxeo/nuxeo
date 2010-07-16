@@ -31,6 +31,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.core.NodeId;
 import org.apache.jackrabbit.core.PropertyId;
+import org.apache.jackrabbit.core.query.QueryHandlerContext;
 import org.apache.jackrabbit.core.query.lucene.FieldNames;
 import org.apache.jackrabbit.core.query.lucene.IndexFormatVersion;
 import org.apache.jackrabbit.core.query.lucene.LongField;
@@ -104,7 +105,8 @@ public class SearchIndex extends
             this.nsMappings = nsMappings;
             this.indexFormatVersion = indexFormatVersion;
             resolver = NamePathResolverImpl.create(nsMappings);
-            itemStateManager = getContext().getItemStateManager();
+            QueryHandlerContext context = getContext();
+			itemStateManager = context.getItemStateManager();
         }
 
         protected Document createDocument(NodeState node)

@@ -90,13 +90,10 @@ public class TestXPathBuilder extends TestCase {
         x = "//element(*,ecmdt:Document)[@dc:title = 'test'] order by @foo descending, @bar";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        // TODO XXX bs
-        // This test is disabled since it is not passing in Java6. In java6 the expected date in xs:dateTime
-        // is T00:00:00.000Z and not T00:00:00.000+01:00
         q = "select * from document where ecm:path LIKE '%/ws/%' and dc:created between DATE '2004-02-10' and DATE '2005-01-02'";
         //x = "//%/ecm:children/ws/ecm:children//element(*,ecmnt:document)[( (dc:created >= xs:dateTime('2004-02-10T00:00:00.000+01:00') and dc:created <= xs:dateTime('2005-01-02T00:00:00.000+01:00')))]";
         x = "//element(*,ecmnt:document)[( jcr:like(@ecm:path, '%/ws/%') ) and ( (dc:created >= xs:dateTime('2004-02-10T00:00:00.000+01:00') and dc:created <= xs:dateTime('2005-01-02T00:00:00.000+01:00')))]";
-        //assertEquals(x, XPathBuilder.fromNXQL(q));
+        assertEquals(x, XPathBuilder.fromNXQL(q));
 
         //q = "select * from document where ecm:path LIKE '/default-domain/workspaces/%' and   dc:created != TIMESTAMP '1003-02-10 10:00:00' and my:urgency = 2 order by ecm:path";
         //x = "/jcr:root/ecm:root/ecm:children/default-domain/ecm:children/workspaces/ecm:children//element(*,ecmnt:document)[((@dc:created <> xs:dateTime('1003-02-10T10:00:00.000+00:09:21'))) and (@my:urgency = 2)] order by @jcr:path ascending";

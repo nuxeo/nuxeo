@@ -279,6 +279,17 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     public void testComplexTypeOrdering() throws Exception {
+        if (database instanceof DatabaseOracle) {
+            // Oracle has problems opening and closing many connections in a
+            // short time span (Listener refused the connection with the
+            // following error: ORA-12519, TNS:no appropriate service handler
+            // found)
+            // It seems to have something to do with how closed sessions are not
+            // immediately accounted for by Oracle's PMON (process monitor)
+            // So don't run this test with Oracle.
+            return;
+        }
+
         // test case to reproduce an ordering content related Heisenbug on
         // postgresql: NXP-2810: Preserve creation order of children of a
         // complex type property in SQL storage with PostgreSQL

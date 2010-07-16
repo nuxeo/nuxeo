@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
@@ -79,7 +79,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             return;
         }
         CoreSession session = null;
-        ModelFulltext fulltextInfo;
+        ModelFulltext fulltextInfo = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
             if (!event.getName().equals(EVENT_NAME)) {
@@ -107,7 +107,6 @@ public class BinaryTextListener implements PostCommitEventListener {
         // we have all the info from the bundle, now do the extraction
         boolean save = false;
         BlobsExtractor extractor = new BlobsExtractor();
-        final DocumentRef rootRef = session.getRootDocument().getRef();
         for (Serializable id : ids) {
             IdRef docRef = new IdRef((String) id);
             // if the runtime has shutdown (normally because tests are finished)
@@ -125,15 +124,26 @@ public class BinaryTextListener implements PostCommitEventListener {
                 // the target document that carries it
                 continue;
             }
-            List<Blob> blobs = extractor.getBlobs(doc);
-            String text = blobsToText(blobs);
-            try {
-                session.setDocumentSystemProp(docRef,
-                        SQLDocument.BINARY_TEXT_SYS_PROP, text);
-            } catch (DocumentException e) {
-                log.error("Couldn't set fulltext on: " + id, e);
-                continue;
+            
+            // Iterate on each index to set the binaryText column
+            for (String indexName : fulltextInfo.indexNames) {
+                // only extracting to default index is working
+                extractor.setExtractorProperties(
+                        fulltextInfo.propPathsByIndexBinary.get(indexName),
+                        fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
+                        fulltextInfo.indexesAllBinary.contains(indexName));
+                List<Blob> blobs = extractor.getBlobs(doc);
+                String text = blobsToText(blobs);
+                try {
+                    session.setDocumentSystemProp(docRef,
+                            SQLDocument.BINARY_TEXT_SYS_PROP
+                                    + getFulltextIndexSuffix(indexName), text);
+                } catch (DocumentException e) {
+                    log.error("Couldn't set fulltext on: " + id, e);
+                    continue;
+                }
             }
+            
             save = true;
         }
         if (save) {
@@ -177,6 +187,10 @@ public class BinaryTextListener implements PostCommitEventListener {
             }
         }
         return StringUtils.join(strings, " ");
+    }
+    
+    public String getFulltextIndexSuffix(String indexName) {
+        return indexName.equals(Model.FULLTEXT_DEFAULT_INDEX) ? "" : '_' + indexName;
     }
 
 }

@@ -45,6 +45,8 @@ public class Html2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(Html2TextConverter.class);
 
+    public static final String TAG_FILTER_PARAMETER = "tagFilter";
+
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -53,7 +55,11 @@ public class Html2TextConverter implements Converter {
             stream = blobHolder.getBlob().getStream();
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer();
-            HtmlParser parser = new HtmlParser();
+            String tagFilter = null;
+            if (parameters != null) {
+                tagFilter = (String) parameters.get(TAG_FILTER_PARAMETER);
+            }
+            HtmlParser parser = new HtmlParser(tagFilter);
 
             SAXResult result = new SAXResult(new DefaultHandler());
 

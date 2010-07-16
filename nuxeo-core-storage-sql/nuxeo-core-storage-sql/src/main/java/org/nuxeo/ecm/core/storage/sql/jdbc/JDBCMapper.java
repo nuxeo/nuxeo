@@ -262,7 +262,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         }
 
-        st.close();
+        closeStatement(st);
     }
 
     protected static Set<String> findTableNames(DatabaseMetaData metadata,
@@ -351,7 +351,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    closePreparedStatement(ps);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     log.error(e.getMessage(), e);
                 }
@@ -427,7 +427,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } finally {
             if (st != null) {
                 try {
-                    st.close();
+                    closeStatement(st);
                 } catch (SQLException e) {
                     log.error(e.getMessage(), e);
                 }
@@ -464,7 +464,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 return id;
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -506,7 +506,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 ps.execute();
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -662,7 +662,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } finally {
             if (ps != null) {
                 try {
-                    closePreparedStatement(ps);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     log.error("Cannot close connection", e);
                 }
@@ -693,14 +693,23 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return;
         }
         log.debug("updateReadAcls: updating ...");
+        Statement st = null;
         try {
-            Statement st = connection.createStatement();
+            st = connection.createStatement();
             String sql = sqlInfo.dialect.getUpdateReadAclsSql();
             logger.log(sql);
             st.execute(sql);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to update read acls", e);
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
         log.debug("updateReadAcls: done.");
     }
@@ -710,14 +719,23 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return;
         }
         log.debug("rebuildReadAcls: rebuilding ...");
+        Statement st = null;
         try {
-            Statement st = connection.createStatement();
+            st = connection.createStatement();
             String sql = sqlInfo.dialect.getRebuildReadAclsSql();
             logger.log(sql);
             st.execute(sql);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to rebuild read acls", e);
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
         log.debug("rebuildReadAcls: done.");
     }

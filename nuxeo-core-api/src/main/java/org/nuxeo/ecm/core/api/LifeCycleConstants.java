@@ -27,6 +27,13 @@ public interface LifeCycleConstants {
 
     static final String DELETED_STATE = "deleted";
 
+    static final String DELETE_TRANSITION = "delete";
+
+    static final String UNDELETE_TRANSITION = "undelete";
+
+    /**
+     * Event for a lifecycle transition.
+     */
     static final String TRANSITION_EVENT = "lifecycle_transition_event";
 
     static final String TRANSTION_EVENT_OPTION_FROM = "from";
@@ -34,5 +41,11 @@ public interface LifeCycleConstants {
     static final String TRANSTION_EVENT_OPTION_TO = "to";
 
     static final String TRANSTION_EVENT_OPTION_TRANSITION = "transition";
+
+    /**
+     * Event for a document undeleted by the user. Triggers an async listener
+     * that undeletes its children too.
+     */
+    public static final String DOCUMENT_UNDELETED = "documentUndeleted";
 
 }

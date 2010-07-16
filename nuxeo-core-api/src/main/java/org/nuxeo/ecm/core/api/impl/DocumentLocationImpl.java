@@ -84,4 +84,11 @@ public class DocumentLocationImpl implements DocumentLocation {
         return docPathRef;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "DocumentLocationImpl [docIdRef=%s, docPathRef=%s, docRef=%s, serverName=%s]",
+                docIdRef, docPathRef, docRef, serverName);
+    }
+
 }

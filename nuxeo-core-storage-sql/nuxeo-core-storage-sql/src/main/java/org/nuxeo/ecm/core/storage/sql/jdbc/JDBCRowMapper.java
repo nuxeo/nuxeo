@@ -222,7 +222,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 return res;
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -343,7 +343,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             if (ps != null) {
                 try {
-                    closePreparedStatement(ps);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -473,7 +473,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             if (ps != null) {
                 try {
-                    closePreparedStatement(ps);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -504,7 +504,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             if (ps != null) {
                 try {
-                    closePreparedStatement(ps);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -532,7 +532,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 int count = ps.executeUpdate();
                 logger.logCount(count);
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -558,7 +558,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 int count = ps.executeUpdate();
                 logger.logCount(count);
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -608,7 +608,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 return array;
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -697,7 +697,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 return row;
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -846,7 +846,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 int count = ps.executeUpdate();
                 logger.logCount(count);
             } finally {
-                closePreparedStatement(ps);
+                closeStatement(ps);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -961,7 +961,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
             idMap.put(id, newId);
         } finally {
-            closePreparedStatement(ps);
+            closeStatement(ps);
         }
         return newId;
     }
@@ -1008,7 +1008,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return childrenIds;
         } finally {
-            closePreparedStatement(ps);
+            closeStatement(ps);
         }
     }
 
@@ -1064,8 +1064,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // 0 , 0 -> null
             return after ? Boolean.TRUE : (before ? Boolean.FALSE : null);
         } finally {
-            closePreparedStatement(copyPs);
-            closePreparedStatement(deletePs);
+            closeStatement(copyPs);
+            closeStatement(deletePs);
         }
     }
 

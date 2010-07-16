@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.AbstractSAXParser;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
+import org.apache.xerces.xni.QName;
+import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XMLLocator;
 import org.apache.xerces.xni.XMLString;
 import org.apache.xerces.xni.XNIException;
@@ -39,8 +41,23 @@ public class HtmlParser extends AbstractSAXParser {
 
     private StringBuffer buffer;
 
+    private String tagFilter;
+
+    private Boolean inFilter;
+
+    private Boolean noFilter;
+
     public HtmlParser() {
         super(new HTMLConfiguration());
+        init(null);
+    }
+
+    public HtmlParser(String tagFilter) {
+        super(new HTMLConfiguration());
+        init(tagFilter);
+    }
+
+    public void init(String tagFilter){
         try {
             // make sure we do not download the DTD URI
             setFeature("http://xml.org/sax/features/validation", false);
@@ -50,6 +67,31 @@ public class HtmlParser extends AbstractSAXParser {
         } catch (SAXException e) {
             log.debug("Could not switch parser to non-validating: " +
                     e.getMessage());
+        }
+        inFilter = false;
+        if (tagFilter == null || "".equals(tagFilter)) {
+            noFilter = true;
+        } else {
+            this.tagFilter = tagFilter;
+            noFilter = false;
+        }
+    }
+
+    @Override
+    public void startElement(QName element, XMLAttributes attributes,
+            Augmentations augs) throws XNIException {
+        super.startElement(element, attributes, augs);
+        if (!noFilter && tagFilter.equalsIgnoreCase(element.localpart)) {
+            inFilter = true;
+        }
+    }
+
+    @Override
+    public void endElement(QName element, Augmentations augs)
+            throws XNIException {
+        super.endElement(element, augs);
+        if (!noFilter && tagFilter.equals(element.localpart)) {
+            inFilter = false;
         }
     }
 
@@ -63,10 +105,10 @@ public class HtmlParser extends AbstractSAXParser {
     @Override
     public void characters(XMLString xmlString, Augmentations augmentations)
             throws XNIException {
-
         super.characters(xmlString, augmentations);
-
-        buffer.append(xmlString.toString());
+        if (noFilter || inFilter) {
+            buffer.append(xmlString.toString());
+        }
     }
 
     private String filterAndJoin(String text) {

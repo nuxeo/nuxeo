@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +55,14 @@ public class BlobsExtractor {
 
     protected SchemaManager schemaManager;
 
+    private Set<String> pathProperties;
+
+    private Set<String> excludedPathProperties;
+
+    private boolean indexAllBinary = false;
+    
+    private boolean isDefaultConfiguration = true;
+
     protected SchemaManager getSchemaManager() throws Exception {
         if (schemaManager == null) {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -73,6 +82,9 @@ public class BlobsExtractor {
             List<String> pathsList = getBlobFieldPathForDocumentType(
                     doc.getType()).get(schema);
             for (String path : pathsList) {
+                if (!isInterestingBlobProperty(path, schemaManager.getSchema(schema).getNamespace().prefix)) {
+                    continue;
+                }
                 List<String> pathSplitted = Arrays.asList(path.split("/[*]/"));
                 if (pathSplitted.size() == 0) {
                     throw new IllegalStateException("Path detected not wellformed: "
@@ -277,4 +289,36 @@ public class BlobsExtractor {
         return result;
     }
 
+    public void setExtractorProperties(Set<String> pathProps, Set<String> excludedPathProps, boolean indexBlobs) {
+        pathProperties = pathProps;
+        excludedPathProperties = excludedPathProps;
+        indexAllBinary = indexBlobs;
+        isDefaultConfiguration = (pathProps == null
+                && excludedPathProps == null
+                && Boolean.TRUE.equals(indexBlobs));
+    }
+    
+    
+    private boolean isInterestingBlobProperty(String path, String prefix) {
+        if (isDefaultConfiguration) {
+            return true;
+        } else if (pathProperties != null && matchProperty(prefix, path, pathProperties)) {
+            return true;
+        } else if (excludedPathProperties != null && matchProperty(prefix, path, excludedPathProperties)) {
+            return false;
+        } else if (Boolean.TRUE.equals(indexAllBinary)) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean matchProperty(String prefix, String fieldPath, Set<String> propPaths) {
+        String pathToMatch = (prefix == "" ? "" : prefix + ":") + fieldPath.substring(1);
+        for (String propPath : propPaths) {
+            if (propPath.startsWith(pathToMatch)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
