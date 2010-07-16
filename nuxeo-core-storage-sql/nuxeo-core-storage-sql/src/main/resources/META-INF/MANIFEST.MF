@@ -2,7 +2,7 @@ Export-Package: org.nuxeo.ecm.core.storage.sql,
  org.nuxeo.ecm.core.storage.sql.coremodel,
  org.nuxeo.ecm.core.storage.sql.jdbc.db,
  org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
- org.nuxeo.ecm.core.storage,
+ org.nuxeo.ecm.core.storage;sql=split,
  org.nuxeo.ecm.core.storage.sql.jdbc,
  org.nuxeo.ecm.core.storage.sql.management,
  org.nuxeo.ecm.core.storage.sql.net
@@ -14,6 +14,7 @@ Bundle-Name: org.nuxeo.ecm.core.storage.sql
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
+Eclipse-ExtensibleAPI: true
 Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/management-contrib.xml,
   OSGI-INF/listener-contrib.xml,

@@ -5,8 +5,7 @@ Bundle-ClassPath: .
 Manifest-Version: 1.0
 Bundle-Name: Nuxeo Core JCR Storage Tests
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Require-Bundle: org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.api
+Require-Bundle: org.nuxeo.ecm.core
 Bundle-Vendor: Nuxeo SAS
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
@@ -14,13 +13,14 @@ Nuxeo-Component: OSGI-INF/DemoRepository.xml,
  OSGI-INF/CoreSessionFactory.xml
 Bundle-License: http://www.gnu.org/copyleft/lesser.txt
 Bundle-Description: Nuxeo Core: JCR Storage Tests.
-Bundle-SymbolicName: org.nuxeo.ecm.core.nuxeo-core-jcr-connector-test
+Bundle-SymbolicName: org.nuxeo.ecm.core.jcr-connector
 Import-Package: javax.jcr;version="1.0.0",
  junit.framework,
  junit.textui,
  org.apache.commons.logging,
  org.apache.jackrabbit,
  org.apache.jackrabbit.core.nodetype,
+ org.jmock,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.api.blobholder,
