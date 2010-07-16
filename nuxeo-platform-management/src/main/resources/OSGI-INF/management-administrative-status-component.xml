@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusComponent">
+    <implementation
+        class="org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusComponent" />
+
+    <service>
+        <provide
+            interface="org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusService" />
+    </service>
+
+</component>

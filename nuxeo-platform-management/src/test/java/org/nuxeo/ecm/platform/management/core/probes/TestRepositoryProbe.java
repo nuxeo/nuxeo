@@ -17,8 +17,8 @@
 package org.nuxeo.ecm.platform.management.core.probes;
 
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.management.test.probes.RepositoryProbe;
-import org.nuxeo.ecm.platform.management.test.probes.RepositoryTestProbe;
+import org.nuxeo.ecm.platform.management.probes.impl.RepositoryProbe;
+import org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
