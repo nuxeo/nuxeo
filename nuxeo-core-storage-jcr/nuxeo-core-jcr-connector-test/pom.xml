@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-storage-jcr-parent</artifactId>
-    <version>1.6.2-NXP-5053-SNAPSHOT</version>
+    <version>1.6.2-NXP-5357-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -78,11 +78,6 @@
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
