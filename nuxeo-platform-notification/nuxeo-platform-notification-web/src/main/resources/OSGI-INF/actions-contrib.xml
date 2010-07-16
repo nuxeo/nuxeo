@@ -8,6 +8,8 @@
     @author Narcis Paslaru
   </documentation>
 
+  <require>org.nuxeo.ecm.platform.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
 
     <documentation>
