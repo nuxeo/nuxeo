@@ -682,23 +682,26 @@ SELECT nx_upgrade_tags();
 # Adding miscellaneous indexes
 
 #TEST:
-SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_doc_uuid_idx' AND EXISTS(SELECT tablename FROM pg_tables WHERE tablename = 'nxp_logs');
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_doc_uuid_idx');
 
-#IF: emptyResult
+#IF: ! emptyResult
 CREATE INDEX nxp_logs_log_doc_uuid_idx ON nxp_logs USING btree(log_doc_uuid);
 
 
 #TEST:
-SELECT 1 FROM pg_indexes WHERE indexname='dc_contributors_item_idx' AND EXISTS(SELECT tablename FROM pg_tables WHERE tablename = 'dc_contributors');
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dc_contributors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dc_contributors_item_idx');
 
-#IF: emptyResult
+#IF: ! emptyResult
 CREATE INDEX dc_contributors_item_idx ON dc_contributors USING btree(item);
 
 
 #TEST:
-SELECT 1 FROM pg_indexes WHERE indexname='dublincore_modified_idx' AND EXISTS(SELECT tablename FROM pg_tables WHERE tablename = 'dublincore');
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dublincore')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dublincore_modified_idx');
 
-#IF: emptyResult
+#IF: ! emptyResult
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
 
