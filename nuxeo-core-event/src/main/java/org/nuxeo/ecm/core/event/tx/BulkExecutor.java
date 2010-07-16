@@ -59,10 +59,11 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
         runner.interrupt();
     }
 
-    protected class MonoThreadBulkExecutor implements Runnable {
+    protected class MonoThreadBulkExecutor implements Runnable, Thread.UncaughtExceptionHandler {
+
+        protected EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
 
         public void run() {
-            EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             long t0 = System.currentTimeMillis();
             log.debug("Start post commit sync execution in Thread "
                     + Thread.currentThread().getId());
@@ -71,15 +72,23 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
                 for (EventListenerDescriptor listener : listeners) {
                     listener.asPostCommitListener().handleEvent(event);
                 }
+                event.disconnect();
                 txh.commitOrRollbackTransaction();
             } catch (Throwable t) {
                 log.error("Exception occured during Bulk Event Handler execution, rolling back transaction", t);
                 log.error("Total execution time = " + (System.currentTimeMillis() - t0) + "ms");
+                event.disconnect();
                 txh.rollbackTransaction();
             }
             log.debug("End of all post commit sync executions : "
                     + (System.currentTimeMillis() - t0) + "ms");
         }
+
+        public void uncaughtException(Thread t, Throwable e) {
+            event.disconnect();
+            txh.rollbackTransaction();
+        }
+
     }
 
 }
