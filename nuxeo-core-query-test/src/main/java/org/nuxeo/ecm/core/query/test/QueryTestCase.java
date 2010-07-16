@@ -659,7 +659,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         createDocs();
 
         // move folder2 into folder1
-        session.move(new PathRef("/testfolder2/"), new PathRef("/testfolder1/"), null);
+        session.move(new PathRef("/testfolder2/"),
+                new PathRef("/testfolder1/"), null);
         session.save();
 
         sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/'";
@@ -830,6 +831,15 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         DocumentModelList dml = session.query("SELECT * FROM Document");
         assertEquals(3, dml.size());
+    }
+
+    public void testQueryWithSecurityAndFulltext() throws Exception {
+        createDocs();
+        closeSession();
+        session = openSessionAs("bob");
+        // this failed with ORA-00918 on Oracle (NXP-5410)
+        session.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
+        // we don't care about the answer, just that the query executes
     }
 
     public void testSecurityManagerBasic() throws Exception {

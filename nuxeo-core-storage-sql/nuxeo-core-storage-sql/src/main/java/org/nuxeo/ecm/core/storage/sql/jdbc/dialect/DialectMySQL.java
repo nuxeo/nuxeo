@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -283,10 +285,9 @@ public class DialectMySQL extends Dialect {
         String match = String.format("MATCH (%s, %s)",
                 stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.join = String.format(
-                "%s ON %s = %s", //
-                ft.getQuotedName(), ftMain.getFullQuotedName(),
-                mainColumn.getFullQuotedName());
+        info.joins = Collections.singletonList(new Join(Join.INNER,
+                ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName()));
         info.whereExpr = String.format("%s AGAINST (? IN BOOLEAN MODE)", match);
         info.whereExprParam = fulltextQuery;
         // Note: using the boolean query in non-boolean mode gives approximate

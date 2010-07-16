@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -260,10 +260,15 @@ public class DialectH2 extends Dialect {
         String scoreAlias = "_nxscore" + nthSuffix;
         // String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.leftJoin = String.format("NXFT_SEARCH('%s', ?) %s ON %s.KEY = %s",
-                fullIndexName, tableAlias, tableAlias,
-                mainColumn.getFullQuotedName());
-        info.leftJoinParam = fulltextQuery;
+        info.joins = Collections.singletonList( //
+        new Join(
+                Join.LEFT, //
+                String.format("NXFT_SEARCH('%s', ?)", fullIndexName),
+                tableAlias, // alias
+                fulltextQuery, // param
+                String.format("%s.KEY", tableAlias), // on1
+                mainColumn.getFullQuotedName() // on2
+        ));
         info.whereExpr = String.format("%s.KEY IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("1 AS %s", scoreAlias);
         info.scoreAlias = scoreAlias;

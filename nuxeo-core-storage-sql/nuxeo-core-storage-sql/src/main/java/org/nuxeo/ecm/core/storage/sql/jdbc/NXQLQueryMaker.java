@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.ColumnMapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
@@ -153,8 +154,6 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String WITH_ALIAS_PREFIX = "_W";
 
-    protected static final String JOIN_ON = "%s ON %s = %s";
-
     /*
      * Fields used by the search service.
      */
@@ -167,19 +166,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected Model model;
 
-    protected List<String> joins;
+    protected String from;
 
-    protected List<Serializable> joinsParams;
+    protected List<Join> joins;
 
-    protected LinkedList<String> leftJoins;
-
-    protected List<Serializable> leftJoinsParams;
-
-    protected LinkedList<String> implicitJoins;
-
-    protected List<Serializable> implicitJoinsParams;
-
-    protected List<String> whereClauses;
+    protected LinkedList<String> whereClauses;
 
     protected List<Serializable> whereParams;
 
@@ -360,12 +351,7 @@ public class NXQLQueryMaker implements QueryMaker {
             // Quoted id attached to the data that matches.
             String dataHierId;
 
-            joins = new LinkedList<String>();
-            joinsParams = new LinkedList<Serializable>();
-            leftJoins = new LinkedList<String>();
-            leftJoinsParams = new LinkedList<Serializable>();
-            implicitJoins = new LinkedList<String>();
-            implicitJoinsParams = new LinkedList<Serializable>();
+            joins = new LinkedList<Join>();
             whereClauses = new LinkedList<String>();
             whereParams = new LinkedList<Serializable>();
 
@@ -375,12 +361,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 dataHierTable = hierTable;
                 dataHierId = hierId;
-                joins.add(hierTable.getQuotedName());
+                from = hierTable.getQuotedName();
                 break;
             case PROXY:
                 hierTable = new TableAlias(hier, TABLE_HIER_ALIAS);
-                String hierFrom = hier.getQuotedName() + " "
-                        + hierTable.getQuotedName(); // TODO use dialect
+                // TODO use dialect
+                from = hier.getQuotedName() + " " + hierTable.getQuotedName();
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 // joined (data)
                 dataHierTable = hier;
@@ -391,11 +377,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 String proxiestargetid = proxies.getColumn(
                         model.PROXY_TARGET_KEY).getFullQuotedName();
                 // join all that
-                joins.add(hierFrom);
-                joins.add(String.format(JOIN_ON, proxies.getQuotedName(),
-                        hierId, proxiesid));
-                joins.add(String.format(JOIN_ON, dataHierTable.getQuotedName(),
-                        dataHierId, proxiestargetid));
+                joins.add(new Join(Join.INNER, proxies.getQuotedName(), null,
+                        null, hierId, proxiesid));
+                joins.add(new Join(Join.INNER, dataHierTable.getQuotedName(),
+                        null, null, dataHierId, proxiestargetid));
                 break;
             default:
                 throw new AssertionError(docKind);
@@ -492,11 +477,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 info.wherePredicate.accept(whereBuilder);
                 // JOINs added by fulltext queries
                 joins.addAll(whereBuilder.joins);
-                joinsParams.addAll(whereBuilder.joinsParams);
-                leftJoins.addAll(whereBuilder.leftJoins);
-                leftJoinsParams.addAll(whereBuilder.leftJoinsParams);
-                implicitJoins.addAll(whereBuilder.implicitJoins);
-                implicitJoinsParams.addAll(whereBuilder.implicitJoinsParams);
                 // WHERE clause
                 String where = whereBuilder.buf.toString();
                 if (where.length() != 0) {
@@ -548,7 +528,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             String securityClause = null;
             List<Serializable> securityParams = new LinkedList<Serializable>();
-            String securityJoin = null;
+            Join securityJoin = null;
             if (queryFilter.getPrincipals() != null) {
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
@@ -563,8 +543,9 @@ public class NXQLQueryMaker implements QueryMaker {
                     /* optimized read acl */
                     securityClause = dialect.getReadAclsCheckSql("r.acl_id");
                     securityParams.add(principals);
-                    securityJoin = String.format(JOIN_ON,
-                            model.HIER_READ_ACL_TABLE_NAME + " r", id, "r.id");
+                    securityJoin = new Join(Join.INNER,
+                            model.HIER_READ_ACL_TABLE_NAME, "r", null, id,
+                            "r.id");
                 } else {
                     securityClause = dialect.getSecurityCheckSql(id);
                     securityParams.add(principals);
@@ -597,7 +578,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     withSelect.setWhat("*");
                     withSelect.setFrom(withTable
                             + (securityJoin == null ? ""
-                                    : (" JOIN " + securityJoin)));
+                                    : (" " + securityJoin.toString())));
                     withSelect.setWhere(securityClause);
                     withSelects.add(withSelect);
                     withSelectsStatements.add(withSelect.getStatement());
@@ -614,17 +595,37 @@ public class NXQLQueryMaker implements QueryMaker {
 
             select = new Select(null);
             select.setWhat(selectWhat);
-            leftJoins.addFirst(StringUtils.join(joins, " JOIN "));
-            String from = StringUtils.join(leftJoins, " LEFT JOIN ");
-            if (!implicitJoins.isEmpty()) {
-                implicitJoins.addFirst(from);
-                from = StringUtils.join(implicitJoins, ", ");
+
+            StringBuilder fromb = new StringBuilder(from);
+            if (dialect.needsOracleJoins()) {
+                // implicit joins for Oracle
+                List<String> joinClauses = new LinkedList<String>();
+                for (Join join : joins) {
+                    fromb.append(", ");
+                    fromb.append(join.getTable());
+                    if (join.tableParam != null) {
+                        selectParams.add(join.tableParam);
+                    }
+                    String joinClause = join.getClause();
+                    if (join.kind == Join.LEFT) {
+                        joinClause += "(+)"; // Oracle implicit LEFT JOIN syntax
+                    }
+                    joinClauses.add(joinClause);
+                }
+                whereClauses.addAll(0, joinClauses);
+            } else {
+                // else ANSI join
+                Collections.sort(joins); // implicit JOINs last (PostgreSQL)
+                for (Join join : joins) {
+                    fromb.append(join.toString());
+                    if (join.tableParam != null) {
+                        selectParams.add(join.tableParam);
+                    }
+                }
             }
-            select.setFrom(from);
+
+            select.setFrom(fromb.toString());
             select.setWhere(StringUtils.join(whereClauses, " AND "));
-            selectParams.addAll(joinsParams);
-            selectParams.addAll(leftJoinsParams);
-            selectParams.addAll(implicitJoinsParams);
             selectParams.addAll(whereParams);
 
             statements.add(select.getStatement());
@@ -703,11 +704,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
     // overridden by specialized query makers that need to tweak some joins
     protected void addDataJoin(Table table, String joinId) {
-        leftJoins.add(formatJoin(table, joinId));
+        joins.add(formatJoin(table, joinId));
     }
 
-    protected String formatJoin(Table table, String joinId) {
-        return String.format(JOIN_ON, table.getQuotedName(), joinId,
+    protected Join formatJoin(Table table, String joinId) {
+        return new Join(Join.LEFT, table.getQuotedName(), null, null, joinId,
                 table.getColumn(model.MAIN_KEY).getFullQuotedName());
     }
 
@@ -1145,17 +1146,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
-        public final List<String> joins = new LinkedList<String>();
-
-        public final List<Serializable> joinsParams = new LinkedList<Serializable>();
-
-        public final List<String> leftJoins = new LinkedList<String>();
-
-        public final List<Serializable> leftJoinsParams = new LinkedList<Serializable>();
-
-        public final List<String> implicitJoins = new LinkedList<String>();
-
-        public final List<Serializable> implicitJoinsParams = new LinkedList<Serializable>();
+        public final List<Join> joins = new LinkedList<Join>();
 
         public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
@@ -1543,23 +1534,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
                         fulltextQuery, name, ftJoinNumber, mainColumn, model,
                         database);
-                if (info.join != null) {
-                    joins.add(info.join);
-                    if (info.joinParam != null) {
-                        joinsParams.add(info.joinParam);
-                    }
-                }
-                if (info.leftJoin != null) {
-                    leftJoins.add(info.leftJoin);
-                    if (info.leftJoinParam != null) {
-                        leftJoinsParams.add(info.leftJoinParam);
-                    }
-                }
-                if (info.implicitJoin != null) {
-                    implicitJoins.add(info.implicitJoin);
-                    if (info.implicitJoinParam != null) {
-                        implicitJoinsParams.add(info.implicitJoinParam);
-                    }
+                if (info.joins != null) {
+                    joins.addAll(info.joins);
                 }
                 buf.append(info.whereExpr);
                 if (info.whereExprParam != null) {

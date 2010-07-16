@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -277,17 +278,7 @@ public abstract class Dialect {
      */
     public static class FulltextMatchInfo {
 
-        public String join;
-
-        public String joinParam;
-
-        public String leftJoin;
-
-        public String leftJoinParam;
-
-        public String implicitJoin;
-
-        public String implicitJoinParam;
+        public List<Join> joins;
 
         public String whereExpr;
 
@@ -432,6 +423,14 @@ public abstract class Dialect {
      * Whether a derived table (subselect in a FROM statement) needs an alias.
      */
     public boolean needsAliasForDerivedTable() {
+        return false;
+    }
+
+    /**
+     * Whether implicit Oracle joins (instead of explicit ANSI joins) are
+     * needed.
+     */
+    public boolean needsOracleJoins() {
         return false;
     }
 

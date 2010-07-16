@@ -34,6 +34,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -345,10 +347,9 @@ public class DialectOracle extends Dialect {
                 + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.join = String.format(
-                "%s ON %s = %s", //
-                ft.getQuotedName(), ftMain.getFullQuotedName(),
-                mainColumn.getFullQuotedName());
+        info.joins = Collections.singletonList(new Join(Join.INNER,
+                ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                mainColumn.getFullQuotedName()));
         info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0",
                 ftColumn.getFullQuotedName(), nthMatch);
         info.whereExprParam = fulltextQuery;
@@ -377,6 +378,11 @@ public class DialectOracle extends Dialect {
     @Override
     public boolean doesUpdateFromRepeatSelf() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean needsOracleJoins() {
+        return true;
     }
 
     @Override
@@ -449,7 +455,8 @@ public class DialectOracle extends Dialect {
 
     @Override
     public boolean supportsWith() {
-        return !aclOptimizationsEnabled;
+        return false;
+        // return !aclOptimizationsEnabled;
     }
 
     @Override

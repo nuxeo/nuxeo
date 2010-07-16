@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -302,13 +304,16 @@ public class DialectPostgreSQL extends Dialect {
         String queryAlias = "_nxquery" + nthSuffix;
         String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.join = String.format(
-                "%s ON %s = %s", //
-                ft.getQuotedName(), ftMain.getFullQuotedName(),
-                mainColumn.getFullQuotedName());
-        info.implicitJoin = String.format("TO_TSQUERY('%s', ?) AS %s",
-                fulltextAnalyzer, queryAlias);
-        info.implicitJoinParam = fulltextQuery;
+        info.joins = Arrays.asList( //
+                new Join(Join.INNER, ft.getQuotedName(), null, null,
+                        ftMain.getFullQuotedName(),
+                        mainColumn.getFullQuotedName()), //
+                new Join(
+                        Join.IMPLICIT, //
+                        String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
+                        queryAlias, // alias
+                        fulltextQuery, // param
+                        null, null));
         info.whereExpr = String.format("(%s @@ %s)", queryAlias,
                 ftColumn.getFullQuotedName());
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32) AS %s",
