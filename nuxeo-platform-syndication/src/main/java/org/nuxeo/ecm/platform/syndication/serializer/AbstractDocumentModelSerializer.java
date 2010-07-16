@@ -151,6 +151,9 @@ public abstract class AbstractDocumentModelSerializer implements
                     if (property instanceof String) {
                         res = new ResultField(fieldName,
                                 (String) doc.getProperty(schemaName, fieldName));
+                    } else if (property instanceof Long) {
+                        res = new ResultField(fieldName,
+                                doc.getProperty(schemaName, fieldName).toString());
                     } else if (property instanceof Calendar) {
                         String date = DATE_PARSER.format(((Calendar) doc.getProperty(
                                 schemaName, fieldName)).getTime());
