@@ -38,9 +38,10 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.dam.core.Constants;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.importer.core.DamImporterExecutor;
 import org.nuxeo.dam.importer.core.MetadataFileHelper;
+import org.nuxeo.dam.importer.core.helper.UnrestrictedSessionRunnerHelper;
 import org.nuxeo.dam.webapp.filter.FilterActions;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.Blob;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.importer.properties.MetadataFile;
@@ -59,6 +61,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
@@ -128,14 +131,15 @@ public class ImportActions implements Serializable {
 
     protected DocumentModel createContainerFolder(String title)
             throws ClientException {
-        DocumentModel folder = documentManager.createDocumentModel(
-                Constants.IMPORT_ROOT_PATH, IdUtils.generateId(title),
-                Constants.IMPORT_FOLDER_TYPE);
-        folder.setPropertyValue("dc:title", title);
-        folder = documentManager.createDocument(folder);
-        documentManager.save();
+        // Create the folder in another thread where we can easily start and
+        // stop a new transaction
+        // to avoid locking tables in h2
+        ContainerFolderCreator cfc = new ContainerFolderCreator(
+                documentManager.getRepositoryName(), title);
+        UnrestrictedSessionRunnerHelper.runInNewThread(cfc);
         Events.instance().raiseEvent(DamEventNames.FOLDERLIST_CHANGED);
-        return folder;
+        return documentManager.getDocument(cfc.folder.getRef());
+
     }
 
     public String createImportSet() throws Exception {
@@ -301,6 +305,42 @@ public class ImportActions implements Serializable {
 
     public void setImportFolder(String importFolder) {
         this.importFolderId = importFolder;
+    }
+
+}
+
+/**
+ * Create the {@code ImportFolder}, from its title, where the import will be created
+ * in an Unrestricted session.
+ */
+class ContainerFolderCreator extends UnrestrictedSessionRunner {
+
+    private static final Log log = LogFactory.getLog(ContainerFolderCreator.class);
+
+    protected String folderTitle;
+
+    public DocumentModel folder;
+
+    public ContainerFolderCreator(String repositoryName, String folderTitle) {
+        super(repositoryName);
+        this.folderTitle = folderTitle;
+    }
+
+    @Override
+    public void run() throws ClientException {
+        TransactionHelper.startTransaction();
+        try {
+            folder = session.createDocumentModel(Constants.IMPORT_ROOT_PATH,
+                    IdUtils.generateId(folderTitle),
+                    Constants.IMPORT_FOLDER_TYPE);
+            folder.setPropertyValue("dc:title", folderTitle);
+            folder = session.createDocument(folder);
+            session.save();
+        } catch (ClientException e) {
+            log.error(e, e);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
 }

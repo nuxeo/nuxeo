@@ -24,23 +24,28 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.dam.importer.core.helper.UnrestrictedSessionRunnerHelper;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
-import org.nuxeo.ecm.platform.importer.base.TxHelper;
 import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import static org.nuxeo.dam.core.Constants.IMPORT_FOLDER_TYPE;
-import static org.nuxeo.dam.core.Constants.IMPORT_SET_TYPE;
+import static org.nuxeo.dam.Constants.IMPORT_FOLDER_TYPE;
+import static org.nuxeo.dam.Constants.IMPORT_SET_TYPE;
 
 /**
  * Default Importer for DAM.
@@ -53,13 +58,6 @@ import static org.nuxeo.dam.core.Constants.IMPORT_SET_TYPE;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
-
-    public static final String DEFAULT_IMPORT_FOLDER_TITLE = "Automatic Import";
-
-    public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
-
-    public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
-            "yyyyMMdd HH:mm");
 
     protected String importFolderPath;
 
@@ -112,14 +110,85 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
 
     @Override
     protected DocumentModel createTargetContainer() throws Exception {
-        TxHelper txHelper = new TxHelper();
-        txHelper.beginNewTransaction(600);
-        txHelper.grabCurrentTransaction(600);
-        DocumentModel importFolder = getOrCreateImportFolder();
-        DocumentModel importset = createImportSet(importFolder);
-        getCoreSession().save();
-        txHelper.commitOrRollbackTransaction();
-        return importset;
+        final TargetContainerCreator tcc = new TargetContainerCreator(
+                getCoreSession().getRepositoryName(), importFolderPath,
+                importFolderTitle, importSetTitle, importWritePath,
+                importSource);
+        UnrestrictedSessionRunnerHelper.runInNewThread(tcc);
+        return getCoreSession().getDocument(tcc.targetContainer.getRef());
+    }
+
+    @Override
+    protected void doRun() throws Exception {
+        super.doRun();
+
+        // remove the imported folder
+        removeImportedFolder();
+    }
+
+    protected void removeImportedFolder() {
+        if (removeImportedFolder) {
+            if (importSource instanceof FileSourceNode) {
+                FileSourceNode sourceNode = (FileSourceNode) importSource;
+                FileUtils.deleteTree(sourceNode.getFile());
+            }
+        }
+    }
+
+}
+
+/**
+ * Create the {@code ImportSet} document where the assets will be imported in a
+ * Unrestricted Session. Create, or get, the {@ImportFolder}
+ * where the {@code ImportSet} wil lbe created.
+ */
+class TargetContainerCreator extends UnrestrictedSessionRunner {
+
+    public static final String DEFAULT_IMPORT_FOLDER_TITLE = "Automatic Import";
+
+    public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
+
+    public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
+            "yyyyMMdd HH:mm");
+
+    private static final Log log = LogFactory.getLog(TargetContainerCreator.class);
+
+    public DocumentModel targetContainer;
+
+    protected String importFolderPath;
+
+    protected String importFolderTitle;
+
+    protected String importSetTitle;
+
+    protected String importWritePath;
+
+    protected SourceNode importSource;
+
+    public TargetContainerCreator(String repositoryName,
+            String importFolderPath, String importFolderTitle,
+            String importSetTitle, String importWritePath,
+            SourceNode importSource) {
+        super(repositoryName);
+        this.importFolderPath = importFolderPath;
+        this.importFolderTitle = importFolderTitle;
+        this.importSetTitle = importSetTitle;
+        this.importWritePath = importWritePath;
+        this.importSource = importSource;
+    }
+
+    @Override
+    public void run() throws ClientException {
+        try {
+            TransactionHelper.startTransaction();
+            DocumentModel importFolder = getOrCreateImportFolder();
+            targetContainer = createImportSet(importFolder);
+            session.save();
+        } catch (Exception e) {
+            log.error(e, e);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
     /**
@@ -128,7 +197,7 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
      *
      * @return the existing or created ImportFolder
      */
-    protected DocumentModel getOrCreateImportFolder() throws Exception {
+    protected DocumentModel getOrCreateImportFolder() throws ClientException {
         DocumentRef importFolderRef;
         String importFolderName;
         if (importFolderPath != null && importFolderPath.trim().length() > 0) {
@@ -148,8 +217,7 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
 
     protected DocumentModel getOrCreateImportFolder(
             DocumentRef importFolderRef, String importFolderName)
-            throws Exception {
-        CoreSession session = getCoreSession();
+            throws ClientException {
         DocumentModel importFolder;
         if (!session.exists(importFolderRef)) {
             importFolder = session.createDocumentModel(importWritePath,
@@ -168,7 +236,6 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
         String title = importSetTitle != null
                 && importSetTitle.trim().length() != 0 ? importSetTitle
                 : generateImportSetName();
-        CoreSession session = getCoreSession();
         DocumentModel importSet = session.createDocumentModel(
                 importFolder.getPathAsString(), IdUtils.generateId(title),
                 IMPORT_SET_TYPE);
@@ -211,23 +278,6 @@ public class DamMultiThreadedImporter extends GenericMultiThreadedImporter {
             }
         }
         return importSet;
-    }
-
-    @Override
-    protected void doRun() throws Exception {
-        super.doRun();
-
-        // remove the imported folder
-        removeImportedFolder();
-    }
-
-    protected void removeImportedFolder() {
-        if (removeImportedFolder) {
-            if (importSource instanceof FileSourceNode) {
-                FileSourceNode sourceNode = (FileSourceNode) importSource;
-                FileUtils.deleteTree(sourceNode.getFile());
-            }
-        }
     }
 
 }
