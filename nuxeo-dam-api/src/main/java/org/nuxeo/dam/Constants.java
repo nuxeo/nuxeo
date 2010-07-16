@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.dam.core;
+package org.nuxeo.dam;
 
 import org.nuxeo.runtime.api.Framework;
 

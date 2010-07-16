@@ -19,6 +19,7 @@
   <description>Nuxeo DAM Parent</description>
 
   <modules>
+    <module>nuxeo-dam-api</module>
     <module>nuxeo-dam-core</module>
     <module>nuxeo-dam-webapp-core</module>
     <module>nuxeo-dam-webapp-common</module>
@@ -34,6 +35,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-api</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-core</artifactId>

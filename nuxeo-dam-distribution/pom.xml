@@ -43,6 +43,10 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-core</artifactId>
     </dependency>
     <dependency>
