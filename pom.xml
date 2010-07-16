@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-NXP-5357-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -17,48 +17,59 @@
   <description>Nuxeo Features: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.3.2-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.3.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.2-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.common.version>1.6.2-NXP-5357-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.2-NXP-5357-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>1.6.2-NXP-5357-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.theme.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.features.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.webengine.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.jsf.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.jsf.version>
   </properties>
 
   <modules>
-    <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-audit</module>
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-imaging</module>
-    <module>nuxeo-platform-imaging-tiling</module>
-    <module>nuxeo-platform-jbpm</module>
-    <module>nuxeo-platform-lang</module>
-    <module>nuxeo-platform-mail</module>
-    <module>nuxeo-platform-notification</module>
-    <module>nuxeo-platform-preview</module>
-    <module>nuxeo-platform-publisher</module>
-    <module>nuxeo-platform-queue</module>
     <module>nuxeo-platform-relations</module>
-    <module>nuxeo-platform-syndication</module>
-    <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
-    <!--<module>nuxeo-platform-wiki</module>-->
-    <module>nuxeo-theme-editor</module>
-    <module>nuxeo-platform-webwidgets</module>
-    <module>nuxeo-platform-userworkspace</module>
-    <module>nuxeo-platform-virtualnavigation</module>
-    <module>nuxeo-platform-tag-service</module>
     <module>nuxeo-webengine-features</module>
-    <module>nuxeo-opensocial</module>
-    <module>nuxeo-generic-wss-handler</module>
-    <module>nuxeo-platform-wss-backend</module>
-    <module>nuxeo-automation</module>
-    <module>nuxeo-features-test</module>
-    <module>nuxeo-platform-jboss-interceptors</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-annotations</module>
+        <module>nuxeo-platform-queue</module>
+	<module>nuxeo-platform-imaging-tiling</module>
+	<module>nuxeo-platform-syndication</module>
+	<module>nuxeo-platform-jbpm</module>
+	<module>nuxeo-platform-lang</module>
+	<module>nuxeo-platform-mail</module>
+	<module>nuxeo-platform-notification</module>
+	<module>nuxeo-platform-preview</module>
+	<module>nuxeo-platform-publisher</module>
+	<module>nuxeo-platform-forum</module>
+	<!--<module>nuxeo-platform-wiki</module>-->
+	<module>nuxeo-theme-editor</module>
+	<module>nuxeo-platform-webwidgets</module>
+	<module>nuxeo-platform-userworkspace</module>
+	<module>nuxeo-platform-virtualnavigation</module>
+	<module>nuxeo-webengine-features</module>
+	<module>nuxeo-opensocial</module>
+	<module>nuxeo-generic-wss-handler</module>
+	<module>nuxeo-platform-wss-backend</module>
+	<module>nuxeo-automation</module>
+	<module>nuxeo-features-test</module>
+        <module>nuxeo-platform-jboss-interceptors</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <dependencyManagement>
     <dependencies>

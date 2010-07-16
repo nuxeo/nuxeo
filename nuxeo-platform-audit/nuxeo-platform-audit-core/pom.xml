@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-audit-parent</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-NXP-5357-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-audit-core</artifactId>
@@ -58,7 +58,18 @@
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
@@ -120,6 +131,7 @@
       <artifactId>nuxeo-platform-management</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
 </project>
