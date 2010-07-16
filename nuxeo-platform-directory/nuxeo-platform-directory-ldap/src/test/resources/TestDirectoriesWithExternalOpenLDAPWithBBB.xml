@@ -99,7 +99,7 @@
         <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
       </entryAdaptor>
 
-      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>groupOfUniqueNames</creationClass>
       <rdnAttribute>cn</rdnAttribute>

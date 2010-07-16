@@ -46,7 +46,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.AbstractReference;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
@@ -243,14 +245,17 @@ public class LDAPReference extends AbstractReference {
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
         try {
-            if (!sourceSession.isReadOnly()) {
+            // fetch the entry to be able to run the security policy implemented in an entry adaptor
+            DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
+            if (sourceEntry == null) {
+                throw new DirectoryException(
+                        String.format(
+                                "could not add links from unexisting %s in directory %s",
+                                sourceId, sourceDirectory.getName()));
+            }
+            if (!BaseSession.isReadOnlyEntry(sourceEntry)) {
                 SearchResult ldapEntry = sourceSession.getLdapEntry(sourceId);
-                if (ldapEntry == null) {
-                    throw new DirectoryException(
-                            String.format(
-                                    "could not add links from unexisting %s in directory %s",
-                                    sourceId, sourceDirectory.getName()));
-                }
+
                 String sourceDn = ldapEntry.getNameInNamespace();
                 Attribute storedAttr = ldapEntry.getAttributes().get(
                         attributeId);
@@ -361,14 +366,25 @@ public class LDAPReference extends AbstractReference {
                 }
                 String targetDn = ldapEntry.getNameInNamespace();
                 for (String sourceId : sourceIds) {
-                    ldapEntry = sourceSession.getLdapEntry(sourceId);
-                    if (ldapEntry == null) {
+                    // fetch the entry to be able to run the security policy implemented in an entry adaptor
+                    DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
+                    if (sourceEntry == null) {
                         log.warn(String.format(
                                 "entry %s in directory %s not found: could not add link to %s in directory %s",
                                 sourceId, sourceDirectory.getName(), targetId,
                                 targetDirectory.getName()));
                         continue;
                     }
+                    if (BaseSession.isReadOnlyEntry(sourceEntry)) {
+                        // skip this entry since it cannot be edited to add the
+                        // reference to targetId
+                        log.warn(String.format(
+                                "entry %s in directory %s is readonly: could not add link to %s in directory %s",
+                                sourceId, sourceDirectory.getName(), targetId,
+                                targetDirectory.getName()));
+                        continue;
+                    }
+                    ldapEntry = sourceSession.getLdapEntry(sourceId);
                     String sourceDn = ldapEntry.getNameInNamespace();
                     Attribute storedAttr = ldapEntry.getAttributes().get(
                             attributeId);

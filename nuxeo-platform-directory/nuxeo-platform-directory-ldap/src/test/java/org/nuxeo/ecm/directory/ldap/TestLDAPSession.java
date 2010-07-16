@@ -748,9 +748,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     public void testUpdateEntry4() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER && HAS_DYNGROUP_SCHEMA) {
-            Session session = getLDAPDirectory("groupDirectory").getSession();
+            Session userSession = getLDAPDirectory("userDirectory").getSession();
+            Session groupSession = getLDAPDirectory("groupDirectory").getSession();
             try {
-                DocumentModel entry = session.getEntry("readonlygroup1");
+                DocumentModel entry = groupSession.getEntry("readonlygroup1");
                 assertNotNull(entry);
 
                 // check that this entry is NOT editable:
@@ -771,10 +772,27 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 entry.setProperty(GROUP_SCHEMANAME, "description", "blablabla");
                 entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList(
                         "user1", "user2"));
-                session.updateEntry(entry);
+                groupSession.updateEntry(entry);
 
                 // fetch the entry again
-                entry = session.getEntry("readonlygroup1");
+                entry = groupSession.getEntry("readonlygroup1");
+                assertNotNull(entry);
+
+                // values should not have changed
+                assertEquals("Statically defined group that is not editable",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user2"), entry.getProperty(
+                        GROUP_SCHEMANAME, "members"));
+
+                // check that we cannot edit readonlygroup1 indirectly by adding
+                // it as a group of user1
+                DocumentModel user1 = userSession.getEntry("user1");
+                user1.setProperty(USER_SCHEMANAME, "groups",
+                        Arrays.asList("readonlygroup1"));
+                userSession.updateEntry(user1);
+
+                // fetch the group entry again
+                entry = groupSession.getEntry("readonlygroup1");
                 assertNotNull(entry);
 
                 // values should not have changed
@@ -784,7 +802,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                         GROUP_SCHEMANAME, "members"));
 
             } finally {
-                session.close();
+                userSession.close();
+                groupSession.close();
             }
         }
     }
