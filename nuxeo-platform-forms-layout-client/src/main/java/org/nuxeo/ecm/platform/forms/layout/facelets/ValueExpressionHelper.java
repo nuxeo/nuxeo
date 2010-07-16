@@ -19,16 +19,16 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Schema;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper for managing value expressions.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class ValueExpressionHelper {
 
@@ -41,51 +41,43 @@ public class ValueExpressionHelper {
         if (field == null || "".equals(field.getPropertyName())) {
             return String.format("#{%s}", valueName);
         }
+        List<String> expressionElements = new ArrayList<String>();
+        expressionElements.add(valueName);
+
         String schemaName = field.getSchemaName();
         String fieldName = field.getFieldName();
         if (schemaName == null) {
-            // resolve schema name for prefix
+            // try to resolve schema name
             String propertyName = field.getFieldName();
             String[] s = propertyName.split(":");
             if (s.length == 2) {
-                String prefix = s[0];
-                Schema schema = null;
-                try {
-                    SchemaManager tm = Framework.getService(SchemaManager.class);
-                    schema = tm.getSchemaFromPrefix(prefix);
-                } catch (Exception e) {
-                }
-                if (schema == null) {
-                    // fall back on prefix as it may be the schema name
-                    schemaName = prefix;
-                } else {
-                    schemaName = schema.getName();
-                }
+                schemaName = s[0];
                 fieldName = s[1];
             }
         }
-        String[] splittedFieldName = fieldName.split("/");
-        StringBuffer newFieldName = new StringBuffer();
-        boolean first = true;
-        for (String item : splittedFieldName) {
-            try {
-                newFieldName.append(String.format("[%s]",
-                        Integer.parseInt(item)));
-            } catch (NumberFormatException e) {
-                if (!first) {
-                    newFieldName.append(String.format(".%s", item));
-                } else {
-                    newFieldName.append(item);
+
+        if (schemaName != null) {
+            expressionElements.add(String.format("['%s']", schemaName));
+        }
+
+        String dmResolverValue;
+        if (fieldName.indexOf(".") != -1) {
+            expressionElements.add(fieldName);
+            // already formatted as an EL expression => do not use brackets
+            dmResolverValue = String.format("#{%s}", StringUtils.join(
+                    expressionElements, "."));
+        } else {
+            String[] splittedFieldName = fieldName.split("/");
+            for (String item : splittedFieldName) {
+                try {
+                    expressionElements.add(String.format("[%s]",
+                            Integer.valueOf(Integer.parseInt(item))));
+                } catch (NumberFormatException e) {
+                    expressionElements.add(String.format("['%s']", item));
                 }
             }
-            first = false;
-        }
-        String dmResolverValue;
-        if (schemaName == null) {
-            dmResolverValue = String.format("#{%s.%s}", valueName, newFieldName);
-        } else {
-            String fieldValue = String.format("%s.%s", schemaName, newFieldName);
-            dmResolverValue = String.format("#{%s.%s}", valueName, fieldValue);
+            dmResolverValue = String.format("#{%s}", StringUtils.join(
+                    expressionElements, ""));
         }
         return dmResolverValue;
     }

@@ -42,7 +42,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TestHelpers extends NXRuntimeTestCase {
 
@@ -59,15 +58,31 @@ public class TestHelpers extends NXRuntimeTestCase {
         FieldDefinition fieldDef = new FieldDescriptor("dublincore", "title");
         String expression = ValueExpressionHelper.createExpressionString(
                 "document", fieldDef);
-        assertEquals("#{document.dublincore.title}", expression);
+        assertEquals("#{document['dublincore']['title']}", expression);
         fieldDef = new FieldDescriptor(null, "dc:title");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
-        assertEquals("#{document.dublincore.title}", expression);
+        assertEquals("#{document['dc']['title']}", expression);
+        fieldDef = new FieldDescriptor(null, "dublincore:title");
+        expression = ValueExpressionHelper.createExpressionString("document",
+                fieldDef);
+        assertEquals("#{document['dublincore']['title']}", expression);
         fieldDef = new FieldDescriptor(null, "dc:contributors/0/name");
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
-        assertEquals("#{document.dublincore.contributors[0].name}", expression);
+        assertEquals("#{document['dc']['contributors'][0]['name']}", expression);
+        fieldDef = new FieldDescriptor(null, "test-schema:test-field");
+        expression = ValueExpressionHelper.createExpressionString("document",
+                fieldDef);
+        assertEquals("#{document['test-schema']['test-field']}", expression);
+        fieldDef = new FieldDescriptor(null, "data.ref");
+        expression = ValueExpressionHelper.createExpressionString(
+                "pageSelection", fieldDef);
+        assertEquals("#{pageSelection.data.ref}", expression);
+        fieldDef = new FieldDescriptor("data", "ref");
+        expression = ValueExpressionHelper.createExpressionString(
+                "pageSelection", fieldDef);
+        assertEquals("#{pageSelection['data']['ref']}", expression);
     }
 
     public static String getTestFile(String filePath)
