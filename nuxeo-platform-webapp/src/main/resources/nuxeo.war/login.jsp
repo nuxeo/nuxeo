@@ -288,41 +288,41 @@ nxthemes css is not used in login.jsp */
                 </td>
                 <td>
                   <select class="login_input" name="language" id="language">
-                    <option value="en_GB" <%="en_GB".equals(selectedLanguage)?"selected=\"selected\"":""%>>
-                      English (United Kingdom)
-                    </option>
-                    <option value="pt_BR" <%="pt_BR".equals(selectedLanguage)?"selected":""%>>
-                      portugu&ecirc;s (Brasil)
-                    </option>
-                    <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
-                      Basque
-                    </option>
-                    <option value="pt" <%="pt".equals(selectedLanguage)?"selected":""%>>
-                      portugu&ecirc;s
-                    </option>
                     <option value="en_US" <%="en_US".equals(selectedLanguage)?"selected":""%>>
                       English (United States)
                     </option>
-                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
-                      cn
+                    <option value="en_GB" <%="en_GB".equals(selectedLanguage)?"selected=":""%>>
+                      English (United Kingdom)
                     </option>
-                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
-                      vn
-                    </option>
-                    <option value="ca" <%="ca".equals(selectedLanguage)?"selected":""%>>
-                      catal&agrave;
+                    <option value="fr" <%="fr".equals(selectedLanguage)?"selected":""%>>
+                      Fran&ccedil;ais
                     </option>
                     <option value="de" <%="de".equals(selectedLanguage)?"selected":""%>>
                       Deutsch
                     </option>
                     <option value="it" <%="it".equals(selectedLanguage)?"selected":""%>>
-                      italiano
+                      Italiano
                     </option>                  
-                    <option value="fr" <%="fr".equals(selectedLanguage)?"selected":""%>>
-                      fran&ccedil;ais
-                    </option>
                     <option value="es" <%="es".equals(selectedLanguage)?"selected":""%>>
-                      espa&ntilde;ol
+                      Espa&ntilde;ol
+                    </option>
+                    <option value="pt" <%="pt".equals(selectedLanguage)?"selected":""%>>
+                      Portugu&ecirc;s
+                    </option>
+                    <option value="pt_BR" <%="pt_BR".equals(selectedLanguage)?"selected":""%>>
+                      Portugu&ecirc;s (Brasil)
+                    </option>
+                    <option value="ca" <%="ca".equals(selectedLanguage)?"selected":""%>>
+                      Catal&agrave;
+                    </option>
+                    <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
+                      Basque
+                    </option>
+                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
+                      中文
+                    </option>
+                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
+                      Tiếng Việt
                     </option>
                     <option value="ar" <%="ar".equals(selectedLanguage)?"selected":""%>>
                       &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
