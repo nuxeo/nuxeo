@@ -83,32 +83,46 @@ public class JavaUtilLoggingHelper {
 
     public static class LogHandler extends Handler {
 
+    	ThreadLocal<LogRecord> holder = new ThreadLocal<LogRecord>();
+    	
         private final Map<String, Log> cache = new ConcurrentHashMap<String, Log>();
 
+        protected void doPublish(LogRecord record) {
+        	Level level = record.getLevel();
+        	if (level == Level.FINER || level == Level.FINEST) {
+        		// don't log, too fine
+        		return;
+        	}
+        	String name = record.getLoggerName();
+        	Log log = cache.get(name);
+        	if (log == null) {
+        		log = LogFactory.getLog(name);
+        		cache.put(name, log);
+        	}
+        	if (level == Level.FINE) {
+        		log.trace(record.getMessage(), record.getThrown());
+        	} else if (level == Level.CONFIG) {
+        		log.debug(record.getMessage(), record.getThrown());
+        	} else if (level == Level.INFO) {
+        		log.info(record.getMessage(), record.getThrown());
+        	} else if (level == Level.WARNING) {
+        		log.warn(record.getMessage(), record.getThrown());
+        	} else if (level == Level.SEVERE) {
+        		log.error(record.getMessage(), record.getThrown());
+        	}
+        	
+        }
         @Override
         public void publish(LogRecord record) {
-            Level level = record.getLevel();
-            if (level == Level.FINER || level == Level.FINEST) {
-                // don't log, too fine
-                return;
-            }
-            String name = record.getLoggerName();
-            Log log = cache.get(name);
-            if (log == null) {
-                log = LogFactory.getLog(name);
-                cache.put(name, log);
-            }
-            if (level == Level.FINE) {
-                log.trace(record.getMessage(), record.getThrown());
-            } else if (level == Level.CONFIG) {
-                log.debug(record.getMessage(), record.getThrown());
-            } else if (level == Level.INFO) {
-                log.info(record.getMessage(), record.getThrown());
-            } else if (level == Level.WARNING) {
-                log.warn(record.getMessage(), record.getThrown());
-            } else if (level == Level.SEVERE) {
-                log.error(record.getMessage(), record.getThrown());
-            }
+        	if (holder.get() != null) {
+        		return;
+        	}
+        	holder.set(record);
+        	try {
+        		doPublish(record);
+        	} finally {
+        		holder.remove();
+        	}
         }
 
         @Override

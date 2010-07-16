@@ -5,12 +5,13 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
-  </parent>
+    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+ </parent>
 
   <groupId>org.nuxeo.common</groupId>
   <artifactId>nuxeo-common</artifactId>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>1.6.2-NXP-5357-SNAPSHOT</version>
   <name>Nuxeo Common</name>
   <description>Nuxeo Common: utilities.</description>
   <url>http://www.nuxeo.org/</url>
@@ -76,24 +77,12 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>osgi</id>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-eclipse-plugin</artifactId>
-	  </plugin>
-	  <plugin>
-	    <artifactId>maven-assembly-plugin</artifactId>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>
