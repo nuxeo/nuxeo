@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
+import org.ajax4jsf.Messages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.TextPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * The new approach: keep all selected documents into a list. Add new document
@@ -80,6 +82,9 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
 
     @In(create = true, required = false)
     private CoreSession documentManager;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
 
     private static final String VIEW_DOMAIN_OUTCOME = "view_domains";
 
@@ -218,12 +223,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
 
     private List<PathElement> makeBackendPathFromLabel(String label) {
         List<PathElement> pathElements = new ArrayList<PathElement>();
-        // add the current document to the path
-        // pathElements.add(new DocumentPathElement(
-        // navigationContext.getCurrentDocument()));
-        FacesContext context = FacesContext.getCurrentInstance();
-        PathElement pathLabel = new TextPathElement(ComponentUtils.translate(
-                context, label, null));
+        label = resourcesAccessor.getMessages().get(label);
+        PathElement pathLabel = new TextPathElement(label);
         // add the label of the viewId to the path
         pathElements.add(pathLabel);
         return pathElements;
