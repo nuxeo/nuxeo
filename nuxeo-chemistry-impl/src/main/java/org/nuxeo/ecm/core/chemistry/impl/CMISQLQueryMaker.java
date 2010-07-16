@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
@@ -123,17 +125,8 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** column aliases useable in ORDER BY */
     public final Map<String, SelectedColumn> columnAliases = new HashMap<String, SelectedColumn>();
 
-    /** left joins added by fulltext match */
-    public final List<String> leftJoins = new LinkedList<String>();
-
-    /** left joins params added by fulltext match */
-    public final List<String> leftJoinsParams = new LinkedList<String>();
-
-    /** implicit joins added by fulltext match */
-    public final List<String> implicitJoins = new LinkedList<String>();
-
-    /** implicit joins params added by fulltext match */
-    public final List<String> implicitJoinsParams = new LinkedList<String>();
+    /** joins added by fulltext match */
+    public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join>();
 
     public List<String> errorMessages = new LinkedList<String>();
 
@@ -666,16 +659,13 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Joins for the external fulltext matches.
          */
 
-        for (String join : leftJoins) {
-            // LEFT JOIN because we want a row even if there's no match
-            // so that the WHERE clause can test and provide a boolean
-            from.append(" LEFT JOIN " + join);
+        Collections.sort(ftJoins); // implicit JOINs last (PostgreSQL)
+        for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : ftJoins) {
+            from.append(join.toString());
+            if (join.tableParam != null) {
+                fromParams.add(join.tableParam);
+            }
         }
-        fromParams.addAll(leftJoinsParams);
-        for (String join : implicitJoins) {
-            from.append(", " + join);
-        }
-        fromParams.addAll(implicitJoinsParams);
 
         /*
          * Where clause.
@@ -1064,17 +1054,13 @@ public class CMISQLQueryMaker implements QueryMaker {
         FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(arg,
                 Model.FULLTEXT_DEFAULT_INDEX, 1, mainColumn, model, database);
         fulltextMatchInfo = info;
-        if (info.leftJoin != null) {
-            leftJoins.add(info.leftJoin);
-            if (info.leftJoinParam != null) {
-                leftJoinsParams.add(info.leftJoinParam);
+        for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : info.joins) {
+            if (join.kind == org.nuxeo.ecm.core.storage.sql.jdbc.db.Join.LEFT) {
+
             }
         }
-        if (info.implicitJoin != null) {
-            implicitJoins.add(info.implicitJoin);
-            if (info.implicitJoinParam != null) {
-                implicitJoinsParams.add(info.implicitJoinParam);
-            }
+        if (info.joins != null) {
+            ftJoins.addAll(info.joins);
         }
         String sql = info.whereExpr;
         if (info.whereExprParam != null) {
