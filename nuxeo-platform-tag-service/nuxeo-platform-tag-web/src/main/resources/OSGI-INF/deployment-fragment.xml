@@ -6,7 +6,7 @@
       <ejb>${bundle.fileName}</ejb>
     </module>
   </extension>
-  
+
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>tag_search_results</from-outcome>
@@ -14,19 +14,19 @@
       <redirect />
     </navigation-case>
   </extension>
-  
+
   <extension target="pages#PAGES">
     <page view-id="/search/tag_search_results.xhtml">
-      breadcrumb=title.tag.search.results
+      breadcrumb=label.virtualnavigation.tag
     </page>
-  </extension>  
-  
+  </extension>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-    
+
     <!--  create a temp dir -->
     <!--  be sure no directory with that name exists -->
     <delete path="nxtagweb.tmp"/>
@@ -48,7 +48,7 @@
         to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
         addNewLine="true"/>
 
-    <delete path="nxtagweb.tmp"/>    
-  </install>  
+    <delete path="nxtagweb.tmp"/>
+  </install>
 
 </fragment>

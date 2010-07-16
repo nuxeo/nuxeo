@@ -36,6 +36,8 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.navigation.Page;
+import org.jboss.seam.navigation.Pages;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
@@ -103,6 +105,8 @@ public class MultiNavTreeManager implements Serializable {
                 return desc;
             }
         }
+
+
         return null;
     }
 

@@ -19,7 +19,7 @@
 
   <div class="breadcrumbs">
     <h:form>
-  
+
       <h:commandLink action="#{breadcrumbActions.navigateToParent}"
         rendered="#{facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
         <nxu:graphicImage value="/icons/UpFolder_icon.gif"
@@ -29,23 +29,22 @@
       <c:if test="#{!empty backendPath}">
 
         <nxu:dataList var="pathElement"
-          value="#{backendPath}"
-          rendered="#{!empty backendPath and selectedNavigationTree == 'CONTENT_TREE'}">
+          value="#{backendPath}">
           <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
-  
+
           <nxd:restDocumentLink document="#{pathElement.documentModel}"
             rendered="#{pathElement.link}">
             <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
           </nxd:restDocumentLink>
           <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
-  
+
         </nxu:dataList>
 
       </c:if>
 
-      <h:outputText value="#{multiNavTreeManager.virtualNavPath}"
-        rendered="#{selectedNavigationTree != 'CONTENT_TREE'}" />
-
+      <c:if test="#{empty backendPath}">
+        <h:outputText value="#{multiNavTreeManager.virtualNavPath}" />
+      </c:if>
     </h:form>
   </div>
 

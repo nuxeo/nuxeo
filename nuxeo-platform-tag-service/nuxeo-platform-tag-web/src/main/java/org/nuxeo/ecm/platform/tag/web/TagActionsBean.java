@@ -213,6 +213,10 @@ public class TagActionsBean implements Serializable {
         }
     }
 
+    public String getListLabel() {
+        return listLabel;
+    }
+
     /**
      * Returns <b>true</b> if the current logged user has permission to modify a
      * tag that is applied on the current document.
