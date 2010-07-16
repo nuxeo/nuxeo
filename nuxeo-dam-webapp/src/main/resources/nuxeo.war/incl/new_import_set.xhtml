@@ -10,37 +10,33 @@
 
   <a4j:region>
   <a4j:outputPanel id="importSetPanel">
-  <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.uploadListener}"
-    maxFilesQuantity="1" immediateUpload="true"
-    onuploadcomplete="fileUploadComplete();"
-    ajaxSingle="true"
-    addControlLabel="${messages['label.action.importset.creation.select.file']}"
-    clearAllControlLabel="${messages['label.action.importset.creation.clear.all']}"
-    clearControlLabel="${messages['label.action.importset.creation.clear']}"
-    stopEntryControlLabel="${messages['label.action.importset.creation.stop.upload']}"
-    uploadControlLabel="${messages['label.action.importset.creation.start.upload']}"
-    doneLabel="${messages['label.action.importset.creation.done']}"
-    transferErrorLabel="${messages[label.fileupload.message.error]}"
-    listWidth="465px">
-    <f:facet name="label">
-      <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
-    </f:facet>
-  </rich:fileUpload>
 
-
-  <h3><h:outputText value="${messages['label.importset.title.select.metadata']}" /></h3>
-
-  <a4j:form id="importset_form"
-    ajaxSingle="true" enctype="multipart/form-data">
-    <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
-
+    <a4j:outputPanel id="importSetFormLayout">
     <table class="dataInput">
       <tbody>
         <tr>
-          <td class="labelColumn">
-            <h:outputText value="#{messages['label.widget.importfolder']}" />
+          <td>
+            <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.uploadListener}"
+              maxFilesQuantity="1" immediateUpload="true"
+              onuploadcomplete="fileUploadComplete();"
+              ajaxSingle="true"
+              addControlLabel="${messages['label.action.importset.creation.select.file']}"
+              clearAllControlLabel="${messages['label.action.importset.creation.clear.all']}"
+              clearControlLabel="${messages['label.action.importset.creation.clear']}"
+              stopEntryControlLabel="${messages['label.action.importset.creation.stop.upload']}"
+              uploadControlLabel="${messages['label.action.importset.creation.start.upload']}"
+              doneLabel="${messages['label.action.importset.creation.done']}"
+              transferErrorLabel="${messages[label.fileupload.message.error]}"
+              listWidth="465px">
+              <f:facet name="label">
+                <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+              </f:facet>
+            </rich:fileUpload>
           </td>
-          <td class="fieldColumn">
+          <td>
+            <p>
+              <h:outputText value="#{messages['label.widget.importfolder']}" />
+            </p>
             <h:selectOneMenu value="#{importActions.importFolder}">
               <f:selectItems value="#{importActions.importFolders}" />
             </h:selectOneMenu>
@@ -48,6 +44,13 @@
         </tr>
       </tbody>
     </table>
+    </a4j:outputPanel>
+
+  <h3><h:outputText value="${messages['label.importset.title.select.metadata']}" /></h3>
+
+  <a4j:form id="importset_form"
+    ajaxSingle="true" enctype="multipart/form-data">
+    <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
 
     <p class="buttonsGadget">
 
@@ -56,7 +59,7 @@
         onclick="processInProgress()"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (data) { hideWaiter() } else { processFinished() };"
-        reRender="filterFormPanel, filterResultTable, selectionView, importset_form, folderSearchResult" />
+        reRender="filterFormPanel, filterResultTable, selectionView, importset_form" />
 
       <a4j:commandButton styleClass="button"
         value="#{messages['command.cancel']}" action="#{importActions.cancel}"

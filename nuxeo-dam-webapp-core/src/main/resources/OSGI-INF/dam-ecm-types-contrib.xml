@@ -23,9 +23,7 @@
         <type>Audio</type>
       </subtypes>
       <layouts mode="any">
-        <layout>importset_heading</layout>
-        <layout>dam_common</layout>
-        <layout>dublincore</layout>
+        <layout>importset</layout>
       </layouts>
     </type>
 
