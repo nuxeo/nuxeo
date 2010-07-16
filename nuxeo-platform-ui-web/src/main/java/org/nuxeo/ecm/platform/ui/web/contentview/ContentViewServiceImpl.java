@@ -57,7 +57,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return contentView;
     }
 
-    public PageProvider<?> getPageProvider(String name) throws ClientException {
+    public PageProvider<?> getPageProvider(String name, Object... parameters)
+            throws ClientException {
         ContentViewDescriptor contentViewDesc = contentViews.get(name);
         if (contentViewDesc == null) {
             return null;
@@ -99,6 +100,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         pageProvider.setSortable(pageDesc.isSortable());
         pageProvider.setSortInfos(pageDesc.getSortInfos());
         pageProvider.setPageSize(pageDesc.getPageSize());
+        pageProvider.setParameters(parameters);
 
         return pageProvider;
     }

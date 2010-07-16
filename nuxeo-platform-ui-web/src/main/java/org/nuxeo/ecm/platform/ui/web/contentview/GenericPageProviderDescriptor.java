@@ -28,6 +28,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
+ * Page provider descriptor accepting a custom class name. The expected
+ * interface is {@link ContentViewPageProvider}, all other attributes are
+ * common to other page provider descriptors.
+ *
  * @author Anahide Tchertchian
  */
 @XObject("genericPageProvider")

@@ -28,7 +28,17 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Default implementation for the content view object.
+ * <p>
+ * Provides simple getters for attributes defined in the XMap descriptor,
+ * except cache key which is computed from currrent {@link FacesContext}
+ * instance if cache key is an EL expression.
+ * <p>
+ * The page provider is initialized calling
+ * {@link ContentViewService#getPageProvider(String, Object...)}.
+ *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public class ContentViewImpl implements ContentView {
 
@@ -97,21 +107,17 @@ public class ContentViewImpl implements ContentView {
             throws ClientException {
         if (pageProvider == null) {
             try {
+                // make the service build the provider
                 ContentViewService service = Framework.getService(ContentViewService.class);
                 if (service == null) {
                     throw new ClientException(
                             "Could not resolve ContentViewService");
                 }
-                pageProvider = service.getPageProvider(getName());
-
+                pageProvider = service.getPageProvider(getName(), params);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-
         }
-
-        pageProvider.setParameters(params);
-
         return pageProvider;
     }
 

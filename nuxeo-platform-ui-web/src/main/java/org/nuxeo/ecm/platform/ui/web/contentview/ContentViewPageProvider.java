@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 import org.nuxeo.ecm.core.api.PageProvider;
 
 /**
+ * Interface to follow when defining a content view page provider: the service
+ * will call {@link #setPageProviderDescriptor(PageProviderDescriptor)} so that
+ * the descriptor information is available to the {@link PageProvider} when
+ * building queries or computing results.
+ *
  * @author Anahide Tchertchian
  */
 public interface ContentViewPageProvider<T> extends PageProvider<T> {

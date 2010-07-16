@@ -18,17 +18,34 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
 
+import javax.faces.context.FacesContext;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
 
 /**
+ * Service handling content views and associated page providers.
+ *
  * @author Anahide Tchertchian
- * @since 5.3.3
+ * @since 5.4
  */
 public interface ContentViewService extends Serializable {
 
+    /**
+     * Returns the content view with given name, or null if not found.
+     *
+     * @throws ClientException
+     */
     ContentView getContentView(String name) throws ClientException;
 
-    PageProvider<?> getPageProvider(String contentViewName) throws ClientException;
+    /**
+     * Returns the page provider computed from the content view with given
+     * name. Its properties are resolved using current {@link FacesContext}
+     * instance if they are EL Expressions.
+     *
+     * @throws ClientException
+     */
+    PageProvider<?> getPageProvider(String contentViewName,
+            Object... parameters) throws ClientException;
 
 }

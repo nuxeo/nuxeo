@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.ui.web.contentview;
+package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -28,8 +28,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
 
 /**
+ * Seam component handling cache and refresh for named content views.
+ *
  * @author Anahide Tchertchian
  */
 @Name("contentViewActions")
@@ -57,7 +61,6 @@ public class ContentViewActionsBean implements ContentViewActions {
 
     public ContentView getContentView(String name) throws ClientException {
         init();
-        // XXX: check it's working ok when there is no cache key defined
         ContentView cView;
         if (!contentViews.containsKey(name)) {
             cView = contentViewService.getContentView(name);
@@ -93,7 +96,6 @@ public class ContentViewActionsBean implements ContentViewActions {
             for (Map.Entry<String, ContentView> entry : contentViews.entrySet()) {
                 ContentView cv = entry.getValue();
                 List<String> eventNames = cv.getRefreshEventNames();
-                // TODO: add appropriate event name
                 if (eventNames != null && eventNames.contains(seamEventName)) {
                     refresh(cv.getName());
                 }

@@ -19,29 +19,70 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
 
 /**
+ * A content view is a notion to handle lists of objects rendering, as well as
+ * query filters to build the list.
+ * <p>
+ * It has a name that will be the resulting page provider name too. It handles
+ * a page provider and accepts configuration needed to handle rendering, like
+ * the search layout (for filtering options), the result layout (for results
+ * rendering), actions (for buttons available when selecting result objects),
+ * the selection list name...
+ * <p>
+ * It also handles refresh or reset of its provider, depending on its cache key
+ * and refresh events configuration.
+ *
  * @author Anahide Tchertchian
  * @since 5.4
  */
 public interface ContentView extends Serializable {
 
+    /**
+     * Returns the name of this content view
+     */
     String getName();
 
+    /**
+     * Returns the selection list name
+     */
     String getSelectionListName();
 
+    /**
+     * Returns the pagination type ('default' or 'numbered')
+     */
     String getPagination();
 
+    /**
+     * Return the list of action categories to display buttons available on
+     * selection of items.
+     */
     List<String> getActionsCategories();
 
+    /**
+     * Returns the search layout name, used to filter results.
+     */
     String getSearchLayoutName();
 
+    /**
+     * Returns the result layout name, used to display results.
+     */
     String getResultLayoutName();
 
+    /**
+     * Returns the cache key for this provider, resolving from the current
+     * {@link FacesContext} instance if it's an EL expression.
+     */
     String getCacheKey();
 
+    /**
+     * Returns the list of event names that wshould trigger a refresh of this
+     * content view page provider.
+     */
     List<String> getRefreshEventNames();
 
     /**
@@ -51,6 +92,10 @@ public interface ContentView extends Serializable {
      */
     PageProvider<?> getPageProvider(Object... params) throws ClientException;
 
+    /**
+     * Returns the current page provider, or null if
+     * {@link #getPageProvider(Object...)} was never called before.
+     */
     PageProvider<?> getCurrentPageProvider();
 
     /**

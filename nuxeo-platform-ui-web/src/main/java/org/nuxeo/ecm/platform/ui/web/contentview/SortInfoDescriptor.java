@@ -21,6 +21,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
+ * Descriptor for sort info declaration.
+ *
  * @author Anahide Tchertchian
  */
 @XObject("sort")

@@ -28,6 +28,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
+ * Core Query page provider descriptor.
+ *
  * @author Anahide Tchertchian
  */
 @XObject("coreQueryPageProvider")

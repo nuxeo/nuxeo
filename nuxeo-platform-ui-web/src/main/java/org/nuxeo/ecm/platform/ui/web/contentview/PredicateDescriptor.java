@@ -23,6 +23,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+/**
+ * Predicate descriptor accepting a schema and field, an operator, and a
+ * parameter.
+ *
+ * @author Anahide Tchertchian
+ */
 @XObject(value = "predicate")
 public class PredicateDescriptor {
 

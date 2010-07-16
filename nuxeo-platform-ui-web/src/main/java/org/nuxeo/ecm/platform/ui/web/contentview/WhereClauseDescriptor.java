@@ -25,6 +25,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 
+/**
+ * Generic descriptor for query where clause, accepting predicates and a fixed
+ * part. A custom escaper can also be set: {@link LuceneMinimalEscaper} will be
+ * used by default.
+ *
+ * @author Anahide Tchertchian
+ */
 @XObject(value = "whereClause")
 public class WhereClauseDescriptor {
 

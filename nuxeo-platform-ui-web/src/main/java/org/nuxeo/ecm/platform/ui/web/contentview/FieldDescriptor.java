@@ -22,6 +22,11 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+/**
+ * Field descriptor accepting a separate schema and field or a complete xpath.
+ *
+ * @author Anahide Tchertchian
+ */
 @XObject(value = "field")
 public class FieldDescriptor {
 

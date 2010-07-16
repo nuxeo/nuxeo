@@ -30,6 +30,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Business delegate exposting the {@link ContentViewService} as a seam
+ * component.
+ *
  * @author Anahide Tchertchian
  */
 @Name("contentViewService")
@@ -59,7 +62,8 @@ public class ContentViewBusinessDelegate implements Serializable {
                 throw new ClientException(errMsg, e);
             }
             if (contentViewService == null) {
-                throw new ClientException("ContentViewService service not bound");
+                throw new ClientException(
+                        "ContentViewService service not bound");
             }
         }
         return contentViewService;

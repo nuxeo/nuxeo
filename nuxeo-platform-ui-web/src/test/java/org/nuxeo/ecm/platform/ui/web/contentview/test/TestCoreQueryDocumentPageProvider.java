@@ -18,15 +18,21 @@ package org.nuxeo.ecm.platform.ui.web.contentview.test;
 
 import java.util.List;
 
+import javax.el.ELException;
+import javax.faces.context.FacesContext;
+
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestContentViewService extends NXRuntimeTestCase {
+public class TestCoreQueryDocumentPageProvider extends SQLRepositoryTestCase {
+
+    MockFacesContext facesContext;
 
     @Override
     public void setUp() throws Exception {
@@ -36,6 +42,19 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.ui.test",
                 "test-contentview-contrib.xml");
+
+        // set mock faces context for needed properties resolution
+        facesContext = new MockFacesContext() {
+            public Object evaluateExpressionGet(FacesContext context,
+                    String expression, Class expectedType) throws ELException {
+                if ("#{documentManager}".equals(expression)) {
+                    return session;
+                }
+                return null;
+            }
+        };
+        facesContext.setCurrent();
+        assertNotNull(FacesContext.getCurrentInstance());
     }
 
     public void testExtensionPoint() throws Exception {
@@ -59,6 +78,10 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("foo", eventNames.get(0));
         assertEquals("bar", eventNames.get(1));
 
-        // TODO: test provider registration
+        assertEquals(session, ComponentTagUtils.resolveElExpression(
+                facesContext, "#{documentManager}"));
+
+        // TODO: test provider behavior
+
     }
 }

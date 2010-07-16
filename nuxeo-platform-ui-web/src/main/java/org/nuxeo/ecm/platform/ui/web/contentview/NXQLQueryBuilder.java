@@ -137,9 +137,6 @@ public class NXQLQueryBuilder {
         if (params == null) {
             queryBuilder = new StringBuilder(pattern + ' ');
         } else {
-            // XXX: the core should provide an escaping scheme by default
-            // similar to the JDBC PreparedStatement class
-
             // XXX: the + " " is a workaround for the buggy implementation of
             // the split function in case the pattern ends with '?'
             String[] queryStrList = (pattern + ' ').split("\\?");
@@ -161,7 +158,6 @@ public class NXQLQueryBuilder {
                     String queryParam = params[i].toString();
                     // this will escape everything as if it where a string
                     // use a literal if you want to do your own custom stuff
-                    // TODO replug escaper from SQLQueryParser
                     queryBuilder.append(prepareStringLiteral(queryParam));
                 }
                 queryBuilder.append(queryStrList[i + 1]);
@@ -184,9 +180,7 @@ public class NXQLQueryBuilder {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
-     * TODO remove this once we work on org.nuxeo.core, v 1.4
      */
-    // TODO remove this once we work on org.nuxeo.core, v 1.4
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";
     }
@@ -352,16 +346,13 @@ public class NXQLQueryBuilder {
     }
 
     /**
-     * Prepares a statement for a fulltext field by converting FULLTEXT*
-     * virtual operators to a syntax that the SearchEngineBackend accepts. TODO
-     * this is hardcoded for Lucene Query Parser Syntax
+     * Prepares a statement for a fulltext field by converting FULLTEXT virtual
+     * operators to a syntax that the search syntax accepts.
      *
      * @param value
      * @return the serialized statement
      */
     protected static String serializeFullText(String value) {
-        // TODO Lucene Query Parser is the only supported one
-        // TODO apply escapes
         String res = "";
         String[] tokens = value.split(" ");
         for (int i = 0; i < tokens.length; i++) {
@@ -370,7 +361,6 @@ public class NXQLQueryBuilder {
             }
             res += "+" + tokens[i];
         }
-        // TODO move back to SQLQueryParser at org.nuxeo.ecm.core v 1.4
         return "= " + NXQLQueryBuilder.prepareStringLiteral(res);
     }
 
@@ -487,7 +477,6 @@ public class NXQLQueryBuilder {
                     || "double".equals(fieldType)) {
                 return value;
             } else {
-                // TODO switch back to SQLQueryParser for org.nuxeo.core 1.4
                 return NXQLQueryBuilder.prepareStringLiteral(value);
             }
         }

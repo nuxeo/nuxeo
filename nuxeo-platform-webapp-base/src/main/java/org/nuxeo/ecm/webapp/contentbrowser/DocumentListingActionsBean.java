@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
-import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
