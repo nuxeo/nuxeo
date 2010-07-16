@@ -13,3 +13,4 @@ target
 *.iws
 nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
+*.bak
