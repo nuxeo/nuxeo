@@ -19,14 +19,8 @@
 
 package org.nuxeo.common.xmap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-
 
 public class XMLBuilder {
 
