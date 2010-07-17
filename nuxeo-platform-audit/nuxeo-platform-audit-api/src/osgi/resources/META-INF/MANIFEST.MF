@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.audit.api;version="5.3.2.SNAPSH
+ OT",org.nuxeo.ecm.platform.audit.api.delegate;version="5.3.2.SNAPSHOT
+ ",org.nuxeo.ecm.platform.audit.api.job;version="5.3.2.SNAPSHOT",org.n
+ uxeo.ecm.platform.audit.api.query;version="5.3.2.SNAPSHOT",org.nuxeo.
+ ecm.platform.audit.api.remote;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
+Bundle-Localization: plugin
+Bundle-Name: NXAuditAPI
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277976973829
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.api
+Import-Package: javax.annotation;version="1.0",
+ javax.persistence,
+ org.apache.commons.lang.builder,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.persistence,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime.api
+Nuxeo-Require: org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.event
+Require-Bundle: org.hibernate
+
