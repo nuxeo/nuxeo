@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.action;
-
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +30,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -46,7 +40,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -56,8 +49,9 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+import org.nuxeo.ecm.core.trash.TrashInfo;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -66,7 +60,6 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
-import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
@@ -77,27 +70,24 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("deleteActions")
-@Scope(EVENT)
-@Install(precedence = FRAMEWORK)
+@Scope(ScopeType.EVENT)
+@Install(precedence = Install.FRAMEWORK)
 public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {
 
-    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
-
-    protected static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
-
-    private static final long serialVersionUID = 9860854328986L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DeleteActionsBean.class);
 
-    private static final String DELETE_OUTCOME = "after_delete";
+    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
 
-    protected static final String DELETE_TRANSITION = "delete";
+    public static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
 
-    protected static final String UNDELETE_TRANSITION = "undelete";
+    public static final String DELETE_OUTCOME = "after_delete";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -106,13 +96,13 @@ public class DeleteActionsBean extends InputController implements
     protected RepositoryLocation currentServerLocation;
 
     @In(create = true)
-    private transient DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
-    private transient TrashManager trashManager;
+    protected transient TrashManager trashManager;
 
     @In(create = true)
-    private transient LockActions lockActions;
+    protected transient LockActions lockActions;
 
     @In(create = true)
     protected transient WebActions webActions;
@@ -121,264 +111,77 @@ public class DeleteActionsBean extends InputController implements
     protected transient QueryModelActions queryModelActions;
 
     @In(create = true)
-    private transient SearchActions searchActions;
+    protected transient SearchActions searchActions;
 
     @Out(required = false)
     @Deprecated
-    private PagedDocumentsProvider resultsProvider;
+    protected PagedDocumentsProvider resultsProvider;
 
-    private DocumentModelList currentDocumentChildren;
-
-    // end import
+    protected DocumentModelList currentDocumentChildren;
 
     @In
-    private transient Principal currentUser;
+    protected transient Principal currentUser;
 
-    private Boolean searchDeletedDocuments;
+    protected Boolean searchDeletedDocuments;
 
-    private static class PathComparator implements Comparator<DocumentModel>,
-            Serializable {
+    protected transient TrashService trashService;
 
-        private static final long serialVersionUID = -6449747704324789701L;
-
-        public int compare(DocumentModel o1, DocumentModel o2) {
-            return o1.getPathAsString().compareTo(o2.getPathAsString());
-        }
-
-    }
-
-    public String purgeSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
-            return purgeSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
-        } else {
-            log.debug("No documents selection in context to process delete on...");
-            return null;
-        }
-    }
-
-    public String purgeSelection(List<DocumentModel> docsToPurge)
-            throws ClientException {
-        if (null != docsToPurge) {
-            List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToPurge);
-
-            // Keep only topmost documents (see NXP-1411)
-            // This is not strictly necessary with Nuxeo Core >= 1.3.2
-            Collections.sort(docsThatCanBeDeleted, new PathComparator());
-            List<DocumentModel> rootDocsToDelete = new LinkedList<DocumentModel>();
-            Path previousPath = null;
-            for (DocumentModel doc : docsThatCanBeDeleted) {
-                if (previousPath == null
-                        || !previousPath.isPrefixOf(doc.getPath())) {
-                    rootDocsToDelete.add(doc);
-                    previousPath = doc.getPath();
-                }
-            }
-
-            // Three auxiliary collections deduced from rootDocsToDelete:
-            // references, paths, and references of parents.
-            // Computed before actual removal for robustness
-            List<DocumentRef> references = DocumentsListsUtils.getDocRefs(rootDocsToDelete);
-            Set<Path> paths = new HashSet<Path>();
-            for (DocumentModel doc : rootDocsToDelete) {
-                paths.add(doc.getPath());
-            }
-            Set<DocumentRef> parentsRefs = new HashSet<DocumentRef>();
-            parentsRefs.addAll(DocumentsListsUtils.getParentRefFromDocumentList(rootDocsToDelete));
-
-            // Treat the cases where the navigation context is under one of the
-            // deleted documents by climbing up.
-            // Target document computation is before removal for robustness.
-            DocumentModel targetContext = navigationContext.getCurrentDocument();
-            while (underOneOf(targetContext.getPath(), paths)) {
-                targetContext = documentManager.getParentDocument(targetContext.getRef());
-            }
-
-            // remove from all lists
-            documentsListsManager.removeFromAllLists(docsThatCanBeDeleted);
-
-            // ACTUAL REMOVAL
-            documentManager.removeDocuments(references.toArray(new DocumentRef[references.size()]));
-            documentManager.save();
-
-            // Update context if needed
-            navigationContext.setCurrentDocument(targetContext);
-
-            // Notify parents
-            for (DocumentRef parentRef : parentsRefs) {
-                DocumentModel parent = documentManager.getDocument(parentRef);
-                if (parent != null) {
-                    Events.instance().raiseEvent(
-                            EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
-                }
-            }
-
-            // User feedback
-            Object[] params = { references.size() };
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_deleted_docs"), params);
-            facesMessages.add(message);
-            log.debug("documents deleted...");
-        } else {
-            log.debug("nothing to delete...");
-        }
-
-        return computeOutcome(DELETE_OUTCOME);
-    }
-
-    private static boolean underOneOf(Path testedPath, Set<Path> paths) {
-        for (Path path : paths) {
-            if (path.isPrefixOf(testedPath)) {
-                return true;
+    protected TrashService getTrashService() {
+        if (trashService == null) {
+            try {
+                trashService = Framework.getService(TrashService.class);
+            } catch (Exception e) {
+                throw new RuntimeException("TrashService not available", e);
             }
         }
-        return false;
+        return trashService;
     }
 
     public boolean getCanDeleteItem(DocumentModel container)
             throws ClientException {
-        if (documentManager != null && container != null) {
-            if (documentManager.hasPermission(container.getRef(),
-                    SecurityConstants.REMOVE_CHILDREN)) {
-                return true;
-            }
+        if (container == null) {
+            return false;
         }
-        return false;
+        return getTrashService().folderAllowsDelete(container);
     }
 
     public boolean getCanDelete() {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
-
-        if (docsToDelete == null || docsToDelete.isEmpty()) {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        try {
+            return getTrashService().canDelete(docs, currentUser, false);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
             return false;
         }
-
-        // do simple filtering
-        return checkDeletePermOnParents(docsToDelete);
     }
 
     public boolean getCanDeleteSections() {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
-
-        if (docsToDelete == null || docsToDelete.isEmpty()) {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        try {
+            return getTrashService().canDelete(docs, currentUser, true);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
             return false;
         }
-
-        List<DocumentModel> realDocsToDelete = new ArrayList<DocumentModel>();
-        for (DocumentModel doc : docsToDelete) {
-            if (!doc.isProxy()) {
-                realDocsToDelete.add(doc);
-            }
-        }
-
-        if (realDocsToDelete.isEmpty()) {
-            return false;
-        }
-
-        // do simple filtering
-        return checkDeletePermOnParents(realDocsToDelete);
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
-
-        if (docsToDelete == null || docsToDelete.isEmpty()) {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        try {
+            return getTrashService().canPurgeOrUndelete(docs, currentUser);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
             return false;
         }
-
-        for (DocumentModel doc : docsToDelete) {
-            if (!LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                return false;
-            }
-        }
-
-        // do simple filtering
-        return checkDeletePermOnParents(docsToDelete);
     }
 
-    public boolean checkDeletePermOnParents(List<DocumentModel> docsToDelete) {
-
-        List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
-
-        for (DocumentRef parentRef : parentRefs) {
-            try {
-                if (documentManager.hasPermission(parentRef,
-                        SecurityConstants.REMOVE_CHILDREN)) {
-                    return true;
-                }
-            } catch (ClientException e) {
-                log.error(e);
-            }
+    public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
+        try {
+            return getTrashService().checkDeletePermOnParents(docs);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
+            return false;
         }
-        return false;
-    }
-
-    private List<DocumentModel> filterDeleteListAccordingToPermsOnParents(
-            List<DocumentModel> docsToDelete) throws ClientException {
-
-        List<DocumentModel> docsThatCanBeDeleted = new ArrayList<DocumentModel>();
-        List<DocumentRef> parentRefs = DocumentsListsUtils.getParentRefFromDocumentList(docsToDelete);
-
-        for (DocumentRef parentRef : parentRefs) {
-            if (documentManager.hasPermission(parentRef,
-                    SecurityConstants.REMOVE_CHILDREN)) {
-                for (DocumentModel doc : docsToDelete) {
-                    if (doc.getParentRef().equals(parentRef)) {
-                        docsThatCanBeDeleted.add(doc);
-                    }
-                }
-            }
-        }
-        return docsThatCanBeDeleted;
-    }
-
-    private List<DocumentModel> filterDeleteListAccordingToPerms(
-            List<DocumentModel> docsToDelete) throws ClientException {
-        // first filter on parents
-        List<DocumentModel> docsThatCanBeDeletedOnParent = filterDeleteListAccordingToPermsOnParents(docsToDelete);
-        List<DocumentModel> docsThatCanBeDeleted = new ArrayList<DocumentModel>();
-
-        int forbiddenDocs = docsToDelete.size()
-                - docsThatCanBeDeletedOnParent.size();
-
-        int lockedDocs = 0;
-        for (DocumentModel docToDelete : docsThatCanBeDeletedOnParent) {
-            if (documentManager.hasPermission(docToDelete.getRef(),
-                    SecurityConstants.REMOVE)) {
-
-                // Check if document is locker
-                if (docToDelete.isLocked()) {
-                    String locker = lockActions.getLockDetails(docToDelete).get(
-                            LockActions.LOCKER);
-                    if (currentUser.getName().equals(locker)) {
-                        docsThatCanBeDeleted.add(docToDelete);
-                    } else {
-                        lockedDocs += 1;
-                    }
-                } else {
-                    docsThatCanBeDeleted.add(docToDelete);
-                }
-            } else {
-                forbiddenDocs += 1;
-            }
-        }
-
-        if (lockedDocs > 0) {
-            Object[] params = { lockedDocs };
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_locked_docs_can_not_delete"), params);
-        }
-
-        if (forbiddenDocs > 0) {
-            Object[] params2 = { forbiddenDocs };
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_forbidden_docs_can_not_delete"), params2);
-        }
-
-        return docsThatCanBeDeleted;
     }
 
     public String deleteSelection() throws ClientException {
@@ -391,133 +194,34 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
-
-        if (docsToDelete == null || docsToDelete.isEmpty()) {
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
+            return deleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
+        } else {
+            log.debug("No documents selection in context to process delete on...");
             return null;
         }
-        boolean selectionContainsProxy = false;
-        List<DocumentModel> nonProxyDocsToDelete = new ArrayList<DocumentModel>();
-        for (DocumentModel doc : docsToDelete) {
-            if (doc.isProxy()) {
-                selectionContainsProxy = true;
-            } else {
-                nonProxyDocsToDelete.add(doc);
-            }
-        }
-
-        if (selectionContainsProxy) {
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_WARN, "can_not_delete_proxies", null);
-            facesMessages.add(message);
-
-        }
-        return deleteSelection(nonProxyDocsToDelete);
     }
 
-    public String deleteSelection(List<DocumentModel> docsToDelete)
+    protected static final int OP_DELETE = 1, OP_PURGE = 2, OP_UNDELETE = 3;
+
+    public String deleteSelection(List<DocumentModel> docs)
             throws ClientException {
-        if (null != docsToDelete) {
+        int op = isTrashManagementEnabled() ? OP_DELETE : OP_PURGE;
+        return actOnSelection(op, docs);
+    }
 
-            List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToDelete);
-
-            // Keep only topmost documents (see NXP-1411)
-            // This is not strictly necessary with Nuxeo Core >= 1.3.2
-            Collections.sort(docsThatCanBeDeleted, new PathComparator());
-            List<DocumentModel> rootDocsToDelete = new LinkedList<DocumentModel>();
-            Path previousPath = null;
-            for (DocumentModel doc : docsThatCanBeDeleted) {
-                if (previousPath == null
-                        || !previousPath.isPrefixOf(doc.getPath())) {
-                    rootDocsToDelete.add(doc);
-                    previousPath = doc.getPath();
-                }
-            }
-
-            // Three auxiliary collections deduced from rootDocsToDelete:
-            // references, paths, and references of parents.
-            // Computed before actual removal for robustness
-            List<DocumentRef> references = DocumentsListsUtils.getDocRefs(rootDocsToDelete);
-            Set<Path> paths = new HashSet<Path>();
-            for (DocumentModel doc : rootDocsToDelete) {
-                paths.add(doc.getPath());
-            }
-            Set<DocumentRef> parentsRefs = new HashSet<DocumentRef>();
-            parentsRefs.addAll(DocumentsListsUtils.getParentRefFromDocumentList(rootDocsToDelete));
-
-            // Treat the cases where the navigation context is under one of the
-            // deleted documents by climbing up.
-            // Target document computation is before removal for robustness.
-            DocumentModel targetContext = navigationContext.getCurrentDocument();
-            while (underOneOf(targetContext.getPath(), paths)) {
-                targetContext = documentManager.getParentDocument(targetContext.getRef());
-            }
-
-            // remove from all lists
-            documentsListsManager.removeFromAllLists(docsThatCanBeDeleted);
-
-            if (trashManager.isTrashManagementEnabled()) {
-                // Change state
-                moveDocumentsToTrash(docsThatCanBeDeleted);
-            } else {
-                // Trash bin is not enabled
-                documentManager.removeDocuments(references.toArray(new DocumentRef[references.size()]));
-            }
-
-            documentManager.save();
-
-            // Update context if needed
-            navigationContext.setCurrentDocument(targetContext);
-
-            // Notify parents
-            for (DocumentRef parentRef : parentsRefs) {
-                DocumentModel parent = documentManager.getDocument(parentRef);
-                if (parent != null) {
-                    Events.instance().raiseEvent(
-                            EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
-                }
-            }
-
-            // User feedback
-            Object[] params = { references.size() };
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_deleted_docs"), params);
-            facesMessages.add(message);
-            log.debug("documents deleted...");
+    public String purgeSelection() throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
+            return purgeSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
         } else {
-            log.debug("nothing to delete...");
+            log.debug("No documents selection in context to process delete on...");
+            return null;
         }
-
-        return computeOutcome(DELETE_OUTCOME);
     }
 
-    /**
-     * Starts a trasition to delete state for the documents in the list
-     *
-     * @param docsThatCanBeDeleted
-     * @throws ClientException
-     */
-    protected void moveDocumentsToTrash(List<DocumentModel> docsThatCanBeDeleted)
+    public String purgeSelection(List<DocumentModel> docs)
             throws ClientException {
-        for (DocumentModel docModel : docsThatCanBeDeleted) {
-            // check if transition is available
-            DocumentModel document = documentManager.getDocument(docModel.getRef());
-
-            // delete children
-            if (document.getAllowedStateTransitions().contains(
-                    DELETE_TRANSITION)) {
-                document.followTransition(DELETE_TRANSITION);
-            } else {
-                log.warn("Document " + document.getId() + " of type "
-                        + document.getType() + " in state "
-                        + document.getCurrentLifeCycleState()
-                        + " does not support transition " + DELETE_TRANSITION
-                        + ", it will be deleted immediately");
-                documentManager.removeDocument(document.getRef());
-            }
-        }
+        return actOnSelection(OP_PURGE, docs);
     }
 
     public String undeleteSelection() throws ClientException {
@@ -529,79 +233,78 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
-    public String undeleteSelection(List<DocumentModel> docsToUndelete)
+    public String undeleteSelection(List<DocumentModel> docs)
             throws ClientException {
-        if (null != docsToUndelete) {
+        return actOnSelection(OP_UNDELETE, docs);
 
-            List<DocumentModel> docsThatCanBeUndeleted = filterDeleteListAccordingToPerms(docsToUndelete);
+    }
 
-            // Keep only topmost documents (see NXP-1411)
-            // This is not strictly necessary with Nuxeo Core >= 1.3.2
-            Collections.sort(docsThatCanBeUndeleted, new PathComparator());
-            List<DocumentModel> rootDocsToDelete = new LinkedList<DocumentModel>();
-            Path previousPath = null;
-            for (DocumentModel doc : docsToUndelete) {
-                if (previousPath == null
-                        || !previousPath.isPrefixOf(doc.getPath())) {
-                    rootDocsToDelete.add(doc);
-                    previousPath = doc.getPath();
-                }
-            }
-
-            // Three auxiliary collections deduced from rootDocsToDelete:
-            // references, paths, and references of parents.
-            // Computed before actual removal for robustness
-            List<DocumentRef> references = DocumentsListsUtils.getDocRefs(rootDocsToDelete);
-            Set<Path> paths = new HashSet<Path>();
-            for (DocumentModel doc : rootDocsToDelete) {
-                paths.add(doc.getPath());
-            }
-            Set<DocumentRef> parentsRefs = new HashSet<DocumentRef>();
-            parentsRefs.addAll(DocumentsListsUtils.getParentRefFromDocumentList(rootDocsToDelete));
-
-            // Treat the cases where the navigation context is under one of the
-            // deleted documents by climbing up.
-            // Target document computation is before removal for robustness.
-            DocumentModel targetContext = navigationContext.getCurrentDocument();
-            while (underOneOf(targetContext.getPath(), paths)) {
-                targetContext = documentManager.getParentDocument(targetContext.getRef());
-            }
-
-            // remove from all lists
-            documentsListsManager.removeFromAllLists(docsThatCanBeUndeleted);
-
-            // Change state
-            undeleteDocumentsFromTrash(docsThatCanBeUndeleted);
-            for (DocumentModel document : docsThatCanBeUndeleted) {
-                undeleteDocument(documentManager.getParentDocuments(document.getRef()));
-            }
-            documentManager.save();
-
-            // Update context if needed
-            navigationContext.setCurrentDocument(targetContext);
-
-            // Notify parents
-            for (DocumentRef parentRef : parentsRefs) {
-                List<DocumentModel> parents = documentManager.getParentDocuments(parentRef);
-                for (DocumentModel parent : parents) {
-                    if (parent != null) {
-                        Events.instance().raiseEvent(
-                                EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
-                    }
-                }
-            }
-
-            // User feedback
-            Object[] params = { references.size() };
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_undeleted_docs"), params);
-            facesMessages.add(message);
-            log.debug("documents undeleted...");
-        } else {
-            log.debug("nothing to undelete...");
+    protected String actOnSelection(int op, List<DocumentModel> docs)
+            throws ClientException {
+        if (docs == null) {
+            return null;
         }
+        TrashInfo info;
+        try {
+            info = getTrashService().getTrashInfo(docs, currentUser, true,
+                    false);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
+            return null;
+        }
+
+        DocumentModel targetContext = getTrashService().getAboveDocument(
+                navigationContext.getCurrentDocument(), info.rootPaths);
+
+        // remove from all lists
+        documentsListsManager.removeFromAllLists(info.docs);
+
+        Set<DocumentRef> parentRefs;
+        String msgid;
+        // operation to do
+        switch (op) {
+        case OP_PURGE:
+            getTrashService().purgeDocuments(documentManager, info.rootRefs);
+            parentRefs = info.rootParentRefs;
+            msgid = "n_deleted_docs";
+            break;
+        case OP_DELETE:
+            getTrashService().trashDocuments(info.docs);
+            parentRefs = info.rootParentRefs;
+            msgid = "n_deleted_docs";
+            break;
+        case OP_UNDELETE:
+            parentRefs = getTrashService().undeleteDocuments(info.docs);
+            msgid = "n_undeleted_docs";
+            break;
+        default:
+            throw new AssertionError(op);
+        }
+
+        // Update context if needed
+        navigationContext.setCurrentDocument(targetContext);
+
+        // Notify parents
+        for (DocumentRef parentRef : parentRefs) {
+            DocumentModel parent = documentManager.getDocument(parentRef);
+            if (parent != null) {
+                Events.instance().raiseEvent(
+                        EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
+            }
+        }
+
+        // User feedback
+        if (info.proxies > 0) {
+            FacesMessage message = FacesMessages.createFacesMessage(
+                    FacesMessage.SEVERITY_WARN, "can_not_delete_proxies",
+                    (Object[]) null);
+            facesMessages.add(message);
+        }
+        Object[] params = { Integer.valueOf(info.docs.size()) };
+        FacesMessage message = FacesMessages.createFacesMessage(
+                FacesMessage.SEVERITY_INFO, "#0 "
+                        + resourcesAccessor.getMessages().get(msgid), params);
+        facesMessages.add(message);
 
         return computeOutcome(DELETE_OUTCOME);
     }
@@ -610,42 +313,8 @@ public class DeleteActionsBean extends InputController implements
         return trashManager.isTrashManagementEnabled();
     }
 
-    protected void undeleteDocumentsFromTrash(
-            List<DocumentModel> docsToBeUndeleted) throws ClientException {
-        // TODO Notify all concerned documents...
-        for (DocumentModel docModel : docsToBeUndeleted) {
-            // check if transition is available
-            DocumentModel document = documentManager.getDocument(docModel.getRef());
-            if (document.getAllowedStateTransitions().contains(
-                    UNDELETE_TRANSITION)) {
-                document.followTransition(UNDELETE_TRANSITION);
-            } else {
-                throw new ClientException("Impossible to move document="
-                        + document.getPathAsString()
-                        + " Life Cycle is not available 1");
-            }
-
-            // restore of children done in core listener
-        }
-    }
-
-    private static void undeleteDocument(List<DocumentModel> docsToBeUndeleted)
-            throws ClientException {
-        // TODO Notify all concerned documents...
-        for (DocumentModel document : docsToBeUndeleted) {
-            // check if transition is available
-            if (document.getAllowedStateTransitions().contains(
-                    UNDELETE_TRANSITION)) {
-                document.followTransition(UNDELETE_TRANSITION);
-            } else {
-                log.debug("No undelete transition defined....");
-            }
-        }
-    }
-
     public SelectDataModel getDeletedChildrenSelectModel()
             throws ClientException {
-
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(
@@ -734,7 +403,7 @@ public class DeleteActionsBean extends InputController implements
         return provider;
     }
 
-    private PagedDocumentsProvider getResultsProviderForDeletedDocs(
+    protected PagedDocumentsProvider getResultsProviderForDeletedDocs(
             String name, SortInfo sortInfo) throws ClientException {
         final DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
@@ -757,7 +426,7 @@ public class DeleteActionsBean extends InputController implements
     /**
      * Usable with a queryModel that defines a pattern NXQL.
      */
-    private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
+    protected PagedDocumentsProvider getChildrenResultsProviderQMPattern(
             String queryModelName, DocumentModel parent, SortInfo sortInfo)
             throws ClientException {
 
@@ -766,7 +435,7 @@ public class DeleteActionsBean extends InputController implements
         return getResultsProvider(queryModelName, params, sortInfo);
     }
 
-    private PagedDocumentsProvider getResultsProvider(String qmName,
+    protected PagedDocumentsProvider getResultsProvider(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         QueryModel qm = queryModelActions.get(qmName);
         return qm.getResultsProvider(documentManager, params, sortInfo);
@@ -805,17 +474,22 @@ public class DeleteActionsBean extends InputController implements
         undeleteSelection(doc);
     }
 
-    // FIXME: should check permissions
     public boolean getCanRestoreCurrentDoc() throws ClientException {
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (currentDoc != null) {
-            return LifeCycleConstants.DELETED_STATE.equals(currentDoc.getCurrentLifeCycleState());
-        } else {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc == null) {
             // this shouldn't happen, if it happens probably there is a
             // customization bug, we guard this though
             log.warn("Null currentDocument in navigationContext");
             return false;
         }
+        try {
+            return getTrashService().canPurgeOrUndelete(
+                    Collections.singletonList(doc), currentUser);
+        } catch (ClientException e) {
+            log.error("Cannot check delete permission", e);
+            return false;
+        }
+
     }
 
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED })

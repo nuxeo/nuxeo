@@ -839,7 +839,7 @@ public class MassEditActionsBean extends InputController implements
 
     @Destroy
     public void destroy() {
-        log.debug("Removing SEAM component: lockActions");
+        log.debug("Removing Seam component: lockActions");
     }
 
 }

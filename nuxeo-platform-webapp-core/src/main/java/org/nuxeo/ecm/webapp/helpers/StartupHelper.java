@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.security.Principal;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,6 +55,8 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 @Scope(SESSION)
 @Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
+
+    public static final String LANGUAGE_PARAMETER = "language";
 
     protected static final String SERVERS_VIEW = "view_servers";
 
@@ -81,6 +85,9 @@ public class StartupHelper implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
 
     /**
      * Initializes the context with the principal id, and try to connect to the
@@ -139,6 +146,13 @@ public class StartupHelper implements Serializable {
 
             // get the domains from selected server
             DocumentModel rootDocument = documentManager.getRootDocument();
+
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+
+            if (request.getParameter(LANGUAGE_PARAMETER) != null) {
+                String localeStr = request.getParameter(LANGUAGE_PARAMETER);
+                localeSelector.setLocaleString(localeStr);
+            }
 
             if (!documentManager.hasPermission(rootDocument.getRef(),
                     SecurityConstants.READ_CHILDREN)) {

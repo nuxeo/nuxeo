@@ -29,7 +29,7 @@
     <div id="content">
     <h3 onclick="testAddFileFromPlugin()"><h:outputText
         value="#{messages['label.selectFileToImport']}"/></h3>
-      <h:form enctype="multipart/form-data">
+      <h:form enctype="multipart/form-data" id="importFileRichUploadForm">
 
         <rich:fileUpload fileUploadListener="#{FileManageActions.processUpload}"
                 maxFilesQuantity="1"

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -222,15 +223,15 @@ public class SearchResultsBean extends InputController implements
         DocumentModel data = null;
         List<DocumentModel> currentDocs = getResultDocuments(providerName);
 
-        for (DocumentModel d : currentDocs) {
-            DocumentRef docRef = d.getRef();
+        for (DocumentModel doc : currentDocs) {
+            DocumentRef docRef = doc.getRef();
             // the search backend might have a bug filling the docref
             if (docRef == null) {
-                log.error("null DocumentRef for doc: " + d);
+                log.error("null DocumentRef for doc: " + doc);
                 continue;
             }
             if (docRef.reference().equals(selectedDocRef)) {
-                data = d;
+                data = doc;
                 break;
             }
         }
@@ -324,8 +325,7 @@ public class SearchResultsBean extends InputController implements
                     for (FieldWidget widget : widgetList) {
                         String fieldSchema = widget.getSchemaName();
                         String fieldName = widget.getFieldName();
-                        Object value = docModel.getProperty(fieldSchema,
-                                fieldName);
+                        Object value;
 
                         if (fieldSchema.equals("dublincore")
                                 && fieldName.equals("title")) {
@@ -339,12 +339,15 @@ public class SearchResultsBean extends InputController implements
                         } else {
                             value = docModel.getProperty(fieldSchema, fieldName);
                         }
+
                         String stringValue;
                         if (value == null) {
                             stringValue = "";
                         } else if (value instanceof GregorianCalendar) {
                             GregorianCalendar gValue = (GregorianCalendar) value;
                             stringValue = df.format(gValue.getTime());
+                        } else if (value instanceof Object[]) {
+                            stringValue = StringUtils.join(Arrays.asList((Object[]) value), ", ");
                         } else {
                             stringValue = String.valueOf(value);
                         }

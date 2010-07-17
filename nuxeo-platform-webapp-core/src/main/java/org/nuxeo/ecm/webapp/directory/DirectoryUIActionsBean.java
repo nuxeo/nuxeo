@@ -52,7 +52,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Manages directories editable by administrators.
- * 
+ *
  * @author Anahide Tchertchian
  */
 @Name("directoryUIActions")

@@ -120,7 +120,7 @@ public interface DocumentVersioning {
             Object value);
 
     /**
-     * Web action method that specify to create or not a document snapshot
+     * Web action method that specifies to create or not a document snapshot
      * before update (and possible version incrementation).
      *
      * @param createSnapshot

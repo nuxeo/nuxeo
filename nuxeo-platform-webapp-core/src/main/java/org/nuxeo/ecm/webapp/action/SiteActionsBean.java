@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.In;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -44,7 +45,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * Performs re-rendering of webcontainer layout widgets.
- * 
+ *
  * @author Anahide Tchertchian
  * @author rux added the site name validation
  */
@@ -132,9 +133,11 @@ public class SiteActionsBean {
     private void validateSite(FacesContext context, UIComponent component,
             Object value, String siteType) {
         if (value instanceof String) {
+            // apply Title2Path translation
+            String name = IdUtils.generateId((String) value);
             try {
                 DocumentModelList sites = querySitesByUrlAndDocType(
-                        documentManager, value.toString(), siteType);
+                        documentManager, name, siteType);
                 if (sites.size() > 0) {
                     FacesMessage message = new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,

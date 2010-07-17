@@ -58,7 +58,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * Dash board actions.
  * <p>
  * Those actions are related to the current authenticated principal.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("dashboardActions")

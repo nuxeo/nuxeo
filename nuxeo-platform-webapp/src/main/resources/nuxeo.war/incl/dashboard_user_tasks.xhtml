@@ -27,7 +27,7 @@
                 <h:column>
                   <f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>
                   <c:set var="createdFromCreateTaskOperation"
-                    value="#{task.taskInstance.getVariable('createdFromCreateTaskOperation') == 'true'}" />
+                    value="#{task.taskInstance.getVariableLocally('createdFromCreateTaskOperation') == 'true'}" />
                   <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />
                   <f:subview rendered="#{createdFromCreateTaskOperation}">
                     #{task.name}

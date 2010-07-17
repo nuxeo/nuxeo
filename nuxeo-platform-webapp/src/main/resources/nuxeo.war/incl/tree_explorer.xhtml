@@ -15,7 +15,9 @@
      <a4j:form ajaxSubmit="true">
      <div style="float:right">
          <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
-           <h:graphicImage value="/img/refresh.png" />
+           <h:graphicImage value="/img/refresh.png"
+            alt="#{messages['label.refresh']}"
+            title="#{messages['label.refresh']}" />
          </a4j:commandLink>
      </div>
     <dl>

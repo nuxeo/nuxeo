@@ -145,8 +145,9 @@ a:hover {
         </div>
         <div class="stacktrace">
           <a href="#"
-             onclick="javascript:toggleError('stackTrace'); return false;">show
-            stacktrace</a>
+             onclick="javascript:toggleError('stackTrace'); return false;">
+           show stacktrace
+          </a>
         </div>
         <div id="stackTrace" style="display: none;">
           <h2><%=exception_message %>
@@ -159,8 +160,9 @@ a:hover {
         </div>
       <div class="stacktrace">
           <a href="#"
-             onclick="javascript:toggleError('requestDump'); return false;">show
-            context dump</a>
+             onclick="javascript:toggleError('requestDump'); return false;">
+            show context dump
+          </a>
         </div>
         <div id="requestDump" style="display: none;">
           <h2>Context</h2>
