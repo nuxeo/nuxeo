@@ -1,27 +1,32 @@
 Nuxeo Digital Asset Management application
 ==========================================
 
-nuxeo-dam is a Seam / JSF web application that leverage the Nuxeo Enterprise
-Platform to build a multimedia document collection application.
+Nuxeo DAM is a Seam / JSF web application that leverages the Nuxeo Enterprise
+Platform to build a multimedia document collection management application.
 
-Building and deploying
-----------------------
+Building and deploying on an existing JBoss
+-------------------------------------------
 
-To build and deploy you need a jboss 4.2.3.GA instance setup and configured in
-a build.properties files based on the build.properties.sample file to be found
-in the current folder::
+To build and deploy you first need to set up a JBoss 4.2.3.GA instance.
+
+Then, you configure the build.properties files (starting from the
+build.properties.sample file to be found in the current folder), to point you
+JBoss instance::
 
   $ cp build.properties.sample build.properties
-  $ vim build.properties
+  $ vi build.properties
 
-Build with::
+You can then build Nuxeo DAM with::
 
   $ ant deploy
 
 TODO: add here instructions for Seam and nuxeo.war hot redeployment.
 
-You can also build a complete jboss or tomcat distribtion with the DAM
-application included with the following maven commands::
+Building a full archive
+-----------------------
+
+You can also build a complete JBoss or Tomcat distribution with the DAM
+application included, using the following maven commands::
 
   $ mvn install -Dmaven.test.skip=true
   $ cd nuxeo-dam-distribution
@@ -31,7 +36,7 @@ The generated zip should be available in::
 
   nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-distribution-tomcat-X.X-SNAPSHOT.zip
 
-After unzipping make the tomcat start scripts runnable and launch tomcat::
+After unzipping, make the Tomcat start scripts runnable and launch Tomcat::
 
   $ cd nuxeo-dam-tomcat
   $ chmod a+x bin/*.sh
@@ -55,7 +60,8 @@ follow the instructions in nuxeo-dam-ear/ftest/selenium/README.txt .
 Login page Copyrights
 ----------------------------------
 
-The fish photography has been taken by Luc Viatour. It is under GFDL and Creative Commons licences
+The fish photography has been taken by Luc Viatour. It is under GFDL and
+Creative Commons licences:
 email: l.viatour@mm.be
 website: http://www.lucnix.be/main.php
 
