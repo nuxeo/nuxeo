@@ -598,6 +598,8 @@ class FolderPage(BasePage):
         pos = '1'
         if item_type == 'Section':
             pos = '0'
+            # XXX: temporary skip, FIXME later
+            return self
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
