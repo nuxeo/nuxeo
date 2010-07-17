@@ -10,15 +10,13 @@
   <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
     <h:outputText value="#{field_0}"  />
-    
+
   </c:if>
-  
+
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
   	<a4j:outputPanel id="importset_title">
-      <h:inputText value="#{field_0}" id="#{widget.id}_title">
-        <a4j:support event="onfocus" focus="#{widget.id}_title" />
-      </h:inputText>
+      <h:inputText value="#{field_0}" id="#{widget.id}_title" onfocus="this.select();" />
     </a4j:outputPanel>
 
   </c:if>
