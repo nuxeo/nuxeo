@@ -121,7 +121,7 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink id="delete-user"
-                    action="#{userManagerActions.deleteUserNoRedirect(userModel.id)}"
+                    action="#{userManagerActions.deleteUserNoRedirect()}"
                     onclick="if (!confirmDeleteUser()) { return false; }"
                     reRender="userSearchResult"
                     rendered="#{userManagerActions.allowDeleteUser and notReadOnly}">
@@ -134,7 +134,7 @@
                         value="#{messages['label.userManager.userName']}" />
                   </f:facet>
                   <a4j:commandLink
-                    action="#{userManagerActions.setSelectedUserId(userModel.id)}"
+                    action="#{userManagerActions.setSelectedUser(userModel)}"
                     oncomplete="Richfaces.showModalPanel('viewUserFormPanel')"
                     reRender="viewUserPanel">
                     <h:outputText value="#{userModel[userSchema].username}" />

@@ -96,7 +96,7 @@
                 rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
                 <h:column>
                   <a4j:commandLink id="delete-group"
-                    action="#{groupManagerActions.deleteGroupNoRedirect(groupModel.id)}"
+                    action="#{groupManagerActions.deleteGroupNoRedirect()}"
                     onclick="if (!confirmDeleteGroup()) { return false; }"
                     reRender="groupSearchResult"
                     rendered="#{groupManagerActions.allowDeleteGroup and notReadOnly}">
@@ -109,7 +109,7 @@
                         value="#{messages['label.groupManager.groupName']}" />
                   </f:facet>
                   <a4j:commandLink
-                    action="#{groupManagerActions.setSelectedGroupId(groupModel.id)}"
+                    action="#{groupManagerActions.setSelectedGroup(groupModel)}"
                     oncomplete="Richfaces.showModalPanel('viewGroupFormPanel')"
                     reRender="viewGroupPanel">
                     <h:outputText value="#{groupModel[groupSchema].groupname}" />
