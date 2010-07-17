@@ -300,4 +300,27 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return searchOverflow;
     }
 
+    /*
+     * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
+     */
+
+    public void setSelectedGroup(DocumentModel group) {
+        selectedGroup = group;
+    }
+
+    public void deleteGroupNoRedirect() throws ClientException {
+        deleteGroup();
+        resetGroups();
+    }
+
+    public void createGroupNoRedirect() throws ClientException {
+        createGroup();
+        resetGroups();
+    }
+
+    public void updateGroupNoRedirect() throws ClientException {
+        updateGroup();
+        resetGroups();
+    }
+
 }

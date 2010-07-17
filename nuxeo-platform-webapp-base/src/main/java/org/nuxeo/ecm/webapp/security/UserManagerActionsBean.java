@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import static org.jboss.seam.ScopeType.APPLICATION;
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -66,6 +62,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.APPLICATION;
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -498,6 +498,29 @@ public class UserManagerActionsBean implements UserManagerActions {
             return user.getVirtualGroups();
         }
         return null;
+    }
+
+    /*
+     * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
+     */
+
+    public void setSelectedUser(DocumentModel user) {
+        selectedUser = user;
+    }
+
+    public void deleteUserNoRedirect() throws ClientException {
+        deleteUser();
+        resetUsers();
+    }
+
+    public void createUserNoRedirect() throws ClientException {
+        createUser();
+        resetUsers();
+    }
+
+    public void updateUserNoRedirect() throws ClientException {
+        updateUser();
+        resetUsers();
     }
 
 }
