@@ -21,13 +21,13 @@ public class OOoConfigHelper {
 
     protected String ooCommandPath=null;
 
+    protected static String oooUserPath=null;
+
     private static String[] WIN_OO_PATHS = {
-            "C:/Program Files/OpenOffice.org 2.5",
-            "C:/Program Files (x86)/OpenOffice.org 2.5",
-            "C:/Program Files/OpenOffice.org 3.0",
-            "C:/Program Files (x86)/OpenOffice.org 3.0",
-            "C:/Program Files/OpenOffice.org 3.1",
-            "C:/Program Files (x86)/OpenOffice.org 3.1"};
+            "C:/Program Files/OpenOffice.org 2.5/program",
+            "C:/Program Files (x86)/OpenOffice.org 2.5/program",
+            "C:/Program Files/OpenOffice.org 3/program",
+            "C:/Program Files (x86)/OpenOffice.org 3/program"};
 
     public OOoConfigHelper(OOoLauncherDescriptor desc) {
         this.desc = desc;
@@ -108,10 +108,24 @@ public class OOoConfigHelper {
                                       "-headless",
                                       "-norestore",
                                       "-invisible",
+                                      "-env:UserInstallation=file://" + getUserDir(),
                                       "-nofirststartwizard",
                                       "-accept=socket," + listen + ";urp;StarOffice.Service" };
 
         return command;
+    }
+
+    public static String getUserDir() {
+        if (oooUserPath==null) {
+            StringBuffer userDir = new StringBuffer();
+            userDir.append(System.getProperty("java.io.tmpdir"));
+            if (!userDir.toString().endsWith(fileSep)) {
+                userDir.append(fileSep);
+            }
+            userDir.append("nxoosrv-" + System.currentTimeMillis());
+            oooUserPath= userDir.toString();
+        }
+        return oooUserPath;
     }
 
 }

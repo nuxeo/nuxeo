@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.platform.convert.ooolauncher;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -9,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonManagerComponent;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -39,13 +42,16 @@ public class OOoLauncherComponent extends DefaultComponent implements
     protected int connUsageNb=0;
     protected static final int maxConnUsage=50;
 
+    public OOoLauncherDescriptor getDescriptor() {
+        return descriptor;
+    }
+
     protected OOoConfigHelper getConfigHelper() {
         if (configHelper == null) {
             configHelper = new OOoConfigHelper(descriptor);
         }
         return configHelper;
     }
-
 
     public boolean isOOoLaunched() {
         return started;
@@ -68,6 +74,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         stopOOo();
+        File oooDir = new File(OOoConfigHelper.getUserDir());
+        if (oooDir.exists()) {
+            FileUtils.deleteTree(oooDir);
+        }
     }
 
     public boolean waitTillReady() {
@@ -142,12 +152,11 @@ public class OOoLauncherComponent extends DefaultComponent implements
             try {
                 log.debug("Try to connect using SocketOpenOfficeConnection is a separated thread");
                 conn.connect();
-                log.debug("SocketOpenOfficeConnection succeedd");
-                connectedOk=true;
-            }
-            catch (Exception e) {
+                log.debug("SocketOpenOfficeConnection succeeded");
+                connectedOk = true;
+            } catch (Exception e) {
                 log.error("Error while connecting to OOo", e);
-                conn=null;
+                conn = null;
             }
         }
 
@@ -239,7 +248,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
         boolean stoped = stopOOo();
         if (!stoped) {
-            return false;
+            log.warn("Unable to kill propertly Ooo process, ... testing if it it still running ...");
         }
 
         for (int i = 0; i < timeOutS; i++) {
@@ -260,42 +269,56 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
     public boolean stopOOo() {
         if (!isOOoLaunched() || OOoProcess == null) {
-            log
-                    .debug("Can not stop OOo as it is not running (or not started by the launcher)");
+            log.debug("Can not stop OOo as it is not running (or not started by the launcher)");
             return false;
         }
 
-        if (sharedConnection!=null && sharedConnection.isConnected()) {
-            sharedConnection.disconnect();
-        }
-
-        SocketOpenOfficeConnection oooConn = new SocketOpenOfficeConnection(
-                descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
+        SocketOpenOfficeConnection oooConn = null;
 
         try {
-            oooConn.connect();
-            Object od = oooConn.getDesktop();
-            XComponentContext ctx = oooConn.getComponentContext();
-            Object desktopObj = ctx.getServiceManager()
-                    .createInstanceWithContext("com.sun.star.frame.Desktop",
-                            ctx);
-            XDesktop desktop = (XDesktop) UnoRuntime.queryInterface(
-                    XDesktop.class, desktopObj);
-            desktop.terminate();
-            oooConn.disconnect();
-        } catch (Exception e) {
-            log.error("Error while killing OOo", e);
-            return false;
-        } finally {
+            // in order to stop OOo, we need to connect to it !!!
+
+            if (sharedConnection!=null && sharedConnection.isConnected()) {
+                oooConn = sharedConnection;
+            } else {
+                oooConn = new SocketOpenOfficeConnection(
+                        descriptor.getOooListenerIP(), descriptor.getOooListenerPort());
+                try {
+                    oooConn.connect();
+                } catch (ConnectException e) {
+                    log.error("Unable to connect to Ooo in order to kill it !!!");
+                    return false;
+                }
+            }
+
+            try {
+                Object od = oooConn.getDesktop();
+                XComponentContext ctx = oooConn.getComponentContext();
+                Object desktopObj = ctx.getServiceManager()
+                        .createInstanceWithContext("com.sun.star.frame.Desktop",
+                                ctx);
+                XDesktop desktop = (XDesktop) UnoRuntime.queryInterface(
+                        XDesktop.class, desktopObj);
+                desktop.terminate();
+                oooConn.disconnect();
+            } catch (Exception e) {
+                log.error("Error while killing OOo", e);
+                return false;
+            }
+        }
+        finally {
             if (oooConn != null && oooConn.isConnected()) {
                 oooConn.disconnect();
             }
             oooConn = null;
+            if (sharedConnection!=null && sharedConnection.isConnected()) {
+                sharedConnection.disconnect();
+            }
+            sharedConnection = null;
+            OOoProcess.destroy();
+            started = false;
+            OOoProcess = null;
         }
-
-        OOoProcess.destroy();
-        started = false;
-        OOoProcess = null;
         return true;
     }
 
@@ -338,10 +361,10 @@ public class OOoLauncherComponent extends DefaultComponent implements
         } else {
             if (!isPortFree()) {
                 log.info("Launcher is not enabled, but port is listening, assuming manual startup");
-                canGetConnection =  true;
+                canGetConnection = true;
             } else {
                 log.warn("Launcher is not enabled, no OOo instance seems to be listening on the target port");
-                canGetConnection =  false;
+                canGetConnection = false;
             }
         }
         return canGetConnection;
@@ -379,7 +402,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             return null;
         }
 
-        if (sharedConnection!=null) {
+        if (sharedConnection != null) {
             return sharedConnection;
         }
 
@@ -389,7 +412,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
                 if (!isPortFree()) {
                     log.info("OOo port is not free : OOo has been started from outside ?");
                 } else {
-                    log.info("Try to starting OOo process");
+                    log.info("Try to start OOo process");
                     boolean ready = startOOoAndWaitTillReady();
                     if (!ready) {
                         log.error("Unable to start Ooo process");
@@ -401,9 +424,9 @@ public class OOoLauncherComponent extends DefaultComponent implements
         }
 
         sharedConnection = safeGetConnection();
-        if (sharedConnection==null) {
+        if (sharedConnection == null) {
             log.error("Unable to connect to OOo server");
-            failedToConnect=true;
+            failedToConnect = true;
             releaseLock();
         }
 
@@ -412,11 +435,11 @@ public class OOoLauncherComponent extends DefaultComponent implements
 
     public void releaseConnection(SocketOpenOfficeConnection connection) {
         releaseLock();
-        connUsageNb+=1;
-        if (connUsageNb>maxConnUsage) {
+        connUsageNb += 1;
+        if (connUsageNb > maxConnUsage) {
             sharedConnection.disconnect();
-            sharedConnection=null;
-            connUsageNb=0;
+            sharedConnection = null;
+            connUsageNb = 0;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -433,7 +456,7 @@ public class OOoLauncherComponent extends DefaultComponent implements
             try {
                 Thread.currentThread().setContextClassLoader(nuxeoCL);
                 log.debug("OOoLauncher Service initialization");
-                if (descriptor.getStartOOoAtServicerStartup()) {
+                if (descriptor.getStartOOoAtServiceStartup()) {
                     if (isConfigured()) {
                         log.info("Starting OOo server process");
                         startOOo();

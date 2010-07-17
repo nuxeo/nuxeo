@@ -1,6 +1,16 @@
+Export-Package: org.nuxeo.ecm.platform.heartbeat.api
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
 Bundle-Name: nuxeo-platform-heartbeat-api project
-Bundle-SymbolicName: org.nuxeo.ecm.platform.heartbeat.api;singleton:=true
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.directory;api=split
+Bundle-SymbolicName: org.nuxeo.ecm.platform.heartbeat.api;singleton:=true
 Nuxeo-Require: org.nuxeo.runtime

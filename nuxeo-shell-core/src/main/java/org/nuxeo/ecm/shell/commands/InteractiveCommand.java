@@ -22,6 +22,10 @@ package org.nuxeo.ecm.shell.commands;
 import java.io.File;
 import java.io.PrintStream;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ejb.EJBAccessException;
 
@@ -104,12 +108,23 @@ public class InteractiveCommand extends AbstractCommand {
         }
     }
 
+    public static String[] splitArgs(String input) {
+        Pattern p = Pattern.compile("\\s*\"(.*?)\"\\s*|(?<=^| )[^ ]*");
+        Matcher m = p.matcher(input);
+        List<String> result = new ArrayList<String>();
+        while (m.find()) {
+            //strip off quotes:
+            result.add(m.group(1) != null ? m.group(1) : m.group());
+        }
+        return result.toArray(new String[result.size()]);
+    }
+
     /**
      * @return the {@link CommandLineReturn} corresponding to the execution
      *         result of the command.
      */
     CommandLineReturn processInput(String input) {
-        String[] args = input.split("[ ]+");
+        String[] args = splitArgs(input);
         try {
             CommandLine cmdLine = service.parse(args, true);
             String cmdName = cmdLine.getCommand();
@@ -162,7 +177,7 @@ public class InteractiveCommand extends AbstractCommand {
 
     /**
      * For now only command auto-completion is available.
-     * 
+     *
      * @param sb
      */
     void autoComplete(StringBuilder sb) {

@@ -40,7 +40,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     public static final String SANITIZED_HTML = "<b>foo</b>";
 
-    // script tag is added here just to be sure sanitiozer is not run
+    // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
     @Inject
@@ -99,6 +99,5 @@ public class TestHtmlSanitizerServiceImpl {
         session.save();
 
     }
-
 
 }

@@ -59,6 +59,8 @@ public class EventJob implements Job {
             UserPrincipal principal = new UserPrincipal(username);
             EventContext ctx = new EventContextImpl(null, principal);
             ctx.setProperty("category", eventCategory);
+            ctx.setProperties(dataMap);
+
             Event event = new EventImpl(eventId, ctx);
             EventService evtService = null;
 

@@ -48,7 +48,7 @@ public class TestLockRecord extends TestCase {
 
         provider = new JPALockRecordProvider() {
             @Override
-            public PersistenceProvider getOrCreatePersistenceProvider() {
+            protected PersistenceProvider persistenceProvider() {
                 return testPersistenceProvider;
             }
         };

@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.platform.scheduler.core.service;
 
+import java.io.Serializable;
 import java.text.ParseException;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,6 +101,11 @@ public class SchedulerRegistryService extends DefaultComponent implements
     }
 
     public void registerSchedule(Schedule schedule) {
+        registerSchedule(schedule, null);
+    }
+
+    public void registerSchedule(Schedule schedule,
+            Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
         JobDetail job = new JobDetail(schedule.getId(), "nuxeo", EventJob.class);
         JobDataMap map = job.getJobDataMap();
@@ -106,6 +113,10 @@ public class SchedulerRegistryService extends DefaultComponent implements
         map.put("eventCategory", schedule.getEventCategory());
         map.put("username", schedule.getUsername());
         map.put("password", schedule.getPassword());
+
+        if (parameters != null) {
+            map.putAll(parameters);
+        }
 
         Trigger trigger;
         try {
@@ -123,32 +134,24 @@ public class SchedulerRegistryService extends DefaultComponent implements
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
-            log.error(String.format(
-                    "failed to schedule job with id '%s': %s",
+            log.error(String.format("failed to schedule job with id '%s': %s",
                     schedule.getId(), e.getMessage()), e);
         }
     }
 
-    public void unregisterSchedule(String scheduleId) {
+    public Boolean unregisterSchedule(String scheduleId) {
         log.info("Unregistering schedule with id" + scheduleId);
         try {
-            scheduler.deleteJob(scheduleId, "nuxeo");
+            return scheduler.deleteJob(scheduleId, "nuxeo");
         } catch (SchedulerException e) {
-            log.error(String.format(
-                    "failed to unschedule job with '%s': %s",
+            log.error(String.format("failed to unschedule job with '%s': %s",
                     scheduleId, e.getMessage()), e);
         }
+        return false;
     }
-    
-    public void unregisterSchedule(Schedule schedule) {
-        log.info("Unregistering " + schedule);
-        try {
-            scheduler.deleteJob(schedule.getId(), "nuxeo");
-        } catch (SchedulerException e) {
-            log.error(String.format(
-                    "failed to unschedule job with '%s': %s",
-                    schedule.getId(), e.getMessage()), e);
-        }
+
+    public Boolean unregisterSchedule(Schedule schedule) {
+        return unregisterSchedule(schedule.getId());
     }
 
 }

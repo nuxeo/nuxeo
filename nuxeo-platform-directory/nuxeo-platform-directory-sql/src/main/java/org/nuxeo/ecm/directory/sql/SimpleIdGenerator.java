@@ -49,8 +49,9 @@ public class SimpleIdGenerator implements IdGenerator {
         select.setFrom(table.getQuotedName(dialect));
         String sql = select.getStatement();
 
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 nextId = rs.getInt(1);
@@ -61,6 +62,14 @@ public class SimpleIdGenerator implements IdGenerator {
             rs.close();
         } catch (SQLException e) {
             throw new DirectoryException("nextIdGenerator retrieval failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
         }
     }
 

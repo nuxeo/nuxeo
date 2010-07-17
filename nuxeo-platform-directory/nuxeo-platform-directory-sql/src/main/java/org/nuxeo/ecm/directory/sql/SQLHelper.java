@@ -231,6 +231,7 @@ public class SQLHelper {
         log.debug("loading data file: " + dataFileName);
         CSVReader csvReader = null;
         String[] columnValues = null;
+        PreparedStatement ps = null;
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream(
                     dataFileName);
@@ -260,7 +261,7 @@ public class SQLHelper {
             String insertSql = insert.getStatement();
             log.debug("insert statement: " + insertSql);
 
-            PreparedStatement ps = connection.prepareStatement(insertSql);
+            ps = connection.prepareStatement(insertSql);
 
             while ((columnValues = csvReader.readNext()) != null) {
                 if (columnValues.length == 0
@@ -338,10 +339,14 @@ public class SQLHelper {
                 if (csvReader != null) {
                     csvReader.close();
                 }
+                if (ps != null) {
+                    ps.close();
+                }
             } catch (IOException e) {
                 throw new DirectoryException("Error closing data file: "
                         + dataFileName, e);
-
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
             }
         }
     }

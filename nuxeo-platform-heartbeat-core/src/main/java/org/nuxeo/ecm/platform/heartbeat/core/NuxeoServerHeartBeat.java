@@ -86,6 +86,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
     }
 
     public void start(long delay) throws IllegalStateException {
+        log.info("Starting heartbeat scheduler ...");
         if (timer != null) {
             throw new IllegalStateException("time already exist");
         }

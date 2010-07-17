@@ -450,12 +450,20 @@ public class LDAPReference extends AbstractReference {
             try {
                 targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                 if (targetLdapEntry == null) {
-                    throw new DirectoryException(targetId
-                            + " does not exist in " + targetDirectoryName);
+                    String msg = String.format(
+                            "Failed to perform inverse lookup on LDAPReference"
+                                    + " resolving field '%s' of '%s' to entries of '%s'"
+                                    + " using the static content of attribute '%s':"
+                                    + " entry '%s' cannot be found in '%s'",
+                            fieldName, sourceDirectory, targetDirectoryName,
+                            staticAttributeId, targetId, targetDirectoryName);
+                    throw new DirectoryException(msg);
                 }
                 targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
             } catch (NamingException e) {
-                throw new DirectoryException("error fetching " + targetId, e);
+                throw new DirectoryException("error fetching " + targetId
+                        + " from " + targetDirectoryName + ": "
+                        + e.getMessage(), e);
             } finally {
                 targetSession.close();
             }
@@ -520,8 +528,14 @@ public class LDAPReference extends AbstractReference {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                 }
                 if (targetLdapEntry == null) {
-                    throw new DirectoryException(targetId
-                            + " does not exist in " + targetDirectoryName);
+                    String msg = String.format(
+                            "Failed to perform inverse lookup on LDAPReference"
+                                    + " resolving field '%s' of '%s' to entries of '%s'"
+                                    + " using the dynamic content of attribute '%s':"
+                                    + " entry '%s' cannot be found in '%s'",
+                            fieldName, sourceDirectory, targetDirectoryName,
+                            dynamicAttributeId, targetId, targetDirectoryName);
+                    throw new DirectoryException(msg);
                 }
                 targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
                 Attributes targetAttributes = targetLdapEntry.getAttributes();
@@ -759,9 +773,12 @@ public class LDAPReference extends AbstractReference {
                     LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
                     String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
                     String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
-                    int scope = "subtree".equalsIgnoreCase(ldapUrl.getScope()) ? SearchControls.SUBTREE_SCOPE
-                            : SearchControls.ONELEVEL_SCOPE;
-
+                    int scope = SearchControls.ONELEVEL_SCOPE;
+                    String scopePart = ldapUrl.getScope();
+                    if (scopePart != null
+                            && scopePart.toLowerCase().startsWith("sub")) {
+                        scope = SearchControls.SUBTREE_SCOPE;
+                    }
                     if (!linkDn.endsWith(directoryDn)
                             && !directoryDn.endsWith(linkDn)) {
                         // optim #1: if the dns do not match, abort

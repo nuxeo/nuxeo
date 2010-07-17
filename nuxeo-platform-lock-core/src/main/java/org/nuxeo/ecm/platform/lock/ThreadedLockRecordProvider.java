@@ -38,11 +38,15 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
 
     public void activate(LockComponent component) {
         delegate = new JPALockRecordProvider();
+        delegate.activate(component);
         service = Executors.newSingleThreadExecutor();
     }
 
     public void disactivate() {
+        delegate.disactivate();
         service.shutdown();
+        delegate = null;
+        service = null;
     }
 
     public LockRecord createRecord(final URI self, final URI resource,

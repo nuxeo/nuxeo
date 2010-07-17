@@ -78,12 +78,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
     private QueryModel statelessModelWithLongPattern;
 
     private QueryModelService service;
-    
+
     protected QueryModel statelessRedefinedModel;
 
     protected QueryModel statefullRedefinedModel;
 
-    
+
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.search.api.tests";
 
     @Override
@@ -168,7 +168,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 "SELECT * FROM Document WHERE dc:contributors = 'Administrator' AND ecm:path STARTSWITH 'somelocation'",
                 descriptor.getQuery(new Object[] { "Administrator",
                         "somelocation" }));
-   
+
         try {
             descriptor.getQuery(documentModel);
             fail("Should have raised an exception since stateless models need a parameters array");
@@ -409,45 +409,33 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "some text");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+some +text'",
+                "SELECT * FROM Document WHERE ecm:fulltext = '+some +text'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "can't");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+can\\'t'",
+                "SELECT * FROM Document WHERE ecm:fulltext = '+can\\'t'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         // Tests the minimal lucene escaper and its registration
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "can\"t");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+can\\\"t'",
+                "SELECT * FROM Document WHERE ecm:fulltext = '+can\\\"t'",
                 descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", "NXP-1576");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE '+NXP\\-1576'",
+                "SELECT * FROM Document WHERE ecm:fulltext = '+NXP\\-1576'",
                 descriptor.getQuery(documentModel));
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
-        documentModel.setProperty(QM_SCHEMA, "fulltext_none", "some text");
-        assertEquals("SELECT * FROM Document WHERE ecm:fulltext "
-                + "NOT LIKE 'some text'", descriptor.getQuery(documentModel));
-        documentModel.setProperty(QM_SCHEMA, "fulltext_none", null);
-
-        documentModel.setProperty(QM_SCHEMA, "fulltext_one_of", "some text");
+        documentModel.setProperty(QM_SCHEMA, "fulltext_my_index", "bla bla bla");
         assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext LIKE 'some text'",
-                descriptor.getQuery(documentModel));
-
-        // Let's finish with a two statements query
-        documentModel.setProperty(QM_SCHEMA, "fulltext_none", "book");
-        assertEquals(
-                "SELECT * FROM Document WHERE ecm:fulltext NOT LIKE 'book' "
-                        + "AND ecm:fulltext LIKE 'some text'",
+                "SELECT * FROM Document WHERE ecm:fulltext_my_index = '+bla +bla +bla'",
                 descriptor.getQuery(documentModel));
     }
 
@@ -571,23 +559,23 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 "SELECT * FROM Document WHERE ecm:path STARTSWITH '/to/toto' OR ecm:path STARTSWITH '/tu/tutu'",
                 descriptor.getQuery(documentModelWithMultiStartswith));
     }
-    
+
     public void testStatelessRedefinedQueryModel() throws ClientException {
-       
+
         QueryModelDescriptor descriptor = statelessRedefinedModel.getDescriptor();
-        
+
         assertTrue(descriptor.isStateless());
         assertFalse(descriptor.isStateful());
-        
+
         String query = "SELECT * FROM Document ORDER BY dc:modified";
-        
-        SortInfo sortInfo = descriptor.getDefaultSortInfo(documentModel);    
+
+        SortInfo sortInfo = descriptor.getDefaultSortInfo(documentModel);
         assertEquals(query, descriptor.getQuery(new Object[0], sortInfo));
-    
+
     }
-    
+
     public void testStatefullRedefinedQueryModel() throws ClientException {
-        
+
         QueryModelDescriptor descriptor = statefullRedefinedModel.getDescriptor();
         assertFalse(statefullRedefinedModel.getDescriptor().isStateless());
         assertTrue(statefullRedefinedModel.getDescriptor().isStateful());
@@ -601,8 +589,8 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 "SELECT * FROM Document WHERE (dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre') "
                 + "AND someint = 4 AND textparameter ILIKE 'foo'",
                 descriptor.getQuery(documentModel2));
-          
+
     }
-    
-    
+
+
 }

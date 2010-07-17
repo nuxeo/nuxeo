@@ -18,11 +18,8 @@ public class OOoLauncherDescriptor {
     @XNode("oooInstallationPath")
     private String oooInstallationPath;
 
-    @XNode("oooOptions")
-    private String oooOptions;
-
-    @XNode("startOOoAtServicerStartup")
-    private boolean startOOoAtServicerStartup=false;
+    @XNode("startOOoAtServiceStartup")
+    private boolean startOOoAtServiceStartup=false;
 
     @XNode("enabled")
     private boolean enabled=true;
@@ -44,16 +41,12 @@ public class OOoLauncherDescriptor {
         return oooInstallationPath;
     }
 
-    public String getOooOptions() {
-        return oooOptions;
-    }
-
     public int getOooStartupTimeOut() {
         return oooStartupTimeOut;
     }
 
-    public boolean getStartOOoAtServicerStartup() {
-        return startOOoAtServicerStartup;
+    public boolean getStartOOoAtServiceStartup() {
+        return startOOoAtServiceStartup;
     }
 
 

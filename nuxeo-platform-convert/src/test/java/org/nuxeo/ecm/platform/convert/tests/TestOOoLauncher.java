@@ -2,7 +2,10 @@ package org.nuxeo.ecm.platform.convert.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.convert.ooolauncher.OOoConfigHelper;
 import org.nuxeo.ecm.platform.convert.ooolauncher.OOoConnectionManager;
+import org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherComponent;
+import org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherDescriptor;
 import org.nuxeo.ecm.platform.convert.ooolauncher.OOoLauncherService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -102,4 +105,22 @@ public class TestOOoLauncher extends NXRuntimeTestCase {
     }
 
 
+    public void testContribs() throws Exception {
+
+        deployContrib("org.nuxeo.ecm.platform.convert.test", "ooo-launcher-test-contrib.xml");
+        OOoLauncherService ols = Framework.getLocalService(OOoLauncherService.class);
+        assertNotNull(ols);
+
+        OOoLauncherComponent component = (OOoLauncherComponent) ols;
+        assertNotNull(component);
+
+        OOoLauncherDescriptor contrib = component.getDescriptor();
+
+        assertEquals("192.168.1.5", contrib.getOooListenerIP());
+        assertEquals(8200, contrib.getOooListenerPort());
+        assertEquals(61, contrib.getOooStartupTimeOut());
+        assertEquals("/opt/openoffice/program", contrib.getOooInstallationPath());
+        assertTrue(contrib.getStartOOoAtServiceStartup());
+
+    }
 }

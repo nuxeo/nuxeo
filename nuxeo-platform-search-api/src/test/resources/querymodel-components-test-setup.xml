@@ -93,16 +93,12 @@
           <field schema="querymodel_test" name="date_max" />
         </predicate>
 
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT ALL">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="querymodel_test" name="fulltext_all"/>
         </predicate>
 
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT NONE">
-          <field schema="querymodel_test" name="fulltext_none"/>
-        </predicate>
-
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT ONE OF">
-          <field schema="querymodel_test" name="fulltext_one_of"/>
+        <predicate parameter="ecm:fulltext_my_index" operator="FULLTEXT">
+          <field schema="querymodel_test" name="fulltext_my_index"/>
         </predicate>
 
       </whereClause>

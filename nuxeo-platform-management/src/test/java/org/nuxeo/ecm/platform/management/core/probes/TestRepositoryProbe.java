@@ -17,16 +17,23 @@
 package org.nuxeo.ecm.platform.management.core.probes;
 
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.management.probes.RepositoryProbe;
+import org.nuxeo.ecm.platform.management.test.probes.RepositoryProbe;
+import org.nuxeo.ecm.platform.management.test.probes.RepositoryTestProbe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class TestRepositoryProbe extends RepositoryOSGITestCase {
 
-   public void testRun() throws Exception {
+   public void testRunRepositoryProbe() throws Exception {
        openRepositoryWithSystemPrivileges();
        RepositoryProbe probe = new RepositoryProbe();
+       probe.runProbe(getCoreSession());
+   }
+   
+   public void testRunRepositoryTestProbe() throws Exception {
+       openRepositoryWithSystemPrivileges();
+       RepositoryTestProbe probe = new RepositoryTestProbe();
        probe.runProbe(getCoreSession());
    }
 
