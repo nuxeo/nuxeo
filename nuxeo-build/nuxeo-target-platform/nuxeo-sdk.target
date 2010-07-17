@@ -4,5 +4,6 @@
 <target name="Nuxeo SDK Target">
 <locations>
 <location path="${project_loc:nuxeo-target-platform}/target/plugins" type="Directory"/>
+<location path="${eclipse_home}" type="Profile"/>
 </locations>
 </target>

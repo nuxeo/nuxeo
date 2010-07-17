@@ -7,21 +7,17 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>nuxeo-target-platform</artifactId>
-  <version>5.3.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Nuxeo ECM Projects</name>
+  <name>Nuxeo ECM SDK Target Platform</name>
   <description>Nuxeo ECM Target Platform for PDE build</description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-distribution-tools</artifactId>
-    </dependency>
     <!-- javax -->
     <dependency>
       <groupId>javax.ejb</groupId>
@@ -32,10 +28,10 @@
       <artifactId>jsr250-api</artifactId>
     </dependency>
     <!-- TODO: remove. It's the same as the two preceding ones -->
-    <dependency>
+    <!--dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>javax.el</groupId>
       <artifactId>el-api</artifactId>
@@ -60,7 +56,7 @@
       <groupId>javax.jws</groupId>
       <artifactId>jsr181</artifactId>
     </dependency>
-    <dependency>
+    <dependency> 
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
@@ -172,22 +168,11 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-scratchpad</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml</artifactId>
+      <classifier>shaded</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache</groupId>
       <artifactId>xmlbeans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>ooxml-schemas</artifactId>
     </dependency>
     <dependency>
       <!-- also overrides jbpm's -->
@@ -282,10 +267,10 @@
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
-    </dependency>
+    </dependency-->
     <!-- Jetty package use 4.2.3.GA -->
     <dependency>
       <groupId>javassist</groupId>
@@ -333,10 +318,6 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jbosssx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
       <artifactId>jgroups</artifactId>
     </dependency>
     <dependency>
@@ -348,9 +329,10 @@
       <artifactId>jboss-aspect-jdk50-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.client</groupId>
-      <artifactId>jbossall-client</artifactId>
+      <groupId>jboss</groupId>
+      <artifactId>jbosssx</artifactId>
     </dependency>
+
 
     <!-- Jetty mortbay -->
     <dependency>
@@ -733,10 +715,23 @@
       <artifactId>geronimo-jta_1.1_spec</artifactId>
     </dependency>
 
+
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>catalina</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>coyote</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
     </dependency>
+
+<!-- TODO provide a symbolic name and do not export embedded thirds
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
@@ -771,6 +766,7 @@
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
+ -->
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
@@ -852,6 +848,7 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
+      <classifier>osgi</classifier>
     </dependency>
     <dependency>
       <groupId>com.hp.hpl.jena</groupId>
@@ -978,19 +975,7 @@
       <groupId>com.gwtext</groupId>
       <artifactId>gwtext</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.openqa.selenium.webdriver</groupId>
-      <artifactId>webdriver-htmlunit</artifactId>
-    </dependency>
 
-    <dependency>
-      <groupId>org.openqa.selenium.webdriver</groupId>
-      <artifactId>webdriver-ie</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openqa.selenium.webdriver</groupId>
-      <artifactId>webdriver-firefox</artifactId>
-    </dependency>
     <dependency>
       <groupId>net.oauth.core</groupId>
       <artifactId>oauth</artifactId>
@@ -1146,10 +1131,40 @@
     </dependency>
 
     <!-- runtime test dependencies -->
+
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-htmlunit</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-ie</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-firefox</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-chrome</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-support</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.webdriver</groupId>
+      <artifactId>webdriver-firefox</artifactId>
     </dependency>
 
     <dependency>
@@ -1162,34 +1177,6 @@
       <artifactId>htmlunit-core-js</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-ie</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
-      <artifactId>webdriver-firefox</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
-      <artifactId>webdriver-chrome</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
-      <artifactId>webdriver-support</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
-      <artifactId>webdriver-common</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>net.sourceforge.cssparser</groupId>
@@ -1236,7 +1223,6 @@
           <downloadJavadocs>false</downloadJavadocs>
           <buildOutputDirectory>${basedir}/bin</buildOutputDirectory>
 	</configuration>
-	<version>2.9-NXP1</version>
         <executions>
           <execution>
 	    <id>osgfy-nuxeo-thirds</id>

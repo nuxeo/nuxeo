@@ -1,0 +1,1 @@
+Export-Package: org.jboss.aspects.remoting;aspects=split;mandatory:=aspects,*

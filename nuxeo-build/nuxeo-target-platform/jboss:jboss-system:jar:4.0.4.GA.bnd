@@ -1,0 +1,3 @@
+Bundle-SymbolicName: org.jboss.system;singleton=true
+Require-Bundle: org.jboss.core;visibility:=reexport
+Export-Package: org.jboss.deployment,system=split;mandatory:=system,*

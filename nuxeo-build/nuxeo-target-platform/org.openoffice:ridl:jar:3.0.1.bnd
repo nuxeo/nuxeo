@@ -1,0 +1,1 @@
+Export-Package: com.sun.star.*;ridl=split,mandatory:=ridl
