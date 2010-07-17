@@ -6,7 +6,8 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-NXP-5357-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
@@ -88,8 +89,7 @@
     <!-- for web driver support -->
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-htmlunit</artifactId>
     </dependency>
 
@@ -104,32 +104,27 @@
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-ie</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-firefox</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-chrome</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-support</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.webdriver
-      </groupId>
+      <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-common</artifactId>
     </dependency>
 

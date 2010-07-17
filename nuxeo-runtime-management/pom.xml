@@ -4,7 +4,8 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-NXP-5357-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -26,13 +27,9 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>commons-lang</groupId>
@@ -45,6 +42,27 @@
     <dependency>
     	<groupId>org.nuxeo.runtime</groupId>
     	<artifactId>nuxeo-runtime-osgi</artifactId>
+	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>jmock</groupId>
+    	<artifactId>jmock</artifactId>
+	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+	<scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
     	<groupId>jmock</groupId>

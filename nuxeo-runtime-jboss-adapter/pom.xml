@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-NXP-5357-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
@@ -61,8 +61,9 @@
         <version>2.0-beta-1</version> <!-- required for enabling mevenide -->
         <extensions>true</extensions>
         <configuration>
+	  <deploymentDescriptorFile>META-INF/MANIFEST.MF</deploymentDescriptorFile>
           <archive>
-            <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
