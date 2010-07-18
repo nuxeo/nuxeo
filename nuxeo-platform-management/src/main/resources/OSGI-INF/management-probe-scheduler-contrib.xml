@@ -3,7 +3,7 @@
   name="org.nuxeo.ecm.platform.management.probes.ProbeSchedulerContrib">
 
   <extension 
-  	target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+  	target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistry"
   	point="schedule">
   	<schedule id="probeSchedule">
           <username>ProbeScheduler</username>
@@ -13,15 +13,12 @@
           <cronExpression>0 0/5 * * * ?</cronExpression>
      </schedule>
   </extension>
-
+  
   <extension
-    target="org.nuxeo.ecm.platform.management.probes.ProbeComponent"
+    target="org.nuxeo.ecm.platform.management.probes.ProbeScheduler"
     point="probes">
     <usecase name="repository"
-      class="org.nuxeo.ecm.platform.management.test.probes.RepositoryProbe"
-      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-    <usecase name="repositoryTest"
-      class="org.nuxeo.ecm.platform.management.test.probes.RepositoryTestProbe"
+      class="org.nuxeo.ecm.platform.management.probes.RepositoryProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </extension>
   
