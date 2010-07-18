@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -262,15 +261,6 @@ public class UserManagerBean implements UserManager {
     public String getAnonymousUserId() throws ClientException {
         try {
             return getUserManager().getAnonymousUserId();
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    public void setConfiguration(UserManagerDescriptor descriptor)
-            throws ClientException {
-        try {
-            getUserManager().setConfiguration(descriptor);
         } catch (Throwable e) {
             throw ClientException.wrap(e);
         }
