@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.3.2-NXP-5053-SNAPSHOT</version>
+  <version>5.3.2-APG-240-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -119,6 +119,11 @@
         <scope>provided</scope>
       </dependency>
       <!-- javax -->
+      <dependency>
+        <groupId>javax.xml.stream</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0</version>
+      </dependency>
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
@@ -1212,7 +1217,12 @@
         <version>1.1.1</version>
         <scope>provided</scope>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+        <version>2.0.0</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
@@ -1893,6 +1903,12 @@
         <scope>compile</scope>
       </dependency>
 
+      <dependency>
+        <groupId>com.smartgwt</groupId>
+        <artifactId>smartgwt</artifactId>
+        <version>1.0-20081121</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -1916,8 +1932,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>
@@ -2379,45 +2395,20 @@
       <build>
 	<plugins>
 	  <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-		<id>import-sources</id>
-		<phase>validate</phase>
-		<goals>
-		  <goal>run</goal>
-		</goals>
-		<configuration>
-		  <tasks>
-		    <mkdir dir="${basedir}/src/main/resources"/>
-		    <copy todir="${basedir}" overwrite="true">
-		      <fileset dir="${basedir}/src/main/resources">
-			<include name="OSGI-INF/**"/>
-			<include name="META-INF/**"/>
-			<exclude name="META-INF/MANIFEST.MF"/>
-		      </fileset>
-		    </copy>
-		    <mkdir dir="${basedir}/src/osgi/resources"/>
-		    <copy todir="${basedir}" overwrite="true">
-		      <fileset dir="${basedir}/src/osgi/resources">
-			<include name="OSGI-INF/**"/>
-			<include name="META-INF/**"/>
-		      </fileset>
-		    </copy>
-		  </tasks>
-		</configuration>
-              </execution>
-            </executions>
-	  </plugin>
-	  <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-eclipse-plugin</artifactId>
 	    <version>2.9-NXP-SNAPSHOT</version>
             <configuration>
+              <additionalProjectnatures>
+                <projectnature>org.nuxeo.ide.builders.BundleNature</projectnature>
+              </additionalProjectnatures>
+              <additionalBuildcommands>
+                <buildcommand>org.nuxeo.ide.builders.BundleBuilder</buildcommand>
+              </additionalBuildcommands>
               <downloadSources>false</downloadSources>
               <pde>true</pde>
               <osgideps>true</osgideps>
-              <notests>false</notests>
+              <notests>true</notests>
               <osgify>false</osgify>
             </configuration>
 	  </plugin>
