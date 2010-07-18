@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-parent</artifactId>
-  <version>5.3.2-NXP-5357-SNAPSHOT</version>
+  <version>5.3.2-APG-240-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>
@@ -36,9 +36,9 @@
   </profiles>
 
   <properties>
-    <nuxeo.webengine.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.webengine.version>5.3.2-APG-240-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-APG-240-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.theme.version>5.3.2-APG-240-SNAPSHOT</nuxeo.theme.version>
   </properties>
 
   <dependencies>
@@ -189,126 +189,5 @@
     </plugins>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <aggregate>true</aggregate>
-          <maxmemory>512m</maxmemory>
-          <!--
-            stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
-            </stylesheetfile
-          -->
-          <windowtitle>
-            Nuxeo WebEngine ${project.version} API Documentation
-          </windowtitle>
-          <doctitle>
-            Nuxeo WebEngine ${project.version} API Documentation
-          </doctitle>
-          <header>Nuxeo WebEngine ${project.version}</header>
-          <links>
-            <link>http://doc.nuxeo.org/5.1/apidocs/</link>
-            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
-            <link>http://java.sun.com/javaee/5/docs/api/</link>
-            <link>
-              http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
-            </link>
-            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/io/apidocs/</link>
-            <link>http://junit.sourceforge.net/javadoc/</link>
-            <link>http://logging.apache.org/log4j/docs/api/</link>
-            <link>http://jackrabbit.apache.org/api-1/</link>
-            <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
-            <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
-            <link>http://www.restlet.org/documentation/1.0/api/</link>
-            <link>http://www.hibernate.org/hib_docs/v3/api/</link>
-            <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
-            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
-            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
-            <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
-          </links>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <name>Nuxeo virtual release repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <name>Nuxeo virtual snapshot repository</name>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <scm>
-    <connection>
-      scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine
-    </connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine
-    </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine</url>
-  </scm>
-
-  <developers>
-    <developer>
-      <id>bstefanescu</id>
-      <name>Bogdan Stefanescu</name>
-      <email>contact@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
-      <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
-      <url>http://blogs.nuxeo.com/section/blogs/bogdan_stefanescu</url>
-      <roles>
-        <role>Lead Architect</role>
-        <role>Project Manager</role>
-      </roles>
-    </developer>
-  </developers>
 
 </project>

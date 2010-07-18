@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-webengine-jersey-adapter</artifactId>
