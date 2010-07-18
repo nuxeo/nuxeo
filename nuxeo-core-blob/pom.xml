@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-NXP-5357-SNAPSHOT</version>
+    <version>1.6.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-blob</artifactId>
