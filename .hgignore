@@ -25,4 +25,3 @@ derby.log
 nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
 *.bak
-src/osgi

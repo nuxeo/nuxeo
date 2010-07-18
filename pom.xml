@@ -7,7 +7,8 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
+    <relativePath>../nuxeo-services/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -17,9 +18,10 @@
   <description>Nuxeo Features: Parent.</description>
 
   <properties>
-    <nuxeo.features.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.jsf.version>5.3.2-NXP-5357-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.theme.version>5.3.2-APG-240-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.features.version>5.3.2-APG-240-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.webengine.version>5.3.2-APG-240-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.jsf.version>5.3.2-APG-240-SNAPSHOT</nuxeo.jsf.version>
   </properties>
 
   <modules>
@@ -29,7 +31,6 @@
     <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
-    <module>nuxeo-webengine-features</module>
   </modules>
 
   <profiles>
@@ -698,7 +699,6 @@
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-userworkspace-api</artifactId>
@@ -947,11 +947,6 @@
         <artifactId>nuxeo-platform-management</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
 
       <!-- scope test -->
       <dependency>
@@ -1001,6 +996,63 @@
         <artifactId>nuxeo-platform-test</artifactId>
         <version>${nuxeo.services.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-gadgets</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-server</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-features</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <!--
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-platform-login-oauth</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-container</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-container-space-config</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-spaces-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-spaces-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-spaces-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-webengine-gadgets</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

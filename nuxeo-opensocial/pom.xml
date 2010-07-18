@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.3.2-NXP-5357-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -31,7 +31,7 @@
     <module>nuxeo-opensocial-container-space-config</module>
     <module>nuxeo-opensocial-dashboard</module>
     <module>nuxeo-opensocial-mydocs-gadget</module>
-    </modules>
+  </modules>
 
   <developers>
     <developer>
@@ -69,103 +69,6 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-
-<!--
-  <repositories>
-    <repository>
-      <id>openqa-releases</id>
-      <name>OpenQA Releases</name>
-      <url>http://nexus.openqa.org/content/repositories/releases</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>openqa-releases</id>
-      <url>http://archiva.openqa.org/repository/releases</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>gwt-maven-plugins</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-    <repository>
-      <id>gwt-maven</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
-    </repository>
-    <repository>
-      <id>gwt-google-apis</id>
-      <url>http://repo1.maven.org/maven2/</url>
-    </repository>
-  </repositories>
--->
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-server</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-features</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <!--
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-platform-login-oauth</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container-space-config</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-spaces-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-spaces-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-spaces-web</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-webengine-gadgets</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <profiles>
     <profile>
