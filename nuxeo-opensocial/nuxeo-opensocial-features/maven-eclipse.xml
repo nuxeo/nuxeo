@@ -2,7 +2,7 @@
   <target name="init"/>
   <target name="copy-resources" depends="init">
     <copy todir="target/classes/nxfeatures" filtering="false">
-      <fileset dir="src/main/js"/>
+      <fileset dir="src/main/js" includes="" excludes="**/*.java"/>
     </copy>
   </target>
 </project>
