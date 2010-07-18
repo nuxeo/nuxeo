@@ -34,13 +34,13 @@ application included, using the following maven commands::
 
 The generated zip should be available in::
 
-  nuxeo-dam-distribution/nuxeo-dam-distribution-tomcat/target/nuxeo-dam-distribution-tomcat-X.X-SNAPSHOT.zip
+  nuxeo-dam-distribution/target/nuxeo-dam-distribution-X.X-SNAPSHOT-tomcat.zip
 
-After unzipping, make the Tomcat start scripts runnable and launch Tomcat::
+After unzipping, make the nuxeoctl script runnable and launch Nuxeo DAM:
 
-  $ cd nuxeo-dam-tomcat
-  $ chmod a+x bin/*.sh
-  $ ./bin/catalina.sh start
+  $ cd nuxeo-dam-X.X-SNAPSHOT-tomcat
+  $ chmod a+x bin/nuxeoctl
+  $ ./bin/nuxeoctl start
 
 
 Technical Overview
@@ -53,8 +53,8 @@ architecture of the nuxeo-dam application.
 Running the functionnal test suite
 ----------------------------------
 
-A functional test suite based on selenium is available in nuxeo-dam-ear. Please
-follow the instructions in nuxeo-dam-ear/ftest/selenium/README.txt .
+A functional test suite based on selenium is available in nuxeo-dam-distribution. Please
+follow the instructions in nuxeo-dam-distribution/ftest/selenium/README.txt .
 
 
 Login page Copyrights
