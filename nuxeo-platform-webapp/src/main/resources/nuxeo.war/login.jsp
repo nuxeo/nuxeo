@@ -309,6 +309,9 @@ nxthemes css is not used in login.jsp */
                     <option value="pt" <%="pt".equals(selectedLanguage)?"selected":""%>>
                       Portugu&ecirc;s
                     </option>
+                    <option value="pl" <%="pl".equals(selectedLanguage)?"selected":""%>>
+                      Polski
+                    </option>
                     <option value="pt_BR" <%="pt_BR".equals(selectedLanguage)?"selected":""%>>
                       Portugu&ecirc;s (Brasil)
                     </option>
