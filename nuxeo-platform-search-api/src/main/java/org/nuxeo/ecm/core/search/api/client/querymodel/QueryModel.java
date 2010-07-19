@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -52,7 +53,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author Olivier Grisel
  * @author Georges Racinet
  * @author Florent Guillaume
+ * @deprecated use {@link ContentView} instances in conjunction with
+ *             {@link PageProvider} instead.
  */
+@Deprecated
 public class QueryModel implements Serializable {
 
     private static final long serialVersionUID = 762348097532723566L;
@@ -80,7 +84,8 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
-            max = descriptor.getMax() == null ? 0 : descriptor.getMax().intValue();
+            max = descriptor.getMax() == null ? 0
+                    : descriptor.getMax().intValue();
         }
 
         this.documentModel = documentModel;

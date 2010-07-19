@@ -24,11 +24,17 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * @deprecated use {@link ContentView} instances in conjunction with
+ *             {@link PageProvider} instead.
+ */
+@Deprecated
 public class QueryModelService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService";
@@ -59,51 +65,50 @@ public class QueryModelService extends DefaultComponent {
         if (descriptor.isStateful()) {
             descriptor.initEscaper(contributor.getContext());
         }
-        
-        QueryModelDescriptor existing = descriptors.get(descriptor.getName());
-        if (existing!=null) {
 
-            if(descriptor.getMax()==null) {
+        QueryModelDescriptor existing = descriptors.get(descriptor.getName());
+        if (existing != null) {
+
+            if (descriptor.getMax() == null) {
                 descriptor.setMax(existing.getMax());
             }
 
-            if(descriptor.getDefaultSortAscending()==null) {
+            if (descriptor.getDefaultSortAscending() == null) {
                 descriptor.setDefaultSortAscending(existing.getDefaultSortAscending());
             }
 
-            if(descriptor.getSortable()==null) {
+            if (descriptor.getSortable() == null) {
                 descriptor.setSortable(existing.getSortable());
             }
 
-            if(descriptor.getBatchLength()==null) {
+            if (descriptor.getBatchLength() == null) {
                 descriptor.setBatchLength(existing.getBatchLength());
             }
 
-            if(descriptor.getBatchSize()==null) {
+            if (descriptor.getBatchSize() == null) {
                 descriptor.setBatchSize(existing.getBatchSize());
             }
 
-            if(descriptor.getDefaultSortColumn()==null) {
+            if (descriptor.getDefaultSortColumn() == null) {
                 descriptor.setDefaultSortColumn(existing.getDefaultSortColumn());
             }
 
-            if(descriptor.getPattern()==null) {
+            if (descriptor.getPattern() == null) {
                 descriptor.setPattern(existing.getPattern());
             }
 
-            if(descriptor.getWhereClause()==null) {
+            if (descriptor.getWhereClause() == null) {
                 descriptor.setWhereClause(existing.getWhereClause());
             }
 
-            if(descriptor.getSortAscendingField()==null) {
+            if (descriptor.getSortAscendingField() == null) {
                 descriptor.setSortAscendingField(existing.getSortAscendingField());
             }
 
         }
 
         descriptors.put(descriptor.getName(), descriptor);
-        log.debug("registered QueryModelDescriptor: "
-                + descriptor.getName());
+        log.debug("registered QueryModelDescriptor: " + descriptor.getName());
     }
 
     @Override
@@ -112,8 +117,7 @@ public class QueryModelService extends DefaultComponent {
 
         QueryModelDescriptor descriptor = (QueryModelDescriptor) contribution;
         descriptors.remove(descriptor.getName());
-        log.debug("unregistered QueryModelDescriptor: "
-                + descriptor.getName());
+        log.debug("unregistered QueryModelDescriptor: " + descriptor.getName());
     }
 
 }

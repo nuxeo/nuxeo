@@ -62,8 +62,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
+ * @deprecated use {@link CoreQueryDocumentPageProvider} instead
  */
+@Deprecated
 public class SearchPageProvider implements PagedDocumentsProvider {
 
     // to be used by the blob filter to transform maps into blob instances
@@ -121,7 +122,8 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      * with sortInfo not null will succeed.
      *
      * @param set the resultset
-     * @param sortable if sortable, a subsequent call that provides sorting info
+     * @param sortable if sortable, a subsequent call that provides sorting
+     *            info
      * @param sortInfo the sorting info or null if the resultset is not sorted
      * @param query the query that produced this result. will succeed.
      */
@@ -271,8 +273,8 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     }
 
     /**
-     * Actual refresh will be next time the page is really needed. Better suited
-     * for Seam/JSF (avoid useless multiple requests)
+     * Actual refresh will be next time the page is really needed. Better
+     * suited for Seam/JSF (avoid useless multiple requests)
      */
     public void refresh() {
         pendingRefresh = true;
@@ -481,7 +483,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
      *
      * @param value raw value as returned by the search service backend
      * @param field Field instance of the matching core Schema
-     *
      * @return the filter Object with Blob instances instead of Map instances
      *         when required
      */
