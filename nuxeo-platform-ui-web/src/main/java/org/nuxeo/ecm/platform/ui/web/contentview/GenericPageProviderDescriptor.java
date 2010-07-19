@@ -54,7 +54,7 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
     @XNode("sortable")
     boolean sortable = true;
 
-    @XNodeList(value = "sortInfo", type = ArrayList.class, componentType = SortInfoDescriptor.class)
+    @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
     List<SortInfoDescriptor> sortInfos;
 
     @XNode("@docType")

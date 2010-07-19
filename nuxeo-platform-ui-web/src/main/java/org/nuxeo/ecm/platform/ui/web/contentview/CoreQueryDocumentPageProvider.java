@@ -122,7 +122,7 @@ public class CoreQueryDocumentPageProvider extends
                             getName()));
                 }
                 newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
-                        descriptor.getWhereClause(), sortArray);
+                        descriptor.getWhereClause(), getParameters(), sortArray);
             }
 
             if (newQuery != null && !newQuery.equals(query)) {
@@ -159,6 +159,10 @@ public class CoreQueryDocumentPageProvider extends
     public PageSelections<DocumentModel> getCurrentSelectPage() {
         checkQueryCache();
         return super.getCurrentSelectPage();
+    }
+
+    public String getCurrentQuery() {
+        return query;
     }
 
     @Override

@@ -72,9 +72,12 @@ public class NXQLQueryBuilder {
         if (whereClause != null) {
             queryBuilder.append(getQueryElement(model, whereClause, params));
         }
-        queryBuilder.append(getSortClause(sortInfos));
-        String res = queryBuilder.toString();
-        return res;
+        String sortClause = getSortClause(sortInfos);
+        if (sortClause != null && sortClause.length() > 0) {
+            queryBuilder.append(" ");
+            queryBuilder.append(sortClause);
+        }
+        return queryBuilder.toString().trim();
     }
 
     public static String getQueryElement(DocumentModel model,

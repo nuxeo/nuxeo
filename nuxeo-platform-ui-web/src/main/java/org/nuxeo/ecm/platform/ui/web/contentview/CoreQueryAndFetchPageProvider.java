@@ -141,6 +141,10 @@ public class CoreQueryAndFetchPageProvider extends
 
     }
 
+    public String getCurrentQuery() {
+        return query;
+    }
+
     @Override
     public void refresh() {
         super.refresh();

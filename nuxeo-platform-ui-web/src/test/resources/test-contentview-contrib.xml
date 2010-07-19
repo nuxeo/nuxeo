@@ -30,19 +30,17 @@
     </contentView>
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
-      <coreQueryPageProvider docType="AdvancedSearch">
+      <coreQueryPageProvider docType="File">
         <property name="coreSession">#{documentManager}</property>
+        <property name="searchDocument">#{searchDocument}</property>
         <property name="checkQueryCache">true</property>
         <whereClause>
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
-            AND ecm:currentLifeCycleState != 'deleted'
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="advanced_search" name="fulltext_all" />
-          </predicate>
           <predicate parameter="dc:title" operator="FULLTEXT">
-            <field schema="advanced_search" name="title" />
+            <field schema="dublincore" name="title" />
           </predicate>
         </whereClause>
         <sort column="dc:title" ascending="true" />
