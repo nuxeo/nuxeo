@@ -17,6 +17,8 @@ package org.nuxeo.theme.html.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.theme.html.Utils;
+
 public class Panel {
 
     public static String render(Map<String, String> params) {
@@ -70,7 +72,7 @@ public class Panel {
 
         // model
         sb.append(String.format("<ins class=\"model\">%s</ins>",
-                org.nuxeo.theme.html.Utils.toJson(model)));
+                Utils.toJson(model)));
 
         // view
         Map<String, Object> view = new HashMap<String, Object>();
@@ -93,7 +95,7 @@ public class Panel {
         }
 
         sb.append(String.format("<ins class=\"view\">%s</ins>",
-                org.nuxeo.theme.html.Utils.toJson(view)));
+                Utils.toJson(view)));
         return sb.toString();
     }
 

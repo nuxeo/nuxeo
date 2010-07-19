@@ -21,7 +21,7 @@ import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
-import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.views.AbstractView;
@@ -37,19 +37,19 @@ public class DefaultStyleView extends AbstractView {
         // add inherited styles first
         final List<Format> ancestors = ThemeManager.listAncestorFormatsOf(style);
         for (Format ancestor : ancestors) {
-            sb.append(Utils.computeCssClassName(ancestor)).append(' ');
+            sb.append(CSSUtils.computeCssClassName(ancestor)).append(' ');
         }
-        sb.append(Utils.computeCssClassName(style));
+        sb.append(CSSUtils.computeCssClassName(style));
 
         // get the widget view name
         final Element element = info.getElement();
         final Widget widget = (Widget) ElementFormatter.getFormatFor(element,
                 "widget");
         if (widget != null) {
-            final String className = Utils.toUpperCamelCase(widget.getName());
+            final String className = CSSUtils.toUpperCamelCase(widget.getName());
             sb.append(className);
         }
 
-        return Utils.insertCssClass(info.getMarkup(), sb.toString());
+        return CSSUtils.insertCssClass(info.getMarkup(), sb.toString());
     }
 }

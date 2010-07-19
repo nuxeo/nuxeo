@@ -28,9 +28,14 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,15 +97,15 @@ public final class Utils {
                 "\\s+", " ").trim();
     }
 
-    public static byte[] readResourceAsBytes(final String path) {
+    public static byte[] readResourceAsBytes(final String path) throws IOException {
         return readResource(path).toByteArray();
     }
 
-    public static String readResourceAsString(final String path) {
+    public static String readResourceAsString(final String path) throws IOException {
         return readResource(path).toString();
     }
 
-    private static ByteArrayOutputStream readResource(final String path) {
+    private static ByteArrayOutputStream readResource(final String path) throws IOException {
         InputStream is = null;
         ByteArrayOutputStream os = null;
         try {
@@ -117,22 +122,16 @@ public final class Utils {
                         os.write(buffer, 0, i);
                     }
                     os.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } finally {
                     if (os != null) {
                         os.close();
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (is != null) {
                 try {
                     is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } finally {
                     is = null;
                 }

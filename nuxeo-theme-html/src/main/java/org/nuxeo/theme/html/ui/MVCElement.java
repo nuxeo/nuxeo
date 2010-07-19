@@ -14,11 +14,13 @@
 
 package org.nuxeo.theme.html.ui;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -43,7 +45,11 @@ public class MVCElement {
             if (resourceType == null) {
                 log.warn("Could not find resource: " + resource);
             } else {
-                sb.append(org.nuxeo.theme.Utils.readResourceAsString(resourceType.getPath()));
+                try {
+                    sb.append(Utils.readResourceAsString(resourceType.getPath()));
+                } catch (IOException e) {
+                    log.warn("Could not find resource: " + resource);
+                }
             }
         }
 

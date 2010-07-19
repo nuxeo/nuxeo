@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.test.themes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,8 +64,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testSerializeTheme() throws ThemeException, NodeException,
-            ThemeIOException {
+    public void testSerializeTheme() throws ThemeException, NodeException, ThemeIOException, IOException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("default");
         PageElement page = (PageElement) ElementFactory.create("page");

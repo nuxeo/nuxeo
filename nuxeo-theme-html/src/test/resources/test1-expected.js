@@ -1,0 +1,1 @@
+var var1="testing";var var2="";var f=function(b,a){alert(b);alert(a)};if(1==0){var1=var2};

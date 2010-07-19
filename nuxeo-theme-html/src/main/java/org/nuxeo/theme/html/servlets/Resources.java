@@ -33,9 +33,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.html.CSSUtils;
+import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.resources.ResourceType;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -128,19 +130,27 @@ public final class Resources extends HttpServlet implements Serializable {
                 }
                 writeResource(resource, out);
                 source = out.toString();
-                if (resourceName.endsWith(".js") && resource.isShrinkable()) {
-                    String compressed = JSUtils.compressSource(source);
-                    if (compressed == null) {
-                        log.warn("failed to compress javascript for: "
-                                + resourceName);
-                        source += "\n";
-                    } else {
-                        source = compressed;
-                    }
 
+                if (resourceName.endsWith(".js")) {
+                    if (resource.isShrinkable()) {
+                        try {
+                            source = JSUtils.compressSource(source);
+                        } catch (ThemeException e) {
+                            log.warn("failed to compress javascript source: "
+                                    + resourceName);
+                        }
+                    }
                 } else if (resourceName.endsWith(".css")) {
                     source = source.replaceAll("\\$\\{basePath\\}",
                             Matcher.quoteReplacement(basePath));
+                    if (resource.isShrinkable()) {
+                        try {
+                            source = CSSUtils.compressSource(source);
+                        } catch (ThemeException e) {
+                            log.warn("failed to compress CSS source: "
+                                    + resourceName);
+                        }
+                    }
                 }
                 themeManager.setResource(resourceName, source);
             }
