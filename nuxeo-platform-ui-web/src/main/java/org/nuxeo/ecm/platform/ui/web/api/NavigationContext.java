@@ -35,36 +35,31 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Stateful Seam component.
- *
  * <ul>
  * <li> manages the navigation context variables
  * <li> outjects them for compatibility
- * <li> provides getters and setters for navigation context variables (ie : hide
- * what Seam scope is used for that)
+ * <li> provides getters and setters for navigation context variables (ie :
+ * hide what Seam scope is used for that)
  * <li> provides basic navigation features by leveraging Core API + Distributed
  * cache + internal cache
  * </ul>
- *
- * This Seam component should ideally serve only DocumentModel, lists of DMs and
- * Trees of DMs: no UI related structure.
+ * This Seam component should ideally serve only DocumentModel, lists of DMs
+ * and Trees of DMs: no UI related structure.
  */
 @Remote
 public interface NavigationContext extends ResultsProviderFarm {
 
     /**
      * Callback for component initialization.
-     *
      */
     void init();
 
     /**
-     *
      * @return current repository location or null if no server is connected
      */
     RepositoryLocation getCurrentServerLocation();
 
     /**
-     *
      * @return current selected repository location or null
      * @deprecated use getCurrentServerLocation instead
      */
@@ -72,11 +67,11 @@ public interface NavigationContext extends ResultsProviderFarm {
     RepositoryLocation getSelectedServerLocation();
 
     /**
-     * Current Domain, <strong>if user has read permission on it</strong>.
+     * Current Domain, <strong>if user has read permission on it</strong>. Use
      *
-     * Use @link{getCurrentDomainPath} if you are in a situation where
-     * it is not guaranteed that the user has read permission on the domain.
-     *
+     * @link{getCurrentDomainPath} if you are in a situation where it is not
+     *                             guaranteed that the user has read permission
+     *                             on the domain.
      * @return the current domain.
      */
     DocumentModel getCurrentDomain();
@@ -84,8 +79,8 @@ public interface NavigationContext extends ResultsProviderFarm {
     /**
      * Find the path to current domain.
      * <p>
-     * This method tries hard to always returns an answer.
-     * If no current domain has been selected, then it will choose one.
+     * This method tries hard to always returns an answer. If no current domain
+     * has been selected, then it will choose one.
      * </p>
      *
      * @return the path
@@ -102,9 +97,8 @@ public interface NavigationContext extends ResultsProviderFarm {
     DocumentModel getCurrentDocument();
 
     /**
-     * Returns the currentSuperSpace (Section, Workspace...).
-     *
-     * Uses SuperSpace facet for that.
+     * Returns the currentSuperSpace (Section, Workspace...). Uses SuperSpace
+     * facet for that.
      *
      * @return
      */
@@ -131,8 +125,9 @@ public interface NavigationContext extends ResultsProviderFarm {
 
     /**
      * Retrieves the documents contained in the current parent.
+     *
      * @deprecated this method is not scalable, all the documents will be in
-     * memory
+     *             memory
      */
     @Deprecated
     DocumentModelList getCurrentDocumentChildren() throws ClientException;
@@ -146,7 +141,6 @@ public interface NavigationContext extends ResultsProviderFarm {
 
     /**
      * @throws ClientException
-     *
      */
     List<PathElement> getCurrentPathList() throws ClientException;
 
@@ -159,14 +153,12 @@ public interface NavigationContext extends ResultsProviderFarm {
     DocumentModelList getCurrentPath() throws ClientException;
 
     /**
-     *
      * @return the URL that can be used to refer the current document from
      *         outside current context
      */
     String getCurrentDocumentUrl();
 
     /**
-     *
      * @return the URL that can be used to refer the current document from
      *         outside current context
      */
@@ -183,7 +175,6 @@ public interface NavigationContext extends ResultsProviderFarm {
 
     /**
      * Resets all context variables.
-     *
      */
     void resetCurrentContext();
 
@@ -200,8 +191,8 @@ public interface NavigationContext extends ResultsProviderFarm {
             throws ClientException;
 
     /**
-     * go to the root server, the root document or to the dashboard if the latest
-     * document are not accessible.
+     * go to the root server, the root document or to the dashboard if the
+     * latest document are not accessible.
      *
      * @return
      */
@@ -307,8 +298,8 @@ public interface NavigationContext extends ResultsProviderFarm {
             throws ClientException;
 
     /**
-     * Returns the current documentManager if any or create a new session to the
-     * currently selected repository location.
+     * Returns the current documentManager if any or create a new session to
+     * the currently selected repository location.
      *
      * @throws ClientException
      */
