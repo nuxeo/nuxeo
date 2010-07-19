@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -47,7 +46,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  * and Trees of DMs: no UI related structure.
  */
 @Remote
-public interface NavigationContext extends ResultsProviderFarm {
+public interface NavigationContext {
 
     /**
      * Callback for component initialization.
@@ -390,22 +389,6 @@ public interface NavigationContext extends ResultsProviderFarm {
      * @param currentContentRoot
      */
     void setCurrentContentRoot(DocumentModel currentContentRoot);
-
-    /**
-     * Listener for the events that must trigger the reset of the list of
-     * current document children.
-     *
-     * @param targetDoc
-     */
-    void resetCurrentDocumentChildrenCache(DocumentModel targetDoc);
-
-    /**
-     * Sets the current PagedDocumentsProvider object that will be used for
-     * displaying current result (documents list).
-     *
-     * @param resultsProvider
-     */
-    void setCurrentResultsProvider(PagedDocumentsProvider resultsProvider);
 
     /**
      * Invalidates children provider (temporarily).
