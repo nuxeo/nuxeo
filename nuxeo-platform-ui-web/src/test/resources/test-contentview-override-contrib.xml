@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testOverrideContrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="CURRENT_DOCUMENT_CHILDREN">
+      <selectionList>CURRENT_SELECTION_2</selectionList>
+      <pagination>simple_2</pagination>
+      <actions category="CURRENT_SELECTION_LIST_2" />
+      <resultLayout>document_listing_2</resultLayout>
+    </contentView>
+
+  </extension>
+
+</component>

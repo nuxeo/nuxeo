@@ -20,20 +20,25 @@
 package org.nuxeo.ecm.platform.ui.web.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 
 /**
  * A Results Provider Farm registers methods to create named
  * {@link PagedDocumentsProvider}.
  * <p>
- * Typically, results provider implementations can vary a lot: we'll have
- * the search service, the document repository. This interface allows to
- * register and call factories for them.
+ * Typically, results provider implementations can vary a lot: we'll have the
+ * search service, the document repository. This interface allows to register
+ * and call factories for them.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
+ * @deprecated use {@link ContentView} instances in conjunction with
+ *             {@link PageProvider} instead.
  */
+@Deprecated
 public interface ResultsProviderFarm {
 
     /**
@@ -43,13 +48,12 @@ public interface ResultsProviderFarm {
      * @return a PagedDocumentsProvider
      * @throws ClientException
      */
-    // TODO: remake an distinction between malformed queries and internal errors
-    // in the process/server that honors them
+    // TODO: remake an distinction between malformed queries and internal
+    // errors in the process/server that honors them
     PagedDocumentsProvider getResultsProvider(String name)
-                throws ClientException, ResultsProviderFarmUserException;
+            throws ClientException, ResultsProviderFarmUserException;
 
     /**
-     *
      * @param name the name of the ResultsProvider instance to create
      * @param sortInfo an object containing the sort details
      * @return a PagedDocumentsProvider

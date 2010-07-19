@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.webapp.pagination;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 
 /**
  * This is a controller interface for pagination. The methods are bound to
@@ -31,7 +33,10 @@ import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
+ * @deprecated use {@link ContentView} instances in conjunction with
+ *             {@link PageProvider} instead.
  */
+@Deprecated
 public interface ResultsProvidersCache {
 
     /**
@@ -53,7 +58,7 @@ public interface ResultsProvidersCache {
      * @throws SortNotSupportedException
      */
     PagedDocumentsProvider get(String name, SortInfo sortInfo)
-        throws ClientException, SortNotSupportedException;
+            throws ClientException, SortNotSupportedException;
 
     /**
      * Invalidates a results provider.
@@ -78,6 +83,7 @@ public interface ResultsProvidersCache {
 
     // TEMPORARY COMPATIBILITY
     int getNumberOfPages();
+
     int getPageIndex();
 
 }

@@ -19,12 +19,12 @@
 
 package org.nuxeo.ecm.webapp.pagination;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.PhaseId;
@@ -44,11 +44,13 @@ import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentChildrenStdFarm;
@@ -69,7 +71,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
+ * @deprecated use {@link ContentView} instances in conjunction with
+ *             {@link PageProvider} instead.
  */
+@Deprecated
 @Name("resultsProvidersCache")
 @Scope(ScopeType.CONVERSATION)
 public class ResultsProvidersCacheBean implements ResultsProvidersCache, Serializable {
