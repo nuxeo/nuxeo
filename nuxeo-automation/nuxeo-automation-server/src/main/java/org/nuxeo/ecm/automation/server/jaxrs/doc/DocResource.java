@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -36,13 +37,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DocResource {
 
     @Context
     protected UriInfo uri;
+
     protected AutomationService service;
+
     protected List<OperationDocumentation> ops;
 
     public DocResource() {
@@ -54,8 +57,11 @@ public class DocResource {
         }
     }
 
-
     protected TemplateView getTemplate() {
+        return getTemplate("index.ftl");
+    }
+
+    protected TemplateView getTemplate(String name) {
         Map<String, List<OperationDocumentation>> cats = new LinkedHashMap<String, List<OperationDocumentation>>();
         for (OperationDocumentation op : ops) {
             List<OperationDocumentation> list = cats.get(op.getCategory());
@@ -65,9 +71,8 @@ public class DocResource {
             }
             list.add(op);
         }
-        return new TemplateView(this, "index.ftl")
-            .arg("categories", cats)
-            .arg("operations", ops);
+        return new TemplateView(this, name).arg("categories", cats).arg(
+                "operations", ops);
     }
 
     @GET
@@ -83,7 +88,8 @@ public class DocResource {
                 }
             }
             if (opDoc == null) {
-                throw new WebResourceNotFoundException("No operation found with name: "+id);
+                throw new WebResourceNotFoundException(
+                        "No operation found with name: " + id);
             }
             TemplateView tpl = getTemplate();
             tpl.arg("operation", opDoc);
@@ -91,13 +97,18 @@ public class DocResource {
         }
     }
 
+    @GET
+    @Path("wiki")
+    public Object doGetWiki() {
+        return getTemplate("wiki.ftl");
+    }
 
     public String[] getInputs(OperationDocumentation op) {
         if (op.signature == null && op.signature.length == 0) {
             return new String[0];
         }
-        String[] result = new String[op.signature.length/2];
-        for (int i=0,k=0; i<op.signature.length; i+=2,k++) {
+        String[] result = new String[op.signature.length / 2];
+        for (int i = 0, k = 0; i < op.signature.length; i += 2, k++) {
             result[k] = op.signature[i];
         }
         return result;
@@ -107,8 +118,8 @@ public class DocResource {
         if (op.signature == null && op.signature.length == 0) {
             return new String[0];
         }
-        String[] result = new String[op.signature.length/2];
-        for (int i=1,k=0; i<op.signature.length; i+=2,k++) {
+        String[] result = new String[op.signature.length / 2];
+        for (int i = 1, k = 0; i < op.signature.length; i += 2, k++) {
             result[k] = op.signature[i];
         }
         return result;
