@@ -595,17 +595,18 @@ class FolderPage(BasePage):
         folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
         self.selectItem(title, item_type)
-        pos = '1'
+        # position of the delete button
+        pos = '3'
         if item_type == 'Section':
             pos = '0'
-            # XXX: temporary skip, FIXME later
-            return self
+        print pos
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
             ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:' + pos + ':clipboardActionsButton', 'Delete'],
             ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1']],
             description='Delete document "%s"' % title)
+
         fl.assert_('Document(s) deleted' in fl.getBody())
         return self
 
