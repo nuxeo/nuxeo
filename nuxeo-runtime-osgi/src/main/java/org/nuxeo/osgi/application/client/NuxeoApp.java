@@ -32,7 +32,10 @@ import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.osgi.SystemBundle;
+import org.nuxeo.osgi.SystemBundleFile;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkEvent;
 
 /**
  * Nuxeo Runtime launcher.
@@ -216,6 +219,15 @@ public class NuxeoApp {
             }
             return result;
         }
+    }
+    
+    public void fireFrameworkStarted() throws Exception {
+        if (osgi.getSystemBundle() == null) {
+            osgi.setSystemBundle(new SystemBundle(osgi, new SystemBundleFile(
+                    osgi.getWorkingDir()), loader));
+        }
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                osgi.getSystemBundle(), null));
     }
 
 }

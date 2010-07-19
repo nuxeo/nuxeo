@@ -5,65 +5,39 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>1.6.2-APG-240-SNAPSHOT</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>1.6.2-APG-240-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.2-APG-240-SNAPSHOT</nuxeo.runtime.version>
   </properties>
 
   <modules>
     <module>nuxeo-runtime</module>
+    <module>nuxeo-runtime-deploy</module>
+    <module>nuxeo-runtime-jboss-adapter</module>
+    <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
+    <module>nuxeo-runtime-launcher</module>
+    <module>nuxeo-runtime-test</module>
+    <module>nuxeo-runtime-jetty-adapter</module>
+    <module>nuxeo-runtime-gf3-adapter</module>
+    <module>nuxeo-runtime-tomcat-adapter</module>
+    <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
-    <module>nuxeo-runtime-jetty-adapter</module>
-    <module>nuxeo-runtime-scripting</module>
   </modules>
-
-  <profiles>
-
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-	<activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-	<module>nuxeo-runtime-deploy</module>
-	<module>nuxeo-runtime-test</module>
-	<module>nuxeo-runtime-jboss-adapter</module>
-	<module>nuxeo-runtime-jboss-extensions</module>
-	<module>nuxeo-runtime-launcher</module>
-	<module>nuxeo-runtime-gf3-adapter</module>
-	<module>nuxeo-runtime-tomcat-adapter</module>
-      </modules>
-    </profile>	
-
-    <profile>
-      <id>osgi</id>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-eclipse-plugin</artifactId>
-	  </plugin>
-	  <plugin>
-	    <artifactId>maven-assembly-plugin</artifactId>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -221,6 +195,5 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
 
 </project>

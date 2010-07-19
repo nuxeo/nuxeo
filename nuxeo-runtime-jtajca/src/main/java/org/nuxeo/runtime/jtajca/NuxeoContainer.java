@@ -158,7 +158,7 @@ public class NuxeoContainer {
             }
         };
         ConnectionTrackingCoordinator connectionTracker = new ConnectionTrackingCoordinator();
-        ClassLoader classLoader = NuxeoContainer.class.getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
         return new GenericConnectionManager(transactionSupport, poolingSupport,
                 subjectSource, connectionTracker, transactionManager,
                 config.name, classLoader);
@@ -275,7 +275,7 @@ public class NuxeoContainer {
         }
 
     }
-    
+
     public static void initTransactionManagement() throws NamingException {
         initTransactionManager(new TransactionManagerConfiguration());
         initConnectionManager(new ConnectionManagerConfiguration());

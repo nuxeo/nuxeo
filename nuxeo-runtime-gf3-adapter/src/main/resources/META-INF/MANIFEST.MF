@@ -1,16 +1,23 @@
+Export-Package: org.nuxeo.runtime.gf3,
+ org.glassfish.embed
+Private-Package: .
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ glassfish-embedded-all-3.0-b38-nxp-web-210.jar
 Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: bstefanescu
-Build-Jdk: 1.5.0_09
+Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Jetty Adapter
-Bundle-Version: 1.0.0
-Bundle-SymbolicName: org.nuxeo.runtime.gf3;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
-Require-Bundle: system.bundle,
- org.nuxeo.common,
- org.nuxeo.runtime
-Export-Package: org.nuxeo.runtime.gf3
 Nuxeo-Component: OSGI-INF/GF3Component.xml
+Import-Package: javax.annotation;version="1.0",
+ javax.resource;version="2.0",
+ org.apache.commons.logging,
+ org.nuxeo.common,
+ org.nuxeo.common.server,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-gf3-adapter;singleton:=true
+Nuxeo-Require: system.bundle,
+  org.nuxeo.common,
+  org.nuxeo.runtime

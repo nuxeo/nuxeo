@@ -80,7 +80,8 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         try {
             parentConfig = Configuration.getConfiguration();
         } catch (Exception e) {
-            // do nothing - this can happen if default configuration provider is not correctly configured
+            // do nothing - this can happen if default configuration provider
+            // is not correctly configured
             // for examnple FileConfig fails if no config file was defined
         }
         config = new LoginConfiguration(this, parentConfig);
@@ -180,16 +181,15 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     public LoginContext loginAs(final String username) throws LoginException {
         // login as system user is a privileged action
         try {
-            return AccessController
-                    .doPrivileged(new PrivilegedExceptionAction<LoginContext>() {
-                        public LoginContext run() throws LoginException {
-                            SecurityManager sm = System.getSecurityManager();
-                            if (sm != null) {
-                                sm.checkPermission(new SystemLoginPermission());
-                            }
-                            return systemLogin(username);
-                        }
-                    });
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<LoginContext>() {
+                public LoginContext run() throws LoginException {
+                    SecurityManager sm = System.getSecurityManager();
+                    if (sm != null) {
+                        sm.checkPermission(new SystemLoginPermission());
+                    }
+                    return systemLogin(username);
+                }
+            });
         } catch (PrivilegedActionException e) {
             throw (LoginException) e.getException();
         }
@@ -203,8 +203,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return null;
     }
 
-    public LoginContext login(CallbackHandler cbHandler)
-            throws LoginException {
+    public LoginContext login(CallbackHandler cbHandler) throws LoginException {
         if (clientLogin != null) {
             return clientLogin.login(cbHandler);
         }
@@ -222,7 +221,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             } else {
                 SystemID sys = (SystemID) principal;
                 String sourceInstanceId = sys.getSourceInstanceId();
-                if (sourceInstanceId==null) {
+                if (sourceInstanceId == null) {
                     log.warn("Can not accept a system login without InstanceID of the source : System login is rejected");
                     return false;
                 } else {
@@ -231,11 +230,13 @@ public class LoginComponent extends DefaultComponent implements LoginService {
                     } else {
                         if (systemLoginManager.isRemoveSystemLoginAllowedForInstance(sourceInstanceId)) {
                             if (log.isTraceEnabled()) {
-                                log.trace("Remote SystemLogin from instance " + sourceInstanceId + " accepted");
+                                log.trace("Remote SystemLogin from instance "
+                                        + sourceInstanceId + " accepted");
                             }
                             return true;
                         } else {
-                            log.warn("Remote SystemLogin attempt from instance " + sourceInstanceId + " was denied");
+                            log.warn("Remote SystemLogin attempt from instance "
+                                    + sourceInstanceId + " was denied");
                             return false;
                         }
                     }
@@ -272,11 +273,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         @Override
         public boolean equals(Object other) {
             if (other instanceof Principal) {
-                if (userName == null) {
-                    return ((Principal) other).getName() == null;
-                } else {
-                    return userName.hashCode()==other.hashCode();
-                }
+                return hashCode() == other.hashCode();
             } else {
                 return false;
             }
@@ -287,7 +284,8 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             if (!systemLoginManager.isRemoteSystemLoginRestricted()) {
                 return userName == null ? 0 : userName.hashCode();
             } else {
-                return userName == null ? 0 : userName.hashCode() + sourceInstanceId.hashCode();
+                return userName == null ? 0 : userName.hashCode()
+                        + sourceInstanceId.hashCode();
             }
         }
 
