@@ -85,7 +85,7 @@ class Pages(NuxeoTestCase):
         p.viewDocumentPath('workspaces/flnxtest-page-workspace/flnxtest-page-folder/flnxtest-tsoc1g7-tris')
         p.publish().publishOnFirstSection()
         p.logout()
-    
+
     def testPublish(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
         description = self.tag + ' ' + self._lipsum.getParagraph(1)
