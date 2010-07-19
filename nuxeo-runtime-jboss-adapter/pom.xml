@@ -53,21 +53,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.0-beta-1</version> <!-- required for enabling mevenide -->
-        <extensions>true</extensions>
-        <configuration>
-	  <deploymentDescriptorFile>META-INF/MANIFEST.MF</deploymentDescriptorFile>
-          <archive>
-            <manifestFile>META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

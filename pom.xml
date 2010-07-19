@@ -17,8 +17,8 @@
   <description>Nuxeo Runtime: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-NXP-5357-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-NXP-5357-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>1.6.2-APG-240-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.6.2-APG-240-SNAPSHOT</nuxeo.runtime.version>
   </properties>
 
   <modules>
