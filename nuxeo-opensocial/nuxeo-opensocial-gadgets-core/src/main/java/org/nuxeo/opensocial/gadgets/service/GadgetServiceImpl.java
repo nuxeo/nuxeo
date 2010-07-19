@@ -160,7 +160,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
         // TODO: FIX since it won't work on JBoss
 
         GadgetDeclaration gadget = getGadget(gadgetName);
-
+        if (gadget==null) {
+            log.warn("Unable to find gadget" + gadgetName);
+            return null;
+        }
         try {
             return gadget.getGadgetDefinition();
         } catch (MalformedURLException e) {
