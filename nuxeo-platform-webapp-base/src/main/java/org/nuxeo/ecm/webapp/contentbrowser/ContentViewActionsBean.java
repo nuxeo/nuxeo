@@ -26,10 +26,12 @@ import javax.faces.context.FacesContext;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Seam component handling cache and refresh for named content views.
@@ -101,6 +103,11 @@ public class ContentViewActionsBean implements ContentViewActions {
                 }
             }
         }
+    }
+
+    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
+    public void refreshOnDocumentChildrenChanged() {
+        refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
     }
 
 }

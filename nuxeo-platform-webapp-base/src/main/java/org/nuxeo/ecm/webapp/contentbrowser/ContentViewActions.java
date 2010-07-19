@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * @author Anahide Tchertchian
@@ -46,5 +47,11 @@ public interface ContentViewActions {
      * as a refresh event in their XML configuration.
      */
     void refreshOnSeamEvents(String seamEventName);
+
+    /**
+     * Refreshes content views that have declared event
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED}as a refresh event.
+     */
+    void refreshOnDocumentChildrenChanged();
 
 }

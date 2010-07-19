@@ -149,12 +149,6 @@ public class DocumentListingActionsBean implements Serializable {
         currentAvailableListingLayoutNames = null;
     }
 
-    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
-    public void refreshOnDocumentChildrenChanged() {
-        contentViewActions.refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
-    }
-
-
     // API for AJAX selection in listings
 
     @SuppressWarnings("unchecked")
