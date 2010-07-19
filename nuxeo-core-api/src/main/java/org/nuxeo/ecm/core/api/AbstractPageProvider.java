@@ -391,6 +391,8 @@ public abstract class AbstractPageProvider<T> implements
 
     public void setSelectedEntries(List<T> entries) {
         this.selectedEntries = entries;
+        // reset current select page so that it's rebuilt
+        currentSelectPage = null;
     }
 
     public Object[] getParameters() {

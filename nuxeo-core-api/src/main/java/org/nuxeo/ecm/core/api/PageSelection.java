@@ -27,20 +27,20 @@ public class PageSelection<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Boolean selected;
+    protected boolean selected;
 
     protected T data;
 
-    public PageSelection(T data, Boolean selected) {
+    public PageSelection(T data, boolean selected) {
         this.data = data;
         this.selected = selected;
     }
 
-    public void setSelected(Boolean selected) {
+    public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
-    public Boolean getSelected() {
+    public boolean isSelected() {
         return selected;
     }
 

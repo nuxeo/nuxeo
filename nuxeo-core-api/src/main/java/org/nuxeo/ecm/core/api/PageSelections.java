@@ -29,7 +29,7 @@ public class PageSelections<T> {
 
     protected String name;
 
-    protected Boolean selected;
+    protected boolean selected;
 
     protected List<PageSelection<T>> entries;
 
@@ -52,11 +52,11 @@ public class PageSelections<T> {
         return name;
     }
 
-    public void setSelected(Boolean selected) {
+    public void setSelected(boolean selected) {
         this.selected = selected;
     }
 
-    public Boolean getSelected() {
+    public boolean isSelected() {
         return selected;
     }
 
