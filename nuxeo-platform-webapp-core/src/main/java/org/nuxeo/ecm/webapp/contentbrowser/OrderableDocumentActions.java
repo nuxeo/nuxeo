@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -39,7 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
@@ -55,6 +53,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Seam bean used for Orderable documents.
@@ -95,7 +95,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
     @Factory(value = "currentOrderedChildrenSelectModel", scope = EVENT)
     public SelectDataModel getCurrentOrderedChildrenSelectModel()
             throws ClientException {
-        List<DocumentModel> documents = getCurrentDocumentChildrenPage();
+        DocumentModelList documents = getCurrentDocumentChildrenPage();
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
@@ -103,18 +103,18 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         return model;
     }
 
-    protected List<DocumentModel> getCurrentDocumentChildrenPage()
+    protected DocumentModelList getCurrentDocumentChildrenPage()
             throws ClientException {
         if (documentManager == null) {
             log.error("documentManager not initialized");
             return new DocumentModelListImpl();
         }
 
-        PageProvider<DocumentModel> resultsProvider = getOrderedChildrenProvider();
+        PagedDocumentsProvider resultsProvider = getOrderedChildrenProvider();
         return resultsProvider.getCurrentPage();
     }
 
-    protected PageProvider<DocumentModel> getOrderedChildrenProvider()
+    protected PagedDocumentsProvider getOrderedChildrenProvider()
             throws ClientException {
         return resultsProvidersCache.get(CURRENT_DOC_ORDERED_CHILDREN_QM);
     }
@@ -122,7 +122,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
     @Factory(value = "sectionOrderedChildrenSelectModel", scope = EVENT)
     public SelectDataModel getSectionOrderedChildrenSelectModel()
             throws ClientException {
-        List<DocumentModel> documents = getCurrentDocumentChildrenPage();
+        DocumentModelList documents = getCurrentDocumentChildrenPage();
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
