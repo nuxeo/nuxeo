@@ -4,9 +4,9 @@
  min-width:450px;
 }
 
-.ImportSetFormPanel {
- width:540px;
-}
+/*.ImportSetFormPanel, #importSetFormPanelShadowDiv, #importSetFormPanelCDiv {
+ width:950px;
+}*/
 
 .CreateUserFormPanel {
  width:540px;
@@ -37,6 +37,10 @@
   height: 100%;
   width: 100%;
 }
+
+.dataInput td {
+  vertical-align: top;
+  }
 
 .labelColumn {
   font:normal 11px "Lucida Grande", Verdana, sans-serif;
@@ -109,10 +113,15 @@
   text-align:center;
 }
 
+.ImportSetFormPanel .buttonsGadget {
+  margin: 20px 0 0px;
+  }
+
 h3 {
   font:normal 15px "Lucida Grande", Verdana, sans-serif;
   color:#3c3c3c;
-  margin:10px 0px 15px;
+  margin: 10px 8px 15px 0;
+  border-bottom: 1px dotted #e9e9e9;
 }
 
 .button {
@@ -136,11 +145,8 @@ h3 {
 
 #fileUploadForm {
   height:98px;
-  width:465px;
-  margin-bottom:30px;
-  margin-left:10px;
-  margin-right:10px;
-  margin-top:10px;
+  width:410px;
+  margin: 0 0 15px;
 }
 
 .centered {
@@ -157,3 +163,25 @@ h3 {
 .hidelink {
   border: none;
 }
+
+/* Two columns for Import Pop-up*/
+
+.summary_div_0 {
+  float:left;
+  width:450px;
+  }
+
+.summary_div_1 {
+  float:right;
+  width:450px;
+  }
+  
+.marginTop {
+  margin-top:
+  }
+  
+#importSetFormPanelContentDiv {
+  width: 950px;
+  height:550px;
+  overflow-y:auto; 
+  }

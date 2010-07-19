@@ -53,7 +53,7 @@
           <widget>authoringDate</widget>
         </row>
         <row>
-          <widget>language</widget>
+          <widget>coverage</widget>
         </row>
       </rows>
       <widget name="title" type="template">
@@ -78,7 +78,7 @@
       </templates>
       <rows>
         <row>
-          <widget>coverage</widget>
+          <widget>language</widget>
         </row>
         <row>
           <widget>topic</widget>

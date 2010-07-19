@@ -46,7 +46,7 @@
           </li>
           <li>
             <a4j:commandLink action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');"
-              rendered="#{importActions.importFolders.size() > 0}" id="importset_creation_button" reRender="importSetFormLayout">
+              rendered="#{importActions.importFolders.size() > 0}" id="importset_creation_button" reRender="importSetPanel">
               <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
             </a4j:commandLink>
           </li>
