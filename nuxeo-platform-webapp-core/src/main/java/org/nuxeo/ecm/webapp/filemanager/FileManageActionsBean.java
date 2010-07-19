@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
@@ -74,6 +75,7 @@ import org.richfaces.model.UploadItem;
  */
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
+@Install(precedence = Install.FRAMEWORK)
 public class FileManageActionsBean extends InputController implements
         FileManageActions {
 
@@ -126,7 +128,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public void destroy() {
-        log.debug("Removing SEAM action listener...");
+        log.debug("Removing Seam action listener...");
     }
 
     public String display() {
@@ -137,6 +139,7 @@ public class FileManageActionsBean extends InputController implements
         return addFile(getFileUpload(), getFileName());
     }
 
+    @SuppressWarnings("static-access")
     public String addFile(InputStream fileUpload, String fileName)
             throws ClientException {
         try {
@@ -231,6 +234,7 @@ public class FileManageActionsBean extends InputController implements
                 targetContainer.getPathAsString());
     }
 
+    @SuppressWarnings("static-access")
     protected String createDocumentFromBlob(Blob blob, String fullName,
             String path) throws ClientException {
         DocumentModel createdDoc;
@@ -409,6 +413,7 @@ public class FileManageActionsBean extends InputController implements
         return MOVE_OK;
     }
 
+    @SuppressWarnings("static-access")
     @WebRemote
     public String moveWithId(String docId, String containerId)
             throws ClientException {
@@ -540,6 +545,12 @@ public class FileManageActionsBean extends InputController implements
     public void validateMultiplesUpload() throws ClientException,
             FileNotFoundException {
         DocumentModel current = navigationContext.getCurrentDocument();
+        validateMultipleUploadForDocument(current);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void validateMultipleUploadForDocument(DocumentModel current) throws ClientException,
+            FileNotFoundException {
         if (!current.hasSchema("files")) {
             return;
         }
@@ -570,6 +581,7 @@ public class FileManageActionsBean extends InputController implements
         Contexts.getConversationContext().remove("fileUploadHolder");
     }
 
+    @SuppressWarnings("unchecked")
     public void performAction(ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
@@ -608,7 +620,7 @@ public class FileManageActionsBean extends InputController implements
             } finally {
                 org.nuxeo.common.utils.FileUtils.close(stream);
                 // the content of the temporary blob has been
-                if(fileUploadHolder.getTempFile() != null) {
+                if (fileUploadHolder.getTempFile() != null) {
                     fileUploadHolder.getTempFile().delete();
                 }
             }

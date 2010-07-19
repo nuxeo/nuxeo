@@ -173,7 +173,7 @@ public class SecurityActionsBean extends InputController implements
     @Remove
     @PermitAll
     public void destroy() {
-        log.debug("Removing SEAM action listener...");
+        log.debug("Removing Seam action listener...");
     }
 
     /**

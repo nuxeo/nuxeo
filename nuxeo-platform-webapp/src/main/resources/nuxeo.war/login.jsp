@@ -10,7 +10,22 @@
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String context = request.getContextPath();
-String language = request.getLocale().toString();
+Locale locale = request.getLocale();
+String language = locale == null ? "en" : locale.getLanguage();
+String country = locale == null ? "US" : locale.getCountry();
+String selectedLanguage = null;
+// handle variants
+if ("en".equals(language)) {
+    if ("US".equals(country) || "GB".equals(country)) {
+        selectedLanguage = "en_" + country;
+    } else {
+        selectedLanguage = "en_US";
+    }
+} else if ("pt".equals(language)) {
+    selectedLanguage = "pt_BR";
+} else {
+    selectedLanguage = language;
+}
 %>
 <html>
 
@@ -44,7 +59,7 @@ table.loginForm {
   }
 
 .leftColumn {
-  width:300px;
+  width:400px;
   }
 
 H1 {
@@ -167,12 +182,14 @@ nxthemes css is not used in login.jsp */
   text-decoration:underline;
   }
 
+.news_container {
+  text-align:left;
+}
 
 .block_container {
-  margin-right:50px;
   border:none;
   height:500px;
-  width:350px;
+  width:365px;
   overflow:auto;
   background-color:#ffffff;
   opacity:0.8;
@@ -207,7 +224,7 @@ nxthemes css is not used in login.jsp */
           <ul>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="http://www.nuxeo.com/en/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.getSupport" />
               </a>
             </li>
@@ -219,7 +236,7 @@ nxthemes css is not used in login.jsp */
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="https://doc.nuxeo.com/display/DMDOC/Nuxeo+DM+-+Documentation+Center?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.documentation" />
               </a>
             </li>
@@ -271,46 +288,52 @@ nxthemes css is not used in login.jsp */
                 </td>
                 <td>
                   <select class="login_input" name="language" id="language">
-                    <option value="en_GB" <%="en_GB".equals(language)?"selected=\"selected\"":""%>>
-                      English (United Kingdom)
-                    </option>
-                    <option value="pt_BR" <%="pt_BR".equals(language)?"selected":""%>>
-                      portugu&ecirc;s (Brasil)
-                    </option>
-                    <option value="eu" <%="eu".equals(language)?"selected":""%>>
-                      Basque
-                    </option>
-                    <option value="pt" <%="pt".equals(language)?"selected":""%>>
-                      portugu&ecirc;s
-                    </option>
-                    <option value="en_US" <%="en_US".equals(language)?"selected":""%>>
+                    <option value="en_US" <%="en_US".equals(selectedLanguage)?"selected":""%>>
                       English (United States)
                     </option>
-                    <option value="cn" <%="cn".equals(language)?"selected":""%>>
-                      cn
+                    <option value="en_GB" <%="en_GB".equals(selectedLanguage)?"selected=":""%>>
+                      English (United Kingdom)
                     </option>
-                    <option value="vn" <%="vn".equals(language)?"selected":""%>>
-                      vn
+                    <option value="fr" <%="fr".equals(selectedLanguage)?"selected":""%>>
+                      Fran&ccedil;ais
                     </option>
-                    <option value="ca" <%="ca".equals(language)?"selected":""%>>
-                      catal&agrave;
-                    </option>
-                    <option value="de" <%="de".equals(language)?"selected":""%>>
+                    <option value="de" <%="de".equals(selectedLanguage)?"selected":""%>>
                       Deutsch
                     </option>
-                    <option value="it" <%="it".equals(language)?"selected":""%>>
-                      italiano
+                    <option value="it" <%="it".equals(selectedLanguage)?"selected":""%>>
+                      Italiano
                     </option>                  
-                    <option value="fr" <%="fr".equals(language)?"selected":""%>>
-                      fran&ccedil;ais
+                    <option value="es" <%="es".equals(selectedLanguage)?"selected":""%>>
+                      Espa&ntilde;ol
                     </option>
-                    <option value="es" <%="es".equals(language)?"selected":""%>>
-                      espa&ntilde;ol
+                    <option value="pt" <%="pt".equals(selectedLanguage)?"selected":""%>>
+                      Portugu&ecirc;s
                     </option>
-                    <option value="ar" <%="ar".equals(language)?"selected":""%>>
+                    <option value="pt_BR" <%="pt_BR".equals(selectedLanguage)?"selected":""%>>
+                      Portugu&ecirc;s (Brasil)
+                    </option>
+                    <option value="pl" <%="pl".equals(selectedLanguage)?"selected":""%>>
+                      Polski
+                    </option>
+                    <option value="ca" <%="ca".equals(selectedLanguage)?"selected":""%>>
+                      Catal&agrave;
+                    </option>
+                    <option value="eu" <%="gl".equals(selectedLanguage)?"selected":""%>>
+                      Galego
+                    </option>
+                    <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
+                      Basque
+                    </option>
+                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
+                      中文
+                    </option>
+                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
+                      Tiếng Việt
+                    </option>
+                    <option value="ar" <%="ar".equals(selectedLanguage)?"selected":""%>>
                       &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
                     </option>
-                    <option value="ru" <%="ru".equals(language)?"selected":""%>>
+                    <option value="ru" <%="ru".equals(selectedLanguage)?"selected":""%>>
                       &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
                     </option>
                   </select>
