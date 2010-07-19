@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-
 /**
  * DAM Importer JAX-RS application
  *

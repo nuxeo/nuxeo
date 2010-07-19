@@ -17,8 +17,6 @@
 
 package org.nuxeo.dam.webapp.annotations;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -36,6 +34,8 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("annotationsActions")
 @Scope(ScopeType.CONVERSATION)
@@ -70,7 +70,8 @@ public class AnnotationsActions {
     public String getAnnotationsURL(DocumentModel document) {
         DocumentLocation docLocation = new DocumentLocationImpl(
                 document.getRepositoryName(), document.getRef());
-        DocumentView docView = new DocumentViewImpl(docLocation, "annotations_popup");
+        DocumentView docView = new DocumentViewImpl(docLocation,
+                "annotations_popup");
         String url = getUrlService().getUrlFromDocumentView(docView,
                 BaseURL.getBaseURL());
         url = RestHelper.addCurrentConversationParameters(url);

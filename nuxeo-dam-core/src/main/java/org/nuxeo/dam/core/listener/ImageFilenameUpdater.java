@@ -17,9 +17,6 @@
 
 package org.nuxeo.dam.core.listener;
 
-import static org.nuxeo.dam.Constants.PICTURE_SCHEMA;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+
+import static org.nuxeo.dam.Constants.PICTURE_SCHEMA;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 /**
  * Listener used to update the filename field of the blobs that are contained by

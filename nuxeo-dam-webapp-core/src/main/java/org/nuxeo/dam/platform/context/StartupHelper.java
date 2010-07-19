@@ -17,9 +17,6 @@
 
 package org.nuxeo.dam.platform.context;
 
-import static org.jboss.seam.ScopeType.SESSION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.security.Principal;
 
@@ -41,6 +38,9 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.context.ServerContextBean;
+
+import static org.jboss.seam.ScopeType.SESSION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("startupHelper")
 @Scope(SESSION)

@@ -17,9 +17,6 @@
 
 package org.nuxeo.dam.platform.context.reuse;
 
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.DEPLOYMENT;
-
 import java.io.Serializable;
 
 import org.jboss.seam.ScopeType;
@@ -32,9 +29,13 @@ import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.DEPLOYMENT;
+
 /**
- * TODO: remove RestHelper : waiting Techlead solution (don't want NavigationContext dependency)
- * override RestHelper component without NavigationContext
+ * TODO: remove RestHelper : waiting Techlead solution (don't want
+ * NavigationContext dependency) override RestHelper component without
+ * NavigationContext
  *
  * @author Benjamin JALON
  */
@@ -66,8 +67,8 @@ public class RestHelper implements Serializable {
     }
 
     public DocumentView getNewDocumentView() {
-    	// since 5.3 release this method have been added don't know why (BJA)
-    	return null;
+        // since 5.3 release this method have been added don't know why (BJA)
+        return null;
     }
 
     /**

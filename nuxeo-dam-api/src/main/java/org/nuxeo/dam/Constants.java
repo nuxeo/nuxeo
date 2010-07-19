@@ -21,6 +21,9 @@ import org.nuxeo.runtime.api.Framework;
 
 public interface Constants {
 
+    String IMPORT_ROOT_PATH = Framework.getProperty("import.root.path",
+            "/default-domain/import-root");
+
     String DAM_COMMON_SCHEMA = "dam_common";
 
     String DUBLINCORE_SCHEMA = "dublincore";
@@ -35,6 +38,20 @@ public interface Constants {
 
     String ASSET_FACET = "Asset";
 
-    String IMPORT_ROOT_PATH = Framework.getProperty(
-            "import.root.path", "/default-domain/import-root");
+    String DUBLINCORE_TITLE_PROPERTY = "dc:title";
+
+    String DUBLINCORE_DESCRIPTION_PROPERTY = "dc:description";
+
+    String DUBLINCORE_COVERAGE_PROPERTY = "dc:coverage";
+
+    String DUBLINCORE_EXPIRED_PROPERTY = "dc:expired";
+
+    String DUBLINCORE_CREATOR_PROPERTY = "dc:creator";
+
+    String DUBLINCORE_CONTRIBUTORS_PROPERTY = "dc:contributors";
+
+    String DAM_COMMON_AUTHOR_PROPERTY = "damc:author";
+
+    String DAM_COMMON_AUTHORING_DATE_PROPERTY = "damc:authoringDate";
+
 }

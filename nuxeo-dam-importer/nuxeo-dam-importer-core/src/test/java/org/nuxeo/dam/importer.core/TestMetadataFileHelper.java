@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,14 +52,10 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
-@Deploy({
-        "org.nuxeo.ecm.core.api",
-        "org.nuxeo.ecm.platform.picture.api",
+@Deploy( { "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.video.core",
-        "org.nuxeo.ecm.platform.audio.core",
-        "org.nuxeo.dam.core"
-})
+        "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.dam.core" })
 public class TestMetadataFileHelper {
 
     @Inject
@@ -82,30 +79,38 @@ public class TestMetadataFileHelper {
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(5, properties.size());
-        assertEquals("testAuthor", properties.get("damc:author"));
-        Date date = ((Calendar) properties.get("damc:authoringDate")).getTime();
+        assertEquals("testAuthor",
+                properties.get(Constants.DAM_COMMON_AUTHOR_PROPERTY));
+        Date date = ((Calendar) properties.get(Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY)).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
-        assertEquals("testDescription", properties.get("dc:description"));
-        assertEquals("testDescription", properties.get("dc:description"));
-        assertEquals("testCoverage", properties.get("dc:coverage"));
-        date = ((Calendar) properties.get("dc:expired")).getTime();
+        assertEquals("testDescription",
+                properties.get(Constants.DUBLINCORE_DESCRIPTION_PROPERTY));
+        assertEquals("testDescription",
+                properties.get(Constants.DUBLINCORE_DESCRIPTION_PROPERTY));
+        assertEquals("testCoverage",
+                properties.get(Constants.DUBLINCORE_COVERAGE_PROPERTY));
+        date = ((Calendar) properties.get(Constants.DUBLINCORE_EXPIRED_PROPERTY)).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
 
-        assertFalse(properties.containsKey("dc:title"));
+        assertFalse(properties.containsKey(Constants.DUBLINCORE_TITLE_PROPERTY));
         assertFalse(properties.containsKey("common:icon"));
     }
 
     protected DocumentModel createTestFile() throws ClientException {
-        DocumentModel file = session.createDocumentModel("/",
-                "testFile", "File");
-        file.setPropertyValue("damc:author", "testAuthor");
-        file.setPropertyValue("damc:authoringDate", calendar);
-        file.setPropertyValue("dc:title", "testTitle");
-        file.setPropertyValue("dc:description", "testDescription");
-        file.setPropertyValue("dc:coverage", "testCoverage");
-        file.setPropertyValue("dc:expired", calendar);
+        DocumentModel file = session.createDocumentModel("/", "testFile",
+                "File");
+        file.setPropertyValue(Constants.DAM_COMMON_AUTHOR_PROPERTY,
+                "testAuthor");
+        file.setPropertyValue(Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY,
+                calendar);
+        file.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "testTitle");
+        file.setPropertyValue(Constants.DUBLINCORE_DESCRIPTION_PROPERTY,
+                "testDescription");
+        file.setPropertyValue(Constants.DUBLINCORE_COVERAGE_PROPERTY,
+                "testCoverage");
+        file.setPropertyValue(Constants.DUBLINCORE_EXPIRED_PROPERTY, calendar);
         file.setPropertyValue("common:icon", "testIcon");
         file = session.createDocument(file);
         assertNotNull(file);

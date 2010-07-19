@@ -55,9 +55,11 @@ public class InheritedPropertiesServiceImpl extends DefaultComponent implements
         if (INHERITED_PROPERTIES_EP.equals(extensionPoint)) {
             InheritedPropertiesDescriptor descriptor = (InheritedPropertiesDescriptor) contribution;
             if (inheritedPropertiesDescriptors.containsKey(descriptor.getSchema())) {
-                log.info("Already  registered schema: " + descriptor.getSchema() + ", overriding it.");
+                log.info("Already  registered schema: "
+                        + descriptor.getSchema() + ", overriding it.");
             }
-            inheritedPropertiesDescriptors.put(descriptor.getSchema(), descriptor);
+            inheritedPropertiesDescriptors.put(descriptor.getSchema(),
+                    descriptor);
         }
     }
 

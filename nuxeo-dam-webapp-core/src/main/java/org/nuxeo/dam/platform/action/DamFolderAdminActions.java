@@ -16,9 +16,6 @@
  */
 package org.nuxeo.dam.platform.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +49,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 /**
  * @author eugen
  *
@@ -68,7 +68,7 @@ public class DamFolderAdminActions implements Serializable {
     @In(create = true)
     protected transient UserManager userManager;
 
-    @DataModel(value="folderList")
+    @DataModel(value = "folderList")
     protected DocumentModelList folders;
 
     protected DocumentModel selectedFolder;

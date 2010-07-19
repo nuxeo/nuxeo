@@ -57,8 +57,9 @@ public class MetadataFileHelper {
     }
 
     /**
-     * Returns a new {@code MetadataFile} object created from the given {@code doc}
-     * and using the properties registered through the {@code InheritedPropertiesService}.
+     * Returns a new {@code MetadataFile} object created from the given {@code
+     * doc} and using the properties registered through the {@code
+     * InheritedPropertiesService}.
      */
     public static MetadataFile createFrom(DocumentModel doc)
             throws ClientException {
@@ -74,8 +75,8 @@ public class MetadataFileHelper {
                 properties.addAll(descriptor.getProperties());
             }
         }
-        return MetadataFile.createFromSchemasAndProperties(doc,
-                schemas, properties);
+        return MetadataFile.createFromSchemasAndProperties(doc, schemas,
+                properties);
     }
 
 }

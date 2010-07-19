@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -163,7 +164,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     // CB: DAM-392 - Create new filter widget for Importset
     @Factory(value = "userImportSetsSelectItems", scope = ScopeType.EVENT)
-    public List<SelectItem> getUserImportSetsSelectItems() throws ClientException {
+    public List<SelectItem> getUserImportSetsSelectItems()
+            throws ClientException {
         DocumentModel filterDocument = getFilterDocument();
         String folderSelection = (String) filterDocument.getPropertyValue(PATH_FIELD_XPATH);
         List<SelectItem> items = new ArrayList<SelectItem>();
@@ -197,7 +199,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
                 documentManager);
         for (DocumentModel doc : docs) {
             String docPath = doc.getPathAsString();
-            items.add(new SelectItem(docPath, doc.getTitle(), "", docPath.equals(folderSelection)));
+            items.add(new SelectItem(docPath, doc.getTitle(), "",
+                    docPath.equals(folderSelection)));
         }
         return items;
     }
@@ -236,7 +239,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         }
 
         if (sortInfo == null) {
-            sortInfo = new SortInfo("dc:title", true);
+            sortInfo = new SortInfo(Constants.DUBLINCORE_TITLE_PROPERTY, true);
         }
         PagedDocumentsProvider provider = model.getResultsProvider(
                 documentManager, null, sortInfo);
@@ -265,7 +268,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
     }
 
     public void clearFilters() throws ClientException {
-        //CB: DAM-281 - Clear filters
+        // CB: DAM-281 - Clear filters
         filterDocument = null;
         queryModelActions.get(QUERY_MODEL_NAME).reset();
         invalidateProvider();

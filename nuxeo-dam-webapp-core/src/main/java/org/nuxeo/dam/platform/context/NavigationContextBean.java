@@ -17,8 +17,6 @@
 
 package org.nuxeo.dam.platform.context;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -46,6 +44,8 @@ import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
+
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("navigationContext")
 @Scope(ScopeType.CONVERSATION)

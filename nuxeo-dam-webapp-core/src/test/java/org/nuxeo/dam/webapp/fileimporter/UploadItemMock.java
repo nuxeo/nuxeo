@@ -18,8 +18,8 @@
 package org.nuxeo.dam.webapp.fileimporter;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
@@ -53,4 +53,3 @@ public class UploadItemMock extends UploadItem {
     }
 
 }
-

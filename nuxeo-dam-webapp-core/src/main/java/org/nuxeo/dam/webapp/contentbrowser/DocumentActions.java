@@ -173,7 +173,7 @@ public class DocumentActions implements Serializable {
      *
      * @param document to extract the title from
      * @param maxLength the maximum length of the title before cropping will
-     *        occur
+     *            occur
      * @return String with the cropped title restricted to maximum of maxLength
      *         characters
      */

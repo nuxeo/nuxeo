@@ -59,9 +59,9 @@ public class FilterResults implements SelectDataModelListener, Serializable {
 
     protected transient PagedDocumentsProvider provider;
 
-
     @Factory(value = FILTER_SELECT_MODEL_NAME, scope = ScopeType.EVENT)
-    public SelectDataModel getResultsSelectModelFiltered() throws ClientException {
+    public SelectDataModel getResultsSelectModelFiltered()
+            throws ClientException {
         return getResultsSelectModel(FILTERED_DOCUMENT_PROVIDER_NAME);
     }
 
@@ -70,8 +70,7 @@ public class FilterResults implements SelectDataModelListener, Serializable {
         if (providerName == null) {
             throw new ClientException("providerName has not been set yet");
         }
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);

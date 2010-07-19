@@ -17,9 +17,6 @@
 
 package org.nuxeo.dam.platform.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +37,9 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
 import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>

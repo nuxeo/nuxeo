@@ -123,7 +123,8 @@ public class ImportActions implements Serializable {
 
             String defaultTitle = fullName + " - "
                     + simpleDateFormat.format(calendar.getTime());
-            newImportSet.setPropertyValue("dc:title", defaultTitle);
+            newImportSet.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                    defaultTitle);
         }
 
         return newImportSet;
@@ -156,8 +157,9 @@ public class ImportActions implements Serializable {
 
         MetadataFile mdFile = MetadataFileHelper.createFrom(newImportSet);
         String principalName = documentManager.getPrincipal().getName();
-        mdFile.addProperty("dc:creator", principalName);
-        mdFile.addProperty("dc:contributors", new String[] { principalName });
+        mdFile.addProperty(Constants.DUBLINCORE_CREATOR_PROPERTY, principalName);
+        mdFile.addProperty(Constants.DUBLINCORE_CONTRIBUTORS_PROPERTY,
+                new String[] { principalName });
         mdFile.writeTo(new File(outDir,
                 FileWithMetadataSourceNode.METADATA_FILENAME));
 
@@ -310,8 +312,8 @@ public class ImportActions implements Serializable {
 }
 
 /**
- * Create the {@code ImportFolder}, from its title, where the import will be created
- * in an Unrestricted session.
+ * Create the {@code ImportFolder}, from its title, where the import will be
+ * created in an Unrestricted session.
  */
 class ContainerFolderCreator extends UnrestrictedSessionRunner {
 
@@ -333,7 +335,8 @@ class ContainerFolderCreator extends UnrestrictedSessionRunner {
             folder = session.createDocumentModel(Constants.IMPORT_ROOT_PATH,
                     IdUtils.generateId(folderTitle),
                     Constants.IMPORT_FOLDER_TYPE);
-            folder.setPropertyValue("dc:title", folderTitle);
+            folder.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                    folderTitle);
             folder = session.createDocument(folder);
             session.save();
         } catch (ClientException e) {

@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.importer.core.helper.UnrestrictedSessionRunnerHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -146,8 +147,6 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
 
     public static final String DEFAULT_IMPORT_FOLDER_TITLE = "Automatic Import";
 
-    public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
-
     public static DateFormat IMPORT_SET_NAME_FORMAT = new SimpleDateFormat(
             "yyyyMMdd HH:mm");
 
@@ -222,7 +221,7 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
         if (!session.exists(importFolderRef)) {
             importFolder = session.createDocumentModel(importWritePath,
                     importFolderName, IMPORT_FOLDER_TYPE);
-            importFolder.setPropertyValue(DUBLINCORE_TITLE_PROPERTY,
+            importFolder.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
                     importFolderTitle);
             importFolder = session.createDocument(importFolder);
         } else {
@@ -239,7 +238,7 @@ class TargetContainerCreator extends UnrestrictedSessionRunner {
         DocumentModel importSet = session.createDocumentModel(
                 importFolder.getPathAsString(), IdUtils.generateId(title),
                 IMPORT_SET_TYPE);
-        importSet.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, title);
+        importSet.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, title);
 
         importSet = setImportSetProperties(importSet);
 

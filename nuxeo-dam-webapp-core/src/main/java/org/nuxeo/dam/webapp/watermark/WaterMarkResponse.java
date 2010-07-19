@@ -37,8 +37,8 @@ public class WaterMarkResponse extends HttpServletResponseWrapper {
 
     private final Logger log = Logger.getLogger(WaterMarkResponse.class);
 
-    protected final File tmpFile = new File(System.getProperty("java.io.tmpdir"),
-            UUID.randomUUID().toString());
+    protected final File tmpFile = new File(
+            System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
     protected ServletOutputStream out;
 

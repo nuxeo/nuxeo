@@ -21,15 +21,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import com.google.inject.Inject;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,7 +51,8 @@ public class TestDocumentActions {
         assertNotNull("session is null ?", session);
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         assertNotNull("doc is null", doc);
-        doc.setPropertyValue("dc:title", "Image Name with longish name");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "Image Name with longish name");
         // now create the doc in the session and save it to the session so that
         // it gets given an id
         doc = session.createDocument(doc);
@@ -64,48 +66,52 @@ public class TestDocumentActions {
         croppedTitle = actions.getTitleCropped(doc, 20);
         assertEquals("Image Nam...ish name", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "1234");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "1234");
         croppedTitle = actions.getTitleCropped(doc, 5);
         assertEquals("1234", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "12345");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "12345");
         croppedTitle = actions.getTitleCropped(doc, 4);
         assertEquals("12345", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "12345");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "12345");
         croppedTitle = actions.getTitleCropped(doc, 5);
         assertEquals("12345", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "12345");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "12345");
         croppedTitle = actions.getTitleCropped(doc, 6);
         log.warn(croppedTitle);
         assertEquals("12345", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "123456");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, "123456");
         croppedTitle = actions.getTitleCropped(doc, 5);
         assertEquals("1...6", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "1234567890123456789");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "1234567890123456789");
         croppedTitle = actions.getTitleCropped(doc, 20);
         assertEquals("1234567890123456789", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "12345678901234567890");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "12345678901234567890");
         croppedTitle = actions.getTitleCropped(doc, 20);
         assertEquals("12345678901234567890", croppedTitle);
 
-        doc.setPropertyValue("dc:title", "123456789012345678901");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "123456789012345678901");
         croppedTitle = actions.getTitleCropped(doc, 20);
         assertEquals("123456789...45678901", croppedTitle);
 
         // test odd numbered maxLength
-        doc.setPropertyValue("dc:title", "123456789012345678901");
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "123456789012345678901");
         croppedTitle = actions.getTitleCropped(doc, 19);
         assertEquals("12345678...45678901", croppedTitle);
 
         // test null or empty title. This should come back with the cropped id.
         // Not really a good test cos it
         // uses same code as function being tested
-        doc.setPropertyValue("dc:title", null);
+        doc.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY, null);
         // we will crop to 21 so that the cropped id will contain the first 9
         // and last 9 characters
         String idStart = docId.substring(0, 9);

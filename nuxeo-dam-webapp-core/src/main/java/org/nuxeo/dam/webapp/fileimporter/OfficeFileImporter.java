@@ -50,8 +50,7 @@ public class OfficeFileImporter extends AbstractFileImporter {
         // Creating an unique identifier
         String docId = IdUtils.generateId(title);
 
-        docModel = documentManager.createDocumentModel(path, docId,
-                TYPE_NAME);
+        docModel = documentManager.createDocumentModel(path, docId, TYPE_NAME);
 
         // Updating known attributes (title, filename, content)
         docModel.setProperty("dublincore", "title", title);

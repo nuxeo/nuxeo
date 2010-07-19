@@ -36,7 +36,7 @@ public class InheritedPropertiesDescriptor {
     @XNode("@allProperties")
     protected boolean allProperties = false;
 
-    @XNodeList(value="property", type = ArrayList.class, componentType = String.class)
+    @XNodeList(value = "property", type = ArrayList.class, componentType = String.class)
     protected List<String> properties;
 
     public String getSchema() {

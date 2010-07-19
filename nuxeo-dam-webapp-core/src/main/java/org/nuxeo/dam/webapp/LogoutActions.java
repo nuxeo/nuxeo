@@ -17,10 +17,6 @@
 
 package org.nuxeo.dam.webapp;
 
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
-
 import java.io.IOException;
 
 import javax.faces.context.ExternalContext;
@@ -33,6 +29,10 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

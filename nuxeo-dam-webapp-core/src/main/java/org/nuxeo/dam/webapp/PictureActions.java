@@ -17,29 +17,30 @@
 
 package org.nuxeo.dam.webapp;
 
-import org.jboss.seam.annotations.Install;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.In;
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import java.io.Serializable;
 
-import org.jboss.seam.contexts.Contexts;
+import javax.faces.context.FacesContext;
+
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -96,7 +97,7 @@ public class PictureActions implements Serializable {
                         }
                     }
                 }
-                if (view==null) {
+                if (view == null) {
                     return;
                 }
                 Blob blob = (Blob) view.getValue(field);
@@ -109,8 +110,8 @@ public class PictureActions implements Serializable {
         }
     }
 
-    protected CoreSession getOrCreateDocumentManager(RepositoryLocation repositoryLocation)
-            throws ClientException {
+    protected CoreSession getOrCreateDocumentManager(
+            RepositoryLocation repositoryLocation) throws ClientException {
         if (documentManager != null) {
             return documentManager;
         }

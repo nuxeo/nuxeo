@@ -51,8 +51,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
-@Deploy({
-        "org.nuxeo.ecm.core.api",
+@Deploy( { "org.nuxeo.ecm.core.api",
         "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core",
@@ -60,8 +59,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.dam.core",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.platform.picture.convert",
-        "org.nuxeo.ecm.platform.commandline.executor"
-})
+        "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestImageFilenameUpdater {
 
     @Inject
@@ -72,12 +70,16 @@ public class TestImageFilenameUpdater {
         // Create Import set document
         DocumentModel importSet = session.createDocumentModel("/",
                 "importSetTest", Constants.IMPORT_SET_TYPE);
-        importSet.setPropertyValue("damc:author", "testCreator");
+        importSet.setPropertyValue(Constants.DAM_COMMON_AUTHOR_PROPERTY,
+                "testCreator");
         Calendar cal = GregorianCalendar.getInstance();
-        importSet.setPropertyValue("damc:authoringDate", cal);
-        importSet.setPropertyValue("dc:description", "testDescription");
-        importSet.setPropertyValue("dc:coverage", "testCoverage");
-        importSet.setPropertyValue("dc:expired", cal);
+        importSet.setPropertyValue(
+                Constants.DAM_COMMON_AUTHORING_DATE_PROPERTY, cal);
+        importSet.setPropertyValue(Constants.DUBLINCORE_DESCRIPTION_PROPERTY,
+                "testDescription");
+        importSet.setPropertyValue(Constants.DUBLINCORE_COVERAGE_PROPERTY,
+                "testCoverage");
+        importSet.setPropertyValue(Constants.DUBLINCORE_EXPIRED_PROPERTY, cal);
         importSet = session.createDocument(importSet);
         assertNotNull(importSet);
         session.saveDocument(importSet);
@@ -109,14 +111,16 @@ public class TestImageFilenameUpdater {
         // Create Picture document
         DocumentModel picture = session.createDocumentModel(
                 importSet.getPathAsString(), "pictureTest", "Picture");
-        picture.setPropertyValue("dc:title", "big nuxeo logo");
+        picture.setPropertyValue(Constants.DUBLINCORE_TITLE_PROPERTY,
+                "big nuxeo logo");
         picture = session.createDocument(picture);
         assertNotNull(picture);
         session.save();
 
         // Update Picture document without uploading picture
         picture = session.getChildren(importSet.getRef()).get(0);
-        picture.setPropertyValue("dc:description", "big nuxeo logo description");
+        picture.setPropertyValue(Constants.DUBLINCORE_DESCRIPTION_PROPERTY,
+                "big nuxeo logo description");
         session.saveDocument(picture);
         assertNotNull(picture);
         session.save();
@@ -138,7 +142,8 @@ public class TestImageFilenameUpdater {
 
         // update 'Original' filename
         picture = session.getChildren(importSet.getRef()).get(0);
-        Map<String, Object> pictureMap = picture.getDataModel(Constants.PICTURE_SCHEMA).getMap();
+        Map<String, Object> pictureMap = picture.getDataModel(
+                Constants.PICTURE_SCHEMA).getMap();
         List<Map<String, Object>> viewsList = (List<Map<String, Object>>) pictureMap.get("views");
         viewsList.get(0).put("filename", "big_nuxeo_logo edit.jpg");
         picture.getDataModel(Constants.PICTURE_SCHEMA).setMap(pictureMap);
@@ -151,7 +156,8 @@ public class TestImageFilenameUpdater {
         for (Map<String, Object> el : viewsList) {
             assertEquals("big_nuxeo_logo edit.jpg", el.get("filename"));
             Blob fileBlob = (Blob) el.get("content");
-            assertEquals((title + "_" + "big_nuxeo_logo edit.jpg"), fileBlob.getFilename());
+            assertEquals((title + "_" + "big_nuxeo_logo edit.jpg"),
+                    fileBlob.getFilename());
         }
     }
 
