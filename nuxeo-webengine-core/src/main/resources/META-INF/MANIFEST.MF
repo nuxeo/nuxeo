@@ -106,8 +106,5 @@ Import-Package: com.sun.jersey.core.spi.component,
  org.osgi.framework;version="1.4",
  org.w3c.dom
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
-Nuxeo-Require: freemarker,
- javax.servlet,
- net.sf.json,
- org.nuxeo.ecm.core.api,
+Nuxeo-Require: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.rendering
