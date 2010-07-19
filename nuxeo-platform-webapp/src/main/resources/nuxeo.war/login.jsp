@@ -324,17 +324,20 @@ nxthemes css is not used in login.jsp */
                     <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
                       Basque
                     </option>
-                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
-                      中文
-                    </option>
-                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
-                      Tiếng Việt
+                    <option value="ru" <%="ru".equals(selectedLanguage)?"selected":""%>>
+                      &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
                     </option>
                     <option value="ar" <%="ar".equals(selectedLanguage)?"selected":""%>>
                       &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
                     </option>
-                    <option value="ru" <%="ru".equals(selectedLanguage)?"selected":""%>>
-                      &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
+                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
+                      中文
+                    </option>
+                    <option value="ja" <%="ja".equals(selectedLanguage)?"selected":""%>>
+                      日本語
+                    </option>
+                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
+                      Tiếng Việt
                     </option>
                   </select>
                 </td>
