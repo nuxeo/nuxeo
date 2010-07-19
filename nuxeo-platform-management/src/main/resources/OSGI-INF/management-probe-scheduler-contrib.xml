@@ -18,10 +18,10 @@
     target="org.nuxeo.ecm.platform.management.probes.ProbeComponent"
     point="probes">
     <usecase name="repository"
-      class="org.nuxeo.ecm.platform.management.test.probes.RepositoryProbe"
+      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
     <usecase name="repositoryTest"
-      class="org.nuxeo.ecm.platform.management.test.probes.RepositoryTestProbe"
+      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </extension>
   

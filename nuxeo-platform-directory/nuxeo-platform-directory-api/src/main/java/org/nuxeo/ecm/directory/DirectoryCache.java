@@ -101,7 +101,21 @@ public class DirectoryCache {
                 dm = entry.getDocumentModel();
             }
         }
-        return dm;
+        try {
+            if (dm == null) {
+                return null;
+            }
+            DocumentModel clone = dm.clone();
+            // DocumentModelImpl#clone does not copy context data, hence
+            // propagate the read-only flag manually
+            if (BaseSession.isReadOnlyEntry(dm)) {
+                BaseSession.setReadOnlyEntry(clone);
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            // will never happen as long a DocumentModelImpl is used
+            return dm;
+        }
     }
 
     public void invalidate(List<String> entryIds) {

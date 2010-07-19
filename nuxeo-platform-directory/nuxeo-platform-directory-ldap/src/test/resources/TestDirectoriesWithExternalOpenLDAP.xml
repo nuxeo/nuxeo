@@ -96,8 +96,12 @@
       <searchScope>subtree</searchScope>
 
       <readOnly>false</readOnly>
+      <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
+        <parameter name="fieldName">dn</parameter>
+        <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
+      </entryAdaptor>
 
-      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>groupOfUniqueNames</creationClass>
       <rdnAttribute>cn</rdnAttribute>

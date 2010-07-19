@@ -150,13 +150,22 @@
           <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
           <searchFilter>(|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))</searchFilter>
           <searchScope>subtree</searchScope>
+          
+          <!-- Special entry adaptor that makes entries in the ou=editable branch editable
+          other entries have the readonly flag. This require adding a "dn" xs:string field
+          to the group schema.
+          -->
+	      <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
+	        <parameter name="fieldName">dn</parameter>
+	        <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
+	      </entryAdaptor>
 
           <readOnly>false</readOnly>
 
           <cacheTimeout>3600</cacheTimeout>
           <cacheMaxSize>1000</cacheMaxSize>
 
-          <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+          <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
           <creationClass>top</creationClass>
           <creationClass>groupOfUniqueNames</creationClass>
           <rdnAttribute>cn</rdnAttribute>

@@ -28,7 +28,7 @@
       <searchScope>onelevel</searchScope>
 
       <readOnly>false</readOnly>
-
+      
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>person</creationClass>
