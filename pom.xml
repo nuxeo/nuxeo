@@ -56,7 +56,7 @@
   </scm>
 
   <dependencyManagement>
-
+    <dependencies>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>
