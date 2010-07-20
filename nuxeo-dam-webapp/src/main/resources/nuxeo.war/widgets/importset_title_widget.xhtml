@@ -16,7 +16,7 @@
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
   	<a4j:outputPanel id="importset_title">
-      <h:inputText value="#{field_0}" id="#{widget.id}_title" onfocus="this.select();" />
+      <h:inputText value="#{field_0}" id="#{widget.id}_title" onclick="javascript:this.focus();this.select();" />
     </a4j:outputPanel>
 
   </c:if>
