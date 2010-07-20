@@ -145,6 +145,10 @@
     <concat destfile="${tomcatdir}/bin/nuxeo.conf" append="true">
       <filelist dir="src/main/resources-tomcat/config" files="nuxeo.conf" />
     </concat>
+
+    <copy todir="${tomcatdir}" overwrite="true">
+      <filelist dir="src/main/resources-common/" files="readme.html" />
+    </copy>
   </target>
 
   <target name="cleanstage">
