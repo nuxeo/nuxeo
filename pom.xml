@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.3.2-SNAPSHOT</version>
+  <version>5.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -1971,7 +1971,7 @@
               <exclude>**/NamingContext.java</exclude>
             </excludes>
             <rulesets>
-              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.3/pmd.xml</ruleset>
+              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.4/pmd.xml</ruleset>
             </rulesets>
           </configuration>
         </plugin>
@@ -2227,12 +2227,12 @@
                 </stylesheetfile
               -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.3 API Documentation
+                Nuxeo Enterprise Platform 5.4 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.3 API Documentation
+                Nuxeo Enterprise Platform 5.4 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.3</header>
+              <header>Nuxeo Enterprise Platform 5.4</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
