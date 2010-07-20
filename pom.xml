@@ -118,6 +118,11 @@
         <version>1.0</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>xom</groupId>
+        <artifactId>xom</artifactId>
+        <version>1.1</version>
+      </dependency>
       <!-- javax -->
       <dependency>
         <groupId>javax.xml.stream</groupId>
