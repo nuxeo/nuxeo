@@ -22,7 +22,7 @@
     <property name="assembly.tests.name" value="blogs" />
   </target>
   <target name="setproperties" depends="set.assembly.name">
-    <property name="nuxeo.dm.version" value="5.3.0-SNAPSHOT" />  
+    <property name="nuxeo.dm.version" value="5.4.0-SNAPSHOT" />  
     <property name="jboss.testing.location" value="${template.ear.root}/target/${assembly.tests.name}.ear/nuxeo-ep-${nuxeo.dm.version}" />  
     <property name="deploy.lib.dir.tests" value="${jboss.testing.location}/server/${jboss.config}/lib" />
     <property name="selenium.test.script.location" value="ftest/selenium" />    
