@@ -45,7 +45,16 @@
           <nxl:layout name="ip_rights" mode="edit" value="#{documentActions.currentSelection}"/>
         </f:subview>
       </div>
+      <div class="togglePanelBody">
+        <p>
+          <h:outputText value="#{messages['label.ip_rights.creative.commons.licenses.message']}" />
+          <a href="http://creativecommons.org/licenses/" class="external" onclick="window.open(this.href); return false;">
+            <h:outputText value="#{messages['label.ip_rights.creative.commons.licenses']}" />
+          </a>
+        </p>
+      </div>
     </div>
   </a4j:form>
+
 
 </div>
