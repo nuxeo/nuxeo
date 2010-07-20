@@ -165,7 +165,7 @@ public class NuxeoRepository {
         info.setChangesOnType(null);
         info.setVendorName("Nuxeo");
         info.setProductName("Nuxeo CMIS Connector");
-        info.setProductVersion("5.3-SNAPSHOT");
+        info.setProductVersion("5.4.0-SNAPSHOT");
         info.setRepositoryCapabilities(caps);
         info.setAclCapabilities(aclCaps);
         //

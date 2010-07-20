@@ -230,7 +230,7 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     public String getProductVersion() {
         // TODO update this when releasing
-        return "5.3.2-SNAPSHOT";
+        return "5.4.0-SNAPSHOT";
     }
 
     public String getVersionSupported() {
