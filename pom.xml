@@ -2403,7 +2403,7 @@
 	  <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-eclipse-plugin</artifactId>
-	    <version>2.9-NXP-SNAPSHOT</version>
+	    <version>2.9-NXP-3</version>
             <configuration>
               <additionalProjectnatures>
                 <projectnature>org.nuxeo.ide.builders.BundleNature</projectnature>
