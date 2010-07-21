@@ -112,7 +112,6 @@
       <!-- Required by tomahawk -->
       <artifact:resolveFile key="commons-el:commons-el" />
       <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
-      <artifact:resolveFile key="jaxen:jaxen:1.1-beta-6" />
       <artifact:resolveFile key="metro.webservices:webservices-api" />
       <artifact:resolveFile key="metro.webservices:webservices-rt" />
       <artifact:resolveFile key="metro.webservices:webservices-tools" />
