@@ -71,8 +71,11 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
-import com.sun.el.ExpressionFactoryImpl;
+import de.odysseus.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
@@ -107,19 +110,40 @@ public class NXAuditEventsService extends DefaultComponent implements
     protected PersistenceProvider persistenceProvider;
 
     public PersistenceProvider getOrCreatePersistenceProvider() {
-        if (persistenceProvider != null) {
-            return persistenceProvider;
-        }
+        return persistenceProvider;
+    }
+
+    protected void activatePersistenceProvider() {
         PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+        persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+        persistenceProvider.openPersistenceUnit();
     }
 
     protected void deactivatePersistenceProvider() {
-        if (persistenceProvider == null) {
-            return;
-        }
         persistenceProvider.closePersistenceUnit();
         persistenceProvider = null;
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        final BundleContext bundleContext = context.getRuntimeContext().getBundle().getBundleContext();
+        // TODO check if framework already started before registering a listener
+        bundleContext.addFrameworkListener(new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+               if (event.getType() == FrameworkEvent.STARTED) {
+                   bundleContext.removeFrameworkListener(this);
+                   final Thread currentThread = Thread.currentThread();
+                   final ClassLoader last = currentThread.getContextClassLoader();
+                   currentThread.setContextClassLoader(PersistenceProvider.class.getClassLoader());
+                   try {
+                       activatePersistenceProvider();
+                   } finally {
+                       currentThread.setContextClassLoader(last);
+                   }
+               }
+            }
+        });
+        super.activate(context);
     }
 
     @Override

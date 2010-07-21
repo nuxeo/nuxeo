@@ -76,6 +76,7 @@
   </extension-point>
   
   
+  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
 
   <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
         point="hibernate">

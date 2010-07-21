@@ -48,6 +48,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
@@ -489,18 +491,29 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        if (Boolean.parseBoolean(Framework.getProperty(
+        if (!Boolean.parseBoolean(Framework.getProperty(
                 "org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
-            context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                    this);
+            return;
         }
+        Bundle host = context.getRuntimeContext().getBundle();
+        BundleContext ctx = host.getBundleContext();
+        if (ctx == null) {
+            log.error("Cannot get access to OSGI framework for registering activation listener");
+            return;
+        }
+        ctx.addFrameworkListener(this);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         // this is doing nothing if listener was not registered
-        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
-                this);
+
+        Bundle host = context.getRuntimeContext().getBundle();
+        BundleContext ctx = host.getBundleContext();
+        if (ctx == null) {
+            return;
+        }
+        ctx.removeFrameworkListener(this);
     }
 
 }
