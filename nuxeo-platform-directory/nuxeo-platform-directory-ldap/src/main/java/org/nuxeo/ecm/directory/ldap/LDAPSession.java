@@ -103,6 +103,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String substringMatchType;
 
+    protected final String rdnAttribute;
+
+    protected final String rdnField;
+
     public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
         this.directory = directory;
         this.dirContext = dirContext;
@@ -113,6 +117,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
         sid = String.valueOf(SIDGenerator.next());
         searchBaseDn = directory.getConfig().getSearchBaseDn();
         substringMatchType = directory.getConfig().getSubstringMatchType();
+        rdnAttribute = directory.getConfig().getRdnAttribute();
+        rdnField = directory.getFieldMapper().getDirectoryField(rdnAttribute);
     }
 
     public Directory getDirectory() {
@@ -131,8 +137,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
         List<String> referenceFieldList = new LinkedList<String>();
         try {
-            String dn = String.format("%s=%s,%s", idAttribute,
-                    fieldMap.get(getIdField()),
+            String dn = String.format("%s=%s,%s", rdnAttribute,
+                    fieldMap.get(rdnField),
                     directory.getConfig().getCreationBaseDn());
             Attributes attrs = new BasicAttributes();
             Attribute attr;
