@@ -21,14 +21,15 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 
-
 /**
  * Interface that provide means to access a result set by pages, allowing easy
  * navigation between them.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
+ * @deprecated use {@link PageProvider<DocumentModel>} instead
  */
+@Deprecated
 public interface PagedDocumentsProvider extends Serializable {
 
     /**
@@ -40,8 +41,8 @@ public interface PagedDocumentsProvider extends Serializable {
      * Returns the current page of results.
      * <p>
      * This method is designed to be called from JSF. It therefore ensures
-     * cheapness of repeated calls, rather than data consistency.
-     * There is a refresh() method for that.
+     * cheapness of repeated calls, rather than data consistency. There is a
+     * refresh() method for that.
      * <p>
      *
      * @return the current page
@@ -81,17 +82,18 @@ public interface PagedDocumentsProvider extends Serializable {
     int getPageSize();
 
     /**
-     * @return the offset (starting from 0) of the first element in the
-     * current page or <code>UNKNOWN_SIZE</code>
+     * @return the offset (starting from 0) of the first element in the current
+     *         page or <code>UNKNOWN_SIZE</code>
      */
     int getCurrentPageOffset();
 
     /**
      * Get the next page of documents.
-     * <p>Has the side effect of setting the current page, too,
-     * hence <code>provider.getNextPage()</code> is equivalent to
-     * <code> provider.next(); page = provider.getCurrentPage() </code>
-     * in terms of returned value and state of the provider, although
+     * <p>
+     * Has the side effect of setting the current page, too, hence
+     * <code>provider.getNextPage()</code> is equivalent to
+     * <code> provider.next(); page = provider.getCurrentPage() </code> in
+     * terms of returned value and state of the provider, although
      * implementation details might imply a performance difference.
      *
      * @return the next page of documents
@@ -99,7 +101,8 @@ public interface PagedDocumentsProvider extends Serializable {
     DocumentModelList getNextPage();
 
     /**
-     * @return number of result elements if available or <code>UNKNOWN_SIZE</code> if it is unknown
+     * @return number of result elements if available or
+     *         <code>UNKNOWN_SIZE</code> if it is unknown
      */
     long getResultsCount();
 
@@ -112,6 +115,7 @@ public interface PagedDocumentsProvider extends Serializable {
 
     /**
      * Return the total number of pages
+     *
      * @return an integer
      */
     int getNumberOfPages();
