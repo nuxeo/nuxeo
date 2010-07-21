@@ -41,7 +41,7 @@ public class DataSourceHelper {
 
     protected static final class TestingInitialContext extends InitialContext {
         protected TestingInitialContext() throws NamingException {
-            super(true); // be lazy
+            super(false); // lazy mode is breaking jboss
         }
         // subclass in order to access the protected method
         @Override
