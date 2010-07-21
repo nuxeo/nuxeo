@@ -22,13 +22,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Basic implementation for a {@link PageProvider}
  *
  * @author Anahide Tchertchian
  */
-public abstract class AbstractPageProvider<T> implements
-        PageProvider<T> {
+public abstract class AbstractPageProvider<T> implements PageProvider<T> {
+
+    private static final Log log = LogFactory.getLog(AbstractPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -77,6 +81,13 @@ public abstract class AbstractPageProvider<T> implements
         }
     }
 
+    /**
+     * @deprecated: use {@link #firstPage()} instead
+     */
+    public void rewind() {
+        firstPage();
+    }
+
     public long getCurrentPageIndex() {
         if (pageSize == 0) {
             return 0;
@@ -108,10 +119,24 @@ public abstract class AbstractPageProvider<T> implements
     }
 
     public List<T> setCurrentPage(long page) {
+        long oldOffset = offset;
         offset = page * pageSize;
         pageChanged();
         refresh();
-        return getCurrentPage();
+        List<T> res = getCurrentPage();
+        // sanity check in case given page is not present in result provider
+        if (page >= getNumberOfPages()) {
+            // go back to old offset
+            log.warn(String.format(
+                    "Provider '%s' does not have a page with number '%s': "
+                            + "go back to old page", getName(),
+                    Long.valueOf(page)));
+            offset = oldOffset;
+            pageChanged();
+            refresh();
+            res = getCurrentPage();
+        }
+        return res;
     }
 
     public long getPageSize() {
@@ -119,9 +144,12 @@ public abstract class AbstractPageProvider<T> implements
     }
 
     public void setPageSize(long pageSize) {
-        // FIXME: current page index may not be valid anymore
-        this.pageSize = pageSize;
-        refresh();
+        if (this.pageSize != pageSize) {
+            this.pageSize = pageSize;
+            // reset offset too
+            offset = 0;
+            refresh();
+        }
     }
 
     public List<SortInfo> getSortInfos() {
@@ -200,6 +228,13 @@ public abstract class AbstractPageProvider<T> implements
         refresh();
     }
 
+    /**
+     * @deprecated: use {@link #lastPage()} instead
+     */
+    public void last() {
+        lastPage();
+    }
+
     public void nextPage() {
         if (pageSize == 0) {
             // do nothing
@@ -208,6 +243,13 @@ public abstract class AbstractPageProvider<T> implements
         offset += pageSize;
         pageChanged();
         refresh();
+    }
+
+    /**
+     * @deprecated: use {@link #nextPage()} instead
+     */
+    public void next() {
+        nextPage();
     }
 
     public void previousPage() {
@@ -220,6 +262,13 @@ public abstract class AbstractPageProvider<T> implements
             pageChanged();
             refresh();
         }
+    }
+
+    /**
+     * @deprecated: use {@link #previousPage()} instead
+     */
+    public void previous() {
+        previousPage();
     }
 
     public void refresh() {
@@ -367,7 +416,7 @@ public abstract class AbstractPageProvider<T> implements
                     // no selection at all
                     for (int i = 0; i < currentPage.size(); i++) {
                         entries.add(new PageSelection<T>(currentPage.get(i),
-                                Boolean.FALSE));
+                                false));
                     }
                 } else {
                     boolean allSelected = true;
@@ -377,10 +426,11 @@ public abstract class AbstractPageProvider<T> implements
                         if (!Boolean.TRUE.equals(selected)) {
                             allSelected = false;
                         }
-                        entries.add(new PageSelection<T>(entry, selected));
+                        entries.add(new PageSelection<T>(entry,
+                                selected.booleanValue()));
                     }
                     if (allSelected) {
-                        currentSelectPage.setSelected(Boolean.TRUE);
+                        currentSelectPage.setSelected(true);
                     }
                 }
             }
