@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  *
  * $Id$
  */
@@ -28,7 +28,7 @@ import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class Main {
 
@@ -45,13 +45,16 @@ public class Main {
         String method = "main";
         int p = path.lastIndexOf(':');
         if (p > -1) {
-            method = path.substring(p+1);
+            method = path.substring(p + 1);
             path = path.substring(0, p);
+            if (method == null || method.length() == 0) {
+                method = "main";
+            }
         }
         p = path.lastIndexOf('/');
         String mainClassName = null;
         if (p > -1) {
-            mainClassName = path.substring(p+1);
+            mainClassName = path.substring(p + 1);
             path = path.substring(0, p);
         }
 
@@ -67,14 +70,16 @@ public class Main {
                         + ". Make sure you have this class on the boot class path");
                 System.exit(3);
             }
-            URLClassLoader classLoader = new URLClassLoader(urls, Main.class.getClassLoader());
+            URLClassLoader classLoader = new URLClassLoader(urls,
+                    Main.class.getClassLoader());
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            // set the property used by Nuxeo OSGi launcher to create the system bundle
+            // set the property used by Nuxeo OSGi launcher to create the system
+            // bundle
             Class<?> mainClass = classLoader.loadClass(mainClassName);
             Method m = mainClass.getMethod(method, String[].class);
             if (args.length > 1) {
-                String[] tmp = new String[args.length-1];
+                String[] tmp = new String[args.length - 1];
                 System.arraycopy(args, 1, tmp, 0, tmp.length);
                 args = tmp;
             } else {
