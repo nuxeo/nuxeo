@@ -393,7 +393,6 @@
     <style name="breadcrumbs style">
       <selector path="">
         <border-bottom preset="breadcrumb (Galaxy borders)"/>
-        <height>25px</height>
         <background preset="breadcrumb (Galaxy backgrounds)"/>
         <padding>3px 7px</padding>
       </selector>
@@ -440,10 +439,13 @@
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".breadcrumbs">
-        <height>20px</height>
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
         <float>left</float>
+      </selector>
+      <selector path=".printButton form, .breadcrumbs form">
+        <padding>0</padding>
+        <margin>0</margin>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
