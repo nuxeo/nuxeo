@@ -23,6 +23,13 @@
       </and>
     </condition>
 
+    <condition property="importer">
+      <or>
+          <isset property="maven.profile.all-distributions" />
+          <isset property="maven.profile.http-importer" />
+      </or>
+    </condition>
+
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
     <property name="tomcat" value="nuxeo-dam-${maven.project.version}-tomcat" />
@@ -110,8 +117,11 @@
                        classifier="tomcat"
                        target="${maven.project.groupId}:${maven.project.artifactId}" />
 
-    <nx:profile name="http-importer">
-      <copy todir="${nxserver}/bundles" overwrite="true">
+    <antcall target="create-http-importer-distribution" />
+  </target>
+
+  <target name="create-http-importer-distribution" if="importer">
+    <copy todir="${nxserver}/bundles" overwrite="true">
         <artifact:set>
           <includes>
             <artifact artifactId="nuxeo-platform-importer-jaxrs" />
@@ -127,7 +137,6 @@
                        type="zip"
                        classifier="tomcat-importer"
                        target="${maven.project.groupId}:${maven.project.artifactId}" />
-    </nx:profile>
   </target>
 
   <target name="third-party-libraries">
