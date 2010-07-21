@@ -22,7 +22,13 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/authentication-framework.xml,
- 
+ OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/web-request-controller-framework.xml,
+ OSGI-INF/web-request-controller-contrib.xml,
+ OSGI-INF/exception-handling-service.xml,
+ OSGI-INF/exception-handling-contrib.xml,
+ OSGI-INF/ajax-proxy-framework.xml,
+ OSGI-INF/ajax-proxy-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.web.common;singleton:=true
 Import-Package: javax.faces.context,
  javax.security.auth,
