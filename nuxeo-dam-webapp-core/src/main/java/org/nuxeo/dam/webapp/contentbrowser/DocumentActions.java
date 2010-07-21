@@ -283,8 +283,7 @@ public class DocumentActions implements Serializable {
                         + "filename");
                 String blobXpath = xpath + "content";
                 FacesContext context = FacesContext.getCurrentInstance();
-                DownloadHelper.downloadWithWatermark(context, currentSelection,
-                        blobXpath, filename);
+                DownloadHelper.download(context, currentSelection, blobXpath, filename);
             }
         }
 

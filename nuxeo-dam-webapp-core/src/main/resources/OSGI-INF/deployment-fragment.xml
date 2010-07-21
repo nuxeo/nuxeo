@@ -8,14 +8,6 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter
-      </filter-name>
-      <url-pattern>/watermark/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
   </extension>
 
   <extension target="application#MODULE">
@@ -29,19 +21,6 @@
         <context-root>/nuxeo</context-root>
       </web>
     </module>
-  </extension>
-
-  <extension target="web#SERVLET">
-    <servlet>
-      <servlet-name>Image Watermarker</servlet-name>
-      <servlet-class>
-        org.nuxeo.dam.webapp.watermark.WaterMarkServlet
-      </servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>Image Watermarker</servlet-name>
-      <url-pattern>/watermark/*</url-pattern>
-    </servlet-mapping>
   </extension>
 
   <extension target="web#FILTER-MAPPING">

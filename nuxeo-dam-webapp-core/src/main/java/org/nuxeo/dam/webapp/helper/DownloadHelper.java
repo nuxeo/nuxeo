@@ -58,23 +58,4 @@ public class DownloadHelper {
         }
     }
 
-    public static void downloadWithWatermark(FacesContext context,
-            DocumentModel doc, String filePropertyPath, String filename) {
-        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
-        StringBuilder bigDownloadURL = new StringBuilder(
-                BaseURL.getBaseURL(request));
-        bigDownloadURL.append("watermark/");
-        bigDownloadURL.append(doc.getRepositoryName()).append('/');
-        bigDownloadURL.append(doc.getRef().toString()).append('/');
-        bigDownloadURL.append(filePropertyPath).append('/');
-        bigDownloadURL.append(URIUtils.quoteURIPathComponent(filename, true));
-        try {
-            response.sendRedirect(bigDownloadURL.toString());
-        } catch (IOException e) {
-            log.error("Error while redirecting for big file downloader", e);
-        }
-    }
-
 }
