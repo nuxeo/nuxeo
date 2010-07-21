@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.el;
 
+import java.io.Serializable;
+
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
@@ -44,9 +46,9 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * <p>
  * Simple document properties are get/set directly: for instance, the above
  * expression will return a String value on get, and set this String on the
- * document for set. Complex properties (maps and lists) are get/set through the
- * {@link Property} object controlling their value: on get, sub properties will
- * be resolved at the next iteration, and on set, they will be set on the
+ * document for set. Complex properties (maps and lists) are get/set through
+ * the {@link Property} object controlling their value: on get, sub properties
+ * will be resolved at the next iteration, and on set, they will be set on the
  * property instance so the document model is aware of the change.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -117,8 +119,8 @@ public class DocumentModelResolver extends BeanELResolver {
             }
         }
 
-        // XXX end by bean resolver to overcome a mysterious StackOverflow error
-        // at first login, and maybe resolve Property getters.
+        // XXX end by bean resolver to overcome a mysterious StackOverflow
+        // error at first login, and maybe resolve Property getters.
         if (!context.isPropertyResolved()) {
             try {
                 value = super.getValue(context, base, property);
@@ -213,7 +215,8 @@ public class DocumentModelResolver extends BeanELResolver {
             DocumentPropertyContext ctx = (DocumentPropertyContext) base;
             value = FieldAdapterManager.getValueForStorage(value);
             try {
-                ctx.doc.setProperty(ctx.schema, (String) property, value);
+                ctx.doc.setPropertyValue(ctx.schema + ":" + (String) property,
+                        (Serializable) value);
                 context.setPropertyResolved(true);
             } catch (ClientException e) {
                 // XXX avoid errors here too?

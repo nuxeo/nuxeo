@@ -40,7 +40,7 @@ public class Action implements Serializable, Comparable<Action> {
     private static final long serialVersionUID = 742479401240977268L;
 
     @XNode("@id")
-    private String id;
+    private String id = "";
 
     @XNode("@link")
     private String link;
@@ -161,7 +161,12 @@ public class Action implements Serializable, Comparable<Action> {
     }
 
     public int compareTo(Action anotherAction) {
-        return order - anotherAction.order;
+        int cmp = order - anotherAction.order;
+        if (cmp == 0) {
+            // make sure we have a deterministic sort
+            cmp = id.compareTo(anotherAction.id);
+        }
+        return cmp;
     }
 
     public List<String> getFilterIds() {

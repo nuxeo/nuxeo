@@ -108,11 +108,19 @@ public class OOoConfigHelper {
                                       "-headless",
                                       "-norestore",
                                       "-invisible",
-                                      "-env:UserInstallation=file://" + getUserDir(),
+                                      getUserEnvParam(),
                                       "-nofirststartwizard",
                                       "-accept=socket," + listen + ";urp;StarOffice.Service" };
 
         return command;
+    }
+
+    protected String getUserEnvParam() {
+        if (isWindows()) {
+            return "";
+        } else {
+            return "-env:UserInstallation=file://" + getUserDir();
+        }
     }
 
     public static String getUserDir() {
