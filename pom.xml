@@ -116,7 +116,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -794,7 +794,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.1.114</version>
+        <version>1.1.114-nx</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2318,7 +2318,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>1.0</version>
+          <version>1.1</version>
           <extensions>true</extensions>
         </plugin>
         <!-- Cannot upgrade after 2.2-beta-1 because of MASSEMBLY-285 -->
