@@ -44,23 +44,22 @@
         <exclude name="**/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
         <exclude name="**/nuxeo-platform-webapp-core*" />
 
-        <exclude name="**/system/nuxeo-platform-virtualnavigation-web*" />
-        <exclude name="**/system/nuxeo-platform-forum*" />
-        <exclude name="**/system/nuxeo-platform-syndication*" />
-        <exclude name="**/system/nuxeo-platform-publish*" />
         <exclude name="**/system/nuxeo-platform-comment-web*" />
-        <exclude name="**/system/nuxeo-platform-workflow*" />
-        <exclude name="**/system/nuxeo-platform-imaging-dm*" />
         <exclude name="**/system/nuxeo-platform-directory-web*" />
-        <exclude name="**/system/nuxeo-platform-lang*" />
-        <exclude name="**/system/nuxeo-platform-tag*" />
-        <exclude name="**/system/nuxeo-platform-mail*" />
         <exclude name="**/system/nuxeo-platform-ear*" />
-        <exclude name="**/system/nuxeo-platform-wss*" />
-        <exclude name="**/system/nuxeo-platform-spaces*" />
-        <exclude name="**/system/nuxeo-platform-virtualnavigation*" />
-
+        <exclude name="**/system/nuxeo-platform-forum*" />
+        <exclude name="**/system/nuxeo-platform-imaging-dm*" />
+        <exclude name="**/system/nuxeo-platform-lang*" />
+        <exclude name="**/system/nuxeo-platform-mail*" />
+        <exclude name="**/system/nuxeo-platform-notification-web*" />
         <exclude name="**/system/nuxeo-opensocial*" />
+        <exclude name="**/system/nuxeo-platform-publish*" />
+        <exclude name="**/system/nuxeo-platform-spaces*" />
+        <exclude name="**/system/nuxeo-platform-syndication*" />
+        <exclude name="**/system/nuxeo-platform-tag*" />
+        <exclude name="**/system/nuxeo-platform-virtualnavigation*" />
+        <exclude name="**/system/nuxeo-platform-workflow*" />
+        <exclude name="**/system/nuxeo-platform-wss*" />
 
         <exclude name="**/system/nuxeo-webengine-gadgets*" />
         <exclude name="**/system/nuxeo-webengine-admin*" />
@@ -68,6 +67,7 @@
         <exclude name="**/system/nuxeo-webengine-sites*" />
         <exclude name="**/system/nuxeo-webengine-ui*" />
 
+        <!-- OpenSocial libs -->
         <exclude name="**/lib/shindig*" />
         <exclude name="**/lib/oauth*" />
         <exclude name="**/lib/caja*" />

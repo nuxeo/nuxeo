@@ -45,23 +45,23 @@
       <patternset>
         <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-core*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-virtualnavigation-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-syndication*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-publish*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-comment-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-workflow*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-imaging-dm*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-directory-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-lang*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-tag*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-mail*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-wss*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-spaces*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-virtualnavigation*" />
 
+        <exclude name="**/nxserver/bundles/nuxeo-platform-comment-web*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-directory-web*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-imaging-dm*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-lang*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-mail*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-notification-web*" />
         <exclude name="**/nxserver/bundles/nuxeo-opensocial*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-publish*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-spaces*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-syndication*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-tag*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-virtualnavigation*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-workflow*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-wss*" />
 
         <exclude name="**/nxserver/bundles/nuxeo-webengine-gadgets*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-admin*" />
@@ -69,13 +69,13 @@
         <exclude name="**/nxserver/bundles/nuxeo-webengine-sites*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-ui*" />
 
+        <!-- OpenSocial libs -->
         <exclude name="**/nxserver/lib/shindig*" />
         <exclude name="**/nxserver/lib/oauth*" />
         <exclude name="**/nxserver/lib/caja*" />
 
         <exclude name="**/nxserver/config/nxmail-scheduler-config.xml" />
         <exclude name="**/nxserver/config/default-opensocial-config.xml" />
-
         <exclude name="**/templates/default/nxserver/config/opensocial.properties" />
       </patternset>
     </unzip>
