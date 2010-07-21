@@ -239,6 +239,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-jca</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <type>rar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-persistence</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
