@@ -10,14 +10,11 @@
       point="doctype">
 
     <doctype name="Tag" extends="Document">
-      <schema name="common"/>
-      <schema name="dublincore"/>
       <schema name="tag"/>
-      <facet name="Folderish"/>
-      <facet name="HiddenInNavigation" />
-      <subtypes>
-        <type>Tag</type>
-      </subtypes>
+      <schema name="dublincore"/>
+    </doctype>
+
+    <doctype name="Tagging" extends="Relation">
     </doctype>
 
   </extension>
