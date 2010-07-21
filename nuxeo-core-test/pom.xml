@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-test</artifactId>
@@ -16,6 +16,12 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
       <scope>compile</scope>
     </dependency>
 
@@ -32,6 +38,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>

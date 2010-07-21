@@ -27,10 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.repository.DocumentProvider;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.repository.impl.DocumentProviderManager;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,8 +84,6 @@ public class CoreInstance implements Serializable {
     private final Map<String, CoreSession> sessions = new ConcurrentHashMap<String, CoreSession>();
 
     private final Map<String, DocumentType> docTypes = new Hashtable<String, DocumentType>();
-
-    private final Map<String, DocumentProvider> documentProviders = new Hashtable<String, DocumentProvider>();
 
     // hiding the default constructor from clients
     protected CoreInstance() {
@@ -208,21 +204,6 @@ public class CoreInstance implements Serializable {
 
     public CoreSessionFactory getFactory() {
         return factory;
-    }
-
-    public DocumentProvider getDocumentProvider(String sid) {
-        DocumentProvider documentProvider = documentProviders.get(sid);
-        if (documentProvider == null) {
-            CoreSession session = getSession(sid);
-            if (session != null) {
-                documentProvider = Framework.getLocalService(DocumentProvider.class);
-                if (documentProvider instanceof DocumentProviderManager) {
-                    ((DocumentProviderManager) documentProvider).setSession(session);
-                }
-                documentProviders.put(sid, documentProvider);
-            }
-        }
-        return documentProvider;
     }
 
 }

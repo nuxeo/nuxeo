@@ -45,7 +45,6 @@ import org.nuxeo.runtime.model.Extension;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public class CoreEventListenerServiceImpl extends DefaultComponent implements
         CoreEventListenerService {
 

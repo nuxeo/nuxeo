@@ -164,6 +164,8 @@ public class PersistenceProvider {
             } finally {
                 releaseEntityManager(em);
             }
+        } catch (Throwable e) {
+                throw new ClientException(e);
         } finally {
             myThread.setContextClassLoader(lastLoader);
         }

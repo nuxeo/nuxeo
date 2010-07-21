@@ -102,7 +102,6 @@ public class SerializableEventBundle implements Serializable {
             serializableEvent.put("contextSessionRepositoryName", repoName);
 
             if (event.getContext() instanceof DocumentEventContext) {
-                DocumentEventContext docContext = (DocumentEventContext) event.getContext();
                 serializableEvent.put("isDocumentEventContext", true);
             } else {
                 serializableEvent.put("isDocumentEventContext", false);

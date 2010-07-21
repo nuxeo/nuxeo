@@ -43,6 +43,10 @@ public abstract class Operation<T> implements Serializable {
     public static final String START_EVENT = "commandStarted";
     public static final String TERMINATE_EVENT = "commandTerminated";
 
+    public static final String OPERATION_START = "!OPERATION_START!";
+
+    public static final String OPERATION_END = "!OPERATION_END!";
+
     /**
      * Operation flags.
      * The first 2 bits are reserved to operation execution state

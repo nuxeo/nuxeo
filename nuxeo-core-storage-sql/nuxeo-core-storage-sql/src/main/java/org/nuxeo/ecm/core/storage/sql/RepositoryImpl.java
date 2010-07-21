@@ -259,7 +259,7 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver);
+        Mapper mapper = backend.getMapper(model, pathResolver);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -272,7 +272,7 @@ public class RepositoryImpl implements Repository {
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
                 processClusterInvalidationsNext();
-                mapper = backend.newMapper(model, pathResolver);
+                mapper = backend.getMapper(model, pathResolver);
             }
         }
 

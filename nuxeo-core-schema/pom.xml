@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-schema</artifactId>
@@ -40,6 +40,11 @@
     <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

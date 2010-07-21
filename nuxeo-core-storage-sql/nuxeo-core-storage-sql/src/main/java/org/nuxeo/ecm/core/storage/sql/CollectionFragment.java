@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
 /**
  * A type of fragment corresponding to several rows with the same id.

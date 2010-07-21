@@ -94,4 +94,12 @@ public class DefaultLoginHandler implements LoginHandler {
         login();
     }
 
+    public boolean isLogged() {
+        return lc != null;
+    }
+
+    public LoginContext loginAsSystem(String username) throws LoginException {
+        logout();
+        return lc = Framework.loginAs(username);
+    }
 }

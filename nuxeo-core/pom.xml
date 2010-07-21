@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core</artifactId>
@@ -64,6 +64,20 @@
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
+
 
 </project>

@@ -25,6 +25,6 @@ package org.nuxeo.ecm.core.api.operation;
  */
 public interface OperationEventListener {
 
-    void handleEvent(OperationEvent event);
+    void handleEvents(OperationEvent[] events, boolean isUrgent);
 
 }
