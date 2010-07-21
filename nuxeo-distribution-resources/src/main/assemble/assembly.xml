@@ -25,7 +25,7 @@
     </antcall>
     <delete dir="${outdir}/bin" failonerror="false" />
     <unzip dest="${outdir}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${maven.project.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${nuxeo.windows.version}:zip" />
     </unzip>
     <antcall target="build-resources">
       <param name="distribution" value="bin" />
