@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.ecm.core.storage.sql.management.MonitoringMapper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -138,7 +137,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     public Mapper getMapper(Model model, PathResolver pathResolver)
             throws StorageException {
-        return MonitoringMapper.newProxy(new JDBCMapper(model, pathResolver, sqlInfo, xadatasource));
+        return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource);
     }
 
     public void shutdown() {
