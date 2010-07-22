@@ -8,7 +8,7 @@ Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-Name: org.nuxeo.runtime.nuxeo-runtime-test
+Bundle-Name: Nuxeo Runtime Test
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT

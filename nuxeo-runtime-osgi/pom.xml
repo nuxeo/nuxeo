@@ -35,45 +35,5 @@
       <artifactId>jboss-jmx</artifactId>
     </dependency>
   </dependencies>
-  <profiles>
-    <profile>
-      <id>bundlor</id>
-      <build>
-	<plugins>
-	  <plugin>
-	    <groupId>com.springsource.bundlor</groupId>
-	    <artifactId>com.springsource.bundlor.maven</artifactId>
-	    <version>1.0.0.RELEASE</version>
-	    <executions>
-              <execution>
-		<id>bundlor</id>
-		<goals>
-		  <goal>bundlor</goal>
-		</goals>
-              </execution>
-	    </executions>
-	    <configuration>
-	      <manifestTemplate>
-Bundle-ManifestVersion: 2
-Bundle-Name: ${project.name}
-Bundle-Version: ${bundle.version}
-Export-Template:
- org.nuxeo.*;version="${bundle.version}"
-Import-Template: 
- org.nuxeo.*;version="${bundle.version.range}"
-Import-Package: org.jboss.system.server,
- org.jboss.mx.util,
- org.jboss.logging,
- org.nuxeo.common,
- org.nuxeo.common.utils
-              </manifestTemplate>
-	      <manifestTemplatePath>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestTemplatePath>
-	      <outputPath>${basedir}</outputPath>
-	    </configuration>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

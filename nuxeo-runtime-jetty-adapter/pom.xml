@@ -73,49 +73,4 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>bundlor</id>
-      <build>
-	<plugins>
-	  <plugin>
-	    <groupId>com.springsource.bundlor</groupId>
-	    <artifactId>com.springsource.bundlor.maven</artifactId>
-	    <version>1.0.0.RELEASE</version>
-	    <executions>
-              <execution>
-		<id>bundlor</id>
-		<goals>
-		  <goal>bundlor</goal>
-		</goals>
-              </execution>
-	    </executions>
-	    <configuration>
-	      <manifestTemplate>
-Import-Package: 
- org.mortbay.component,
- org.mortbay.jetty.webapp,
- org.mortbay.xml,
- org.nuxeo.common,
- org.nuxeo.common.server,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.model,
- org.nuxeo.runtime.deployment.preprocessor
-Bundle-ManifestVersion: 2
-Bundle-Name: ${project.name}
-Bundle-Version: ${bundle.version}
-Export-Template:
- org.nuxeo.*;version="${bundle.version}"
-Import-Template: 
- org.nuxeo.*;version="${bundle.version.range}"
-              </manifestTemplate>
-	      <manifestTemplatePath>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestTemplatePath>
-	      <outputPath>${basedir}</outputPath>
-	    </configuration>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>
