@@ -27,9 +27,19 @@ public interface AdministrativeStatusConstants {
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT_TYPE = "AdministrativeStatus";
 
     public static final String ADMINISTRATIVE_STATUS_PROPERTY = "status:administrative_status";
-    
+
     public static final String LOCKED = "locked";
 
     public static final String UNLOCKED = "unlocked";
+
+    public static final String ADMINISTRATIVE_INSTANCE_ID = "org.nuxeo.ecm.instance.administrative.id";
+    
+    public static final String ADMINISTRATIVE_EVENT_CATEGORY = "administrativeCategory";
+    
+    public static final String ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT = "administrativeStatusDocumentCreated";
+    
+    public static final String SEVER_LOCKED_EVENT = "serverLocked";
+    
+    public static final String SERVER_UNLOCKED_EVENT = "serverUnlocked";
 
 }

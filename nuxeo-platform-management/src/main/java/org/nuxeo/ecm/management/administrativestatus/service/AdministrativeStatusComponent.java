@@ -23,7 +23,19 @@ import static org.nuxeo.ecm.management.administrativestatus.service.Administrati
 import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_PROPERTY;
 import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.LOCKED;
 import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.UNLOCKED;
+import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_INSTANCE_ID;
+import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_EVENT_CATEGORY;
+import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT;
+import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.SEVER_LOCKED_EVENT;
+import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.SERVER_UNLOCKED_EVENT;
 
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,8 +44,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * Used to control the server administrative status: the status of the server
+ * can be locked/unlocked
+ * 
+ * @author Mariana Cedica
+ */
 public class AdministrativeStatusComponent extends DefaultComponent implements
         AdministrativeStatusService {
 
@@ -41,31 +62,36 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
 
     private DocumentModel statusDoc;
 
-    public boolean lockServer(CoreSession session) throws ClientException {
-        return setStatusProperty(session, LOCKED);
+    protected EventProducer eventProducer;
+
+    public boolean lockServer(CoreSession session) {
+        AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
+                session, LOCKED, SEVER_LOCKED_EVENT);
+        try {
+            runner.runUnrestricted();
+            return true;
+        } catch (ClientException e) {
+            log.error("Unable to lock server", e);
+            return false;
+        }
+
     }
 
-    public boolean unlockServer(CoreSession session) throws ClientException {
-        return setStatusProperty(session, UNLOCKED);
+    public boolean unlockServer(CoreSession session) {
+        AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
+                session, UNLOCKED, SERVER_UNLOCKED_EVENT);
+        try {
+            runner.runUnrestricted();
+            return true;
+        } catch (ClientException e) {
+            log.error("Unable to lock server", e);
+            return false;
+        }
     }
 
     public String getServerStatus(CoreSession session) throws ClientException {
         return (String) getOrCreateStatusDocument(session).getPropertyValue(
                 ADMINISTRATIVE_STATUS_PROPERTY);
-    }
-
-    private boolean setStatusProperty(CoreSession session, String status)
-            throws ClientException {
-        try {
-            statusDoc = getOrCreateStatusDocument(session);
-            statusDoc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, status);
-            session.saveDocument(statusDoc);
-        } catch (ClientException e) {
-            log.error("Unable to change the status of the server to " + status,
-                    e);
-            return false;
-        }
-        return true;
     }
 
     private DocumentModel getOrCreateStatusDocument(CoreSession session)
@@ -85,6 +111,43 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
         return statusDoc;
     }
 
+    private class AdministrativeStatusServerChangeState extends
+            UnrestrictedSessionRunner {
+
+        private DocumentModel statusDoc;
+
+        private String serverState;
+
+        private String eventName;
+
+        public AdministrativeStatusServerChangeState(CoreSession session,
+                String state, String eventName) {
+            super(session);
+            this.serverState = state;
+            this.eventName = eventName;
+
+        }
+
+        @Override
+        public void run() throws ClientException {
+            statusDoc = getOrCreateStatusDocument(session);
+            String actualServerState = (String) statusDoc.getPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY);
+            if (actualServerState != null
+                    && actualServerState.equals(serverState)) {
+                return;
+            }
+
+            statusDoc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY,
+                    serverState);
+            session.saveDocument(statusDoc);
+            // and notify docStatus created
+            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+            eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
+            notifyEvent(session, eventName, statusDoc, eventProperties);
+        }
+
+    }
+
     private class AdministrativeStatusDocCreator extends
             UnrestrictedSessionRunner {
 
@@ -97,19 +160,29 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
             DocumentModel administrativeContainer = getOrCreateAdministrativeContainter(session);
+
             DocumentRef statusDocRef = new PathRef(
                     administrativeContainer.getPathAsString() + "/"
-                            + ADMINISTRATIVE_STATUS_DOCUMENT);
+                            + getAdministrativeStatusDocName());
             if (!session.exists(statusDocRef)) {
                 DocumentModel statusModel = session.createDocumentModel(
                         administrativeContainer.getPathAsString(),
-                        ADMINISTRATIVE_STATUS_DOCUMENT,
+                        getAdministrativeStatusDocName(),
                         ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
-                statusDoc = session.createDocument(statusModel);
-                // set staus unlocked by default
-                statusDoc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY,
+
+                // set status unlocked by default
+                statusModel.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY,
                         UNLOCKED);
+                statusDoc = session.createDocument(statusModel);
+                statusDoc = session.saveDocument(statusModel);
                 session.save();
+
+                // and notify docStatus created
+                Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
+                notifyEvent(session, ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT,
+                        statusDoc, eventProperties);
+
             } else {
                 statusDoc = session.getDocument(statusDocRef);
             }
@@ -135,6 +208,44 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
             return statusDoc;
         }
 
+    }
+
+    private String getAdministrativeStatusDocName() throws ClientException {
+        return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + getServerInstanceName();
+    }
+
+    public String getServerInstanceName() throws ClientException {
+        String instanceName = Framework.getProperties().getProperty(
+                ADMINISTRATIVE_INSTANCE_ID);
+        if (StringUtils.isEmpty(instanceName)) {
+            InetAddress addr;
+            try {
+                addr = InetAddress.getLocalHost();
+                instanceName = addr.getHostName();
+            } catch (UnknownHostException e) {
+                instanceName = "localhost";
+            }
+        }
+        return instanceName;
+    }
+
+    public void notifyEvent(CoreSession session, String name,
+            DocumentModel document, Map<String, Serializable> eventProperties) {
+        DocumentEventContext envContext = new DocumentEventContext(session,
+                session.getPrincipal(), document);
+        envContext.setProperties(eventProperties);
+        try {
+            getEventProducer().fireEvent(envContext.newEvent(name));
+        } catch (Exception e) {
+            log.error("Unable to fire event", e);
+        }
+    }
+
+    protected EventProducer getEventProducer() throws Exception {
+        if (eventProducer == null) {
+            eventProducer = Framework.getService(EventProducer.class);
+        }
+        return eventProducer;
     }
 
 }
