@@ -22,8 +22,8 @@ import javax.faces.context.FacesContext;
 import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
 
 /**
- * Temporary helper class to cleanup any ChainSelect given its id until
- * we have a correct ChainSelect behavior like all our other components.
+ * Temporary helper class to cleanup any ChainSelect given its id until we have
+ * a correct ChainSelect behavior like all our other components.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -46,10 +46,13 @@ public class ChainSelectCleaner {
     }
 
     public static void cleanup(String chainSelectId) {
-        ChainSelect chainSelect = (ChainSelect) FacesContext.getCurrentInstance().getViewRoot().findComponent(
-                chainSelectId);
-        if (chainSelect != null) {
-            chainSelect.setComponentValue(null);
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            ChainSelect chainSelect = (ChainSelect) facesContext.getViewRoot().findComponent(
+                    chainSelectId);
+            if (chainSelect != null) {
+                chainSelect.setComponentValue(null);
+            }
         }
     }
 

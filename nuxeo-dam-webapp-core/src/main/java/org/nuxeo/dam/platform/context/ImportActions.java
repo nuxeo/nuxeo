@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -59,9 +58,6 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.importer.properties.MetadataFile;
 import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
-import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
-import org.nuxeo.ecm.platform.ui.web.directory.DirectorySelectItem;
-import org.nuxeo.ecm.platform.ui.web.directory.Selection;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
@@ -231,18 +227,6 @@ public class ImportActions implements Serializable {
                 }
             }
         }
-
-        ChainSelect coverageChainSelect = (ChainSelect) FacesContext.getCurrentInstance().getViewRoot().findComponent(
-                "importset_form:nxl_importset:nxl_importset_left:nxw_coverage:nxw_coverage_editselect");
-        Selection[] selections = new Selection[1];
-        selections[0] = new Selection(new DirectorySelectItem[0]);
-        coverageChainSelect.setSelections(selections);
-
-        ChainSelect subjectsChainSelect = (ChainSelect) FacesContext.getCurrentInstance().getViewRoot().findComponent(
-                "importset_form:nxl_importset:nxl_importset_right:nxw_topic:nxw_topic_editselect");
-        selections = new Selection[1];
-        selections[0] = new Selection(new DirectorySelectItem[0]);
-        subjectsChainSelect.setSelections(selections);
     }
 
     protected DocumentModel getOrCreateImportFolder(String title)
