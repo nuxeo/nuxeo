@@ -33,19 +33,22 @@ public interface AdministrativeStatusService {
      * 
      * @return true if the locked succeed
      */
-    boolean lockServer(CoreSession session) throws ClientException;
+    boolean lockServer(CoreSession session);
 
     /**
      * Unlocks the server
      * 
      * @return true if the unlocked succeed
      */
-    boolean unlockServer(CoreSession session) throws ClientException;
+    boolean unlockServer(CoreSession session);
 
     
     /**
      * @return the server status
      */
     String getServerStatus(CoreSession session) throws ClientException;
+    
+    
+    String getServerInstanceName() throws ClientException;
 
 }

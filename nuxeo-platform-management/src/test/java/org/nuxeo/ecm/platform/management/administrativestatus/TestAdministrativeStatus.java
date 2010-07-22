@@ -29,15 +29,21 @@ public class TestAdministrativeStatus extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.management");
+        deployBundle("org.nuxeo.ecm.platform.management.test");
         openSession();
     }
 
     public void testServerAdministrativeStatus() throws ClientException {
-        assertEquals("unlocked", getAdministrativeStatusService().getServerStatus(session));
+        assertEquals("unlocked",
+                getAdministrativeStatusService().getServerStatus(session));
         getAdministrativeStatusService().lockServer(session);
-        assertEquals("locked", getAdministrativeStatusService().getServerStatus(session));
+        assertEquals("locked",
+                getAdministrativeStatusService().getServerStatus(session));
+        assertTrue(AdministrativeStatusListener.isServerLockedEventTriggered());
         getAdministrativeStatusService().unlockServer(session);
-        assertEquals("unlocked", getAdministrativeStatusService().getServerStatus(session));
+        assertEquals("unlocked",
+                getAdministrativeStatusService().getServerStatus(session));
+        assertTrue(AdministrativeStatusListener.isServerUnlockedEventTriggered());
     }
 
     private AdministrativeStatusService getAdministrativeStatusService()

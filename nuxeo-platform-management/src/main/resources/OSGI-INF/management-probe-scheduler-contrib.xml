@@ -23,6 +23,9 @@
     <usecase name="repositoryTest"
       class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+    <usecase name="administrativeStatus"
+      class="org.nuxeo.ecm.platform.management.probes.impl.AdministrativeStatusProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </extension>
   
 </component>
