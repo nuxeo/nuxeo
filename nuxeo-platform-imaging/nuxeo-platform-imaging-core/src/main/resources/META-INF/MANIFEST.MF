@@ -28,7 +28,10 @@ Nuxeo-Component: OSGI-INF/imaging-service-framework.xml,
  OSGI-INF/picture-schemas-contrib.xml,
  OSGI-INF/picture-life-cycle-contrib.xml,
  OSGI-INF/picturebook-schemas-contrib.xml,
- 
+ OSGI-INF/picturebook-life-cycle-contrib.xml,
+ OSGI-INF/libraryselector-config-framework.xml,
+ OSGI-INF/commandline-imagemagick-contrib.xml,
+ OSGI-INF/filemanager-plugins-contrib.xml
 Import-Package: com.drew.imaging.jpeg,
  com.drew.metadata,
  com.drew.metadata.iptc,
