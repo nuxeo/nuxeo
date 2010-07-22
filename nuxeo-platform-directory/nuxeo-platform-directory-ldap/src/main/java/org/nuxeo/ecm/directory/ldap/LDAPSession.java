@@ -67,6 +67,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
+import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.Reference;
 
@@ -196,7 +197,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 reference.addLinks((String) fieldMap.get(getIdField()),
                         targetIds);
             }
-
+            String dnFieldName = directory.getFieldMapper().getDirectoryField(
+                    LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
+            if (directory.getSchemaFieldMap().containsKey(dnFieldName)) {
+                // add the DN special attribute to the fieldmap of the new entry
+                fieldMap.put(dnFieldName, dn);
+            }
             directory.invalidateCaches();
             return fieldMapToDocumentModel(fieldMap);
         } catch (Exception e) {
@@ -344,6 +350,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
+        if (isReadOnlyEntry(docModel)) {
+            // do not edit readonly entries
+            return;
+        }
         List<String> updateList = new ArrayList<String>();
         List<String> referenceFieldList = new LinkedList<String>();
 
@@ -637,11 +647,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return result;
     }
 
-    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap)
+            throws DirectoryException {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid,
                     schemaName, id, fieldMap, isReadOnly());
+            EntryAdaptor adaptor = directory.getConfig().getEntryAdaptor();
+            if (adaptor != null) {
+                docModel = adaptor.adapt(directory, docModel);
+            }
             return docModel;
         } catch (PropertyException e) {
             log.error(e, e);

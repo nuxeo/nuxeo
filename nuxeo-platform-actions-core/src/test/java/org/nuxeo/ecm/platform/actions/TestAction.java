@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -196,6 +197,22 @@ public class TestAction extends NXRuntimeTestCase {
     public void testDefaultFilter() {
         List<Action> actions = as.getActions("global", new ActionContext());
         assertEquals(1, actions.size());
+    }
+
+    // test sort of actions with same order value
+    public void testActionSort() {
+        List<Action> actions;
+        Action a1 = new Action("id1", null);
+        Action a2 = new Action("id2", null);
+        actions = new ArrayList<Action>(Arrays.asList(a1, a2));
+        Collections.sort(actions);
+        assertEquals("id1", actions.get(0).getId());
+        assertEquals("id2", actions.get(1).getId());
+        // now start with opposite order
+        actions = new ArrayList<Action>(Arrays.asList(a2, a1));
+        Collections.sort(actions);
+        assertEquals("id1", actions.get(0).getId());
+        assertEquals("id2", actions.get(1).getId());
     }
 
 }

@@ -561,6 +561,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             try {
                 DocumentModel entry = session.getEntry("user1");
                 assertNotNull(entry);
+
+                // check that this entry is editable:
+                assertFalse(BaseSession.isReadOnlyEntry(entry));
+
                 entry.setProperty(USER_SCHEMANAME, "firstName", "toto");
                 entry.setProperty(USER_SCHEMANAME, "lastName", "");
                 entry.setProperty(USER_SCHEMANAME, "password", "toto");
@@ -632,6 +636,13 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             try {
                 DocumentModel entry = session.getEntry("members");
                 assertNotNull(entry);
+
+                // check that this entry is editable:
+                assertFalse(BaseSession.isReadOnlyEntry(entry));
+                assertEquals(
+                        "cn=members,ou=editable,ou=groups,dc=example,dc=com",
+                        entry.getProperty(GROUP_SCHEMANAME, "dn"));
+
                 assertEquals(Arrays.asList("submembers"), entry.getProperty(
                         GROUP_SCHEMANAME, "subGroups"));
 
@@ -676,6 +687,13 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             Session session = getLDAPDirectory("groupDirectory").getSession();
             try {
                 DocumentModel entry = session.getEntry("dyngroup1");
+
+                // check that this entry is editable:
+                assertFalse(BaseSession.isReadOnlyEntry(entry));
+                assertEquals(
+                        "cn=dyngroup1,ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com",
+                        entry.getProperty(GROUP_SCHEMANAME, "dn"));
+
                 assertNotNull(entry);
                 assertEquals(Arrays.asList("user1", "user3"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
@@ -724,6 +742,68 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 session.updateEntry(entry);
             } finally {
                 session.close();
+            }
+        }
+    }
+
+    public void testUpdateEntry4() throws Exception {
+        if (USE_EXTERNAL_TEST_LDAP_SERVER && HAS_DYNGROUP_SCHEMA) {
+            Session userSession = getLDAPDirectory("userDirectory").getSession();
+            Session groupSession = getLDAPDirectory("groupDirectory").getSession();
+            try {
+                DocumentModel entry = groupSession.getEntry("readonlygroup1");
+                assertNotNull(entry);
+
+                // check that this entry is NOT editable:
+                assertTrue(BaseSession.isReadOnlyEntry(entry));
+                assertEquals(
+                        "cn=readonlygroup1,ou=readonly,ou=groups,dc=example,dc=com",
+                        entry.getProperty(GROUP_SCHEMANAME, "dn"));
+
+                assertEquals("Statically defined group that is not editable",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user2"), entry.getProperty(
+                        GROUP_SCHEMANAME, "members"));
+
+                // check that updates to a readonly entry are not taken into
+                // account
+
+                // edit description and members but not subGroups
+                entry.setProperty(GROUP_SCHEMANAME, "description", "blablabla");
+                entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList(
+                        "user1", "user2"));
+                groupSession.updateEntry(entry);
+
+                // fetch the entry again
+                entry = groupSession.getEntry("readonlygroup1");
+                assertNotNull(entry);
+
+                // values should not have changed
+                assertEquals("Statically defined group that is not editable",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user2"), entry.getProperty(
+                        GROUP_SCHEMANAME, "members"));
+
+                // check that we cannot edit readonlygroup1 indirectly by adding
+                // it as a group of user1
+                DocumentModel user1 = userSession.getEntry("user1");
+                user1.setProperty(USER_SCHEMANAME, "groups",
+                        Arrays.asList("readonlygroup1"));
+                userSession.updateEntry(user1);
+
+                // fetch the group entry again
+                entry = groupSession.getEntry("readonlygroup1");
+                assertNotNull(entry);
+
+                // values should not have changed
+                assertEquals("Statically defined group that is not editable",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
+                assertEquals(Arrays.asList("user2"), entry.getProperty(
+                        GROUP_SCHEMANAME, "members"));
+
+            } finally {
+                userSession.close();
+                groupSession.close();
             }
         }
     }
@@ -785,9 +865,9 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModelList entries = session.getEntries();
             if (HAS_DYNGROUP_SCHEMA) {
                 // 2 dynamic groups
-                assertEquals(8, entries.size());
+                assertEquals(9, entries.size());
             } else {
-                assertEquals(6, entries.size());
+                assertEquals(7, entries.size());
             }
         } finally {
             session.close();
