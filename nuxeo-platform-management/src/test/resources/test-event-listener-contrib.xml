@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.management.administrativestatus.event.test">
+  
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="administratorStatusListner" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.management.administrativestatus.AdministrativeStatusListener">
+        <event>serverLocked</event>
+        <event>serverUnlocked</event>
+    </listener>
+
+  </extension>
+
+</component>
