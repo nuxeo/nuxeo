@@ -51,8 +51,9 @@
 
   </h:form>
   
-  <ui:include src="/incl/document_listing_layout_selector.xhtml"/>
-  
-  <div style="clear:both"></div>
+  <c:if test="#{!documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
+    <ui:include src="/incl/document_listing_layout_selector.xhtml" />
+    <div style="clear:both"></div>
+  </c:if>
 
 </div>

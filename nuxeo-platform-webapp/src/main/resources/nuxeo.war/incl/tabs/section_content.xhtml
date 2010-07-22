@@ -9,23 +9,37 @@
 
     <ui:include src="/incl/document_actions.xhtml" />
 
-    <nxu:set var="documents" value="#{documentActions.sectionChildrenSelectModel}"      
-      cache="true">
-    <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}"
-      cache="true">
-    <nxu:set var="layoutName" value="#{currentListingLayoutName}"
-      cache="true">
+    <c:choose>
+      <c:when test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
 
-      <ui:decorate template="/incl/documents_layout_table.xhtml">
-        <ui:param name="listName" value="CURRENT_SELECTION_SECTIONS" />
-        <ui:define name="buttons">
-          <ui:include src="/incl/section_clipboard.xhtml" />
-        </ui:define>
-      </ui:decorate>
+        <ui:include src="/incl/document_content_view.xhtml">
+          <ui:param name="contentViewCategory" value="content" />
+        </ui:include>
+  
+      </c:when>
+      <c:otherwise>
 
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
+        <nxu:set var="documents" value="#{documentActions.sectionChildrenSelectModel}"      
+          cache="true">
+        <nxu:set var="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}"
+          cache="true">
+        <nxu:set var="layoutName" value="#{currentListingLayoutName}"
+          cache="true">
+    
+          <ui:decorate template="/incl/documents_layout_table.xhtml">
+            <ui:param name="listName" value="CURRENT_SELECTION_SECTIONS" />
+            <ui:define name="buttons">
+              <ui:include src="/incl/section_clipboard.xhtml" />
+            </ui:define>
+          </ui:decorate>
+    
+    
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+
+      </c:otherwise>
+    </c:choose>
 
   </c:if>
   
