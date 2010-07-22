@@ -70,6 +70,13 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         serviceUnderTest = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
         openRepository();
+        fireFrameworkStarted();
+    }
+
+    @Override
+    public void tearDown() throws Exception  {
+        waitForEventsDispatched();
+        super.tearDown();
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
