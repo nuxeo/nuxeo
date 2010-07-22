@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,37 +51,71 @@ public class ContentViewImpl implements ContentView {
 
     protected PageProvider<?> pageProvider;
 
+    protected String title;
+
+    protected boolean translateTitle;
+
+    protected String iconPath;
+
     protected String selectionList;
 
     protected String pagination;
 
     protected List<String> actionCategories;
 
-    protected String searchLayoutName;
+    protected ContentViewLayout searchLayout;
 
-    protected String resultLayoutName;
+    protected List<ContentViewLayout> resultLayouts;
+
+    protected ContentViewLayout currentResultLayout;
 
     protected String cacheKey;
 
+    protected Integer cacheSize;
+
     protected List<String> refreshEventNames;
 
-    public ContentViewImpl(String name, String selectionList,
-            String pagination, List<String> actionCategories,
-            String searchLayoutName, String resultLayoutName, String cacheKey,
-            List<String> refreshEventNames) {
+    protected boolean useGlobalPageSize;
+
+    protected String[] queryParameters;
+
+    public ContentViewImpl(String name, String title, boolean translateTitle,
+            String iconPath, String selectionList, String pagination,
+            List<String> actionCategories, ContentViewLayout searchLayout,
+            List<ContentViewLayout> resultLayouts, String cacheKey,
+            Integer cacheSize, List<String> refreshEventNames,
+            boolean useGlobalPageSize, String[] queryParameters) {
         super();
         this.name = name;
+        this.title = title;
+        this.translateTitle = translateTitle;
+        this.iconPath = iconPath;
         this.selectionList = selectionList;
         this.pagination = pagination;
         this.actionCategories = actionCategories;
-        this.searchLayoutName = searchLayoutName;
-        this.resultLayoutName = resultLayoutName;
+        this.searchLayout = searchLayout;
+        this.resultLayouts = resultLayouts;
         this.cacheKey = cacheKey;
+        this.cacheSize = cacheSize;
         this.refreshEventNames = refreshEventNames;
+        this.useGlobalPageSize = useGlobalPageSize;
+        this.queryParameters = queryParameters;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean getTranslateTitle() {
+        return translateTitle;
+    }
+
+    public String getIconPath() {
+        return iconPath;
     }
 
     public String getSelectionListName() {
@@ -95,17 +130,64 @@ public class ContentViewImpl implements ContentView {
         return actionCategories;
     }
 
-    public String getSearchLayoutName() {
-        return searchLayoutName;
+    public ContentViewLayout getSearchLayout() {
+        return searchLayout;
     }
 
-    public String getResultLayoutName() {
-        return resultLayoutName;
+    public List<ContentViewLayout> getResultLayouts() {
+        return resultLayouts;
     }
 
-    public PageProvider<?> getPageProvider(Object... params)
+    public ContentViewLayout getCurrentResultLayout() {
+        if (currentResultLayout == null) {
+            if (resultLayouts != null && !resultLayouts.isEmpty()) {
+                currentResultLayout = resultLayouts.get(0);
+            }
+        }
+        return currentResultLayout;
+    }
+
+    public void setCurrentResultLayout(ContentViewLayout layout) {
+        this.currentResultLayout = layout;
+    }
+
+    protected boolean getParametersChanged(Object[] oldParams,
+            Object[] newParams) {
+        if (oldParams == null && newParams == null) {
+            return true;
+        } else if (oldParams != null && newParams != null) {
+            if (oldParams.length != newParams.length) {
+                return true;
+            }
+            for (int i = 0; i < oldParams.length; i++) {
+                if (oldParams[i] == null && newParams[i] == null) {
+                    continue;
+                } else if (oldParams[i] != null && newParams[i] != null) {
+                    if (!oldParams[i].equals(newParams[i])) {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns cached page provider if it exists or build a new one if
+     * paramaters have changed.
+     */
+    public PageProvider<?> getPageProvider(List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Object... params)
             throws ClientException {
-        if (pageProvider == null) {
+        if (params == null) {
+            // fallback on local parameters
+            params = getQueryParameters();
+        }
+        if (pageProvider == null
+                || getParametersChanged(pageProvider.getParameters(), params)) {
             try {
                 // make the service build the provider
                 ContentViewService service = Framework.getService(ContentViewService.class);
@@ -113,12 +195,29 @@ public class ContentViewImpl implements ContentView {
                     throw new ClientException(
                             "Could not resolve ContentViewService");
                 }
-                pageProvider = service.getPageProvider(getName(), params);
+                pageProvider = service.getPageProvider(getName(), sortInfos,
+                        pageSize, currentPage, params);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
+        } else {
+            if (pageSize != null) {
+                pageProvider.setPageSize(pageSize.longValue());
+            }
+            if (currentPage != null) {
+                pageProvider.setCurrentPage(currentPage.longValue());
+            }
         }
         return pageProvider;
+    }
+
+    public PageProvider<?> getPageProvider(Object... params)
+            throws ClientException {
+        return getPageProvider(null, null, null, params);
+    }
+
+    public PageProvider<?> getPageProvider() throws ClientException {
+        return getPageProvider(null, null, null, (Object[]) null);
     }
 
     public PageProvider<?> getCurrentPageProvider() {
@@ -145,8 +244,43 @@ public class ContentViewImpl implements ContentView {
         return (String) value;
     }
 
+    public Integer getCacheSize() {
+        return cacheSize;
+    }
+
+    public Object[] getQueryParameters() {
+        if (queryParameters == null) {
+            return null;
+        }
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object[] res = new Object[queryParameters.length];
+        for (int i = 0; i < queryParameters.length; i++) {
+            res[i] = ComponentTagUtils.resolveElExpression(context,
+                    queryParameters[i]);
+        }
+        return res;
+    }
+
     public List<String> getRefreshEventNames() {
         return refreshEventNames;
     }
 
+    public boolean getUseGlobalPageSize() {
+        return useGlobalPageSize;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ContentViewImpl [name=%s, title=%s, "
+                + "translateTitle=%s, iconPath=%s, "
+                + "selectionList=%s, pagination=%s, "
+                + "actionCategories=%s, searchLayout=%s, "
+                + "resultLayouts=%s, currentResultLayout=%s, "
+                + "cacheKey=%s, cacheSize=%s, refreshEventNames=%s, "
+                + "useGlobalPageSize=%s]", name, title,
+                Boolean.valueOf(translateTitle), iconPath, selectionList,
+                pagination, actionCategories, searchLayout, resultLayouts,
+                currentResultLayout, cacheKey, cacheSize, refreshEventNames,
+                Boolean.valueOf(useGlobalPageSize));
+    }
 }

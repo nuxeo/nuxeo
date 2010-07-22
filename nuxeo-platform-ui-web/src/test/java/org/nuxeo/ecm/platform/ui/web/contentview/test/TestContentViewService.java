@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.ui.web.contentview.test;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewLayout;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -45,18 +46,37 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNull(service.getContentView("foo"));
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
+        assertEquals("current document children", contentView.getTitle());
+        assertFalse(contentView.getTranslateTitle());
+        assertEquals("/icons/document_listing_icon.png",
+                contentView.getIconPath());
         assertEquals("CURRENT_SELECTION_LIST",
                 contentView.getActionsCategories().get(0));
         assertEquals("simple", contentView.getPagination());
-        assertEquals("document_listing", contentView.getResultLayoutName());
-        assertEquals("search_layout", contentView.getSearchLayoutName());
+
+        List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
+        assertNotNull(resultLayouts);
+        assertEquals(1, resultLayouts.size());
+        assertEquals("document_listing", resultLayouts.get(0).getName());
+        assertEquals("label.document_listing.layout",
+                resultLayouts.get(0).getTitle());
+        assertTrue(resultLayouts.get(0).getTranslateTitle());
+        assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
+
+        assertEquals("search_layout", contentView.getSearchLayout().getName());
+        assertEquals(null, contentView.getSearchLayout().getTitle());
+        assertFalse(contentView.getSearchLayout().getTranslateTitle());
+        assertEquals(null, contentView.getSearchLayout().getIconPath());
+
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
         assertNotNull(eventNames);
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
+        assertFalse(contentView.getUseGlobalPageSize());
     }
 
     public void testOverride() throws Exception {
@@ -69,18 +89,43 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNull(service.getContentView("foo"));
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
+        assertEquals("current document children overriden",
+                contentView.getTitle());
+        assertFalse(contentView.getTranslateTitle());
+        assertEquals("/icons/document_listing_icon.png",
+                contentView.getIconPath());
         assertEquals("CURRENT_SELECTION_LIST_2",
                 contentView.getActionsCategories().get(0));
         assertEquals("simple_2", contentView.getPagination());
-        assertEquals("document_listing_2", contentView.getResultLayoutName());
-        assertEquals("search_layout", contentView.getSearchLayoutName());
+
+        List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
+        assertNotNull(resultLayouts);
+        assertEquals(2, resultLayouts.size());
+        assertEquals("document_listing", resultLayouts.get(0).getName());
+        assertEquals("label.document_listing.layout",
+                resultLayouts.get(0).getTitle());
+        assertTrue(resultLayouts.get(0).getTranslateTitle());
+        assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
+        assertEquals("document_listing_2", resultLayouts.get(1).getName());
+        assertEquals("label.document_listing.layout_2",
+                resultLayouts.get(1).getTitle());
+        assertTrue(resultLayouts.get(1).getTranslateTitle());
+        assertNull(resultLayouts.get(1).getIconPath());
+
+        assertEquals("search_layout_2", contentView.getSearchLayout().getName());
+        assertEquals(null, contentView.getSearchLayout().getTitle());
+        assertFalse(contentView.getSearchLayout().getTranslateTitle());
+        assertEquals(null, contentView.getSearchLayout().getIconPath());
+
         assertEquals("CURRENT_SELECTION_2", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
         assertNotNull(eventNames);
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
+        assertTrue(contentView.getUseGlobalPageSize());
     }
 
 }

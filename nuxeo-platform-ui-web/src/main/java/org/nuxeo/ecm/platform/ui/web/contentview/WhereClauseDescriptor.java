@@ -35,6 +35,9 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 @XObject(value = "whereClause")
 public class WhereClauseDescriptor {
 
+    @XNode("@docType")
+    protected String docType;
+
     @XNode("@escaper")
     private final Class<? extends Escaper> escaperClass = LuceneMinimalEscaper.class;
 
@@ -42,6 +45,10 @@ public class WhereClauseDescriptor {
     protected PredicateDescriptor[] predicates;
 
     protected String fixedPart;
+
+    public String getDocType() {
+        return docType;
+    }
 
     @XNode("fixedPart")
     public void setFixedPath(String fixedPart) {

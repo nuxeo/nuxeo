@@ -43,6 +43,9 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<String, String>();
 
+    @XNodeList(value = "parameter", type = String[].class, componentType = String.class)
+    String[] queryParameters;
+
     @XNode("pageSize")
     long pageSize = 0;
 
@@ -51,9 +54,6 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
     List<SortInfoDescriptor> sortInfos;
-
-    @XNode("@docType")
-    protected String docType;
 
     protected String pattern;
 
@@ -72,8 +72,8 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
         return properties;
     }
 
-    public String getDocType() {
-        return docType;
+    public String[] getQueryParameters() {
+        return queryParameters;
     }
 
     public String getPattern() {

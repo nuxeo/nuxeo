@@ -17,9 +17,9 @@ public interface PageProviderDescriptor extends Serializable {
 
     Map<String, String> getProperties();
 
-    void setPattern(String pattern);
+    String[] getQueryParameters();
 
-    String getDocType();
+    void setPattern(String pattern);
 
     String getPattern();
 

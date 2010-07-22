@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractPageProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -43,6 +45,8 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public class CoreQueryDocumentPageProvider extends
         AbstractPageProvider<DocumentModel> implements
         ContentViewPageProvider<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -85,10 +89,24 @@ public class CoreQueryDocumentPageProvider extends
             }
 
             try {
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Perform query: '%s' with pageSize=%s, offset=%s",
+                            query, Long.valueOf(getPageSize()),
+                            Long.valueOf(offset)));
+                }
+
                 DocumentModelList docs = coreSession.query(query, null,
                         getPageSize(), offset, true);
                 resultsCount = docs.totalSize();
                 currentPageDocuments = docs;
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Performed query: got %s hits",
+                            Long.valueOf(resultsCount)));
+                }
+
             } catch (Exception e) {
                 throw new ClientRuntimeException(e);
             }
@@ -103,7 +121,7 @@ public class CoreQueryDocumentPageProvider extends
             if (sortInfos != null) {
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
-            if (descriptor.getDocType() == null) {
+            if (descriptor.getWhereClause() == null) {
                 newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
                         getParameters(), sortArray);
             } else {
@@ -114,6 +132,16 @@ public class CoreQueryDocumentPageProvider extends
                     if (props.containsKey(SEARCH_DOCUMENT_PROPERTY)) {
                         searchDocumentModel = (DocumentModel) props.get(SEARCH_DOCUMENT_PROPERTY);
                     }
+                }
+                if (searchDocumentModel == null) {
+                    String docType = descriptor.getWhereClause().getDocType();
+                    if (docType == null) {
+                        throw new ClientException(String.format(
+                                "Cannot build query of provider '%s': "
+                                        + "no docType set on whereClause",
+                                getName()));
+                    }
+                    searchDocumentModel = coreSession.createDocumentModel(docType);
                 }
                 if (searchDocumentModel == null) {
                     throw new ClientException(String.format(

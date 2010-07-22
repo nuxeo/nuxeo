@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -50,16 +52,30 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (desc == null) {
             return null;
         }
+        Boolean useGlobalPageSize = desc.getUseGlobalPageSize();
+        if (useGlobalPageSize == null) {
+            // default value
+            useGlobalPageSize = Boolean.FALSE;
+        }
+        Boolean translateTitle = desc.getTranslateTitle();
+        if (translateTitle == null) {
+            // default value
+            translateTitle = Boolean.FALSE;
+        }
         ContentViewImpl contentView = new ContentViewImpl(name,
-                desc.getSelectionListName(), desc.getPagination(),
-                desc.getActionCategories(), desc.getSearchLayoutName(),
-                desc.getResultLayoutName(), desc.getCacheKey(),
-                desc.getRefreshEventNames());
+                desc.getTitle(), translateTitle.booleanValue(),
+                desc.getIconPath(), desc.getSelectionListName(),
+                desc.getPagination(), desc.getActionCategories(),
+                desc.getSearchLayout(), desc.getResultLayouts(),
+                desc.getCacheKey(), desc.getCacheSize(),
+                desc.getRefreshEventNames(), useGlobalPageSize.booleanValue(),
+                desc.getQueryParameters());
         return contentView;
     }
 
-    public PageProvider<?> getPageProvider(String name, Object... parameters)
-            throws ClientException {
+    public PageProvider<?> getPageProvider(String name,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Object... parameters) throws ClientException {
         ContentViewDescriptor contentViewDesc = contentViews.get(name);
         if (contentViewDesc == null) {
             return null;
@@ -100,9 +116,20 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         // set descriptor, used to build the query
         pageProvider.setPageProviderDescriptor(pageDesc);
         pageProvider.setSortable(pageDesc.isSortable());
-        pageProvider.setSortInfos(pageDesc.getSortInfos());
-        pageProvider.setPageSize(pageDesc.getPageSize());
         pageProvider.setParameters(parameters);
+        if (sortInfos == null) {
+            pageProvider.setSortInfos(pageDesc.getSortInfos());
+        } else {
+            pageProvider.setSortInfos(sortInfos);
+        }
+        if (pageSize == null) {
+            pageProvider.setPageSize(pageDesc.getPageSize());
+        } else {
+            pageProvider.setPageSize(pageSize.longValue());
+        }
+        if (currentPage != null && currentPage.longValue() != 0) {
+            pageProvider.setCurrentPage(currentPage.longValue());
+        }
 
         return pageProvider;
     }
@@ -164,6 +191,21 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     protected ContentViewDescriptor mergeContentViews(
             ContentViewDescriptor oldDesc, ContentViewDescriptor newDesc) {
+        String title = newDesc.getTitle();
+        if (title != null) {
+            oldDesc.title = title;
+        }
+
+        Boolean translateTitle = newDesc.getTranslateTitle();
+        if (translateTitle != null) {
+            oldDesc.translateTitle = translateTitle;
+        }
+
+        String iconPath = newDesc.getIconPath();
+        if (iconPath != null) {
+            oldDesc.iconPath = iconPath;
+        }
+
         List<String> actions = newDesc.getActionCategories();
         if (actions != null && !actions.isEmpty()) {
             oldDesc.actionCategories = actions;
@@ -172,6 +214,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         String cacheKey = newDesc.getCacheKey();
         if (cacheKey != null) {
             oldDesc.cacheKey = cacheKey;
+        }
+
+        Integer cacheSize = newDesc.getCacheSize();
+        if (cacheSize != null) {
+            oldDesc.cacheSize = cacheSize;
         }
 
         CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
@@ -193,17 +240,32 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (events != null && !events.isEmpty()) {
             oldDesc.eventNames = events;
         }
-        String resultLayout = newDesc.getResultLayoutName();
-        if (resultLayout != null) {
-            oldDesc.resultLayout = resultLayout;
-        }
-        String searchLayout = newDesc.getSearchLayoutName();
+        ContentViewLayoutImpl searchLayout = newDesc.getSearchLayout();
         if (searchLayout != null) {
             oldDesc.searchLayout = searchLayout;
+        }
+        List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
+        if (resultLayouts != null) {
+            Boolean appendResultLayout = newDesc.appendResultLayouts;
+            if (Boolean.TRUE.equals(appendResultLayout)) {
+                List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
+                if (oldDesc.resultLayouts != null) {
+                    allLayouts.addAll(oldDesc.resultLayouts);
+                }
+                allLayouts.addAll(resultLayouts);
+                oldDesc.resultLayouts = allLayouts;
+            } else {
+                oldDesc.resultLayouts = resultLayouts;
+            }
         }
         String selectionList = newDesc.getSelectionListName();
         if (selectionList != null) {
             oldDesc.selectionList = selectionList;
+        }
+
+        Boolean useGlobalPageSize = newDesc.getUseGlobalPageSize();
+        if (useGlobalPageSize != null) {
+            oldDesc.useGlobalPageSize = useGlobalPageSize;
         }
 
         return oldDesc;

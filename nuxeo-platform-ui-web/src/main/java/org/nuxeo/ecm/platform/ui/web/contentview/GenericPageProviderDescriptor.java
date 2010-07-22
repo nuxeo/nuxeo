@@ -48,6 +48,9 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<String, String>();
 
+    @XNodeList(value = "parameter", type = String[].class, componentType = String.class)
+    String[] queryParameters;
+
     @XNode("pageSize")
     long pageSize = 0;
 
@@ -56,9 +59,6 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
     List<SortInfoDescriptor> sortInfos;
-
-    @XNode("@docType")
-    protected String docType;
 
     protected String pattern;
 
@@ -73,16 +73,16 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
         return properties;
     }
 
+    public String[] getQueryParameters() {
+        return queryParameters;
+    }
+
     @XNode("pattern")
     public void setPattern(String pattern) {
         // remove new lines and following spaces
         if (pattern != null) {
             this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
         }
-    }
-
-    public String getDocType() {
-        return docType;
     }
 
     public String getPattern() {

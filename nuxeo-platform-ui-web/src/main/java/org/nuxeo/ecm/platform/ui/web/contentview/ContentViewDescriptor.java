@@ -36,6 +36,15 @@ public class ContentViewDescriptor {
     @XNode("@name")
     String name;
 
+    @XNode("title")
+    String title;
+
+    @XNode("translateTitle")
+    Boolean translateTitle;
+
+    @XNode("iconPath")
+    String iconPath;
+
     @XNode("coreQueryPageProvider")
     CoreQueryPageProviderDescriptor coreQueryPageProvider;
 
@@ -52,13 +61,22 @@ public class ContentViewDescriptor {
     List<String> actionCategories;
 
     @XNode("searchLayout")
-    String searchLayout;
+    ContentViewLayoutImpl searchLayout;
 
-    @XNode("resultLayout")
-    String resultLayout;
+    @XNode("resultLayouts@append")
+    Boolean appendResultLayouts;
+
+    @XNodeList(value = "resultLayouts/layout", type = ArrayList.class, componentType = ContentViewLayoutImpl.class)
+    List<ContentViewLayout> resultLayouts;
 
     @XNode("cacheKey")
     String cacheKey;
+
+    @XNode("cacheSize")
+    Integer cacheSize;
+
+    @XNode("useGlobalPageSize")
+    Boolean useGlobalPageSize;
 
     @XNodeList(value = "refresh/event", type = ArrayList.class, componentType = String.class)
     List<String> eventNames;
@@ -87,20 +105,55 @@ public class ContentViewDescriptor {
         return actionCategories;
     }
 
-    public String getSearchLayoutName() {
+    public ContentViewLayoutImpl getSearchLayout() {
         return searchLayout;
     }
 
-    public String getResultLayoutName() {
-        return resultLayout;
+    public Boolean getAppendResultLayouts() {
+        return appendResultLayouts;
+    }
+
+    public List<ContentViewLayout> getResultLayouts() {
+        return resultLayouts;
     }
 
     public String getCacheKey() {
         return cacheKey;
     }
 
+    public Integer getCacheSize() {
+        return cacheSize;
+    }
+
     public List<String> getRefreshEventNames() {
         return eventNames;
+    }
+
+    public Boolean getUseGlobalPageSize() {
+        return useGlobalPageSize;
+    }
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Boolean getTranslateTitle() {
+        return translateTitle;
+    }
+
+    public String[] getQueryParameters() {
+        CoreQueryPageProviderDescriptor coreDesc = getCoreQueryPageProvider();
+        GenericPageProviderDescriptor genDesc = getGenericPageProvider();
+        if (coreDesc != null && coreDesc.isEnabled()) {
+            return coreDesc.getQueryParameters();
+        } else if (genDesc != null && genDesc.isEnabled()) {
+            return genDesc.getQueryParameters();
+        }
+        return null;
     }
 
 }

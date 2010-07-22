@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractPageProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -38,6 +40,8 @@ public class CoreQueryAndFetchPageProvider extends
         ContentViewPageProvider<Map<String, Serializable>> {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
@@ -78,6 +82,14 @@ public class CoreQueryAndFetchPageProvider extends
 
             IterableQueryResult result = null;
             try {
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Perform query: '%s' with pageSize=%s, offset=%s",
+                            query, Long.valueOf(getPageSize()),
+                            Long.valueOf(offset)));
+                }
+
                 result = coreSession.queryAndFetch(query, "NXQL");
                 resultsCount = result.size();
                 if (offset < resultsCount) {
@@ -90,6 +102,11 @@ public class CoreQueryAndFetchPageProvider extends
                     pos += 1;
                     Map<String, Serializable> item = it.next();
                     currentItems.add(item);
+                }
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Performed query: got %s hits",
+                            Long.valueOf(resultsCount)));
                 }
 
             } catch (ClientException e) {

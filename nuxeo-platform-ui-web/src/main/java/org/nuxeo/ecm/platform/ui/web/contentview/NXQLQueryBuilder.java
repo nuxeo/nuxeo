@@ -158,10 +158,15 @@ public class NXQLQueryBuilder {
                 } else if (params[i] instanceof Literal) {
                     queryBuilder.append(params[i].toString());
                 } else {
-                    String queryParam = params[i].toString();
-                    // this will escape everything as if it where a string
-                    // use a literal if you want to do your own custom stuff
-                    queryBuilder.append(prepareStringLiteral(queryParam));
+                    if (params[i] == null) {
+                        queryBuilder.append("''");
+                    } else {
+                        String queryParam = params[i].toString();
+                        // this will escape everything as if it where a string
+                        // use a literal if you want to do your own custom
+                        // stuff
+                        queryBuilder.append(prepareStringLiteral(queryParam));
+                    }
                 }
                 queryBuilder.append(queryStrList[i + 1]);
             }

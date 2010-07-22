@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PageProvider;
@@ -39,6 +41,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  */
 public class TestDefaultPageProviders extends SQLRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(TestDefaultPageProviders.class);
 
     ContentViewService service;
 
@@ -60,6 +64,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         searchDocument = session.createDocumentModel("File");
 
+        final DocumentModel rootDoc = session.getRootDocument();
+
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext() {
             public Object evaluateExpressionGet(FacesContext context,
@@ -69,6 +75,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                 }
                 if ("#{searchDocument}".equals(expression)) {
                     return searchDocument;
+                }
+                if ("#{currentDocument.id}".equals(expression)) {
+                    return rootDoc.getId();
+                } else {
+                    log.error("Cannot evaluate expression: " + expression);
                 }
                 return null;
             }
@@ -101,7 +112,89 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
+        assertEquals(parentIdParam, contentView.getCacheKey());
+
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider(parentIdParam);
+        assertNotNull(pp);
+
+        assertEquals(-1, pp.getResultsCount());
+        assertEquals(0, pp.getNumberOfPages());
+
+        // init results
+        List<DocumentModel> docs = pp.getCurrentPage();
+
+        // check query
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals(
+                String.format(
+                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                                + " AND ecm:isCheckedInVersion = 0"
+                                + " AND ecm:mixinType != 'HiddenInNavigation'"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
+                        parentIdParam),
+                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
+
+        assertEquals(5, pp.getResultsCount());
+        assertEquals(3, pp.getNumberOfPages());
+        assertFalse(pp.isPreviousPageAvailable());
+        assertTrue(pp.isNextPageAvailable());
+
+        assertNotNull(docs);
+        assertEquals(2, docs.size());
+        assertEquals("Document number 0", docs.get(0).getPropertyValue(
+                "dc:title"));
+        assertEquals("Document number 1", docs.get(1).getPropertyValue(
+                "dc:title"));
+
+        pp.nextPage();
+        docs = pp.getCurrentPage();
+
+        assertEquals(
+                String.format(
+                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                                + " AND ecm:isCheckedInVersion = 0"
+                                + " AND ecm:mixinType != 'HiddenInNavigation'"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
+                        parentIdParam),
+                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
+
+        assertEquals(5, pp.getResultsCount());
+        assertEquals(3, pp.getNumberOfPages());
+        assertTrue(pp.isPreviousPageAvailable());
+        assertTrue(pp.isNextPageAvailable());
+
+        assertNotNull(docs);
+        assertEquals(2, docs.size());
+        assertEquals("Document number 2", docs.get(0).getPropertyValue(
+                "dc:title"));
+        assertEquals("Document number 3", docs.get(1).getPropertyValue(
+                "dc:title"));
+
+        // test selection
+        pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
+        PageSelections<DocumentModel> selections = pp.getCurrentSelectPage();
+        assertNotNull(selections);
+        assertEquals(2, selections.getSize());
+        assertFalse(selections.isSelected());
+        assertEquals("Document number 2",
+                selections.getEntries().get(0).getData().getPropertyValue(
+                        "dc:title"));
+        assertFalse(selections.getEntries().get(0).isSelected());
+        assertEquals("Document number 3",
+                selections.getEntries().get(1).getData().getPropertyValue(
+                        "dc:title"));
+        assertTrue(selections.getEntries().get(1).isSelected());
+    }
+
+    // same test but taking XML parameters instead of passing them through API
+    // calls
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryWithXMLParameters() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
+
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());

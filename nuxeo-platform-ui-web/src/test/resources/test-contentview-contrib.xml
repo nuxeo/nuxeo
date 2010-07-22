@@ -7,6 +7,9 @@
     point="contentViews">
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN">
+      <title>current document children</title>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <property name="checkQueryCache">true</property>
@@ -17,24 +20,30 @@
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
+        <parameter>#{currentDocument.id}</parameter>
       </coreQueryPageProvider>
+
+      <cacheKey>#{currentDocument.id}</cacheKey>
 
       <selectionList>CURRENT_SELECTION</selectionList>
       <pagination>simple</pagination>
       <actions category="CURRENT_SELECTION_LIST" />
-      <resultLayout>document_listing</resultLayout>
-      <searchLayout>search_layout</searchLayout>
+      <resultLayouts>
+        <layout name="document_listing" title="label.document_listing.layout"
+          translateTitle="true" iconPath="/icons/myicon.png" />
+      </resultLayouts>
+      <searchLayout name="search_layout" />
       <refresh>
         <event>documentChildrenChanged</event>
       </refresh>
     </contentView>
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
-      <coreQueryPageProvider docType="File">
+      <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <property name="searchDocument">#{searchDocument}</property>
         <property name="checkQueryCache">true</property>
-        <whereClause>
+        <whereClause docType="File">
           <fixedPart>
             ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
             'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'

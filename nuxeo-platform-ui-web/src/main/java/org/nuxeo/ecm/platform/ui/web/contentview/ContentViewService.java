@@ -17,11 +17,13 @@
 package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
  * Service handling content views and associated page providers.
@@ -42,10 +44,15 @@ public interface ContentViewService extends Serializable {
      * Returns the page provider computed from the content view with given
      * name. Its properties are resolved using current {@link FacesContext}
      * instance if they are EL Expressions.
+     * <p>
+     * If not null, parameters sortInfos and pageSize will override information
+     * computed in the XML file. If not null, currentPage will override default
+     * current page (0).
      *
      * @throws ClientException
      */
     PageProvider<?> getPageProvider(String contentViewName,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... parameters) throws ClientException;
 
 }

@@ -23,6 +23,7 @@ import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
  * A content view is a notion to handle lists of objects rendering, as well as
@@ -48,6 +49,16 @@ public interface ContentView extends Serializable {
     String getName();
 
     /**
+     * Returns a title for this content view
+     */
+    String getTitle();
+
+    /**
+     * Returns a boolean stating if title has to be translated
+     */
+    boolean getTranslateTitle();
+
+    /**
      * Returns the selection list name
      */
     String getSelectionListName();
@@ -64,20 +75,41 @@ public interface ContentView extends Serializable {
     List<String> getActionsCategories();
 
     /**
-     * Returns the search layout name, used to filter results.
+     * Returns the search layout, used to filter results.
      */
-    String getSearchLayoutName();
+    ContentViewLayout getSearchLayout();
 
     /**
-     * Returns the result layout name, used to display results.
+     * Returns the result layouts, used to display results.
      */
-    String getResultLayoutName();
+    List<ContentViewLayout> getResultLayouts();
+
+    ContentViewLayout getCurrentResultLayout();
+
+    void setCurrentResultLayout(ContentViewLayout layout);
 
     /**
-     * Returns the cache key for this provider, resolving from the current
-     * {@link FacesContext} instance if it's an EL expression.
+     * Returns the cache key for this content view provider, resolving from the
+     * current {@link FacesContext} instance if it's an EL expression.
      */
     String getCacheKey();
+
+    /**
+     * Returns the cache size for this content view.
+     */
+    Integer getCacheSize();
+
+    /**
+     * Returns the icon relative path for this content view.
+     */
+    String getIconPath();
+
+    /**
+     * Returns the query parameters for this content view provider provider,
+     * resolving from the current {@link FacesContext} instance if they are EL
+     * expressions.
+     */
+    Object[] getQueryParameters();
 
     /**
      * Returns the list of event names that wshould trigger a refresh of this
@@ -88,9 +120,35 @@ public interface ContentView extends Serializable {
     /**
      * Gets page provider according to given parameters
      *
-     * @param params
+     * @param sortInfos if not null, will override default sort info put in the
+     *            page provider XML description
+     * @param pageSize if not null, will override default page size put in the
+     *            page provider XML description
+     * @param currentPage if not null, will set the current page to given one
+     * @param params if not null, will set the parameters on provider. If null,
+     *            will take parameters as resolved on the content view from the
+     *            XML configuration, see {@link #getQueryParameters()}
+     */
+    PageProvider<?> getPageProvider(List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Object... params) throws ClientException;
+
+    /**
+     * Gets page provider according to given parameters
+     *
+     * @see #getPageProvider(List, Long, Long, Object...) using null as every
+     *      argument except params
+     * @throws ClientException
      */
     PageProvider<?> getPageProvider(Object... params) throws ClientException;
+
+    /**
+     * Gets page provider according to given parameters
+     *
+     * @see #getPageProvider(List, Long, Long, Object...), using null as every
+     *      argument
+     * @throws ClientException
+     */
+    PageProvider<?> getPageProvider() throws ClientException;
 
     /**
      * Returns the current page provider, or null if
@@ -111,5 +169,11 @@ public interface ContentView extends Serializable {
      * {@link PageProvider#refresh()}
      */
     void refreshPageProvider();
+
+    /**
+     * Returns true is this content view can use the global page size set on
+     * the application.
+     */
+    boolean getUseGlobalPageSize();
 
 }
