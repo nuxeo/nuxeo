@@ -16,4 +16,3 @@ Require-Bundle: org.nuxeo.ecm.spaces.api,
  org.nuxeo.ecm.webapp.core
 Export-Package: org.nuxeo.opensocial.spaces.web
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
- 
