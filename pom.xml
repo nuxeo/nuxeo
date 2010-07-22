@@ -6,7 +6,6 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.4.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
  </parent>
 
   <groupId>org.nuxeo.common</groupId>
