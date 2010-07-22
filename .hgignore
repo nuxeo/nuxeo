@@ -11,5 +11,8 @@ target
 *.iws
 .DS_Store
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
+nuxeo-*/META-INF
+nuxeo-*/OSGI-INF
 *.gpd.*
 *cpJar*
+*.bak

@@ -49,6 +49,7 @@ import org.nuxeo.ecm.directory.sql.repository.Column;
 import org.nuxeo.ecm.directory.sql.repository.ConfigurationException;
 import org.nuxeo.ecm.directory.sql.repository.FieldMapper;
 import org.nuxeo.ecm.directory.sql.repository.Table;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -91,7 +92,8 @@ public class SQLDirectory extends AbstractDirectory {
 
         if (config.initDependencies != null) {
             // initialize dependent directories first
-            DirectoryServiceImpl directoryService = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
+            final RuntimeService runtime = Framework.getRuntime();
+            DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(
                     DirectoryService.NAME);
             for (String dependency : config.initDependencies) {
                 log.debug("initializing dependencies first: " + dependency);

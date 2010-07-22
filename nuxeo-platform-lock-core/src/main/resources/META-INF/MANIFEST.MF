@@ -1,8 +1,28 @@
+Export-Package: org.nuxeo.ecm.platform.lock
+Private-Package: .,
+ org.nuxeo.ecm.core.peristence
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
 Bundle-Name: nuxeo-platform-lock-core project
-Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
-Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence
-Require-Bundle: org.nuxeo.runtime, org.nuxeo.ecm.core.persistence, org.nuxeo.ecm.platform.lock.api
+Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxlock-framework.xml
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation;version="1.0",
+ javax.persistence,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.persistence,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.platform.lock.api,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model,
+ org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.ecm.platform.lock.core;singleton:=true
+Nuxeo-Require: org.nuxeo.runtime,
+  org.nuxeo.ecm.core.persistence,
+  org.nuxeo.ecm.platform.lock.api

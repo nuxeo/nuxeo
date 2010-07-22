@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -189,7 +190,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
         groupDoc.setProperty(schemaName, id, grp.getName());
         groupDoc.setProperty(schemaName, getGroupIdField(), grp.getName());
 
-        groupDoc.getContextData().putScopedValue("virtual", true);
+        final ScopedMap contextData = groupDoc.getContextData();
+        contextData.putScopedValue("virtual", true);
 
         return groupDoc;
     }
