@@ -151,6 +151,11 @@
       <filelist dir="src/main/resources-tomcat/config"
                 files="nuxeo.properties" />
     </concat>
+    <concat destfile="${tomcatdir}/templates/default/nuxeo.defaults"
+            append="true">
+      <filelist dir="src/main/resources-tomcat/config"
+                files="nuxeo.defaults" />
+    </concat>
     <concat destfile="${tomcatdir}/bin/nuxeo.conf" append="true">
       <filelist dir="src/main/resources-tomcat/config" files="nuxeo.conf" />
     </concat>

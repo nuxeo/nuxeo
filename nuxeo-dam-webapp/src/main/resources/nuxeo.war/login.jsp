@@ -6,8 +6,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%
-    String productName = Framework.getProperty("org.nuxeo.dam.product.name");
-    String productVersion = Framework.getProperty("org.nuxeo.dam.product.version");
+    String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+    String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 %>
 <html>
 
@@ -181,10 +181,10 @@ nxthemes css is not used in login.jsp */
 .labelCorp a:hover {
   text-decoration:underline;
   }
-  
+
 .news_container {
  text-align:left;
-} 
+}
 
 .block_container {
   border:none;

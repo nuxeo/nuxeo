@@ -99,6 +99,11 @@
       <filelist dir="src/main/resources-jboss/config"
                 files="nuxeo.properties" />
     </concat>
+    <concat destfile="${jbossdir}/templates/common/nuxeo.defaults"
+            append="true">
+      <filelist dir="src/main/resources-jboss/config"
+                files="nuxeo.defaults" />
+    </concat>
     <concat destfile="${jbossdir}/bin/nuxeo.conf" append="true">
       <filelist dir="src/main/resources-jboss/config" files="nuxeo.conf" />
     </concat>
