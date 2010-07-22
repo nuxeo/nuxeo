@@ -9,5 +9,6 @@ target
 *.ipr
 *.iml
 *.iws
+*.bak
 nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
