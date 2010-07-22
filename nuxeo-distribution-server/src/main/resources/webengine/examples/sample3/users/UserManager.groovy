@@ -38,7 +38,7 @@ public class UserManager extends DefaultObject {
   }
 
   /**
-   *
+   * Get the user JAX-RS resource given the user name
    */
   @Path("user/{name}")
   public Object getUser(@PathParam("name") String name) {
@@ -46,17 +46,6 @@ public class UserManager extends DefaultObject {
     // the User object is intialized with the String "Username: name"
     return newObject("User", "Username: "+name);
   }
-
-  /**
-   * This method is not implemented but demonstrates how POST requests can be used
-   */
-  @POST
-  @Path("user/{name}")
-  public Object createUser(@PathParam("name") String name) {
-    //TODO ... create user here ...
-    return redirect(getPath()+"/user/"+name); // redirect to the newly created user
-  }
-
 
 }
 
