@@ -49,11 +49,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="WorkspaceRoot">
@@ -74,11 +75,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="TemplateRoot">
@@ -99,11 +101,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="Workspace">
@@ -131,11 +134,12 @@
         <!--<layout>file</layout>-->
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="SectionRoot">
@@ -156,11 +160,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>section_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="Section">
@@ -181,11 +186,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>section_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="Folder">
@@ -209,11 +215,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-        <layout>document_listing_compact_2_columns</layout>
-        <layout>document_listing_icon_2_columns</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="OrderedFolder">
@@ -274,7 +281,7 @@
         <layout>note</layout>
       </layouts>
       <layouts mode="summary">
-      <layout>note_summary_layout</layout>
+        <layout>note_summary_layout</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>

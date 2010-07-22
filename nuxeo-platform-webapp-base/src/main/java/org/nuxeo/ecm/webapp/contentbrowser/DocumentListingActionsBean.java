@@ -65,12 +65,12 @@ public class DocumentListingActionsBean implements Serializable {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient ContentViewActions contentViewActions;
+    protected transient ContentViewActionsBean contentViewActions;
 
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    // XXX: make max items configurable?
+    // only store 20 entries that cache chosen layout for a given document
     protected LRUCachingMap<String, String> docTolistings = new LRUCachingMap<String, String>(
             20);
 
@@ -101,7 +101,6 @@ public class DocumentListingActionsBean implements Serializable {
         }
         String id = doc.getId();
         docTolistings.put(id, layoutName);
-        currentListingLayoutName = layoutName;
     }
 
     @Factory(value = "currentListingLayoutName", scope = EVENT)
@@ -116,6 +115,7 @@ public class DocumentListingActionsBean implements Serializable {
     public void setLayoutForCurrentDocument(String layoutName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         setLayoutForDocument(currentDocument, layoutName);
+        currentListingLayoutName = layoutName;
     }
 
     public List<String> getAvailableLayoutsForDocument(DocumentModel doc) {
@@ -149,13 +149,12 @@ public class DocumentListingActionsBean implements Serializable {
         currentAvailableListingLayoutNames = null;
     }
 
-    // API for AJAX selection in listings
+    // API for AJAX selection in listings of content views
 
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> getCurrentPageDocuments(String contentViewName)
             throws ClientException {
         List<DocumentModel> documents = null;
-        // try content views
         ContentView cView = contentViewActions.getContentView(contentViewName);
         if (cView != null) {
             PageProvider<?> cProvider = cView.getCurrentPageProvider();

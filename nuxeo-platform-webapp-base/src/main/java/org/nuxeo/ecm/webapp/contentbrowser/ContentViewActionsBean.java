@@ -18,9 +18,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
 
@@ -29,82 +27,120 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewCache;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Seam component handling cache and refresh for named content views.
+ * Handles cache and refresh for named content views.
  *
  * @author Anahide Tchertchian
  */
 @Name("contentViewActions")
 @Scope(CONVERSATION)
-public class ContentViewActionsBean implements ContentViewActions {
+public class ContentViewActionsBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    protected Map<String, String> cacheKeys;
+    protected ContentViewCache cache = new ContentViewCache();
 
-    protected Map<String, ContentView> contentViews;
+    protected Long globalPageSize;
 
     @In(create = true, required = false)
     protected FacesContext facesContext;
 
-    protected void init() {
-        if (cacheKeys == null) {
-            cacheKeys = new HashMap<String, String>();
-        }
-        if (contentViews == null) {
-            contentViews = new HashMap<String, ContentView>();
-        }
+    protected ContentView currentContentView;
+
+    /**
+     * Returns the current global content view
+     */
+    public ContentView getCurrentContentView() {
+        return currentContentView;
     }
 
+    /**
+     * Sets the current global content view
+     */
+    public void setCurrentContentView(ContentView cv) {
+        currentContentView = cv;
+    }
+
+    /**
+     * Returns the global page size, or returns the page size on current global
+     * content view if set.
+     */
+    public Long getCurrentGlobalPageSize() {
+        if (globalPageSize == null && currentContentView != null) {
+            PageProvider<?> pp = currentContentView.getCurrentPageProvider();
+            if (pp != null) {
+                return Long.valueOf(pp.getPageSize());
+            }
+        }
+        return globalPageSize;
+    }
+
+    /**
+     * Sets the global page size, useful to sets the value having the
+     * appropriate selection on get, see {@link #getCurrentContentView()}
+     */
+    public void setCurrentGlobalPageSize(Long pageSize) {
+        setGlobalPageSize(pageSize);
+    }
+
+    /**
+     * Returns the global page size
+     */
+    public Long getGlobalPageSize() {
+        return globalPageSize;
+    }
+
+    /**
+     * Sets the global page size
+     */
+    public void setGlobalPageSize(Long pageSize) {
+        this.globalPageSize = pageSize;
+    }
+
+    /**
+     * Returns content view with given name, or null if no content view with
+     * this name is found.
+     * <p>
+     * The content view is put in a cache map so that it's not rebuilt at each
+     * call. It is rebuilt when its cache key changes (if defined).
+     *
+     * @throws ClientException
+     */
     public ContentView getContentView(String name) throws ClientException {
-        init();
-        ContentView cView;
-        if (!contentViews.containsKey(name)) {
+        ContentView cView = cache.get(name);
+        if (cView == null) {
             cView = contentViewService.getContentView(name);
             if (cView != null) {
-                contentViews.put(name, cView);
-                cacheKeys.put(name, cView.getCacheKey());
-            }
-        } else {
-            // check cache
-            cView = contentViews.get(name);
-            String oldCacheKey = cacheKeys.get(name);
-            String newCacheKey = cView.getCacheKey();
-            if (newCacheKey != null && !newCacheKey.equals(oldCacheKey)) {
-                // rebuild it
-                cView = contentViewService.getContentView(name);
+                cache.add(cView);
                 if (cView != null) {
-                    contentViews.put(name, cView);
-                    cacheKeys.put(name, newCacheKey);
+                    setCurrentContentView(cView);
                 }
             }
         }
         return cView;
     }
 
-    public void refresh(String name) {
-        init();
-        contentViews.remove(name);
-        cacheKeys.remove(name);
-    }
-
+    /**
+     * Refreshes all content views that have declared the given seam event name
+     * as a refresh event in their XML configuration.
+     */
     public void refreshOnSeamEvents(String seamEventName) {
-        if (seamEventName != null && contentViews != null) {
-            for (Map.Entry<String, ContentView> entry : contentViews.entrySet()) {
-                ContentView cv = entry.getValue();
-                List<String> eventNames = cv.getRefreshEventNames();
-                if (eventNames != null && eventNames.contains(seamEventName)) {
-                    refresh(cv.getName());
-                }
-            }
-        }
+        cache.refreshOnEvent(seamEventName);
     }
 
+    /**
+     * Refreshes content views that have declared event
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED}as a refresh event.
+     */
     @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
     public void refreshOnDocumentChildrenChanged() {
         refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
