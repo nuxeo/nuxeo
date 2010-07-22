@@ -18,7 +18,7 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/shell-commandline-service.xml,
- 
+ OSGI-INF/shell-commands-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: au.com.bytecode.opencsv,
  javax.ejb,
