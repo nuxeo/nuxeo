@@ -18,9 +18,9 @@ package org.nuxeo.ecm.webengine.debug;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +38,9 @@ public class ReloadManager {
     private static final Log log = LogFactory.getLog(ReloadManager.class);
 
     protected final WebEngine engine;
+
     protected final FileEntry deploy; // track deploy/undeploy modules
+
     private final Timer timer = new Timer("ReloadManager");
 
     public ReloadManager(WebEngine engine) {
@@ -47,7 +49,8 @@ public class ReloadManager {
     }
 
     public void start() {
-        String interval = Framework.getProperty("org.nuxeo.ecm.webengine.reloadInterval", "2000");
+        String interval = Framework.getProperty(
+                "org.nuxeo.ecm.webengine.reloadInterval", "2000");
         start(4000, Integer.parseInt(interval));
     }
 
@@ -70,7 +73,7 @@ public class ReloadManager {
                     module.getTracker().run();
                 }
             }
-            //handle hot deployment
+            // handle hot deployment
             if (deploy.check()) { // deployment directory changed
                 ModuleManager mgr = engine.getModuleManager();
                 ModuleConfiguration[] ar = mgr.getModules();
@@ -87,9 +90,13 @@ public class ReloadManager {
                                 if (!set.remove(f)) { // a new module
                                     try {
                                         log.info("auto-deploying module: " + f);
+                                        engine.getWebLoader().addClassPathElement(
+                                                file);
                                         mgr.loadModule(f);
                                     } catch (Exception e) {
-                                        log.error("Failed to load module: " + f, e);
+                                        log.error(
+                                                "Failed to load module: " + f,
+                                                e);
                                     }
                                 }
                             }
@@ -103,6 +110,7 @@ public class ReloadManager {
                         if (mc != null) {
                             log.info("auto-undeploying module: " + mc.name);
                             mgr.unregisterModule(mc.name);
+                            engine.getWebLoader().flushCache();
                         }
                     }
                 }

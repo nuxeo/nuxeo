@@ -105,7 +105,7 @@ public class WebEngine implements ResourceLocator {
     protected final File root;
 
     protected ApplicationManager apps;
-    
+
     /**
      * moduleMgr use double-check idiom and needs to be volatile. See
      * http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
@@ -135,9 +135,9 @@ public class WebEngine implements ResourceLocator {
     protected ReloadManager reloadMgr;
 
     public WebEngine(File root) {
-        this (new EmptyRegistry(), root);
+        this(new EmptyRegistry(), root);
     }
-    
+
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
@@ -174,52 +174,63 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * TODO: This is deprecating ModuleManager
+     * 
      * @return
      */
     public ApplicationManager getApplicationManager() {
         return apps;
     }
-    
+
     /**
      * JSP taglib support
      */
     public void loadJspTaglib(GenericServlet servlet) {
         if (rendering instanceof FreemarkerEngine) {
-            FreemarkerEngine fm = (FreemarkerEngine)rendering;
-            ServletContextHashModel servletContextModel = new ServletContextHashModel(servlet, fm.getObjectWrapper());
+            FreemarkerEngine fm = (FreemarkerEngine) rendering;
+            ServletContextHashModel servletContextModel = new ServletContextHashModel(
+                    servlet, fm.getObjectWrapper());
             fm.setSharedVariable("Application", servletContextModel);
-            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
+            fm.setSharedVariable("__FreeMarkerServlet.Application__",
+                    servletContextModel);
             fm.setSharedVariable("Application", servletContextModel);
-            fm.setSharedVariable("__FreeMarkerServlet.Application__", servletContextModel);
-            fm.setSharedVariable("JspTaglibs", new TaglibFactory(servlet.getServletContext()));
+            fm.setSharedVariable("__FreeMarkerServlet.Application__",
+                    servletContextModel);
+            fm.setSharedVariable("JspTaglibs", new TaglibFactory(
+                    servlet.getServletContext()));
         }
     }
 
-    public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+    public void initJspRequestSupport(GenericServlet servlet,
+            HttpServletRequest request, HttpServletResponse response) {
         if (rendering instanceof FreemarkerEngine) {
-            FreemarkerEngine fm = (FreemarkerEngine)rendering;
-            HttpRequestHashModel requestModel = new HttpRequestHashModel(request, response, fm.getObjectWrapper());
+            FreemarkerEngine fm = (FreemarkerEngine) rendering;
+            HttpRequestHashModel requestModel = new HttpRequestHashModel(
+                    request, response, fm.getObjectWrapper());
             fm.setSharedVariable("__FreeMarkerServlet.Request__", requestModel);
             fm.setSharedVariable("Request", requestModel);
-            fm.setSharedVariable("RequestParameters", new HttpRequestParametersHashModel(request));
+            fm.setSharedVariable("RequestParameters",
+                    new HttpRequestParametersHashModel(request));
 
-//            HttpSessionHashModel sessionModel = null;
-//            HttpSession session = request.getSession(false);
-//            if(session != null) {
-//                sessionModel = (HttpSessionHashModel) session.getAttribute(ATTR_SESSION_MODEL);
-//                if (sessionModel == null || sessionModel.isZombie()) {
-//                    sessionModel = new HttpSessionHashModel(session, wrapper);
-//                    session.setAttribute(ATTR_SESSION_MODEL, sessionModel);
-//                    if(!sessionModel.isZombie()) {
-//                        initializeSession(request, response);
-//                    }
-//                }
-//            }
-//            else {
-//                sessionModel = new HttpSessionHashModel(servlet, request, response, fm.getObjectWrapper());
-//            }
-//            sessionModel = new HttpSessionHashModel(request, response, fm.getObjectWrapper());
-            //fm.setSharedVariable("Session", sessionModel);
+            // HttpSessionHashModel sessionModel = null;
+            // HttpSession session = request.getSession(false);
+            // if(session != null) {
+            // sessionModel = (HttpSessionHashModel)
+            // session.getAttribute(ATTR_SESSION_MODEL);
+            // if (sessionModel == null || sessionModel.isZombie()) {
+            // sessionModel = new HttpSessionHashModel(session, wrapper);
+            // session.setAttribute(ATTR_SESSION_MODEL, sessionModel);
+            // if(!sessionModel.isZombie()) {
+            // initializeSession(request, response);
+            // }
+            // }
+            // }
+            // else {
+            // sessionModel = new HttpSessionHashModel(servlet, request,
+            // response, fm.getObjectWrapper());
+            // }
+            // sessionModel = new HttpSessionHashModel(request, response,
+            // fm.getObjectWrapper());
+            // fm.setSharedVariable("Session", sessionModel);
         }
     }
 
@@ -235,7 +246,7 @@ public class WebEngine implements ResourceLocator {
         return skinPathPrefix;
     }
 
-    @Deprecated 
+    @Deprecated
     public ResourceRegistry getRegistry() {
         return registry;
     }
@@ -292,7 +303,7 @@ public class WebEngine implements ResourceLocator {
     public void registerModule(File config) {
         registerModule(config, true);
     }
-    
+
     public void registerModule(File config, boolean addToClassPath) {
         if (addToClassPath) {
             getWebLoader().addClassPathElement(config.getParentFile());
@@ -309,7 +320,7 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * Make a copy to avoid concurrent modification exceptions
-     *
+     * 
      * @return
      */
     public File[] getRegisteredModules() {
@@ -321,20 +332,31 @@ public class WebEngine implements ResourceLocator {
             synchronized (this) {
                 /**
                  * the duplicate if is used avoid synchronizing when no needed.
-                 * note that the this.moduleMgr member must be set at the end of the synchronized block
-                 * after the module manager is completely initialized
+                 * note that the this.moduleMgr member must be set at the end of
+                 * the synchronized block after the module manager is completely
+                 * initialized
                  */
                 if (moduleMgr == null) {
                     ModuleManager moduleMgr = new ModuleManager(this);
                     File deployRoot = getDeploymentDirectory();
                     if (deployRoot.isDirectory()) {
-                        moduleMgr.loadModules(deployRoot);
+                        // load modules present in deploy directory
+                        for (String name : deployRoot.list()) {
+                            String path = name + "/module.xml";
+                            File file = new File(deployRoot, path);
+                            if (file.isFile()) {
+                                webLoader.addClassPathElement(file.getParentFile());
+                                moduleMgr.loadModule(file);
+                            }
+                        }
                     }
-                    // make a copy to avoid concurrent modifications with registerModule
+                    // make a copy to avoid concurrent modifications with
+                    // registerModule
                     for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
                         moduleMgr.loadModule(mod);
                     }
-                    // set member at the end to be sure moduleMgr is completely initialized
+                    // set member at the end to be sure moduleMgr is completely
+                    // initialized
                     this.moduleMgr = moduleMgr;
                 }
             }
@@ -398,6 +420,7 @@ public class WebEngine implements ResourceLocator {
         webLoader.flushCache();
         apps.reload();
     }
+
     /**
      * Reloads configuration.
      */
