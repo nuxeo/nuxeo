@@ -31,8 +31,10 @@ public class TestServiceAccess extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit.api");
         deployBundle("org.nuxeo.ecm.platform.audit");
+        fireFrameworkStarted();
     }
 
     public void testFullAccess() {
