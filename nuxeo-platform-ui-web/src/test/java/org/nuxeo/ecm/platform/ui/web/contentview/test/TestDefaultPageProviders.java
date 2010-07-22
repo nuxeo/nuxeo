@@ -93,6 +93,12 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         createTestDocuments();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        facesContext.relieveCurrent();
+        super.tearDown();
+    }
+
     protected void createTestDocuments() throws ClientException {
         DocumentModel root = session.getRootDocument();
         // create docs in descending order so that docs are not ordered by

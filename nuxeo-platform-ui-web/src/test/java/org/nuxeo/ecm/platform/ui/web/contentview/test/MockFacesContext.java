@@ -71,6 +71,10 @@ public abstract class MockFacesContext extends FacesContext {
         setCurrentInstance(this);
     }
 
+    public void relieveCurrent() {
+        setCurrentInstance(null);
+    }
+
     @Override
     public Application getApplication() {
         return new MockApplication();
