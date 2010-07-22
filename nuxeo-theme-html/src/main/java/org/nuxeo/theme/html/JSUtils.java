@@ -14,11 +14,14 @@
 
 package org.nuxeo.theme.html;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.Script;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.ToolErrorReporter;
 import org.mozilla.javascript.tools.shell.Global;
 import org.mozilla.javascript.tools.shell.Main;
@@ -28,13 +31,19 @@ public final class JSUtils {
     static final Log log = LogFactory.getLog(JSUtils.class);
 
     private static final Global global = Main.getGlobal();
+    private static Method compress;
 
     static {
         ToolErrorReporter errorReporter = new ToolErrorReporter(false,
                 global.getErr());
         Main.shellContextFactory.setErrorReporter(errorReporter);
         global.init(Main.shellContextFactory);
-    }
+        try {
+            compress = Context.class.getMethod("compressReader", Context.class, Scriptable.class, Script.class, String.class, String.class, Integer.TYPE, Object.class);
+        } catch (NoSuchMethodException e) {
+            log.warn("No javascript compressor support available, check for your rhino engine.");
+        }
+   }
 
     public static String compressSource(final String source) {
         IProxy iproxy = new IProxy(source);
@@ -49,18 +58,15 @@ public final class JSUtils {
         }
 
         public Object run(final Context cx) {
-            try {
-                final Script script = Main.loadScriptFromSource(cx, source,
-                        "compress", 1, null);
-                return cx.compressReader(global, script, source, "compress", 1,
-                        null);
-            } catch (IllegalArgumentException e) {
-                // Can happen on very large files (> 500K) with JDK 5
-                log.error("Could not compress javascript source.");
+            if (compress == null) {
                 return source;
-            } catch (NoSuchMethodError e) {
-                // custom_rhino.jar is not installed.
-                log.info("Could not compress javascript source. custom_rhino.jar is probably not installed.");
+            }
+            try {
+                Script script = Main.loadScriptFromSource(cx, source, "compress", 1, null);
+                    return compress.invoke(cx, global, script, source, "compress", 1, null);
+            } catch (Exception e) {
+                // Can happen on very large files (> 500K) with JDK 5
+                log.error("Could not compress javascript source.", e);
                 return source;
             }
         }
