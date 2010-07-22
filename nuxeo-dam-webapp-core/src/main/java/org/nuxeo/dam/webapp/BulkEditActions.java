@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.webapp.bulkedit.FictiveDocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
