@@ -250,6 +250,7 @@
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="el-api*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jsp-*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="gwt-servlet*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="slf4j-*-1.3*" />
     </delete>
 
     <copy todir="${outdir}/${tomcat}/nxserver/lib">

@@ -25,6 +25,7 @@
     <nuxeo.services.version>5.3.2-APG-240-SNAPSHOT</nuxeo.services.version>
     <nuxeo.jsf.version>5.3.2-APG-240-SNAPSHOT</nuxeo.jsf.version>
     <nuxeo.dm.version>5.3.2-APG-240-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.addons.version>5.3.2-APG-240-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
   </properties>
@@ -579,6 +580,7 @@
     <dependency>
       <groupId>org.nuxeo</groupId>
       <artifactId>nuxeo-platform-lang-ext</artifactId>
+      <version>${nuxeo.addons.version}</version>
     </dependency>
 
     <dependency>

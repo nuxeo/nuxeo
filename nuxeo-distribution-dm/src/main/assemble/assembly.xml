@@ -147,6 +147,11 @@
           <artifact groupId="org.nuxeo*" />
         </includes>
         <excludes>
+          <artifact artifactId="*-test" />
+          <artifact artifactId="*nuxeo-core-storage-sql-extensions" />
+          <artifact artifactId="*nuxeo-runtime-jetty-adapter" />
+          <artifact artifactId="*nuxeo-runtime-deploy" />
+          <artifact artifactId="*nuxeo-runtime-jtajca" />
           <artifact artifactId="nuxeo-runtime-management-metrics" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
@@ -197,6 +202,24 @@
     <!-- Remove duplicates -->
     <delete>
       <fileset dir="${nuxeo.ear}/lib">
+        <include name="eval-*" />
+        <include name="cssparser-0.9.5.jar*" />
+        <include name="htmlunit-*" />
+        <include name="htmlunit-*" />
+        <include name="hamcrest-*" />
+        <include name="jmock-*" />
+        <include name="jna-*" />
+        <include name="jotm-*" />
+        <include name="json-20080701*" />
+        <include name="jtds-**" />
+        <include name="lucene-analyzer*" />
+        <include name="mysql-connector-java*" />
+        <include name="ognl-*" />
+        <include name="README.txt" />
+        <include name="slf4j-*-1.3*" />
+        <include name="webdriver-*" />
+        <include name="concordion*" />
+        <include name="serializer*" />
         <include name="activation-*" />
         <include name="ant-*" />
         <include name="ant-launcher-*" />
