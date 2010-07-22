@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,10 +14,11 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.platform.management.web.probes;
+package org.nuxeo.ecm.management.administrativestatus.web;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE;
+import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.PROBES_WEB_OBJECT_TYPE;
+import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.PROBE_WEB_OBJECT_TYPE;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,21 +27,27 @@ import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.management.probes.ProbeInfo;
 import org.nuxeo.ecm.platform.management.probes.ProbeRunner;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * Runs the contributed probs if any
- * */
-@WebObject(type = "ha")
-@Produces("text/html; charset=UTF-8")
-public class AllProbes extends DefaultObject {
 
-    private static final Log log = LogFactory.getLog(AllProbes.class);
+/**
+ * 
+ * Web object implementation corresponding to the root module for ha 
+ * (module used for administrative purpose)
+ * 
+ * @author mcedica
+ * 
+ */
+@WebObject(type = "ha" , administrator=Access.GRANT)
+@Produces("text/html; charset=UTF-8")
+public class HaManager extends DefaultObject {
+
+    private static final Log log = LogFactory.getLog(HaManager.class);
 
     private ProbeRunner probeRunner;
 
@@ -55,37 +62,21 @@ public class AllProbes extends DefaultObject {
 
     @GET
     public Object doGet() {
-        return dispatch("/");
+        return getView("index");
     }
 
-    @GET
     @Path("{probeName}")
     public Object dispatch(@PathParam("probeName") String path) {
         try {
-            if (probeRunner == null) {
-                return getView("run-probe-error").arg("probe_name",
-                        "there are no registered probes");
-            }
-            if ("/".equals(path)) {
-                // run all probes and then display status for each one
-                probeRunner.run();
-                List<ProbeInfo> succededProbes = new ArrayList<ProbeInfo>();
-                succededProbes.addAll(probeRunner.getRunWithSucessProbesInfo());
-                return getView("run-all-probes").arg("probes_in_error",
-                        probeRunner.getProbesInError()).arg("probes_succeded",
-                        succededProbes);
-            } else {
-                // check to see if probe is correctly registered
-                if (probeRunner.getProbeNames().contains(path)) {
-                    // probe is registered, we should be able to run it
-                    ProbeInfo probeInfo = probeRunner.getProbeInfo(path);
-                    boolean status = probeRunner.runProbe(probeInfo);
-                    return getView("run-probe").arg("probe_status", status).arg(
-                            "probe", probeInfo);
-                }
+            if (getProbesObjectTypeName().equals(path)) {
+                return newObject(getProbesObjectTypeName(), probeRunner);
             }
 
-            return getView("run-probe-error").arg("probe_name", path);
+            if (getAdministrativeStatusObjectTypeName().equals(path)) {
+                return newObject(getAdministrativeStatusObjectTypeName(), path);
+            } else {
+                return newObject(getProbeObjectTypeName(), probeRunner, path);
+            }
 
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -99,4 +90,15 @@ public class AllProbes extends DefaultObject {
         return probeRunner;
     }
 
+    public String getAdministrativeStatusObjectTypeName() {
+        return ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE;
+    }
+
+    public String getProbeObjectTypeName() {
+        return PROBE_WEB_OBJECT_TYPE;
+    }
+
+    public String getProbesObjectTypeName() {
+        return PROBES_WEB_OBJECT_TYPE;
+    }
 }
