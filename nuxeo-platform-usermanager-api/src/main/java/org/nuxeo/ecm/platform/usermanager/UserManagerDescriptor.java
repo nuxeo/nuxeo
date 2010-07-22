@@ -39,63 +39,63 @@ public class UserManagerDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@class")
-    public Class<?> userManagerClass;
+    protected Class<?> userManagerClass;
 
     @XNode("defaultGroup")
-    public String defaultGroup;
+    protected String defaultGroup;
 
     @XNodeList(value = "defaultAdministratorId", type = ArrayList.class, componentType = String.class)
-    public List<String> defaultAdministratorIds;
+    protected List<String> defaultAdministratorIds;
 
     @XNodeList(value = "administratorsGroup", type = ArrayList.class, componentType = String.class)
-    public List<String> administratorsGroups;
+    protected List<String> administratorsGroups;
 
     @XNode("disableDefaultAdministratorsGroup")
     Boolean disableDefaultAdministratorsGroup;
 
     @XNode("userSortField")
-    public String userSortField;
+    protected String userSortField;
 
     @XNode("groupSortField")
-    public String groupSortField;
+    protected String groupSortField;
 
     @XNode("users/directory")
-    public String userDirectoryName;
+    protected String userDirectoryName;
 
     @XNode("users/emailField")
-    public String userEmailField;
+    protected String userEmailField;
 
     @XNode("users/listingMode")
-    public String userListingMode;
+    protected String userListingMode;
 
     // BBB old syntax
     @XNode("userListingMode")
-    public void setUserListingMode(String userListingMode) {
+    protected void setUserListingMode(String userListingMode) {
         this.userListingMode = userListingMode;
     }
 
-    public boolean userSearchFieldsPresent = false;
+    protected boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    public void setUserSearchFieldsPresent(@SuppressWarnings("unused")
+    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
     String text) {
         userSearchFieldsPresent = true;
     }
 
     @XNode("users/searchFields@append")
-    public boolean userSearchFieldsAppend;
+    protected boolean userSearchFieldsAppend;
 
     Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
 
     @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
-    public void setExactMatchUserSearchFields(String[] fields) {
+    protected void setExactMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.EXACT);
         }
     }
 
     @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
-    public void setSubstringMatchUserSearchFields(String[] fields) {
+    protected void setSubstringMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.SUBSTRING);
         }
@@ -106,37 +106,37 @@ public class UserManagerDescriptor implements Serializable {
      */
     @Deprecated
     @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
-    public void setUserSearchFields(String[] fields) {
+    protected void setUserSearchFields(String[] fields) {
         setSubstringMatchUserSearchFields(fields);
     }
 
-    public Pattern userPasswordPattern;
+    protected Pattern userPasswordPattern;
 
     @XNode("userPasswordPattern")
-    public void setUserPasswordPattern(String pattern) {
+    protected void setUserPasswordPattern(String pattern) {
         userPasswordPattern = Pattern.compile(pattern);
     }
 
     @XNode("users/anonymousUser")
-    public VirtualUserDescriptor anonymousUser;
+    protected VirtualUserDescriptor anonymousUser;
 
     @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
-    public Map<String, VirtualUserDescriptor> virtualUsers;
+    protected Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")
-    public String groupDirectoryName;
+    protected String groupDirectoryName;
 
     @XNode("groups/membersField")
-    public String groupMembersField;
+    protected String groupMembersField;
 
     @XNode("groups/subGroupsField")
-    public String groupSubGroupsField;
+    protected String groupSubGroupsField;
 
     @XNode("groups/parentGroupsField")
-    public String groupParentGroupsField;
+    protected String groupParentGroupsField;
 
     @XNode("groups/listingMode")
-    public String groupListingMode;
+    protected String groupListingMode;
 
     /**
      * Merge with data from another descriptor.
