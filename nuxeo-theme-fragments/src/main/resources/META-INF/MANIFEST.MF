@@ -1,8 +1,21 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: NXThemes Fragments
-Bundle-SymbolicName: org.nuxeo.theme.fragments;singleton:=true
-Bundle-Vendor: Chalmers
-Nuxeo-Component: OSGI-INF/nxthemes-fragments-contrib.xml
+Export-Package: org.nuxeo.theme.fragments;version="5.3.2.SNAPSHOT",org
+ .nuxeo.theme.models;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Tool: Bnd-0.0.394
 Bundle-Localization: bundle
+Bundle-Name: NXThemes Fragments
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.theme.core
+Bundle-Vendor: Chalmers
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1278083605800
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/nxthemes-fragments-contrib.xml
+Bundle-SymbolicName: org.nuxeo.theme.fragments;singleton:=true
+Import-Package: javax.annotation;version="1.0",org.nuxeo.ecm.core;api=
+ split,org.nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.directory;api=sp
+ lit,org.nuxeo.theme.properties
+
