@@ -1,0 +1,2 @@
+Require-Bundle: org.richfaces.framework.richfaces-api;visibility:=reexport
+Export-Package: org.ajax4jsf.*;impl=split

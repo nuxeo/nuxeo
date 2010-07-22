@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.4.0-SNAPSHOT</version>
+  <version>5.3.2-APG-240-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -86,16 +86,14 @@
     <module>nuxeo-common</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-core</module>
-    <module>nuxeo-theme</module>
     <module>nuxeo-services</module>
     <module>nuxeo-jsf</module>
     <module>nuxeo-features</module>
     <module>nuxeo-webengine</module>
-    <module>nuxeo-dm</module>
-    <module>nuxeo-gwt</module>
   </modules>
 
   <properties>
+    <webdriver.version>0.9.7376</webdriver.version>
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -105,11 +103,12 @@
     <jackrabbit.version>1.5.0</jackrabbit.version>
     <jackrabbit.jcr-commons.version>1.5.3</jackrabbit.jcr-commons.version>
     <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
-    <jetty.mortbay.version>6.1H.7</jetty.mortbay.version>
+    <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.chemistry.version>0.5-NX</apache.chemistry.version>
     <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
+    <metro.version>1.4</metro.version>
   </properties>
 
   <dependencyManagement>
@@ -120,7 +119,17 @@
         <version>1.1</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>xom</groupId>
+        <artifactId>xom</artifactId>
+        <version>1.1</version>
+      </dependency>
       <!-- javax -->
+      <dependency>
+        <groupId>javax.xml.stream</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0</version>
+      </dependency>
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
@@ -369,6 +378,12 @@
         <scope>compile</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>3.5-beta6</version>
+	<classifier>shaded</classifier>
+      </dependency>
+      <dependency>
         <groupId>org.apache</groupId>
         <artifactId>xmlbeans</artifactId>
         <version>2.3.0</version>
@@ -394,10 +409,14 @@
         <scope>provided</scope>
         <exclusions>
           <exclusion>
-            <groupId>poi</groupId>
-            <artifactId>poi</artifactId>
+            <groupId>org.apache.poi</groupId>
+	    <artifactId>poi-scratchpad</artifactId>
           </exclusion>
-        </exclusions>
+          <exclusion>
+            <groupId>org.apache.poi</groupId>
+	    <artifactId>poi</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
@@ -494,6 +513,11 @@
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
         <version>2.2</version>
+      </dependency>
+      <dependency>
+	<groupId>asm</groupId>
+	<artifactId>asm</artifactId>
+	<version>1.5.3</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -831,6 +855,21 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>0.9.14</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>0.9.14</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-access</artifactId>
+        <version>0.9.14</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.1</version>
@@ -851,6 +890,12 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
+        <version>1.6.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
         <version>1.6.0</version>
         <scope>provided</scope>
       </dependency>
@@ -1091,7 +1136,53 @@
         <version>1.1</version>
         <scope>provided</scope>
       </dependency>
+
+      <!-- ImageJ -->
+      <dependency>
+        <groupId>imagej</groupId>
+        <artifactId>imagej</artifactId>
+        <version>1.4.1.e</version>
+      </dependency>
+      <!-- Mistral -->
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>EditableImage</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>JAI-Adapter</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>Operations</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>metadata-extractor</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      <!-- JAI -->
+      <dependency>
+        <groupId>javax.media</groupId>
+        <artifactId>jai_core</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.media</groupId>
+        <artifactId>jai_codec</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.media</groupId>
+        <artifactId>mlib_jai</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+
       <!-- This is obsolete -remove it when resteasy adapter will be removed -->
+
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
@@ -1138,7 +1229,12 @@
         <version>1.1.1</version>
         <scope>provided</scope>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+        <version>2.0.0</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
@@ -1318,6 +1414,12 @@
         <version>1.6</version>
       </dependency>
       <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+	<classifier>osgi</classifier>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.hp.hpl.jena</groupId>
         <artifactId>jena</artifactId>
         <version>2.5.4</version>
@@ -1405,11 +1507,6 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>net.sourceforge.htmlunit</groupId>
-        <artifactId>htmlunit-core-js</artifactId>
-        <version>2.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.shindig</groupId>
@@ -1504,17 +1601,17 @@
       <dependency>
         <groupId>org.openqa.selenium.webdriver</groupId>
         <artifactId>webdriver-htmlunit</artifactId>
-        <version>0.5.609</version>
+        <version>0.6.964</version>
       </dependency>
       <dependency>
         <groupId>org.openqa.selenium.webdriver</groupId>
         <artifactId>webdriver-ie</artifactId>
-        <version>0.5.609</version>
+        <version>0.6.964</version>
       </dependency>
       <dependency>
         <groupId>org.openqa.selenium.webdriver</groupId>
         <artifactId>webdriver-firefox</artifactId>
-        <version>0.5.609</version>
+        <version>0.6.964</version>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>
@@ -1525,6 +1622,49 @@
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
         <version>1.3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.dts</groupId>
+        <artifactId>jmyspell-core</artifactId>
+        <version>1.0.0-beta-2</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.tomcat</groupId>
+	<artifactId>catalina</artifactId>
+	<version>6.0.20</version>
+	<exclusions>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>juli</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>annotations-api</artifactId>
+          </exclusion>
+	</exclusions>
+      </dependency>
+
+      <dependency>
+	<groupId>org.apache.tomcat</groupId>
+	<artifactId>juli</artifactId>
+	<version>6.0.20</version>
+	<exclusions>
+          <exclusion>
+            <groupId>org.apache.tomcat</groupId>
+	    <artifactId>annotations-api</artifactId>
+          </exclusion>
+	</exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>coyote</artifactId>
+        <version>6.0.20</version>
       </dependency>
 
       <!--  Test Scope -->
@@ -1546,6 +1686,18 @@
         <artifactId>mockito-all</artifactId>
         <version>1.6</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit-core-js</artifactId>
+        <version>2.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.concordion</groupId>
+        <artifactId>concordion</artifactId>
+        <version>1.3.0</version>
       </dependency>
 
       <dependency>
@@ -1678,12 +1830,132 @@
         <artifactId>oauth-provider</artifactId>
         <version>20090531</version>
       </dependency>
+      <dependency>
+	<groupId>org.javasimon</groupId>
+	<artifactId>javasimon-core</artifactId>
+	<version>2.3.0</version>
+      </dependency>
+      <dependency>
+	<groupId>org.javasimon</groupId>
+	<artifactId>javasimon-jmx</artifactId>
+	<version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.javasimon</groupId>
+        <artifactId>javasimon-jdbc3</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <!-- runtime test dependencies -->
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-htmlunit</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
         <version>3.0</version>
       </dependency>
+
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit-core-js</artifactId>
+        <version>2.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-ie</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-firefox</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-chrome</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-support</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.webdriver
+        </groupId>
+        <artifactId>webdriver-common</artifactId>
+        <version>${webdriver.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sourceforge.cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.5-NXP-4018</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.w3c</groupId>
+        <artifactId>sac</artifactId>
+        <version>1.3</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.smartgwt</groupId>
+        <artifactId>smartgwt</artifactId>
+        <version>1.0-20081121</version>
+      </dependency>
+
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-api</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-rt</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-tools</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>6.1.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>6.1.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.13</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -1762,6 +2034,7 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
           <downloadSources>false</downloadSources>
+          <downloadJavadocs>false</downloadJavadocs>
         </configuration>
       </plugin>
       <plugin>
@@ -1825,6 +2098,11 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>1.3.3</version>
+	</plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-ejb-plugin</artifactId>
           <version>2.2.1</version>
           <configuration>
@@ -1846,6 +2124,23 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.3</version>
+          <configuration>
+            <archive>
+              <manifestFile>
+                src/main/resources/META-INF/MANIFEST.MF
+              </manifestFile>
+              <manifestEntries>
+                <Bundle-Version>
+                  ${eclipseVersion}-t${buildNumber}
+                </Bundle-Version>
+                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-sar-plugin</artifactId>
           <configuration>
             <archive>
               <manifestFile>
@@ -1971,7 +2266,7 @@
               <exclude>**/NamingContext.java</exclude>
             </excludes>
             <rulesets>
-              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.4/pmd.xml</ruleset>
+              <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.3/pmd.xml</ruleset>
             </rulesets>
           </configuration>
         </plugin>
@@ -2147,6 +2442,79 @@
   </reporting>
 
   <profiles>
+
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-theme</module>
+	<module>nuxeo-dm</module>
+	<module>nuxeo-gwt</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>pde</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-eclipse-plugin</artifactId>
+	    <version>2.9-NXP-3</version>
+            <configuration>
+              <additionalProjectnatures>
+                <projectnature>org.nuxeo.ide.builders.BundleNature</projectnature>
+              </additionalProjectnatures>
+              <additionalBuildcommands>
+                <buildcommand>org.nuxeo.ide.builders.BundleBuilder</buildcommand>
+              </additionalBuildcommands>
+              <downloadSources>false</downloadSources>
+              <pde>true</pde>
+              <osgideps>true</osgideps>
+              <notests>true</notests>
+              <osgify>false</osgify>
+            </configuration>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>tycho</id>
+      <properties>
+	<tycho-version>0.9.0</tycho-version>
+      </properties>
+      <repositories>
+	<repository>
+	  <id>ganymede</id>
+	  <layout>p2</layout>
+	  <url>http://download.eclipse.org/releases/ganymede</url>
+	</repository>
+      </repositories>
+      <build>
+	<plugins>
+
+	  <plugin>
+            <groupId>org.sonatype.tycho</groupId>
+            <artifactId>tycho-maven-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <extensions>true</extensions>
+	  </plugin>
+
+	  <plugin>
+            <groupId>org.sonatype.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+              <resolver>p2</resolver>
+            </configuration>
+	  </plugin>
+
+	</plugins>
+      </build>
+    </profile>
+
     <profile>
       <id>release</id>
       <activation>
@@ -2217,22 +2585,22 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <!--
-                aggregate parameter is deprecated since 2.5. use the aggregate
-                goal instead of
-              -->
+                 aggregate parameter is deprecated since 2.5. use the aggregate
+                 goal instead of
+		-->
               <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
               <!--
-                stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
-                </stylesheetfile
-              -->
+                 stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
+              </stylesheetfile
+		 -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.4 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.4 API Documentation
+                Nuxeo Enterprise Platform 5.3 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.4</header>
+              <header>Nuxeo Enterprise Platform 5.3</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
@@ -2476,6 +2844,24 @@
         </plugins>
       </reporting>
     </profile>
+
+    <profile>
+      <id>skiptests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/*.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
   <developers>

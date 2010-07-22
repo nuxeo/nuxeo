@@ -1,0 +1,3 @@
+-nouses: true
+Eclipse-ExtensibleAPI: true
+Import-Package: *;resolution:=optional

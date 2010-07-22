@@ -1,0 +1,4 @@
+-nouses: true
+Require-Bundle: net.java.dev.mistral.Operations;visiblity:=reexport
+Export-Package: it.tidalwave.image.op;img=split,*
+Import-Package: *;resolution:=optional

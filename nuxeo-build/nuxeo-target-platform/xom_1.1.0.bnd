@@ -1,0 +1,2 @@
+Export-Package: !org.jaxen.*,!org.w3c.dom,*
+Import-Package: *;resolution:=optional

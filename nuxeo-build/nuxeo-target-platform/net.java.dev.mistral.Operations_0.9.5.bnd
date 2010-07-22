@@ -1,0 +1,3 @@
+-nouses: true
+Export-Package: it.tidalwave.image.op;op=split;mandatory:=op,*
+Import-Package: *;resolution:=optional

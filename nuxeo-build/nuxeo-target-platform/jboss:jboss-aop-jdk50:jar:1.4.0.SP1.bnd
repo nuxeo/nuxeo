@@ -1,0 +1,3 @@
+Bundle-SymbolicName: org.jboss.aop;singleton=true
+Require-Bundle: org.jboss.aspects;visibility:=reexport
+Export-Package: org.jboss.aspects;aop=split;mandatory:=true,*
