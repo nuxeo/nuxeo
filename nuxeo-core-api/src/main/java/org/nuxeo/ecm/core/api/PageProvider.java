@@ -254,7 +254,7 @@ public interface PageProvider<T> extends Serializable {
     List<SortInfo> getSortInfos();
 
     /**
-     * Returns the main sorting info for this provider
+     * Returns the first sorting info for this provider
      * <p>
      * Also kept for compatibility with existing code.
      */
@@ -266,16 +266,28 @@ public interface PageProvider<T> extends Serializable {
     void setSortInfos(List<SortInfo> sortInfo);
 
     /**
-     * Sets the main sorting info for this provider
+     * Sets the first and only sorting info for this provider.
      * <p>
      * Also kept for compatibility with existing code.
      */
     void setSortInfo(SortInfo sortInfo);
 
-    void setSortInfo(String sortColumn, boolean sortAscending);
+    /**
+     * Sets the first and only sorting info for this provider if parameter
+     * removeOtherSortInfos is true. Otherwise, adds or changes the
+     * sortAscending information according to given direction.
+     */
+    void setSortInfo(String sortColumn, boolean sortAscending,
+            boolean removeOtherSortInfos);
 
+    /**
+     * Add the given sort info to the list of sorting infos.
+     */
     void addSortInfo(String sortColumn, boolean sortAscending);
 
+    /**
+     * Returns true if given sort information is found on the set sort infos.
+     */
     boolean hasSortInfo(String sortColumn, boolean sortAscending);
 
     DocumentModel getSearchDocumentModel();

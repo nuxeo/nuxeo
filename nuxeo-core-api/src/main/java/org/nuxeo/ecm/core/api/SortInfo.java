@@ -74,7 +74,8 @@ public class SortInfo implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s: %s", sortColumn, sortAscending);
+        return String.format("SortInfo [sortColumn=%s, sortAscending=%s]",
+                sortColumn, Boolean.valueOf(sortAscending));
     }
 
 }

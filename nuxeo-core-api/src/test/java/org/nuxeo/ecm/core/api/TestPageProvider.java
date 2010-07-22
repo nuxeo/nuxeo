@@ -202,4 +202,5 @@ public class TestPageProvider extends TestCase {
         provider.firstPage();
         assertEquals(0, provider.getCurrentPageIndex());
     }
+
 }

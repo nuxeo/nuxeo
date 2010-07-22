@@ -66,6 +66,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * Page change hook, to override for custom behavior
      */
     protected void pageChanged() {
+        currentEntryIndex = 0;
         currentSelectPage = null;
     }
 
@@ -154,7 +155,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public List<SortInfo> getSortInfos() {
         // break reference
-        return new ArrayList<SortInfo>(sortInfos);
+        List<SortInfo> res = new ArrayList<SortInfo>();
+        if (sortInfos != null) {
+            res.addAll(sortInfos);
+        }
+        return res;
     }
 
     public SortInfo getSortInfo() {
@@ -177,9 +182,30 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         refresh();
     }
 
-    public void setSortInfo(String sortColumn, boolean sortAscending) {
-        SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
-        setSortInfo(sortInfo);
+    public void setSortInfo(String sortColumn, boolean sortAscending,
+            boolean removeOtherSortInfos) {
+        if (removeOtherSortInfos) {
+            SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
+            setSortInfo(sortInfo);
+        } else {
+            if (hasSortInfo(sortColumn, sortAscending)) {
+                // do nothing
+            } else if (hasSortInfo(sortColumn, !sortAscending)) {
+                // change direction
+                List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
+                for (SortInfo sortInfo : getSortInfos()) {
+                    if (sortColumn.equals(sortInfo.getSortColumn())) {
+                        newSortInfos.add(new SortInfo(sortColumn, sortAscending));
+                    } else {
+                        newSortInfos.add(sortInfo);
+                    }
+                }
+                setSortInfos(newSortInfos);
+            } else {
+                // just add it
+                addSortInfo(sortColumn, sortAscending);
+            }
+        }
     }
 
     public void addSortInfo(String sortColumn, boolean sortAscending) {

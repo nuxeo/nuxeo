@@ -31,14 +31,17 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
 
     protected List<MockPagedListItem> currentItems;
 
+    protected long givenResultsCount;
+
     public MockPageProvider(long pageSize, long resultsCount) {
         this.pageSize = pageSize;
+        givenResultsCount = resultsCount;
         this.resultsCount = resultsCount;
     }
 
     @Override
     public List<MockPagedListItem> getCurrentPage() {
-        long usedPageSize = resultsCount;
+        long usedPageSize = givenResultsCount;
         if (pageSize > 0) {
             usedPageSize = pageSize;
         }
@@ -59,6 +62,7 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
     public void refresh() {
         super.refresh();
         currentItems = null;
+        resultsCount = givenResultsCount;
     }
 
 }
