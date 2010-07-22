@@ -1,2 +1,0 @@
--nouses: true
-Import-Package: javax.transaction.*;version=1.1,*

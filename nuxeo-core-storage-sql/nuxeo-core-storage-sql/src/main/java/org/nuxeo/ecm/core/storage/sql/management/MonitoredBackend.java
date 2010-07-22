@@ -35,8 +35,8 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper getMapper(Model model, PathResolver pathResolver) throws StorageException {
-        return MetricInvocationHandler.newProxy(wrapped.getMapper(model, pathResolver),Mapper.class);
+    public Mapper newMapper(Model model, PathResolver pathResolver) throws StorageException {
+        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver),Mapper.class);
     }
 
     @Override

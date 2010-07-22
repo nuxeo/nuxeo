@@ -135,7 +135,7 @@ public class JDBCBackend implements RepositoryBackend {
         sqlInfo = new SQLInfo(repository, model, dialect);
     }
 
-    public Mapper getMapper(Model model, PathResolver pathResolver)
+    public Mapper newMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource);
     }
