@@ -11,7 +11,9 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,
  OSGI-INF/management-probe-scheduler-contrib.xml,
- OSGI-INF/management-resource-publisher-contrib.xml
+ OSGI-INF/management-resource-publisher-contrib.xml,
+ OSGI-INF/management-status-persister-contrib.xml,
+ OSGI-INF/management-administrative-status-component.xml
 Provide-Package: org.nuxeo.ecm.platform.management
 Import-Package: javax.annotation;version="1.0",
  javax.servlet.http,
