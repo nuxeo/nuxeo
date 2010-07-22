@@ -25,6 +25,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.dam.webapp.chainselect.ChainSelectCleaner;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -60,9 +62,26 @@ public class BulkEditActions extends
                     schemas.add(schema.getName());
                 }
             }
-            fictiveDocumentModel = FictiveDocumentModel.createFictiveDocumentModelWith(schemas);
+            fictiveDocumentModel = FictiveDocumentModel .createFictiveDocumentModelWith(schemas);
         }
         return fictiveDocumentModel;
+    }
+
+    @Override
+    public void bulkEditSelectionNoRedirect() throws ClientException {
+        super.bulkEditSelectionNoRedirect();
+        cleanupChainSelects();
+    }
+
+    @Override
+    public void cancel() {
+        super.cancel();
+        cleanupChainSelects();
+    }
+
+    protected void cleanupChainSelects() {
+        ChainSelectCleaner.cleanup(ChainSelectCleaner.BULK_EDIT_COVERAGE_CHAIN_SELECT_ID);
+        ChainSelectCleaner.cleanup(ChainSelectCleaner.BULK_EDIT_SUBJECTS_CHAIN_SELECT_ID);
     }
 
 }

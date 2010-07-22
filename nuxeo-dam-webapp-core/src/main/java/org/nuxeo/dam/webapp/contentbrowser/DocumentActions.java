@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
+import org.nuxeo.dam.webapp.chainselect.ChainSelectCleaner;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -109,7 +110,8 @@ public class DocumentActions implements Serializable {
         return currentSelection;
     }
 
-    public void setCurrentSelection(DocumentModel selection) {
+    public void setCurrentSelection(DocumentModel selection)
+            throws ClientException {
         // Reset the tabs list and the display mode
         webActions.resetTabList();
         displayMode = BuiltinModes.VIEW;
@@ -283,7 +285,8 @@ public class DocumentActions implements Serializable {
                         + "filename");
                 String blobXpath = xpath + "content";
                 FacesContext context = FacesContext.getCurrentInstance();
-                DownloadHelper.download(context, currentSelection, blobXpath, filename);
+                DownloadHelper.download(context, currentSelection, blobXpath,
+                        filename);
             }
         }
 
@@ -293,6 +296,9 @@ public class DocumentActions implements Serializable {
     private void resetData() {
         // Data to reset on asset selection is changed
         downloadSize = DEFAULT_PICTURE_DOWNLOAD_PROPERTY;
+
+        ChainSelectCleaner.cleanup(ChainSelectCleaner.ASSET_COVERAGE_CHAIN_SELECT_ID);
+        ChainSelectCleaner.cleanup(ChainSelectCleaner.ASSET_SUBJECTS_CHAIN_SELECT_ID);
     }
 
     public String getDownloadSize() {
