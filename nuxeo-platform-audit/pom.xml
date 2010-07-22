@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -17,11 +17,23 @@
 
   <modules>
     <module>nuxeo-platform-audit-api</module>
-    <module>nuxeo-platform-audit-client</module>
     <module>nuxeo-platform-audit-core</module>
-    <module>nuxeo-platform-audit-facade</module>
-    <module>nuxeo-platform-audit-io</module>
-    <module>nuxeo-platform-audit-search</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-audit-client</module>
+	<module>nuxeo-platform-audit-facade</module>
+	<module>nuxeo-platform-audit-facade</module>
+	<module>nuxeo-platform-audit-io</module>
+	<module>nuxeo-platform-audit-search</module>
+      </modules>
+    </profile>	
+  </profiles>
 
 </project>

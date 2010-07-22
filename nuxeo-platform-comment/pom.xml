@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.3.2-APG-240-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -19,7 +19,19 @@
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment-core</module>
     <module>nuxeo-platform-comment</module>
-    <module>nuxeo-platform-comment-web</module>
-    <module>nuxeo-platform-comment-workflow</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-comment-web</module>
+	<module>nuxeo-platform-comment-workflow</module>
+      </modules>
+    </profile>	
+  </profiles>
+
 </project>

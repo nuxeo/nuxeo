@@ -22,3 +22,6 @@ nuxeo-theme-editor/bin-groovy
 .svn2hg_curlog
 derby.log
 *.launch
+nuxeo-*/META-INF
+nuxeo-*/OSGI-INF
+*.bak
