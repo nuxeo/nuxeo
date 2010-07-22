@@ -9,8 +9,6 @@ import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
 
-import com.thoughtworks.xstream.mapper.Mapper;
-
 public class MetricInvocationHandler<T> implements InvocationHandler {
 
     protected T proxied;
@@ -19,9 +17,10 @@ public class MetricInvocationHandler<T> implements InvocationHandler {
         this.proxied = proxied;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T newProxy(T proxied, Class<?> ...classes) {
         MetricInvocationHandler<T> handler = new MetricInvocationHandler<T>(proxied);
-        return (T) Proxy.newProxyInstance(Mapper.class.getClassLoader(), classes, handler);
+        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), classes, handler);
     }
 
     protected String formatParms(Object... parms) {

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Version: 0.0.0.qualifier
+Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Metrics
 Bundle-SymbolicName: org.nuxeo.runtime.management.metrics;singleton:=true
@@ -16,4 +16,5 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
  org.osgi.framework
+Export-Package: org.nuxeo.runtime.management.metrics
 
