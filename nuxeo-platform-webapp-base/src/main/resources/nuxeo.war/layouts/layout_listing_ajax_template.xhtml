@@ -49,7 +49,7 @@
                   <nxu:set var="hasAscending" value="#{provider.hasSortInfo(layoutColumn.properties.sortPropertyName, true)}" cache="true">
                   <nxu:set var="hasDescending" value="#{provider.hasSortInfo(layoutColumn.properties.sortPropertyName, false)}" cache="true">
                     <h:commandLink immediate="true"
-                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(hasAscending, false, true))}"
+                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(hasAscending, false, true), true)}"
                       id="#{layoutColumn.widgets[0].name}_header_sort">
                       <h:outputText value="#{layoutColumn.widgets[0].label}"
                         rendered="#{!layoutColumn.widgets[0].translated}" />
