@@ -51,6 +51,10 @@
         <exclude name="**/templates/common/config/nxmail-scheduler-config.xml" />
         <exclude name="**/templates/common/config/default-opensocial-config.xml" />
         <exclude name="**/templates/common/config/opensocial.properties" />
+
+        <exclude name="**/templates/common-sfsl/**" />
+        <exclude name="**/templates/stateful/**" />
+        <exclude name="**/templates/stateless/**" />
       </patternset>
     </unzip>
     <nx:rename from="${stagedir}/nuxeo-dm*" to="${jbossdir}" />
