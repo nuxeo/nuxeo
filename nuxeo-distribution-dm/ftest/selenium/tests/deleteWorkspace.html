@@ -12,9 +12,9 @@
 <tr><td rowspan="1" colspan="3">deleteWorkspace</td></tr>
 </thead><tbody>
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium deleteWorkspace</td>
-        <td></td>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium deleteWorkspace</td>
+	<td></td>
 </tr>
 <!--Suppression de WS par le responsable de l'espace-->
 <tr>
@@ -59,22 +59,22 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td>//input[@id=&quot;document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td>12000</td>
 </tr>
 <tr>
 	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_ADDTOLIST&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:1:clipboardActionsButton</td>
 	<td></td>
 </tr>
 <!--suppression de WS to be deleted-->
@@ -85,17 +85,17 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td>//input[@id=&quot;document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td>12000</td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td>//input[@id=&quot;document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -167,23 +167,18 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td>//input[@id=&quot;document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td>12000</td>
 </tr>
 <tr>
 	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_ADDTOLIST&quot;]/input</td>
-	<td></td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>12000</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -193,12 +188,12 @@
 <!--Annulation de la suppression-->
 <tr>
 	<td>click</td>
-	<td>//input[@id=&quot;CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document&quot;]</td>
+	<td>//input[@id=&quot;document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td>12000</td>
 </tr>
 <tr>
@@ -208,7 +203,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td></td>
 </tr>
 <tr>
@@ -224,7 +219,7 @@
 <!--Validation de la suppression-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Delete&quot;]</td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
 	<td></td>
 </tr>
 <tr>

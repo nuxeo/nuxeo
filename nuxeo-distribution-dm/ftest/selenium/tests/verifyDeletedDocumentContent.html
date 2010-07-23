@@ -53,39 +53,29 @@
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[3]//a</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[2]/td[3]//a</td>
 	<td>testFolder1</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[2]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[2]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[2]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
-	<td>12000</td>
-</tr>
-<tr>
-	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_TRASH&quot;]/input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyEditable</td>
-	<td>//span[@id=&quot;CURRENT_SELECTION_ADDTOLIST&quot;]/input</td>
-	<td></td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>10000</td>
 </tr>
 <!--Validation de la suppression-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Delete&quot;]</td>
-	<td></td>
+	<td>document_content:clipboardActionsTable_0_0:3:clipboardActionsButton</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>assertConfirmation</td>
@@ -119,9 +109,9 @@
 	<td>Administrator</td>
 </tr>
 <tr>
-        <td>clickAndWait</td>
-        <td>Submit</td>
-        <td></td>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -165,17 +155,17 @@
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[3]//a</td>
 	<td>Note to be modified</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -224,7 +214,6 @@
 	<td>testNote1</td>
 	<td></td>
 </tr>
-
 <!--restore other note-->
 <tr>
 	<td>clickAndWait</td>
@@ -243,17 +232,17 @@
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[3]//a</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[3]//a</td>
 	<td>testNote1</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyChecked</td>
-	<td>//form[@id=&quot;CHILDREN_DOCUMENT_LIST&quot;]//table/tbody/tr[1]/td[1]//input</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[1]//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -297,7 +286,6 @@
 	<td>testNote1</td>
 	<td></td>
 </tr>
-
 <!--Déconnexion-->
 <tr>
 	<td>clickAndWait</td>
