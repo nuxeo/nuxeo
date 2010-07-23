@@ -84,10 +84,6 @@ public class CoreQueryDocumentPageProvider extends
 
             currentPageDocuments = new ArrayList<DocumentModel>();
 
-            if (query == null) {
-                throw new ClientRuntimeException("query string is null");
-            }
-
             try {
 
                 if (log.isDebugEnabled()) {
@@ -154,9 +150,9 @@ public class CoreQueryDocumentPageProvider extends
             }
 
             if (newQuery != null && !newQuery.equals(query)) {
-                query = newQuery;
                 // query has changed => refresh
                 refresh();
+                query = newQuery;
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -196,6 +192,7 @@ public class CoreQueryDocumentPageProvider extends
     @Override
     public void refresh() {
         super.refresh();
+        query = null;
         currentPageDocuments = null;
     }
 

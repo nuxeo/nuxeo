@@ -11,10 +11,11 @@ Needed parameters:
 </c:if>
 
 <div class="listingLayoutSelector">
-  <h:form id="contentViewLayoutSelectForm_#{contentViewListStatus.index}">
+  <h:form id="contentViewLayoutSelectForm_#{contentViewListStatus.index}"
+    style="display:inline;">
 
     <c:if test="#{contentView.getResultLayouts().size() > 1}">
-      <ul class="layoutViewMode">
+      <ul class="layoutViewMode" style="display:inline;">
         <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
           <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
             <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
@@ -32,7 +33,8 @@ Needed parameters:
   </h:form>
 
   <c:if test="#{contentView.useGlobalPageSize}">
-    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListStatus.index}">
+    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListStatus.index}"
+      style="display:inline;">
 
       <h:selectOneMenu value="#{contentViewActions.currentGlobalPageSize}"
         id="contentViewPageSizeSelector"

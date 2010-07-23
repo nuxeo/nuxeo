@@ -134,8 +134,8 @@ public class CoreQueryAndFetchPageProvider extends
 
             if (!newQuery.equals(query)) {
                 // query has changed => refresh
-                query = newQuery;
                 refresh();
+                query = newQuery;
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -165,6 +165,7 @@ public class CoreQueryAndFetchPageProvider extends
     @Override
     public void refresh() {
         super.refresh();
+        query = null;
         currentItems = null;
     }
 

@@ -35,7 +35,7 @@
             </c:when>
             <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
-                title="#{messages['tooltip.content.select.all']}"               
+                title="#{messages['tooltip.content.select.all']}"
                 value="#{documents.selected}">
                 <a4j:support event="onclick"
                   onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
@@ -55,18 +55,27 @@
                         rendered="#{!layoutColumn.widgets[0].translated}" />
                       <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
                         rendered="#{layoutColumn.widgets[0].translated}" />
-                      <c:if test="#{hasAscending}">
-                        <h:graphicImage value="/icons/arrow_down.gif" />
-                      </c:if>
-                      <c:if test="#{hasDescending}">
-                        <h:graphicImage value="/icons/arrow_up.gif" />
-                      </c:if>
                     </h:commandLink>
+                    <f:verbatim>&amp;nbsp;</f:verbatim>
+                    <c:if test="#{hasAscending}">
+                      <h:commandLink immediate="true"
+                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                        <h:graphicImage value="/icons/sort_down.png" />
+                      </h:commandLink>
+                    </c:if>
+                    <c:if test="#{hasDescending}">
+                      <h:commandLink immediate="true"
+                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                        <h:graphicImage value="/icons/sort_up.png" />
+                      </h:commandLink>
+                    </c:if>
                     <c:if test="#{!hasAscending and !hasDescending}">
                       <h:commandLink immediate="true"
                         action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
                         id="#{layoutColumn.widgets[0].name}_header_sort_add">
-                        <h:graphicImage value="/icons/mini_add.gif" />
+                        <h:graphicImage value="/icons/sort_add.png" />
                       </h:commandLink>
                     </c:if>
                   </nxu:set>
