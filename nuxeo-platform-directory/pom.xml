@@ -18,13 +18,25 @@
   <modules>
     <module>nuxeo-platform-directory-api</module>
     <module>nuxeo-platform-directory-core</module>
-    <module>nuxeo-platform-directory-facade</module>
-    <module>nuxeo-platform-directory-ldap</module>
-    <module>nuxeo-platform-directory-multi</module>
     <module>nuxeo-platform-directory-sql</module>
     <module>nuxeo-platform-directory-types-contrib</module>
-    <module>nuxeo-platform-directory-web</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-directory-facade</module>
+	<module>nuxeo-platform-directory-ldap</module>
+	<module>nuxeo-platform-directory-multi</module>
+	<module>nuxeo-platform-directory-web</module>
+      </modules>
+    </profile>
+  </profiles>
+
 </project>
 
 

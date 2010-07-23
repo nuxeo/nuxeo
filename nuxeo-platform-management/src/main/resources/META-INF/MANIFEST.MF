@@ -1,21 +1,40 @@
+Export-Package: org.nuxeo.ecm.platform.management.adapters,
+ org.nuxeo.ecm.platform.management.probes
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
 Bundle-Name: nuxeo platform management
-Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
-Provide-Package: org.nuxeo.ecm.platform.management
-Require-Bundle: org.nuxeo.ecm.webengine.core,
- org.nuxeo.runtime.management,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.event,
- org.nuxeo.platform.web.common,
- org.nuxeo.platform.scheduler.core
-Nuxeo-Require: org.nuxeo.ecm.core.api, 
- org.nuxeo.ecm.core.event,
- org.nuxeo.runtime.management,
- org.nuxeo.ecm.platform.scheduler.core
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,
  OSGI-INF/management-probe-scheduler-contrib.xml,
  OSGI-INF/management-resource-publisher-contrib.xml,
  OSGI-INF/management-status-persister-contrib.xml,
  OSGI-INF/management-administrative-status-component.xml
+Provide-Package: org.nuxeo.ecm.platform.management
+Import-Package: javax.annotation;version="1.0",
+ javax.servlet.http,
+ org.apache.commons.lang,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.security,
+ org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.model,
+ org.nuxeo.ecm.core.repository,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.runtime,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.management,
+ org.nuxeo.runtime.model
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
+Nuxeo-Require: org.nuxeo.ecm.webengine.core,
+ org.nuxeo.runtime.management,
+ org.nuxeo.ecm.core,
+ org.nuxeo.platform.web.common,
+ org.nuxeo.platform.scheduler.core

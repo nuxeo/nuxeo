@@ -33,8 +33,6 @@ import javax.security.auth.spi.LoginModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import sun.security.acl.GroupImpl;
-
 /**
  * Abstract implementation of the {@link LoginModule} SPI from {@code javax.security.auth.spi}.
  */
