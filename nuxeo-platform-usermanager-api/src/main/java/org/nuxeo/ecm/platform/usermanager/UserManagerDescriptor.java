@@ -33,69 +33,76 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
+/**
+ * APG-240 All attributes are defined public because the user manager service do not get
+ * access to the fields. OSGI don't allow splitted packages having access to public members defined
+ * from an another package provider.
+ * @author matic
+ *
+ */
 @XObject(value = "userManager")
 public class UserManagerDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @XNode("@class")
-    protected Class<?> userManagerClass;
+    public Class<?> userManagerClass;
 
     @XNode("defaultGroup")
-    protected String defaultGroup;
+    public String defaultGroup;
 
     @XNodeList(value = "defaultAdministratorId", type = ArrayList.class, componentType = String.class)
-    protected List<String> defaultAdministratorIds;
+    public List<String> defaultAdministratorIds;
 
     @XNodeList(value = "administratorsGroup", type = ArrayList.class, componentType = String.class)
-    protected List<String> administratorsGroups;
+    public List<String> administratorsGroups;
 
     @XNode("disableDefaultAdministratorsGroup")
     Boolean disableDefaultAdministratorsGroup;
 
     @XNode("userSortField")
-    protected String userSortField;
+    public String userSortField;
 
     @XNode("groupSortField")
-    protected String groupSortField;
+    public String groupSortField;
 
     @XNode("users/directory")
-    protected String userDirectoryName;
+    public String userDirectoryName;
 
     @XNode("users/emailField")
-    protected String userEmailField;
+    public String userEmailField;
 
     @XNode("users/listingMode")
-    protected String userListingMode;
+    public String userListingMode;
 
     // BBB old syntax
     @XNode("userListingMode")
-    protected void setUserListingMode(String userListingMode) {
+    public void setUserListingMode(String userListingMode) {
         this.userListingMode = userListingMode;
     }
 
-    protected boolean userSearchFieldsPresent = false;
+    public boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
+    public void setUserSearchFieldsPresent(@SuppressWarnings("unused")
     String text) {
         userSearchFieldsPresent = true;
     }
 
     @XNode("users/searchFields@append")
-    protected boolean userSearchFieldsAppend;
+    public boolean userSearchFieldsAppend;
 
     Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
 
     @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
-    protected void setExactMatchUserSearchFields(String[] fields) {
+    public void setExactMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.EXACT);
         }
     }
 
     @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
-    protected void setSubstringMatchUserSearchFields(String[] fields) {
+    public void setSubstringMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.SUBSTRING);
         }
@@ -106,37 +113,37 @@ public class UserManagerDescriptor implements Serializable {
      */
     @Deprecated
     @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
-    protected void setUserSearchFields(String[] fields) {
+    public void setUserSearchFields(String[] fields) {
         setSubstringMatchUserSearchFields(fields);
     }
 
-    protected Pattern userPasswordPattern;
+    public Pattern userPasswordPattern;
 
     @XNode("userPasswordPattern")
-    protected void setUserPasswordPattern(String pattern) {
+    public void setUserPasswordPattern(String pattern) {
         userPasswordPattern = Pattern.compile(pattern);
     }
 
     @XNode("users/anonymousUser")
-    protected VirtualUserDescriptor anonymousUser;
+    public VirtualUserDescriptor anonymousUser;
 
     @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
-    protected Map<String, VirtualUserDescriptor> virtualUsers;
+    public Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")
-    protected String groupDirectoryName;
+    public String groupDirectoryName;
 
     @XNode("groups/membersField")
-    protected String groupMembersField;
+    public String groupMembersField;
 
     @XNode("groups/subGroupsField")
-    protected String groupSubGroupsField;
+    public String groupSubGroupsField;
 
     @XNode("groups/parentGroupsField")
-    protected String groupParentGroupsField;
+    public String groupParentGroupsField;
 
     @XNode("groups/listingMode")
-    protected String groupListingMode;
+    public String groupListingMode;
 
     /**
      * Merge with data from another descriptor.
