@@ -47,6 +47,7 @@ Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/restAPI-framework.xml,
  OSGI-INF/restAPI-contrib.xml,
+ OSGI-INF/contentview-framework.xml,
  OSGI-INF/urlservice-framework.xml,
  OSGI-INF/urlservice-contrib.xml,
  OSGI-INF/htmleditor-framework.xml,

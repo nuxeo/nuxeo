@@ -19,12 +19,20 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import javax.faces.application.Application;
+import javax.faces.context.FacesContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Component tag utils.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class ComponentTagUtils {
+
+    private static final Log log = LogFactory.getLog(ComponentTagUtils.class);
 
     // Utility class.
     private ComponentTagUtils() {
@@ -37,8 +45,12 @@ public final class ComponentTagUtils {
      * @param value The value to evaluate (not null)
      */
     public static boolean isValueReference(String value) {
-        return value.contains("#{")
-                && value.indexOf("#{") < value.indexOf('}');
+        if (value == null) {
+            return false;
+        }
+        return value.contains("#{") && value.indexOf("#{") < value.indexOf('}')
+                || value.contains("${")
+                && value.indexOf("${") < value.indexOf('}');
     }
 
     /**
@@ -61,6 +73,31 @@ public final class ComponentTagUtils {
             }
         }
         return false;
+    }
+
+    public static Object resolveElExpression(FacesContext context,
+            String elExpression) {
+        if (!ComponentTagUtils.isValueReference(elExpression)) {
+            // literal
+            return elExpression;
+        } else {
+            if (context == null) {
+                log.error(String.format(
+                        "FacesContext is null => cannot resolve el expression '%s'",
+                        elExpression));
+                return null;
+            }
+            // expression => evaluate
+            Application app = context.getApplication();
+            try {
+                return app.evaluateExpressionGet(context, elExpression,
+                        Object.class);
+            } catch (Exception e) {
+                log.error(String.format("Error processing expression '%s'",
+                        elExpression), e);
+                return null;
+            }
+        }
     }
 
 }
