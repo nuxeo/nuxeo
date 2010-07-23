@@ -21,7 +21,7 @@
  body {
   font: normal 11px "Lucida Grande", sans-serif;
   background-repeat: no-repeat;
-  background-position: top center;
+  background-position: center -350px;
   background-color: white;
   background-image: url(/nuxeo/img/dam_login_1300.jpg);
   color: #343434;
@@ -217,14 +217,14 @@ nxthemes css is not used in login.jsp */
   <!-- Change the background image according to the screen size -->
   <script type="text/javascript">
     var width = window.screen.width;
-    if (width >= 1280 && width < 1440) {
-        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1440.jpg)';
-    } else if (width >= 1440 && width < 1500) {
+    if (width >= 1280 && width < 1300) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1300.jpg)';
+    } else if (width >= 1300 && width < 1500) {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1500.jpg)';
     } else if (width >= 1500 && width < 2000) {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_2000.jpg)';
     } else if (width >= 2000) {
-        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_3000.jpg)';
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_2200.jpg)';
     } else {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1300.jpg)';
     }
@@ -336,7 +336,7 @@ nxthemes css is not used in login.jsp */
       <tr class="footer">
         <td valign="bottom" style="padding-left:42px;">
           <div class="loginLegal">
-            Photography: &#169; <a href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="www.lucnix.be/">www.lucnix.be</a> | Colors: &#169; Michael Yucha / <a href="http://www.flickr.com/photos/greenwenvy/">flickR</a>
+            Photography: &#169; <a onclick="window.open(this.href); return false;" href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="http://www.lucnix.be/">www.lucnix.be</a>
           </div>
         </td>
 	      <td align="center" valign="bottom">
