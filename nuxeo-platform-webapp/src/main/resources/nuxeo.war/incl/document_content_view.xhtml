@@ -36,7 +36,7 @@ function confirmDeleteDocumentsForever() {
     cache="true">
 
     <c:if test="#{contentView != null}">  
-    <a4j:region>
+    <a4j:region id="contentViewAjaxRegion_#{contentViewListStatus.index}">
 
       <nxu:set var="provider" value="#{contentView.currentPageProvider}"
         cache="true">
