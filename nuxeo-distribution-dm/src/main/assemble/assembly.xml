@@ -216,7 +216,8 @@
         <include name="mysql-connector-java*" />
         <include name="ognl-*" />
         <include name="README.txt" />
-        <include name="slf4j-*-1.3*" />
+        <include name="slf4j-*-1.4.3*" />
+        <include name="slf4j-*-1.5.3*" />
         <include name="webdriver-*" />
         <include name="concordion*" />
         <include name="serializer*" />
@@ -321,7 +322,6 @@
         <include name="postgresql-*" />
         <include name="quartz-all-*" />
         <include name="servlet-api-*" />
-        <include name="slf4j-api-1.5.3*" />
         <include name="stax-api-*" />
         <include name="webservices-api-*" />
         <include name="wstx-asl-*" />
@@ -334,6 +334,7 @@
         <include name="javassist*" />
         <include name="jaxen-*beta*" />
         <include name="xalan-*" />
+        <include name="xom-1.0*" />
       </fileset>
     </delete>
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
