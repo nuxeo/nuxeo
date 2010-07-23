@@ -1,26 +1,27 @@
-Export-Package: org.nuxeo.ecm.core.storage.sql,
- org.nuxeo.ecm.core.storage.sql.coremodel,
- org.nuxeo.ecm.core.storage.sql.jdbc.db,
- org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
- org.nuxeo.ecm.core.storage;sql=split,
- org.nuxeo.ecm.core.storage.sql.jdbc,
- org.nuxeo.ecm.core.storage.sql.management,
- org.nuxeo.ecm.core.storage.sql.net
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.core.storage.sql;core=split;version="1.6
+ .2.SNAPSHOT",org.nuxeo.ecm.core.storage.sql.coremodel;version="1.6.2.
+ SNAPSHOT",org.nuxeo.ecm.core.storage.sql.jdbc.db;version="1.6.2.SNAPS
+ HOT",org.nuxeo.ecm.core.storage.sql.jdbc.dialect;version="1.6.2.SNAPS
+ HOT",org.nuxeo.ecm.core.storage;version="1.6.2.SNAPSHOT",org.nuxeo.ec
+ m.core.storage.sql.jdbc;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.s
+ torage.sql.management;version="1.6.2.SNAPSHOT",org.nuxeo.ecm.core.sto
+ rage.sql.net;version="1.6.2.SNAPSHOT"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Manifest-Version: 1.0
 Bundle-Category: core
+Tool: Bnd-0.0.394
 Bundle-Name: org.nuxeo.ecm.core.storage.sql
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
-Eclipse-ExtensibleAPI: true
+Bundle-Version: 1.6.2.SNAPSHOT
 Eclipse-BuddyPolicy: registered
-Nuxeo-Component: OSGI-INF/management-contrib.xml,
-  OSGI-INF/listener-contrib.xml,
-  OSGI-INF/querymaker-service.xml,
-  OSGI-INF/querymaker-contrib.xml
+Bnd-LastModified: 1277573281791
 Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/management-contrib.xml, OSGI-INF/listener-co
+ ntrib.xml, OSGI-INF/querymaker-service.xml, OSGI-INF/querymaker-contr
+ ib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
 Import-Package: javax.resource,
  javax.resource.cci,
  javax.servlet,
@@ -69,13 +70,10 @@ Import-Package: javax.resource,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.management,
+ org.nuxeo.runtime.management.metrics,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.streaming
-Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
-Nuxeo-Require: org.nuxeo.runtime,
-  org.nuxeo.runtime.management,
-  org.nuxeo.ecm.core.schema,
-  org.nuxeo.ecm.core,
-  org.nuxeo.ecm.core.convert,
-  org.nuxeo.ecm.core.convert.api,
-  org.nuxeo.ecm.core.convert.plugins
+Nuxeo-Require: org.nuxeo.runtime, org.nuxeo.runtime.management, org.nu
+ xeo.ecm.core.schema, org.nuxeo.ecm.core, org.nuxeo.ecm.core.convert, 
+ org.nuxeo.ecm.core.convert.api, org.nuxeo.ecm.core.convert.plugins
+
