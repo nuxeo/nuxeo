@@ -6,7 +6,7 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.4.0-SNAPSHOT</version>
-  </parent>
+ </parent>
 
   <groupId>org.nuxeo.common</groupId>
   <artifactId>nuxeo-common</artifactId>
@@ -71,12 +71,17 @@
     </pluginRepository>
   </pluginRepositories>
 
+
   <dependencies>
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
   </dependencies>
+
 
 </project>
