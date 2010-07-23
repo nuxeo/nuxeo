@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.ReferenceMap;
@@ -67,6 +68,7 @@ implements DocumentModelCache {
     protected final Map<String, String> path2Ids = new DualHashBidiMap();
     protected final Map<String, List<DocumentRef>> childrenCache = new HashMap<String, List<DocumentRef>>();
 
+    protected List<DocumentModelCacheListener> listeners = new CopyOnWriteArrayList<DocumentModelCacheListener>();
 
 
     public CachingRepositoryInstanceHandler(Repository repository) {
@@ -532,6 +534,14 @@ implements DocumentModelCache {
         } finally {
             DirtyUpdateInvokeBridge.clearThreadContext();
         }
+    }
+
+    public void addListener(DocumentModelCacheListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(DocumentModelCacheListener listener) {
+        listeners.remove(listener);
     }
 
 }

@@ -53,7 +53,7 @@ public class CompatibilityListener implements EventListener {
         String eventId = event.getName();
         if (eventId.startsWith("!OPERATION_")) {
             Object[] args = event.getContext().getArguments();
-            if (args.length == 1 && args[0] instanceof Operation) {
+            if (args.length == 1 && args[0] instanceof Operation<?>) {
                 if (eventId.equals("!OPERATION_START!")) {
                     getEventService().fireOperationStarted((Operation<?>)args[0]);
                 } else if (eventId.equals("!OPERATION_END!")) {

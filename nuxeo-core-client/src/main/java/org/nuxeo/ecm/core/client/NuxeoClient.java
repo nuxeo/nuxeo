@@ -331,15 +331,11 @@ public final class NuxeoClient {
     }
 
     public synchronized void login() throws LoginException {
-        if (loginHandler != null) {
             loginHandler.login();
-        }
     }
 
     public synchronized void logout() throws LoginException {
-        if (loginHandler != null) {
-            loginHandler.logout();
-        }
+        loginHandler.logout();
     }
 
     public RepositoryManager getRepositoryManager() throws Exception {

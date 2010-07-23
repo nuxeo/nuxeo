@@ -116,7 +116,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         fireEvent(new EventImpl(name, context));
     }
 
-    @SuppressWarnings("unchecked")
     public void fireEvent(Event event) throws ClientException {
 
         if (!event.isInline()) { // record the event
@@ -158,7 +157,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void fireEventBundle(EventBundle event) throws ClientException {
         boolean comesFromJMS = false;
 
@@ -215,7 +213,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void fireEventBundleSync(EventBundle event) throws ClientException {
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
@@ -225,12 +222,10 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<EventListener> getEventListeners() {
          return listenerDescriptors.getInLineListeners();
     }
 
-    @SuppressWarnings("unchecked")
     public List<PostCommitEventListener> getPostCommitEventListeners() {
         List<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
 

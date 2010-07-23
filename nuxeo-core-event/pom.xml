@@ -46,6 +46,10 @@
       <groupId>javax.script</groupId>
       <artifactId>script-api</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>commons-lang</groupId>
+    	<artifactId>commons-lang</artifactId>
+    </dependency>
 
     <!-- only for tests -->
     <dependency>
@@ -69,4 +73,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

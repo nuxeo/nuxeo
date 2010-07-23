@@ -22,14 +22,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.

@@ -30,6 +30,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Row;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -55,10 +56,10 @@ public class XL2TextConverter implements Converter {
             HSSFWorkbook workbook = new HSSFWorkbook(fs);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 HSSFSheet sheet = workbook.getSheetAt(i);
-                Iterator rows = sheet.rowIterator();
+                Iterator<Row> rows = sheet.rowIterator();
                 while (rows.hasNext()) {
                     HSSFRow row = (HSSFRow) rows.next();
-                    Iterator cells = row.cellIterator();
+                    Iterator<?> cells = row.cellIterator();
                     while (cells.hasNext()) {
                         HSSFCell cell = (HSSFCell) cells.next();
                         appendTextFromCell(cell,sb);
