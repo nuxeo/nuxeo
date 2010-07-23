@@ -266,7 +266,7 @@ class BasePage:
         fl.post(server_url + "/gwtcontainer", data,
                 description="dashboard gwt container")
         fl.assert_('//OK' in fl.getBody())
-         
+
         # Extract iframes from the gwtcontainer response
         iframes = extractIframes(fl.getBody())
         fl.assert_(len(iframes))
@@ -570,24 +570,45 @@ class FolderPage(BasePage):
         conversation_id = self.getConversationId()
         folder_uid = self.getDocUid()
         html = fl.getBody()
-        start = html.find('form id="CHILDREN_DOCUMENT_LIST"')
+        if item_type in ['Section', 'SectionRoot']:
+            start = html.find('form id="section_content"')
+        else:
+            start = html.find('form id="document_content"')
         end = html.find(title, start)
         fl.assert_(end>0, 'Item with title "%s" not found.' % title)
         start = html.rfind('<tr class', start, end)
-        doc_uid = extractToken(html[start:end], 'docRef:', '"')
-        fl.assert_(doc_uid, 'item "%s" not found.' % title)
-        sel = 'CURRENT_SELECTION'
-        if item_type == "Section":
-            sel = 'CURRENT_SELECTION_SECTIONS'
-        xml = '''<envelope><header><context><conversationId>%s</conversationId></context></header><body><call component="documentActions" method="checkCurrentDocAndProcessSelectRow" id="0">
-<params><param><str>%s</str></param><param><str>CURRENT_DOC_CHILDREN</str></param><param><str>%s</str></param><param><bool>true</bool></param><param><str>%s</str></param></params><refs></refs></call></body></envelope>''' % (
-            conversation_id, doc_uid, sel, folder_uid)
-        #print "%s" % xml
-        fl.post(fl.server_url + "/seam/resource/remoting/execute",
-                Data('application/xml; charset=UTF-8',
-                     xml),
-                description="Select document")
-        fl.assert_(sel + "_TRASH" in fl.getBody())
+
+        # seam remoting selection is now done in ajax
+#        doc_uid = extractToken(html[start:end], 'docRef:', '"')
+#        fl.assert_(doc_uid, 'item "%s" not found.' % title)
+#        sel = 'CURRENT_SELECTION'
+#        if item_type == "Section":
+#            sel = 'CURRENT_SELECTION_SECTIONS'
+#        xml = '''<envelope><header><context><conversationId>%s</conversationId></context></header><body><call component="documentActions" method="checkCurrentDocAndProcessSelectRow" id="0">
+#<params><param><str>%s</str></param><param><str>CURRENT_DOC_CHILDREN</str></param><param><str>%s</str></param><param><bool>true</bool></param><param><str>%s</str></param></params><refs></refs></call></body></envelope>''' % (
+#            conversation_id, doc_uid, sel, folder_uid)
+#        #print "%s" % xml
+#        fl.post(fl.server_url + "/seam/resource/remoting/execute",
+#                Data('application/xml; charset=UTF-8',
+#                     xml),
+#                description="Select document")
+#        fl.assert_(sel + "_TRASH" in fl.getBody())
+
+        checkbox_id = extractToken(html[start:end], 'input id="', '"')
+        fl.assert_(checkbox_id, 'item "%s" not found.' % title)
+        checkbox_ajax_onclick_id = checkbox_id + '_ajax_onclick'
+        table_name = checkbox_id.split(':', 1)[0]
+
+        params = [
+            ['AJAXREQUEST', 'contentViewAjaxRegion_0'],
+            [checkbox_id, 'on'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
+            [table_name + '_SUBMIT', '1']
+            ]
+        fl.post(fl.server_url + "/view_documents.faces", params,
+            description='Select document "%s"' % title)
+
         return self
 
     def deleteItem(self, title, item_type="Workspace"):
@@ -596,15 +617,18 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         self.selectItem(title, item_type)
         # position of the delete button
+        table_name = "document_content"
         pos = '3'
-        if item_type == 'Section':
+        if item_type in ['Section', 'SectionRoot']:
+            table_name = "section_content"
             pos = '0'
-        print pos
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['CHILDREN_DOCUMENT_LIST:nxl_document_listing:nxw_listing_selection_box_with_current_document', 'on'],
+        params=[
+            [table_name + ':nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
-            ['CHILDREN_DOCUMENT_LIST:clipboardActionsTable:' + pos + ':clipboardActionsButton', 'Delete'],
-            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1']],
+            [table_name + ':clipboardActionsTable_0_0:' + pos + ':clipboardActionsButton', 'Delete'],
+            [table_name + '_SUBMIT', '1']
+            ]
+        fl.post(fl.server_url + "/view_documents.faces", params,
             description='Delete document "%s"' % title)
 
         fl.assert_('Document(s) deleted' in fl.getBody())
@@ -684,29 +708,25 @@ class FolderPage(BasePage):
     def sort(self, column):
         fl = self.fl
         server_url = fl.server_url
-        fl.assert_('CHILDREN_DOCUMENT_LIST' in fl.getBody(),
+        fl.assert_('document_content' in fl.getBody(),
                    'Not a folder listing page.')
-        options = {'date': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_modification_date_header_sort', 
-                             'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_modification_date_header_sort'],
-                            ['sortColumn', 'dc:modified'],
-                            ['defaultSortAscending', 'false']],
-                   'author': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_author_header_sort',
-                             'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_author_header_sort'],
-                              ['sortColumn', 'dc:creator']],
-                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_lifecycle_header_sort', 
-                                 'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_lifecycle_header_sort'],
-                                ['sortColumn', 'ecm:currentLifeCycleState']],
-                   'title': [['CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_title_link_header_sort', 
-                              'CHILDREN_DOCUMENT_LIST:nxl_document_listing:listing_title_link_header_sort'],
-                             ['sortColumn', 'dc:title']]
+
+        options = {'date': ['document_content:nxl_document_listing_ajax:listing_modification_date_header_sort',
+                            'document_content:nxl_document_listing_ajax:listing_modification_date_header_sort'],
+                   'author': ['document_content:nxl_document_listing_ajax:listing_author_header_sort',
+                              'document_content:nxl_document_listing_ajax:listing_author_header_sort'],
+                   'lifecycle': ['document_content:nxl_document_listing_ajax:listing_lifecycle_header_sort',
+                                 'document_content:nxl_document_listing_ajax:listing_lifecycle_header_sort'],
+                   'title': ['document_content:nxl_document_listing_ajax:listing_title_link_header_sort',
+                             'document_content:nxl_document_listing_ajax:listing_title_link_header_sort'],
                    }
         fl.assert_(column in options.keys(), 'Invalid sort column')
         # date
         fl.post(server_url + "/view_documents.faces", params=[
-            ['CHILDREN_DOCUMENT_LIST_SUBMIT', '1'],
+            ['document_content_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['providerName', 'CURRENT_DOC_CHILDREN']] + options[column],
-                description="Sort by " + column)
+            options[column]],
+            description="Sort by " + column)
         return self
 
     def viewRandomDocument(self, pattern):
