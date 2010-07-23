@@ -27,6 +27,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Property list descriptor
  *
+ *APG-240 All attributes are defined public because the user manager service do not get
+ * access to the fields. OSGI don't allow splitted packages having access to public members defined
+ * from an another package provider.
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("propertyList")
@@ -35,7 +38,7 @@ public class PropertyListDescriptor implements Serializable {
     private static final long serialVersionUID = -5870562997550545838L;
 
     @XNodeList(value = "value", type = String[].class, componentType = String.class)
-    String[] values = new String[0];
+    public String[] values = new String[0];
 
     public String[] getValues() {
         return values;

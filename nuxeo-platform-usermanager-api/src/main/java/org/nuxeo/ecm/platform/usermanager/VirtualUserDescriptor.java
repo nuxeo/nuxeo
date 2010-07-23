@@ -33,6 +33,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Descriptor for virtual users.
  *
+ * APG-240 All attributes are defined public because the user manager service do not get
+ * access to the fields. OSGI don't allow splitted packages having access to public members defined
+ * from an another package provider.
+ *
  * @author Anahide Tchertchian
  */
 @XObject("virtualUser")
@@ -41,27 +45,27 @@ public class VirtualUserDescriptor implements VirtualUser {
     private static final long serialVersionUID = 1L;
 
     @XNode("@id")
-    protected String id;
+    public String id;
 
     @XNode("@remove")
-    protected boolean remove;
+    public boolean remove;
 
     // searchable by default
     @XNode("@searchable")
-    protected boolean searchable = true;
+    public boolean searchable = true;
 
     @XNode("password")
-    protected String password;
+    public String password;
 
     // XXX for now only dealing with String properties
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties;
+    public Map<String, String> properties;
 
     @XNodeMap(value = "propertyList", key = "@name", type = HashMap.class, componentType = PropertyListDescriptor.class)
-    protected Map<String, PropertyListDescriptor> listProperties = new HashMap<String, PropertyListDescriptor>();
+    public Map<String, PropertyListDescriptor> listProperties = new HashMap<String, PropertyListDescriptor>();
 
     @XNodeList(value = "group", type = ArrayList.class, componentType = String.class)
-    protected List<String> groups;
+    public List<String> groups;
 
     public String getId() {
         return id;

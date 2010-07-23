@@ -103,25 +103,25 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
 
-    protected final List<String> roles = new LinkedList<String>();
+    public final List<String> roles = new LinkedList<String>();
 
     // group not stored in the backend and added at login time
-    protected List<String> virtualGroups = new LinkedList<String>();
+    public List<String> virtualGroups = new LinkedList<String>();
 
     // transitive closure of the "member of group" relation
-    protected List<String> allGroups;
+    public List<String> allGroups;
 
-    protected final boolean isAnonymous;
+    public final boolean isAnonymous;
 
-    protected boolean isAdministrator;
+    public boolean isAdministrator;
 
-    protected String principalId;
+    public String principalId;
 
-    protected DocumentModel model;
+    public DocumentModel model;
 
-    protected DataModel dataModel;
+    public DataModel dataModel;
 
-    protected String origUserName;
+    public String origUserName;
 
     /**
      * Constructor that sets principal to not anonymous, not administrator, and
