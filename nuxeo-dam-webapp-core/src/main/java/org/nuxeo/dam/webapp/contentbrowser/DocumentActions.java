@@ -110,8 +110,7 @@ public class DocumentActions implements Serializable {
         return currentSelection;
     }
 
-    public void setCurrentSelection(DocumentModel selection)
-            throws ClientException {
+    public void setCurrentSelection(DocumentModel selection) {
         // Reset the tabs list and the display mode
         webActions.resetTabList();
         displayMode = BuiltinModes.VIEW;
