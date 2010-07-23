@@ -12,4 +12,3 @@ Nuxeo-Require: org.nuxeo.theme.webengine
 Nuxeo-Component: OSGI-INF/nxthemes-webwidgets-service.xml,
   OSGI-INF/nxwebwidgets-persistence.xml,
   OSGI-INF/nxthemes-webwidgets-contrib.xml
- 

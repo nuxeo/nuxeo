@@ -9,4 +9,3 @@ Bundle-Version: ${eclipseVersion}-r${buildNumber}
 Require-Bundle: org.nuxeo.theme.webengine
 Nuxeo-Require: org.nuxeo.theme.webengine
 Nuxeo-Component: OSGI-INF/nxthemes-webwidgets-ui-contrib.xml
- 

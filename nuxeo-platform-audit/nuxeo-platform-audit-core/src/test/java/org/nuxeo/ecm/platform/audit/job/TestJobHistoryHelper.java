@@ -37,6 +37,7 @@ public class TestJobHistoryHelper extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit");
         deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
+        fireFrameworkStarted();
     }
 
     public void testLogger() throws Exception {

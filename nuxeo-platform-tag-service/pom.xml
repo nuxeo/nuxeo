@@ -20,10 +20,22 @@
   <modules>
     <module>nuxeo-platform-tag-api</module>
     <module>nuxeo-platform-tag-core</module>
-    <module>nuxeo-platform-tag-facade</module>
     <module>nuxeo-platform-tag-web</module>
   </modules>
 
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-tag-facade</module>
+	<module>nuxeo-platform-tag-web</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <dependencyManagement>
     <dependencies>

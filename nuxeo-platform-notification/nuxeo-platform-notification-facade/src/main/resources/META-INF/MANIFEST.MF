@@ -12,4 +12,3 @@ Export-Package: org.nuxeo.ecm.platform.ec.notification,
 Require-Bundle: org.nuxeo.ecm.platform.audit.api,
  org.nuxeo.ecm.platform.notification.core
 Nuxeo-Component: OSGI-INF/PlatformBindings.xml
- 

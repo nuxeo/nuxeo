@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.rest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -78,13 +79,14 @@ public class DocumentObject extends DefaultObject {
     @GET
     @Path("@search")
     public Object search() {
-        String query = ctx.getRequest().getParameter("query");
+        final HttpServletRequest request = ctx.getRequest();
+        String query = request.getParameter("query");
         if (query == null) {
-            String fullText = ctx.getRequest().getParameter("fullText");
+            String fullText = request.getParameter("fullText");
             if (fullText == null) {
                 throw new IllegalParameterException("Expecting a query or a fullText parameter");
             }
-            String orderBy = ctx.getRequest().getParameter("orderBy");
+            String orderBy = request.getParameter("orderBy");
             String orderClause = "";
             if (orderBy != null) {
                 orderClause = " ORDER BY " + orderBy;

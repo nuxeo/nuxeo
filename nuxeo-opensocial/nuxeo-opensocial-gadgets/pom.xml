@@ -6,7 +6,6 @@
     <groupId>org.nuxeo.ecm.opensocial</groupId>
     <artifactId>nuxeo-opensocial-parent</artifactId>
     <version>5.4.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-opensocial-gadgets</artifactId>
