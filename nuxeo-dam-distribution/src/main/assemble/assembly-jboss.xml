@@ -55,6 +55,8 @@
         <exclude name="**/templates/common-sfsl/**" />
         <exclude name="**/templates/stateful/**" />
         <exclude name="**/templates/stateless/**" />
+
+        <exclude name="**/*.orig" />
       </patternset>
     </unzip>
     <nx:rename from="${stagedir}/nuxeo-dm*" to="${jbossdir}" />
