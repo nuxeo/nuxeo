@@ -168,12 +168,12 @@ h3 {
 
 .summary_div_0 {
   float:left;
-  width:450px;
+  width:440px;
   }
 
 .summary_div_1 {
   float:right;
-  width:450px;
+  width:440px;
   }
   
 .marginTop {
@@ -181,7 +181,46 @@ h3 {
   }
   
 #importSetFormPanelContentDiv {
-  width: 950px;
-  height:550px;
+  width: 960px;
+  height:480px;
   overflow-y:auto; 
+  }
+
+/* Fieldset style*/
+
+fieldset {
+  border:1px solid #ddd;
+  margin:0 2px 10px;
+  padding: 0px 5px 7px 5px;
+  }
+
+legend {
+  font-size:12px;
+  color:#333333;
+  padding:0px 3px 5px;
+  }
+  
+.rich-fileupload-list-decor{
+  height:110px;
+  }
+
+.rich-fileupload-table-td {
+  border:none;
+  }
+  
+.dr-mpnl-pnl-b {
+  padding:10px 10px 0px;
+  }
+
+.ImportSetFormPanel .buttonsGadget {
+  margin: 2px 0 0px;
+  }
+
+.detailBlock {
+  text-align:right;
+  font-size:9px;
+  }
+
+.smallBox {
+  height:140px;
   }
