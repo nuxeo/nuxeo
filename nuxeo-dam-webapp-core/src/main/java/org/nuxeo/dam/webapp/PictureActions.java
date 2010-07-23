@@ -18,6 +18,7 @@
 package org.nuxeo.dam.webapp;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -27,12 +28,15 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
@@ -51,6 +55,8 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 public class PictureActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final long MAX_WIDTH_OR_HEIGHT = 384;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -124,6 +130,38 @@ public class PictureActions implements Serializable {
         }
         documentManager = documentManagerBD.getDocumentManager(repositoryLocation);
         return documentManager;
+    }
+
+    public boolean isLandscape(DocumentModel doc) throws ClientException {
+        if (!doc.hasSchema(Constants.PICTURE_SCHEMA)) {
+            return false;
+        }
+        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        Map<String, Serializable> view = (Map<String, Serializable>) doc.getPropertyValue(picture.getViewXPath("Medium"));
+        long width = (Long) view.get("width");
+        long height = (Long) view.get("height");
+
+        return width > height;
+    }
+
+    public long getMaxWidth(DocumentModel doc) throws ClientException {
+        if (!doc.hasSchema(Constants.PICTURE_SCHEMA)) {
+            return MAX_WIDTH_OR_HEIGHT;
+        }
+        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        Map<String, Serializable> view = (Map<String, Serializable>) doc.getPropertyValue(picture.getViewXPath("Medium"));
+        long width = (Long) view.get("width");
+        return width > 384 ? MAX_WIDTH_OR_HEIGHT : 384;
+    }
+
+    public long getMaxHeight(DocumentModel doc) throws ClientException {
+        if (!doc.hasSchema(Constants.PICTURE_SCHEMA)) {
+            return MAX_WIDTH_OR_HEIGHT;
+        }
+        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        Map<String, Serializable> view = (Map<String, Serializable>) doc.getPropertyValue(picture.getViewXPath("Medium"));
+        long height = (Long) view.get("height");
+        return height > 384 ? MAX_WIDTH_OR_HEIGHT : height;
     }
 
 }
