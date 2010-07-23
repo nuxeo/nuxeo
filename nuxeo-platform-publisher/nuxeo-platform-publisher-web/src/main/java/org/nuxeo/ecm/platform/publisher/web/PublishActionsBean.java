@@ -466,6 +466,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
             tree.unpublish(publishedDocument);
         }
 
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+
         Object[] params = { documentModels.size() };
         // remove from the current selection list
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
