@@ -27,12 +27,24 @@
 
   <modules>
     <module>nuxeo-platform-ui-api</module>
-    <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-ui-web</module>
-    <module>nuxeo-platform-forms-layout-client</module>
-    <module>nuxeo-platform-webapp-base</module>
-    <module>nuxeo-theme-jsf</module>
   </modules>
+
+  <profiles>
+
+    <profile>
+      <id>no-osgi</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+	<module>nuxeo-platform-ui-web-compat</module>
+	<module>nuxeo-platform-forms-layout-client</module>
+	<module>nuxeo-platform-webapp-base</module>
+	<module>nuxeo-theme-jsf</module>
+      </modules>
+    </profile>	
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
