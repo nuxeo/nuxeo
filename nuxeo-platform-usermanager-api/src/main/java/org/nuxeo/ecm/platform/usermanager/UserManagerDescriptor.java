@@ -58,7 +58,7 @@ public class UserManagerDescriptor implements Serializable {
     public List<String> administratorsGroups;
 
     @XNode("disableDefaultAdministratorsGroup")
-    Boolean disableDefaultAdministratorsGroup;
+    public Boolean disableDefaultAdministratorsGroup;
 
     @XNode("userSortField")
     public String userSortField;
@@ -92,7 +92,7 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/searchFields@append")
     public boolean userSearchFieldsAppend;
 
-    Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
+    public Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
 
     @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     public void setExactMatchUserSearchFields(String[] fields) {
