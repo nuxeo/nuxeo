@@ -107,6 +107,8 @@ public class ImportActions implements Serializable {
 
     protected String importFolderId;
 
+    protected String newImportFolder;
+
     public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
             newImportSet = documentManager.createDocumentModel(Constants.IMPORT_SET_TYPE);
@@ -233,7 +235,10 @@ public class ImportActions implements Serializable {
             throws ClientException {
         DocumentModel importFolder;
         if (importFolderId == null) {
-            importFolder = createContainerFolder(title);
+            String importFolderTitle = newImportFolder != null
+                    && newImportFolder.trim().length() > 0 ? newImportFolder
+                    : title;
+            importFolder = createContainerFolder(importFolderTitle);
             importFolderId = importFolder.getId();
         } else {
             importFolder = documentManager.getDocument(new IdRef(importFolderId));
@@ -260,6 +265,8 @@ public class ImportActions implements Serializable {
 
     public void invalidateImportContext() {
         newImportSet = null;
+        newImportFolder = null;
+        importFolderId = null;
         ChainSelectCleaner.cleanup(ChainSelectCleaner.IMPORT_COVERAGE_CHAIN_SELECT_ID);
         ChainSelectCleaner.cleanup(ChainSelectCleaner.IMPORT_SUBJECTS_CHAIN_SELECT_ID);
     }
@@ -308,6 +315,14 @@ public class ImportActions implements Serializable {
 
     public void setImportFolder(String importFolder) {
         this.importFolderId = importFolder;
+    }
+
+    public String getNewImportFolder() {
+        return newImportFolder;
+    }
+
+    public void setNewImportFolder(String newImportFolder) {
+        this.newImportFolder = newImportFolder;
     }
 
 }

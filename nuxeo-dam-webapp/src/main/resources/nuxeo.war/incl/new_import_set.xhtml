@@ -5,10 +5,13 @@
       xmlns:a4j="http://richfaces.org/a4j"
       xmlns:rich="http://richfaces.org/rich"
       xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  
+
     <a4j:region>
     <a4j:outputPanel id="importSetPanel">
-    
+
+    <a4j:form id="importset_form"
+      ajaxSingle="true" enctype="multipart/form-data">
+
     <table class="dataInput">
       <tr>
         <td>
@@ -49,9 +52,17 @@
                 <h:outputText value="#{messages['label.widget.importfolder']}" />
               </td>
               <td class="fieldColumn">
-                <h:selectOneMenu value="#{importActions.importFolder}">
+                <h:selectOneMenu value="#{importActions.importFolder}" id="importFolderSelect">
                   <f:selectItems value="#{importActions.importFolders}" />
                 </h:selectOneMenu>
+              </td>
+            </tr>
+            <tr id="newImportFolder">
+              <td class="labelColumn">
+                <h:outputText value="#{messages['label.widget.new.importfolder']}" />
+              </td>
+              <td class="fieldColumn">
+                <h:inputText value="#{importActions.newImportFolder}" />
               </td>
             </tr>
             <tr>
@@ -66,13 +77,11 @@
       </td>
     </tr>
   </table>
-    
+
   <div style="clear:both;"></div>
 
   <h3><h:outputText value="${messages['label.importset.title.select.metadata']}" /></h3>
 
-  <a4j:form id="importset_form"
-    ajaxSingle="true" enctype="multipart/form-data">
     <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
     <div style="clear:both;"></div>
     <p class="buttonsGadget">
@@ -95,6 +104,16 @@
     <script type="text/javascript">
       // Disable create button, will be enabled after uploading a file
       jQuery("#importset_form\\:importSetFormOk").attr("disabled", "disabled");
+
+      jQuery('#importset_form\\:importFolderSelect').change(function() {
+        var val = jQuery('#importset_form\\:importFolderSelect').val();
+        if (val == null || val == "") {
+          jQuery('#newImportFolder').show();
+        } else {
+          jQuery('#newImportFolder').hide();
+        }
+
+      });
     </script>
 
   </a4j:outputPanel>
