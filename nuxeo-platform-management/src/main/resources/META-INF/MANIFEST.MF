@@ -1,4 +1,5 @@
-Export-Package: org.nuxeo.ecm.platform.management.adapters,
+Export-Package: org.nuxeo.ecm.management.administrativestatus.service,
+ org.nuxeo.ecm.platform.management.adapters,
  org.nuxeo.ecm.platform.management.probes
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
