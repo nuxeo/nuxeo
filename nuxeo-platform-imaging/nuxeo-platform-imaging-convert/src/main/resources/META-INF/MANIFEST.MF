@@ -7,8 +7,7 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
 Provide-Package: org.nuxeo.ecm.platform.picture.convert
-Import-Package: com.sun.org.apache.commons.logging;specification-version="6.1.6",
- org.apache.commons.logging,
+Import-Package: org.apache.commons.logging,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.api.blobholder,
  org.nuxeo.ecm.core.convert.api,
