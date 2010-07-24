@@ -6,6 +6,10 @@
 
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.sql.BundleContextProvider"/>
+  </service>
+
   <documentation>
     SQL-based implementation for NXDirectory
   </documentation>

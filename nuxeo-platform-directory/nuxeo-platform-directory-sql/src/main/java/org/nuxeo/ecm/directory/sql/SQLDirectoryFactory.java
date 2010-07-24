@@ -37,6 +37,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
+import org.osgi.framework.BundleContext;
 
 public class SQLDirectoryFactory extends DefaultComponent implements
         DirectoryFactory {
@@ -47,6 +48,8 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(SQLDirectoryFactory.class);
 
     private Map<String, Directory> proxies;
+
+    protected ComponentContext ctx;
 
     public Directory getDirectory(String name) throws DirectoryException {
         return proxies.get(name);
@@ -59,11 +62,13 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         proxies = new HashMap<String, Directory>();
+        ctx = context;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         proxies = null;
+        ctx = null;
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
@@ -195,4 +200,15 @@ public class SQLDirectoryFactory extends DefaultComponent implements
         return directoryList;
     }
 
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(BundleContextProvider.class)) {
+            return adapter.cast(new BundleContextProvider() {
+                public BundleContext getContext() {
+                    return ctx.getRuntimeContext().getBundle().getBundleContext();
+                }
+            });
+        }
+        return super.getAdapter(adapter);
+    }
 }
