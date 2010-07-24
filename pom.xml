@@ -89,6 +89,7 @@
     <module>nuxeo-services</module>
     <module>nuxeo-jsf</module>
     <module>nuxeo-features</module>
+    <module>nuxeo-theme</module>
     <module>nuxeo-webengine</module>
   </modules>
 
@@ -2371,7 +2372,6 @@
 	<activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-	<module>nuxeo-theme</module>
 	<module>nuxeo-dm</module>
 	<module>nuxeo-gwt</module>
       </modules>
