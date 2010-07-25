@@ -250,7 +250,6 @@
         <include name="commons-lang-*" />
         <include name="commons-logging-*" />
         <include name="concurrent-*" />
-        <include name="custom_rhino-*" />
         <include name="derby-*" />
         <include name="dom4j-*" />
         <include name="ehcache-*" />
@@ -335,6 +334,7 @@
         <include name="jaxen-*beta*" />
         <include name="xalan-*" />
         <include name="xom-1.0*" />
+        <include name="yuicompressor-*" />
       </fileset>
     </delete>
     <copy todir="${nuxeo.ear}/lib" overwrite="true">

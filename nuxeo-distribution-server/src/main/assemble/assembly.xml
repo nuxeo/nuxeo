@@ -199,7 +199,7 @@
     <artifacts>
       <artifact group="net.sourceforge.cssparser" name="cssparser" />
       <artifact group="org.w3c" name="sac" />
-      <artifact group="org.dojotoolkit" name="custom_rhino" />
+      <artifact group="com.yahoo" name="yuicompressor" />
     </artifacts>
   </artifactSet>
 
