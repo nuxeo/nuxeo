@@ -222,9 +222,9 @@
                 </artifactItem>
                 <!--  used by nuxeo-theme-jsf... -->
                 <artifactItem>
-                  <groupId>org.dojotoolkit</groupId>
-                  <artifactId>custom_rhino</artifactId>
-                  <version>0.9.0</version>
+                  <groupId>com.yahoo</groupId>
+                  <artifactId>yuicompressor</artifactId>
+                  <version>2.4.2</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>
