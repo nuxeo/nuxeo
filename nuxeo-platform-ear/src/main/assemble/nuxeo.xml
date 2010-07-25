@@ -29,6 +29,8 @@
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifact name="nuxeo-runtime-management-metrics" />
+      <artifact name="nuxeo-runtime-jetty-adapter" />
       <artifact name="nuxeo-generic-wss-handler" />
 
       <artifact name="nuxeo-platform-webapp" />
@@ -141,6 +143,7 @@
       <artifact group="batik" name="batik-util" />
 
       <artifact group="org.mvel" name="mvel2" />
+      <artifact group="de.odysseus.juel" name="juel-impl" />
     </artifacts>
   </artifactSet>
 
