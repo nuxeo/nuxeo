@@ -956,19 +956,6 @@ public class Editor {
         saveTheme(themeName);
     }
 
-    public static byte[] getViewIconContent(final String viewTypeName) {
-        ViewType viewType = (ViewType) Manager.getTypeRegistry().lookup(
-                TypeFamily.VIEW, viewTypeName);
-        String iconResourcePath = null;
-        if (viewType != null) {
-            iconResourcePath = viewType.getIcon();
-        }
-        if (iconResourcePath == null) {
-            iconResourcePath = "nxthemes/html/icons/no-icon.png";
-        }
-        return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
-    }
-
     // UndoBuffer
     public static void saveToUndoBuffer(final String themeName,
             final String message) throws ThemeException {
