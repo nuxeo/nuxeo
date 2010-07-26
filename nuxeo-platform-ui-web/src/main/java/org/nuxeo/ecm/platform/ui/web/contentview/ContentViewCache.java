@@ -113,6 +113,12 @@ public class ContentViewCache implements Serializable {
         return cView;
     }
 
+    public void refresh(String contentViewName) {
+        cacheInstances.remove(contentViewName);
+        namedCacheKeys.remove(contentViewName);
+        namedContentViews.remove(contentViewName);
+    }
+
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
             Set<String> contentViewNames = eventToContentViewName.get(eventName);
