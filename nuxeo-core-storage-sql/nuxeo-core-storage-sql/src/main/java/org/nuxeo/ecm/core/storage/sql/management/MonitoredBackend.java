@@ -31,32 +31,30 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     RepositoryBackend wrapped;
 
     protected MonitoredBackend(RepositoryBackend wrapped) {
-       this.wrapped = wrapped;
+        this.wrapped = wrapped;
     }
 
-    @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver) throws StorageException {
-        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver),Mapper.class);
+    public Mapper newMapper(Model model, PathResolver pathResolver)
+            throws StorageException {
+        return MetricInvocationHandler.newProxy(wrapped.newMapper(model,
+                pathResolver), Mapper.class);
     }
 
-    @Override
     public void initialize(RepositoryImpl repository) throws StorageException {
         wrapped.initialize(repository);
     }
 
-    @Override
     public void initializeModel(Model model) throws StorageException {
-       wrapped.initializeModel(model);
+        wrapped.initializeModel(model);
     }
 
-    @Override
-    public void initializeModelSetup(ModelSetup modelSetup) throws StorageException {
-       wrapped.initializeModelSetup(modelSetup);
+    public void initializeModelSetup(ModelSetup modelSetup)
+            throws StorageException {
+        wrapped.initializeModelSetup(modelSetup);
     }
 
-    @Override
     public void shutdown() throws StorageException {
-       wrapped.shutdown();
+        wrapped.shutdown();
     }
 
 }
