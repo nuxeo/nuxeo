@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
@@ -215,6 +216,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public String goHome() {
+        EventManager.raiseEventsOnGoingHome();
         return "home";
     }
 

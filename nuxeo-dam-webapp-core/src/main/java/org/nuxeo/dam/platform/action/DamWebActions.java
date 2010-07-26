@@ -25,6 +25,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
 
@@ -155,6 +157,11 @@ public class DamWebActions extends WebActionsBean {
     @Factory(value = "isInsideAdministration", scope = EVENT)
     public boolean showAdministration() {
         return showAdministration;
+    }
+
+    @Observer(value = EventNames.GO_HOME)
+    public void resetOnGoHome() {
+        showAdministration = false;
     }
 
     public void showListLink() {
