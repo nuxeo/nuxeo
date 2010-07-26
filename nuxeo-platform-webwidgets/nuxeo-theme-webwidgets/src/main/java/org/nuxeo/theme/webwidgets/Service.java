@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.webwidgets;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -267,22 +269,27 @@ public class Service extends DefaultComponent implements FrameworkListener {
 
     private void initializeWidget(WidgetType widgetType) {
         final String path = widgetType.getPath();
-        final String source = org.nuxeo.theme.Utils.readResourceAsString(path);
-        widgetType.setSource(source);
-        final String icon = Utils.extractIcon(source);
-        if (icon != null) {
-            widgetType.setIcon(icon);
-        }
-        widgetType.setAuthor(Utils.extractMetadata(source, "author"));
-        widgetType.setDescription(Utils.extractMetadata(source, "description"));
-        widgetType.setThumbnail(Utils.extractMetadata(source, "thumbnail"));
-        widgetType.setScreenshot(Utils.extractMetadata(source, "screenshot"));
-        widgetType.setWebsite(Utils.extractMetadata(source, "website"));
+        try {
+            final String source = org.nuxeo.theme.Utils.readResourceAsString(path);
+            widgetType.setSource(source);
+            final String icon = Utils.extractIcon(source);
+            if (icon != null) {
+                widgetType.setIcon(icon);
+            }
+            widgetType.setAuthor(Utils.extractMetadata(source, "author"));
+            widgetType.setDescription(Utils.extractMetadata(source,
+                    "description"));
+            widgetType.setThumbnail(Utils.extractMetadata(source, "thumbnail"));
+            widgetType.setScreenshot(Utils.extractMetadata(source, "screenshot"));
+            widgetType.setWebsite(Utils.extractMetadata(source, "website"));
 
-        widgetType.setSchema(Utils.extractSchema(source));
-        widgetType.setScripts(Utils.extractScripts(source));
-        widgetType.setStyles(Utils.extractStyles(source));
-        widgetType.setBody(Utils.extractBody(source));
+            widgetType.setSchema(Utils.extractSchema(source));
+            widgetType.setScripts(Utils.extractScripts(source));
+            widgetType.setStyles(Utils.extractStyles(source));
+            widgetType.setBody(Utils.extractBody(source));
+        } catch (IOException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public Set<String> getWidgetCategories() {

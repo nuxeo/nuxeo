@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import java.io.IOException;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -77,7 +78,7 @@ public class TestUtils extends TestCase {
                 Utils.extractIcon("<link rel=\"icon\" href=\"icon.png\" type=\"image/png\" />"));
     }
 
-    public void testExtractSchema() {
+    public void testExtractSchema() throws IOException {
         List<WidgetFieldType> fields = Utils.extractSchema(org.nuxeo.theme.Utils.readResourceAsString("test-widget.html"));
         WidgetFieldType field1 = fields.get(0);
         assertEquals("Title", field1.label);

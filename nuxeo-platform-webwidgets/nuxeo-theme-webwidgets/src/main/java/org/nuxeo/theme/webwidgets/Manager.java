@@ -32,6 +32,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -501,6 +502,10 @@ public class Manager {
 
     public static byte[] getWidgetIconContent(final String widgetTypeName) {
         String iconResourcePath = getWidgetIconPath(widgetTypeName);
-        return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
+        try {
+            return org.nuxeo.theme.Utils.readResourceAsBytes(iconResourcePath);
+        } catch (IOException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 }
