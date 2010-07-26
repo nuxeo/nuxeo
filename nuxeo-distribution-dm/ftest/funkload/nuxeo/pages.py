@@ -87,6 +87,8 @@ class BasePage:
 
     def login(self, user, password):
         fl = self.fl
+        fl.clearHeaders()
+        fl.addHeader('Accept-Language', 'en')
         fl.post(fl.server_url + "/nxstartup.faces", params=[
             ['language', 'en_US'],
             ['user_name', user],
