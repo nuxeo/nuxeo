@@ -550,3 +550,18 @@ font-size:12px;
 font-weight:bold;
 padding:5px 0px 2px 0px;
 }
+
+#tooltip {
+  position:absolute;
+  display:block;
+}
+
+#tooltipContent {
+  display:block; 
+  padding:2px 12px 3px 7px; 
+  margin-left:5px; 
+  background:#FFFFAA; 
+  color:#000000;
+  border: 1px #333333;
+  border-style:solid;
+}
