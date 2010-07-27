@@ -69,7 +69,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getSearchLayout(), desc.getResultLayouts(),
                 desc.getCacheKey(), desc.getCacheSize(),
                 desc.getRefreshEventNames(), useGlobalPageSize.booleanValue(),
-                desc.getQueryParameters());
+                desc.getQueryParameters(), desc.getSearchDocumentBinding(),
+                desc.getSearchDocumentType());
         return contentView;
     }
 

@@ -39,9 +39,9 @@
     </contentView>
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
+      <searchDocument>#{searchDocument}</searchDocument>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <property name="searchDocument">#{searchDocument}</property>
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
           <fixedPart>

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 
@@ -27,7 +28,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PageProvider;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewCache;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
@@ -40,12 +44,15 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("contentViewActions")
 @Scope(CONVERSATION)
-public class ContentViewActionsBean implements Serializable {
+public class ContentViewActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected ContentViewService contentViewService;
+
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     protected ContentViewCache cache = new ContentViewCache();
 
@@ -71,7 +78,7 @@ public class ContentViewActionsBean implements Serializable {
     }
 
     /**
-     * Returns the global page size, or returns the page size on current global
+     * Returns the global page size, or returns the page size on current
      * content view if set.
      */
     public Long getCurrentGlobalPageSize() {
@@ -85,8 +92,8 @@ public class ContentViewActionsBean implements Serializable {
     }
 
     /**
-     * Sets the global page size, useful to sets the value having the
-     * appropriate selection on get, see {@link #getCurrentContentView()}
+     * Sets the global page size, useful to set the value having the
+     * appropriate selection set, see {@link #getCurrentContentView()}
      */
     public void setCurrentGlobalPageSize(Long pageSize) {
         setGlobalPageSize(pageSize);
@@ -106,25 +113,80 @@ public class ContentViewActionsBean implements Serializable {
         this.globalPageSize = pageSize;
     }
 
+    public ContentView getContentView(String name) throws ClientException {
+        return getContentView(name, null);
+    }
+
     /**
      * Returns content view with given name, or null if no content view with
      * this name is found.
+     * <p>
+     * If parameter searchDocumentModel is not null, it will be set on the
+     * content view. If it is null and the content is using a provider that
+     * needs it, a new document model is created and attached to it. This
+     * document model is resolved from the binding put in the content view XML
+     * definition, or from the document type in this definition if no binding
+     * is set.
+     * <p>
+     * If not null, this content view is set as the current content view so
+     * that subsequent calls to other methods can take information from it,
+     * like {@link #getCurrentGlobalPageSize()}
      * <p>
      * The content view is put in a cache map so that it's not rebuilt at each
      * call. It is rebuilt when its cache key changes (if defined).
      *
      * @throws ClientException
      */
-    public ContentView getContentView(String name) throws ClientException {
+    public ContentView getContentView(String name,
+            DocumentModel searchDocumentModel) throws ClientException {
         ContentView cView = cache.get(name);
         if (cView == null) {
             cView = contentViewService.getContentView(name);
             if (cView != null) {
                 cache.add(cView);
-                if (cView != null) {
-                    setCurrentContentView(cView);
+            }
+        }
+        if (cView != null) {
+            if (searchDocumentModel != null) {
+                cView.setSearchDocumentModel(searchDocumentModel);
+            } else {
+                DocumentModel doc = cView.getSearchDocumentModel();
+                if (doc == null
+                        && cView.getSearchDocumentModelType() != null) {
+                    // initialize doc
+                    cView.setSearchDocumentModel(documentManager.createDocumentModel(cView.getSearchDocumentModelType()));
                 }
             }
+            setCurrentContentView(cView);
+        }
+        return cView;
+    }
+
+    public ContentView getContentViewWithProvider(String name,
+            DocumentModel searchDocumentModel) throws ClientException {
+        return getContentViewWithProvider(name, searchDocumentModel, null,
+                null, (Object[]) null);
+    }
+
+    public ContentView getContentViewWithProvider(String name,
+            DocumentModel searchDocumentModel, Object... params)
+            throws ClientException {
+        return getContentViewWithProvider(name, searchDocumentModel, null,
+                null, params);
+    }
+
+    public ContentView getContentViewWithProvider(String name,
+            DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
+            Long currentPage, Object... params) throws ClientException {
+        ContentView cView = getContentView(name, searchDocumentModel);
+        if (cView != null) {
+            Long pageSize = null;
+            if (cView.getUseGlobalPageSize()) {
+                pageSize = getGlobalPageSize();
+            }
+            // initialize provider
+            cView.getPageProvider(searchDocumentModel, sortInfos, pageSize,
+                    currentPage, params);
         }
         return cView;
     }
@@ -139,11 +201,15 @@ public class ContentViewActionsBean implements Serializable {
 
     /**
      * Refreshes content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED}as a refresh event.
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a refresh event.
      */
     @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
     public void refreshOnDocumentChildrenChanged() {
         refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
+    }
+
+    public void refresh(String contentViewName) {
+        cache.refresh(contentViewName);
     }
 
 }

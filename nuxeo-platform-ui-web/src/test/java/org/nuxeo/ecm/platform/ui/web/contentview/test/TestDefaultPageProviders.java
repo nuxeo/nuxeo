@@ -120,7 +120,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         assertEquals(parentIdParam, contentView.getCacheKey());
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider(parentIdParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -277,7 +277,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
-        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProvider(parentIdParam);
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProviderWithParams(parentIdParam);
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -340,7 +340,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         // leave default values on doc for now: will filter on all docs with
         // given parent
         String parentIdParam = session.getRootDocument().getId();
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider(parentIdParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());

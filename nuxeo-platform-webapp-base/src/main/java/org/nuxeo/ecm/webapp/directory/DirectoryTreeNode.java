@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -35,8 +36,10 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
+import org.nuxeo.ecm.webapp.contentbrowser.ContentViewActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
@@ -72,11 +75,17 @@ public class DirectoryTreeNode {
 
     protected DirectoryService directoryService;
 
-    private QueryModel queryModel;
+    protected ContentView contentView;
 
-    private DocumentModelList childrenEntries;
+    /**
+     * @deprecated use {@link #contentView} instead
+     */
+    @Deprecated
+    protected QueryModel queryModel;
 
-    private List<DirectoryTreeNode> children;
+    protected DocumentModelList childrenEntries;
+
+    protected List<DirectoryTreeNode> children;
 
     public DirectoryTreeNode(int level, DirectoryTreeDescriptor config,
             String identifier, String description, String path,
@@ -89,39 +98,66 @@ public class DirectoryTreeNode {
         this.directoryService = directoryService;
     }
 
+    protected List<String> processSelectedValuesOnMultiSelect(String value,
+            List<String> values) {
+        if (values.contains(value)) {
+            values.remove(value);
+        } else {
+            // unselect all previous selection that are either more
+            // generic or more specific
+            List<String> valuesToRemove = new ArrayList<String>();
+            String valueSlash = value + "/";
+            for (String existingSelection : values) {
+                String existingSelectionSlash = existingSelection + "/";
+                if (existingSelectionSlash.startsWith(valueSlash)
+                        || valueSlash.startsWith(existingSelectionSlash)) {
+                    valuesToRemove.add(existingSelection);
+                }
+            }
+            values.removeAll(valuesToRemove);
+
+            // add the new selection
+            values.add(value);
+        }
+        return values;
+    }
+
     @SuppressWarnings("unchecked")
     public String selectNode() throws ClientException {
-        lookupQueryModel();
-        String fieldName = config.getFieldName();
-        String schemaName = config.getSchemaName();
-        String value = path;
-        if (config.isMultiselect()) {
-            List<String> values = (List<String>) queryModel.getProperty(
-                    schemaName, fieldName);
-            if (values.contains(value)) {
-                values.remove(value);
-            } else {
-                // unselect all previous selection that are either more generic
-                // or more specific
-                List<String> valuesToRemove = new ArrayList<String>();
-                String valueSlash = value + "/";
-                for (String existingSelection : values) {
-                    String existingSelectionSlash = existingSelection + "/";
-                    if (existingSelectionSlash.startsWith(valueSlash)
-                            || valueSlash.startsWith(existingSelectionSlash)) {
-                        valuesToRemove.add(existingSelection);
-                    }
+        if (config.hasContentViewSupport()) {
+            DocumentModel searchDoc = getContentViewSearchDocumentModel();
+            if (searchDoc != null) {
+                String fieldName = config.getFieldName();
+                String schemaName = config.getSchemaName();
+                if (config.isMultiselect()) {
+                    List<String> values = (List<String>) searchDoc.getProperty(
+                            schemaName, fieldName);
+                    values = processSelectedValuesOnMultiSelect(path, values);
+                    searchDoc.setProperty(schemaName, fieldName, values);
+                } else {
+                    searchDoc.setProperty(schemaName, fieldName, path);
                 }
-                values.removeAll(valuesToRemove);
-
-                // add the new selection
-                values.add(value);
+                if (contentView != null) {
+                    contentView.refreshPageProvider();
+                }
+            } else {
+                log.error("Cannot select node: search document model is null");
             }
-            queryModel.setProperty(schemaName, fieldName, values);
         } else {
-            queryModel.setProperty(schemaName, fieldName, value);
+            lookupQueryModel();
+            String fieldName = config.getFieldName();
+            String schemaName = config.getSchemaName();
+            if (config.isMultiselect()) {
+                List<String> values = (List<String>) queryModel.getProperty(
+                        schemaName, fieldName);
+                values = processSelectedValuesOnMultiSelect(path, values);
+                queryModel.setProperty(schemaName, fieldName, values);
+            } else {
+                queryModel.setProperty(schemaName, fieldName, path);
+            }
+            Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED,
+                    queryModel);
         }
-        Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED, queryModel);
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
         Events.instance().raiseEvent(
@@ -133,15 +169,35 @@ public class DirectoryTreeNode {
 
     @SuppressWarnings("unchecked")
     public boolean isSelected() throws ClientException {
-        lookupQueryModel();
-        String fieldName = config.getFieldName();
-        String schemaName = config.getSchemaName();
-        if (config.isMultiselect()) {
-            List<Object> values = (List<Object>) queryModel.getProperty(
-                    schemaName, fieldName);
-            return values.contains(path);
+        if (config.hasContentViewSupport()) {
+            DocumentModel searchDoc = getContentViewSearchDocumentModel();
+            if (searchDoc != null) {
+                String fieldName = config.getFieldName();
+                String schemaName = config.getSchemaName();
+                if (config.isMultiselect()) {
+                    List<Object> values = (List<Object>) searchDoc.getProperty(
+                            schemaName, fieldName);
+                    return values.contains(path);
+                } else {
+                    return path.equals(searchDoc.getProperty(schemaName,
+                            fieldName));
+                }
+            } else {
+                log.error("Cannot check if node is selected: "
+                        + "search document model is null");
+                return false;
+            }
         } else {
-            return path.equals(queryModel.getProperty(schemaName, fieldName));
+            lookupQueryModel();
+            String fieldName = config.getFieldName();
+            String schemaName = config.getSchemaName();
+            if (config.isMultiselect()) {
+                List<Object> values = (List<Object>) queryModel.getProperty(
+                        schemaName, fieldName);
+                return values.contains(path);
+            } else {
+                return path.equals(queryModel.getProperty(schemaName, fieldName));
+            }
         }
     }
 
@@ -150,15 +206,30 @@ public class DirectoryTreeNode {
      */
     @SuppressWarnings("unchecked")
     public boolean isOpened() throws ClientException {
-        lookupQueryModel();
-        String fieldName = config.getFieldName();
-        String schemaName = config.getSchemaName();
         if (config.isMultiselect()) {
             return isOpen();
         } else {
-            Object value = queryModel.getProperty(schemaName, fieldName);
-            if (value instanceof String) {
-                return ((String) value).startsWith(path);
+            if (config.hasContentViewSupport()) {
+                DocumentModel searchDoc = getContentViewSearchDocumentModel();
+                if (searchDoc != null) {
+                    String fieldName = config.getFieldName();
+                    String schemaName = config.getSchemaName();
+                    Object value = searchDoc.getProperty(schemaName, fieldName);
+                    if (value instanceof String) {
+                        return ((String) value).startsWith(path);
+                    }
+                } else {
+                    log.error("Cannot check if node is selected: "
+                            + "search document model is null");
+                }
+            } else {
+                lookupQueryModel();
+                String fieldName = config.getFieldName();
+                String schemaName = config.getSchemaName();
+                Object value = queryModel.getProperty(schemaName, fieldName);
+                if (value instanceof String) {
+                    return ((String) value).startsWith(path);
+                }
             }
         }
         return false;
@@ -211,8 +282,8 @@ public class DirectoryTreeNode {
 
     protected DocumentModelList getChildrenEntries() throws ClientException {
         if (childrenEntries != null) {
-            // memorized directory lookup since directory content is not suppose
-            // to change
+            // memorized directory lookup since directory content is not
+            // suppose to change
             // XXX: use the cache manager instead of field caching strategy
             return childrenEntries;
         }
@@ -300,11 +371,37 @@ public class DirectoryTreeNode {
         return getDirectoryService().open(getDirectoryName());
     }
 
-    protected void lookupQueryModel() throws ClientException {
+    protected void lookupContentView() throws ClientException {
+        if (contentView != null) {
+            return;
+        }
         SeamContextHelper seamContextHelper = new SeamContextHelper();
+        ContentViewActions cva = (ContentViewActions) seamContextHelper.get("contentViewActions");
+        contentView = cva.getContentView(config.getContentView());
+        if (contentView == null) {
+            throw new ClientException("no content view registered as "
+                    + config.getContentView());
+        }
+    }
+
+    protected DocumentModel getContentViewSearchDocumentModel()
+            throws ClientException {
+        lookupContentView();
+        if (contentView != null) {
+            return contentView.getSearchDocumentModel();
+        }
+        return null;
+    }
+
+    /**
+     * @deprecated ise {@link #lookupContentView()} instead
+     */
+    @Deprecated
+    protected void lookupQueryModel() throws ClientException {
         if (queryModel != null) {
             return;
         }
+        SeamContextHelper seamContextHelper = new SeamContextHelper();
         QueryModelActions qma = (QueryModelActions) seamContextHelper.get("queryModelActions");
         queryModel = qma.get(config.getQuerymodel());
         if (queryModel == null) {
@@ -322,8 +419,24 @@ public class DirectoryTreeNode {
             // no breadcrumbs management with multiselect
             return;
         }
-        String aPath = (String) queryModel.getProperty(config.getSchemaName(),
-                config.getFieldName());
+        String aPath = null;
+        if (config.hasContentViewSupport()) {
+            try {
+                DocumentModel searchDoc = getContentViewSearchDocumentModel();
+                if (searchDoc != null) {
+                    aPath = (String) searchDoc.getProperty(
+                            config.getSchemaName(), config.getFieldName());
+                } else {
+                    log.error("Cannot perform path preprocessing: "
+                            + "search document model is null");
+                }
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
+        } else if (queryModel != null) {
+            aPath = (String) queryModel.getProperty(config.getSchemaName(),
+                    config.getFieldName());
+        }
         if (aPath != null && aPath != "") {
             String[] bitsOfPath = aPath.split("/");
             String myPath = "";

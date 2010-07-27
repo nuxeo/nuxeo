@@ -54,8 +54,6 @@ public class CoreQueryDocumentPageProvider extends
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
-    public static final String SEARCH_DOCUMENT_PROPERTY = "searchDocument";
-
     protected PageProviderDescriptor descriptor;
 
     protected String query;
@@ -122,23 +120,6 @@ public class CoreQueryDocumentPageProvider extends
                         getParameters(), sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
-                if (searchDocumentModel == null) {
-                    // try to retrieve it from properties
-                    Map<String, Serializable> props = getProperties();
-                    if (props.containsKey(SEARCH_DOCUMENT_PROPERTY)) {
-                        searchDocumentModel = (DocumentModel) props.get(SEARCH_DOCUMENT_PROPERTY);
-                    }
-                }
-                if (searchDocumentModel == null) {
-                    String docType = descriptor.getWhereClause().getDocType();
-                    if (docType == null) {
-                        throw new ClientException(String.format(
-                                "Cannot build query of provider '%s': "
-                                        + "no docType set on whereClause",
-                                getName()));
-                    }
-                    searchDocumentModel = coreSession.createDocumentModel(docType);
-                }
                 if (searchDocumentModel == null) {
                     throw new ClientException(String.format(
                             "Cannot build query of provider '%s': "

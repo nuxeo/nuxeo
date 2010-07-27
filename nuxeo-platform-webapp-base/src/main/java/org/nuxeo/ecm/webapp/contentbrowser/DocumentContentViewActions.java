@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
@@ -45,7 +44,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("documentContentViewActions")
 @Scope(CONVERSATION)
-public class DocumentContentViewActionsBean implements Serializable {
+public class DocumentContentViewActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,7 +52,7 @@ public class DocumentContentViewActionsBean implements Serializable {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient ContentViewActionsBean contentViewActions;
+    protected transient ContentViewActions contentViewActions;
 
     /**
      * Map caching content views defined on a given document type
@@ -104,31 +103,6 @@ public class DocumentContentViewActionsBean implements Serializable {
             typeToContentView.put(docType, byCategories);
         }
         return !typeToContentView.get(docType).get(category).isEmpty();
-    }
-
-    public ContentView getContentViewWithProvider(String name)
-            throws ClientException {
-        return getContentViewWithProvider(name, null, null, (Object[]) null);
-    }
-
-    public ContentView getContentViewWithProvider(String name, Object... params)
-            throws ClientException {
-        return getContentViewWithProvider(name, null, null, params);
-    }
-
-    public ContentView getContentViewWithProvider(String name,
-            List<SortInfo> sortInfos, Long currentPage, Object... params)
-            throws ClientException {
-        ContentView cView = contentViewActions.getContentView(name);
-        if (cView != null) {
-            Long pageSize = null;
-            if (cView.getUseGlobalPageSize()) {
-                pageSize = contentViewActions.getGlobalPageSize();
-            }
-            // initialize provider
-            cView.getPageProvider(sortInfos, pageSize, currentPage, params);
-        }
-        return cView;
     }
 
     public List<ContentViewHeader> getAvailableContentViewsForDocument(

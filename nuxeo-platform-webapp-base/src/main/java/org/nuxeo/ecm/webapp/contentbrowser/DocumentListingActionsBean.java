@@ -65,7 +65,7 @@ public class DocumentListingActionsBean implements Serializable {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient ContentViewActionsBean contentViewActions;
+    protected transient ContentViewActions contentViewActions;
 
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;

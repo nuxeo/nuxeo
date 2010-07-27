@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.contentview.test;
 
-import java.util.List;
-
 import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
@@ -133,12 +131,17 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertEquals(0, pp.getNumberOfPages());
 
         // init results
-        List<DocumentModel> docs = pp.getCurrentPage();
+        pp.getCurrentPage();
 
         assertEquals(0, pp.getCurrentPageIndex());
+        assertEquals(5, pp.getResultsCount());
         assertTrue(pp.isNextPageAvailable());
         pp.nextPage();
         assertEquals(1, pp.getCurrentPageIndex());
+        assertEquals(-1, pp.getResultsCount());
+        // init results
+        pp.getCurrentPage();
+        assertEquals(5, pp.getResultsCount());
         assertEquals("document_listing",
                 contentView.getCurrentResultLayout().getName());
         ContentViewLayout layout = new ContentViewLayoutImpl(
@@ -148,7 +151,11 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         cache.add(contentView);
 
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
+        pp = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
+        assertNotNull(pp);
         assertEquals(1, pp.getCurrentPageIndex());
+        assertEquals(5, pp.getResultsCount());
         assertEquals("document_listing_2",
                 contentView.getCurrentResultLayout().getName());
 
@@ -159,13 +166,23 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         this.currentDocument = container1;
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
+        pp = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
+        assertNotNull(pp);
         assertEquals(1, pp.getCurrentPageIndex());
+        assertEquals(5, pp.getResultsCount());
         assertEquals("document_listing_2",
                 contentView.getCurrentResultLayout().getName());
 
         cache.refreshOnEvent("documentChildrenChanged");
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
-        assertNull(contentView);
+        assertNotNull(contentView);
+        pp = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
+        assertNotNull(pp);
+        assertEquals(1, pp.getCurrentPageIndex());
+        assertEquals(-1, pp.getResultsCount());
+        // init results
+        pp.getCurrentPage();
+        assertEquals(5, pp.getResultsCount());
     }
 
 }

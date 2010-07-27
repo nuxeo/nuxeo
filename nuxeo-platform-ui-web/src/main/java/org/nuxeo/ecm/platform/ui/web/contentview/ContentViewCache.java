@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
  * <p>
  * Each content view instance will be cached if its cache key is not null. Each
  * instance will be cached using the cache key so its state is restored. Also
- * handles refresh of caches when receiving events contfigured on the content
+ * handles refresh of caches when receiving events configured on the content
  * view.
  *
  * @author Anahide Tchertchian
@@ -114,9 +114,18 @@ public class ContentViewCache implements Serializable {
     }
 
     public void refresh(String contentViewName) {
-        cacheInstances.remove(contentViewName);
-        namedCacheKeys.remove(contentViewName);
-        namedContentViews.remove(contentViewName);
+        ContentView cv = namedContentViews.get(contentViewName);
+        if (cv != null) {
+            cv.refreshPageProvider();
+        }
+        Map<String, ContentView> instances = cacheInstances.get(contentViewName);
+        if (instances != null) {
+            for (ContentView cView : instances.values()) {
+                if (cView != null) {
+                    cView.refreshPageProvider();
+                }
+            }
+        }
     }
 
     public void refreshOnEvent(String eventName) {
@@ -124,9 +133,7 @@ public class ContentViewCache implements Serializable {
             Set<String> contentViewNames = eventToContentViewName.get(eventName);
             if (contentViewNames != null) {
                 for (String contentViewName : contentViewNames) {
-                    cacheInstances.remove(contentViewName);
-                    namedCacheKeys.remove(contentViewName);
-                    namedContentViews.remove(contentViewName);
+                    refresh(contentViewName);
                 }
             }
         }

@@ -6,12 +6,14 @@
 
 <c:if test="false">
 Needed parameters:
-- contentView
-- contentViewListStatus
+ - contentView: the content view instance, mandatory
+ - contentViewListIndex: a marker to generate unique ids
+   when iterating over a list of content views, optional
+   when only one content view is displayed in the page.
 </c:if>
 
 <div class="listingLayoutSelector">
-  <h:form id="contentViewLayoutSelectForm_#{contentViewListStatus.index}"
+  <h:form id="contentViewLayoutSelectForm_#{contentViewListIndex}"
     style="display:inline;">
 
     <c:if test="#{contentView.getResultLayouts().size() > 1}">
@@ -33,7 +35,7 @@ Needed parameters:
   </h:form>
 
   <c:if test="#{contentView.useGlobalPageSize}">
-    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListStatus.index}"
+    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}"
       style="display:inline;">
 
       <h:selectOneMenu value="#{contentViewActions.currentGlobalPageSize}"
@@ -51,7 +53,7 @@ Needed parameters:
       <div style="display: none;">
         <h:commandButton value="submit" />
       </div>
-        
+
     </h:form>
   </c:if>
 
