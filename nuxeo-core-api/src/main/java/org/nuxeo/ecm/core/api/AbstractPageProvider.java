@@ -188,9 +188,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
             setSortInfo(sortInfo);
         } else {
-            if (hasSortInfo(sortColumn, sortAscending)) {
-                // do nothing
-            } else if (hasSortInfo(sortColumn, !sortAscending)) {
+            if (getSortInfoIndex(sortColumn, sortAscending) != -1) {
+                // do nothing: sort on this column is not set
+            } else if (getSortInfoIndex(sortColumn, !sortAscending) != -1) {
                 // change direction
                 List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
                 for (SortInfo sortInfo : getSortInfos()) {
@@ -219,13 +219,13 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
-    public boolean hasSortInfo(String sortColumn, boolean sortAscending) {
+    public int getSortInfoIndex(String sortColumn, boolean sortAscending) {
         List<SortInfo> sortInfos = getSortInfos();
         if (sortInfos == null || sortInfos.isEmpty()) {
-            return false;
+            return -1;
         } else {
             SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
-            return sortInfos.contains(sortInfo);
+            return sortInfos.indexOf(sortInfo);
         }
     }
 

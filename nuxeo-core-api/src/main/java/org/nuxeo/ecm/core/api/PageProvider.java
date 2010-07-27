@@ -286,9 +286,11 @@ public interface PageProvider<T> extends Serializable {
     void addSortInfo(String sortColumn, boolean sortAscending);
 
     /**
-     * Returns true if given sort information is found on the set sort infos.
+     * Returns a positive 0-based integer if given sort information is found on
+     * the set sort infos, indicating the sort index, or -1 if this sort
+     * information is not found.
      */
-    boolean hasSortInfo(String sortColumn, boolean sortAscending);
+    int getSortInfoIndex(String sortColumn, boolean sortAscending);
 
     DocumentModel getSearchDocumentModel();
 
