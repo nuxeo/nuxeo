@@ -9,7 +9,7 @@
 
 <c:if test="false">
  Template rendering a content view defined on a document
- 
+
  Parameters:
  - contentViewCategory
 
@@ -31,81 +31,16 @@ function confirmDeleteDocumentsForever() {
   items="#{documentContentViewActions.getAvailableContentViewsForCurrentDocument(contentViewCategory)}"
   varStatus="contentViewListStatus">
 
-  <nxu:set var="contentView"
-    value="#{documentContentViewActions.getContentViewWithProvider(contentViewHeader.name)}"
-    cache="true">
+  <nxu:set var="contentViewListIndex" value="#{contentViewListStatus.index}">
+  <nxu:set var="contentViewName" value="#{contentViewHeader.name}">
 
-    <c:if test="#{contentView != null}">  
-    <a4j:region id="contentViewAjaxRegion_#{contentViewListStatus.index}">
+    <ui:decorate template="/incl/content_view.xhtml">
+      <ui:define name="content_view_header_before_selector" />
+    </ui:decorate>
 
-      <nxu:set var="provider" value="#{contentView.currentPageProvider}"
-        cache="true">
-        #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
-    
-        <ui:include src="/incl/document_listing_content_view_selector.xhtml" />
-        <div style="clear:both;" />
-        
-        <c:set var="title"
-          value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
-        <c:if test="#{!empty title}">
-          <h3>
-            <c:if test="#{!empty contentView.iconPath}">
-              <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />        
-            </c:if>
-            #{title}
-          </h3>
-        </c:if>
-    
-        <ui:decorate template="/incl/documents_layout_table.xhtml">
-          <ui:param name="documents" value="#{provider.currentSelectPage}" />
-          <ui:param name="listName" value="#{contentView.selectionListName}" />
-          <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
-          <ui:define name="buttons">
-            <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
-              <div id="selection_buttons">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                          <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
-                            <nxu:dataList var="sel_action" value="#{actions}"
-                              id="clipboardActionsTable_#{contentViewListStatus.index}_#{status.index}">
-                            <span id="#{sel_action.id}">
-                              <nxh:commandButton
-                                styleClass="button" type="submit"
-                                action="#{sel_action.getLink()}"
-                                value="#{messages[sel_action.label]}"
-                                onclick="#{sel_action.confirm}"
-                                disabled="#{!sel_action.available}"
-                                id="clipboardActionsButton" />
-                             </span>
-                            </nxu:dataList>
-                          </nxu:set>
-                          <br />
-                        </c:forEach>
-                      </td>
-                      <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
-                        <a4j:status>
-                          <f:facet name="start">
-                            <h:graphicImage value="/img/standart_waiter.gif" />
-                          </f:facet>
-                        </a4j:status>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </a4j:outputPanel>
-          </ui:define>
-        </ui:decorate>
-      
-      </nxu:set>
-      
-    </a4j:region>
-    </c:if>
+  </nxu:set>
   </nxu:set>
 
 </c:forEach>
-    
+
 </div>
