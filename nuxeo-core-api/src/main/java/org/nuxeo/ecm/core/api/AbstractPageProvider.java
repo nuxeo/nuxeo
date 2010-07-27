@@ -485,6 +485,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
         this.searchDocumentModel = searchDocumentModel;
+        refresh();
     }
 
 }
