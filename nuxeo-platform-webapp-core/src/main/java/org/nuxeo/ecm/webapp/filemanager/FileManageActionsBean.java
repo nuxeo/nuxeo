@@ -537,7 +537,7 @@ public class FileManageActionsBean extends InputController implements
                 log.error("Unable to reach fileUploadHolder");
             }
         } catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
             return;
         }
     }
@@ -600,7 +600,7 @@ public class FileManageActionsBean extends InputController implements
             documentManager.saveDocument(current);
             documentManager.save();
         } catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
         }
     }
 
@@ -612,7 +612,7 @@ public class FileManageActionsBean extends InputController implements
                 return addFile(stream, getFileName());
             } catch (Exception e) {
                 // NXP-3570 : temporary solution before real fix
-                log.error(e);
+                log.error(e, e);
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.unsupportedFile"));
