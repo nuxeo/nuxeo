@@ -17,6 +17,10 @@
     matching widget label.
 </c:if>
 
+<nxu:set var="hasSeveralSorts"
+  value="#{provider.getSortInfos().size() > 1}"
+  cache="true">
+
 <c:if test="#{showListingHeader and layout.properties.showListingHeader}">
   <thead>
     <tr>
@@ -46,10 +50,14 @@
             <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
               <c:choose>
                 <c:when test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
-                  <nxu:set var="hasAscending" value="#{provider.hasSortInfo(layoutColumn.properties.sortPropertyName, true)}" cache="true">
-                  <nxu:set var="hasDescending" value="#{provider.hasSortInfo(layoutColumn.properties.sortPropertyName, false)}" cache="true">
+                  <nxu:set var="ascIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, true)}"
+                    cache="true">
+                  <nxu:set var="descIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
+                    cache="true">
                     <h:commandLink immediate="true"
-                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(hasAscending, false, true), true)}"
+                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
                       id="#{layoutColumn.widgets[0].name}_header_sort">
                       <h:outputText value="#{layoutColumn.widgets[0].label}"
                         rendered="#{!layoutColumn.widgets[0].translated}" />
@@ -57,25 +65,31 @@
                         rendered="#{layoutColumn.widgets[0].translated}" />
                     </h:commandLink>
                     <f:verbatim>&amp;nbsp;</f:verbatim>
-                    <c:if test="#{hasAscending}">
+                    <c:if test="#{ascIndex != -1}">
                       <h:commandLink immediate="true"
                         action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
                         id="#{layoutColumn.widgets[0].name}_header_sort_desc">
-                        <h:graphicImage value="/icons/sort_down.png" />
+                        <h:graphicImage value="/icons/sort_selected_down.png" />
+                        <c:if test="#{hasSeveralSorts}">
+                          #{ascIndex + 1}
+                        </c:if>
                       </h:commandLink>
                     </c:if>
-                    <c:if test="#{hasDescending}">
+                    <c:if test="#{descIndex != -1}">
                       <h:commandLink immediate="true"
                         action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
                         id="#{layoutColumn.widgets[0].name}_header_sort_asc">
-                        <h:graphicImage value="/icons/sort_up.png" />
+                        <h:graphicImage value="/icons/sort_selected_up.png" />
+                        <c:if test="#{hasSeveralSorts}">
+                          #{descIndex + 1}
+                        </c:if>
                       </h:commandLink>
                     </c:if>
-                    <c:if test="#{!hasAscending and !hasDescending}">
+                    <c:if test="#{ascIndex == -1 and descIndex == -1}">
                       <h:commandLink immediate="true"
                         action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
                         id="#{layoutColumn.widgets[0].name}_header_sort_add">
-                        <h:graphicImage value="/icons/sort_add.png" />
+                        <h:graphicImage value="/icons/sort_down.png" />
                       </h:commandLink>
                     </c:if>
                   </nxu:set>
@@ -92,9 +106,19 @@
           </c:choose>
         </th>
       </nxl:layoutColumn>
+      <c:if test="#{provider.sortable}">
+        <th>
+        #{messages['contentview.sort.help']}
+          <h:graphicImage value="/icons/lightbulb.png"
+            onmouseover="tooltip.show('#{messages['contentview.sort.help']}', 200, 'topleft');"
+            onmouseout="tooltip.hide();" />
+        </th>
+      </c:if>
     </tr>
   </thead>
 </c:if>
+
+</nxu:set>
 
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
@@ -108,6 +132,10 @@
       </nxl:layoutColumnWidget>
     </td>
   </nxl:layoutColumn>
+  <c:if test="#{provider.sortable}">
+    <td class="iconColumn">
+    </td>
+  </c:if>
 </tr>
 
 </f:subview>
