@@ -334,7 +334,6 @@
         <include name="jaxen-*beta*" />
         <include name="xalan-*" />
         <include name="xom-1.0*" />
-        <include name="yuicompressor-*" />
       </fileset>
     </delete>
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
