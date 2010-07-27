@@ -79,29 +79,35 @@ public class StreamableMediaConverter extends BaseVideoConverter implements
         InputFile inputFile = null;
         try {
             blob = blobHolder.getBlob();
-            inputFile = new InputFile(blob);
-
-            // Convert the source to mp4 (h264 + aac)
-            outFile = File.createTempFile("StreamableMediaConverter-out-",
-                    ".tmp.mp4");
-            CmdParameters paramsForStreamable = new CmdParameters();
-            paramsForStreamable.addNamedParameter("inFilePath",
-                    inputFile.file.getAbsolutePath());
-            paramsForStreamable.addNamedParameter("outFilePath",
-                    outFile.getAbsolutePath());
-            ExecResult resultMp4 = cleService.execCommand(
-                    HANDBRAKE_CONVERT_MP4,
-                    paramsForStreamable);
-            if (!resultMp4.isSuccessful()) {
-                throw new ConversionException("Failed to build mp4 version of "
-                        + blob.getFilename() + ": "
-                        + StringUtils.join(resultMp4.getOutput(), " "));
-            }
-            log.info(String.format(
-                    "mp4 conversion of '%s' execution time: %ds",
-                    blob.getFilename(), resultMp4.getExecTime() / 1000));
-            if (log.isDebugEnabled()) {
-                log.debug(StringUtils.join(resultMp4.getOutput(), " "));
+            if (blob.getFilename().endsWith("mp4")) {
+                log.debug(blob.getFilename() + " is already a mp4 file, don't try to convert it");
+                outFile = File.createTempFile("StreamableMediaConverter-out-",
+                        ".tmp.mp4");
+                blob.transferTo(outFile);
+            } else {
+                inputFile = new InputFile(blob);
+                // Convert the source to mp4 (h264 + aac)
+                outFile = File.createTempFile("StreamableMediaConverter-out-",
+                        ".tmp.mp4");
+                CmdParameters paramsForStreamable = new CmdParameters();
+                paramsForStreamable.addNamedParameter("inFilePath",
+                        inputFile.file.getAbsolutePath());
+                paramsForStreamable.addNamedParameter("outFilePath",
+                        outFile.getAbsolutePath());
+                ExecResult resultMp4 = cleService.execCommand(
+                        HANDBRAKE_CONVERT_MP4,
+                        paramsForStreamable);
+                if (!resultMp4.isSuccessful()) {
+                    throw new ConversionException("Failed to build mp4 version of "
+                            + blob.getFilename() + ": "
+                            + StringUtils.join(resultMp4.getOutput(), " "));
+                }
+                log.info(String.format(
+                        "mp4 conversion of '%s' execution time: %ds",
+                        blob.getFilename(), resultMp4.getExecTime() / 1000));
+                if (log.isDebugEnabled()) {
+                    log.debug(StringUtils.join(resultMp4.getOutput(), " "));
+                }
             }
 
             // Hint the resulting mp4 file for streaming
