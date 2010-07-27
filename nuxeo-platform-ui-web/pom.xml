@@ -220,12 +220,6 @@
                   <artifactId>standard</artifactId>
                   <version>1.1.2</version>
                 </artifactItem>
-                <!--  used by nuxeo-theme-jsf... -->
-                <artifactItem>
-                  <groupId>com.yahoo</groupId>
-                  <artifactId>yuicompressor</artifactId>
-                  <version>2.4.2</version>
-                </artifactItem>
               </artifactItems>
               <outputDirectory>
                 ${project.build.outputDirectory}/WEB/lib
