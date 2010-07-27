@@ -246,7 +246,8 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
             }
             return cr.getCleanHTML();
         } catch (Exception e) {
-            log.error("Cannot sanitize", e);
+            log.error(String.format("Cannot sanitize %s: %s", info == null ? ""
+                    : info, e));
             return string;
         }
     }
