@@ -456,6 +456,28 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals("testfile1", dml.get(1).getName());
     }
 
+    public void testOrderBySameColumns() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        sql = "SELECT * FROM File "
+                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+                + " ORDER BY dc:title, dc:title";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+        assertEquals("testfile1", dml.get(0).getName());
+        assertEquals("testfile2", dml.get(1).getName());
+
+        sql = "SELECT * FROM File "
+                + " WHERE dc:title in ('testfile1_Title', 'testfile2_Title')"
+                + " ORDER BY dc:title DESC, dc:title";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+        assertEquals("testfile2", dml.get(0).getName());
+        assertEquals("testfile1", dml.get(1).getName());
+    }
+
     public void testOrderByPath() throws Exception {
         String sql;
         DocumentModelList dml;
