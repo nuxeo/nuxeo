@@ -1033,17 +1033,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.dojotoolkit</groupId>
-        <artifactId>custom_rhino</artifactId>
-        <version>0.4.3</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.yahoo</groupId>
-        <artifactId>yuicompressor</artifactId>
-        <version>2.4.2</version>
-      </dependency>
-      <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.1_3</version>
