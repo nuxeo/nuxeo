@@ -168,6 +168,8 @@ public class RepositoryDescriptor {
 
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
+        listen = other.listen;
+        connect = other.connect;
         backendClass = other.backendClass;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
