@@ -10,14 +10,14 @@
     point="trees">
 
     <directoryTree name="bySubjectsNavigation" label="base.navigation.subjects"
-      querymodel="bySubjectsNavQueryModel" field="subjects" schema="querynav"
+      contentView="bySubjectsContentView" field="subjects" schema="querynav"
       outcome="subjects_virtual_navigation">
       <directory>topic</directory>
       <directory>subtopic</directory>
     </directoryTree>
 
     <directoryTree name="byCoverageNavigation" label="base.navigation.coverage"
-      querymodel="byCoverageNavQueryModel" field="coverage" schema="querynav"
+      contentView="byCoverageContentView" field="coverage" schema="querynav"
       outcome="coverage_virtual_navigation">
       <directory>continent</directory>
       <directory>country</directory>
