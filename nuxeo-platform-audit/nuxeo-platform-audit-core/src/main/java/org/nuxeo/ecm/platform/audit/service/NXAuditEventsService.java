@@ -127,8 +127,10 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void deactivatePersistenceProvider() {
-        persistenceProvider.closePersistenceUnit();
-        persistenceProvider = null;
+        if (persistenceProvider != null) {
+            persistenceProvider.closePersistenceUnit();
+            persistenceProvider = null;
+        }
     }
 
     @Override
