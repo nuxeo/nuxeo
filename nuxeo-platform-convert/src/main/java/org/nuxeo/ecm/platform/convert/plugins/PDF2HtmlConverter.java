@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 
 /**
  * Pdf2Html converter based on the pdftohtml command-line executable.
- * 
+ *
  * @author tiry
  * @author Vincent Dutat
  */
@@ -93,13 +93,7 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
             throw new ConversionException(
                     "Unable to create tmp dir for transformer output");
         }
-
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            cmdStringParams.put("outDirPath", outDir.getAbsolutePath().replace(
-                    "\\", "\\\\"));
-        } else {
-            cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
-        }
+        cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
         return cmdStringParams;
     }
 

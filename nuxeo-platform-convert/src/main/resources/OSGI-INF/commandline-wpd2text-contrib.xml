@@ -6,7 +6,7 @@
     point="command">
     <command name="wpd2text" enabled="true">
       <commandLine>wpd2text</commandLine>
-      <parameterString> &quot;#{inFilePath}&quot;</parameterString>
+      <parameterString> #{inFilePath}</parameterString>
       <installationDirective>You need to install wpd2text (deb : libwpd-tools)  http://libwpd.sourceforge.net/download.html </installationDirective>
     </command>
 
