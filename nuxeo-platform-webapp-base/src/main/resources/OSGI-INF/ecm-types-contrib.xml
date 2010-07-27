@@ -23,6 +23,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="Domain">
@@ -244,9 +250,12 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>document_listing</layout>
-      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
     </type>
 
     <type id="File">

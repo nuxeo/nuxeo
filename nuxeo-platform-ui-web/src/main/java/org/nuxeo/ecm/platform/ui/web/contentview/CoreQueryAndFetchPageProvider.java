@@ -85,8 +85,8 @@ public class CoreQueryAndFetchPageProvider extends
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "Perform query: '%s' with pageSize=%s, offset=%s",
-                            query, Long.valueOf(getPageSize()),
+                            "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
+                            getName(), query, Long.valueOf(getPageSize()),
                             Long.valueOf(offset)));
                 }
 
@@ -105,8 +105,9 @@ public class CoreQueryAndFetchPageProvider extends
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Performed query: got %s hits",
-                            Long.valueOf(resultsCount)));
+                    log.debug(String.format(
+                            "Performed query for provider '%s': got %s hits",
+                            getName(), Long.valueOf(resultsCount)));
                 }
 
             } catch (ClientException e) {

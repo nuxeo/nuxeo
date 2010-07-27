@@ -151,8 +151,7 @@ public class ContentViewActions implements Serializable {
                 cView.setSearchDocumentModel(searchDocumentModel);
             } else {
                 DocumentModel doc = cView.getSearchDocumentModel();
-                if (doc == null
-                        && cView.getSearchDocumentModelType() != null) {
+                if (doc == null && cView.getSearchDocumentModelType() != null) {
                     // initialize doc
                     cView.setSearchDocumentModel(documentManager.createDocumentModel(cView.getSearchDocumentModelType()));
                 }
@@ -203,9 +202,11 @@ public class ContentViewActions implements Serializable {
      * Refreshes content views that have declared event
      * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a refresh event.
      */
-    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
+            EventNames.DOCUMENT_CHANGED })
     public void refreshOnDocumentChildrenChanged() {
         refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
+        refreshOnSeamEvents(EventNames.DOCUMENT_CHANGED);
     }
 
     public void refresh(String contentViewName) {
