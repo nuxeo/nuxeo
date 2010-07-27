@@ -32,7 +32,7 @@
           <field schema="filter_query" name="ecm_path" />
         </predicate>
 
-        <predicate parameter="dc:created" operator="BETWEEN">
+        <predicate parameter="damc:authoringDate" operator="BETWEEN">
           <field schema="filter_query" name="created_min" />
           <field schema="filter_query" name="created_max" />
         </predicate>
