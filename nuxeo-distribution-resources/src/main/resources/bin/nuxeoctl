@@ -77,6 +77,9 @@ if [ -r "$NUXEO_CONF" ]; then
 		if [[ "$key" == "nuxeo.data.dir" ]]; then
 			read -r DATA_DIR <<< $value
 		fi
+		if [[ "$key" == "nuxeo.tmp.dir" ]]; then
+			read -r TMP_DIR <<< $value
+		fi
 		if [[ "$key" == "nuxeo.bind.address" ]]; then
 			read -r BIND_ADDRESS <<< $value
 		fi

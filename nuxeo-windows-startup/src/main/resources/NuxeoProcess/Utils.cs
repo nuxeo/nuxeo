@@ -280,6 +280,24 @@ namespace NuxeoProcess
 			}
 			nxEnv.Add("DATA_DIR",DATA_DIR);
 			
+			// Setup TMP_DIR
+			// We don't set a default to keep backward compatibility
+			String TMP_DIR=null;
+			if (nxConfig.ContainsKey("nuxeo.tmp.dir")) {
+				TMP_DIR=nxConfig["nuxeo.tmp.dir"];
+				if (!Path.IsPathRooted(TMP_DIR)) {
+					TMP_DIR=Path.Combine(NUXEO_HOME,TMP_DIR);
+				}
+				try {
+					if (!Directory.Exists(TMP_DIR)) Directory.CreateDirectory(TMP_DIR);
+				} catch (Exception e) {
+					Log("Cannot create "+TMP_DIR,"ERROR");
+					Log(e.Message,"ERROR");
+					return false;
+				}
+			}
+			nxEnv.Add("TMP_DIR",TMP_DIR);
+			
 			// Setup NUXEO_BIND_ADDRESS
 			String NUXEO_BIND_ADDRESS="0.0.0.0";
 			if (nxConfig.ContainsKey("nuxeo.bind.address")) {
@@ -409,9 +427,15 @@ namespace NuxeoProcess
 			    	NUXEO_DATA=" -Djboss.server.data.dir=\""+nxEnv["DATA_DIR"]+"\"";
 			}
 			
+			String NUXEO_TMP="";
+			if (nxEnv["TMP_DIR"]!=null) {
+				NUXEO_TMP=" -Djboss.server.temp.dir=\""+nxEnv["TMP_DIR"]+"\""+
+					" -Djboss.server.temp.dir.overrideJavaTmpDir=true";
+			}
+			
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=\""+NUXEO_ENDORSED+"\""+
-				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_DATA+
+				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_DATA+NUXEO_TMP+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
 				" org.jboss.Main -b "+nxEnv["NUXEO_BIND_ADDRESS"];
@@ -435,6 +459,9 @@ namespace NuxeoProcess
 			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+Path.PathSeparator+srvStartJar;
 			    
 			String CATALINA_TEMP=Path.Combine(nxEnv["NUXEO_HOME"],"temp");
+			if (nxEnv["TMP_DIR"]!=null) {
+				CATALINA_TEMP=nxEnv["TMP_DIR"];
+			}
 			    
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
