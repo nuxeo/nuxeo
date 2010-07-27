@@ -72,6 +72,7 @@
         <include name="jline-*" />
         <include name="junit-*" />
         <include name="log4j-*" />
+        <include name="slf4j-*" />
         <include name="xml-apis-*" />
       </fileset>
     </delete>
