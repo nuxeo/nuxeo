@@ -104,7 +104,8 @@ public class NoteImporter extends AbstractFileImporter {
 
             // simple guess for MT
             String mt = "text/plain";
-            String extension = new Path(filename).getFileExtension().toLowerCase();
+            String extension = new Path(filename).getFileExtension();
+            extension = extension == null ? "" : extension.toLowerCase();
             if (extension.endsWith("htm") || extension.endsWith("html")) {
                 mt = "text/html";
             } else if (extension.endsWith("xml")) {

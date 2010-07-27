@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.mimetype.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -190,9 +191,10 @@ public class MimetypeRegistryService extends DefaultComponent implements
         try {
             // Magic magic = new Magic(); // need to be initialized
             MagicMatch match = Magic.getMagicMatch(file, true, false);
+            String mimeType;
 
             if (match.getSubMatches().isEmpty()) {
-                return match.getMimeType();
+                mimeType = match.getMimeType();
             } else {
                 // Submatches found
                 // TODO: we only take the first here
@@ -203,15 +205,26 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 Collection<MagicMatch> possibilities = match.getSubMatches();
                 Iterator<MagicMatch> iter = possibilities.iterator();
                 MagicMatch m = iter.next();
-
-                String matchingMimetype = m.getMimeType();
-
+                mimeType = m.getMimeType();
                 // need to clean for subsequent calls
                 possibilities.clear();
                 match.setSubMatches(possibilities);
-
-                return matchingMimetype;
             }
+            if ("text/plain".equals(mimeType)) {
+                // check we didn't mis-detect files with zeroes
+                // check first 16 bytes
+                byte[] bytes = new byte[16];
+                FileInputStream is = new FileInputStream(file);
+                int n = is.read(bytes);
+                is.close();
+                for (int i = 0; i < n; i++) {
+                    if (bytes[i] == 0) {
+                        mimeType = "application/octet-stream";
+                        break;
+                    }
+                }
+            }
+            return mimeType;
         } catch (MagicMatchNotFoundException e) {
             if (file.getAbsolutePath() != null) {
                 return getMimetypeFromFilename(file.getAbsolutePath());

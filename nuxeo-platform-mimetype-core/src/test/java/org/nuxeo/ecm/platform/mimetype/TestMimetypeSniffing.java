@@ -58,6 +58,36 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         return FileUtils.getResourceFileFromContext(path);
     }
 
+    private static File getZeroesDocument() {
+        return FileUtils.getResourceFileFromContext("test-data/zeroes");
+    }
+
+    public void testZeroesDocumentFromFile() throws Exception {
+        assertEquals("application/octet-stream",
+                mimetypeRegistry.getMimetypeFromFile(getZeroesDocument()));
+    }
+
+    public void testZeroesDocumentFromStream() throws Exception {
+        InputStream stream = new FileInputStream(getZeroesDocument());
+        assertEquals("application/octet-stream",
+                mimetypeRegistry.getMimetypeFromStream(stream));
+    }
+
+    private static File getTextDocument() {
+        return FileUtils.getResourceFileFromContext("test-data/hello.txt");
+    }
+
+    public void testTextDocumentFromFile() throws Exception {
+        assertEquals("text/plain",
+                mimetypeRegistry.getMimetypeFromFile(getTextDocument()));
+    }
+
+    public void testTextDocumentFromStream() throws Exception {
+        InputStream stream = new FileInputStream(getTextDocument());
+        assertEquals("text/plain",
+                mimetypeRegistry.getMimetypeFromStream(stream));
+    }
+
     private static File getWordDocument() {
         return FileUtils.getResourceFileFromContext("test-data/hello.doc");
     }
