@@ -80,11 +80,11 @@ public interface Constants {
 
     public final static String CAT_SCRIPTING = "Scripting";
 
-    public final static String CAT_EXECUTION = "Context";
+    public final static String CAT_EXECUTION = "Execution Context";
 
     public final static String CAT_EXECUTION_STACK = "Push & Pop";
 
-    public final static String CAT_SUBCHAIN_EXECUTION = "Chain Execution";
+    public final static String CAT_SUBCHAIN_EXECUTION = "Execution Flow";
 
     public final static String CAT_DOCUMENT = "Document";
 
