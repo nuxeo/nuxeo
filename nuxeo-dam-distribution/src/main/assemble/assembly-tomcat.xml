@@ -143,6 +143,11 @@
     <copy todir="${nxserver}/lib" overwrite="true">
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
     </copy>
+
+    <copy todir="${tomcatdir}/lib">
+      <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
+      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+    </copy>
   </target>
 
   <target name="copy-resources">
