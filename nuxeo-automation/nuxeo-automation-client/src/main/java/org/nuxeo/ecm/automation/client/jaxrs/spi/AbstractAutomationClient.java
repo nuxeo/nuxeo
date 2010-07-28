@@ -27,7 +27,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
 /**
@@ -37,34 +36,25 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 public abstract class AbstractAutomationClient implements AutomationClient,
         Constants {
 
-    protected int state; // 0 - initialized, 1 - starting, 2 - started
-
     protected String url;
 
     protected volatile OperationRegistry registry;
 
     protected Map<Class<?>, List<AdapterFactory<?>>> adapters;
 
-    protected AbstractAutomationClient() {
+    protected AbstractAutomationClient(String url) {
         adapters = new HashMap<Class<?>, List<AdapterFactory<?>>>();
+        this.url = url.endsWith("/") ? url : url + "/";
     }
 
     public String getBaseUrl() {
         return url;
     }
 
-    public OperationRegistry getRegistry() {
+    protected OperationRegistry getRegistry() {
         return registry;
     }
 
-    /**
-     * Register and adapter for a given type. Registration is not thread safe.
-     * You should register adapters at initialization time. An adapter type can
-     * be bound to a single adaptable type.
-     * 
-     * @param typeToAdapt
-     * @param adapterType
-     */
     public void registerAdapter(AdapterFactory<?> factory) {
         Class<?> adapter = factory.getAdapterType();
         List<AdapterFactory<?>> factories = adapters.get(adapter);
@@ -89,49 +79,19 @@ public abstract class AbstractAutomationClient implements AutomationClient,
         return null;
     }
 
-    public OperationDocumentation getOperation(String id) {
-        if (registry == null) {
-            throw new IllegalStateException("Client not connected");
-        }
-        return registry.getOperation(id);
-    }
-
-    public Map<String, OperationDocumentation> getOperations() {
-        if (registry == null) {
-            throw new IllegalStateException("Client not connected");
-        }
-        return registry.getOperations();
-    }
-
-    public synchronized void connect(String url) throws Exception {
-        if (this.url != null) {
-            throw new IllegalStateException("Already connected to " + url);
-        }
-        this.url = url.endsWith("/") ? url : url + "/";
+    protected synchronized void connect(String username, String password)
+            throws Exception {
         Request req = new Request(Request.GET, url);
         req.put("Accept", CTYPE_AUTOMATION);
+        if (username != null) {
+            String auth = "Basic " + Base64.encode(username + ":" + password);
+            req.put("Authorization", auth);
+        }
+        // TODO handle authorization failure
         registry = (OperationRegistry) newConnector().execute(req);
     }
 
-    public synchronized void connect(final String url,
-            final AsyncCallback<AutomationClient> cb) {
-        asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    connect(url);
-                    cb.onSuccess(AbstractAutomationClient.this);
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    public synchronized boolean isConnected() {
-        return url != null;
-    }
-
-    public synchronized void disconnect() {
+    public synchronized void shutdown() {
         url = null;
         registry = null;
         adapters = null;
@@ -139,9 +99,12 @@ public abstract class AbstractAutomationClient implements AutomationClient,
 
     public Session getSession(final String username, final String password)
             throws Exception {
-        if (!isConnected()) {
-            throw new IllegalStateException(
-                    "Cannot create an user session since client is not connected");
+        if (registry == null) { // not yet connected
+            synchronized (this) {
+                if (registry == null) {
+                    connect(username, password);
+                }
+            }
         }
         if (username != null) {
             return login(username, password);
@@ -152,14 +115,12 @@ public abstract class AbstractAutomationClient implements AutomationClient,
 
     public void getSession(final String username, final String password,
             final AsyncCallback<Session> cb) {
-        if (!isConnected()) {
-            throw new IllegalStateException(
-                    "Cannot create an user session since client is not connected");
-        }
         asyncExec(new Runnable() {
             public void run() {
                 try {
-                    cb.onSuccess(getSession(username, password));
+                    Session session = getSession(username, password);
+                    // TODO handle failures
+                    cb.onSuccess(session);
                 } catch (Throwable t) {
                     cb.onError(t);
                 }
@@ -168,10 +129,6 @@ public abstract class AbstractAutomationClient implements AutomationClient,
     }
 
     public Session login(String username, String password) throws Exception {
-        if (!isConnected()) {
-            throw new IllegalStateException(
-                    "Cannot login since client is not connected");
-        }
         Request request = new Request(Request.POST, url
                 + getRegistry().getPath("login"));
         String auth = "Basic " + Base64.encode(username + ":" + password);

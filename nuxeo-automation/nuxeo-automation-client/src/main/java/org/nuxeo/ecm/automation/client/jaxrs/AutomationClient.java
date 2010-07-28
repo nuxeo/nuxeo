@@ -16,32 +16,50 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
-
 /**
+ * The connection to the automation service is done the first time you create a
+ * session. To create a session you need to pass the authentication information.
+ * If null is passed as the user name an anonymous session will be created. Note
+ * that anonymous sessions are not always accepted by a Nuxeo Server (it depends
+ * on the server configuration).
+ * 
+ * When you attempt to create a new session using the same authentication info
+ * as an already created session the session will be reused (TODO this is
+ * optional for implementors?)
+ * 
+ * Note for implementors: The implementation should provide a constructor that
+ * initialize the base URL
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
 public interface AutomationClient {
 
+    /**
+     * Get the automation service URL.
+     * 
+     * @return
+     */
     String getBaseUrl();
 
-    void connect(String url) throws Exception;
-
-    void connect(String url, AsyncCallback<AutomationClient> cb);
-
-    public boolean isConnected();
-
-    void disconnect();
-
-    OperationDocumentation getOperation(String id);
-
-    Map<String, OperationDocumentation> getOperations();
-
+    /**
+     * Create a new session using the given login.
+     * 
+     * @param username
+     * @param password
+     * @return
+     * @throws Exception
+     */
     Session getSession(String username, String password) throws Exception;
 
+    /**
+     * Create asynchronously a new session using the given login. The given
+     * callback will be notified after the session is created.
+     * 
+     * @param username
+     * @param password
+     * @param cb
+     */
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
@@ -58,6 +76,20 @@ public interface AutomationClient {
      */
     <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
 
+    /**
+     * Register and adapter for a given type. Registration is not thread safe.
+     * You should register adapters at initialization time. An adapter type can
+     * be bound to a single adaptable type.
+     * 
+     * @param typeToAdapt
+     * @param adapterType
+     */
     void registerAdapter(AdapterFactory<?> factory);
+
+    /**
+     * Cleanup any resources held by this client. After a shutdown the client is
+     * no more usable.
+     */
+    void shutdown();
 
 }

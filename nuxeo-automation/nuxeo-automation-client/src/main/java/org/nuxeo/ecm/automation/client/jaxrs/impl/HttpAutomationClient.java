@@ -23,16 +23,17 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class HttpAutomationClient extends AsyncAutomationClient {
 
     protected DefaultHttpClient http;
 
-    public HttpAutomationClient() {
+    public HttpAutomationClient(String url) {
+        super(url);
         http = new DefaultHttpClient();
-        //http.setCookieSpecs(null);
-        //http.setCookieStore(null);
+        // http.setCookieSpecs(null);
+        // http.setCookieStore(null);
         registerAdapter(new DocumentServiceFactory());
     }
 
@@ -41,8 +42,8 @@ public class HttpAutomationClient extends AsyncAutomationClient {
     }
 
     @Override
-    public synchronized void disconnect() {
-        super.disconnect();
+    public synchronized void shutdown() {
+        super.shutdown();
         http.getConnectionManager().shutdown();
         http = null;
     }

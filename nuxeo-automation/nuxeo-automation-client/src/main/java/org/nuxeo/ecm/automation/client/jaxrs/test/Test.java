@@ -32,8 +32,8 @@ public class Test {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient();
-            client.connect("http://localhost:8080/automation");
+            HttpAutomationClient client = new HttpAutomationClient(
+                    "http://localhost:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
             Session session = client.getSession("Administrator",
                     "Administrator");
@@ -72,7 +72,7 @@ public class Test {
             System.out.println("@@@@@@@@@@@@@@@@@@@");
             System.out.println("took: "
                     + ((double) System.currentTimeMillis() - start) / 1000);
-            client.disconnect();
+            client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();
             System.out.println(e.getRemoteStackTrace());

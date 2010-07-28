@@ -18,9 +18,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.test;
 
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 
@@ -28,43 +26,40 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Test2 {
+public class Test3 {
 
     public static void main(String[] args) throws Exception {
         try {
+            // create the client
             HttpAutomationClient client = new HttpAutomationClient(
                     "http://localhost:8080/nuxeo/site/automation");
-            long start = System.currentTimeMillis();
+            // get an Administrator session
             Session session = client.getSession("Administrator",
                     "Administrator");
-            DocumentService rs = session.getAdapter(DocumentService.class);
-            Document doc = rs.getDocument("/default-domain");
-            System.out.println(doc + " - " + doc.getTitle());
-            Documents docs = rs.getChildren(doc);
+            // get the /default-domain/workspaces document
+            Document doc = (Document) session.newRequest("Document.Fetch").set(
+                    "value", "/default-domain/workspaces").execute();
+            System.out.println(doc);
+            System.out.println(doc.getTitle());
+
+            // create a new workspace (inside /default-domain/workspaces)
+            Document myWs = (Document) session.newRequest("Document.Create").setInput(
+                    doc).set("type", "Workspace").set("name", "MyWorkspace").set(
+                    "properties",
+                    "dc:title=My Workspace\ndc:description=This is my workspace").execute();
+            System.out.println(myWs.getTitle());
+
+            // now list the children in /default-domain/workspaces
+            Documents docs = (Documents) session.newRequest(
+                    "Document.GetChildren").setInput(doc).execute();
             System.out.println(docs);
-            Document dd = null;
+
+            // list children titles
             for (Document d : docs) {
-                if (d.getPath().endsWith("/workspaces")) {
-                    dd = d;
-                }
                 System.out.println(d.getTitle() + " at " + d.getLastModified());
             }
-            // doc = rs.createDocument(dd, "Workspace", "hello");
-            // System.out.println(doc + " - "+doc.getTitle());
-            System.out.println("@@@@@@@@@@@@@@@@@@@");
-            DocRef wsRef = new DocRef("/default-domain/workspaces");
-            docs = rs.getChildren(wsRef);
-            System.out.println(docs);
-            for (Document d : docs) {
-                System.out.println(d.getTitle() + " at " + d.getLastModified()
-                        + " state: " + d.getState());
-            }
-            doc = rs.getDocument("/default-domain/workspaces");
-            System.out.println("----------------------------");
-            System.out.println(doc + " - " + doc.getTitle());
-            System.out.println("@@@@@@@@@@@@@@@@@@@");
-            System.out.println("took: "
-                    + ((double) System.currentTimeMillis() - start) / 1000);
+
+            // shutdown the client
             client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();

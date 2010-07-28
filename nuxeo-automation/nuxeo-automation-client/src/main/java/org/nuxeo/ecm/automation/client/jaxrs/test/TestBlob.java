@@ -36,8 +36,8 @@ public class TestBlob {
 
     public static void main(String[] args) throws Exception {
         try {
-            HttpAutomationClient client = new HttpAutomationClient();
-            client.connect("http://localhost:8080/automation");
+            HttpAutomationClient client = new HttpAutomationClient(
+                    "http://localhost:8080/automation");
             long start = System.currentTimeMillis();
             // SessionImpl session = (SessionImpl)client.getSession(null);
             Session session = (Session) client.getSession("Administrator",
@@ -81,7 +81,7 @@ public class TestBlob {
             }
             System.out.println("60 full docs took: "
                     + ((double) System.currentTimeMillis() - start) / 1000);
-            client.disconnect();
+            client.shutdown();
         } catch (RemoteException e) {
             e.printStackTrace();
             System.out.println(e.getRemoteStackTrace());

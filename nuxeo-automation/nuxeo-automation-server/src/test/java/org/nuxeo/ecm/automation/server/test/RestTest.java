@@ -97,8 +97,8 @@ public class RestTest {
     @BeforeClass
     public static void connect() throws Exception {
         try {
-            client = new HttpAutomationClient();
-            client.connect("http://localhost:18080/automation");
+            client = new HttpAutomationClient(
+                    "http://localhost:18080/automation");
 
             session = client.getSession("Administrator", "Administrator");
         } catch (RemoteException e) {
@@ -109,9 +109,9 @@ public class RestTest {
     }
 
     @AfterClass
-    public static void disconnect() {
+    public static void shutdown() {
         if (client != null) {
-            client.disconnect();
+            client.shutdown();
             client = null;
             session = null;
         }

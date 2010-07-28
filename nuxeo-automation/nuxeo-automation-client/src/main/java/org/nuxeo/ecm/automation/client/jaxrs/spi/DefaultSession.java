@@ -171,11 +171,11 @@ public class DefaultSession implements Session, Constants {
     }
 
     public OperationDocumentation getOperation(String id) {
-        return client.getOperation(id);
+        return client.getRegistry().getOperation(id);
     }
 
     public Map<String, OperationDocumentation> getOperations() {
-        return client.getOperations();
+        return client.getRegistry().getOperations();
     }
 
 }

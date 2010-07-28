@@ -21,25 +21,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class AsyncAutomationClient extends AbstractAutomationClient {
 
     protected ExecutorService async;
 
-
-    public AsyncAutomationClient() {
-        this (Executors.newCachedThreadPool(new ThreadFactory() {
+    public AsyncAutomationClient(String url) {
+        this(url, Executors.newCachedThreadPool(new ThreadFactory() {
             public Thread newThread(Runnable r) {
                 return new Thread("AutomationAsyncExecutor");
             }
         }));
     }
 
-    public AsyncAutomationClient(ExecutorService executor) {
+    public AsyncAutomationClient(String url, ExecutorService executor) {
+        super(url);
         async = executor;
     }
 
@@ -49,13 +48,13 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
     }
 
     @Override
-    public synchronized void disconnect() {
+    public synchronized void shutdown() {
         try {
-        async.awaitTermination(2, TimeUnit.SECONDS);
+            async.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        super.disconnect();
+        super.shutdown();
         async = null;
     }
 
