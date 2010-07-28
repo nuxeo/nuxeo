@@ -21,6 +21,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import javax.transaction.xa.Xid;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
@@ -82,6 +84,20 @@ public class MapperClient implements InvocationHandler {
         } else if ("createDatabase".equals(methodName)) {
             createDatabase();
             return null;
+        }
+
+        // copying the transaction id implementation object that may not be
+        // known by the class loader on server side.
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] instanceof Xid) {
+                    Xid transactionId = (Xid) args[i];
+                    args[i] = new MapperClientXid(
+                            transactionId.getBranchQualifier(),
+                            transactionId.getFormatId(),
+                            transactionId.getGlobalTransactionId());
+                }
+            }
         }
 
         // send through network
