@@ -70,7 +70,6 @@ import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;

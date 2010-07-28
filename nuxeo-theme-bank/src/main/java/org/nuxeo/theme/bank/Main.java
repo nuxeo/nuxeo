@@ -139,6 +139,7 @@ public class Main extends ModuleRoot {
                     skinMap.put("collection", collection);
                     skinMap.put("resource", resource);
                     skinMap.put("preview", preview);
+                    skinMap.put("name", String.format("%s (%s)", resource.replace(".css", ""), collection));
                     skins.add(skinMap);
                 }
             }
