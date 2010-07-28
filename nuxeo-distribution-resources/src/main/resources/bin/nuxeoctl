@@ -357,6 +357,9 @@ createdirs() {
 	if [ ! -z "$DATA_DIR" ] && [ ! -d "$DATA_DIR" ]; then
 		mkdir -p "$DATA_DIR"
 	fi
+	if [ ! -z "$TMP_DIR" ] && [ ! -d "$TMP_DIR" ]; then
+		mkdir -p "$TMP_DIR"
+	fi
 }
 
 stop() {
