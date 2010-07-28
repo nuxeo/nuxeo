@@ -31,6 +31,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -64,6 +65,9 @@ public class DamFolderAdminActions implements Serializable {
     protected static final long serialVersionUID = 1L;
 
     public static final DocumentModelList NO_FOLDERS = new DocumentModelListImpl();
+
+    public static final Labeler labeler = new Labeler(
+            "label.security.permission");
 
     @In(create = true)
     protected transient UserManager userManager;
@@ -238,6 +242,10 @@ public class DamFolderAdminActions implements Serializable {
 
     public DocumentModel getSelectedFolder() {
         return selectedFolder;
+    }
+
+    public String getLabelFor(String permission) {
+        return labeler.makeLabel(permission);
     }
 
 }

@@ -57,7 +57,7 @@
                     </h:selectOneMenu>
                   </td>
                 </tr>
-                <tr id="newImportFolder">
+                <tr id="newImportFolder" style="visibility: hidden;">
                   <td class="labelColumn">
                     <h:outputText value="#{messages['label.widget.new.importfolder']}" />
                   </td>
@@ -103,6 +103,12 @@
     <script type="text/javascript">
       // Disable create button, will be enabled after uploading a file
       jQuery("#importset_form\\:importSetFormOk").attr("disabled", "disabled");
+
+      // Display the hidden input text for the folder title if needed
+      var val = jQuery('#importset_form\\:importFolderSelect').val();
+      if (val == null || val == "") {
+        jQuery('#newImportFolder').css({visibility: "visible"});
+      }
 
       jQuery('#importset_form\\:importFolderSelect').change(function() {
         var val = jQuery('#importset_form\\:importFolderSelect').val();

@@ -27,7 +27,7 @@
           <span>
             <a4j:commandLink styleClass="button"
                              action="#{documentActions.toggleDisplayMode}"
-                             immediate="true" reRender="assetView">
+                             immediate="true" reRender="assetView" rendered="#{documentActions.canEditAsset()}">
               <h:outputText value="#{messages['command.cancel']}"
                             rendered="#{documentActions.displayMode == 'edit'}"/>
               <h:outputText value="#{messages['command.edit']}"
