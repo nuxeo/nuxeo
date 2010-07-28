@@ -51,7 +51,7 @@ public class ContentViewActions implements Serializable {
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    @In(create = true, required = false)
+    @In(create = true, required = true)
     protected transient CoreSession documentManager;
 
     protected ContentViewCache cache = new ContentViewCache();
@@ -151,9 +151,13 @@ public class ContentViewActions implements Serializable {
                 cView.setSearchDocumentModel(searchDocumentModel);
             } else {
                 DocumentModel doc = cView.getSearchDocumentModel();
-                if (doc == null && cView.getSearchDocumentModelType() != null) {
-                    // initialize doc
-                    cView.setSearchDocumentModel(documentManager.createDocumentModel(cView.getSearchDocumentModelType()));
+                if (doc == null) {
+                    String docType = cView.getSearchDocumentModelType();
+                    if (docType != null) {
+                        // initialize doc
+                        DocumentModel blankDoc = documentManager.createDocumentModel(docType);
+                        cView.setSearchDocumentModel(blankDoc);
+                    }
                 }
             }
             setCurrentContentView(cView);
