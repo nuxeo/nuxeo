@@ -439,6 +439,7 @@
       </selector>
       <selector path=".banner_actions ul li">
         <float>left</float>
+        <padding>0</padding>
       </selector>
       <selector path=".banner_actions ul li a">
         <display>block</display>
