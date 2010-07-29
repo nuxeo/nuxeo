@@ -560,6 +560,7 @@ public class ThemeParser {
             log.error("Unknown style: " + styleName);
         } else {
             Utils.loadCss(style, cssSource, "*");
+            style.setRemote(true);
         }
     }
 

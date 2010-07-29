@@ -135,9 +135,15 @@ public class ThemeSerializer {
             // export named styles
             for (Identifiable object : themeManager.getNamedObjects(themeName,
                     formatTypeName)) {
-                serializeFormat((Format) object, formatNode);
+                Format format = (Format) object;
+                if (!format.isRemote() || format.isCustomized()) {
+                    serializeFormat(format, formatNode);
+                }
             }
             for (Format format : themeManager.getFormatsByTypeName(formatTypeName)) {
+                if (format.isRemote() && !format.isCustomized()) {
+                    continue;
+                }
                 // make sure that the format is used by this theme
                 boolean isUsedByThisTheme = false;
                 for (Element element : ElementFormatter.getElementsFor(format)) {

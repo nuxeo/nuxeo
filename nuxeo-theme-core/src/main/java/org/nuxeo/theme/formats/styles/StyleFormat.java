@@ -135,8 +135,4 @@ public class StyleFormat extends DefaultFormat implements Style {
         return getName() != null;
     }
 
-    public boolean isCustomized() {
-        return isNamed() && !styleProperties.isEmpty();
-    }
-
 }

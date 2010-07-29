@@ -35,4 +35,12 @@ public interface Format extends Relate, Identifiable, PropertySheet {
 
     boolean isNamed();
 
+    boolean isCustomized();
+
+    boolean isRemote();
+
+    void setRemote(boolean remote);
+
+    void setCustomized(boolean customized);
+
 }
