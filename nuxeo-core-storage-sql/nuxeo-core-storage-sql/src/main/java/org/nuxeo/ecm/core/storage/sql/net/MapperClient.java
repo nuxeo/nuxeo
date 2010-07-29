@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -91,11 +92,7 @@ public class MapperClient implements InvocationHandler {
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 if (args[i] instanceof Xid) {
-                    Xid transactionId = (Xid) args[i];
-                    args[i] = new MapperClientXid(
-                            transactionId.getBranchQualifier(),
-                            transactionId.getFormatId(),
-                            transactionId.getGlobalTransactionId());
+                    args[i] = new XidImpl((Xid) args[i]);
                 }
             }
         }

@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -736,7 +737,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * rollback before save (underlying XAResource saw no updates)
          */
-        Xid xid = new DummyXid("1");
+        Xid xid = new XidImpl("1");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
         nodea.setSingleProperty("tst:title", "new");
@@ -749,7 +750,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * rollback after save (underlying XAResource does a rollback too)
          */
-        xid = new DummyXid("2");
+        xid = new XidImpl("2");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
         nodea.setSingleProperty("tst:title", "new");
@@ -768,7 +769,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         XAResource xaresource = ((SessionImpl) session).getXAResource();
 
         // first transaction
-        Xid xid = new DummyXid("1");
+        Xid xid = new XidImpl("1");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         Node root = session.getRootNode();
         assertNotNull(root);
@@ -782,7 +783,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ((SessionImpl) session).clearCaches();
 
         // second transaction
-        xid = new DummyXid("2");
+        xid = new XidImpl("2");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         Node foo = session.getNodeByPath("/foo", null);
         assertNotNull(foo);
@@ -1567,57 +1568,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         } finally {
             JDBCMapper.testMode = false;
         }
-    }
-
-}
-
-class DummyXid implements Xid, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private final byte[] gtrid;
-
-    private final byte[] bqual;
-
-    public DummyXid(String id) {
-        gtrid = id.getBytes();
-        // MySQL JDBC driver needs a non 0-length branch qualifier
-        bqual = new byte[] { '0' };
-    }
-
-    public int getFormatId() {
-        return 0;
-    }
-
-    public byte[] getGlobalTransactionId() {
-        return gtrid;
-    }
-
-    public byte[] getBranchQualifier() {
-        return bqual;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 31 + Arrays.hashCode(bqual);
-        return 31 * result + Arrays.hashCode(gtrid);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof DummyXid) {
-            return equals((DummyXid) other);
-        } else {
-            return false;
-        }
-    }
-
-    private boolean equals(DummyXid other) {
-        if (other == this) {
-            return true;
-        }
-        return Arrays.equals(bqual, other.bqual)
-                && Arrays.equals(gtrid, other.gtrid);
     }
 
 }
