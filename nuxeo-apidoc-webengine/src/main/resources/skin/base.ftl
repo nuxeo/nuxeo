@@ -34,6 +34,7 @@
 <body>
 
 <table width="100%" cellpadding="0" cellspacing="0">
+<#if !Root.isEmbeddedMode()>
   <tr valign="middle">
     <td class="header">
       <@block name="header">
@@ -50,11 +51,14 @@
       </@block>
     </td>
   </tr>
+</#if>
   <tr valign="top" align="left">
     <td>
       <@block name="middle">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr valign="top" align="left">
+        <#if !hideNav>
+
           <td width="20%" style="padding:20px 10px 20px 20px; border-right:1px solid #d2d2d2">
           <@block name="left">
 
@@ -62,8 +66,9 @@
 
           </@block>
           </td>
+        </#if>
           <td style="padding:10px 20px 20px 10px;">
-     <#if enableDocumentationView>
+     <#if enableDocumentationView && !Root.isEmbeddedMode() >
             <table width="100% class="tabs" id="tabbox">
             <tr>
 
@@ -103,6 +108,7 @@
       </@block>
     </td>
   </tr>
+  <#if !Root.isEmbeddedMode()>
   <tr valign="middle" align="center">
     <td class="footer">
       <@block name="footer">
@@ -114,8 +120,10 @@
         </div>
         <div style="clear:both;"></div>
       </@block>
+
     </td>
   </tr>
+  </#if>
 </table>
 
 

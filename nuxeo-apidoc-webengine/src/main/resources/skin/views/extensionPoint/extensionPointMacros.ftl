@@ -1,4 +1,4 @@
-<#macro viewExtensionPoint extensionPointWO >
+<#macro viewExtensionPoint extensionPointWO expand=false>
 
   <#assign nestedLevel=nestedLevel+1/>
   <#assign extensionPointItem=extensionPointWO.getNxArtifact()/>
@@ -48,12 +48,28 @@
  </span>
   <ul>
   <#list extensionPointItem.extensions as contrib>
-    <li><A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
+    <#if !expand>
+      <li><A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
+    </#if>
+    <#if expand>
+      <li><p>
+      <div>${contrib.id}</div>
+       <pre>
+        <code>
+         ${contrib.xml?html}
+        </code>
+       </pre>
+      </p>
+      </li>
+    </#if>
   </#list>
   </ul>
   </p>
 
+<#if !expand>
   <@viewAdditionalDoc docsByCat=extensionPointDocs.getDocumentationItems(Context.getCoreSession())/>
+</#if>
+
   </div>
   </div>
 

@@ -67,6 +67,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ApiBrowser extends DefaultObject {
 
     String distributionId;
+    boolean embeddedMode=false;
 
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);
@@ -79,6 +80,9 @@ public class ApiBrowser extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         distributionId = (String) args[0];
+        if (args.length>1) {
+            embeddedMode = (Boolean) args[1];
+        }
     }
 
     @GET
@@ -98,7 +102,19 @@ public class ApiBrowser extends DefaultObject {
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView("index").arg("distId", ctx.getProperty("distId"));
+        if (embeddedMode) {
+            DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession());
+            Map<String, Integer> stats = new HashMap<String, Integer>();
+            stats.put("bundles", snap.getBundleIds().size());
+            stats.put("jComponents", snap.getJavaComponentIds().size());
+            stats.put("xComponents", snap.getXmlComponentIds().size());
+            stats.put("services",snap.getServiceIds().size());
+            stats.put("xps",snap.getExtensionPointIds().size());
+            stats.put("contribs", snap.getComponentIds().size());
+            return getView("indexSimple").arg("distId", ctx.getProperty("distId")).arg("stats", stats);
+        } else {
+            return getView("index").arg("distId", ctx.getProperty("distId"));
+        }
     }
 
     @GET
@@ -300,6 +316,38 @@ public class ApiBrowser extends DefaultObject {
         }
         return getView("listServices")
                 .arg("services", serviceLabels).arg("distId", ctx.getProperty("distId")).arg("searchFilter", fulltext);
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listExtensionPointsSimple")
+    public Object getExtensionPointsSimple() {
+        List<String> epIds = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()).getExtensionPointIds();
+
+        Map<String, Integer> epSimpleIds = new HashMap<String, Integer>();
+
+        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
+        for (String id : epIds) {
+            ArtifactLabel label =ArtifactLabel.createLabelFromExtensionPoint(id);
+            labels.add(label);
+            Integer count = epSimpleIds.get(label.simpleId);
+            if (count==null) {
+                count=1;
+            } else {
+                count=count+1;
+            }
+            epSimpleIds.put(label.simpleId, count);
+        }
+
+        for (ArtifactLabel label : labels) {
+            if (epSimpleIds.get(label.simpleId)==1) {
+                label.label=label.simpleId;
+            }
+        }
+
+        Collections.sort(labels);
+        return getView("listExtensionPointsSimple")
+                .arg("eps", labels).arg("distId", ctx.getProperty("distId")).arg("hideNav", true);
     }
 
     @GET

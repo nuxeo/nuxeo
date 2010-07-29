@@ -110,9 +110,14 @@ public class Distribution extends ModuleRoot{
             if (distributionId==null || "".equals(distributionId)) {
                 return this;
             }
+            Boolean embeddedMode = false;
+            if ("adm".equals(distributionId)) {
+                embeddedMode = true;
+            }
+            ctx.setProperty("embeddedMode",embeddedMode);
             ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()));
             ctx.setProperty("distId", distributionId);
-            return ctx.newObject("apibrowser", distributionId);
+            return ctx.newObject("apibrowser", distributionId, embeddedMode);
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
@@ -251,7 +256,14 @@ public class Distribution extends ModuleRoot{
         return getView("index");
     }
 
+    public boolean isEmbeddedMode() {
+        return (Boolean) getContext().getProperty("embeddedMode", false);
+    }
+
     public boolean isEditor() {
+        if (isEmbeddedMode()) {
+            return false;
+        }
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
         return SecurityHelper.canEditDocumentation(principal);
     }

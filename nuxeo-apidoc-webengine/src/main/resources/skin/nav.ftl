@@ -2,6 +2,8 @@
 
 <#assign navPoint=Root.getNavigationPoint()/>
 
+<#if !Root.isEmbeddedMode()>
+
 <A href="${Root.path}"> See all available distributions </A>
 
 <h3>Explore distribution ${Root.currentDistribution.name} ${Root.currentDistribution.version}</h3>
@@ -142,6 +144,7 @@
 </table>
 <br/>
 <b> Browse by hierarchy </b>
+</#if>
 
 <div id="treeControler"></div>
 
@@ -168,6 +171,7 @@
 
 <@tree id="myTree" root="/"/>
 
+<#if !Root.isEmbeddedMode()>
 <br/>
 <h3>Browse documentation</h3>
 <table border=0>
@@ -182,5 +186,6 @@
       </td>
 </tr>
 </table>
+</#if>
 
 </#if>

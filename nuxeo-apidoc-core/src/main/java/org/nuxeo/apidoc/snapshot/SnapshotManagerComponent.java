@@ -57,6 +57,8 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     public static final String RUNTIME="current";
 
+    public static final String RUNTIME_ADM="adm";
+
     protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
 
     protected final SnapshotPersister persister = new SnapshotPersister();
@@ -73,7 +75,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
-        if (key == null || RUNTIME.equals(key)) {
+        if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
             return getRuntimeSnapshot();
         }
         readPersistentSnapshots(session);

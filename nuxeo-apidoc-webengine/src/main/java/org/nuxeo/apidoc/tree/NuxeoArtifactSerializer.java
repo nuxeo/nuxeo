@@ -1,8 +1,5 @@
 package org.nuxeo.apidoc.tree;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -28,6 +25,10 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         this.ds=ds;
     }
 
+    protected static boolean useEmbededMode(WebContext ctx) {
+        return (Boolean) ctx.getProperty("embeddedMode",false);
+    }
+
     @Override
     public String getUrl(TreeItem item) {
 
@@ -38,7 +39,11 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         String distId;
         distId = ds.getKey().replace(" ", "%20");
         if (ds.isLive()) {
-            distId="current";
+            if (useEmbededMode(ctx)) {
+                distId= "adm";
+            } else {
+                distId="current";
+            }
         }
         url = ctx.getRoot().getURL() + "/" + distId + "/";
 

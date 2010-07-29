@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.1</version>
+    <version>5.3.2</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>  
@@ -16,9 +16,9 @@
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.platform.version>5.3.1</nuxeo.platform.version>
-    <nuxeo.features.version>5.3.1</nuxeo.features.version>
-    <nuxeo.core.version>1.6.1</nuxeo.core.version>
+    <nuxeo.platform.version>5.3.2</nuxeo.platform.version>
+    <nuxeo.features.version>5.3.2</nuxeo.features.version>
+    <nuxeo.core.version>1.6.2</nuxeo.core.version>
   </properties>
 
   <modules>

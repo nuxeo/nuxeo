@@ -24,15 +24,26 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
 
     protected final String id;
 
-    protected final String label;
+    protected String label;
 
-    public ArtifactLabel(String id, String label) {
+    protected String simpleId;
+
+    public ArtifactLabel(String id, String label, String simpleId) {
         this.id = id;
         this.label = label;
+        if (simpleId==null) {
+            simpleId=label;
+        } else {
+            this.simpleId = simpleId;
+        }
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getSimpleId() {
+        return simpleId;
     }
 
     public String getLabel() {
@@ -51,7 +62,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
     public static ArtifactLabel createLabelFromService(String service) {
         String[] parts = service.split("\\.");
         String label = parts[parts.length-1];
-        return new ArtifactLabel(service, label);
+        return new ArtifactLabel(service, label, null);
     }
 
     protected static String removePrefix(String name, List<String> prefixes) {
@@ -71,7 +82,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         prefixes.add("org.nuxeo.ecm.");
         prefixes.add("org.nuxeo.");
         label = removePrefix(component, prefixes);
-        return new ArtifactLabel(component, label);
+        return new ArtifactLabel(component, label, null);
     }
 
     public static ArtifactLabel createLabelFromExtensionPoint(String extensionPoint) {
@@ -79,13 +90,13 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         String component = parts[0];
         String ep = parts[1];
         String label = ep + " (" + component + ")";
-        return new ArtifactLabel(extensionPoint, label);
+        return new ArtifactLabel(extensionPoint, label, ep);
     }
 
     public static ArtifactLabel createLabelFromContribution(String contribution) {
         String[] parts = contribution.split("\\.");
         String label = parts[parts.length-1];
-        return new ArtifactLabel(contribution, label);
+        return new ArtifactLabel(contribution, label, null);
     }
 
 }

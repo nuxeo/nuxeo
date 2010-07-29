@@ -16,7 +16,7 @@
 
 <#include "/views/extensionPoint/extensionPointMacros.ftl">
 
-<@viewExtensionPoint extensionPointWO=This />
+<@viewExtensionPoint extensionPointWO=This expanded=false/>
 
 </@block>
 

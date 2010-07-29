@@ -1,0 +1,30 @@
+<component name="org.nuxeo.platform.explorer.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="PlatformExplorer" link="view_explorer.xhtml"
+      label="admcommand.explorer" order="40">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+        <action id="PlatformExplorerBrowse" link="/incl/apidoc/browse.xhtml"
+          label="tab.explorer.browse" order="20">
+          <category>NUXEO_ADMIN_PlatformExplorer</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="PlatformExplorerXP" link="/incl/apidoc/xp.xhtml"
+          label="tab.explorer.xp" order="30">
+          <category>NUXEO_ADMIN_PlatformExplorer</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+
+  </extension>
+
+</component>
