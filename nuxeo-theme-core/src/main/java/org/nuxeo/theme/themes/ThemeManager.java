@@ -34,6 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,6 +125,10 @@ public final class ThemeManager implements Registrable {
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
     private static final int DEFAULT_THEME_INDENT = 2;
+    
+
+    private static final Pattern styleResourceNamePattern = Pattern.compile(
+            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
     static {
         CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
@@ -582,7 +588,7 @@ public final class ThemeManager implements Registrable {
                 inheritedStyle.setName(inheritedName);
                 registerFormat(inheritedStyle);
                 setNamedObject(themeName, "style", inheritedStyle);
-                ThemeParser.loadStyle(inheritedStyle);
+                loadRemoteStyle(inheritedStyle);
             }
 
             if (preserveInheritance) {
@@ -603,6 +609,27 @@ public final class ThemeManager implements Registrable {
             }
 
             makeFormatInherit(style, inheritedStyle);
+        }
+    }
+    
+    public static void loadRemoteStyle(Style style) {
+        if (!style.isNamed()) {
+            return;
+        }
+        String styleName = style.getName();
+        String cssSource = null;
+        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
+        if (resourceNameMatcher.find()) {
+            String collectionName = resourceNameMatcher.group(2);
+            String resourceId = resourceNameMatcher.group(1) + ".css";
+            cssSource = ResourceManager.getBankResource("style",
+                    collectionName, resourceId);
+        }
+        if (cssSource == null) {
+            log.error("Unknown style: " + styleName);
+        } else {
+            Utils.loadCss(style, cssSource, "*");
+            style.setRemote(true);
         }
     }
 

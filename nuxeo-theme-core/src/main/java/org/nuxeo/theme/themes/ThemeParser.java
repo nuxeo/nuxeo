@@ -76,9 +76,6 @@ public class ThemeParser {
 
     private static final String DOCROOT_NAME = "theme";
 
-    private static final Pattern styleResourceNamePattern = Pattern.compile(
-            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
-
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
     public static void registerTheme(final ThemeDescriptor themeDescriptor,
@@ -336,19 +333,19 @@ public class ThemeParser {
                     n.getTextContent());
             final String group = themeName; // use the theme's name as
             // group name
-            
+
             final Node labelAttr = attrs.getNamedItem("label");
             String label = "";
             if (labelAttr != null) {
-                 label = labelAttr.getNodeValue();
+                label = labelAttr.getNodeValue();
             }
-            
+
             final Node descriptionAttr = attrs.getNamedItem("description");
             String description = "";
             if (descriptionAttr != null) {
                 description = descriptionAttr.getNodeValue();
             }
-            
+
             PresetType preset = new CustomPresetType(name, value, group,
                     category, label, description);
             typeRegistry.register(preset);
@@ -418,7 +415,7 @@ public class ThemeParser {
                         themeManager.registerFormat(inheritedStyle);
                         themeManager.setNamedObject(themeName, "style",
                                 inheritedStyle);
-                        loadStyle(inheritedStyle);
+                        ThemeManager.loadRemoteStyle(inheritedStyle);
                     }
                     if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
@@ -437,66 +434,65 @@ public class ThemeParser {
                 List<Node> selectorNodes = getChildElementsByTagName(n,
                         "selector");
 
-                if (selectorNodes.isEmpty()) {
-                    if (style.isNamed()) {
-                        // Try to retrieve the style from the resource bank
-                        loadStyle(style);
+                // Try to retrieve the style from the resource bank
+                if (style.isNamed()) {
+                    ThemeManager.loadRemoteStyle(style);
+                    if (style.isRemote() && !selectorNodes.isEmpty()) {
+                        style.setCustomized(true);
+                    }
+                }
+                
+                // Use style properties from the theme
+                for (Node selectorNode : selectorNodes) {
+                    NamedNodeMap attrs = selectorNode.getAttributes();
+                    Node pathAttr = attrs.getNamedItem("path");
+                    if (pathAttr == null) {
+                        log.warn(String.format(
+                                "Style parser: named style '%s' has a selector with no path: ignored",
+                                styleName));
+                        continue;
+                    }
+                    String path = pathAttr.getNodeValue();
+
+                    String viewName = null;
+                    Node viewAttr = attrs.getNamedItem("view");
+                    if (viewAttr != null) {
+                        viewName = viewAttr.getNodeValue();
                     }
 
-                } else {
-                    // Use the style from the theme
-                    for (Node selectorNode : selectorNodes) {
-                        NamedNodeMap attrs = selectorNode.getAttributes();
-                        Node pathAttr = attrs.getNamedItem("path");
-                        if (pathAttr == null) {
-                            log.warn(String.format(
-                                    "Style parser: named style '%s' has a selector with no path: ignored",
-                                    styleName));
-                            continue;
-                        }
-                        String path = pathAttr.getNodeValue();
+                    String selectorDescription = getCommentAssociatedTo(selectorNode);
+                    if (selectorDescription != null) {
+                        style.setSelectorDescription(path, viewName,
+                                selectorDescription);
+                    }
 
-                        String viewName = null;
-                        Node viewAttr = attrs.getNamedItem("view");
-                        if (viewAttr != null) {
-                            viewName = viewAttr.getNodeValue();
-                        }
-
-                        String selectorDescription = getCommentAssociatedTo(selectorNode);
-                        if (selectorDescription != null) {
-                            style.setSelectorDescription(path, viewName,
-                                    selectorDescription);
-                        }
-
-                        if (elementXPath != null
-                                && (viewName == null || viewName.equals("*"))) {
-                            log.info("Style parser: trying to guess the view name for: "
-                                    + elementXPath);
-                            viewName = guessViewNameFor(doc, elementXPath);
-                            if (viewName == null) {
-                                if (!newStyles.containsKey(style)) {
-                                    newStyles.put(
-                                            style,
-                                            new LinkedHashMap<String, Properties>());
-                                }
-                                newStyles.get(style).put(path,
-                                        getPropertiesFromNode(selectorNode));
+                    if (elementXPath != null
+                            && (viewName == null || viewName.equals("*"))) {
+                        log.info("Style parser: trying to guess the view name for: "
+                                + elementXPath);
+                        viewName = guessViewNameFor(doc, elementXPath);
+                        if (viewName == null) {
+                            if (!newStyles.containsKey(style)) {
+                                newStyles.put(style,
+                                        new LinkedHashMap<String, Properties>());
                             }
-                        }
-
-                        if (styleName != null) {
-                            if (viewName != null) {
-                                log.info("Style parser: ignoring view name '"
-                                        + viewName + "' in named style '"
-                                        + styleName + "'.");
-                            }
-                            viewName = "*";
-                        }
-
-                        if (viewName != null) {
-                            style.setPropertiesFor(viewName, path,
+                            newStyles.get(style).put(path,
                                     getPropertiesFromNode(selectorNode));
                         }
+                    }
+
+                    if (styleName != null) {
+                        if (viewName != null) {
+                            log.info("Style parser: ignoring view name '"
+                                    + viewName + "' in named style '"
+                                    + styleName + "'.");
+                        }
+                        viewName = "*";
+                    }
+
+                    if (viewName != null) {
+                        style.setPropertiesFor(viewName, path,
+                                getPropertiesFromNode(selectorNode));
                     }
                 }
             }
@@ -540,27 +536,6 @@ public class ThemeParser {
 
             themeManager.makeFormatInherit(parent, s);
             log.info("Created extra style: " + s.getName());
-        }
-    }
-
-    public static void loadStyle(Style style) {
-        if (!style.isNamed()) {
-            return;
-        }
-        String styleName = style.getName();
-        String cssSource = null;
-        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
-        if (resourceNameMatcher.find()) {
-            String collectionName = resourceNameMatcher.group(2);
-            String resourceId = resourceNameMatcher.group(1) + ".css";
-            cssSource = ResourceManager.getBankResource("style",
-                    collectionName, resourceId);
-        }
-        if (cssSource == null) {
-            log.error("Unknown style: " + styleName);
-        } else {
-            Utils.loadCss(style, cssSource, "*");
-            style.setRemote(true);
         }
     }
 
