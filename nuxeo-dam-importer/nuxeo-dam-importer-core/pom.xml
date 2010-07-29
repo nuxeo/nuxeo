@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.nuxeo.dam</groupId>
     <artifactId>nuxeo-dam-importer-parent</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-dam-importer-core</artifactId>

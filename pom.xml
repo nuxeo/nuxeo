@@ -13,7 +13,7 @@
 
   <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-parent</artifactId>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <name>Nuxeo DAM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
