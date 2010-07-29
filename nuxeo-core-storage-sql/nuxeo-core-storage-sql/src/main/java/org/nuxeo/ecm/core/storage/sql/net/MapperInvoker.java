@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -92,9 +93,12 @@ public class MapperInvoker extends Thread {
                 try {
                     res = localCall(call.methodName, call.args);
                 } catch (InvocationTargetException e) {
-                    res = e.getCause();
+                    res = WrappedException.wrap(e.getCause());
                 } catch (Exception e) {
-                    res = e;
+                    // wrap the exception as its class may not be present on the
+                    // server, or be slightly different
+                    // (javax.resource.ResourceException)
+                    res = WrappedException.wrap(e);
                 }
                 methodResults.put(new MethodResult(res));
             }
