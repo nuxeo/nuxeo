@@ -304,8 +304,8 @@ public class GroupManagerActionsBean implements GroupManagerActions {
      * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
      */
 
-    public void setSelectedGroup(DocumentModel group) {
-        selectedGroup = group;
+    public void setSelectedGroup(DocumentModel group) throws ClientException {
+        selectedGroup = refreshGroup(group.getId());
     }
 
     public void deleteGroupNoRedirect() throws ClientException {

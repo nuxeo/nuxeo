@@ -22,6 +22,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -112,7 +113,7 @@ public interface ContentView extends Serializable {
     Object[] getQueryParameters();
 
     /**
-     * Returns the list of event names that wshould trigger a refresh of this
+     * Returns the list of event names that should trigger a refresh of this
      * content view page provider.
      */
     List<String> getRefreshEventNames();
@@ -120,6 +121,10 @@ public interface ContentView extends Serializable {
     /**
      * Gets page provider according to given parameters
      *
+     * @param searchDocument document that will be set on the page provider. If
+     *            this document is null, we try to retrieve the content view
+     *            document model calling {@link #getSearchDocumentModel()}. If
+     *            it is not null, it is set on the page provider.
      * @param sortInfos if not null, will override default sort info put in the
      *            page provider XML description
      * @param pageSize if not null, will override default page size put in the
@@ -129,30 +134,34 @@ public interface ContentView extends Serializable {
      *            will take parameters as resolved on the content view from the
      *            XML configuration, see {@link #getQueryParameters()}
      */
-    PageProvider<?> getPageProvider(List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Object... params) throws ClientException;
+    PageProvider<?> getPageProvider(DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Object... params) throws ClientException;
 
     /**
      * Gets page provider according to given parameters
      *
-     * @see #getPageProvider(List, Long, Long, Object...) using null as every
-     *      argument except params
+     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) using
+     *      null as every argument except params
      * @throws ClientException
      */
-    PageProvider<?> getPageProvider(Object... params) throws ClientException;
+    PageProvider<?> getPageProviderWithParams(Object... params)
+            throws ClientException;
 
     /**
      * Gets page provider according to given parameters
      *
-     * @see #getPageProvider(List, Long, Long, Object...), using null as every
-     *      argument
+     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...), using
+     *      null as every argument
      * @throws ClientException
      */
     PageProvider<?> getPageProvider() throws ClientException;
 
     /**
-     * Returns the current page provider, or null if
-     * {@link #getPageProvider(Object...)} was never called before.
+     * Returns the current page provider, or null if methods
+     * {@link #getPageProvider()},
+     * {@link #getPageProvider(DocumentModel, List, Long, Long, Object...)} or
+     * {@link #getPageProviderWithParams(Object...)} were never called before.
      */
     PageProvider<?> getCurrentPageProvider();
 
@@ -160,13 +169,16 @@ public interface ContentView extends Serializable {
      * Resets the page provider.
      * <p>
      * A new page provider will be computed next time
-     * {@link #getPageProvider(Object...)} is called.
+     * {@link #getPageProviderWithParams(Object...)} is called. Sort
+     * information and query parameters will have to be re-generated.
      */
     void resetPageProvider();
 
     /**
      * Refreshes the current page provider if not null, see
-     * {@link PageProvider#refresh()}
+     * {@link PageProvider#refresh()}.
+     * <p>
+     * Sort information and query parameters are kept.
      */
     void refreshPageProvider();
 
@@ -175,5 +187,33 @@ public interface ContentView extends Serializable {
      * the application.
      */
     boolean getUseGlobalPageSize();
+
+    /**
+     * Returns the search document model as set on the content view.
+     * <p>
+     * If this document is null and a EL binding has been set on the content
+     * view description, the document model will be resolved from this binding,
+     * and set as the search document model.
+     */
+    DocumentModel getSearchDocumentModel();
+
+    /**
+     * Sets the search document model to be passed on the page provider, and
+     * set it also on the current page provider if not null.
+     */
+    // TODO: make it possible to load sort info from document model
+    void setSearchDocumentModel(DocumentModel doc);
+
+    /**
+     * Resets the search document model, setting it to null so that it's
+     * recomputed when calling {@link #getSearchDocumentModel()}
+     */
+    void resetSearchDocumentModel();
+
+    /**
+     * Returns the search document model type as defined in the XML
+     * configuration.
+     */
+    String getSearchDocumentModelType();
 
 }

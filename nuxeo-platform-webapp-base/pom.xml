@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-jsf-parent</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-webapp-base</artifactId>
@@ -311,38 +311,6 @@
               </outputDirectory>
             </configuration>
           </execution>
-          <!--  artifacts in WEB-INF/lib, not needed in any classpath -->
-          <execution>
-            <id>copy-installed-webinflib</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>opensymphony</groupId>
-                  <artifactId>oscache</artifactId>
-                  <version>2.3.2</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>taglibs</groupId>
-                  <artifactId>standard</artifactId>
-                  <version>1.1.2</version>
-                </artifactItem>
-                <!--  used by nuxeo-theme-jsf... -->
-                <artifactItem>
-                  <groupId>org.dojotoolkit</groupId>
-                  <artifactId>custom_rhino</artifactId>
-                  <version>0.9.0</version>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.outputDirectory}/WEB/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-
         </executions>
       </plugin>
     </plugins>

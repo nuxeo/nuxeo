@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
  * <p>
  * Each content view instance will be cached if its cache key is not null. Each
  * instance will be cached using the cache key so its state is restored. Also
- * handles refresh of caches when receiving events contfigured on the content
+ * handles refresh of caches when receiving events configured on the content
  * view.
  *
  * @author Anahide Tchertchian
@@ -67,6 +67,10 @@ public class ContentViewCache implements Serializable {
             Integer cacheSize = cView.getCacheSize();
             if (cacheSize == null) {
                 cacheSize = DEFAULT_CACHE_SIZE;
+            }
+            if (cacheSize.intValue() <= 0) {
+                // no cache
+                return;
             }
             Map<String, ContentView> cacheEntry = cacheInstances.get(name);
             if (cacheEntry == null) {
@@ -113,15 +117,36 @@ public class ContentViewCache implements Serializable {
         return cView;
     }
 
+    public void refresh(String contentViewName) {
+        ContentView cv = namedContentViews.get(contentViewName);
+        if (cv != null) {
+            cv.refreshPageProvider();
+        }
+        Map<String, ContentView> instances = cacheInstances.get(contentViewName);
+        if (instances != null) {
+            for (ContentView cView : instances.values()) {
+                if (cView != null) {
+                    cView.refreshPageProvider();
+                }
+            }
+        }
+    }
+
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
             Set<String> contentViewNames = eventToContentViewName.get(eventName);
-            for (String contentViewName : contentViewNames) {
-                cacheInstances.remove(contentViewName);
-                namedCacheKeys.remove(contentViewName);
-                namedContentViews.remove(contentViewName);
+            if (contentViewNames != null) {
+                for (String contentViewName : contentViewNames) {
+                    refresh(contentViewName);
+                }
             }
         }
+    }
+
+    public void reset(String contentViewName) {
+        namedContentViews.remove(contentViewName);
+        namedCacheKeys.remove(contentViewName);
+        cacheInstances.remove(contentViewName);
     }
 
 }

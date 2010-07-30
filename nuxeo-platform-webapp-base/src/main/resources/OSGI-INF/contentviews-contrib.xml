@@ -21,6 +21,7 @@
 
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
+        <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -59,6 +60,7 @@
       <useGlobalPageSize>true</useGlobalPageSize>
 
       <refresh>
+        <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -95,6 +97,7 @@
 
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
+        <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -116,6 +119,39 @@
 
     </contentView>
 
+    <contentView name="orderable_document_content">
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="ecm:pos" ascending="true" />
+        <sortable>false</sortable>
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+      <actions category="ORDERABLE_CURRENT_SELECTION_LIST" />
+
+    </contentView>
 
   </extension>
 

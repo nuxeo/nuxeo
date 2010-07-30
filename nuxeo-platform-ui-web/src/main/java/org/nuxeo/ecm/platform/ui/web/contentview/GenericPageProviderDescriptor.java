@@ -62,6 +62,9 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
 
     protected String pattern;
 
+    @XNode("pattern@quoteParameters")
+    protected boolean quotePatternParameters = true;
+
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
 
@@ -83,6 +86,10 @@ public class GenericPageProviderDescriptor implements PageProviderDescriptor {
         if (pattern != null) {
             this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
         }
+    }
+
+    public boolean getQuotePatternParameters() {
+        return quotePatternParameters;
     }
 
     public String getPattern() {

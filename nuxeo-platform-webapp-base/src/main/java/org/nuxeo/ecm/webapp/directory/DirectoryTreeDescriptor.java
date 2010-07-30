@@ -51,12 +51,22 @@ public class DirectoryTreeDescriptor {
 
     /**
      * Stateful QueryModel to be edited on node selection.
+     *
+     * @deprecated use {@link #contentView} instead
      */
+    @Deprecated
     @XNode("@querymodel")
     protected String querymodel = "defaultSearchForm";
 
     /**
-     * Name of the QueryModel field that will be used updated on node selection.
+     * Content view to be updated on node selection
+     */
+    @XNode("@contentView")
+    protected String contentView;
+
+    /**
+     * Name of the QueryModel field that will be used updated on node
+     * selection.
      */
     @XNode("@field")
     protected String fieldName;
@@ -148,8 +158,16 @@ public class DirectoryTreeDescriptor {
         return outcome;
     }
 
+    /**
+     * @deprecated use {@link #getContentView()} instead
+     */
+    @Deprecated
     public String getQuerymodel() {
         return querymodel;
+    }
+
+    public String getContentView() {
+        return contentView;
     }
 
     public String getSchemaName() {
@@ -160,6 +178,10 @@ public class DirectoryTreeDescriptor {
         return enabled;
     }
 
+    public boolean hasContentViewSupport() {
+        return contentView != null;
+    }
+
     public void merge(DirectoryTreeDescriptor other) {
 
         if (other.schemaName != null) {
@@ -167,6 +189,9 @@ public class DirectoryTreeDescriptor {
         }
         if (other.querymodel != null) {
             this.querymodel = other.querymodel;
+        }
+        if (other.contentView != null) {
+            this.contentView = other.contentView;
         }
         if (other.outcome != null) {
             this.outcome = other.outcome;

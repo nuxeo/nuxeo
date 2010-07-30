@@ -60,6 +60,9 @@ public class ContentViewDescriptor {
     @XNodeList(value = "actions@category", type = ArrayList.class, componentType = String.class)
     List<String> actionCategories;
 
+    @XNode("searchDocument")
+    String searchDocument;
+
     @XNode("searchLayout")
     ContentViewLayoutImpl searchLayout;
 
@@ -143,6 +146,25 @@ public class ContentViewDescriptor {
 
     public Boolean getTranslateTitle() {
         return translateTitle;
+    }
+
+    public String getSearchDocumentBinding() {
+        return searchDocument;
+    }
+
+    public String getSearchDocumentType() {
+        CoreQueryPageProviderDescriptor coreDesc = getCoreQueryPageProvider();
+        GenericPageProviderDescriptor genDesc = getGenericPageProvider();
+        WhereClauseDescriptor whereClause = null;
+        if (coreDesc != null && coreDesc.isEnabled()) {
+            whereClause = coreDesc.getWhereClause();
+        } else if (genDesc != null && genDesc.isEnabled()) {
+            whereClause = genDesc.getWhereClause();
+        }
+        if (whereClause != null) {
+            return whereClause.getDocType();
+        }
+        return null;
     }
 
     public String[] getQueryParameters() {

@@ -13,3 +13,6 @@ target
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
 *.gpd.*
 *cpJar*
+nuxeo-*/META-INF
+nuxeo-*/OSGI-INF
+*.bak

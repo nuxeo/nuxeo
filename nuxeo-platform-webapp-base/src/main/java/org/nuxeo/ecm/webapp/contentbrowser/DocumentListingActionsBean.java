@@ -65,7 +65,7 @@ public class DocumentListingActionsBean implements Serializable {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient ContentViewActionsBean contentViewActions;
+    protected transient ContentViewActions contentViewActions;
 
     @In(required = false, create = true)
     protected transient DocumentsListsManager documentsListsManager;
@@ -238,10 +238,16 @@ public class DocumentListingActionsBean implements Serializable {
      */
     public void checkCurrentDocAndProcessSelectRow(String docRef,
             String providerName, String listName, Boolean selection,
-            String currentDocRef) throws ClientException {
-        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
-        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
-            navigationContext.navigateToRef(currentDocumentRef);
+            String requestedCurrentDocRef) throws ClientException {
+        DocumentRef requestedCurrentDocumentRef = new IdRef(
+                requestedCurrentDocRef);
+        DocumentRef currentDocumentRef = null;
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument != null) {
+            currentDocumentRef = currentDocument.getRef();
+        }
+        if (!requestedCurrentDocumentRef.equals(currentDocumentRef)) {
+            navigationContext.navigateToRef(requestedCurrentDocumentRef);
         }
         processSelectRow(docRef, providerName, listName, selection);
     }

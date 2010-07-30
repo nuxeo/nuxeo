@@ -504,8 +504,8 @@ public class UserManagerActionsBean implements UserManagerActions {
      * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
      */
 
-    public void setSelectedUser(DocumentModel user) {
-        selectedUser = user;
+    public void setSelectedUser(DocumentModel user) throws ClientException {
+        selectedUser = refreshUser(user.getId());
     }
 
     public void deleteUserNoRedirect() throws ClientException {

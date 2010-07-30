@@ -840,6 +840,80 @@
       </columns>
     </layout>
 
+    <layout name="document_virtual_navigation_listing_ajax">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+          </properties>
+          <widget>listing_author</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column>
+          <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          <property name="sortPropertyName">ecm:currentLifeCycleState</property>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+      </columns>
+    </layout>
+
     <layout name="document_listing_compact_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
@@ -896,6 +970,35 @@
       </columns>
     </layout>
 
+    <layout name="document_virtual_navigation_listing_ajax_compact_2_columns">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <widget>listing_title_link</widget>
+          <widget>listing_modification_date</widget>
+          <widget>listing_author</widget>
+          <widget>listing_lifecycle</widget>
+          <widget>listing_version</widget>
+        </column>
+      </columns>
+    </layout>
+
     <layout name="document_listing_icon_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
@@ -922,6 +1025,25 @@
       <columns>
         <column>
           <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column>
+          <widget>listing_big_icon_type_link</widget>
+        </column>
+        <column>
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="document_virtual_navigation_listing_ajax_icon_2_columns">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <columns>
+        <column>
+          <widget>listing_ajax_selection_box</widget>
         </column>
         <column>
           <widget>listing_big_icon_type_link</widget>

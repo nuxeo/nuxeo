@@ -23,6 +23,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -79,12 +80,19 @@ public class ContentViewImpl implements ContentView {
 
     protected String[] queryParameters;
 
+    protected DocumentModel searchDocumentModel;
+
+    protected String searchDocumentModelBinding;
+
+    protected String searchDocumentModelType;
+
     public ContentViewImpl(String name, String title, boolean translateTitle,
             String iconPath, String selectionList, String pagination,
             List<String> actionCategories, ContentViewLayout searchLayout,
             List<ContentViewLayout> resultLayouts, String cacheKey,
             Integer cacheSize, List<String> refreshEventNames,
-            boolean useGlobalPageSize, String[] queryParameters) {
+            boolean useGlobalPageSize, String[] queryParameters,
+            String searchDocumentModelBinding, String searchDocumentModelType) {
         super();
         this.name = name;
         this.title = title;
@@ -100,6 +108,8 @@ public class ContentViewImpl implements ContentView {
         this.refreshEventNames = refreshEventNames;
         this.useGlobalPageSize = useGlobalPageSize;
         this.queryParameters = queryParameters;
+        this.searchDocumentModelBinding = searchDocumentModelBinding;
+        this.searchDocumentModelType = searchDocumentModelType;
     }
 
     public String getName() {
@@ -179,9 +189,9 @@ public class ContentViewImpl implements ContentView {
      * Returns cached page provider if it exists or build a new one if
      * paramaters have changed.
      */
-    public PageProvider<?> getPageProvider(List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Object... params)
-            throws ClientException {
+    public PageProvider<?> getPageProvider(DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Object... params) throws ClientException {
         if (params == null) {
             // fallback on local parameters
             params = getQueryParameters();
@@ -208,16 +218,26 @@ public class ContentViewImpl implements ContentView {
                 pageProvider.setCurrentPage(currentPage.longValue());
             }
         }
+        if (searchDocument != null) {
+            pageProvider.setSearchDocumentModel(searchDocument);
+        } else {
+            // initialize on page provider only if not already set
+            DocumentModel searchDoc = getSearchDocumentModel();
+            if (searchDoc != null
+                    && pageProvider.getSearchDocumentModel() == null) {
+                pageProvider.setSearchDocumentModel(searchDoc);
+            }
+        }
         return pageProvider;
     }
 
-    public PageProvider<?> getPageProvider(Object... params)
+    public PageProvider<?> getPageProviderWithParams(Object... params)
             throws ClientException {
-        return getPageProvider(null, null, null, params);
+        return getPageProvider(null, null, null, null, params);
     }
 
     public PageProvider<?> getPageProvider() throws ClientException {
-        return getPageProvider(null, null, null, (Object[]) null);
+        return getPageProviderWithParams((Object[]) null);
     }
 
     public PageProvider<?> getCurrentPageProvider() {
@@ -269,6 +289,44 @@ public class ContentViewImpl implements ContentView {
         return useGlobalPageSize;
     }
 
+    public DocumentModel getSearchDocumentModel() {
+        if (searchDocumentModel == null) {
+            // initialize from binding
+            if (searchDocumentModelBinding != null) {
+                FacesContext context = FacesContext.getCurrentInstance();
+                Object value = ComponentTagUtils.resolveElExpression(context,
+                        searchDocumentModelBinding);
+                if (value != null && !(value instanceof DocumentModel)) {
+                    log.error(String.format(
+                            "Error processing expression '%s', "
+                                    + "result is not a DocumentModel: %s",
+                            searchDocumentModelBinding, value));
+                } else {
+                    searchDocumentModel = (DocumentModel) value;
+                }
+            }
+        }
+        return searchDocumentModel;
+    }
+
+    public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
+        this.searchDocumentModel = searchDocumentModel;
+        if (pageProvider != null) {
+            pageProvider.setSearchDocumentModel(searchDocumentModel);
+        }
+    }
+
+    public void resetSearchDocumentModel() {
+        this.searchDocumentModel = null;
+        if (pageProvider != null) {
+            pageProvider.setSearchDocumentModel(null);
+        }
+    }
+
+    public String getSearchDocumentModelType() {
+        return searchDocumentModelType;
+    }
+
     @Override
     public String toString() {
         return String.format("ContentViewImpl [name=%s, title=%s, "
@@ -277,10 +335,10 @@ public class ContentViewImpl implements ContentView {
                 + "actionCategories=%s, searchLayout=%s, "
                 + "resultLayouts=%s, currentResultLayout=%s, "
                 + "cacheKey=%s, cacheSize=%s, refreshEventNames=%s, "
-                + "useGlobalPageSize=%s]", name, title,
+                + "useGlobalPageSize=%s, searchDocumentModel=%s]", name, title,
                 Boolean.valueOf(translateTitle), iconPath, selectionList,
                 pagination, actionCategories, searchLayout, resultLayouts,
                 currentResultLayout, cacheKey, cacheSize, refreshEventNames,
-                Boolean.valueOf(useGlobalPageSize));
+                Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
     }
 }
