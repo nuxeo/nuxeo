@@ -198,7 +198,7 @@ public class ContentViewActions implements Serializable {
      * Refreshes all content views that have declared the given seam event name
      * as a refresh event in their XML configuration.
      */
-    public void refreshOnSeamEvents(String seamEventName) {
+    public void refreshOnSeamEvent(String seamEventName) {
         cache.refreshOnEvent(seamEventName);
     }
 
@@ -209,8 +209,8 @@ public class ContentViewActions implements Serializable {
     @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
             EventNames.DOCUMENT_CHANGED })
     public void refreshOnDocumentChildrenChanged() {
-        refreshOnSeamEvents(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        refreshOnSeamEvents(EventNames.DOCUMENT_CHANGED);
+        refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+        refreshOnSeamEvent(EventNames.DOCUMENT_CHANGED);
     }
 
     public void refresh(String contentViewName) {
