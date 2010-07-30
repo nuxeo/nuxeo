@@ -1,0 +1,32 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <script language="javascript">
+    function popupSearch(inputElementId, url) {
+      popup = window.open(url + '&amp;inputElementId=' + inputElementId, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
+      if(!popup.opener) {
+        popup.opener = window;
+      }
+      return false;
+    }
+  </script>
+
+  <h:inputText value="#{field}"
+    styleClass="dataInputText" id="#{widget.id}" />
+  <nxu:set var="url" value="#{contextPath}/search/choose_searchscope_popup.faces">
+    <nxu:set var="urlWithConversation"
+      value="#{restHelper.addCurrentConversationParameters(url)}"
+      cache="true">
+      <input type="button" value="#{messages['command.advancedsearch.browse']}" class="button"
+        onclick="javascript:popupSearch(this.form.id + ':#{layout.id}:#{widget.id}', '#{urlWithConversation}');" />
+    </nxu:set>
+  </nxu:set>
+  <c:if test="false">
+    Example of how to put local search tree in an existing form
+    <ui:include src="/search/search_path_tree_explorer.xhtml" />
+  </c:if>
+
+</div>

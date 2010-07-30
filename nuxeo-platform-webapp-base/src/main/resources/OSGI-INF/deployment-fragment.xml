@@ -89,6 +89,17 @@
 
   </extension>
 
+  <extension target="faces-config#CONVERTER">
+
+    <converter>
+      <converter-id>org.nuxeo.SearchDeletedDocumentsConverter</converter-id>
+      <converter-class>
+        org.nuxeo.ecm.webapp.search.SearchDeletedDocumentsConverter
+      </converter-class>
+    </converter>
+
+  </extension>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
