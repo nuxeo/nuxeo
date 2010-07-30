@@ -4,6 +4,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
@@ -12,40 +13,42 @@
   </ui:define>
 
   <ui:define name="body">
-    <ui:include src="/incl/message_banner.xhtml"/>
-    <div id="content">
-      <h3>
-        <h:outputText value="#{messages['label.search.results.keywords']}" />
-        <f:verbatim>&amp;nbsp;</f:verbatim>
-        <h:outputText value="#{searchActions.simpleSearchKeywords}" />
-      </h3>
 
-      <nxu:set var="provider"
-        value="#{resultsProvidersCache.get('SIMPLE_SEARCH')}"
-        cache="true">
-        <ui:decorate template="/search/documents_table_search_results.xhtml">
-          <ui:param name="provider" value="#{provider}"/>
-          <ui:param name="providerName" value="#{provider.name}"/>
-          <ui:param name="documents" value="#{searchSelectModel_simple}" />
-          <ui:param name="showCheckboxes" value="#{true}" />
-          <ui:define name="buttons">
-            <ui:include src="/incl/clipboard.xhtml" />
+    <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div id="content">
+
+      <nxu:set var="contentViewListIndex" value="0">
+      <nxu:set var="contentViewName" value="simple_search">
+
+        <ui:decorate template="/incl/content_view.xhtml">
+          <ui:define name="empty_folder_label">
+            <h:outputText value="#{messages['label.content.empty.search']}"
+              rendered="#{documents.rowCount == 0}" />
           </ui:define>
-          <ui:define name="extra_info">
-            <!-- empty, used in extension modules -->
+          <ui:define name="content_view_header_before_selector">
+            <div class="action_bar">
+              <h3>
+                <h:outputText value="#{messages['label.search.results.keywords']}" />
+                <f:verbatim>&amp;nbsp;</f:verbatim>
+                <h:outputText value="#{documentSearchActions.simpleSearchKeywords}" />
+              </h3>
+            </div>
+          </ui:define>
+          <ui:define name="content_view_header_after_selector" />
+          <ui:define name="syndication_buttons">
+            <c:if test="false">syndication currently broken with content views</c:if>
+            <ui:include src="/incl/syndication_buttons.xhtml">
+              <ui:param name="type" value="search" />
+            </ui:include>
           </ui:define>
         </ui:decorate>
+
       </nxu:set>
+      </nxu:set>
+
     </div>
 
-    <f:subview>
-      <ui:include src="/incl/syndication_buttons.xhtml">
-        <ui:param name="type" value="search" />
-      </ui:include>
-    </f:subview>
-
   </ui:define>
-
-
 
 </nxthemes:composition>

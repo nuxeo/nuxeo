@@ -7,13 +7,16 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core">
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <ui:define name="page title">
   <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}"/>
 </ui:define>
 
 <ui:define name="body">
+
+  <ui:include src="/incl/message_banner.xhtml"/>
 
   <h:form id="searchForm">
 
@@ -24,25 +27,32 @@
         </a>
       </h3>
       <div class="boxBody">
-        <ui:include src="/search/search_simpleform.xhtml" />
+        <nxu:set var="contentView"
+          value="#{contentViewActions.getContentViewWithProvider('advanced_search', null)}"
+          cache="true">
+          <c:if test="#{contentView != null}">
+            <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+              value="#{contentView.searchDocumentModel}" />
+          </c:if>
+        </nxu:set>
+        <div>
+          <h:commandButton type="submit" value="#{messages['command.search']}"
+            action="search_results_advanced" class="button">
+            <nxu:actionListenerMethod
+              value="#{contentViewActions.refresh('advanced_search')}" /> 
+          </h:commandButton>
+          <h:commandButton value="#{messages['command.clearSearch']}"
+            action="#{contentViewActions.reset('advanced_search')}"
+            styleClass="button" />
+        </div>
+
       </div>
     </div>
 
-    <div class="foldableBox">
-      <h3 class="unfolded">
-        <a href="#nologo" onclick="return toggleBox(this)">
-          <h:outputText value="#{messages['label.search.results']}"/>
-        </a>
-      </h3>
-      <div class="boxBody">
-        <ui:include src="/search/search_columns.xhtml" />
-      </div>
-    </div>
 
-    <ui:include src="/search/search_buttons.xhtml" />
   </h:form>
 
-  <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+  <c:if test="#{currentNuxeoPrincipal.administrator}">
     <div class="foldableBox">
       <h3 class="unfolded">
         <a href="#nologo" onclick="return toggleBox(this)">
@@ -50,10 +60,19 @@
         </a>
       </h3>
       <div class="boxBody">
-        <ui:include src="/search/search_admin.xhtml" />
+        <h:outputText value="#{messages['label.search.form.enterNXQL']}"/>
+        <h:form id="nxqlSearchForm">
+          <h:inputText value="#{documentSearchActions.nxqlQuery}" size="80"/>
+          <br/>
+          <h:commandButton type="submit" value="#{messages['command.search']}"
+            action="search_results_nxql" class="button">
+            <nxu:actionListenerMethod
+              value="#{contentViewActions.refresh('nxql_search')}" /> 
+          </h:commandButton>
+        </h:form>
       </div>
     </div>
-  </f:subview>
+  </c:if>
 
 </ui:define>
 

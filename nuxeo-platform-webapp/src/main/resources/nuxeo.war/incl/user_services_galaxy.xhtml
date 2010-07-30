@@ -12,21 +12,20 @@
     <div class="searchService">
 
       <c:if test="#{userServicesContext.searchEnabled}">
-        <h:inputText value="#{searchActions.simpleSearchKeywords}" size="15"
+        <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
           class="directoryFilter"
           onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
-          id="simpleSearchKeywordsInput" />
-        <h:inputHidden value="#{searchActions.searchTypeId}"
-          id="simpleSearchKeywordsInputHidden">
-          <f:attribute name="value" value="KEYWORDS"/>
-        </h:inputHidden>
-        <h:commandButton action="#{searchActions.performSearch}"
+          id="simpleSearchKeywordsInput"
+          validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+        <h:message styleClass="errorMessage" for="simpleSearchKeywordsInput" />
+        <h:commandButton action="search_results_simple"
           value="#{messages['command.search']}" styleClass="button"
           id="simpleSearchSubmitButton" />
     
         <span class="advancedSearchLink">
-          <h:commandLink action="#{searchActions.search}"
+          <h:commandLink action="search_form"
             value="#{messages['command.advancedSearch']}"
+            immediate="true"
             id="advancedSearchButton" />
         </span>
       </c:if>
