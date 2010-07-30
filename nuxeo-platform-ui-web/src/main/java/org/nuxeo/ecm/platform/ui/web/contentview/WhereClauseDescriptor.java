@@ -46,6 +46,9 @@ public class WhereClauseDescriptor {
 
     protected String fixedPart;
 
+    @XNode("fixedPart@quoteParameters")
+    protected boolean quoteFixedPartParameters = true;
+
     public String getDocType() {
         return docType;
     }
@@ -54,6 +57,10 @@ public class WhereClauseDescriptor {
     public void setFixedPath(String fixedPart) {
         // remove new lines and following spaces
         this.fixedPart = fixedPart.replaceAll("\r?\n\\s*", " ");
+    }
+
+    public boolean getQuoteFixedPartParameters() {
+        return quoteFixedPartParameters;
     }
 
     public PredicateDescriptor[] getPredicates() {

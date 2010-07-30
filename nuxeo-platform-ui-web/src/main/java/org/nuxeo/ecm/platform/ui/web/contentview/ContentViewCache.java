@@ -68,6 +68,10 @@ public class ContentViewCache implements Serializable {
             if (cacheSize == null) {
                 cacheSize = DEFAULT_CACHE_SIZE;
             }
+            if (cacheSize.intValue() <= 0) {
+                // no cache
+                return;
+            }
             Map<String, ContentView> cacheEntry = cacheInstances.get(name);
             if (cacheEntry == null) {
                 cacheEntry = new LRUCachingMap<String, ContentView>(
@@ -137,6 +141,12 @@ public class ContentViewCache implements Serializable {
                 }
             }
         }
+    }
+
+    public void reset(String contentViewName) {
+        namedContentViews.remove(contentViewName);
+        namedCacheKeys.remove(contentViewName);
+        cacheInstances.remove(contentViewName);
     }
 
 }

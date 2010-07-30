@@ -118,7 +118,8 @@ public class CoreQueryDocumentPageProvider extends
             }
             if (descriptor.getWhereClause() == null) {
                 newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
-                        getParameters(), sortArray);
+                        getParameters(),
+                        descriptor.getQuotePatternParameters(), sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {

@@ -57,6 +57,9 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     protected String pattern;
 
+    @XNode("pattern@quoteParameters")
+    protected boolean quotePatternParameters = true;
+
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
 
@@ -66,6 +69,10 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
         if (pattern != null) {
             this.pattern = pattern.replaceAll("\r?\n\\s*", " ");
         }
+    }
+
+    public boolean getQuotePatternParameters() {
+        return quotePatternParameters;
     }
 
     public Map<String, String> getProperties() {

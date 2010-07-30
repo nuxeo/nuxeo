@@ -186,6 +186,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 log.info("Overriding content view with name " + name);
                 desc = mergeContentViews(contentViews.get(name), desc);
             }
+            log.info("Registering content view with name " + name);
             contentViews.put(name, desc);
         }
     }
@@ -278,7 +279,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
-            contentViews.remove(desc.getName());
+            String name = desc.getName();
+            contentViews.remove(name);
+            log.info("Unregistering content view with name " + name);
         }
     }
 

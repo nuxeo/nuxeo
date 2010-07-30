@@ -201,6 +201,7 @@ public interface ContentView extends Serializable {
      * Sets the search document model to be passed on the page provider, and
      * set it also on the current page provider if not null.
      */
+    // TODO: make it possible to load sort info from document model
     void setSearchDocumentModel(DocumentModel doc);
 
     /**

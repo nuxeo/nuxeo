@@ -19,6 +19,8 @@ public interface PageProviderDescriptor extends Serializable {
 
     String[] getQueryParameters();
 
+    boolean getQuotePatternParameters();
+
     void setPattern(String pattern);
 
     String getPattern();

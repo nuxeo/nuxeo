@@ -221,8 +221,10 @@ public class ContentViewImpl implements ContentView {
         if (searchDocument != null) {
             pageProvider.setSearchDocumentModel(searchDocument);
         } else {
+            // initialize on page provider only if not already set
             DocumentModel searchDoc = getSearchDocumentModel();
-            if (searchDoc != null) {
+            if (searchDoc != null
+                    && pageProvider.getSearchDocumentModel() == null) {
                 pageProvider.setSearchDocumentModel(searchDoc);
             }
         }

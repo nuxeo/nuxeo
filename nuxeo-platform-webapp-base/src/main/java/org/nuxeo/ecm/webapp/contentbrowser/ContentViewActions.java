@@ -217,4 +217,8 @@ public class ContentViewActions implements Serializable {
         cache.refresh(contentViewName);
     }
 
+    public void reset(String contentViewName) {
+        cache.reset(contentViewName);
+    }
+
 }
