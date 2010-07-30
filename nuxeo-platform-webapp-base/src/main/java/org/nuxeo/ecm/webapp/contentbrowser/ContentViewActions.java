@@ -165,6 +165,12 @@ public class ContentViewActions implements Serializable {
         return cView;
     }
 
+    public ContentView getContentViewWithProvider(String name)
+            throws ClientException {
+        return getContentViewWithProvider(name, null, null, null,
+                (Object[]) null);
+    }
+
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel) throws ClientException {
         return getContentViewWithProvider(name, searchDocumentModel, null,
