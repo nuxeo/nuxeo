@@ -145,8 +145,8 @@
     </copy>
 
     <copy todir="${tomcatdir}/lib">
-      <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
-      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+      <artifact:resolveFile key="postgresql:postgresql" />
+      <artifact:resolveFile key="mysql:mysql-connector-java" />
     </copy>
   </target>
 
