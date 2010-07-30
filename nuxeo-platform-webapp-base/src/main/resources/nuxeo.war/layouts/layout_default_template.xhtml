@@ -41,7 +41,7 @@
                 </td>
               </c:otherwise>
             </c:choose>
-            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 2*layout.columns-1, 1)}">
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
           </nxl:layoutRowWidget>
@@ -89,7 +89,7 @@
                 </td>
               </c:otherwise>
             </c:choose>
-            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 2*layout.columns-1, 1)}">
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}" />
             </td>
           </nxl:layoutRowWidget>
