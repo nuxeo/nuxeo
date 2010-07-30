@@ -3,18 +3,18 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>5.3.2</version>
+    <version>5.3.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-parent</artifactId>
-  <version>5.3.2</version>
+  <version>5.3.2-SNAPSHOT</version>
   <name>Nuxeo-platform login parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo Platform login parent</description>
 
   <properties>
-    <nuxeo.platform.version>5.3.2</nuxeo.platform.version>
+    <nuxeo.platform.version>5.3.2-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <modules>
@@ -38,7 +38,7 @@
   <repositories>
     <repository>
       <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <url>http://maven.nuxeo.org/public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -48,12 +48,11 @@
     </repository>
     <repository>
       <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
       <snapshots>
-        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </repository>
