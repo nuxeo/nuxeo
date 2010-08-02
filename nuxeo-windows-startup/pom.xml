@@ -17,10 +17,6 @@
   * Framework .NET 3.x\n
   </description>
 
-  <properties>
-    <win32startup.version>5.3.1_02</win32startup.version>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
