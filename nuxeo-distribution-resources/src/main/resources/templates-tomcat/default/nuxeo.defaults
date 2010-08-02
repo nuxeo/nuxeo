@@ -4,5 +4,5 @@ nuxeo.template.includes=
 nuxeo.db.user=sa
 nuxeo.db.password=
 
-org.nuxeo.ecm.instance.name=Nuxeo 5.3
+org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
