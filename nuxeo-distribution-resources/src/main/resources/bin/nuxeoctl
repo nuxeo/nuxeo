@@ -156,12 +156,6 @@ elif [[ "$PID_DIR" != /* ]]; then
 fi
 PID="$PID_DIR/nuxeo.pid"
 
-# TMP_DIR
-if [ -n "$TMP_DIR" ]; then
-	if [[ "$TMP_DIR" != /* ]]; then
-		TMP_DIR="$NUXEO_HOME/$TMP_DIR"
-	fi
-fi
 
 # Where possible, increase the maximum number of file descriptors
 
@@ -333,6 +327,12 @@ if [[ "$DATA_DIR" != /* ]]; then
   DATA_DIR="$NUXEO_HOME/$DATA_DIR"
 fi
 
+# Set absolute path for tmp directory if any
+if [ -n "$TMP_DIR" ]; then
+	if [[ "$TMP_DIR" != /* ]]; then
+		TMP_DIR="$NUXEO_HOME/$TMP_DIR"
+	fi
+fi
 
 checkalive() {
 	if [ ! -r "$PID" ]; then
