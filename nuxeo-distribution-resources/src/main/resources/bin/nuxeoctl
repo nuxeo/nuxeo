@@ -529,7 +529,7 @@ case "$1" in
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR"  \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
-      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMPDIR" \
+      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR" \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
     fi
