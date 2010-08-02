@@ -67,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- *
+ * 
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -170,11 +170,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (success) {
             eventId = "loginSuccess";
             comment = userName + " successfully logged in using "
-            + userInfo.getAuthPluginName() + "Authentication";
+                    + userInfo.getAuthPluginName() + "Authentication";
         } else {
             eventId = "loginFailed";
             comment = userName + " failed to authenticate using "
-            + userInfo.getAuthPluginName() + "Authentication";
+                    + userInfo.getAuthPluginName() + "Authentication";
         }
 
         return sendAuthenticationEvent(userInfo, eventId, comment);
@@ -248,7 +248,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String deputyLogin = (String) httpRequest.getAttribute(NXAuthConstants.SWITCH_USER_KEY);
         String targetPageAfterSwitch = (String) httpRequest.getAttribute(NXAuthConstants.PAGE_AFTER_SWITCH);
-        if (targetPageAfterSwitch==null) {
+        if (targetPageAfterSwitch == null) {
             targetPageAfterSwitch = DEFAULT_START_PAGE;
         }
 
@@ -259,11 +259,11 @@ public class NuxeoAuthenticationFilter implements Filter {
             // simply switch back to the previous identity
             NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) cachableUserIdent.getPrincipal();
             String previousUser = currentPrincipal.getOriginatingUser();
-            if (previousUser==null) {
+            if (previousUser == null) {
                 return false;
             }
             deputyLogin = previousUser;
-            originatingUser=null;
+            originatingUser = null;
         }
 
         try {
@@ -285,7 +285,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         Principal principal = doAuthenticate(newCachableUserIdent, httpRequest);
         if (principal != null) {
             NuxeoPrincipal nxUser = (NuxeoPrincipal) principal;
-            if (originatingUser!=null) {
+            if (originatingUser != null) {
                 nxUser.setOriginatingUser(originatingUser);
             }
             propagateUserIdentificationInformation(cachableUserIdent);
@@ -380,6 +380,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                             && httpRequest.getParameter(NXAuthConstants.FORM_SUBMITTED_MARKER) == null) {
                         return;
                     }
+                } else {
+                    targetPageURL = getSavedRequestedURL(httpRequest,
+                            httpResponse);
                 }
             }
 
@@ -556,13 +559,13 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Unable to get Service "
                     + PluggableAuthenticationService.NAME);
             throw new ServletException(
-            "Can't initialize Nuxeo Pluggable Authentication Service");
+                    "Can't initialize Nuxeo Pluggable Authentication Service");
         }
     }
 
     /**
      * Save requested URL before redirecting to login form.
-     *
+     * 
      * Returns true if target url is a valid startup page.
      */
     public boolean saveRequestedURLBeforeRedirect(
@@ -588,7 +591,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             requestPage = getRequestedUrl(httpRequest);
         }
 
-        if (requestPage==null) {
+        if (requestPage == null) {
             return false;
         }
 
@@ -601,7 +604,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         // in the request params
         if (isStartPageValid(requestPage)) {
             if (!requestPageInParams) {
-                session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY, requestPage);
+                session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY,
+                        requestPage);
             }
             return true;
         }
@@ -629,7 +633,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String requestedPage = null;
 
-        if (httpRequest.getParameter(NXAuthConstants.START_PAGE_SAVE_KEY) == null) {
+        if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) == null) {
             HttpSession session = httpRequest.getSession(false);
             if (session != null) {
                 requestedPage = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
@@ -639,7 +643,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 }
             }
         } else {
-            requestedPage = httpRequest.getParameter(NXAuthConstants.START_PAGE_SAVE_KEY);
+            requestedPage = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
         }
 
         // if SSO authentication cookie store the initial URL asked
@@ -666,7 +670,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected boolean isStartPageValid(String startPage) {
-        if (startPage==null) {
+        if (startPage == null) {
             return false;
         }
         for (String prefix : service.getStartURLPatterns()) {
@@ -680,7 +684,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected boolean handleLogout(ServletRequest request,
             ServletResponse response,
             CachableUserIdentificationInfo cachedUserInfo)
-    throws ServletException {
+            throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
         // invalidate Session !
