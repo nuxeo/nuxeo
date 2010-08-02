@@ -156,12 +156,6 @@ elif [[ "$PID_DIR" != /* ]]; then
 fi
 PID="$PID_DIR/nuxeo.pid"
 
-# TMP_DIR
-if [ -n "$TMP_DIR" ]; then
-	if [[ "$TMP_DIR" != /* ]]; then
-		TMP_DIR="$NUXEO_HOME/$TMP_DIR"
-	fi
-fi
 
 # Where possible, increase the maximum number of file descriptors
 
@@ -333,6 +327,12 @@ if [[ "$DATA_DIR" != /* ]]; then
   DATA_DIR="$NUXEO_HOME/$DATA_DIR"
 fi
 
+# Set absolute path for tmp directory if any
+if [ -n "$TMP_DIR" ]; then
+	if [[ "$TMP_DIR" != /* ]]; then
+		TMP_DIR="$NUXEO_HOME/$TMP_DIR"
+	fi
+fi
 
 checkalive() {
 	if [ ! -r "$PID" ]; then
@@ -529,7 +529,7 @@ case "$1" in
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR"  \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
-      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMPDIR" \
+      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR" \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
     fi
