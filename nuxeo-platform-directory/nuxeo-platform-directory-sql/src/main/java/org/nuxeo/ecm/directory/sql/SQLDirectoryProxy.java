@@ -106,5 +106,9 @@ public class SQLDirectoryProxy implements Directory {
     public DirectoryCache getCache() throws DirectoryException {
         return getDirectory().getCache();
     }
+    
+    public void invalidateDirectoryCache() throws DirectoryException{
+        getCache().invalidateAll();
+    }
 
 }

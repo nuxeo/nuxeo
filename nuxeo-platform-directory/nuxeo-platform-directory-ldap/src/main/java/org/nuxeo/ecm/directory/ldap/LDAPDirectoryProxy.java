@@ -106,4 +106,7 @@ public class LDAPDirectoryProxy implements Directory {
         return getDirectory().getCache();
     }
 
+    public void invalidateDirectoryCache() throws DirectoryException{
+        getCache().invalidateAll();
+    }
 }
