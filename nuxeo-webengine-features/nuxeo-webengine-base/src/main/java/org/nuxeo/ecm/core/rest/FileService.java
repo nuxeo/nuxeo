@@ -129,9 +129,9 @@ public class FileService extends DefaultAdapter {
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
                     map.put("filename", blob.getFilename());
                     map.put("file", (Serializable) blob);
-                    p.add(map);
+                    p.addValue(map);
                 } else {
-                    p.add(blob);
+                    p.addValue(blob);
                 }
             } else {
                 if ("file".equals(p.getSchema().getName())) { // for

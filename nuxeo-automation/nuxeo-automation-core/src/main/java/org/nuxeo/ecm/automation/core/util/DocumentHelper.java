@@ -96,9 +96,9 @@ public class DocumentHelper {
             // holder)
             Type ft = ((ListProperty) p).getType().getFieldType();
             if (ft.isComplexType() && ((ComplexType) ft).getFieldsCount() == 2) {
-                p.add(createBlobHolderMap(blob));
+                p.addValue(createBlobHolderMap(blob));
             } else {
-                p.add(blob);
+                p.addValue(blob);
             }
         } else {
             p.setValue(blob);
