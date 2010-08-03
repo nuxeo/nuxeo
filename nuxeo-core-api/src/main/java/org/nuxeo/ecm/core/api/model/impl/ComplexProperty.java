@@ -158,12 +158,6 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return getChild(field);
     }
 
-    public Property set(String name, Object value) throws PropertyException {
-        Property property = get(name);
-        property.setValue(value);
-        return property;
-    }
-
     @Override
     public Serializable internalGetValue() throws PropertyException {
         // noinspection CollectionDeclaredAsConcreteClass
@@ -230,17 +224,17 @@ public abstract class ComplexProperty extends AbstractProperty implements
         }
     }
 
-    public Property add(Object value) {
+    public Property addValue(Object value) {
         throw new UnsupportedOperationException(
                 "add(value) operation not supported on map properties");
     }
 
-    public Property add(int index, Object value) {
+    public Property addValue(int index, Object value) {
         throw new UnsupportedOperationException(
                 "add(value, index) operation not supported on map properties");
     }
 
-    public Property add() {
+    public Property addEmpty() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }

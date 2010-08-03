@@ -89,7 +89,7 @@ public class DocumentPartReader {
         NodeIterator it =node.getNodes();
         while (it.hasNext()) {
             Node childNode = it.nextNode();
-            Property prop = property.add();
+            Property prop = property.addEmpty();
             prop.setData(childNode.getName()); // store real name using key attr of the property
             readProperty(node, prop);
         }

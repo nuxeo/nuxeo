@@ -264,7 +264,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals("/book:file/fileName", path);
 
         Author author = new Author();
-        dp.get("authors").add(author.getMap());
+        dp.get("authors").addValue(author.getMap());
         path = dp.resolvePath("book:authors/author[0]/name/firstName").getPath();
         assertEquals("/book:authors/author[0]/name/firstName", path);
     }
@@ -344,10 +344,10 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         assertEquals(keysProp, dp.resolvePath("book:keywords"));
 
         // testing list access - for this we need a phantom property??
-        prop = refsProp.add("key1");
+        prop = refsProp.addValue("key1");
         assertEquals(prop, dp.resolvePath("book:references/reference[0]"));
 
-        prop = authorsProp.add(new Author().getMap());
+        prop = authorsProp.addValue(new Author().getMap());
         assertEquals(prop, dp.resolvePath("authors/author[0]"));
 
         prop = prop.get("name").get("firstName");
@@ -373,7 +373,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         author.age = 100L;
         author.name = new Name();
         author.name.firstName = "Toto";
-        prop = dp.get("authors").add(author.getMap());
+        prop = dp.get("authors").addValue(author.getMap());
         assertEquals(prop.getValue(), author.getMap());
 
         assertEquals("Toto", prop.resolvePath("name/firstName").getValue());
@@ -382,7 +382,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         // test set(index)
         author.name.firstName = null;
         author.name.lastName = "Titi";
-        dp.get("authors").set(0, author.getMap());
+        dp.get("authors").setValue(0, author.getMap());
         assertEquals("Titi", prop.resolvePath("name/lastName").getValue());
         assertNull(prop.get("name").get("firstName").getValue());
         // set using xpath
@@ -391,7 +391,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
         // test add(index)
         author.name.lastName = "Toto";
-        dp.get("authors").add(0, author.getMap());
+        dp.get("authors").addValue(0, author.getMap());
         assertEquals("Toto",
                 dp.resolvePath("authors/author[0]/name/lastName").getValue());
         assertEquals("Tete",

@@ -99,10 +99,9 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
-    public Property set(int index, Object value) throws PropertyException {
+    public void setValue(int index, Object value) throws PropertyException {
         Property property = get(index);
         property.setValue(value);
-        return property;
     }
 
     public int size() {

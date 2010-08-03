@@ -504,24 +504,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     Property get(String name) throws PropertyNotFoundException;
 
     /**
-     * Set the child property value
-     * <p>
-     * This method will mark the child value as dirty for existing values and,
-     * in the case of map properties, it will mark phantom properties as new
-     * properties.
-     *
-     * @param name the child property name (the full name including the prefix
-     *            if any)
-     * @param value the new value
-     * @return the property that was set
-     * @throws {@link UnsupportedOperationException} if the property is a scalar
-     *             property (doesn't have children)
-     * @throws {@link PropertyNotFoundException} if the child property is not
-     *             found in the type definition
-     */
-    Property set(String name, Object value) throws PropertyException;
-
-    /**
      * Get the child property given it's index. This operation is mandatory for
      * List properties.
      * <p>
@@ -555,13 +537,12 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param index
      * @param value the new value
-     * @return the property that was set
      * @throws {@link UnsupportedOperationException} if the property is a scalar
      *             property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not
      *             found in the type definition
      */
-    Property set(int index, Object value) throws PropertyException;
+    void setValue(int index, Object value) throws PropertyException;
 
     /**
      * Get a collection over the children properties. This includes all children
@@ -595,7 +576,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param value
      * @return the added property
      */
-    Property add(Object value) throws PropertyException;
+    Property addValue(Object value) throws PropertyException;
 
     /**
      * Inserts at the given position a new value to the list. A new property
@@ -608,7 +589,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param index the position to insert the value
      * @return the added property
      */
-    Property add(int index, Object value) throws PropertyException;
+    Property addValue(int index, Object value) throws PropertyException;
 
     /**
      * Creates an empty child property and adds it as a property to the list
@@ -619,7 +600,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @return the created property
      * @throws PropertyException
      */
-    Property add() throws PropertyException;
+    Property addEmpty() throws PropertyException;
 
     /**
      * Moves a property position into the parent container list.

@@ -83,7 +83,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return !getType().isScalarList();
     }
 
-    public Property add(int index, Object value) throws PropertyException {
+    public Property addValue(int index, Object value) throws PropertyException {
         Field lfield = getType().getField();
         Property property = getRoot().createProperty(this, lfield, IS_NEW);
         property.setValue(value);
@@ -91,7 +91,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return property;
     }
 
-    public Property add(Object value) throws PropertyException {
+    public Property addValue(Object value) throws PropertyException {
         Field lfield = getType().getField();
         Property property = getRoot().createProperty(this, lfield, IS_NEW);
         property.setValue(value);
@@ -99,7 +99,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return property;
     }
 
-    public Property add() {
+    public Property addEmpty() {
         Field lfield = getType().getField();
         Property property = getRoot().createProperty(this, lfield, 0);
         children.add(property);
@@ -124,10 +124,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     public Property get(int index) {
         return children.get(index);
-    }
-
-    public Property set(String name, Object value) throws PropertyException {
-        return set(Integer.parseInt(name), value);
     }
 
     @Override
@@ -366,10 +362,10 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         for (ListDiff.Entry entry : ld.diff()) {
             switch (entry.type) {
             case ListDiff.ADD:
-                add(entry.value);
+                addValue(entry.value);
                 break;
             case ListDiff.INSERT:
-                add(entry.index, entry.value);
+                addValue(entry.index, entry.value);
                 break;
             case ListDiff.REMOVE:
                 remove(entry.index);

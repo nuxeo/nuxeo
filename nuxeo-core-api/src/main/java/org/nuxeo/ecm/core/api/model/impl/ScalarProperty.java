@@ -92,21 +92,17 @@ public class ScalarProperty extends AbstractProperty {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
-    public Property set(String name, Object value) {
-        throw new UnsupportedOperationException("Scalar properties don't have children");
-    }
-
-    public Property add(Object value) {
+    public Property addValue(Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
-    public Property add(int index, Object value) {
+    public Property addValue(int index, Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
-    public Property add() {
+    public Property addEmpty() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }
