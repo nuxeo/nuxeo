@@ -48,7 +48,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
  *
  * @author Anahide Tchertchian
  */
-@Operation(id = CreateTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.3.2", description = "Enable to create a task binded to the document. "
+@Operation(id = CreateTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.3.2", description = "Enable to create a task bound to the document. "
         + "<p><b>Directive</b>, <b>comment</b> and <b>due date</b> will be displayed in the task list of the user. "
         + "In <b>accept operation chain</b> and <b>reject operation chain</b> fields, "
         + "you can put the operation chain ID of your choice among the one you contributed. "
