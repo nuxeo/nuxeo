@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractDirectory;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author Florent Guillaume
- *
+ * 
  */
 public class MultiDirectory extends AbstractDirectory {
 
@@ -97,10 +98,24 @@ public class MultiDirectory extends AbstractDirectory {
         }
     }
 
+    @Override
+    public Reference getReference(String referenceFieldName) {
+        return new MultiReference(this, referenceFieldName);
+    }
 
     @Override
-    public Reference getReference(String referenceFieldName)  {
-        return new MultiReference(this, referenceFieldName);
+    public void invalidateDirectoryCache() throws DirectoryException {
+        getCache().invalidateAll();
+        // and also invalidates the cache from the source directories
+        for (SourceDescriptor src : descriptor.sources) {
+            for (SubDirectoryDescriptor sub : src.subDirectories) {
+                Directory dir = MultiDirectoryFactory.getDirectoryService().getDirectory(
+                        sub.name);
+                if (dir != null) {
+                    dir.invalidateDirectoryCache();
+                }
+            }
+        }
     }
 
 }

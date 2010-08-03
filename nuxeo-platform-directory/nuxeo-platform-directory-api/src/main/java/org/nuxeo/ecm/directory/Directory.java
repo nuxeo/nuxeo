@@ -118,5 +118,13 @@ public interface Directory {
      * @throws DirectoryException
      */
     DirectoryCache getCache() throws DirectoryException;
+    
+    /**
+     * Invalidates the cache instance of the directory
+     *
+     * @throws DirectoryException
+     */
+    void invalidateDirectoryCache() throws DirectoryException;
+
 
 }
