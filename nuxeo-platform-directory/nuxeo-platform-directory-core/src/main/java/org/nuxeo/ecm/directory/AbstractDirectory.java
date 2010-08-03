@@ -46,7 +46,7 @@ public abstract class AbstractDirectory implements Directory {
         for (Reference ref : references.values()) {
             Directory targetDir = ref.getTargetDirectory();
             if (targetDir != null) {
-                targetDir.getCache().invalidateAll();
+                targetDir.invalidateDirectoryCache();
             }
         }
     }
@@ -97,4 +97,8 @@ public abstract class AbstractDirectory implements Directory {
         return cache;
     }
 
+    public void invalidateDirectoryCache() throws DirectoryException{
+        getCache().invalidateAll();
+    }
+    
 }
