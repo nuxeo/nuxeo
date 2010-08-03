@@ -76,28 +76,24 @@ them in nuxeo.conf of each server.
 Default Nuxeo configuration.
 Designed for development or test purpose.
 Repository backend: H2
-Tags service backend: H2
-Other services backend: Derby
+Services backend: Derby
 
 2.2) postgresql
 
 Recommended configuration for production, based on PostgreSQL.
 Think to add PostgreSQL JDBC driver into server/default/lib/ directory.
 Repository backend: PostgreSQL XA
-Tags service backend: PostgreSQL XA
-Other services backend: PostgreSQL XA
+Services backend: PostgreSQL XA
 
 2.3) mysql
 
 Repository backend: MySQL XA
-Tags service backend: MySQL
-Other services backend: MySQL
+Services backend: MySQL
 
 2.4) oracle
 
 Repository backend: Oracle XA
-Tags service backend: Oracle
-Other services backend: Oracle
+Services backend: Oracle
 
 2.5) stateful and stateless
 
