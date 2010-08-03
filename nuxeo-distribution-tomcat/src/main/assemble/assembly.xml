@@ -240,10 +240,8 @@
                includes="nuxeo-runtime-jetty-*" />
       <!--fileset dir="${outdir}/${tomcat}/nxserver/bundles" includes="nuxeo-platform-virtualnavigation-*" /-->
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="core-*" />
+      <!-- jetty is needed by vcs remote -->
       <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
-      <fileset dir="${outdir}/${tomcat}/nxserver/lib"
-               includes="jetty-*"
-               excludes="jetty-util*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jsp-api*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib"
                includes="servlet-api-*" />
