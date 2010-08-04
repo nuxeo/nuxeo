@@ -53,7 +53,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             throws ClientException {
         super.initSession(eventDoc);
 
-        if (!isTargetEmpty(eventDoc)) {
+        if (eventDoc.isVersion() || !isTargetEmpty(eventDoc)) {
             return;
         }
 
