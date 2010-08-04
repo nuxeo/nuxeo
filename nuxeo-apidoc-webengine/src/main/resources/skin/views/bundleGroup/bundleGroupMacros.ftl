@@ -21,7 +21,7 @@
   <p><@docContent docItem=bundleGroupDesc /></p>
 
   <#if (subGroups?size>0)>
-  ${bundleGroupDesc.title} contains ${subGroups?size} sub BundleGroups.
+  ${bundleGroupDesc.title} contains ${subGroups?size} sub BundleGroup(s).
 
   <table class="linkTable">
   <#list subGroups as subGroup>
@@ -42,7 +42,7 @@
   </#if>
 
   <span class="builtindoc">
-  ${bundleGroupDesc.title} is composed of ${bundles?size} bundles.
+  ${bundleGroupDesc.title} is composed of ${bundles?size} bundle(s).
 
   <table class="linkTable">
   <#list bundles as bundle>
