@@ -44,7 +44,7 @@
   <b> Known contributions </b>
   <br/>
  <span class="builtindoc">
-   This extension points has ${extensionPointItem.extensions?size} know contributions.<br/>
+   This extension points has ${extensionPointItem.extensions?size} known contribution(s).<br/>
  </span>
   <ul>
   <#list extensionPointItem.extensions as contrib>
