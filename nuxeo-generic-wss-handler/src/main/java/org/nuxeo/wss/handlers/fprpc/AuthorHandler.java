@@ -18,6 +18,7 @@
 package org.nuxeo.wss.handlers.fprpc;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,10 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
         } else if ("get document".equals(call.getMethodName())) {
             String location = call.getParameters().get("document_name");
-
+            try {
+                location = new String(location.getBytes("ISO-8859-15"), "UTF-8");
+            } catch (UnsupportedEncodingException e1) {
+            }
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             WSSListItem doc = backend.getItem(location);

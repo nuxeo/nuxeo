@@ -3,7 +3,7 @@
 <html dir="ltr">
 <HEAD>
 <META Name="GENERATOR" Content="Microsoft SharePoint">
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=utf-8">
 <META HTTP-EQUIV="Expires" content="0">
 <Title ID=onetidTitle>Listing ${parent.description} </Title>
 <BASE HREF="${request.getResourcesUrl()}">
