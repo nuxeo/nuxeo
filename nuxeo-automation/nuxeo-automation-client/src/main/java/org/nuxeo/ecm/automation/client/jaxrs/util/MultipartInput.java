@@ -33,7 +33,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.HasFile;
 public class MultipartInput extends MimeMultipart {
 
     public MultipartInput() {
-        super ("related");
+        super("related");
     }
 
     public void setRequest(String content) throws Exception {
@@ -53,7 +53,7 @@ public class MultipartInput extends MimeMultipart {
     protected void setBlob(Blob blob, String id) throws Exception {
         MimeBodyPart part = new MimeBodyPart();
         if (blob instanceof HasFile) {
-            part.attachFile(((HasFile)blob).getFile());
+            part.attachFile(((HasFile) blob).getFile());
         } else {
             part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
         }

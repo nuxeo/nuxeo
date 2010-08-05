@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.Blob;
 @Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Return back the input file")
 public class PostBlob {
 
-    public final static String ID = "Blob.Post";
+    public static final String ID = "Blob.Post";
 
     @Param(name = "url")
     protected String url;

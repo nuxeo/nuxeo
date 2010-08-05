@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 @Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Get a list of files that are attached on the input document. The files location should eb specified using the blob list property xpath. Return a list of files.")
 public class GetDocumentBlobs {
 
-    public final static String ID = "Blob.GetList";
+    public static final String ID = "Blob.GetList";
 
     @Param(name = "xpath", required = false, values = "files:files")
     protected String xpath = "files:files";

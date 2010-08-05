@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
@@ -31,11 +30,14 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 import org.nuxeo.ecm.automation.client.jaxrs.util.MultipartInput;
 
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_REQUEST_NOCHARSET;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEADER;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class DefaultSession implements Session, Constants {
+public class DefaultSession implements Session {
 
     protected AbstractAutomationClient client;
 
@@ -67,7 +69,7 @@ public class DefaultSession implements Session, Constants {
     }
 
     public Object execute(OperationRequest request) throws Exception {
-        Request req = null;
+        Request req;
         String content = JsonMarshalling.writeRequest(request);
         String ctype;
         OperationInput input = request.getInput();

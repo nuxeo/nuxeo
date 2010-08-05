@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 @Operation(id = BlobToPDF.ID, category = Constants.CAT_BLOB, label = "Convert To PDF", description = "Convert the input file to a PDF and return the new file.")
 public class BlobToPDF {
 
-    public final static String ID = "Blob.ToPDF";
+    public static final String ID = "Blob.ToPDF";
 
     @Context
     protected ConversionService service;

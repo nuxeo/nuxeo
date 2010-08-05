@@ -78,12 +78,13 @@ public class DefaultOperationRequest implements OperationRequest {
     }
 
     protected final void checkInput(String type) {
-        if (!acceptInput(type))
+        if (!acceptInput(type)) {
             throw new IllegalArgumentException("Input not supported: " + type);
+        }
     }
 
     public List<String> getParamNames() {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         for (Param param : op.params) {
             result.add(param.name);
         }

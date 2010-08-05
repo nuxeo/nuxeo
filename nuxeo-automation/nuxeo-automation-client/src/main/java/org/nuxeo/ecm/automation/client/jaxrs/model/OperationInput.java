@@ -24,10 +24,10 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
  */
 public interface OperationInput {
 
-    public boolean isBinary();
+    boolean isBinary();
 
-    public String getInputType();
+    String getInputType();
 
-    public String getInputRef();
+    String getInputRef();
 
 }

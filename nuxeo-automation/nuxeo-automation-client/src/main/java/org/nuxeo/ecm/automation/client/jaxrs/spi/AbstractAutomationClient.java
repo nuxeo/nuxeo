@@ -24,17 +24,18 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
+
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public abstract class AbstractAutomationClient implements AutomationClient,
-        Constants {
+public abstract class AbstractAutomationClient implements AutomationClient {
 
     protected String url;
 

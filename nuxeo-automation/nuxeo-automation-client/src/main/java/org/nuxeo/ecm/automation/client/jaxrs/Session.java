@@ -52,7 +52,7 @@ public interface Session {
     OperationRequest newRequest(String id) throws Exception;
 
     /**
-     * Create a new operationr request given an operation ID and a operation
+     * Create a new operation request given an operation ID and an operation
      * context map.
      * 
      * @param id the operation id
@@ -79,7 +79,7 @@ public interface Session {
 
     /**
      * Get a collection of files from the server given the path identifying the
-     * collection
+     * collection.
      * 
      * @param path
      * @return a collection of files represented as blobs.

@@ -44,9 +44,9 @@ public interface OperationRequest {
 
     void execute(AsyncCallback<Object> cb);
 
-    Map<String,String> getParameters();
+    Map<String, String> getParameters();
 
-    Map<String,String> getContextParameters();
+    Map<String, String> getContextParameters();
 
     OperationRequest setHeader(String key, String value);
 

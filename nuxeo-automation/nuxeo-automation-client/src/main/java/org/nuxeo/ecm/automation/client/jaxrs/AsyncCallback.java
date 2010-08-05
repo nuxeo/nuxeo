@@ -23,8 +23,8 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  */
 public interface AsyncCallback<T> {
 
-    public void onError(Throwable e);
+    void onError(Throwable e);
 
-    public void onSuccess(T data);
+    void onSuccess(T data);
 
 }

@@ -34,20 +34,23 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_MULTIPART_MIXED;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Request extends HashMap<String, String> implements Constants {
+public class Request extends HashMap<String, String> {
+
+    public static final int GET = 0;
+    public static final int POST = 1;
 
     private static final long serialVersionUID = 1L;
 
     protected static Pattern ATTR_PATTERN = Pattern.compile(
             ";?\\s*filename\\s*=\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
-
-    public final static int GET = 0;
-
-    public final static int POST = 1;
 
     protected int method;
 

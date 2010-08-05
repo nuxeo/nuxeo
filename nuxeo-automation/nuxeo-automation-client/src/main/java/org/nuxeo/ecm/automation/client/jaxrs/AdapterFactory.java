@@ -22,10 +22,10 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  */
 public interface AdapterFactory<T> {
 
-    public Class<?> getAcceptType();
+    Class<?> getAcceptType();
 
-    public Class<T> getAdapterType();
+    Class<T> getAdapterType();
 
-    public T getAdapter(Object toAdapt);
+    T getAdapter(Object toAdapt);
 
 }

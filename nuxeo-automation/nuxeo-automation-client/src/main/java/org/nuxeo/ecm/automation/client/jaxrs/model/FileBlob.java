@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -32,7 +31,7 @@ public class FileBlob extends Blob implements HasFile {
     protected File file;
 
     public FileBlob(File file) {
-        super (file.getName(), getMimeTypeFromExtension(file.getPath()));
+        super(file.getName(), getMimeTypeFromExtension(file.getPath()));
         this.file = file;
     }
 
@@ -48,4 +47,5 @@ public class FileBlob extends Blob implements HasFile {
     public static String getMimeTypeFromExtension(String path) {
         return "application/octet-stream";
     }
+
 }

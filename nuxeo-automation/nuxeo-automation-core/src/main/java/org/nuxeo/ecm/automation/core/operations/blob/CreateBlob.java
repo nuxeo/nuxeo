@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 @Operation(id = CreateBlob.ID, category = Constants.CAT_FETCH, label = "File From URL", description = "Create a file from a given URL. The file parameter specify how to retrieve the file content. It should be an URL to the file you want to use as the source. You can also use an expression to get an URL from the context. Returns the created file.")
 public class CreateBlob {
 
-    public final static String ID = "Blob.Create";
+    public static final String ID = "Blob.Create";
 
     @Param(name = "file")
     protected URL file;

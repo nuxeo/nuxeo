@@ -37,20 +37,20 @@ public class TestBlob {
     public static void main(String[] args) throws Exception {
         try {
             HttpAutomationClient client = new HttpAutomationClient(
-                    "http://localhost:8080/automation");
+                    "http://192.168.1.200:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
             // SessionImpl session = (SessionImpl)client.getSession(null);
             Session session = (Session) client.getSession("Administrator",
                     "Administrator");
             // FileBlob fb = new FileBlob(new
             // File("/Users/bstefanescu/operations.jpg"));
-            FileBlob fb = new FileBlob(new File("/Users/bstefanescu/test.jpg"));
+            FileBlob fb = new FileBlob(new File("/Users/fermigier/Pictures/bart.jpg"));
             fb.setMimeType("image/jpeg");
 
             // TODO avoid getting the output from server
             Blob blob = (Blob) session.newRequest(DocumentService.AttachBlob).setHeader(
                     Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
-                    "document", "/default-domain/workspaces/myws/file").execute();
+                    "document", "/titi").execute();
             System.out.println(blob);
             // System.out.println(((FileBlob)blob).getFile());
 
