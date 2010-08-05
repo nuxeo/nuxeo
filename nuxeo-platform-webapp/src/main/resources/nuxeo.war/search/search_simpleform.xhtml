@@ -19,8 +19,8 @@
 <br />
 
 <script language="javascript">
-  function popupSearch(createFormId, url) {
-    popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
+  function popupSearch(searchFieldId, url) {
+    popup = window.open(url+'&amp;fieldId='+searchFieldId, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
     if(!popup.opener) {
       popup.opener = window;
     }
@@ -252,7 +252,7 @@
           <nxu:set var="urlWithConversation"
             value="#{restHelper.addCurrentConversationParameters(url)}">
             <input type="button" value="#{messages['command.advancedsearch.browse']}" class="button"
-              onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');" />
+              onclick="javascript:popupSearch(this.previousSibling.previousSibling.id, '#{urlWithConversation}');" />
           </nxu:set>
         </nxu:set>
         <f:subview rendered="false">
