@@ -37,9 +37,11 @@ public class WSSConfig {
     protected String wssBackendFactoryClassName = "org.nuxeo.wss.spi.dummy.DummyBackendFactory";
 
     protected String contextPath = "";
-
+    
     protected boolean hostFPExtensionAtRoot = true;
 
+    public static final String DEFAULT_ENCODING = "org.nuxeo.wss.handler.windows.encoding";
+    
     public synchronized static WSSConfig instance() {
         if (instance == null) {
             instance = new WSSConfig();

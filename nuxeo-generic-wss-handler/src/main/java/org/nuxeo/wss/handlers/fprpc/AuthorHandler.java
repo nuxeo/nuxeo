@@ -26,8 +26,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.fprpc.FPError;
 import org.nuxeo.wss.fprpc.FPRPCCall;
@@ -92,9 +94,15 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
         } else if ("get document".equals(call.getMethodName())) {
             String location = call.getParameters().get("document_name");
-            try {
-                location = new String(location.getBytes("ISO-8859-15"), "UTF-8");
-            } catch (UnsupportedEncodingException e1) {
+            String windowsEncoding = System.getProperty(WSSConfig.DEFAULT_ENCODING);
+            if (StringUtils.isEmpty(windowsEncoding)
+                    || windowsEncoding.startsWith("ISO-8859")) {
+                try {
+
+                    location = new String(location.getBytes("ISO-8859-15"),
+                            "UTF-8");
+                } catch (UnsupportedEncodingException e1) {
+                }
             }
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
