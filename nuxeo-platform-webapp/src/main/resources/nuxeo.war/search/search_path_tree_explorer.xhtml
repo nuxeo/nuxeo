@@ -19,10 +19,9 @@
       <script language="javascript">
 
           function updateParent(value) {
-            PARENT_FORM_NAME = 'searchForm';
-            FIELD_NAME = 'searchscope';
+            FIELD_FULL_NAME = '<h:outputText value="#{param.fieldId}" />';
 
-            parentSearchScope = opener.document.getElementById(PARENT_FORM_NAME + ':' + FIELD_NAME);
+            parentSearchScope = opener.document.getElementById(FIELD_FULL_NAME);
             parentSearchScope.value = value;
             self.close();
           }
