@@ -33,8 +33,8 @@ import org.nuxeo.ecm.automation.OperationParameters;
  */
 public class AutomationInfo {
 
-    protected List<OperationDocumentation> ops;
-    protected List<OperationDocumentation> chains;
+    protected final List<OperationDocumentation> ops;
+    protected final List<OperationDocumentation> chains;
 
     public AutomationInfo(AutomationService service) {
         ops = service.getDocumentation();
@@ -53,7 +53,7 @@ public class AutomationInfo {
             // compute chain signature
             List<OperationParameters> ops = chain.getOperations();
             if (ops.isEmpty()) {
-              doc.signature = new String[] {"void","void"};
+              doc.signature = new String[] {"void", "void"};
             } else if (ops.size() == 1) {
                 OperationDocumentation opdoc = map.get(ops.get(0).id());
                 doc.signature = opdoc.signature;
@@ -67,7 +67,7 @@ public class AutomationInfo {
                 for (int i=0; i<head.length; i+=2) {
                     String in = head[i];
                     String out = head[i+1];
-                    ArrayList<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<String>();
                     checkPath(out, sigs, 1, result);
                     for (String r : result) {
                         rs.add(in);

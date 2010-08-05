@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipOutputStream;
 
@@ -103,9 +104,9 @@ public class CreateZip {
     }
 
     protected void zip(BlobList blobs, ZipOutputStream out) throws Exception {
-        HashSet<String> names = new HashSet<String>(); // use a set to avoid
-                                                        // zipping entries with
-                                                        // same names
+        Collection<String> names = new HashSet<String>(); // use a set to avoid
+                                                     // zipping entries with
+                                                     // same names
         int cnt = 1;
         for (Blob blob : blobs) {
             String entry = getFileName(blob);

@@ -24,15 +24,13 @@ import javax.activation.DataSource;
 
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class BlobDataSource implements DataSource {
 
-    protected Blob blob;
+    protected final Blob blob;
 
     public BlobDataSource(Blob blob) {
         this.blob = blob;

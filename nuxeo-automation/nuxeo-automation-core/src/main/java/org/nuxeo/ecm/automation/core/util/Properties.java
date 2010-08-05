@@ -54,7 +54,7 @@ public class Properties extends HashMap<String, String> {
 
     public static Map<String, String> loadProperties(Reader reader)
             throws Exception {
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         loadProperties(reader, map);
         return map;
     }

@@ -38,7 +38,7 @@ public class AutomationModule extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(AutomationResource.class);
         result.add(MultiPartRequestReader.class); // need to be stateless since it needs the request member to be injected
         return result;
@@ -46,7 +46,7 @@ public class AutomationModule extends Application {
 
     @Override
     public Set<Object> getSingletons() {
-        HashSet<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<Object>();
         result.add(new JsonRequestReader());
         result.add(new JsonExceptionWriter());
         result.add(new JsonAutomationInfoWriter());

@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.OperationContext;
  */
 public class ChainResource extends ExecutableResource {
 
-    protected String chainId;
+    protected final String chainId;
 
     public ChainResource(AutomationService service, String chainId) {
         super(service);

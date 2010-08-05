@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -66,7 +67,7 @@ public class AuditLog {
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        ArrayList<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<LogEntry>();
         Date date = new Date();
         Principal principal = ctx.getPrincipal();
         String uname = principal != null ? principal.getName() : null;

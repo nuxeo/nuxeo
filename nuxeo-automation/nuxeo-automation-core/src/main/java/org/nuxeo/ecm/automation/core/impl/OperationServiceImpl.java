@@ -145,7 +145,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     public List<OperationChain> getOperationChains() {
-        ArrayList<OperationChain> result = new ArrayList<OperationChain>();
+        List<OperationChain> result = new ArrayList<OperationChain>();
         Map<String, ChainEntry> chains = chainLookup();
         for (ChainEntry entry : chains.values()) {
             result.add(entry.chain);
@@ -282,7 +282,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     public List<OperationDocumentation> getDocumentation() {
-        ArrayList<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
+        List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         Collection<OperationTypeImpl> ops = lookup().values();
         for (OperationTypeImpl ot : ops.toArray(new OperationTypeImpl[ops.size()])) {
             result.add(ot.getDocumentation());

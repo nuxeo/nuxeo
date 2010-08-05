@@ -78,9 +78,9 @@ public class IOUtils {
 
     public static String read(Reader in) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char[] buffer = new char[64*1024];
         try {
             int read;
+            char[] buffer = new char[64 * 1024];
             while ((read = in.read(buffer)) != -1) {
                 sb.append(new String(buffer, 0, read));
             }

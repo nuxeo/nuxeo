@@ -40,8 +40,7 @@ public class TestBlob {
                     "http://192.168.1.200:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
             // SessionImpl session = (SessionImpl)client.getSession(null);
-            Session session = (Session) client.getSession("Administrator",
-                    "Administrator");
+            Session session = client.getSession("Administrator", "Administrator");
             // FileBlob fb = new FileBlob(new
             // File("/Users/bstefanescu/operations.jpg"));
             FileBlob fb = new FileBlob(new File("/Users/fermigier/Pictures/bart.jpg"));
@@ -64,7 +63,7 @@ public class TestBlob {
             PropertyMap map = doc.getProperties().getMap("file:content");
             System.out.println("----------");
             String path = map.getString("data");
-            blob = (Blob) session.getFile(path);
+            blob = session.getFile(path);
             System.out.println(((FileBlob) blob).getFile());
             System.out.println("----------");
             System.out.println(map);

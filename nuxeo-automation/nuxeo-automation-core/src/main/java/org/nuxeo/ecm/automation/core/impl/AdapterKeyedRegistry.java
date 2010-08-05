@@ -31,7 +31,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 public class AdapterKeyedRegistry extends
         SuperKeyedRegistry<TypeAdapterKey, TypeAdapter> {
 
-    protected Set<Class<?>> blacklist;
+    protected final Set<Class<?>> blacklist;
 
     public AdapterKeyedRegistry() {
         blacklist = new HashSet<Class<?>>();

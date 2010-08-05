@@ -37,7 +37,7 @@ public interface AutomationService {
      * @param type
      * @throws OperationException
      */
-    public void putOperation(Class<?> type) throws OperationException;
+    void putOperation(Class<?> type) throws OperationException;
 
     /**
      * Register an operation given its class. The operation class MUST be
@@ -49,7 +49,7 @@ public interface AutomationService {
      * @param replace
      * @throws OperationException
      */
-    public void putOperation(Class<?> type, boolean replace)
+    void putOperation(Class<?> type, boolean replace)
             throws OperationException;
 
     /**
@@ -58,14 +58,14 @@ public interface AutomationService {
      *
      * @param key
      */
-    public void removeOperation(Class<?> key);
+    void removeOperation(Class<?> key);
 
     /**
      * Get all operation types that was registered.
      *
      * @return
      */
-    public OperationType[] getOperations();
+    OperationType[] getOperations();
 
     /**
      * Get an operation type given its ID. Throws an exception if the operation
@@ -75,7 +75,7 @@ public interface AutomationService {
      * @return
      * @throws OperationNotFoundException
      */
-    public OperationType getOperation(String id)
+    OperationType getOperation(String id)
             throws OperationNotFoundException;
 
     /**
@@ -90,7 +90,7 @@ public interface AutomationService {
      * @throws Exception
      * @throws InvalidChainException
      */
-    public CompiledChain compileChain(Class<?> inputType, OperationChain chain)
+    CompiledChain compileChain(Class<?> inputType, OperationChain chain)
             throws Exception, InvalidChainException;
 
     /**
@@ -102,7 +102,7 @@ public interface AutomationService {
      * @throws Exception
      * @throws InvalidChainException
      */
-    public CompiledChain compileChain(Class<?> inputType,
+    CompiledChain compileChain(Class<?> inputType,
             OperationParameters... chain) throws Exception,
             InvalidChainException;
 
@@ -117,7 +117,7 @@ public interface AutomationService {
      * @throws Exception
      * @throws InvalidChainException
      */
-    public Object run(OperationContext ctx, OperationChain chain)
+    Object run(OperationContext ctx, OperationChain chain)
             throws Exception, InvalidChainException;
 
     /**
@@ -131,7 +131,7 @@ public interface AutomationService {
      * @throws Exception
      * @throws InvalidChainException
      */
-    public Object run(OperationContext ctx, String chainId) throws Exception,
+    Object run(OperationContext ctx, String chainId) throws Exception,
             InvalidChainException;
 
     /**
@@ -141,7 +141,7 @@ public interface AutomationService {
      *
      * @param chain
      */
-    public void putOperationChain(OperationChain chain)
+    void putOperationChain(OperationChain chain)
             throws OperationException;
 
     /**
@@ -154,21 +154,21 @@ public interface AutomationService {
      * @param replace
      * @throws OperationException
      */
-    public void putOperationChain(OperationChain chain, boolean replace)
+    void putOperationChain(OperationChain chain, boolean replace)
             throws OperationException;
 
     /**
      * Remove a registered operation chain given its ID. Do nothing if the
      * chain was not registered.
      */
-    public void removeOperationChain(String id);
+    void removeOperationChain(String id);
 
     /**
      * Get a registered operation chain.
      *
      * @param id
      */
-    public OperationChain getOperationChain(String id)
+    OperationChain getOperationChain(String id)
             throws OperationNotFoundException;
 
     /**
@@ -177,7 +177,7 @@ public interface AutomationService {
      * @return the list or an empty list if no registered chains exists
      * @throws OperationException
      */
-    public List<OperationChain> getOperationChains();
+    List<OperationChain> getOperationChains();
 
     /**
      * Register a new type adapter that can adapt an instance of the accepted
@@ -187,7 +187,7 @@ public interface AutomationService {
      * @param produce
      * @param adapter
      */
-    public void putTypeAdapter(Class<?> accept, Class<?> produce,
+    void putTypeAdapter(Class<?> accept, Class<?> produce,
             TypeAdapter adapter);
 
     /**
@@ -196,7 +196,7 @@ public interface AutomationService {
      * @param accept
      * @param produce
      */
-    public void removeTypeAdapter(Class<?> accept, Class<?> produce);
+    void removeTypeAdapter(Class<?> accept, Class<?> produce);
 
     /**
      * Get a type adapter for the input type accept and the output type
@@ -206,7 +206,7 @@ public interface AutomationService {
      * @param produce
      * @return
      */
-    public TypeAdapter getTypeAdapter(Class<?> accept, Class<?> produce);
+    TypeAdapter getTypeAdapter(Class<?> accept, Class<?> produce);
 
     /**
      * Adapt an object to a target type if possible otherwise throws an
@@ -220,7 +220,7 @@ public interface AutomationService {
      * @return
      * @throws Exception
      */
-    public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
+    <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
             Class<?> targetType) throws Exception;
 
     /**
@@ -236,7 +236,7 @@ public interface AutomationService {
      * @return
      * @throws Exception
      */
-    public boolean isTypeAdaptable(Class<?> typeToAdapt, Class<?> targetType);
+    boolean isTypeAdaptable(Class<?> typeToAdapt, Class<?> targetType);
 
     /**
      * Generate a documentation model for all registered operations. The
@@ -246,6 +246,6 @@ public interface AutomationService {
      *
      * @return
      */
-    public List<OperationDocumentation> getDocumentation();
+    List<OperationDocumentation> getDocumentation();
 
 }

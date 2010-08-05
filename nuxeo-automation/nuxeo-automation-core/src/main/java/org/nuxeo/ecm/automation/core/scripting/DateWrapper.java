@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class DateWrapper {
 
-    protected Calendar date;
+    protected final Calendar date;
 
     public DateWrapper() {
         this.date = Calendar.getInstance();

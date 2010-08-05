@@ -79,7 +79,7 @@ public class Scripting {
 
     public static Map<String, Object> initBindings(OperationContext ctx) {
         Object input = ctx.getInput(); // get last output
-        HashMap<String, Object> map = new HashMap<String, Object>(ctx);
+        Map<String, Object> map = new HashMap<String, Object>(ctx);
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
         map.put("This", input);
@@ -94,7 +94,7 @@ public class Scripting {
         return map;
     }
 
-    public static interface Script {
+    public interface Script {
         // protected long lastModified;
         void eval(OperationContext ctx) throws Exception;
     }

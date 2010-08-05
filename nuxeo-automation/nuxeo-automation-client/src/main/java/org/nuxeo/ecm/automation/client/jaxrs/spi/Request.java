@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;

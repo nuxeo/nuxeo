@@ -44,9 +44,9 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
  */
 public class ConnectorImpl implements Connector {
 
-    protected HttpClient http;
+    protected final HttpClient http;
 
-    protected HttpContext ctx;
+    protected final HttpContext ctx;
 
     protected String basicAuth;
 

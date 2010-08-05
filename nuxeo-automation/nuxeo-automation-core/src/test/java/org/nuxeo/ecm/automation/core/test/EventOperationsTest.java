@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.core.test;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -108,7 +109,7 @@ public class EventOperationsTest {
         service.putOperationChain(chain);
 
         EventHandler handler = new EventHandler(DocumentEventTypes.DOCUMENT_CREATED, "createNoteWhenFolderCreated");
-        HashSet<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<String>();
         set.add("Folder");
         handler.setDoctypes(set);
         reg.putEventHandler(handler);
@@ -142,7 +143,7 @@ public class EventOperationsTest {
         service.putOperationChain(chain);
 
         EventHandler handler = new EventHandler(DocumentEventTypes.DOCUMENT_CREATED, "createNoteWhenFolderCreatedPc");
-        HashSet<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<String>();
         set.add("Folder");
         handler.setDoctypes(set);
         reg.putPostCommitEventHandler(handler);

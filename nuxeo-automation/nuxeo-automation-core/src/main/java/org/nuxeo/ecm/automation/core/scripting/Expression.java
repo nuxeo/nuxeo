@@ -25,6 +25,6 @@ import org.nuxeo.ecm.automation.OperationContext;
  */
 public interface Expression extends Serializable {
 
-    public Object eval(OperationContext ctx) throws Exception;
+    Object eval(OperationContext ctx) throws Exception;
 
 }

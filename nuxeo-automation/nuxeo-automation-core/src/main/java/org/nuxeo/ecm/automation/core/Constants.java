@@ -19,7 +19,7 @@ package org.nuxeo.ecm.automation.core;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Constants {
+public class Constants {
 
     // Known input/output types
     public final static String O_DOCUMENT = "document";

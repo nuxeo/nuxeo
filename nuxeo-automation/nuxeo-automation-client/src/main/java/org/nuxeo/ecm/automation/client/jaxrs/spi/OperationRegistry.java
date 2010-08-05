@@ -54,7 +54,7 @@ public class OperationRegistry {
     }
 
     public Map<String, OperationDocumentation> getOperations() {
-        HashMap<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(
+        Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(
                 ops);
         map.putAll(chains);
         return map;

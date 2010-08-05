@@ -27,15 +27,15 @@ import java.util.Set;
  */
 public interface OperationType {
 
-    public String getId();
+    String getId();
 
-    public Class<?> getType();
+    Class<?> getType();
 
-    public Set<Class<?>> getProduces();
+    Set<Class<?>> getProduces();
 
-    public Set<Class<?>> getConsumes();
+    Set<Class<?>> getConsumes();
 
-    public Object newInstance(OperationContext ctx, Map<String, Object> args)
+    Object newInstance(OperationContext ctx, Map<String, Object> args)
             throws Exception;
 
     /**
@@ -43,5 +43,6 @@ public interface OperationType {
      *
      * @return
      */
-    public AutomationService getService();
+    AutomationService getService();
+
 }

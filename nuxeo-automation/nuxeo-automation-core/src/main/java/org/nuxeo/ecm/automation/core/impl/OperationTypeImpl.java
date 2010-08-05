@@ -19,14 +19,7 @@ package org.nuxeo.ecm.automation.core.impl;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -198,7 +191,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
-        ArrayList<Match> result = new ArrayList<Match>();
+        List<Match> result = new ArrayList<Match>();
         for (InvokableMethod m : methods) {
             int priority = m.inputMatch(in);
             if (priority > 0) {
@@ -268,7 +261,7 @@ public class OperationTypeImpl implements OperationType {
         Collections.sort(doc.params);
         // load signature
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
-        HashSet<String> collectedSigs = new HashSet<String>();
+        Collection<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
             String in = getParamDocumentationType(m.getInputType());
             String out = getParamDocumentationType(m.getOutputType());
@@ -281,7 +274,6 @@ public class OperationTypeImpl implements OperationType {
         }
         doc.signature = result.toArray(new String[result.size()]);
         return doc;
-
     }
 
     protected String getParamDocumentationType(Class<?> type) {

@@ -30,12 +30,11 @@ public interface TypeAdapter {
      * input object cannot be null. Throws an exception if the object cannot be
      * adapted.
      *
-     * @param <T>
      * @param ctx
      * @param objectToAdapt
      * @throws TypeAdaptException when the object cannot be adapted
      */
-    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
+    Object getAdaptedValue(OperationContext ctx, Object objectToAdapt)
             throws TypeAdaptException;
 
 }

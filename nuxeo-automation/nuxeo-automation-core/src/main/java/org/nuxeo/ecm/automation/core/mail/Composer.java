@@ -18,10 +18,12 @@ package org.nuxeo.ecm.automation.core.mail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -41,13 +43,13 @@ import freemarker.template.Template;
  */
 public class Composer {
 
-    private static Log log = LogFactory.getLog(Composer.class);
+    private static final Log log = LogFactory.getLog(Composer.class);
 
-    protected FreemarkerEngine engine;
+    protected final FreemarkerEngine engine;
 
     protected Mailer mailer;
 
-    protected ConcurrentMap<String, URL> urls;
+    protected final ConcurrentMap<String, URL> urls;
 
     public Composer() {
         this(null);
@@ -141,7 +143,7 @@ public class Composer {
     }
 
     public String render(String templateContent, Object ctx) throws Exception {
-        java.io.StringReader reader = new java.io.StringReader(templateContent);
+        StringReader reader = new StringReader(templateContent);
         Template temp = new Template("@inline", reader,
                 engine.getConfiguration(), "UTF-8");
         StringWriter writer = new StringWriter();
@@ -184,7 +186,7 @@ public class Composer {
 
         Composer c = new Composer(mailer);
 
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("key1", "val1");
 
         Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom(

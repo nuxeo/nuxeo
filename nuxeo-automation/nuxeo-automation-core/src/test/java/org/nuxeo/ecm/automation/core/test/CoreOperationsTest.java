@@ -71,6 +71,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -122,7 +126,7 @@ public class CoreOperationsTest {
         chain.add(RunScript.ID).set("script", "Context[\"script_title\"] = This.title;");
 
         service.run(ctx, chain);
-        Assert.assertEquals(src.getTitle(), ctx.get("script_title"));
+        assertEquals(src.getTitle(), ctx.get("script_title"));
     }
 
     /* This test is not enabled for now since the operation is disabled until fully implemented
@@ -138,13 +142,12 @@ public class CoreOperationsTest {
 
         String oldTitle = src.getTitle();
         service.run(ctx, chain);
-        Assert.assertEquals(oldTitle, ctx.get("script_title"));
-        Assert.assertEquals(((DocumentModel)src).getPropertyValue("dc:title"), "modified title");
+        assertEquals(oldTitle, ctx.get("script_title"));
+        assertEquals("modified title", src.getPropertyValue("dc:title"));
     }
 
-
     /**
-     * Create | Copy | Set Property
+     * Create | Copy | Set Property.
      * This is also testing {@link StringToProperties} adapter
      * @throws Exception
      */
@@ -155,17 +158,18 @@ public class CoreOperationsTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "Note").set("name", "note")
-            .set("properties", "dc:title=MyDoc");
+                .set("properties", "dc:title=MyDoc");
         chain.add(CopyDocument.ID).set("target", dst).set("name", "note_copy");
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
+
         doc = session.getDocument(new PathRef("/src/note"));
-        Assert.assertEquals(doc.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
     }
 
     /**
@@ -180,11 +184,12 @@ public class CoreOperationsTest {
 
         DocumentModel out = (DocumentModel)service.run(ctx, "core_chain1");
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
+
         doc = session.getDocument(new PathRef("/src/note"));
-        Assert.assertEquals(doc.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
     }
 
     /**
@@ -208,11 +213,12 @@ public class CoreOperationsTest {
 
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
+
         doc = session.getDocument(new PathRef("/src/note"));
-        Assert.assertEquals(doc.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
     }
 
     /**
@@ -234,16 +240,16 @@ public class CoreOperationsTest {
 
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
+
         doc = session.getDocument(new PathRef("/src/note"));
-        Assert.assertEquals(doc.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
     }
 
     /**
-     * Create | Move | Set Property
-     * @throws Exception
+     * Create | Move | Set Property.
      */
     @Test public void testChain2() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -252,15 +258,15 @@ public class CoreOperationsTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
         chain.add(CreateDocument.ID).set("type", "Note").set("name", "note")
-        .set("properties", new Properties("dc:title=MyDoc"));
+                .set("properties", new Properties("dc:title=MyDoc"));
         chain.add(MoveDocument.ID).set("target", dst).set("name", "note_copy");
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
         try {
             doc = session.getDocument(new PathRef("/src/note"));
             Assert.fail("Document /src/note is not supposed to exists");
@@ -270,8 +276,7 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Create | GetParent | Update Parent | Save | Pop | Lock
-     * @throws Exception
+     * Create | GetParent | Update Parent | Save | Pop | Lock.
      */
     @Test public void testChain3() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -290,19 +295,17 @@ public class CoreOperationsTest {
         chain.add(LockDocument.ID);
         chain.add(SaveDocument.ID);
 
-
-        Assert.assertNull(src.getPropertyValue("dc:description"));
+        assertNull(src.getPropertyValue("dc:description"));
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc2");
-        Assert.assertTrue(out.isLocked());
-        Assert.assertEquals("parentdoc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
+        assertTrue(out.isLocked());
+        assertEquals("parentdoc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create
-     * Context Fetch | GetChildren | Delete
-     * @throws Exception
+     * Context Fetch | Create | GetParent | Create.
+     * Context Fetch | GetChildren | Delete.
      */
     @Test public void testChain4() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -316,7 +319,7 @@ public class CoreOperationsTest {
         chain.add(CreateDocument.ID).set("type", "Note").set("name", "note2")
             .set("properties", new Properties("dc:title=MyDoc2"));
         service.run(ctx, chain);
-        Assert.assertEquals(2, session.getChildren(src.getRef()).size());
+        assertEquals(2, session.getChildren(src.getRef()).size());
 
         ctx = new OperationContext(session);
         ctx.setInput(src);
@@ -326,13 +329,12 @@ public class CoreOperationsTest {
         chain.add(DeleteDocument.ID);
         service.run(ctx, chain);
 
-        Assert.assertEquals(0, session.getChildren(src.getRef()).size());
+        assertEquals(0, session.getChildren(src.getRef()).size());
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create
-     * Context Fetch | GetChildren | Delete
-     * @throws Exception
+     * Context Fetch | Create | GetParent | Create.
+     * Context Fetch | GetChildren | Delete.
      */
     @Test public void testBlobChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -355,14 +357,14 @@ public class CoreOperationsTest {
         session.save();
 
         blob = (Blob)session.getDocument(new PathRef("/src/file1")).getPropertyValue("file:content");
-        Assert.assertEquals("blob content", blob.getString());
-        blob = (Blob)session.getDocument(new PathRef("/src/file2")).getPropertyValue("file:content");
-        Assert.assertEquals("blob content", blob.getString());
+        assertEquals("blob content", blob.getString());
 
+        blob = (Blob)session.getDocument(new PathRef("/src/file2")).getPropertyValue("file:content");
+        assertEquals("blob content", blob.getString());
     }
+
     /**
-     * Query | Update
-     * @throws Exception
+     * Query | Update.
      */
     @Test public void testChain5() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -373,17 +375,15 @@ public class CoreOperationsTest {
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "samedesc");
         chain.add(SaveDocument.ID);
         DocumentModelList list = (DocumentModelList)service.run(ctx, chain);
-        Assert.assertEquals(2, list.size());
-        Assert.assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        Assert.assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        Assert.assertEquals("samedesc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
-        Assert.assertEquals("samedesc", session.getDocument(dst.getRef()).getPropertyValue("dc:description"));
-
+        assertEquals(2, list.size());
+        assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
+        assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
+        assertEquals("samedesc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
+        assertEquals("samedesc", session.getDocument(dst.getRef()).getPropertyValue("dc:description"));
     }
 
     /**
-     * Test a chain running a sub-chain
-     * @throws Exception
+     * Test a chain running a sub-chain.
      */
     @Test public void testSubChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -393,13 +393,11 @@ public class CoreOperationsTest {
         chain.add(FetchContextDocument.ID);
         chain.add(RunDocumentChain.ID).set("id", "doc_subchain");
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
-        Assert.assertEquals("My Doc", doc.getTitle());
-
+        assertEquals("My Doc", doc.getTitle());
     }
 
     /**
-     * Test restore doc
-     * @throws Exception
+     * Test restore doc.
      */
     @Test public void testRestore() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -410,12 +408,11 @@ public class CoreOperationsTest {
         chain.add(SetVar.ID).set("name", "mydoc").set("value", new PathRef("/dst"));
         chain.add(RestoreDocumentInput.ID).set("name", "mydoc");
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
-        Assert.assertEquals(dst, doc);
+        assertEquals(dst, doc);
     }
 
     /**
-     * Test date expressions
-     * @throws Exception
+     * Test date expressions.
      */
     @Test public void testDate() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -425,12 +422,11 @@ public class CoreOperationsTest {
         chain.add(FetchContextDocument.ID);
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", Scripting.newTemplate("Now is @{CurrentDate.months(-2)}"));
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
-        Assert.assertTrue(doc.getTitle().startsWith("Now is TIMESTAMP"));
+        assertTrue(doc.getTitle().startsWith("Now is TIMESTAMP"));
     }
 
     /**
-     * Create a document and copy it by giving the destination path as a template expression
-     * @throws Exception
+     * Create a document and copy it by giving the destination path as a template expression.
      */
     @Test public void testStringToDocAdapters() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -441,20 +437,20 @@ public class CoreOperationsTest {
         chain.add(SetVar.ID).set("name", "st").set("value", "st");
         chain.add(SetVar.ID).set("name", "pathVar").set("value", Scripting.newTemplate("/d@{st}"));
         chain.add(CreateDocument.ID).set("type", "Note").set("name", "note")
-            .set("properties", "dc:title=MyDoc");
+                .set("properties", "dc:title=MyDoc");
         chain.add(CopyDocument.ID).set("target", Scripting.newExpression("pathVar")).set("name", "note_copy");
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "mydesc");
 
         DocumentModel out = (DocumentModel)service.run(ctx, chain);
 
         DocumentModel doc = session.getDocument(new PathRef("/dst/note_copy"));
-        Assert.assertEquals(out.getId(), doc.getId());
-        Assert.assertEquals(out.getPropertyValue("dc:description"), "mydesc");
-        Assert.assertEquals(out.getPropertyValue("dc:title"), "MyDoc");
-        doc = session.getDocument(new PathRef("/src/note"));
-        Assert.assertEquals(doc.getPropertyValue("dc:title"), "MyDoc");
-    }
+        assertEquals(out.getId(), doc.getId());
+        assertEquals("mydesc", out.getPropertyValue("dc:description"));
+        assertEquals("MyDoc", out.getPropertyValue("dc:title"));
 
+        doc = session.getDocument(new PathRef("/src/note"));
+        assertEquals("MyDoc", doc.getPropertyValue("dc:title"));
+    }
 
     @Test
     public void testCreateVersion() throws Exception {
@@ -477,11 +473,11 @@ public class CoreOperationsTest {
 
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
 
-        Assert.assertEquals("1.0", ctx.get("versionLabel_1"));
-        Assert.assertEquals("2.0", ctx.get("versionLabel_2"));
-        Assert.assertEquals("2.1", ctx.get("versionLabel_3"));
-        Assert.assertEquals("2.1", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
-        Assert.assertEquals("MyDoc4", doc.getTitle());
+        assertEquals("1.0", ctx.get("versionLabel_1"));
+        assertEquals("2.0", ctx.get("versionLabel_2"));
+        assertEquals("2.1", ctx.get("versionLabel_3"));
+        assertEquals("2.1", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
+        assertEquals("MyDoc4", doc.getTitle());
     }
 
     @Test
@@ -500,9 +496,9 @@ public class CoreOperationsTest {
 
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
 
-        Assert.assertEquals("1.0", ctx.get("versionLabel_1"));
-        Assert.assertEquals("1.0", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
-        Assert.assertEquals("MyDoc2", doc.getTitle());
+        assertEquals("1.0", ctx.get("versionLabel_1"));
+        assertEquals("1.0", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
+        assertEquals("MyDoc2", doc.getTitle());
     }
 
     @Test
@@ -525,11 +521,11 @@ public class CoreOperationsTest {
 
         DocumentModel doc = (DocumentModel)service.run(ctx, chain);
 
-        Assert.assertEquals("1.0", ctx.get("versionLabel_1"));
-        Assert.assertEquals("1.0", ctx.get("versionLabel_2"));
-        Assert.assertEquals("1.0", ctx.get("versionLabel_3"));
-        Assert.assertEquals("1.0", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
-        Assert.assertEquals("MyDoc3", doc.getTitle());
+        assertEquals("1.0", ctx.get("versionLabel_1"));
+        assertEquals("1.0", ctx.get("versionLabel_2"));
+        assertEquals("1.0", ctx.get("versionLabel_3"));
+        assertEquals("1.0", Framework.getLocalService(VersioningManager.class).getVersionLabel(doc));
+        assertEquals("MyDoc3", doc.getTitle());
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }

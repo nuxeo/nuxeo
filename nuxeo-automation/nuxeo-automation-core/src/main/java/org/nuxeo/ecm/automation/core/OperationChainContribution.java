@@ -33,11 +33,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
 
+import static org.nuxeo.ecm.automation.core.Constants.*;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("chain")
-public class OperationChainContribution implements Constants {
+public class OperationChainContribution {
 
     @XNode("@id")
     protected String id;
