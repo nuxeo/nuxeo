@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,8 +13,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     bstefanescu, jcarsique
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.osgi.jboss;
@@ -48,19 +48,26 @@ import org.osgi.framework.FrameworkEvent;
  * <p>
  * If you need to use this service inside multiple EARs you must use isolated
  * class loaders.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBossOSGiAdapterMBean {
+public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
+        JBossOSGiAdapterMBean {
 
     private static JBossOSGiAdapter instance;
+
+    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+
+    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
     private OSGiAdapter osgi;
 
     /**
      * This method is safe only when using isolated EARs if there are multiple
      * nuxeo EARs in the system.
-     *
+     * 
      * @return the instance or null if not yet instantiated
      */
     public static JBossOSGiAdapter getInstance() {
@@ -75,7 +82,8 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
      */
     public static DeploymentInfo getEARDeployment() {
         if (instance == null) {
-            throw new IllegalStateException("JBossOSGiAdapter was not initialized");
+            throw new IllegalStateException(
+                    "JBossOSGiAdapter was not initialized");
         }
         try {
             return instance.getDeploymentInfo().parent;
@@ -89,20 +97,19 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     }
 
     @SuppressWarnings("unchecked")
-    public BundleImpl installBundle(String symbolicName, DeploymentInfo di) throws BundleException {
+    public BundleImpl installBundle(String symbolicName, DeploymentInfo di)
+            throws BundleException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(di.ucl);
         try {
             log.info("Installing OSGi bundle: " + di.url);
             BundleImpl bundle;
             if ("org.nuxeo.osgi".equals(symbolicName)) {
-                bundle = new SystemBundle(osgi, new JBossBundleFile(di),
-                        di.ucl);
-                osgi.setSystemBundle((SystemBundle)bundle);
-                log.info("Installed system bundle: "+di.shortName);
+                bundle = new SystemBundle(osgi, new JBossBundleFile(di), di.ucl);
+                osgi.setSystemBundle((SystemBundle) bundle);
+                log.info("Installed system bundle: " + di.shortName);
             } else {
-                bundle = new BundleImpl(osgi, new JBossBundleFile(di),
-                    di.ucl);
+                bundle = new BundleImpl(osgi, new JBossBundleFile(di), di.ucl);
             }
             di.context.put("OSGI_BUNDLE", bundle);
             osgi.install(bundle);
@@ -112,7 +119,8 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         }
     }
 
-    public void uninstallBundle(String symbolicName, DeploymentInfo di) throws BundleException {
+    public void uninstallBundle(String symbolicName, DeploymentInfo di)
+            throws BundleException {
         BundleImpl bundle = (BundleImpl) di.context.remove("OSGI_BUNDLE");
         if (bundle != null) {
             log.info("Uninstalling OSGi bundle: " + di.url);
@@ -130,15 +138,38 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     protected void startService() throws Exception {
         super.startService();
         instance = this;
+        String dataDir = System.getProperty(NUXEO_DATA_DIR);
+        String logDir = System.getProperty(NUXEO_LOG_DIR);
+        String tmpDir = System.getProperty(NUXEO_TMP_DIR);
+        File workingDir;
         ServerConfig jbossConfig = ServerConfigLocator.locate();
-        File workingDir =  new File(jbossConfig.getServerDataDir(), "NXRuntime");
-        File installDir = FileUtils.getFileFromURL(getEARDeployment().url);
-        File configDir = new File(installDir, "config"); // TODO: must not use a directory from the ear.
+        if (dataDir != null && !dataDir.isEmpty()) {
+            workingDir = new File(dataDir);
+        } else {
+            workingDir = jbossConfig.getServerDataDir();
+        }
+        // Should not add NXRuntime directory in path
+        workingDir = new File(workingDir, "NXRuntime");
         // initialize the Environment
         Environment env = new Environment(workingDir);
+
+        // Data should use a different directory than "home"
+        env.setData(workingDir);
+
+        File installDir = FileUtils.getFileFromURL(getEARDeployment().url);
+        // TODO: must not use a directory from the ear.
+        File configDir = new File(installDir, "config");
         env.setConfig(configDir);
-        env.setLog( jbossConfig.getServerLogDir());
-        env.setTemp(jbossConfig.getServerTempDir());
+        if (logDir != null && !logDir.isEmpty()) {
+            env.setLog(new File(logDir));
+        } else {
+            env.setLog(jbossConfig.getServerLogDir());
+        }
+        if (tmpDir != null && !tmpDir.isEmpty()) {
+            env.setTemp(new File(tmpDir));
+        } else {
+            env.setTemp(jbossConfig.getServerTempDir());
+        }
         env.setHostApplicationName(Environment.JBOSS_HOST);
         Package pkg = Package.getPackage("org.jboss");
         if (pkg == null) {
@@ -156,12 +187,13 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         if (addr != null) {
             osgi.setProperty("nuxeo.bind.address", addr);
         }
-        //osgi.setProperty("HOST_ADAPTER", null); //TODO
+        // osgi.setProperty("HOST_ADAPTER", null); //TODO
 
-//        DeploymentInfo di = getDeploymentInfo();
-//        SystemBundle systemBundle = new SystemBundle(osgi, new JBossBundleFile(di),
-//                di.ucl);
-//        osgi.setSystemBundle(systemBundle);
+        // DeploymentInfo di = getDeploymentInfo();
+        // SystemBundle systemBundle = new SystemBundle(osgi, new
+        // JBossBundleFile(di),
+        // di.ucl);
+        // osgi.setSystemBundle(systemBundle);
     }
 
     @Override
@@ -181,23 +213,24 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         BundleImpl[] bundles = osgi.getInstalledBundles();
         Arrays.sort(bundles, new Comparator<BundleImpl>() {
             public int compare(BundleImpl o1, BundleImpl o2) {
-                return (int)(o1.getStartupTime() - o2.getStartupTime());
+                return (int) (o1.getStartupTime() - o2.getStartupTime());
             }
         });
         StringBuilder buf = new StringBuilder();
         double total = 0;
         for (BundleImpl bundle : bundles) {
-            buf.append(bundle.getBundleId()).append(": ")
-                    .append(bundle.getSymbolicName()).append(" [ state: ")
-                    .append(bundle.getState());
+            buf.append(bundle.getBundleId()).append(": ").append(
+                    bundle.getSymbolicName()).append(" [ state: ").append(
+                    bundle.getState());
             double tm = bundle.getStartupTime();
-            buf.append("; startup time: ").append(tm/1000);
+            buf.append("; startup time: ").append(tm / 1000);
             total += tm;
             buf.append(" ]\n");
         }
-        buf.append("\n------------------------------------------------------------\nDeployed ")
-            .append(bundles.length)
-            .append("  bundles in ").append(total/1000).append(" sec.");
+        buf.append(
+                "\n------------------------------------------------------------\nDeployed ").append(
+                bundles.length).append("  bundles in ").append(total / 1000).append(
+                " sec.");
         return buf.toString();
     }
 
@@ -212,9 +245,11 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     @SuppressWarnings("unchecked")
     public void handleNotification2(Notification notification, Object handback) {
         String type = notification.getType().intern();
-        // test for the the server started notification to send the event to the osgi framework
+        // test for the the server started notification to send the event to the
+        // osgi framework
         if (type == Server.START_NOTIFICATION_TYPE) {
-            osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, osgi.getSystemBundle(), null));
+            osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                    osgi.getSystemBundle(), null));
             return;
         }
 
@@ -225,7 +260,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
                     || di.url.sameFile(getDeploymentInfo().url)) {
                 return;
             }
-            //TODO: components from runtime bundle will be deployed twice..
+            // TODO: components from runtime bundle will be deployed twice..
             if (type == SubDeployer.CREATE_NOTIFICATION) {
                 // check for OSGi bundles
                 Manifest mf = di.getManifest();
@@ -242,8 +277,10 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
                             } else {
                                 classPath = val;
                             }
-                            // update classpath so that the main deployer deploys these ones
-                            mainAttributes.put(Attributes.Name.CLASS_PATH, classPath);
+                            // update classpath so that the main deployer
+                            // deploys these ones
+                            mainAttributes.put(Attributes.Name.CLASS_PATH,
+                                    classPath);
                         }
                     }
                 }

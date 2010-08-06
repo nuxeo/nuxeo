@@ -74,6 +74,12 @@ public class FrameworkLoader {
 
     public static final String ARGS = "org.nuxeo.app.args";
 
+    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+
+    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
 
     private static boolean isInitialized;
@@ -246,26 +252,40 @@ public class FrameworkLoader {
         if (v != null) {
             env.setHostApplicationVersion((String) hostEnv.get(HOST_VERSION));
         }
+        String systemParam = System.getProperty(NUXEO_DATA_DIR);
         v = (String) hostEnv.get(DATA_DIR);
-        if (v != null) {
+        if (systemParam != null) {
+            env.setData(new File(systemParam));
+        } else if (v != null) {
             env.setData(new File(home, v));
         }
+
+        systemParam = System.getProperty(NUXEO_LOG_DIR);
         v = (String) hostEnv.get(LOG_DIR);
-        if (v != null) {
-            env.setData(new File(home, v));
+        if (systemParam != null) {
+            env.setLog(new File(systemParam));
+        } else if (v != null) {
+            env.setLog(new File(home, v));
         }
+
+        systemParam = System.getProperty(NUXEO_TMP_DIR);
         v = (String) hostEnv.get(TMP_DIR);
-        if (v != null) {
-            env.setData(new File(home, v));
+        if (systemParam != null) {
+            env.setTemp(new File(systemParam));
+        } else if (v != null) {
+            env.setTemp(new File(home, v));
         }
+
         v = (String) hostEnv.get(WEB_DIR);
         if (v != null) {
-            env.setData(new File(home, v));
+            env.setWeb(new File(home, v));
         }
+
         v = (String) hostEnv.get(CONFIG_DIR);
         if (v != null) {
-            env.setData(new File(home, v));
+            env.setConfig(new File(home, v));
         }
+
         v = (String) hostEnv.get(ARGS);
         if (v != null) {
             env.setCommandLineArguments(v.split("\\s+"));

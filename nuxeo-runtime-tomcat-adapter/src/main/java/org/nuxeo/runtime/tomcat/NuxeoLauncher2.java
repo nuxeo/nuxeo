@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.runtime.tomcat;
 
@@ -23,6 +23,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.ContainerBase;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
+import org.nuxeo.osgi.application.loader.FrameworkLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,6 +35,11 @@ public class NuxeoLauncher2 implements LifecycleListener {
 
     protected FrameworkBootstrap bootstrap;
 
+    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+
+    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
     public void setHome(String home) {
         this.home = home;
@@ -59,6 +65,9 @@ public class NuxeoLauncher2 implements LifecycleListener {
 
                 File homeDir = resolveHomeDirectory();
                 bootstrap = new FrameworkBootstrap(cl, homeDir);
+                bootstrap.env().put(FrameworkLoader.DATA_DIR, System.getProperty(NUXEO_DATA_DIR));
+                bootstrap.env().put(FrameworkLoader.LOG_DIR, System.getProperty(NUXEO_LOG_DIR));
+                bootstrap.env().put(FrameworkLoader.TMP_DIR, System.getProperty(NUXEO_TMP_DIR));
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
                 bootstrap.initialize();
