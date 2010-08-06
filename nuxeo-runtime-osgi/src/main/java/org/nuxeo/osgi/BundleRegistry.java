@@ -30,17 +30,18 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 public class BundleRegistry {
 
     private static final Log log = LogFactory.getLog(BundleRegistry.class);
 
     private final Map<Long, BundleRegistration> bundlesById;
-    private final Map<String, BundleRegistration> bundles;
-    private final Map<String, Set<BundleRegistration>> pendings;
 
+    private final Map<String, BundleRegistration> bundles;
+
+    private final Map<String, Set<BundleRegistration>> pendings;
 
     public BundleRegistry() {
         bundlesById = new HashMap<Long, BundleRegistration>();
@@ -68,7 +69,7 @@ public class BundleRegistry {
     public synchronized BundleImpl[] getInstalledBundles() {
         BundleImpl[] bundles = new BundleImpl[this.bundles.size()];
         int i = 0;
-        for (BundleRegistration reg :  this.bundles.values()) {
+        for (BundleRegistration reg : this.bundles.values()) {
             bundles[i++] = reg.bundle;
         }
         return bundles;
@@ -79,11 +80,14 @@ public class BundleRegistry {
             BundleRegistration reg = bundles.get(bundle.getSymbolicName());
             if (reg == null) {
                 register(new BundleRegistration(bundle));
+            } else {
+                register(reg);
             }
         }
     }
 
-    public synchronized void uninstall(BundleImpl bundle) throws BundleException {
+    public synchronized void uninstall(BundleImpl bundle)
+            throws BundleException {
         if (bundle.getState() != Bundle.UNINSTALLED) {
             BundleRegistration reg = bundles.get(bundle.getSymbolicName());
             if (reg != null) {
@@ -94,10 +98,12 @@ public class BundleRegistry {
 
     private void register(BundleRegistration reg) throws BundleException {
         String str = null; // (FIXME) disable MANIFEST requirements temporarily
-        //String str = (String) reg.bundle.getHeaders().get(Constants.REQUIRE_BUNDLE);
+        // String str = (String)
+        // reg.bundle.getHeaders().get(Constants.REQUIRE_BUNDLE);
         if (str != null) {
             String name = reg.bundle.getSymbolicName();
-            StringTokenizer tokenizer = new StringTokenizer(str.trim(), ", \t\n\r\f");
+            StringTokenizer tokenizer = new StringTokenizer(str.trim(),
+                    ", \t\n\r\f");
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
                 // remove require properties if any
@@ -176,12 +182,15 @@ public class BundleRegistry {
     }
 
     public void shutdown() {
-        BundleRegistration[] regs = bundles.values().toArray(new BundleRegistration[bundles.size()]);
+        BundleRegistration[] regs = bundles.values().toArray(
+                new BundleRegistration[bundles.size()]);
         for (BundleRegistration reg : regs) {
             try {
                 reg.bundle.shutdown();
             } catch (BundleException e) {
-                log.error("Failed to stop bundle "+reg.bundle.getSymbolicName(), e);
+                log.error(
+                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
+                        e);
             }
         }
     }
