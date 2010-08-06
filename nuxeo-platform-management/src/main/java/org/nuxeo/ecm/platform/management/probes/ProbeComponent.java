@@ -197,7 +197,7 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
         return getProbesInSuccess().contains(probe.shortcutName);
     }
 
-    public Collection<ProbeInfo> getRunWithSucessProbesInfo() {
+    public Collection<ProbeInfo> getRunWithSuccessProbesInfo() {
         return runnerRegistry.succeedProbesContext;
     }
 

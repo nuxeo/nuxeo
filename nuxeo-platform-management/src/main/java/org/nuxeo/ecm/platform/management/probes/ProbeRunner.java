@@ -32,7 +32,7 @@ public interface ProbeRunner {
      */
     boolean runProbe(ProbeInfo probe);
     
-    Collection<ProbeInfo> getRunWithSucessProbesInfo();
+    Collection<ProbeInfo> getRunWithSuccessProbesInfo();
     
     Set<String> getProbeNames() ;
     
