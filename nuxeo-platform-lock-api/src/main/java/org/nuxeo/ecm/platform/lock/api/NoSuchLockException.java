@@ -22,7 +22,6 @@ import java.net.URI;
  * it.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class NoSuchLockException extends LockException {
     private static final long serialVersionUID = 1L;
@@ -30,4 +29,5 @@ public class NoSuchLockException extends LockException {
     public NoSuchLockException(Throwable e, URI r) {
         super("No Such lock", e, r);
     }
+
 }

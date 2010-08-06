@@ -20,21 +20,18 @@ import java.io.Serializable;
 import java.net.URI;
 
 /**
- * 
- * 
- * Coordinate two or more clients for operating on a resource.` Clients ask the
+ * Coordinate two or more clients for operating on a resource. Clients ask the
  * coordinator for a temporary lock on a resource. Coordinator let the winner
  * operating on the resource and block the others. If the winner do not return
  * to the coordinator in the delay he gave, one of the other takes the place and
  * the game is replayed.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public interface LockCoordinator {
 
     /**
-     * Enter in the competition. Return immediatly if the resource is availble.
+     * Enter in the competition. Return immediately if the resource is available.
      * Otherwise wait for the expiration.
      * 
      * @param resource

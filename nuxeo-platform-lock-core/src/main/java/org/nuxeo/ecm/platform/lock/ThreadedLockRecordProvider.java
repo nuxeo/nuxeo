@@ -41,8 +41,8 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
         service = Executors.newSingleThreadExecutor();
     }
 
-    public void disactivate() {
-        delegate.disactivate();
+    public void deactivate() {
+        delegate.deactivate();
         service.shutdown();
         delegate = null;
         service = null;

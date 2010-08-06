@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  * Generic lock exception.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class LockException extends ClientException {
 

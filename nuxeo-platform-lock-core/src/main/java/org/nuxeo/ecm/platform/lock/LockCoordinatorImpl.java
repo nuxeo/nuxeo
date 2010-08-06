@@ -49,7 +49,7 @@ public class LockCoordinatorImpl implements LockCoordinator,
         provider = component.provider;
     }
 
-    public void disactivate() {
+    public void deactivate() {
 
     }
 

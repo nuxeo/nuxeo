@@ -48,7 +48,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
         persistenceProvider = openProvider();
     }
 
-    public void disactivate() {
+    public void deactivate() {
         persistenceProvider.closePersistenceUnit();
         persistenceProvider = null;
     }

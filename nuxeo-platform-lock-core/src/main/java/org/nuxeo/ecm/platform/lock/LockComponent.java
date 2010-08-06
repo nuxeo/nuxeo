@@ -55,8 +55,8 @@ public class LockComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        coordinator.disactivate();
-        provider.disactivate();
+        coordinator.deactivate();
+        provider.deactivate();
         coordinator = null;
         provider = null;
         super.deactivate(context);

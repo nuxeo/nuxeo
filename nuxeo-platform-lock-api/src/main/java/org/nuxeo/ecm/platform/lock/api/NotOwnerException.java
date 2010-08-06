@@ -22,7 +22,6 @@ import java.net.URI;
  * but couldn't as the lock owner is not the current user.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class NotOwnerException extends LockException {
 

@@ -22,7 +22,6 @@ import java.util.Date;
  * Lock information.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public interface LockInfo {
 
@@ -35,4 +34,5 @@ public interface LockInfo {
     boolean isExpired();
 
     URI getRunning();
+
 }

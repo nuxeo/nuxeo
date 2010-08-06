@@ -22,14 +22,13 @@ import java.net.URI;
  * locked.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class AlreadyLockedException extends LockException {
 
     private static final long serialVersionUID = 1L;
 
     public AlreadyLockedException(URI resource) {
-        super("aleady locked", resource);
+        super("already locked", resource);
     }
 
 }
