@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Florent Guillaume, jcarsique
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -46,7 +47,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- *
+ * 
  * @author Florent Guillaume
  */
 public class DefaultBinaryManager implements BinaryManager {
@@ -85,12 +86,19 @@ public class DefaultBinaryManager implements BinaryManager {
             base = new File(path);
         } else {
             // relative
-            String home = Framework.getRuntime().getHome().getPath();
-            if (home.endsWith("/") || home.endsWith("\\")) {
-                home = home.substring(0, home.length() - 1);
-            }
+            File home = Environment.getDefault().getData();
             base = new File(home, path);
+
+            // Backward compliance with versions before 5.4 (NXP-5370)
+            File oldBase = new File(Framework.getRuntime().getHome().getPath(),
+                    path);
+            if (oldBase.exists()) {
+                log.warn("Old binaries path used (NXP-5370). Please move "
+                        + oldBase + " to " + base);
+                base = oldBase;
+            }
         }
+
         log.info("Repository '"
                 + repositoryDescriptor.name
                 + "' using "
@@ -176,7 +184,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
     /**
      * Gets a file representing the storage for a given digest.
-     *
+     * 
      * @param digest the digest
      * @param createDir {@code true} if the directory containing the file itself
      *            must be created

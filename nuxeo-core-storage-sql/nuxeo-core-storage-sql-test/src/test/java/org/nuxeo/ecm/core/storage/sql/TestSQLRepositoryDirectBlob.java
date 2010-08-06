@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Florent Guillaume
+ *     Florent Guillaume, jcarsique
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -207,7 +208,7 @@ class FileManager {
     public FileManager() {
         // from inside Nuxeo components, this can be used
         // otherwise use a hardcoded string or parameter to that directory
-        File rootDir = new File(Framework.getRuntime().getHome(), "binaries");
+        File rootDir = new File(Environment.getDefault().getData(), "binaries");
         tmpDir = new File(rootDir, "tmp");
         dataDir = new File(rootDir, "data");
         tmpDir.mkdirs();
