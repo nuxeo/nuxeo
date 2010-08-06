@@ -60,7 +60,6 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(SANITIZED_HTML, note);
     }
 
-
     @Test
     public void sanitizeWebPage() throws Exception {
 
@@ -97,7 +96,6 @@ public class TestHtmlSanitizerServiceImpl {
         String webpage4 = (String) doc4.getPropertyValue("webp:content");
         Assert.assertFalse(WIKI_MARKUP.equals(webpage4));
         session.save();
-
     }
 
 }

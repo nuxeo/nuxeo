@@ -59,4 +59,5 @@ public class HtmlSanitizerDescriptor {
         buf.append(')');
         return buf.toString();
     }
+
 }

@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener that sanitizes some HMTL fields to remove potential cross-site
+ * Listener that sanitizes some HTML fields to remove potential cross-site
  * scripting attacks in them.
  */
 public class HtmlSanitizerListener implements EventListener {

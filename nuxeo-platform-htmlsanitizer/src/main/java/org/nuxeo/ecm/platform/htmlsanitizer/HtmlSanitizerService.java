@@ -28,15 +28,15 @@ public interface HtmlSanitizerService {
     /**
      * Sanitizes a document's fields, depending on the service configuration.
      */
-    public void sanitizeDocument(DocumentModel doc) throws ClientException;
+    void sanitizeDocument(DocumentModel doc) throws ClientException;
 
     /**
      * Sanitizes a string.
      *
-     * @param string the string to sanitize
+     * @param html the string to sanitize
      * @param info additional info logged when something is sanitized
      * @return the sanitized string
      */
-    public String sanitizeString(String html, String info);
+    String sanitizeString(String html, String info);
 
 }
