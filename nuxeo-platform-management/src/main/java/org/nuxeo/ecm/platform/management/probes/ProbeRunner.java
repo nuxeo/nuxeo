@@ -23,13 +23,13 @@ public interface ProbeRunner {
     
     /**
      * Runs all probes
-     * */
+     */
     boolean run() ;
     
     /**
-     * Runs a probe
+     * Runs a probe.
      * @return true if probe succeeds, false if not
-     * */
+     */
     boolean runProbe(ProbeInfo probe);
     
     Collection<ProbeInfo> getRunWithSucessProbesInfo();

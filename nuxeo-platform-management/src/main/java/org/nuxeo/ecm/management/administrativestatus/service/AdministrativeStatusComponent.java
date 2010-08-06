@@ -51,14 +51,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Used to control the server administrative status: the status of the server
- * can be locked/unlocked
+ * can be locked/unlocked.
  * 
  * @author Mariana Cedica
  */
 public class AdministrativeStatusComponent extends DefaultComponent implements
         AdministrativeStatusService {
 
-    private static Log log = LogFactory.getLog(AdministrativeStatusComponent.class);
+    private static final Log log = LogFactory.getLog(AdministrativeStatusComponent.class);
 
     private DocumentModel statusDoc;
 
@@ -74,7 +74,6 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
             log.error("Unable to lock server", e);
             return false;
         }
-
     }
 
     public boolean unlockServer(CoreSession session) {
@@ -186,7 +185,6 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
             } else {
                 statusDoc = session.getDocument(statusDocRef);
             }
-
         }
 
         private DocumentModel getOrCreateAdministrativeContainter(

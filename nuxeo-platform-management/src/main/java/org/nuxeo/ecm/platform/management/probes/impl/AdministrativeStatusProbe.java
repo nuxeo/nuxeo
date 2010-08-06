@@ -24,8 +24,7 @@ import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Retrieves the administrative status of the server
+ * Retrieves the administrative status of the server.
  * 
  * @author Mariana Cedica
  */

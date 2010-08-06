@@ -31,7 +31,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
         ProbeSchedulerMBean, ProbeRunner {
@@ -190,18 +189,12 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
 
     public boolean run() {
         runnerRegistry.doRun();
-        if (getProbesInErrorCount() > 0) {
-            return false;
-        }
-        return true;
+        return getProbesInErrorCount() <= 0;
     }
 
     public boolean runProbe(ProbeInfo probe) {
         runnerRegistry.doRunProbe(probe);
-        if (getProbesInSuccess().contains(probe.shortcutName)) {
-            return true;
-        }
-        return false;
+        return getProbesInSuccess().contains(probe.shortcutName);
     }
 
     public Collection<ProbeInfo> getRunWithSucessProbesInfo() {

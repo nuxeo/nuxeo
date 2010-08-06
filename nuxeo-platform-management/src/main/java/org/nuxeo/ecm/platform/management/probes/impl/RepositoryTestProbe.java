@@ -25,13 +25,12 @@ import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
 
 public class RepositoryTestProbe implements Probe {
 
-    private static final String queryString = "Select * from Document where ecm:path STARTSWITH '/'";
+    private static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/'";
 
     ProbeStatus status;
 
     public void init(Object service) {
         // TODO Auto-generated method stub
-
     }
 
     public void runProbe(CoreSession session) throws ClientException {
@@ -41,7 +40,6 @@ public class RepositoryTestProbe implements Probe {
             status.setStatus(status.getStatus() + " "
                     + documentModel.getTitle());
         }
-
     }
 
     public ProbeStatus getProbeStatus() {

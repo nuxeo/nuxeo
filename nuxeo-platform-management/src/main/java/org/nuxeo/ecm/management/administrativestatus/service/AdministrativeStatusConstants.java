@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.management.administrativestatus.service;
 
-public interface AdministrativeStatusConstants {
+public class AdministrativeStatusConstants {
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER_TYPE = "AdministrativeStatusContainer";
 
@@ -41,5 +41,8 @@ public interface AdministrativeStatusConstants {
     public static final String SEVER_LOCKED_EVENT = "serverLocked";
     
     public static final String SERVER_UNLOCKED_EVENT = "serverUnlocked";
+
+    private AdministrativeStatusConstants() {
+    }
 
 }

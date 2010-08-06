@@ -19,36 +19,33 @@ package org.nuxeo.ecm.management.administrativestatus.service;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
-
 /**
  * Used to control the server administrative status: the status of the server
- * can be locked/unlocked
+ * can be locked/unlocked.
  * 
  * @author Mariana Cedica
  */
 public interface AdministrativeStatusService {
 
     /**
-     * Locks the server
+     * Locks the server.
      * 
      * @return true if the locked succeed
      */
     boolean lockServer(CoreSession session);
 
     /**
-     * Unlocks the server
+     * Unlocks the server.
      * 
      * @return true if the unlocked succeed
      */
     boolean unlockServer(CoreSession session);
 
-    
     /**
      * @return the server status
      */
     String getServerStatus(CoreSession session) throws ClientException;
-    
-    
+
     String getServerInstanceName() throws ClientException;
 
 }

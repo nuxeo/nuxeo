@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class RepositoryProbe implements Probe {
 
@@ -54,7 +53,6 @@ public class RepositoryProbe implements Probe {
         session.removeDocument(model.getRef());
         session.save();
         status.setStatus(status.getStatus() + " and  removed it ");
-
     }
 
     public void init(Object service) {

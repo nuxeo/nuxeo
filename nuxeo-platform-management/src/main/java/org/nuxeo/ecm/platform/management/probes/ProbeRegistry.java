@@ -27,14 +27,8 @@ import org.nuxeo.ecm.platform.management.probes.ProbeInfo;
 
 class ProbeRegistry {
 
-    /**
-     * 
-     */
     private final ProbeComponent probeComponent;
 
-    /**
-     * @param probeComponent
-     */
     ProbeRegistry(ProbeComponent probeComponent) {
         this.probeComponent = probeComponent;
     }
@@ -58,9 +52,9 @@ class ProbeRegistry {
         }
         probe.init(service);
         ProbeInfo context = new ProbeInfo(this.probeComponent, probe, "default");
-        this.probeComponent.managementPublisher.doQualifyNames(context,
+        probeComponent.managementPublisher.doQualifyNames(context,
                 descriptor);
-        this.probeComponent.managementPublisher.doPublishContext(context);
+        probeComponent.managementPublisher.doPublishContext(context);
         scheduledProbesContext.put(probeClass, context);
     }
 
@@ -71,7 +65,7 @@ class ProbeRegistry {
             throw new IllegalArgumentException("not registered probe"
                     + descriptor);
         }
-        this.probeComponent.managementPublisher.doUnpublishContext(context);
+        probeComponent.managementPublisher.doUnpublishContext(context);
     }
 
     protected void doRunWithSafeClassLoader() {
