@@ -242,6 +242,8 @@
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="core-*" />
       <!-- jetty is needed by vcs remote -->
       <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
+      <!-- jetty-naming has jndi properties conflicting with Tomcat -->
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jetty-naming*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="jsp-api*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib"
                includes="servlet-api-*" />
