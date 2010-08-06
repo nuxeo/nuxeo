@@ -27,10 +27,9 @@ import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 
 /**
- * Testing the lock persistence provider (using jpa and hibernate)
+ * Testing the lock persistence provider (using jpa and hibernate).
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class TestLockRecord extends TestCase {
 
@@ -52,13 +51,10 @@ public class TestLockRecord extends TestCase {
                 return testPersistenceProvider;
             }
         };
-
     }
 
     /**
      * Simple test of the lock record provider: insert, retrieve, remove.
-     * 
-     * @throws Exception
      */
     public void testLockRecordProvider() throws Exception {
 

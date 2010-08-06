@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.lock.api.LockInfo;
  * it.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class LockInfoImpl implements LockInfo {
 

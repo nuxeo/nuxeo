@@ -35,10 +35,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * JPA implementation of the LockRecordProvider to get/create/update/delete
  * lockRecord. This class is using its own transaction manager (need to be run
- * in its own thread if already one running)
+ * in its own thread if already one running).
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class JPALockRecordProvider implements LockRecordProvider,
         LockComponentDelegate {
@@ -52,7 +51,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
     public void disactivate() {
         persistenceProvider.closePersistenceUnit();
         persistenceProvider = null;
-    };
+    }
 
     PersistenceProvider persistenceProvider;
 
@@ -78,7 +77,6 @@ public class JPALockRecordProvider implements LockRecordProvider,
             try {
                 persistenceProvider.closePersistenceUnit();
             } catch (Throwable t) {
-                ;
             }
             return persistenceProvider;
         } finally {
@@ -91,7 +89,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     protected EntityManager open(boolean start) {
         EntityManager em = PersistenceProviderFriend.acquireEntityManager(persistenceProvider());
-        if (start == true) {
+        if (start) {
             em.getTransaction().begin();
         }
         return em;
@@ -186,7 +184,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
      */
     public LockRecord createRecord(URI self, URI resource, String comment,
             long timeout) {
-        LockRecord record = null;
+        LockRecord record;
         EntityManager em = open(true);
         try {
             Date now = new Date();

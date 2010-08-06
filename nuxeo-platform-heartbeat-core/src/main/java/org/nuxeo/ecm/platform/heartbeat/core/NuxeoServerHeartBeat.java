@@ -99,7 +99,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
                     getMyURI(), new Date()).runUnrestricted();
         } catch (ClientException e) {
             throw new Error(
-                    "An error occured while starting creating/updating the server start",
+                    "An error occurred while starting creating/updating the server start",
                     e);
         }
         // start a schedule that regulary update the current server start
@@ -113,16 +113,17 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
                             getMyURI(), null).runUnrestricted();
                 } catch (ClientException e) {
                     log.error(
-                            "An error occured while trying to update the server keep alive",
+                            "An error occurred while trying to update the server keep alive",
                             e);
                 }
 
             }
         }, delay, delay);
-        log.info("Heatbeat scheduler started");
+        log.info("Heartbeat scheduler started");
     }
 
     class CreateOrUpdateServerInfo extends SafeUnrestrictedSessionRunner {
+
         URI serveruri;
 
         Date startTime;
@@ -171,7 +172,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
     }
 
     public List<ServerInfo> getInfos() {
-        ArrayList<ServerInfo> serverinfos = new ArrayList<ServerInfo>();
+        List<ServerInfo> serverinfos = new ArrayList<ServerInfo>();
         try {
             String defaultRepositoryName = Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepository().getName();
@@ -183,10 +184,10 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
             }
         } catch (ClientException e) {
             throw new Error(
-                    "An unexpected error occured while trying to get infos", e);
+                    "An unexpected error occurred while trying to get infos", e);
         } catch (URISyntaxException e) {
             throw new Error(
-                    "An unexpected error occured while trying to get infos", e);
+                    "An unexpected error occurred while trying to get infos", e);
         }
         return serverinfos;
     }

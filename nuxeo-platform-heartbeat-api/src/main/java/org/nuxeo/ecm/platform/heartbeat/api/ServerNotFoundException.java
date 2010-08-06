@@ -17,17 +17,15 @@
 package org.nuxeo.ecm.platform.heartbeat.api;
 
 /**
- * Exception thrown when no server are found
+ * Exception thrown when no server are found.
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
 public class ServerNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     public ServerNotFoundException() {
-        super();
     }
 
     public ServerNotFoundException(String arg0, Throwable arg1) {

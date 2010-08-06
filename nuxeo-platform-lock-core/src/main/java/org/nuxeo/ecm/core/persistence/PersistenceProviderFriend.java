@@ -22,16 +22,15 @@ import javax.persistence.EntityManager;
  * (without starting the transaction). Friend that can access to it.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class PersistenceProviderFriend {
 
     private PersistenceProviderFriend() {
-        ;
     }
 
     public static EntityManager acquireEntityManager(
             PersistenceProvider provider) {
         return provider.doAcquireEntityManager();
     }
+
 }

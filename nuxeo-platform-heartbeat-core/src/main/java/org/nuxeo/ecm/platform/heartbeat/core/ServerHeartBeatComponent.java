@@ -20,12 +20,12 @@ import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * Framework for accessing to running nuxeo server in a cluster using heartbeat
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
 public class ServerHeartBeatComponent extends DefaultComponent {
 
@@ -36,7 +36,7 @@ public class ServerHeartBeatComponent extends DefaultComponent {
         super.activate(context);
         heartbeat = new NuxeoServerHeartBeat();
 
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new org.osgi.framework.FrameworkListener() {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
 
             public void frameworkEvent(FrameworkEvent event) {
                 if(event.getType() != FrameworkEvent.STARTED) {

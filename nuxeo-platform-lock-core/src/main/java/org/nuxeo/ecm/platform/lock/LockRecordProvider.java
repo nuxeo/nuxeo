@@ -22,7 +22,6 @@ import java.net.URI;
  * LockRecordProvider api for dealing with lock record.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public interface LockRecordProvider {
 

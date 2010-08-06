@@ -31,10 +31,9 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
- * JPA Entity for a lock record
+ * JPA Entity for a lock record.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 @Entity(name = "Lock")
 @Table(name = "NX_LOCK")

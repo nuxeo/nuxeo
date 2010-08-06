@@ -25,12 +25,11 @@ import java.util.List;
  * jobs orphans.
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
 public interface ServerHeartBeat {
 
     /**
-     * stop and restart
+     * Stop and restart.
      *
      * @throws IllegalStateException
      */
@@ -44,14 +43,14 @@ public interface ServerHeartBeat {
     void stop() throws IllegalStateException;
 
     /**
-     * Starting the heat beat updates
+     * Starting the heat beat updates.
      *
      * @throws IllegalStateException
      */
     void start(long delay) throws IllegalStateException;
 
     /**
-     * is the heart beat updates process started and running ?
+     * Is the heart beat updates process started and running?
      *
      * @return
      */
@@ -64,14 +63,14 @@ public interface ServerHeartBeat {
     long getHeartBeatDelay();
 
     /**
-     * Return the list of server running
+     * Returns the list of server running.
      *
      * @return
      */
     List<ServerInfo> getInfos();
 
     /**
-     * get the running server informations
+     * Get the running server information.
      *
      * @return
      * @throws ServerNotFoundException
@@ -79,14 +78,14 @@ public interface ServerHeartBeat {
     ServerInfo getMyInfo() throws ServerNotFoundException;
 
     /**
-     * get the running server informations
+     * Get the running server information.
      *
      * @return
      */
     ServerInfo getInfo(URI serverURI) throws ServerNotFoundException;
 
     /**
-     * Get the running server uri
+     * Get the running server URI.
      *
      * @return
      */

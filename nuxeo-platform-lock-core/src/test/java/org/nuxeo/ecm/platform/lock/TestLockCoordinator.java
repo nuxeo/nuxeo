@@ -27,13 +27,15 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class TestLockCoordinator extends NXRuntimeTestCase {
 
     public static final Log log = LogFactory.getLog(TestLockCoordinator.class);
+
+    // TODO if we reduced the delay to less that
+    // this value, algorithm is failing
+    final static long DELAY = 800;
 
     @Override
     public void setUp() throws Exception {
@@ -43,20 +45,14 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.lock.core");
         deployTestContrib("org.nuxeo.ecm.platform.lock.core",
                 "nxlocks-tests.xml");
-        super.fireFrameworkStarted();
+        fireFrameworkStarted();
     }
-
-    // TODO if we reduced the delay to less that
-    // this value, algorithm is failing
-    final static long DELAY = 800;
 
     /**
      * Basic lock scenario: there is 2 competitors that want to get a lock.
      * winner is getting the lock for a certain time and need to unlock before,
      * looser is waiting (until the timeout is reached), winner unlocks, looser
-     * finally has lost (AlreadyLockedException)
-     * 
-     * @throws Exception
+     * finally has lost (AlreadyLockedException).
      */
     public void testLockService() throws Exception {
 
@@ -86,7 +82,6 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         assertNotNull(
                 "looser should has been waiting for the lock and has his lock refused",
                 looserLocker.alreadyLocked);
-
     }
 
     class Locker implements Runnable {
@@ -112,7 +107,6 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
             this.executionTime = executionTime;
             this.comment = comment;
             selfcompetitor = competitor;
-
         }
 
         public void run() {

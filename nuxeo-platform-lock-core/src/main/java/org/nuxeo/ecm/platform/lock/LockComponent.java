@@ -27,7 +27,6 @@ import org.osgi.framework.FrameworkListener;
  * Default implementation of the lock service.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class LockComponent extends DefaultComponent {
 
