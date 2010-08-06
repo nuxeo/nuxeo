@@ -31,11 +31,10 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.PROBES_WEB_OBJECT_TYPE;
 
-
 /**
  * Runs the contributed probs if any
  * */
-@WebObject(type = PROBES_WEB_OBJECT_TYPE , administrator=Access.GRANT)
+@WebObject(type = PROBES_WEB_OBJECT_TYPE, administrator = Access.GRANT)
 public class Probes extends DefaultObject {
 
     private ProbeRunner probeRunner;
@@ -54,7 +53,7 @@ public class Probes extends DefaultObject {
         }
         probeRunner.run();
         List<ProbeInfo> succededProbes = new ArrayList<ProbeInfo>();
-        succededProbes.addAll(probeRunner.getRunWithSucessProbesInfo());
+        succededProbes.addAll(probeRunner.getRunWithSuccessProbesInfo());
         return getView("run-all-probes").arg("probes_in_error",
                 probeRunner.getProbesInError()).arg("probes_succeded",
                 succededProbes);
