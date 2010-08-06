@@ -507,29 +507,31 @@ case "$1" in
 		createdirs
     if [ "$jboss" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-        -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-        -Djboss.server.temp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
-        -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
+        -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+        -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+        -Djboss.server.data.dir="$DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-        -Djboss.server.temp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
-        -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" \
-        -Djboss.server.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
+        -Djboss.server.temp.dir="$TMP_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" -Djboss.server.temp.dir.overrideJavaTmpDir=$TMP_OVERRIDE \
+        -Dprogram.name=nuxeoctl -Djava.endorsed.dirs="$NUXEO_ENDORSED" -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+        -Djboss.server.data.dir="$DATA_DIR" -Dnuxeo.data.dir="$DATA_DIR" org.jboss.Main -b $BIND_ADDRESS
 
     elif [ "$tomcat" = "true" ]; then
       echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
         -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-        -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start
+        -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start
       $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
         -Dnuxeo.log.dir="$LOG_DIR" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
         -Dcatalina.base="$NUXEO_HOME" -Dcatalina.home="$NUXEO_HOME" -Djava.io.tmpdir="$CATALINA_TEMP" \
-        -Dnuxeo.data.dir="$DATA_DIR" org.apache.catalina.startup.Bootstrap start
+        -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" org.apache.catalina.startup.Bootstrap start
 
     elif [ "$jetty" = "true" ]; then
-      echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR"  \
+      echo Command: $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+        -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
-      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Djava.io.tmpdir="$TMP_DIR" \
+      $JAVA $JAVA_OPTS -classpath "$NUXEO_CLASSPATH" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+        -Dnuxeo.tmp.dir="$TMP_DIR" -Djava.io.tmpdir="$TMP_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
         -Dnuxeo.data.dir="$DATA_DIR" -jar "$jettyjar" "$NUXEO_HOME"/bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
         "$NUXEO_BUNDLES" -home "$NUXEO_HOME"
     fi
