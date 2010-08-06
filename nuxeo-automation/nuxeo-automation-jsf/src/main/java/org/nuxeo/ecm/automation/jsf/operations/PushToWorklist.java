@@ -35,7 +35,8 @@ public class PushToWorklist {
 
     public static final String ID = "Seam.AddToWorklist";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

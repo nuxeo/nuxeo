@@ -32,8 +32,8 @@ public class ClearClipboard {
 
     public static final String ID = "Seam.ClearClipboard";
 
-    protected @Context
-    OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public void run() throws Exception {

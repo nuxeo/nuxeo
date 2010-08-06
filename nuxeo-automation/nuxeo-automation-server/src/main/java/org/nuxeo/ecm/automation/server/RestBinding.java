@@ -47,9 +47,6 @@ public class RestBinding {
 
     protected String[] groups;
 
-    public RestBinding() {
-
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -110,4 +107,5 @@ public class RestBinding {
     public String getName() {
         return name;
     }
+
 }

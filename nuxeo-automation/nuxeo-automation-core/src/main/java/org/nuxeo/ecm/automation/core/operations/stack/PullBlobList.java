@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 @Operation(id = PullBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull File List", description = "Restore the first saved input file list in the context input stack")
 public class PullBlobList {
 
-    public final static String ID = "Blob.PullList";
+    public static final String ID = "Blob.PullList";
 
     @Context
     protected OperationContext ctx;

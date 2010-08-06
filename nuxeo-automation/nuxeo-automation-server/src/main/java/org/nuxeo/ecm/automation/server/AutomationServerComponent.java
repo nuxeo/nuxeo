@@ -40,9 +40,6 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected volatile Map<String, RestBinding> lookup;
 
-    public AutomationServerComponent() {
-
-    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {

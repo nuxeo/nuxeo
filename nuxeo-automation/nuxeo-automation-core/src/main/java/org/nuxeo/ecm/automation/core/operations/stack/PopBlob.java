@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.Blob;
 @Operation(id = PopBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop File", description = "Restore the last saved input file in the context input stack. This operation must be used only if a PUSH operation was previously made. Return the last <i>pushed</i> file.")
 public class PopBlob {
 
-    public final static String ID = "Blob.Pop";
+    public static final String ID = "Blob.Pop";
 
     @Context
     protected OperationContext ctx;

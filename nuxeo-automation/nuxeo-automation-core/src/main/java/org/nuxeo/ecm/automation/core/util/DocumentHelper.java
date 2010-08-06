@@ -155,8 +155,8 @@ public class DocumentHelper {
         if (entries.length == 0) {
             return;
         }
-        for (int i = 0; i < entries.length; i++) {
-            String[] ace = StringUtils.split(entries[i], ':', true);
+        for (String entry : entries) {
+            String[] ace = StringUtils.split(entry, ':', true);
             acl.add(new ACE(ace[0], ace[1], Boolean.parseBoolean(ace[2])));
         }
         session.setACP(doc.getRef(), acp, false);

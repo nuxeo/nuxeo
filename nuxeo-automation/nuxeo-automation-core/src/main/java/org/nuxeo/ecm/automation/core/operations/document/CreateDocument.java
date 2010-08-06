@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 @Operation(id = CreateDocument.ID, category = Constants.CAT_DOCUMENT, label = "Create", description = "Create a new document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns the created document.")
 public class CreateDocument {
 
-    public final static String ID = "Document.Create";
+    public static final String ID = "Document.Create";
 
     @Context
     protected CoreSession session;

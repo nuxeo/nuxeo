@@ -93,7 +93,6 @@ public class OperationActionBean implements Serializable {
                     + " executed successfully");
         }
 
-        String outcome = (String) ctx.get(SeamOperation.OUTCOME);
-        return outcome;
+        return (String) ctx.get(SeamOperation.OUTCOME);
     }
 }

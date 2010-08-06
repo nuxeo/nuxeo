@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 @Operation(id = FireEvent.ID, category = Constants.CAT_NOTIFICATION, label = "Send Event", description = "Send a Nuxeo event.")
 public class FireEvent {
 
-    public final static String ID = "Notification.SendEvent";
+    public static final String ID = "Notification.SendEvent";
 
     @Context
     protected OperationContext ctx;

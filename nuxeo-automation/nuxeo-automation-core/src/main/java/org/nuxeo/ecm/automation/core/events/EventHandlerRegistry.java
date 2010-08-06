@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class EventHandlerRegistry {
 
-    private final static Log log = LogFactory.getLog(OperationEventListener.class);
+    private static final Log log = LogFactory.getLog(OperationEventListener.class);
 
     protected AutomationService svc;
 

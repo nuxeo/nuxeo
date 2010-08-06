@@ -168,8 +168,7 @@ public class DefaultSession implements Session {
         if (op == null) {
             throw new IllegalArgumentException("No such operation: " + id);
         }
-        DefaultOperationRequest req = new DefaultOperationRequest(this, op, ctx);
-        return req;
+        return new DefaultOperationRequest(this, op, ctx);
     }
 
     public OperationDocumentation getOperation(String id) {

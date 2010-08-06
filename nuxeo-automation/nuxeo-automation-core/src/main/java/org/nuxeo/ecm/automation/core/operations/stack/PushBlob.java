@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.Blob;
 @Operation(id = PushBlob.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File", description = "Push the input file on the context stack. The file can be restored later as the input using the corrresponding pop operation. Returns the input file.")
 public class PushBlob {
 
-    public final static String ID = "Blob.Push";
+    public static final String ID = "Blob.Push";
 
     @Context
     protected OperationContext ctx;

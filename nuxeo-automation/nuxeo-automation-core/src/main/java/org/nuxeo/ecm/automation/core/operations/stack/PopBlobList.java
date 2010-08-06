@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 @Operation(id = PopBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pop File List", description = "Restore the last saved input file list in the context input stack")
 public class PopBlobList {
 
-    public final static String ID = "Blob.PopList";
+    public static final String ID = "Blob.PopList";
 
     @Context
     protected OperationContext ctx;

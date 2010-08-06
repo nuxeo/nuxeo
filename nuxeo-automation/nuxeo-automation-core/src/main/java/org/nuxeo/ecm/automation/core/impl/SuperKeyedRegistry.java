@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class SuperKeyedRegistry<K, V> {
 
-    private final static Object NULL = new Object();
+    private static final Object NULL = new Object();
 
     protected Map<K, V> registry;
 

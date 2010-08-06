@@ -38,7 +38,8 @@ public class FetchFromClipboard {
 
     public static final String ID = "Seam.FetchFromClipboard";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModelList run() throws Exception {

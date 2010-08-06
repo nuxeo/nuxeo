@@ -34,8 +34,11 @@ public class Navigate {
 
     public static final String ID = "Seam.NavigateTo";
 
-    protected @Context OperationContext ctx;
-    protected @Param(name = "view", required = false) String view;
+    @Context
+    protected OperationContext ctx;
+
+    @Param(name = "view", required = false)
+    protected String view;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

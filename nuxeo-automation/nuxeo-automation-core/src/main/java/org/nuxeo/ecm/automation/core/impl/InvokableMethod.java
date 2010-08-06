@@ -29,15 +29,15 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  */
 public class InvokableMethod {
 
-    public final static int VOID_PRIORITY = 1;
+    public static final int VOID_PRIORITY = 1;
 
-    public final static int ADAPTABLE_PRIORITY = 2;
+    public static final int ADAPTABLE_PRIORITY = 2;
 
-    public final static int ISTANCE_OF_PRIORITY = 3;
+    public static final int ISTANCE_OF_PRIORITY = 3;
 
-    public final static int EXACT_MATCH_PRIORITY = 4;
+    public static final int EXACT_MATCH_PRIORITY = 4;
 
-    public final static int USER_PRIORITY = 9; // priorities from 1 to 10 are
+    public static final int USER_PRIORITY = 9; // priorities from 1 to 10 are
 
     // reserved for internal use.
 

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 @Operation(id = FetchContextDocument.ID, category = Constants.CAT_FETCH, label = "Context Document", description = "Fetch the input of the context as a document. The document will become the input for the next operation.")
 public class FetchContextDocument {
 
-    public final static String ID = "Context.FetchDocument";
+    public static final String ID = "Context.FetchDocument";
 
     @Context
     protected OperationContext ctx;

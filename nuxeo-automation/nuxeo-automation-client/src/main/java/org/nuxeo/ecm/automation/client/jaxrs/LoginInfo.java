@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class LoginInfo {
 
-    public final static LoginInfo ANONYNMOUS = new LoginInfo("Anonymous");
+    public static final LoginInfo ANONYNMOUS = new LoginInfo("Anonymous");
 
     protected String username;
     protected Set<String> groups;

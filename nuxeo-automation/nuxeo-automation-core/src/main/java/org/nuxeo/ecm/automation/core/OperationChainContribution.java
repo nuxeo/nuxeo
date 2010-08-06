@@ -69,7 +69,7 @@ public class OperationChainContribution {
                     // decode < and >
                     param.value = param.value.replaceAll("&lt;", "<");
                     param.value = param.value.replaceAll("&gt;", ">");
-                    if (param.value.indexOf("@{") > -1) {
+                    if (param.value.contains("@{")) {
                         params.set(param.name,
                                 Scripting.newTemplate(param.value));
                     } else {
@@ -129,8 +129,7 @@ public class OperationChainContribution {
                         break;
                     case 'r':
                         if (T_RESOURCE.equals(type)) {
-                            if (param.value.indexOf(":/") > -1) { // a real
-                                                                    // URL
+                            if (param.value.contains(":/")) { // a real URL
                                 val = new URL(param.value);
                             } else { // try with class loader
                                 val = bundle.getEntry(param.value);
@@ -155,7 +154,6 @@ public class OperationChainContribution {
 
         @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
         protected ArrayList<Param> params;
-
     }
 
     @XObject("param")

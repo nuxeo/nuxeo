@@ -33,9 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Functions {
 
-    public final static Functions INSTANCE = new Functions();
+    public static final Functions INSTANCE = new Functions();
 
-    protected volatile DirectoryService dirService = null;
+    protected volatile DirectoryService dirService;
 
     protected volatile UserManager userMgr;
 

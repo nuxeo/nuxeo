@@ -63,7 +63,7 @@ public class ExecutionRequest {
     public void setParam(String key, String value) {
         if (value.startsWith("expr:")) {
             value = value.substring(5).trim();
-            if (value.indexOf("@{") > -1) {
+            if (value.contains("@{")) {
                 params.put(key, Scripting.newTemplate(value));
             } else {
                 params.put(key, Scripting.newExpression(value));

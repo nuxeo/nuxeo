@@ -45,8 +45,8 @@ public class RunScriptFile {
     @Context
     protected OperationContext ctx;
 
-    protected @Param(name = "script")
-    URL script;
+    @Param(name = "script")
+    protected URL script;
 
     @OperationMethod
     public void run() throws Exception {

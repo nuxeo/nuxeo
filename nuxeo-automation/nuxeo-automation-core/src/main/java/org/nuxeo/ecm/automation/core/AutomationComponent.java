@@ -91,20 +91,18 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class AutomationComponent extends DefaultComponent {
 
-    public final static String XP_OPERATIONS = "operations";
+    public static final String XP_OPERATIONS = "operations";
 
-    public final static String XP_ADAPTERS = "adapters";
+    public static final String XP_ADAPTERS = "adapters";
 
-    public final static String XP_CHAINS = "chains";
+    public static final String XP_CHAINS = "chains";
 
-    public final static String XP_EVENT_HANDLERS = "event-handlers";
+    public static final String XP_EVENT_HANDLERS = "event-handlers";
 
     protected AutomationService service;
 
     protected EventHandlerRegistry handlers;
 
-    public AutomationComponent() {
-    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {

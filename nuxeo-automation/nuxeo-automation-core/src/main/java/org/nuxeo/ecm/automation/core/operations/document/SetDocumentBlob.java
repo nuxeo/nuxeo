@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 @Operation(id = SetDocumentBlob.ID, category = Constants.CAT_DOCUMENT, label = "Set File", description = "Set the input file to the given property on the input document. If the xpath points to a blob list then the blob is appended to the list, otherwise the xpath should point to a blob property. If the save parameter is set the document modification will be automatically saved. Return the document.")
 public class SetDocumentBlob {
 
-    public final static String ID = "Blob.Set";
+    public static final String ID = "Blob.Set";
 
     @Context
     protected CoreSession session;

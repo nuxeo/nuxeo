@@ -34,7 +34,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 @Operation(id = SetVar.ID, category = Constants.CAT_EXECUTION, label = "Set Context Variable", description = "Set a context variable given a name and the value. To compute the value at runtime from the current context you should use an EL expression as the value. This operation works on any input type and return back the input as the output.")
 public class SetVar {
 
-    public final static String ID = "Context.SetVar";
+    public static final String ID = "Context.SetVar";
 
     @Context
     protected OperationContext ctx;

@@ -35,7 +35,8 @@ public class PushToClipboard {
 
     public static final String ID = "Seam.AddToClipboard";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {

@@ -34,8 +34,11 @@ public class FetchDocumentFromSeamContext {
 
     public static final String ID = "Seam.FetchDocument";
 
-    protected @Context OperationContext ctx;
-    protected @Param(name="name") String name;
+    @Context
+    protected OperationContext ctx;
+
+    @Param(name = "name")
+    protected String name;
 
     @OperationMethod
     public DocumentModel run() throws Exception {

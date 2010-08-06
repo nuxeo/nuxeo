@@ -107,7 +107,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return req;
     }
 
-    public final static DocumentRef docRefFromString(String input) {
+    public static DocumentRef docRefFromString(String input) {
         if (input.startsWith("/")) {
             return new PathRef(input);
         } else {

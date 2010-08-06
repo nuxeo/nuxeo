@@ -161,14 +161,13 @@ public class PrincipalHelper {
 
     static class EmailCollector implements Collector<String> {
 
-        final protected String userSchemaName;
+        protected final String userSchemaName;
 
-        final protected String userEmailFieldName;
+        protected final String userEmailFieldName;
 
         protected HashSet<String> result = new HashSet<String>();
 
         public EmailCollector(String userSchemaName, String userEmailFieldName) {
-            super();
             this.userSchemaName = userSchemaName;
             this.userEmailFieldName = userEmailFieldName;
         }
@@ -216,12 +215,11 @@ public class PrincipalHelper {
 
     static class IdCollector implements Collector<String> {
 
-        final protected boolean prefixIds;
+        protected final boolean prefixIds;
 
         protected HashSet<String> result = new HashSet<String>();
 
         public IdCollector(boolean prefixIds) {
-            super();
             this.prefixIds = prefixIds;
         }
 

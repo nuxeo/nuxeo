@@ -85,7 +85,6 @@ public class EventHandler {
     private Expression expr;
 
     public EventHandler() {
-
     }
 
     public EventHandler(String eventId, String chainId) {

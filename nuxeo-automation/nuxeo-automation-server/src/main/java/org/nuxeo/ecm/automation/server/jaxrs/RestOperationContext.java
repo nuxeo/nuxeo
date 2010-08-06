@@ -25,25 +25,20 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 /**
  * A custom operation context to be used in REST calls on server side. This
  * implementation is delegating the post execution cleanup to the webengine
- * filter through {@link UserSession} and {@link RequestCleanupHandler}
- * 
+ * filter through {@link UserSession} and {@link RequestCleanupHandler}.
+ * <p>
  * This way temporary resources like files used by operations are removed after
  * the response is sent to the client.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class RestOperationContext extends OperationContext {
 
     private static final long serialVersionUID = 1L;
 
-    public RestOperationContext() {
-    }
 
     /**
      * Must be called before context execution
-     * 
-     * @param us
      */
     public void addRequestCleanupHandler(HttpServletRequest request) {
         UserSession.addRequestCleanupHandler(request,
@@ -62,4 +57,5 @@ public class RestOperationContext extends OperationContext {
     public void dispose() {
         // do nothing
     }
+
 }

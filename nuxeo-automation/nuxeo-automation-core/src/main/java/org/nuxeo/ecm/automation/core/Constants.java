@@ -22,121 +22,125 @@ package org.nuxeo.ecm.automation.core;
 public class Constants {
 
     // Known input/output types
-    public final static String O_DOCUMENT = "document";
+    public static final String O_DOCUMENT = "document";
 
-    public final static String O_DOCUMENTS = "documents";
+    public static final String O_DOCUMENTS = "documents";
 
-    public final static String O_BLOB = "blob";
+    public static final String O_BLOB = "blob";
 
-    public final static String O_BLOBS = "blobs";
+    public static final String O_BLOBS = "blobs";
 
     // Parameter types
-    public final static String T_STRING = "string"; // injectable as String
+    public static final String T_STRING = "string"; // injectable as String
 
-    public final static String T_BOOLEAN = "boolean"; // injectable as
+    public static final String T_BOOLEAN = "boolean"; // injectable as
 
     // Boolean
 
-    public final static String T_DATE = "date"; // W3C string injectable as
+    public static final String T_DATE = "date"; // W3C string injectable as
 
     // Date
 
-    public final static String T_INTEGER = "integer"; // integer number
+    public static final String T_INTEGER = "integer"; // integer number
 
     // injectable as Long
 
-    public final static String T_FLOAT = "float"; // float number injectable
+    public static final String T_FLOAT = "float"; // float number injectable
 
     // as Double
 
-    public final static String T_RESOURCE = "resource"; // resource url
+    public static final String T_RESOURCE = "resource"; // resource url
 
     // injectable as URL
 
-    public final static String T_DOCUMENT = "document"; // Document injectable
+    public static final String T_DOCUMENT = "document"; // Document injectable
 
     // as DocumentRef /
     // DocumentModel
 
-    public final static String T_DOCUMENTS = "documents"; // Document
+    public static final String T_DOCUMENTS = "documents"; // Document
 
     // injectable as
     // DocumentRefList
     // /
     // DocumentModelList
 
-    public final static String T_SCRIPT = "script"; // inline mvel injectable
+    public static final String T_SCRIPT = "script"; // inline mvel injectable
 
     // script as Script
 
-    public final static String T_PROPERTIES = "properties"; // Java properties
+    public static final String T_PROPERTIES = "properties"; // Java properties
 
     // content
     // injectable as
     // Properties
 
     // Category names
-    public final static String CAT_FETCH = "Fetch";
+    public static final String CAT_FETCH = "Fetch";
 
-    public final static String CAT_SCRIPTING = "Scripting";
+    public static final String CAT_SCRIPTING = "Scripting";
 
-    public final static String CAT_EXECUTION = "Execution Context";
+    public static final String CAT_EXECUTION = "Execution Context";
 
-    public final static String CAT_EXECUTION_STACK = "Push & Pop";
+    public static final String CAT_EXECUTION_STACK = "Push & Pop";
 
-    public final static String CAT_SUBCHAIN_EXECUTION = "Execution Flow";
+    public static final String CAT_SUBCHAIN_EXECUTION = "Execution Flow";
 
-    public final static String CAT_DOCUMENT = "Document";
+    public static final String CAT_DOCUMENT = "Document";
 
-    public final static String CAT_BLOB = "Files";
+    public static final String CAT_BLOB = "Files";
 
-    public final static String CAT_NOTIFICATION = "Notification";
+    public static final String CAT_NOTIFICATION = "Notification";
 
-    public final static String CAT_SERVICES = "Services";
+    public static final String CAT_SERVICES = "Services";
 
-    public final static String CAT_USERS_GROUPS = "Users & Groups";
+    public static final String CAT_USERS_GROUPS = "Users & Groups";
 
-    public final static String CAT_UI = "User Interface";
+    public static final String CAT_UI = "User Interface";
 
-    public final static String SEAM_CONTEXT = "Seam";
+    public static final String SEAM_CONTEXT = "Seam";
 
-    public final static String WORKFLOW_CONTEXT = "Workflow";
+    public static final String WORKFLOW_CONTEXT = "Workflow";
 
     // Widget types
-    public final static String W_TEXT = "Text"; // the default Widget for
+    public static final String W_TEXT = "Text"; // the default Widget for
 
     // String or any other unknown
     // type
 
-    public final static String W_MULTILINE_TEXT = "TextArea";
+    public static final String W_MULTILINE_TEXT = "TextArea";
 
-    public final static String W_PROPERTIES = "Properties"; // to edit a
+    public static final String W_PROPERTIES = "Properties"; // to edit a
 
     // properties table
 
-    public final static String W_CHECK = "Check"; // the default widget for
+    public static final String W_CHECK = "Check"; // the default widget for
 
     // Boolean
 
-    public final static String W_RADIO = "Radio";
+    public static final String W_RADIO = "Radio";
 
-    public final static String W_OPTION = "Option"; // a single selection
+    public static final String W_OPTION = "Option"; // a single selection
 
     // listbox
 
-    public final static String W_LIST = "List";
+    public static final String W_LIST = "List";
 
-    public final static String W_COMBO = "Combo";
+    public static final String W_COMBO = "Combo";
 
-    public final static String W_DATE = "Date"; // Default widget for Date
+    public static final String W_DATE = "Date"; // Default widget for Date
 
-    public final static String W_DECIMAL = "Decimal"; // Default widget for
+    public static final String W_DECIMAL = "Decimal"; // Default widget for
 
     // Long
 
-    public final static String W_NUMBER = "Number"; // Default widget for
+    public static final String W_NUMBER = "Number"; // Default widget for
 
     // Double
 
     public static final String W_AUDIT_EVENT = "AuditEvent";
+
+    private Constants() {
+    }
+
 }

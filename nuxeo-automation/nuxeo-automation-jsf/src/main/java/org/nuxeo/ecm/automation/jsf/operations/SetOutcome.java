@@ -25,7 +25,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
- *
  * @deprecated Not used for now. To enable it add the operation to the XML contribution file.
  */
 @Deprecated
@@ -35,9 +34,11 @@ public class SetOutcome {
 
     public static final String ID = "Seam.SetOutcome";
 
+    @Context
+    protected OperationContext ctx;
 
-    protected @Context OperationContext ctx;
-    protected @Param(name="outcome") String outcome;
+    @Param(name = "outcome")
+    protected String outcome;
 
     @OperationMethod
     public void run() throws Exception {

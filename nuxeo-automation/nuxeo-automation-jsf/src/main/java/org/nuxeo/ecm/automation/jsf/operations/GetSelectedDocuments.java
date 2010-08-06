@@ -38,7 +38,8 @@ public class GetSelectedDocuments {
 
     public static final String ID = "Seam.GetSelectedDocuments";
 
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModelList run() throws Exception {

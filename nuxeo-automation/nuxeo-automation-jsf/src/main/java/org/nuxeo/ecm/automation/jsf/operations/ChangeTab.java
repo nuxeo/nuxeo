@@ -14,9 +14,11 @@ public class ChangeTab {
 
     public static final String ID = "Seam.ChangeTab";
 
+    @Context
+    protected OperationContext ctx;
 
-    protected @Context OperationContext ctx;
-    protected @Param(name="tab") String tab;
+    @Param(name = "tab")
+    protected String tab;
 
     @OperationMethod
     public void run() throws Exception {

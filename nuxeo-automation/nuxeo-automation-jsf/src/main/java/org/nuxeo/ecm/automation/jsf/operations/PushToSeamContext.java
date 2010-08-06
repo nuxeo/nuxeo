@@ -34,10 +34,14 @@ public class PushToSeamContext {
 
     public static final String ID = "Seam.PushDocument";
 
+    @Context
+    protected OperationContext ctx;
 
-    protected @Context OperationContext ctx;
-    protected @Param(name="name") String name;
-    protected @Param(name="scope", widget=Constants.W_OPTION, values={"session", "conversation", "page", "event"}) String scope;
+    @Param(name = "name")
+    protected String name;
+
+    @Param(name = "scope", widget = Constants.W_OPTION, values = {"session", "conversation", "page", "event"})
+    protected String scope;
 
     @OperationMethod
     public DocumentModel push(DocumentModel value) throws Exception {

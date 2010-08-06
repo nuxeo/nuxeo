@@ -38,8 +38,8 @@ public class FetchFromWorklist {
 
     public static final String ID = "Seam.FetchFromWorklist";
 
-
-    protected @Context OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public DocumentModelList run() throws Exception {

@@ -35,8 +35,8 @@ public class DownloadFile {
 
     public static final String ID = "Seam.DownloadFile";
 
-    protected @Context
-    OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public void run(Blob blob) throws Exception {
@@ -45,10 +45,7 @@ public class DownloadFile {
         }
 
         FacesContext faces = FacesContext.getCurrentInstance();
-        String filename = "file.bin";
-        if (blob != null) {
-            filename = blob.getFilename();
-        }
+        String filename = blob.getFilename();
         ComponentUtils.download(faces, blob, filename);
     }
 

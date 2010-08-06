@@ -32,8 +32,8 @@ public class ClearWorklist {
 
     public static final String ID = "Seam.ClearWorklist";
 
-    protected @Context
-    OperationContext ctx;
+    @Context
+    protected OperationContext ctx;
 
     @OperationMethod
     public void run() throws Exception {
