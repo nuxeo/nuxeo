@@ -54,6 +54,7 @@ public class ConfigurationGenerator {
      * 
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
+    @Deprecated
     protected static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     /**
@@ -70,16 +71,16 @@ public class ConfigurationGenerator {
 
     protected static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
 
-    private File nuxeoHome;
+    private final File nuxeoHome;
 
     // User configuration file
-    private File nuxeoConf;
+    private final File nuxeoConf;
+
+    // Chosen templates
+    private final List<File> includedTemplates = new ArrayList<File>();
 
     // Common default configuration file
     private File nuxeoDefaultConf;
-
-    // Chosen templates
-    private List<File> includedTemplates = new ArrayList<File>();
 
     private boolean isJBoss;
 
@@ -91,17 +92,9 @@ public class ConfigurationGenerator {
 
     private boolean forceGeneration;
 
-    public void setForceGeneration(boolean forceGeneration) {
-        this.forceGeneration = forceGeneration;
-    }
-
     private Properties defaultConfig;
 
-    private Properties userConfig = null;
-
-    public Properties getUserConfig() {
-        return userConfig;
-    }
+    private Properties userConfig;
 
     public ConfigurationGenerator() {
         String nuxeoHomePath = System.getProperty(NUXEO_HOME);
@@ -142,8 +135,16 @@ public class ConfigurationGenerator {
         }
     }
 
+    public void setForceGeneration(boolean forceGeneration) {
+        this.forceGeneration = forceGeneration;
+    }
+
+    public Properties getUserConfig() {
+        return userConfig;
+    }
+
     /**
-     * Run the configuration files generation
+     * Runs the configuration files generation.
      * 
      * @throws ConfigurationException
      */
@@ -174,10 +175,6 @@ public class ConfigurationGenerator {
         }
     }
 
-    /**
-     * @throws ConfigurationException
-     * 
-     */
     private void setBasicConfiguration() throws ConfigurationException {
         try {
             // Load default configuration
@@ -230,13 +227,8 @@ public class ConfigurationGenerator {
         includeTemplates(userTemplatesList);
     }
 
-    /**
-     * @param templatesList
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
     private void includeTemplates(String templatesList)
-            throws FileNotFoundException, IOException {
+            throws IOException {
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();

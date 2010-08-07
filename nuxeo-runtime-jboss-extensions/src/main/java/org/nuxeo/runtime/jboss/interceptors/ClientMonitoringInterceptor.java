@@ -3,10 +3,14 @@ package org.nuxeo.runtime.jboss.interceptors;
 import org.javasimon.Counter;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
+import org.jboss.aop.advice.Interceptor;
 import org.jboss.aop.joinpoint.Invocation;
 import org.jboss.aop.joinpoint.MethodInvocation;
 
-public class ClientMonitoringInterceptor extends AbstractMonitoring implements org.jboss.aop.advice.Interceptor, java.io.Serializable {
+import java.io.Serializable;
+
+public class ClientMonitoringInterceptor extends AbstractMonitoring
+        implements Interceptor, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -14,10 +18,8 @@ public class ClientMonitoringInterceptor extends AbstractMonitoring implements o
         return getClass().getCanonicalName();
     }
 
-
-
     public Object invoke(Invocation context) throws Throwable {
-        MethodInvocation mCtx = (MethodInvocation)context;;
+        MethodInvocation mCtx = (MethodInvocation)context;
         Stopwatch stopwatch  = getStopwatch(mCtx);
         Split split = stopwatch.start();
         try {

@@ -4,7 +4,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoClassLoaderInjector {
 
-    protected static ThreadLocal<ClassLoader> ctx = new ThreadLocal<ClassLoader>();
+    protected static final ThreadLocal<ClassLoader> ctx = new ThreadLocal<ClassLoader>();
 
     public static void replace() {
         if (ctx.get() != null) {

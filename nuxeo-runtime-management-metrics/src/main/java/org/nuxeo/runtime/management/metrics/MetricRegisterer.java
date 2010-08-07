@@ -12,9 +12,9 @@ import org.apache.commons.logging.LogFactory;
 
 public class MetricRegisterer {
 
-    protected MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+    protected static final Log log = LogFactory.getLog(MetricRegisterer.class);
 
-    protected Log log = LogFactory.getLog(MetricRegisterer.class);
+    protected final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
     protected Map<ObjectName, Object> registry = new HashMap<ObjectName, Object>();
 
@@ -55,7 +55,5 @@ public class MetricRegisterer {
         }
         registry.remove(oName);
     }
-
-
 
 }

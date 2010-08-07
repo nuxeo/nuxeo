@@ -259,7 +259,6 @@ public abstract class ApplicationLoader {
                 if (bundles == null || bundles.isEmpty()) {
                     return;
                 }
-                //System.out.println(">>> FOUND NESTED JARS: "+bundles);
                 for (BundleFile bundle : bundles) {
                     if (bundle.getSymbolicName() != null) {
                         visitBundle(bundle);

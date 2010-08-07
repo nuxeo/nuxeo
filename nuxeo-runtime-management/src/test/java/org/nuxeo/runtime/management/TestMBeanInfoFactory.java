@@ -31,7 +31,7 @@ public class TestMBeanInfoFactory extends TestCase {
     protected final ModelMBeanInfoFactory factoryUnderTest =
             new ModelMBeanInfoFactory();
 
-    public void testInterfaceProperty() throws Exception {
+    public void testInterfaceProperty() {
         ModelMBeanInfo ifaceInfo =
                 factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];

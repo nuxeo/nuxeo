@@ -148,7 +148,7 @@ public class BundleWalker extends FileWalker.Visitor {
             }
             BundleFile bundleFile = new JarBundleFile(jarFile);
             if (bundleFile.getSymbolicName() != null) {
-                //System.out.println("###### Bundle sympbolic name: "+bundleFile.getSymbolicName());
+                //System.out.println("###### Bundle symbolic name: "+bundleFile.getSymbolicName());
 
                 // notify the callback about the new bundle
                 callback.visitBundle(bundleFile);

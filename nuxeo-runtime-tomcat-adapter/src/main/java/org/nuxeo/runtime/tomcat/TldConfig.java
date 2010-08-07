@@ -70,6 +70,7 @@ import org.xml.sax.InputSource;
  *
  * BS: patched to avoid lookups in parent class loaders - see BS comments
  */
+@SuppressWarnings({"ALL"})
 public final class TldConfig  implements LifecycleListener {
 
     // Names of JARs that are known not to contain any TLDs
@@ -325,8 +326,9 @@ public final class TldConfig  implements LifecycleListener {
             }
         }
 
-        if( log.isDebugEnabled() )
+        if( log.isDebugEnabled() ) {
             log.debug( "Adding tld listeners:" + list.length);
+        }
         for( int i=0; list!=null && i<list.length; i++ ) {
             context.addApplicationListener(list[i]);
         }
@@ -362,7 +364,9 @@ public final class TldConfig  implements LifecycleListener {
                 break;
             }
             long lastM = url.openConnection().getLastModified();
-            if (lastM > lastModified) lastModified = lastM;
+            if (lastM > lastModified) {
+                lastModified = lastM;
+            }
             if (log.isDebugEnabled()) {
                 log.debug( "Last modified " + path + " " + lastM);
             }
@@ -373,7 +377,9 @@ public final class TldConfig  implements LifecycleListener {
             while (paths.hasNext()) {
                 File jarFile = (File) paths.next();
                 long lastM = jarFile.lastModified();
-                if (lastM > lastModified) lastModified = lastM;
+                if (lastM > lastModified) {
+                    lastModified = lastM;
+                }
                 if (log.isDebugEnabled()) {
                     log.debug("Last modified " + jarFile.getAbsolutePath()
                               + " " + lastM);
@@ -390,8 +396,9 @@ public final class TldConfig  implements LifecycleListener {
             FileInputStream in=new FileInputStream(tldCache);
             ObjectInputStream ois=new ObjectInputStream( in );
             String list[]=(String [])ois.readObject();
-            if( log.isDebugEnabled() )
+            if( log.isDebugEnabled() ) {
                 log.debug("Reusing tldCache " + tldCache + " " + list.length);
+            }
             for( int i=0; list!=null && i<list.length; i++ ) {
                 context.addApplicationListener(list[i]);
             }

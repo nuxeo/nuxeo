@@ -27,7 +27,6 @@ import javax.naming.NamingException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MyTestClass implements MyTestMBean {
 
@@ -42,7 +41,8 @@ public class MyTestClass implements MyTestMBean {
     public String getResult() {
         String ip = System.getProperty("REMOTE_IP");
         if (ip == null) {
-            return "CANNOT RUN TEST: You should define the java system property REMOTE_IP that point to the bind address of the remote server";
+            return "CANNOT RUN TEST: You should define the java system property REMOTE_IP "
+                + "that point to the bind address of the remote server";
         }
         String msg = "";
         try {

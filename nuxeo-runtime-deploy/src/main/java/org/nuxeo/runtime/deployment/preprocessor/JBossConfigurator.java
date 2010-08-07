@@ -23,15 +23,11 @@ import java.io.File;
 
 /**
  * @author jcarsique
- *
  */
 public class JBossConfigurator extends ServerConfigurator {
 
     public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
 
-    /**
-     * @param configurationGenerator
-     */
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -39,6 +35,7 @@ public class JBossConfigurator extends ServerConfigurator {
     /**
      * @return true if "config" files directory already exists
      */
+    @Override
     public boolean isConfigured() {
         log.debug("Detected JBoss server.");
         return new File(generator.getNuxeoHome(), JBOSS_CONFIG).exists();

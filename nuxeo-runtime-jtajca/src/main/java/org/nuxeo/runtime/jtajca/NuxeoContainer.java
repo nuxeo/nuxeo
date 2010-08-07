@@ -173,22 +173,24 @@ public class NuxeoContainer {
     }
 
     /**
-     * Wrap a geronimo cm to be able to flush the pool
+     * Wraps a geronimo cm to be able to flush the pool.
      * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
-     *
      */
     public static class ConnectionManagerWrapper implements ConnectionManager {
         private static final long serialVersionUID = 1L;
         protected AbstractConnectionManager cm;
-        protected ConnectionManagerConfiguration config;
+        protected final ConnectionManagerConfiguration config;
+
         public ConnectionManagerWrapper(AbstractConnectionManager cm, ConnectionManagerConfiguration config) {
             this.cm = cm;
             this.config = config;
         }
+
         public Object allocateConnection(ManagedConnectionFactory managedConnectionFactory,
                 ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
             return cm.allocateConnection(managedConnectionFactory, connectionRequestInfo);
         }
+
         public void reset() throws Exception {
             cm.doStop();
             cm = createConnectionManager(transactionManager, config);

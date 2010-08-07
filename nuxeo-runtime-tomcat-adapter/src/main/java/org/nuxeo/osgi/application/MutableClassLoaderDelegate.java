@@ -24,7 +24,7 @@ import java.net.URL;
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
-    protected ClassLoader cl;
+    protected final ClassLoader cl;
     protected Method addURL;
 
     public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {

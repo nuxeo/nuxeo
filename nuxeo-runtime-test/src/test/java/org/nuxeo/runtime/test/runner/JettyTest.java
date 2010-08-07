@@ -32,7 +32,7 @@ public class JettyTest {
 
     @Inject Server server;
 
-    @Test public void jettyComponentIsDeployed() throws Exception {
+    @Test public void jettyComponentIsDeployed() {
         assertNotNull(server);
     }
 

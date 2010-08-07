@@ -29,7 +29,6 @@ import org.nuxeo.runtime.api.login.SecurityDomain;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractServerConfiguration implements ServerConfiguration {
 

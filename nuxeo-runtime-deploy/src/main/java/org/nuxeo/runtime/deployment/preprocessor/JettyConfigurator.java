@@ -29,9 +29,6 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public static final String JETTY_CONFIG = "config/sql.properties";
 
-    /**
-     * @param configurationGenerator
-     */
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -39,6 +36,7 @@ public class JettyConfigurator extends ServerConfigurator {
     /**
      * @return true if "config" files directory already exists
      */
+    @Override
     protected boolean isConfigured() {
         log.debug("Detected Jetty server. Template configuration not yet implemented for Jetty.");
         return true;

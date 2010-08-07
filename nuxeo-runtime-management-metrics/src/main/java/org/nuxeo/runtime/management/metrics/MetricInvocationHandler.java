@@ -11,7 +11,7 @@ import org.javasimon.Stopwatch;
 
 public class MetricInvocationHandler<T> implements InvocationHandler {
 
-    protected T proxied;
+    protected final T proxied;
 
     protected MetricInvocationHandler(T proxied) {
         this.proxied = proxied;

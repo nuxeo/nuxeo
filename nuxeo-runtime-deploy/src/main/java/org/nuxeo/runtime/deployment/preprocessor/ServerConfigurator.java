@@ -37,13 +37,13 @@ public abstract class ServerConfigurator {
 
     protected static final Log log = LogFactory.getLog(ServerConfigurator.class);
 
-    protected ConfigurationGenerator generator;
+    protected final ConfigurationGenerator generator;
 
     /**
      * @param configurationGenerator
      */
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
-        this.generator = configurationGenerator;
+        generator = configurationGenerator;
     }
 
     /**
@@ -89,6 +89,6 @@ public abstract class ServerConfigurator {
     /**
      * @return output directory for files generation
      */
-    abstract protected File getOutputDirectory();
+    protected abstract File getOutputDirectory();
 
 }

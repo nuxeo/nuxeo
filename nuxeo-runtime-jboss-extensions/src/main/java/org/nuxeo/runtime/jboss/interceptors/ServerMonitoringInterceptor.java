@@ -7,11 +7,11 @@ import org.jboss.aop.joinpoint.MethodInvocation;
 
 public class ServerMonitoringInterceptor extends AbstractMonitoring implements Interceptor {
 
+    protected final ThreadLocal<Split> reentrancy = new ThreadLocal<Split>();
+
     public String getName() {
         return getClass().getCanonicalName();
     }
-
-    protected ThreadLocal<Split> reentrancy = new ThreadLocal<Split>();
 
     public Object invoke(Invocation context) throws Throwable {
         Split split = reentrancy.get();

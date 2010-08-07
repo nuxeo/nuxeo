@@ -94,7 +94,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
 
     protected Bundle runtimeBundle;
 
-    protected List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
+    protected final List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
 
     public NXRuntimeTestCase() {
     }

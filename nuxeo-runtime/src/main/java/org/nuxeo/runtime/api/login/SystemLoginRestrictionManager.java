@@ -27,51 +27,50 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Manage restrictions for usage of SystemLogin
- *
+ * Manage restrictions for usage of SystemLogin.
+ * <p/>
  * The main point is to prevent system login from untrusted remote nuxeo runtime instances.
- *
+ * <p/>
  * Restrictions can be adjusted via system properties :
- *
- *  - org.nuxeo.systemlogin.restrict : true/false (default true) ; turns on/off restrictions
- *  - org.nuxeo.systemlogin.trusted.instances : comma separated list of trusted off (default : empty)
- *
+ * <ul>
+ * <li>org.nuxeo.systemlogin.restrict : true/false (default true) ; turns on/off restrictions
+ * <li>org.nuxeo.systemlogin.trusted.instances : comma separated list of trusted off (default : empty)
+ * </ul>
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
+// FIXME: typos in API names.
 public class SystemLoginRestrictionManager {
 
     public static final String RESTRICT_REMOTE_SYSTEM_LOGIN_PROP = "org.nuxeo.systemlogin.restrict";
     public static final String REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP = "org.nuxeo.systemlogin.trusted.instances";
 
-    public static final String TRUSTED_INSTANCES_SEP=",";
+    public static final String TRUSTED_INSTANCES_SEP = ",";
 
-    protected Boolean restrictRemoteSystemLogin = null;
+    protected static final Log log = LogFactory.getLog(SystemLoginRestrictionManager.class);
 
-    protected List<String> allowedInstancesForSystemLogin= null;
+    protected Boolean restrictRemoteSystemLogin;
 
-    protected static Log log = LogFactory.getLog(SystemLoginRestrictionManager.class);
+    protected List<String> allowedInstancesForSystemLogin;
 
     public boolean isRemoteSystemLoginRestricted() {
-        if (restrictRemoteSystemLogin==null) {
-            if(Framework.getProperty(RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true").equalsIgnoreCase("false")) {
-                restrictRemoteSystemLogin=false;
+        if (restrictRemoteSystemLogin == null) {
+            if (Framework.getProperty(RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true").equalsIgnoreCase("false")) {
+                restrictRemoteSystemLogin = false;
             } else {
-                restrictRemoteSystemLogin=true;
+                restrictRemoteSystemLogin = true;
             }
         }
         return restrictRemoteSystemLogin.booleanValue();
     }
 
     public List<String> getAllowedInstanceForSystemLogin() {
-        if (allowedInstancesForSystemLogin==null) {
+        if (allowedInstancesForSystemLogin == null) {
             String instanceKeys = Framework.getProperty(REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP, null);
-            if (instanceKeys !=null) {
-                instanceKeys= instanceKeys.trim();
+            if (instanceKeys != null) {
+                instanceKeys = instanceKeys.trim();
                 if (instanceKeys.endsWith(TRUSTED_INSTANCES_SEP)) {
-                    instanceKeys = instanceKeys.substring(0, instanceKeys.length()-1);
+                    instanceKeys = instanceKeys.substring(0, instanceKeys.length() - 1);
                 }
                 allowedInstancesForSystemLogin = Arrays.asList(instanceKeys.split(TRUSTED_INSTANCES_SEP));
             } else {
@@ -82,12 +81,7 @@ public class SystemLoginRestrictionManager {
     }
 
     public boolean isRemoveSystemLoginAllowedForInstance(String instanceId) {
-
-        if (getAllowedInstanceForSystemLogin().contains(instanceId)) {
-            return true;
-        }
-
-        return false;
+        return getAllowedInstanceForSystemLogin().contains(instanceId);
     }
 
 

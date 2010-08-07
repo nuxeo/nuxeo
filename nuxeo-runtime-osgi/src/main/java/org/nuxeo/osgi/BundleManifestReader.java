@@ -34,7 +34,6 @@ import org.osgi.framework.Constants;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class BundleManifestReader {
 

@@ -44,13 +44,13 @@ public class RuntimeFeature extends SimpleFeature {
 
     protected RuntimeHarness harness;
 
-    protected DeploymentSet deploy;
+    protected final DeploymentSet deploy;
 
     /**
      * Providers contributed by other features to override the default service provider
      * used for a nuxeo service.
      */
-    protected Map<Class<?>, Provider<?>> serviceProviders;
+    protected final Map<Class<?>, Provider<?>> serviceProviders;
 
     public RuntimeFeature() {
         harness = new NXRuntimeTestCase();

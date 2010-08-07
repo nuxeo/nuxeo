@@ -27,11 +27,10 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AnnotationScanner {
 
-    protected Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
+    protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
 
     public synchronized void scan(Class<?> clazz) {
         if (classes.containsKey(clazz)) {

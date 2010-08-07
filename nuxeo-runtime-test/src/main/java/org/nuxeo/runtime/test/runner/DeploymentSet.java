@@ -27,8 +27,8 @@ import java.util.Set;
  */
 public class DeploymentSet {
 
-    protected LinkedHashSet<String> deployments;
-    protected LinkedHashSet<String> localDeployments;
+    protected final LinkedHashSet<String> deployments;
+    protected final LinkedHashSet<String> localDeployments;
 
     public DeploymentSet() {
         deployments = new LinkedHashSet<String>();

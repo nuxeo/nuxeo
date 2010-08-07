@@ -67,11 +67,11 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     private SecurityDomain clientLogin;
 
-    protected static String instanceId = RuntimeInstanceIdentifier.getId();
+    protected static final String instanceId = RuntimeInstanceIdentifier.getId();
 
-    protected static SystemLoginRestrictionManager systemLoginManager = new SystemLoginRestrictionManager();
+    protected static final SystemLoginRestrictionManager systemLoginManager = new SystemLoginRestrictionManager();
 
-    protected static Log log = LogFactory.getLog(LoginComponent.class);
+    protected static final Log log = LogFactory.getLog(LoginComponent.class);
 
     @Override
     public void activate(ComponentContext context) throws Exception {

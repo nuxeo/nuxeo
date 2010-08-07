@@ -26,13 +26,12 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public class ServiceTest {
     @Inject EventService eventService;
-    @Test public void testService() throws Exception {
+    @Test public void testService() {
         Assert.assertNotNull(eventService);
     }
 }

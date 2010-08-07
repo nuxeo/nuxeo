@@ -39,7 +39,7 @@ public class WebTest {
 
     @Inject protected MyHomePage home;
 
-    @Test public void testSearch() throws Exception {
+    @Test public void testSearch() {
         SearchResultPage result = home.search("test");
         Assert.assertNotNull(result.getFirstResult());
 //        System.out.println(result.getFirstResult());

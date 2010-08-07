@@ -198,9 +198,8 @@ public class TransactionHelper {
             log.warn("No user transaction", e);
             return;
         }
-        int status;
         try {
-            status = ut.getStatus();
+            int status = ut.getStatus();
             if (status == Status.STATUS_ACTIVE) {
                 if (log.isDebugEnabled()) {
                     log.debug("Commiting transaction");

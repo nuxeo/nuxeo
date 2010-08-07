@@ -11,40 +11,38 @@ public abstract class AbstractMonitoring {
 
     public static final String RESPONSE_DURATION_TAG = "nx:duration";
 
-    protected Stopwatch getStopwatch(MethodInvocation ctx, String ...names) {
-        String name = formatName(ctx,names);
+    protected Stopwatch getStopwatch(MethodInvocation ctx, String... names) {
+        String name = formatName(ctx, names);
         Stopwatch stopwatch = SimonManager.getStopwatch(name);
         stopwatch.setNote(formatNote(ctx));
         return stopwatch;
     }
 
-
-    protected  Counter getCounter(MethodInvocation ctx, String... names) {
+    protected Counter getCounter(MethodInvocation ctx, String... names) {
         String name = formatName(ctx, names);
-        Counter counter = SimonManager.getCounter(name);
-        return counter;
+        return SimonManager.getCounter(name);
     }
 
-    protected String formatParms(Object ...parms) {
-        if (parms == null) {
+    protected String formatParams(Object... params) {
+        if (params == null) {
             return "";
         }
         StringBuffer buffer = new StringBuffer();
-        for (Object parm:parms) {
-            buffer.append(".").append(parm);
+        for (Object param : params) {
+            buffer.append(".").append(param);
         }
         return buffer.toString();
     }
 
-    protected  String formatName(MethodInvocation context, String ...parms) {
+    protected String formatName(MethodInvocation context, String... params) {
         Method m = context.getActualMethod();
         Class<?> declaringClass = m.getDeclaringClass();
-        return String.format("%s.%s%s", declaringClass.getSimpleName(), m.getName(),formatParms(parms));
+        return String.format("%s.%s%s", declaringClass.getSimpleName(), m.getName(), formatParams(params));
     }
 
-    protected  String formatNote(MethodInvocation context) {
+    protected String formatNote(MethodInvocation context) {
         Method m = context.getActualMethod();
-        return String.format("%s#%s(%s)", m.getDeclaringClass().getSimpleName(), m.getName(), formatParms(context.getArguments()));
+        return String.format("%s#%s(%s)", m.getDeclaringClass().getSimpleName(), m.getName(), formatParams(context.getArguments()));
     }
 
 }

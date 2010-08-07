@@ -28,7 +28,7 @@ import org.nuxeo.runtime.util.SimpleRuntime;
 
 public class TestSystemLoginRestriction extends TestCase {
 
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         System.setProperty("org.nuxeo.runtime.testing", "true");
@@ -67,7 +67,6 @@ public class TestSystemLoginRestriction extends TestCase {
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost2"));
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance(""));
-
     }
 
 }

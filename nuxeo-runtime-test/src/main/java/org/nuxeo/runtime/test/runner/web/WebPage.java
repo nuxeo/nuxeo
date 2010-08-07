@@ -158,7 +158,6 @@ public abstract class WebPage {
                 }
             });
         } catch (NotFoundException e) {
-            return;
         }
     }
 

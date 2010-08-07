@@ -2,16 +2,15 @@ package org.nuxeo.runtime.management.metrics;
 
 import org.javasimon.SimonManager;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.BundleContext;
 
 
-public class MetricComponent extends org.nuxeo.runtime.model.DefaultComponent {
+public class MetricComponent extends DefaultComponent {
 
+    protected final MetricSerializer serializer = new MetricSerializer();
 
-    protected MetricSerializer serializer = new MetricSerializer();
-
-    protected MetricEnabler enabler = new MetricEnabler();
-
+    protected final MetricEnabler enabler = new MetricEnabler();
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -21,9 +20,9 @@ public class MetricComponent extends org.nuxeo.runtime.model.DefaultComponent {
         return super.getAdapter(adapter);
     }
 
-    protected MetricRegisterer register = new MetricRegisterer();
+    protected final MetricRegisterer register = new MetricRegisterer();
 
-    protected MetricRegisteringCallback  registeringCB = new  MetricRegisteringCallback();
+    protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback();
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -59,4 +58,5 @@ public class MetricComponent extends org.nuxeo.runtime.model.DefaultComponent {
         register.unregisterMXBean(enabler);
         register.unregisterMXBean(serializer);
     }
+
 }

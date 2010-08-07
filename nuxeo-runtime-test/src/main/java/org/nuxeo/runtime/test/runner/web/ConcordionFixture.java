@@ -27,7 +27,7 @@ import org.junit.Test;
  */
 public class ConcordionFixture {
 
-    protected ConcordionBuilder concordionBuilder = new ConcordionBuilder();
+    protected final ConcordionBuilder concordionBuilder = new ConcordionBuilder();
 
     @Test public void test() throws IOException {
         ResultSummary resultSummary = concordionBuilder.build().process(this);

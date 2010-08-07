@@ -13,13 +13,13 @@ public class MetricEnabler implements MetricEnablerMXBean {;
 
     protected MetricSerializer serializer;
 
+    protected LoggingCallback lgCB;
+
+    protected final JmxRegisterCallback jmxCB = new JmxRegisterCallback();
+
     protected void setSerializer(MetricSerializer serializer) {
         this.serializer = serializer;
     }
-
-    protected LoggingCallback lgCB;
-
-    protected JmxRegisterCallback jmxCB = new JmxRegisterCallback();
 
     public void enable() {
         SimonManager.enable();

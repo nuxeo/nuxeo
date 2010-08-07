@@ -26,7 +26,7 @@ import com.google.inject.Provider;
  */
 public class ServiceProvider<T> implements Provider<T> {
 
-    protected Class<?> clazz;
+    protected final Class<?> clazz;
 
     public ServiceProvider(Class<?> clazz) {
         this.clazz = clazz;

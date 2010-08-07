@@ -10,7 +10,7 @@ import org.nuxeo.runtime.management.metrics.MetricSerializer;
 
 public class MetricSerializerTestCase extends TestCase {
 
-    MetricSerializer srv = new MetricSerializer();
+    final MetricSerializer srv = new MetricSerializer();
 
     static class Context {
         public String getInfo() {
@@ -37,4 +37,5 @@ public class MetricSerializerTestCase extends TestCase {
         srv.flushOuput();
         assertTrue(srv.getOutputFile().length() > 0);
     }
+
 }

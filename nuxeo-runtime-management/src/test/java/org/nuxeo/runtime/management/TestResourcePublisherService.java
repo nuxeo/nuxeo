@@ -27,10 +27,6 @@ import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import org.nuxeo.runtime.api.Framework;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
 public class TestResourcePublisherService extends ManagementTestCase {
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -39,7 +35,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         assertNotNull(Framework.getService(ResourcePublisher.class));
     }
 
-    public void testRegisterResource() throws Exception {
+    public void testRegisterResource() {
         publisherService.registerResource("dummy", "org.nuxeo:name=dummy",
                 DummyMBean.class, new DummyService());
         publisherService.bindResources();

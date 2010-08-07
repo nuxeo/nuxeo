@@ -30,7 +30,7 @@ public class BundleRegistration {
 
     BundleImpl bundle;
 
-    // XXX: explain why these three variables are lazily instanciated.
+    // XXX: explain why these three variables are lazily instantiated.
     Set<String> dependsOn;
     Set<String> dependsOnMe;
     Set<String> waitingFor;

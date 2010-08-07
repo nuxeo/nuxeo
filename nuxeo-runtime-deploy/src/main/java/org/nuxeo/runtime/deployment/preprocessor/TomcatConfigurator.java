@@ -24,15 +24,11 @@ import java.io.File;
 
 /**
  * @author jcarsique
- *
  */
 public class TomcatConfigurator extends ServerConfigurator {
 
     public static final String TOMCAT_CONFIG = "conf/Catalina/localhost/nuxeo.xml";
 
-    /**
-     * @param configurationGenerator
-     */
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -40,6 +36,7 @@ public class TomcatConfigurator extends ServerConfigurator {
     /**
      * @return true if "config" files directory already exists
      */
+    @Override
     protected boolean isConfigured() {
         log.debug("Detected Tomcat server.");
         return new File(generator.getNuxeoHome(), TOMCAT_CONFIG).exists();

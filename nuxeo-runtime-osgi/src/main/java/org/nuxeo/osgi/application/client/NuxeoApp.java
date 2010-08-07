@@ -46,11 +46,11 @@ import org.osgi.framework.FrameworkEvent;
  */
 public class NuxeoApp {
 
-    protected OSGiAdapter osgi;
-
     protected final ClassLoader loader;
 
     protected final Environment env;
+
+    private OSGiAdapter osgi;
 
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

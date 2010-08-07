@@ -40,7 +40,7 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class FrameworkLoader {
 
@@ -103,8 +103,7 @@ public class FrameworkLoader {
     }
 
     public static synchronized void initialize(ClassLoader cl, File home,
-            List<File> bundleFiles, Map<String, Object> hostEnv)
-            throws Exception {
+            List<File> bundleFiles, Map<String, Object> hostEnv) {
         if (isInitialized) {
             return;
         }

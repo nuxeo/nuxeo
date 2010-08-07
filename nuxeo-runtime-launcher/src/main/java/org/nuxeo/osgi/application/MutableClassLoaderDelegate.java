@@ -28,7 +28,7 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
     protected final ClassLoader cl;
     protected Method addURL;
 
-    public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {
+    public MutableClassLoaderDelegate(ClassLoader cl) {
         this.cl = cl;
         Class<?> clazz = cl.getClass();
         do {
@@ -41,7 +41,8 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
             }
         } while (addURL == null && clazz != null);
         if (addURL == null) {
-            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)");
+            throw new IllegalArgumentException("Incompatible class loader: "+cl.getClass()
+                    +". ClassLoader must provide a method: addURL(URL url)");
         }
         addURL.setAccessible(true);
     }

@@ -11,14 +11,13 @@ import org.javasimon.Split;
 
 public class MetricSerializingCallback extends CallbackSkeleton {
 
-    protected static Log log = LogFactory.getLog(MetricSerializingCallback.class);
+    protected static final Log log = LogFactory.getLog(MetricSerializingCallback.class);
 
     protected MetricSerializer serializer;
 
     public MetricSerializingCallback(MetricSerializer serializer) {
         this.serializer = serializer;
     }
-
 
     @Override
     public void stopwatchStop(Split split) {

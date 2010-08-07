@@ -42,7 +42,7 @@ import com.google.inject.Module;
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
-    protected static AnnotationScanner scanner = new AnnotationScanner();
+    protected static final AnnotationScanner scanner = new AnnotationScanner();
 
     /**
      * Guice injector.
@@ -69,12 +69,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return super.getTestClass().getJavaClass();
     }
 
-    protected void loadFeature(HashSet<Class<?>> cycles, LinkedHashSet<Class<? extends RunnerFeature>> features, Class<? extends RunnerFeature> clazz) throws Exception {
-        if (features.contains(clazz)) {
+    protected void loadFeature(HashSet<Class<?>> cycles,
+            LinkedHashSet<Class<? extends RunnerFeature>> features,
+            Class<? extends RunnerFeature> clazz) throws Exception {
+    if (features.contains(clazz)) {
             return;
         }
         if (cycles.contains(clazz)) {
-            throw new Error("Cycle detected in features dependencies of "+clazz);
+            throw new IllegalStateException("Cycle detected in features dependencies of "+clazz);
         }
         cycles.add(clazz);
         scanner.scan(clazz);
@@ -236,8 +238,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected class InvokeMethod extends Statement {
-        protected FrameworkMethod testMethod;
-        protected Object target;
+        protected final FrameworkMethod testMethod;
+        protected final Object target;
 
         protected InvokeMethod(FrameworkMethod testMethod, Object target) {
             this.testMethod = testMethod;

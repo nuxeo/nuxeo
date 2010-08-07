@@ -42,7 +42,6 @@ import com.sun.enterprise.config.serverbeans.ConnectorModule;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class GF3Component extends DefaultComponent {
 
@@ -101,7 +100,9 @@ public class GF3Component extends DefaultComponent {
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
             WebApplication app = (WebApplication)contribution;
-            log.info("Async. Deploying WAR:  "+ app.getName()+"; context path:  "+app.getContextPath()+" webRoot: "+app.getWebRoot());
+            log.info("Async. Deploying WAR:  " + app.getName()
+                    + "; context path:  " + app.getContextPath()
+                    + " webRoot: " + app.getWebRoot());
             Thread deployerThread = new Thread(new WarDeployer(app), "Deployer");
             deployerThread.setPriority(Thread.MAX_PRIORITY);
             deployerThread.start();
@@ -129,12 +130,11 @@ public class GF3Component extends DefaultComponent {
         return null;
     }
 
-
     class WarDeployer implements Runnable {
 
         final WebApplication app;
 
-        public WarDeployer(WebApplication app) {
+        WarDeployer(WebApplication app) {
             this.app = app;
         }
         public void run() {
@@ -183,6 +183,5 @@ public class GF3Component extends DefaultComponent {
             }
         }
     }
-
 
 }
