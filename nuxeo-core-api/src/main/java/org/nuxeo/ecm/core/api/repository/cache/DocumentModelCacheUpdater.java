@@ -132,26 +132,33 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
             }
             catch (Exception e) {
                 StringBuilder sb = new StringBuilder("In event " + event.getId() + ", error handling ");
-                if (modif.isCreate())
+                if (modif.isCreate()) {
                     sb.append("create ");
-                if (modif.isAddChild())
+                }
+                if (modif.isAddChild()) {
                     sb.append("add-child ");
-                if (modif.isOrderChild())
+                }
+                if (modif.isOrderChild()) {
                     sb.append("order-child ");
-                if (modif.isRemove())
+                }
+                if (modif.isRemove()) {
                     sb.append("remove ");
-                if (modif.isRemoveChild())
+                }
+                if (modif.isRemoveChild()) {
                     sb.append("remove-child ");
-                if (modif.isUpdateModification())
+                }
+                if (modif.isUpdateModification()) {
                     sb.append("update ");
+                }
                 sb.append("modification " + modif);
-                if (doc != null)
+                if (doc != null) {
                     sb.append("\nCached DocumentModel '" + doc.getTitle()
                             + "' [type=" + doc.getType()
                             + " id=" + doc.getId()
                             + " path=" + doc.getPathAsString() + "\n");
-                else
+                } else {
                     sb.append("\nCached DocumentModel is null\n");
+                }
                 sb.append("childref=" + childRef + "\n");
                 sb.append("\nWhilst processing the following Modification set:\n");
                 for (Modification m : event.getModifications()) {

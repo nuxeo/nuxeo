@@ -146,8 +146,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return info;
     }
 
-    protected static String getDocumentLocker(DocumentModel doc)
-            throws ClientException {
+    protected static String getDocumentLocker(DocumentModel doc) {
         String lock = doc.getLock();
         if (lock == null) {
             return null;

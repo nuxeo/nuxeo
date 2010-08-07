@@ -45,11 +45,6 @@ public class TestExportImportBlob extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     private void createDocs() throws Exception {
         rootDocument = session.getRootDocument();
         workspace = session.createDocumentModel(rootDocument.getPathAsString(),

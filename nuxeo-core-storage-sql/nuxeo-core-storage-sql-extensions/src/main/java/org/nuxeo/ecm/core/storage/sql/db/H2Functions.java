@@ -25,13 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -220,9 +217,7 @@ public class H2Functions extends EmbeddedFunctions {
                 }
             }
         } finally {
-            if (ps != null) {
-                ps.close();
-            }
+            ps.close();
         }
         return readAcl.toString();
     }

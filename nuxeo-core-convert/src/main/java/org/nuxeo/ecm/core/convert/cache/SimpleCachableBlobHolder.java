@@ -104,10 +104,8 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
         } else {
             File dir = new File(path.toString());
             dir.mkdir();
-            for (int i = 0; i < blobs.size(); i++) {
-                Blob blob = blobs.get(i);
-                File file = new File(
-                        (path.append(blob.getFilename())).toString());
+            for (Blob blob : blobs) {
+                File file = new File((path.append(blob.getFilename())).toString());
                 blob.transferTo(file);
             }
             return dir.getAbsolutePath();

@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * The data of a single row in a table (keys/values form a map), or of multiple
  * rows with the same id (values is an array of Serializable).
@@ -129,8 +127,6 @@ public final class Row extends RowId implements Serializable {
      *
      * @param key the key
      * @param value the value
-     * @return {@code true} if an old key was overwritten
-     * @throws StorageException
      */
     public void put(String key, Serializable value) {
         if (key.equals(Model.MAIN_KEY)) {
@@ -154,7 +150,6 @@ public final class Row extends RowId implements Serializable {
      *
      * @param key the key
      * @param value the value
-     * @throws StorageException
      */
     public void putNew(String key, Serializable value) {
         if (key.equals(Model.MAIN_KEY)) {
@@ -171,7 +166,6 @@ public final class Row extends RowId implements Serializable {
      *
      * @param key the key
      * @return the value
-     * @throws StorageException
      */
     public Serializable get(String key) {
         if (key.equals(Model.MAIN_KEY)) {

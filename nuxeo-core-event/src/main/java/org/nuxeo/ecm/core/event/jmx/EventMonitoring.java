@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class EventMonitoring implements EventMonitoringMBean {
 
-    private EventServiceAdmin getAdminService() {
+    private static EventServiceAdmin getAdminService() {
         return Framework.getLocalService(EventServiceAdmin.class);
     }
 

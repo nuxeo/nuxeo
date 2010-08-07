@@ -94,7 +94,8 @@ public class AsyncEventExecutor {
     }
 
     public int getUnfinishedCount() {
-        return executor.getQueue().size() + executor.getActiveCount() + mono_executor.getQueue().size() + mono_executor.getActiveCount();
+        return executor.getQueue().size() + executor.getActiveCount()
+                + mono_executor.getQueue().size() + mono_executor.getActiveCount();
     }
 
     public int getActiveCount() {

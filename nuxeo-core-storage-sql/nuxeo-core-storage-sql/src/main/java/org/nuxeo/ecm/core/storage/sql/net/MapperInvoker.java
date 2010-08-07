@@ -65,7 +65,7 @@ public class MapperInvoker extends Thread {
         }
     }
 
-    private Repository repository;
+    private final Repository repository;
 
     private Session session;
 

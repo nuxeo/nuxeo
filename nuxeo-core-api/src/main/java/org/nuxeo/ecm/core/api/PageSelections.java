@@ -25,8 +25,6 @@ import java.util.List;
  */
 public class PageSelections<T> {
 
-    private static final long serialVersionUID = 1L;
-
     protected String name;
 
     protected boolean selected;

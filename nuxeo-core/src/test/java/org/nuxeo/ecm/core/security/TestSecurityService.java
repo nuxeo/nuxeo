@@ -32,8 +32,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import org.nuxeo.osgi.BundleFile;
-
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>

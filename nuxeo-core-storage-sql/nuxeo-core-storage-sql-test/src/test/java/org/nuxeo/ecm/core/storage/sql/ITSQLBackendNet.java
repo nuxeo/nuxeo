@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;

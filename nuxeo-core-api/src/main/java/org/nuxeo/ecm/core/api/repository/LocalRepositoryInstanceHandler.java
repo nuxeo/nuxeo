@@ -36,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
 
+    private static final long serialVersionUID = 1L;
+
     protected final Principal principal;
 
     public LocalRepositoryInstanceHandler(Repository repository, NuxeoPrincipal principal) {

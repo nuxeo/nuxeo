@@ -41,11 +41,11 @@ import com.google.inject.Provider;
 
 /**
  * Repository configuration that can be set using {@link RepositoryConfig} annotations.
- *
- * If you are modifying fields in this class do not forget to update the {@link RepositorySettings#importSettings(RepositorySettings) method
+ * <p>
+ * If you are modifying fields in this class do not forget to update the
+ * {@link RepositorySettings#importSettings(RepositorySettings) method.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RepositorySettings implements Provider<CoreSession> {
 

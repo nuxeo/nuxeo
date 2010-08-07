@@ -177,11 +177,6 @@ public class JCRRepository extends RepositoryImpl implements Repository {
         }
     }
 
-    @Override
-    public synchronized void shutdown() {
-        super.shutdown();
-    }
-
     void aboutToCloseSession(org.nuxeo.ecm.core.model.Session session) {
         // remove session from pool
         uncacheSession(session);

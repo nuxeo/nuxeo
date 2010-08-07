@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Sample test showing how to use a direct access to the binaries storage.

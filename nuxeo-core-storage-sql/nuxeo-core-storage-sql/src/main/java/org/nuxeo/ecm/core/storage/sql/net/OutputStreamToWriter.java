@@ -33,7 +33,7 @@ public class OutputStreamToWriter extends OutputStream {
     }
 
     // debug
-    private StringBuilder sb = new StringBuilder();
+    private final StringBuilder sb = new StringBuilder();
 
     // debug
     private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();

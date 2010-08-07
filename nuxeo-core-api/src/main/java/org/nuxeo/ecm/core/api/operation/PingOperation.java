@@ -24,9 +24,10 @@ package org.nuxeo.ecm.core.api.operation;
  * test connectivity.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- *
  */
 public class PingOperation extends Operation {
+
+    private static final long serialVersionUID = 1L;
 
     public PingOperation() {
         super("__PING__");

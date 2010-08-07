@@ -225,7 +225,7 @@ public abstract class AbstractSession implements CoreSession,
                 }
             }
         }
-        // <------------- end repository intialization
+        // <------------- end repository initialization
 
         return sessionId;
     }

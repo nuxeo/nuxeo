@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
-import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 
 /**
  * Runs synchronous Listeners in a separated thread in order to enable TX

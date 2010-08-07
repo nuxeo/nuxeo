@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api;
  * a core level.
  *
  * @author Anahide Tchertchian
- *
  */
 public interface LifeCycleConstants {
 
