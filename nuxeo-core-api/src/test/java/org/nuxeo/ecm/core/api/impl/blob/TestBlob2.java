@@ -71,7 +71,7 @@ public class TestBlob2 extends TestCase {
         out.write("some content");
         out.close();
 
-        Blob blob = new URLBlob(file.toURL(), "text/plain", "UTF-8");
+        Blob blob = new URLBlob(file.toURI().toURL(), "text/plain", "UTF-8");
         checkBlob(blob);
 
         file.delete();
