@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Stephane Lacoin 
+ *     Stephane Lacoin
  */
 
 package org.nuxeo.ecm.core.storage.sql.management;

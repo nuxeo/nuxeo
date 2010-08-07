@@ -47,7 +47,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- * 
+ *
  * @author Florent Guillaume
  */
 public class DefaultBinaryManager implements BinaryManager {
@@ -184,7 +184,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
     /**
      * Gets a file representing the storage for a given digest.
-     * 
+     *
      * @param digest the digest
      * @param createDir {@code true} if the directory containing the file itself
      *            must be created

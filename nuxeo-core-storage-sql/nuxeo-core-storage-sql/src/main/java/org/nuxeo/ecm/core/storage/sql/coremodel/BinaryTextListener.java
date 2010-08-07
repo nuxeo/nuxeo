@@ -124,7 +124,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                 // the target document that carries it
                 continue;
             }
-            
+
             // Iterate on each index to set the binaryText column
             for (String indexName : fulltextInfo.indexNames) {
                 if (!fulltextInfo.indexesAllBinary.contains(indexName)
@@ -147,7 +147,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                     continue;
                 }
             }
-            
+
             save = true;
         }
         if (save) {
@@ -192,7 +192,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
         return StringUtils.join(strings, " ");
     }
-    
+
     public String getFulltextIndexSuffix(String indexName) {
         return indexName.equals(Model.FULLTEXT_DEFAULT_INDEX) ? "" : '_' + indexName;
     }

@@ -34,8 +34,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCGCache extends NXRuntimeTestCase {
-    
-    ConversionService cs; 
+
+    ConversionService cs;
 
     @Override
     public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class TestCGCache extends NXRuntimeTestCase {
         cs = Framework.getLocalService(ConversionService.class);
     }
 
-    
+
     public void testCGTask() throws Exception {
         int noRuns = ConversionCacheGCManager.getGCRuns();
         Converter cv = deployConverter();
@@ -57,7 +57,7 @@ public class TestCGCache extends NXRuntimeTestCase {
         BlobHolder bh = getBlobHolder();
         BlobHolder result = cs.convert("identity", bh, null);
         assertNotNull(result);
-        
+
         int cacheSize2 = ConversionCacheHolder.getNbCacheEntries();
         // check new cache entry was created
         assertEquals(1, cacheSize2 - cacheSize1);
@@ -75,12 +75,12 @@ public class TestCGCache extends NXRuntimeTestCase {
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
         assertEquals(0, cacheSize3);
     }
-    
+
     private Converter deployConverter() throws Exception{
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
         return ConversionServiceImpl.getConverter("identity");
     }
-    
+
     private BlobHolder getBlobHolder(){
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
         assertNotNull(file);
@@ -91,5 +91,5 @@ public class TestCGCache extends NXRuntimeTestCase {
         return new SimpleBlobHolder(blob);
 
     }
-  
+
 }

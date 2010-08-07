@@ -60,7 +60,7 @@ public class BlobsExtractor {
     private Set<String> excludedPathProperties;
 
     private boolean indexAllBinary = false;
-    
+
     private boolean isDefaultConfiguration = true;
 
     protected SchemaManager getSchemaManager() throws Exception {
@@ -297,8 +297,8 @@ public class BlobsExtractor {
                 && excludedPathProps == null
                 && Boolean.TRUE.equals(indexBlobs));
     }
-    
-    
+
+
     private boolean isInterestingBlobProperty(String path, String prefix) {
         if (isDefaultConfiguration) {
             return true;
@@ -311,7 +311,7 @@ public class BlobsExtractor {
         }
         return false;
     }
-    
+
     private boolean matchProperty(String prefix, String fieldPath, Set<String> propPaths) {
         String pathToMatch = (prefix == "" ? "" : prefix + ":") + fieldPath.substring(1);
         for (String propPath : propPaths) {

@@ -168,7 +168,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * Testing that if 2 modifications are done at the same time on the same
      * document on 2 separate transactions, one is rejected
      * (TransactionRuntimeException)
-     * 
+     *
      * @throws Exception
      */
     public void testDirtyUpdateDetection() throws Exception {

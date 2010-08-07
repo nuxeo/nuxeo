@@ -106,7 +106,7 @@ public class SearchIndex extends
             this.indexFormatVersion = indexFormatVersion;
             resolver = NamePathResolverImpl.create(nsMappings);
             QueryHandlerContext context = getContext();
-			itemStateManager = context.getItemStateManager();
+            itemStateManager = context.getItemStateManager();
         }
 
         protected Document createDocument(NodeState node)

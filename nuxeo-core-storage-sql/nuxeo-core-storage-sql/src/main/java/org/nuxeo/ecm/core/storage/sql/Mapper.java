@@ -128,7 +128,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @return an iterable, which <b>must</b> be closed when done
      */
     // queryFilter used for principals and permissions
-    public IterableQueryResult queryAndFetch(String query, String queryType,
+    IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException;
 
     /*

@@ -52,7 +52,7 @@ import org.nuxeo.runtime.services.streaming.StreamingService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public final class NuxeoClient {
 
@@ -225,8 +225,8 @@ public final class NuxeoClient {
     }
 
     /**
-     * Workaround for being able to load schemas from remote 
-     * TODO integrate this in core 
+     * Workaround for being able to load schemas from remote
+     * TODO integrate this in core
      */
     private static void schemaRemotingWorkaround(String host) throws Exception {
         ServiceManager serviceManager = Framework.getLocalService(ServiceManager.class);
@@ -347,7 +347,7 @@ public final class NuxeoClient {
 
     /**
      * Gets the repositories available on the connected server.
-     * 
+     *
      * @return the repositories
      */
     public Repository[] getRepositories() throws Exception {
