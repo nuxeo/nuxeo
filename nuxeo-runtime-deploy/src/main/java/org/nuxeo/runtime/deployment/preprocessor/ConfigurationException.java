@@ -21,18 +21,13 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 /**
  * @author jcarsique
- *
  */
 public class ConfigurationException extends Exception {
 
-    /**
-     * @param string
-     * @param e
-     */
+    private static final long serialVersionUID = 1L;
+
     public ConfigurationException(String message, Throwable throwable) {
         super(message, throwable);
     }
-
-    private static final long serialVersionUID = 1L;
 
 }

@@ -39,6 +39,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DataSourceHelper {
 
+    private DataSourceHelper() {
+    }
+
     protected static final class TestingInitialContext extends InitialContext {
         protected TestingInitialContext() throws NamingException {
             super(false); // lazy mode is breaking jboss
