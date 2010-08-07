@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.el;
 
 import java.io.Serializable;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
@@ -41,8 +42,8 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * To specify a property on a document mode, the following syntax is available:
  * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the
  * schema name and 'title' is the field name. It can be used to get or set the
- * document title : <h:outputText value="#{currentDocument.dublincore.title}" />
- * or <h:inputText value="#{currentDocument.dublincore.title}" />.
+ * document title: {@code <h:outputText value="#{currentDocument.dublincore.title}" />}
+ * or {@code <h:inputText value="#{currentDocument.dublincore.title}" />}.
  * <p>
  * Simple document properties are get/set directly: for instance, the above
  * expression will return a String value on get, and set this String on the
@@ -127,7 +128,7 @@ public class DocumentModelResolver extends BeanELResolver {
             } catch (Exception e) {
                 Throwable t = e;
                 do {
-                    if (t instanceof javax.ejb.EJBTransactionRolledbackException) {
+                    if (t instanceof EJBTransactionRolledbackException) {
                         // log if ejb rollback (kills seam components silently)
                         log.error(t, t);
                         break;

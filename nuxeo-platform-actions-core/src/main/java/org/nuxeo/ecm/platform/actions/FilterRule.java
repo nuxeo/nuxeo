@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 @XObject("rule")
 public class FilterRule {
@@ -146,14 +145,14 @@ public class FilterRule {
                     sb.append(",");
                 }
             }
-            
+
             if (groups != null && groups.length > 0) {
-				sb.append(":groups:");
-				for (String group : groups) {
-					sb.append(group);
-					sb.append(",");
-				}
-			}
+                sb.append(":groups:");
+                for (String group : groups) {
+                    sb.append(group);
+                    sb.append(",");
+                }
+            }
             cacheKey = sb.toString();
         }
         return cacheKey;

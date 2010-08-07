@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
  * type.
  * <p>
  * 3 - Structure Mismatch: The JSF bean must be split in several fields ie:
- * The updloaded file is one object, but the core expect at least 2 separate
+ * The uploaded file is one object, but the core expect at least 2 separate
  * fields (filename and content)
  *
  * @author Thierry Delprat
