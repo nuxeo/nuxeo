@@ -77,7 +77,7 @@ public class TestURIUtils extends TestCase {
         return URIUtils.quoteURIPathComponent(s, b);
     }
 
-    public void testQuoteURIPathComponent() throws Exception {
+    public void testQuoteURIPathComponent() {
         assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", q(
                 "test yes:no /caf\u00e9.bin", true));
         assertEquals("http%3A%2F%2Ffoo%2Fbar", q("http://foo/bar", true));
@@ -90,7 +90,7 @@ public class TestURIUtils extends TestCase {
         return URIUtils.unquoteURIPathComponent(s);
     }
 
-    public void testUnquoteURIPathComponent() throws Exception {
+    public void testUnquoteURIPathComponent() {
         assertEquals("test yes:no /caf\u00e9.bin",
                 uq("test%20yes%3Ano%20%2Fcaf%C3%A9.bin"));
         assertEquals("http://foo/bar", uq("http%3A%2F%2Ffoo%2Fbar"));

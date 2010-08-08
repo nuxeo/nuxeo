@@ -36,8 +36,6 @@ import javax.naming.NoPermissionException;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
-import org.nuxeo.common.jndi.NamingContext;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.jndi.NamingContext.NamingContextNameParser;
 
 import junit.framework.TestCase;

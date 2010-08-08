@@ -157,7 +157,6 @@ public class XMap {
      * @param klass the object class
      * @return the mapping description
      */
-    @SuppressWarnings("unchecked")
     public XAnnotatedObject register(Class klass) {
         XAnnotatedObject xao = objects.get(klass);
         if (xao == null) { // avoid scanning twice

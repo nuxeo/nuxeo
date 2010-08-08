@@ -391,7 +391,6 @@ public final class XMLMemento implements Memento {
      * specified writer.
      *
      * @param writer the writer used to save the memento's document
-     * @throws IOException if there is a problem serializing the document to the stream.
      */
     public void save(Writer writer) {
         DOMWriter out = new DOMWriter(writer);

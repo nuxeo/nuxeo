@@ -26,7 +26,7 @@ import junit.framework.TestCase;
  */
 public class TestRFC2231 extends TestCase {
 
-    public void testEncodeWithPercent() throws Exception {
+    public void testEncodeWithPercent() {
         StringBuilder buf = new StringBuilder();
         RFC2231.percentEscape(buf, "foo");
         assertEquals("foo", buf.toString());
