@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.layout.service;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -39,12 +38,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
  * definition.
  *
  * @author Anahide Tchertchian
- *
  */
 public class LayoutAutomaticGeneration {
 
     public static Document generateLayoutOutput(SchemaManager sm,
-            String schemaName, boolean generateLabels) throws ClientException {
+            String schemaName, boolean generateLabels) {
         String layoutName = String.format("%s", schemaName);
 
         Document document = DocumentFactory.getInstance().createDocument();

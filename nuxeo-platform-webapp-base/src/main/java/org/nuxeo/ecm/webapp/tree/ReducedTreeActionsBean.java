@@ -47,7 +47,7 @@ public class ReducedTreeActionsBean extends TreeActionsBean {
 
     @Override
     public List<DocumentTreeNode> getTreeRoots() throws ClientException {
-    	return getTreeRoots(true);
+        return getTreeRoots(true);
     }
 
 }

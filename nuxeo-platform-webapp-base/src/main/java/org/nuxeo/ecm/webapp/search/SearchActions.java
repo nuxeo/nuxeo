@@ -30,20 +30,18 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
- *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public interface SearchActions extends StatefulBaseLifeCycle,
     SelectDataModelListener, ResultsProviderFarm {
 
     String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
-    static final String QM_ADVANCED = "ADVANCED_SEARCH";
+    String QM_ADVANCED = "ADVANCED_SEARCH";
 
-    static final String QM_SIMPLE = "SIMPLE_SEARCH";
+    String QM_SIMPLE = "SIMPLE_SEARCH";
 
-    static final String PROV_NXQL = "SEARCH_BEAN_NXQL_PROVIDER";
+    String PROV_NXQL = "SEARCH_BEAN_NXQL_PROVIDER";
 
     /**
      * Declaration for [Seam]Create method.

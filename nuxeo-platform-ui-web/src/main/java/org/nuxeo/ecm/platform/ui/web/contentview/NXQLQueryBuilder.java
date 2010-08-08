@@ -44,6 +44,9 @@ public class NXQLQueryBuilder {
 
     public static final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 
+    private NXQLQueryBuilder() {
+    }
+
     public static String getSortClause(SortInfo... sortInfos) {
         StringBuilder queryBuilder = new StringBuilder();
         if (sortInfos != null) {

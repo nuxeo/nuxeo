@@ -107,14 +107,12 @@ public class DirectorySelectManyWidgetTypeHandler extends
                     helper.createAttribute("var", "item"));
             List<TagAttribute> attrs = new ArrayList<TagAttribute>();
             // first fill with widget properties
-            if (properties != null) {
-                for (Map.Entry<String, Serializable> property : properties.entrySet()) {
-                    if (!"value".equals(property.getKey())) {
-                        TagAttribute attr = helper.createAttribute(
-                                property.getKey(), property.getValue());
-                        if (attr != null) {
-                            attrs.add(attr);
-                        }
+            for (Map.Entry<String, Serializable> property : properties.entrySet()) {
+                if (!"value".equals(property.getKey())) {
+                    TagAttribute attr = helper.createAttribute(
+                            property.getKey(), property.getValue());
+                    if (attr != null) {
+                        attrs.add(attr);
                     }
                 }
             }

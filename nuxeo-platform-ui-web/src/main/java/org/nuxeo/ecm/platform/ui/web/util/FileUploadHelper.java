@@ -50,12 +50,11 @@ import com.noelios.restlet.http.HttpRequest;
  */
 public class FileUploadHelper {
 
+    private FileUploadHelper() {
+    }
+
     /**
-     * Parses a Multipart Restlet Request to extract blobs
-     *
-     * @param request
-     * @return
-     * @throws Exception
+     * Parses a Multipart Restlet Request to extract blobs.
      */
     public static List<Blob> parseRequest(Request request) throws Exception {
         if (request instanceof HttpRequest) {
@@ -71,10 +70,6 @@ public class FileUploadHelper {
 
     /**
      * Parses a Multipart Servlet Request to extract blobs
-     *
-     * @param request
-     * @return
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public static List<Blob> parseRequest(HttpServletRequest request)
@@ -113,4 +108,5 @@ public class FileUploadHelper {
         }
         return blobs;
     }
+
 }
