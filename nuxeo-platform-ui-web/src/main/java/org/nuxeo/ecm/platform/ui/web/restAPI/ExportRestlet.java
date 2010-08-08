@@ -53,12 +53,10 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
     private static final long serialVersionUID = 7831287875548588711L;
 
-
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
         boolean exportAsTree;
         boolean exportAsZip;
-        boolean needUnrestricted = false;
         String action = req.getResourceRef().getSegments().get(4);
         if (action.equals("exportTree")) {
             exportAsTree = true;
@@ -85,9 +83,10 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
         DocumentModel root;
         String docid = (String) req.getAttributes().get("docid");
-        try {
+        boolean needUnrestricted = false;
 
-            Boolean init = initRepository(res, repo);
+        try {
+            boolean init = initRepository(res, repo);
             if (!init) {
                 handleError(res, "Unable to init repository");
                 return;
@@ -109,7 +108,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                     // if he can at least read a proxy pointing to this version
                     if (root.isVersion()) {
                         DocumentModelList docs = session.getProxies(root.getRef(), null);
-                        Boolean hasReadableProxy = false;
+                        boolean hasReadableProxy = false;
                         for (DocumentModel doc : docs) {
                             if (session.hasPermission(doc.getRef(), SecurityConstants.READ)) {
                                 hasReadableProxy = true;
@@ -203,14 +202,13 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         };
     }
 
-    protected static class UnrestrictedVersionExporter extends
-            UnrestrictedSessionRunner {
+    protected static class UnrestrictedVersionExporter extends UnrestrictedSessionRunner {
 
         private final String docid;
 
         public DocumentModel root;
 
-        public UnrestrictedVersionExporter(CoreSession session, String docId) {
+        protected UnrestrictedVersionExporter(CoreSession session, String docId) {
             super(session);
             docid = docId;
         }
@@ -219,6 +217,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         public void run() throws ClientException {
             root = session.getDocument(new IdRef(docid));
         }
-}
+
+    }
 
 }

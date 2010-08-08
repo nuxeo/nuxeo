@@ -70,8 +70,8 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         }
 
         // build the XML response document holding the containers info
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument resultDocument = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument resultDocument = (DOMDocument) domFactory.createDocument();
         Element containersElement = resultDocument.addElement("containers");
         for (DocumentModel parent : containers) {
             Element docElement = containersElement.addElement(documentTag);

@@ -58,15 +58,14 @@ public class BaseNuxeoRestlet extends Restlet {
     // error handling
 
     protected static void handleError(Response res, String message) {
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
-
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
         handleError(result, res, message);
     }
 
     protected static void handleError(Response res, Exception e) {
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
         handleError(result, res, e.getMessage(), e.getClass().getCanonicalName());
     }
 
@@ -142,10 +141,9 @@ public class BaseNuxeoRestlet extends Restlet {
         }
     }
 
-    protected static String getQueryParamValue(Request req, String paramName,
-            String defaultValue) {
-                return req.getResourceRef().getQueryAsForm().getFirstValue(paramName,
-                        defaultValue);
-            }
+    protected static String getQueryParamValue(Request req,
+            String paramName, String defaultValue) {
+        return req.getResourceRef().getQueryAsForm().getFirstValue(paramName, defaultValue);
+    }
 
 }

@@ -56,8 +56,8 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
     @Override
     public void handle(Request req, Response res) {
 
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         try {
             DirectoryService service = Framework.getLocalService(DirectoryService.class);
@@ -97,4 +97,5 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
     }
+
 }

@@ -113,8 +113,8 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             documentManager.save();
 
             // build the XML response document holding the ref
-            DOMDocumentFactory domfactory = new DOMDocumentFactory();
-            DOMDocument resultDocument = (DOMDocument) domfactory.createDocument();
+            DOMDocumentFactory domFactory = new DOMDocumentFactory();
+            DOMDocument resultDocument = (DOMDocument) domFactory.createDocument();
             Element docElement = resultDocument.addElement(documentTag);
             docElement.addElement(docRepositoryTag).setText(
                     newDm.getRepositoryName());

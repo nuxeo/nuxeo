@@ -50,9 +50,9 @@ public class SystemLogRestlet extends BaseStatelessNuxeoRestlet {
             return;
         }
         Form form = req.getResourceRef().getQueryAsForm();
-        String level = (String) form.getFirstValue(LEVEL);
-        String message = (String) form.getFirstValue(MESSAGE);
-        String token = (String) form.getFirstValue(TOKEN);
+        String level = form.getFirstValue(LEVEL);
+        String message = form.getFirstValue(MESSAGE);
+        String token = form.getFirstValue(TOKEN);
         String tokenProp = Framework.getProperty(TOKEN_PROP);
         if (tokenProp == null || !tokenProp.equals(token)) {
             log.debug(String.format("Provided token '%s' does not match %s",

@@ -50,7 +50,6 @@ import com.noelios.restlet.http.HttpRequest;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author Florent Guillaume
  */
-
 public class SeamRestletFilter extends Filter {
 
     private static final Log log = LogFactory.getLog(SeamRestletFilter.class);
@@ -58,17 +57,15 @@ public class SeamRestletFilter extends Filter {
     private boolean useConversation = false;
 
     public SeamRestletFilter() {
-        useConversation = false;
+        this(false);
     }
 
     public SeamRestletFilter(boolean needConversation) {
         useConversation = needConversation;
     }
 
-
     @Override
     protected void beforeHandle(Request request, Response response) {
-
         FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
              // Complete HTTP call with convesation

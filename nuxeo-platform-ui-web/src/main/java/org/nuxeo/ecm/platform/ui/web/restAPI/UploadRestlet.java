@@ -77,8 +77,8 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
         String docid = (String) req.getAttributes().get("docid");
         String fileName = (String) req.getAttributes().get("filename");
 
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         DocumentModel targetContainer;
         try {
@@ -135,4 +135,5 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
         rep.setCharacterSet(CharacterSet.UTF_8);
         res.setEntity(rep);
     }
+
 }

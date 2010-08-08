@@ -116,8 +116,8 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             DocumentModelList documents = session.query(query, null, MAX, 0, true);
 
             // build the RSS 2.0 response document holding the results
-            DOMDocumentFactory domfactory = new DOMDocumentFactory();
-            DOMDocument resultDocument = (DOMDocument) domfactory.createDocument();
+            DOMDocumentFactory domFactory = new DOMDocumentFactory();
+            DOMDocument resultDocument = (DOMDocument) domFactory.createDocument();
 
             // rss root tag
             Element rssElement = resultDocument.addElement(RSS_TAG);

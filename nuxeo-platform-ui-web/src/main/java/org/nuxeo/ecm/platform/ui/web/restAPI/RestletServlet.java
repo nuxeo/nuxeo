@@ -50,7 +50,7 @@ public class RestletServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1764653653643L;
 
-    protected ServletConverter converter=null;
+    protected ServletConverter converter;
 
     protected PluggableRestletService service;
 
@@ -81,9 +81,7 @@ public class RestletServlet extends HttpServlet {
 
             Restlet restletToAdd;
             if (plugin.getUseSeam()) {
-
-                Filter seamFilter;
-                seamFilter = new SeamRestletFilter(plugin.getUseConversation());
+                Filter seamFilter = new SeamRestletFilter(plugin.getUseConversation());
 
                 Restlet seamRestlet = service.getContributedRestletByName(
                         restletName);
@@ -96,9 +94,7 @@ public class RestletServlet extends HttpServlet {
                 if (plugin.isSingleton()) {
                     restletToAdd = service.getContributedRestletByName(restletName);
                 } else {
-
-                    Filter threadSafeRestletFilter;
-                    threadSafeRestletFilter = new ThreadSafeRestletFilter();
+                    Filter threadSafeRestletFilter = new ThreadSafeRestletFilter();
 
                     Restlet restlet = service.getContributedRestletByName(restletName);
 
@@ -116,7 +112,6 @@ public class RestletServlet extends HttpServlet {
         }
 
         converter.setTarget(restletRouter);
-
     }
 
     @Override
