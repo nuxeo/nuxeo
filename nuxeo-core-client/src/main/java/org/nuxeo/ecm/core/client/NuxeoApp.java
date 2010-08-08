@@ -39,15 +39,14 @@ import org.osgi.framework.BundleException;
 /**
  * Nuxeo Runtime launcher.
  *
- * This launcher assume all bundles are already on the classpath.
- *
+ * This launcher assumes all bundles are already on the classpath.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoApp {
 
-    private final static Log log = LogFactory.getLog(NuxeoApp.class);
+    private static final Log log = LogFactory.getLog(NuxeoApp.class);
+
     protected OSGiAdapter osgi;
     protected final ClassLoader loader;
     protected final Environment env;
@@ -80,11 +79,11 @@ public class NuxeoApp {
     }
 
     public void deployBundles(String bundlePath) throws BundleException, IOException {
-        deployBundles(NuxeoApp.getBundleFiles(new File("."), bundlePath, ":"));
+        deployBundles(getBundleFiles(new File("."), bundlePath, ":"));
     }
 
     public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {
-        deployBundles(NuxeoApp.getBundleFiles(baseDir, bundlePath, ":"));
+        deployBundles(getBundleFiles(baseDir, bundlePath, ":"));
     }
 
     public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
@@ -174,7 +173,7 @@ public class NuxeoApp {
             return Collections.singletonList(makeFile(baseDir, fileName));
         } else if (p == 0) {
             String suffix= fileName.substring(p+1);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {
@@ -186,10 +185,10 @@ public class NuxeoApp {
             return result;
         } else if (p == fileName.length()-1) {
             String prefix= fileName.substring(0, p);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
-                for (String name : baseDir.list()) {
+                for (String name : names) {
                     if (name.startsWith(prefix)) {
                         result.add(makeFile(baseDir, name));
                     }
@@ -199,7 +198,7 @@ public class NuxeoApp {
         } else {
             String prefix= fileName.substring(0, p);
             String suffix= fileName.substring(p+1);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {

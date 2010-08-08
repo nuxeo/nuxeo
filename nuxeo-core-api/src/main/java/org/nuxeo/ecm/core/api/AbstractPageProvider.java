@@ -435,7 +435,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         if (currentSelectPage == null) {
             currentSelectPage = new PageSelections<T>();
             currentSelectPage.setName(name);
-            ArrayList<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
+            List<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
             List<T> currentPage = getCurrentPage();
             if (currentPage != null && !currentPage.isEmpty()) {
                 if (selectedEntries == null || selectedEntries.isEmpty()) {

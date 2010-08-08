@@ -72,10 +72,9 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     public void addDirectoryToList(File directory, String prefix)
             throws ConversionException {
         File[] directoryContent = directory.listFiles();
-        int beginIndex;
         for (File file : directoryContent) {
             if (file.isDirectory()) {
-                beginIndex = prefix.length();
+                int beginIndex = prefix.length();
                 prefix = prefix.concat(file.getName() + File.separatorChar);
                 addDirectoryToList(file, prefix);
                 prefix = prefix.substring(0, beginIndex);
@@ -92,7 +91,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     }
 
     public String persist(String basePath) throws Exception {
-        if (blobs == null || blobs.size() == 0) {
+        if (blobs == null || blobs.isEmpty()) {
             return null;
         }
         Path path = new Path(basePath);

@@ -58,7 +58,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     };
 
-    protected ListenerList txListeners;
+    protected final ListenerList txListeners;
 
     protected final EventListenerList listenerDescriptors;
 

@@ -147,14 +147,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      *
      * @param tableName the table name
      * @param ids the ids
-     * @param the rows, including those for empty collections
      */
     protected List<Row> readCollectionArrays(String tableName,
             Collection<Serializable> ids) throws StorageException {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
-        String[] orderBys = new String[] { model.MAIN_KEY,
+        String[] orderBys = { model.MAIN_KEY,
                 model.COLL_TABLE_POS_KEY }; // clusters results
         Set<String> skipColumns = new HashSet<String>(
                 Arrays.asList(model.COLL_TABLE_POS_KEY));
@@ -182,7 +181,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 Serializable curId = null;
                 List<Serializable> list = null;
                 Serializable[] returnId = new Serializable[1];
-                int[] returnPos = new int[] { -1 };
+                int[] returnPos = { -1 };
                 List<Row> res = new LinkedList<Row>();
                 Set<Serializable> remainingIds = new HashSet<Serializable>(ids);
                 while (rs.next()) {
@@ -593,9 +592,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
                 // construct the resulting collection using each row
                 CollectionIO io = getCollectionIO(tableName);
-                ArrayList<Serializable> list = new ArrayList<Serializable>();
+                List<Serializable> list = new ArrayList<Serializable>();
                 Serializable[] returnId = new Serializable[1];
-                int[] returnPos = new int[] { -1 };
+                int[] returnPos = { -1 };
                 while (rs.next()) {
                     list.add(io.getCurrentFromResultSet(rs, columns, model,
                             returnId, returnPos));

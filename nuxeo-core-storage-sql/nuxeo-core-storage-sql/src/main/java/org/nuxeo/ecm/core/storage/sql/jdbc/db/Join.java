@@ -34,25 +34,25 @@ public class Join implements Serializable, Comparable<Join> {
     public static final int IMPLICIT = 4;
 
     /** INNER / LEFT / RIGHT / IMPLICIT */
-    public int kind;
+    public final int kind;
 
     /** Table name. */
-    public String table;
+    public final String table;
 
     /** Table alias, or {@code null}. */
-    public String tableAlias;
+    public final String tableAlias;
 
     /**
      * Parameter if table name is an expression that contains a "?", or {@code
      * null}.
      */
-    public String tableParam;
+    public final String tableParam;
 
     /** Left part of equijoin. */
-    public String on1;
+    public final String on1;
 
     /** Right part of equijoin. */
-    public String on2;
+    public final String on2;
 
     public Join(int kind, String table, String tableAlias, String tableParam,
             String on1, String on2) {
@@ -106,4 +106,5 @@ public class Join implements Serializable, Comparable<Join> {
             throw new AssertionError();
         }
     }
+
 }

@@ -112,7 +112,7 @@ public class ScalarProperty extends AbstractProperty {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public final Object clone() throws CloneNotSupportedException {
         ScalarProperty clone = (ScalarProperty) super.clone();
         return clone;
     }

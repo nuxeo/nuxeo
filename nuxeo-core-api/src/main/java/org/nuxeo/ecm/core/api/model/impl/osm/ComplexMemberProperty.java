@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
@@ -68,7 +67,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     @Override
     public void setValue(Object value) throws PropertyException {
         if (value instanceof Map) {
-            getAdapter().setMap(getValue(), (Map<String, Object>) value);
+            adapter.setMap(getValue(), (Map<String, Object>) value);
             setIsModified();
         } else {
             super.setValue(value);

@@ -66,15 +66,13 @@ public class DocumentModelFactory {
     }
 
     public static DocumentModel newDocument(DocumentModel parent, String type) {
-        DocumentType docType;
-        docType = parent.getCoreSession().getDocumentType(type);
+        DocumentType docType = parent.getCoreSession().getDocumentType(type);
         return newDocument(parent, docType);
     }
 
     public static DocumentModel newDocument(DocumentModel parent, String name,
             String type) {
-        DocumentType docType;
-        docType = parent.getCoreSession().getDocumentType(type);
+        DocumentType docType = parent.getCoreSession().getDocumentType(type);
         return newDocument(parent, name, docType);
     }
 
@@ -154,8 +152,7 @@ public class DocumentModelFactory {
         String sourceId = sourceDoc == null ? null : sourceDoc.getUUID();
 
         // Immutable flag
-        boolean immutable = doc.isVersion()
-        || (doc.isProxy() && sourceDoc.isVersion());
+        boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion());
 
         Set<String> typeFacets = type.getFacets();
         if (immutable) {

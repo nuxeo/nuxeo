@@ -29,7 +29,8 @@ import org.nuxeo.ecm.core.event.EventListener;
  */
 public class DummyTestListener implements EventListener {
 
-    public static List<Event> EVENTS_RECEIVED = Collections.synchronizedList(new LinkedList<Event>());
+    public static final List<Event> EVENTS_RECEIVED
+            = Collections.synchronizedList(new LinkedList<Event>());
 
     public void handleEvent(Event event) {
         EVENTS_RECEIVED.add(event);

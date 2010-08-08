@@ -72,8 +72,8 @@ public class DefaultQueryVisitor implements IVisitor {
     }
 
     public void visitOrderByList(OrderByList node) {
-        for (int i = 0; i < node.size(); i++) {
-            node.get(i).accept(this);
+        for (OrderByExpr aNode : node) {
+            aNode.accept(this);
         }
     }
 

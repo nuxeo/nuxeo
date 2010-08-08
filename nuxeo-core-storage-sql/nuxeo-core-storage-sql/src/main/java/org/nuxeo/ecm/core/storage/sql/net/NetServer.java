@@ -62,7 +62,7 @@ public class NetServer {
         instance().removeRepositoryServer(serverDescriptor, servletName);
     }
 
-    protected synchronized static NetServer instance() {
+    protected static synchronized NetServer instance() {
         if (instance == null) {
             instance = new NetServer();
             try {
@@ -76,7 +76,7 @@ public class NetServer {
         return instance;
     }
 
-    protected synchronized static void shutDown() {
+    protected static synchronized void shutDown() {
         if (instance != null) {
             Server server = instance.server;
             instance = null;

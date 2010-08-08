@@ -498,8 +498,8 @@ public class XPathBuilder {
         buf.append(function.toString()); // TODO: expand fucntion args too
     }
 
-    public static interface LiteralFixer {
-        public Literal fix(Literal literal);
+    public interface LiteralFixer {
+        Literal fix(Literal literal);
     }
 
     public static class IdentityFixer implements LiteralFixer {
@@ -528,7 +528,7 @@ public class XPathBuilder {
 
         public final boolean value;
 
-        public BooleanLiteral(boolean value) {
+        protected BooleanLiteral(boolean value) {
             this.value = value;
         }
 

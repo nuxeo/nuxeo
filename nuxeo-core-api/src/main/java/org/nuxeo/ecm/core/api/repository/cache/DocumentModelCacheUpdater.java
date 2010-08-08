@@ -50,9 +50,9 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
                 events.length);
         HashSet<DocumentModel> updatedTrees = new HashSet<DocumentModel>(
                 events.length);
-        for (int i = 0; i < events.length; ++i) {
+        for (OperationEvent event : events) {
             try {
-                handleEvent(cache, updatedDocs, updatedTrees, events[i]);
+                handleEvent(cache, updatedDocs, updatedTrees, event);
             } catch (Exception e) {
                 log.error("Exception handling event", e);
             }
@@ -79,7 +79,6 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
                 }
             }
         }
-
     }
 
     public void handleEvent(DocumentModelCache cache,

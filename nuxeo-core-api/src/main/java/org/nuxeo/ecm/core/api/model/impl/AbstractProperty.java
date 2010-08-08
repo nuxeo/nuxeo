@@ -264,7 +264,7 @@ public abstract class AbstractProperty implements Property {
             throw new IllegalStateException(
                     "Cannot set IS_NEW flag on a dirty property");
         }
-        // clear dirty + phatom flag if any
+        // clear dirty + phantom flag if any
         setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new
         // flag
         if (parent != null) {

@@ -62,7 +62,7 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
 
     protected class MonoThreadBulkExecutor implements Runnable, Thread.UncaughtExceptionHandler {
 
-        protected EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
+        protected final EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
 
         public void run() {
             long t0 = System.currentTimeMillis();

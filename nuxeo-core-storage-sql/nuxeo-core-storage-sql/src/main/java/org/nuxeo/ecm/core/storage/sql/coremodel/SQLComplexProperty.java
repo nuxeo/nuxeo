@@ -47,7 +47,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     private static final Log log = LogFactory.getLog(SQLComplexProperty.class);
 
-    private Node node;
+    private final Node node;
 
     protected final SQLSession session;
 

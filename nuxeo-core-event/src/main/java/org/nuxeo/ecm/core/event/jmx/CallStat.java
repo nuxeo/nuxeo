@@ -29,7 +29,7 @@ public class CallStat {
 
     int callCount = 0;
 
-    String label;
+    final String label;
 
     public CallStat(String label) {
         this.label = label;

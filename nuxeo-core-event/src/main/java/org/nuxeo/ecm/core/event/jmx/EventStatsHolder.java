@@ -38,6 +38,9 @@ public class EventStatsHolder {
 
     protected static Map<String, CallStat> aSyncStats = new HashMap<String, CallStat>();
 
+    private EventStatsHolder() {
+    }
+
     public static boolean isCollectAsyncHandlersExecTime() {
         return collectAsyncHandlersExecTime;
     }

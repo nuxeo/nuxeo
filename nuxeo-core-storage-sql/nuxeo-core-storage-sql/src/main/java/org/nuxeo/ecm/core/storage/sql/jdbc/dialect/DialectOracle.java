@@ -253,9 +253,9 @@ public class DialectOracle extends Dialect {
                 return null;
             }
             StringBuilder sb = new StringBuilder();
-            char[] buffer = new char[4096];
             try {
                 int n;
+                char[] buffer = new char[4096];
                 while ((n = r.read(buffer)) != -1) {
                     sb.append(new String(buffer, 0, n));
                 }

@@ -107,12 +107,11 @@ public class JDBCMapperLogger {
 
     public void logIds(List<Serializable> ids, boolean countTotal,
             long totalSize) {
-        int i;
         List<Serializable> debugIds = ids;
         String end = "";
         if (ids.size() > DEBUG_MAX_ARRAY) {
             debugIds = new ArrayList<Serializable>(DEBUG_MAX_ARRAY);
-            i = 0;
+            int i = 0;
             for (Serializable id : ids) {
                 debugIds.add(id);
                 i++;

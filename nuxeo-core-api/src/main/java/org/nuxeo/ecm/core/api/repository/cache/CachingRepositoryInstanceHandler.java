@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 
 /**
- *
  * Cached children are not preserving order
  * The order should be updated from notifications
  *
@@ -68,7 +67,7 @@ implements DocumentModelCache {
     protected final Map<String, String> path2Ids = new DualHashBidiMap();
     protected final Map<String, List<DocumentRef>> childrenCache = new HashMap<String, List<DocumentRef>>();
 
-    protected List<DocumentModelCacheListener> listeners = new CopyOnWriteArrayList<DocumentModelCacheListener>();
+    protected final List<DocumentModelCacheListener> listeners = new CopyOnWriteArrayList<DocumentModelCacheListener>();
 
 
     public CachingRepositoryInstanceHandler(Repository repository) {
@@ -103,14 +102,12 @@ implements DocumentModelCache {
         return repository.getName();
     }
 
-
     /**
      * The doc
      * cache should be always updated first (before paths cache). It is not a blocking issue if we
      * end up with garbage in the path cache (path mappings to IDs that doesn't exists anymore in
      * the doc cache)
      */
-
     public synchronized DocumentModel cacheDocument(DocumentModel doc) {
         String id = doc.getId();
         if (id == null) { // doc is not yet in repository, avoid caching it

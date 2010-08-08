@@ -345,7 +345,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
         protected final BinaryScrambler scrambler;
 
-        protected final byte onebyte[] = new byte[1];
+        protected final byte[] onebyte = new byte[1];
 
         protected ScrambledFileInputStream(File file, BinaryScrambler scrambler)
                 throws IOException {
@@ -366,12 +366,12 @@ public class DefaultBinaryManager implements BinaryManager {
         }
 
         @Override
-        public int read(byte b[]) throws IOException {
+        public int read(byte[] b) throws IOException {
             return read(b, 0, b.length);
         }
 
         @Override
-        public int read(byte b[], int off, int len) throws IOException {
+        public int read(byte[] b, int off, int len) throws IOException {
             int n = is.read(b, off, len);
             if (n != -1) {
                 scrambler.unscrambleBuffer(b, off, n);
@@ -396,4 +396,5 @@ public class DefaultBinaryManager implements BinaryManager {
             is.close();
         }
     }
+
 }

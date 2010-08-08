@@ -59,7 +59,7 @@ public class ObjectProperty extends ComplexMemberProperty {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public final Object clone() throws CloneNotSupportedException {
         ObjectProperty clone = (ObjectProperty) super.clone();
         return clone;
     }

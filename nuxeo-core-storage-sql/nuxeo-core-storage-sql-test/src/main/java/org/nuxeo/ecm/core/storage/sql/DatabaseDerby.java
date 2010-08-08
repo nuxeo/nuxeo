@@ -30,7 +30,7 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public class DatabaseDerby extends DatabaseHelper {
 
-    public static DatabaseHelper INSTANCE = new DatabaseDerby();
+    public static final DatabaseHelper INSTANCE = new DatabaseDerby();
 
     /** This directory will be deleted and recreated. */
     private static final String DIRECTORY = "target/test/derby";

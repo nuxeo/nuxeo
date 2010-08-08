@@ -32,19 +32,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author tiry
  */
-public class DocumentBlobHolder extends AbstractBlobHolder {
+public class
+        DocumentBlobHolder extends AbstractBlobHolder {
 
     protected final DocumentModel doc;
 
     protected final String xPath;
 
     protected String xPathFilename;
-
-    public DocumentBlobHolder(DocumentModel doc, String xPath) {
-        this.doc = doc;
-        this.xPath = xPath;
-        this.xPathFilename = null;
-    }
 
     /**
      * Constructor with filename property for compatibility (when filename was
@@ -55,6 +50,10 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
         this.doc = doc;
         this.xPath = xPath;
         this.xPathFilename = xPathFilename;
+    }
+
+    public DocumentBlobHolder(DocumentModel doc, String xPath) {
+        this(doc, xPath, null);
     }
 
     @Override
