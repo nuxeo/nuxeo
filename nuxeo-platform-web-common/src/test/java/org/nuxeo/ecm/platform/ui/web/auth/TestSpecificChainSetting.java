@@ -34,8 +34,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         return authService;
     }
 
-    public void testStdChain() throws Exception {
-
+    public void testStdChain() {
         PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);
 
@@ -51,11 +50,9 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertTrue(chain.contains("BASIC_AUTH"));
         assertTrue(chain.contains("ANONYMOUS_AUTH"));
         assertTrue(chain.contains("WEBSERVICES_AUTH"));
-
     }
 
-    public void testSpecificChain() throws Exception {
-
+    public void testSpecificChain() {
         List<String> chain = null;
 
         PluggableAuthenticationService authService = getAuthService();
@@ -70,6 +67,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("test", chainName);
+
         chain = authService.getAuthChain(request);
         assertTrue(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
@@ -81,6 +79,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("test-allow", chainName);
+
         chain = authService.getAuthChain(request);
         assertTrue(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
@@ -94,6 +93,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("test-headers", chainName);
+
         chain = authService.getAuthChain(request);
         assertFalse(chain.contains("FORM_AUTH"));
         assertFalse(chain.contains("BASIC_AUTH"));
@@ -107,6 +107,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("test-headers2", chainName);
+
         chain = authService.getAuthChain(request);
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
@@ -119,6 +120,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("WSS", chainName);
+
         chain = authService.getAuthChain(request);
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
@@ -132,12 +134,12 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         chainName = authService.getSpecificAuthChainName(request);
         assertNotNull(chainName);
         assertEquals("WSS", chainName);
+
         chain = authService.getAuthChain(request);
         assertFalse(chain.contains("FORM_AUTH"));
         assertTrue(chain.contains("BASIC_AUTH"));
         assertFalse(chain.contains("ANONYMOUS_AUTH"));
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
-
     }
 
 }

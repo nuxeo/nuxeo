@@ -31,7 +31,6 @@ public class ServerInfo {
     Date updateTime;
 
     public ServerInfo(URI serverId, Date startTime, Date updateTime) {
-        super();
         this.serverId = serverId;
         this.startTime = startTime;
         this.updateTime = updateTime;

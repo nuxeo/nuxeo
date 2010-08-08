@@ -110,10 +110,10 @@ public interface Layout extends Serializable {
 
     /**
      * Sets property with given name on the layout. If there is already a
-     * property with this name on the layout, it will be overriden.
+     * property with this name on the layout, it will be overridden.
      *
      * @param name the property name.
-     * @param the property value or null if not found.
+     * @param value the property value or null if not found.
      * @since 5.3.2
      */
     void setProperty(String name, Serializable value);

@@ -35,7 +35,7 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
 
     // TODO if we reduced the delay to less that
     // this value, algorithm is failing
-    final static long DELAY = 800;
+    static final long DELAY = 800;
 
     @Override
     public void setUp() throws Exception {

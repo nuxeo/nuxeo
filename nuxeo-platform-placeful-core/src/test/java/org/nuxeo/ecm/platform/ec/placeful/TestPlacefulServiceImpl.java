@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
@@ -71,7 +70,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         return source;
     }
 
-    public void testAnnotations() throws DocumentException, ClientException, ClassNotFoundException {
+    public void testAnnotations() {
         SubscriptionConfig config = new SubscriptionConfig();
         //DocumentModel source = doCreateDocument();
 

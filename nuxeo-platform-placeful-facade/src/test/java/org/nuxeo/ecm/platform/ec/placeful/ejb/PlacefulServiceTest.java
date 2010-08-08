@@ -54,6 +54,7 @@ public class PlacefulServiceTest extends TestCase {
         createTestData();
 
         service = new PlacefulServiceImpl() {
+            @Override
             public Map<String, String> getAnnotationRegistry() {
                 Map<String, String> registry = new HashMap<String, String>();
                 registry.put(ANNOTATION_NAME,
@@ -92,7 +93,7 @@ public class PlacefulServiceTest extends TestCase {
         em.getTransaction().commit();
     }
 
-    public void testGetAnnotation() throws Exception {
+    public void testGetAnnotation() {
         PlacefulServiceBean serviceBean = new PlacefulServiceBean();
 
         serviceBean.em = em;
@@ -104,7 +105,7 @@ public class PlacefulServiceTest extends TestCase {
         assertEquals(EVENT, annotation.getEvent());
     }
 
-    public void testSetAnnotation() throws Exception {
+    public void testSetAnnotation() {
         PlacefulServiceBean serviceBean = new PlacefulServiceBean();
         serviceBean.em = em;
         serviceBean.service = (PlacefulServiceImpl) service;

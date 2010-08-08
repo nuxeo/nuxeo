@@ -218,7 +218,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertFalse(principal.isMemberOf("group1"));
     }
 
-    public void testGetAdministratorGroups() throws Exception {
+    public void testGetAdministratorGroups() {
         List<String> adminGroups = userManager.getAdministratorsGroups();
         assertEquals(Arrays.asList("administrators"), adminGroups);
     }

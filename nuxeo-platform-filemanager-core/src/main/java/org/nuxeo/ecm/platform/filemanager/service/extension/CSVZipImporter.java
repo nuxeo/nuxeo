@@ -90,7 +90,9 @@ public class CSVZipImporter extends AbstractFileImporter {
         }
     }
 
-    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite, String filename, TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content,
+            String path, boolean overwrite, String filename, TypeManager typeService)
+            throws ClientException, IOException {
 
         File tmp = File.createTempFile("zipcsv-importer", null);
 

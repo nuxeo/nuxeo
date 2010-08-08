@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class TestDublinCoreStorage extends SQLRepositoryTestCase {
@@ -170,7 +169,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         closeSession();
     }
 
-    public void testIssuedDate() throws ClientException, DocumentException {
+    public void testIssuedDate() throws ClientException {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
         "Folder");
         folder1 = session.createDocument(folder1);
@@ -188,12 +187,11 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertNotNull(issued);
     }
 
-    private EventProducer getEventProducer() throws ClientException {
+    private static EventProducer getEventProducer() throws ClientException {
         try {
             return Framework.getService(EventProducer.class);
         } catch (Exception e) {
             throw new ClientException(e);
-
         }
     }
 

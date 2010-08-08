@@ -34,7 +34,7 @@ public class DirectoryServiceTest {
     DirectoryService ds;
 
     @Test
-    public void theDirectoryServiceIsProvided() throws Exception {
+    public void theDirectoryServiceIsProvided() {
         assertNotNull(ds);
     }
 

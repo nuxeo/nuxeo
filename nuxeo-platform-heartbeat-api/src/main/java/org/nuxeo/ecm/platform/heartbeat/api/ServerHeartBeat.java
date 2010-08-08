@@ -33,21 +33,21 @@ public interface ServerHeartBeat {
      *
      * @throws IllegalStateException
      */
-    void reset(long delay) throws IllegalStateException;
+    void reset(long delay);
 
     /**
      * Stopping the heart beat updates.
      *
      * @throws IllegalStateException
      */
-    void stop() throws IllegalStateException;
+    void stop();
 
     /**
      * Starting the heat beat updates.
      *
      * @throws IllegalStateException
      */
-    void start(long delay) throws IllegalStateException;
+    void start(long delay);
 
     /**
      * Is the heart beat updates process started and running?

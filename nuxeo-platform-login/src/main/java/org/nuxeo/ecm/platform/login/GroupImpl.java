@@ -23,14 +23,17 @@ import java.security.acl.*;
 
 /**
  * This class implements a group of principals.
- * @author      Satish Dharmaraj
+ *
+ * @author Satish Dharmaraj
  */
 public class GroupImpl implements Group {
     private Vector<Principal> groupMembers = new Vector<Principal>(50, 100);
+
     private String group;
 
     /**
      * Constructs a Group object with no members.
+     *
      * @param groupName the name of the group
      */
     public GroupImpl(String groupName) {
@@ -39,27 +42,31 @@ public class GroupImpl implements Group {
 
     /**
      * adds the specified member to the group.
+     *
      * @param user The principal to add to the group.
-     * @return true if the member was added - false if the
-     * member could not be added.
+     * @return true if the member was added - false if the member could not be
+     *         added.
      */
     public boolean addMember(Principal user) {
-        if (groupMembers.contains(user))
-          return false;
+        if (groupMembers.contains(user)) {
+            return false;
+        }
 
         // do not allow groups to be added to itself.
-        if (group.equals(user.toString()))
+        if (group.equals(user.toString())) {
             throw new IllegalArgumentException();
+        }
 
         groupMembers.addElement(user);
         return true;
     }
 
     /**
-     * removes the specified member from the group.
+     * Removes the specified member from the group.
+     *
      * @param user The principal to remove from the group.
-     * @param true if the principal was removed false if
-     * the principal was not a member
+     * @param true if the principal was removed false if the principal was not a
+     *        member
      */
     public boolean removeMember(Principal user) {
         return groupMembers.removeElement(user);
@@ -73,25 +80,26 @@ public class GroupImpl implements Group {
     }
 
     /**
-     * This function returns true if the group passed matches
-     * the group represented in this interface.
-     * @param another The group to compare this group to.
+     * This function returns true if the group passed matches the group
+     * represented in this interface.
+     *
+     * @param obj the group to compare this group to.
      */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof Group == false) {
+        if (!(obj instanceof Group)) {
             return false;
         }
-        Group another = (Group)obj;
-        return group.equals(another.toString());
+        Group other = (Group) obj;
+        return group.equals(other.toString());
     }
 
     // equals(Group) for compatibility
-    public boolean equals(Group another) {
-        return equals((Object)another);
+    public boolean equals(Group other) {
+        return equals((Object) other);
     }
 
     /**
@@ -112,9 +120,9 @@ public class GroupImpl implements Group {
 
     /**
      * returns true if the passed principal is a member of the group.
+     *
      * @param member The principal whose membership must be checked for.
-     * @return true if the principal is a member of this group,
-     * false otherwise
+     * @return true if the principal is a member of this group, false otherwise
      */
     public boolean isMember(Principal member) {
 
@@ -165,16 +173,19 @@ public class GroupImpl implements Group {
                 //
                 GroupImpl g = (GroupImpl) p;
                 alreadySeen.addElement(this);
-                if (!alreadySeen.contains(g))
-                  mem =  g.isMemberRecurse(member, alreadySeen);
+                if (!alreadySeen.contains(g)) {
+                    mem = g.isMemberRecurse(member, alreadySeen);
+                }
             } else if (p instanceof Group) {
                 Group g = (Group) p;
-                if (!alreadySeen.contains(g))
-                  mem = g.isMember(member);
+                if (!alreadySeen.contains(g)) {
+                    mem = g.isMember(member);
+                }
             }
 
-            if (mem)
-              return mem;
+            if (mem) {
+                return mem;
+            }
         }
         return false;
     }

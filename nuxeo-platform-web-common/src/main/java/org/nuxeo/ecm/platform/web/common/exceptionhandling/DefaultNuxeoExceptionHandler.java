@@ -43,7 +43,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected NuxeoExceptionHandlerParameters parameters = null;
 
-    public DefaultNuxeoExceptionHandler() throws Exception {
+    public DefaultNuxeoExceptionHandler() {
     }
 
     public void setParameters(NuxeoExceptionHandlerParameters parameters) {
@@ -58,8 +58,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
      *             The initial exception is then wrapped.
      */
     protected void startHandlingException(HttpServletRequest request,
-            HttpServletResponse response, Throwable t) throws IOException,
-            ServletException {
+            HttpServletResponse response, Throwable t) throws ServletException {
         if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Initial exception", t);

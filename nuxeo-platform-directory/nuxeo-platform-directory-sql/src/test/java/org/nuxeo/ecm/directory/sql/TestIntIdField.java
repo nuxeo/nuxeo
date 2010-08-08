@@ -6,7 +6,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -14,20 +13,15 @@ public class TestIntIdField extends SQLDirectoryTestCase {
 
     @Override
     public void setUp() throws Exception {
-
         super.setUp();
         deployContrib("org.nuxeo.ecm.directory.sql.tests", "intIdDirectory-contrib.xml");
-
     }
 
     public void testIntIdDirectory() throws Exception {
-
-
         DirectoryServiceImpl dirServiceImpl =
             (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
 
         Session session = dirServiceImpl.open("testIdDirectory");
-
         assertNotNull(session);
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -45,7 +39,6 @@ public class TestIntIdField extends SQLDirectoryTestCase {
         assertNotNull(session.getEntry("1"));
         assertNotNull(session.getEntry("2"));
         assertNull(session.getEntry("3"));
-
     }
 
 }

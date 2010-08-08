@@ -69,7 +69,7 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(cmds.contains("identify"));
     }
 
-    public void testCmdAvailable() throws Exception {
+    public void testCmdAvailable() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 

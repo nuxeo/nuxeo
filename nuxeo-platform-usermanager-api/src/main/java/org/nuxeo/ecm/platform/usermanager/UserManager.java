@@ -108,7 +108,7 @@ public interface UserManager extends Serializable {
     void updateUser(DocumentModel userModel) throws ClientException;
 
     /**
-     * Deletes user represented by given model
+     * Deletes user represented by given model.
      *
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
@@ -117,7 +117,7 @@ public interface UserManager extends Serializable {
     void deleteUser(DocumentModel userModel) throws ClientException;
 
     /**
-     * Deletes user with given id
+     * Deletes user with given id.
      *
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
@@ -193,7 +193,7 @@ public interface UserManager extends Serializable {
             HashSet<String> fulltext) throws ClientException;
 
     /**
-     * Creates a group from given model
+     * Creates a group from given model.
      *
      * @return the created group model
      * @since 5.2M4
@@ -204,7 +204,7 @@ public interface UserManager extends Serializable {
             GroupAlreadyExistsException;
 
     /**
-     * Updates group represented by given model
+     * Updates group represented by given model.
      *
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
@@ -213,7 +213,7 @@ public interface UserManager extends Serializable {
     void updateGroup(DocumentModel groupModel) throws ClientException;
 
     /**
-     * Deletes group represented by given model
+     * Deletes group represented by given model.
      *
      * @param groupModel
      * @since 5.2M4
@@ -223,7 +223,7 @@ public interface UserManager extends Serializable {
     void deleteGroup(DocumentModel groupModel) throws ClientException;
 
     /**
-     * Deletes group with given id
+     * Deletes group with given id.
      *
      * @param groupId
      * @since 5.2M4
@@ -282,7 +282,7 @@ public interface UserManager extends Serializable {
     List<String> getUsersInGroup(String groupId) throws ClientException;
 
     /**
-     * Get users from a group and its subgroups
+     * Get users from a group and its subgroups.
      *
      * @param groupId ID of the group
      * @return

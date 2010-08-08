@@ -64,7 +64,6 @@ public class SpecificAuthChainDescriptor {
     }
 
     public List<String> computeResultingChain(List<String> defaultChain) {
-
         if (replacementChain!=null && replacementChain.size()>0) {
             return replacementChain;
         }
@@ -77,4 +76,5 @@ public class SpecificAuthChainDescriptor {
         }
         return filtredChain;
     }
+
 }

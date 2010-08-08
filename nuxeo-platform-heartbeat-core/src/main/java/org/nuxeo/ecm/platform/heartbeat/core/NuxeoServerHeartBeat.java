@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class NuxeoServerHeartBeat implements ServerHeartBeat {
 
@@ -79,13 +79,13 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         return timer != null;
     }
 
-    public void reset(long delay) throws IllegalStateException {
+    public void reset(long delay) {
         stop();
         this.delay = delay;
         start(delay);
     }
 
-    public void start(long delay) throws IllegalStateException {
+    public void start(long delay) {
         log.info("Starting heartbeat scheduler ...");
         if (timer != null) {
             throw new IllegalStateException("time already exist");
@@ -143,7 +143,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         }
     }
 
-    public void stop() throws IllegalStateException {
+    public void stop() {
         if (timer == null) {
             throw new IllegalStateException("Timer not found");
         }
@@ -222,7 +222,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         return serveruri;
     }
 
-    private ServerInfo docToServerInfo(DocumentModel doc)
+    private static ServerInfo docToServerInfo(DocumentModel doc)
             throws ClientException, URISyntaxException {
         ServerInfo serverinfo;
         String serverIdStr = (String) doc.getProperty(HEARTBEATSERVER_SCHEMA,
@@ -292,7 +292,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         return model;
     }
 
-    private void setServerInfo(URI uri, Date starttime, DocumentModel model)
+    private static void setServerInfo(URI uri, Date starttime, DocumentModel model)
             throws ClientException {
         model.setProperty("dublincore", "title", uri.toString());
         model.setProperty(HEARTBEATSERVER_SCHEMA, HEARTBEATSERVER_SERVERID,

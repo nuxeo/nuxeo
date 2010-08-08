@@ -95,7 +95,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
             nuxPrincipal.setVirtualGroups(origVGroups);
 
             // This a hack to work around the problem of running tests
-            if (Framework.isTestModeSet() == false) {
+            if (!Framework.isTestModeSet()) {
                 nuxPrincipal.updateAllGroups();
             } else {
                 List<String> allGroups = nuxPrincipal.getGroups();
@@ -125,7 +125,6 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
 
     @Override
     public List<String> getGroupIds() throws ClientException {
-
         List<String> ids = super.getGroupIds();
         if (activateComputedGroup()) {
             List<String> vGroups = getService().computeGroupIds();

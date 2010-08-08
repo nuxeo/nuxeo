@@ -86,7 +86,7 @@ public class CommandLineDescriptor implements Serializable {
         return enabled;
     }
 
-    private boolean isWindows() {
+    private static boolean isWindows() {
         String osName = System.getProperty("os.name");
         return osName.toLowerCase().contains("windows");
     }

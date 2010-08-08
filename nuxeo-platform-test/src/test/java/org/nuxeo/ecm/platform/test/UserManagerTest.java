@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -35,13 +34,8 @@ public class UserManagerTest {
     UserManager um;
 
     @Test
-    public void userManagerIsInjected() throws Exception {
+    public void userManagerIsInjected() {
         assertNotNull(um);
-        boolean injected = false;
-        if (um instanceof UserManager) {
-            injected=true;
-        }
-        assertEquals(true, injected);
     }
 
     @Test

@@ -133,17 +133,17 @@ public class MimetypeIconUpdater implements EventListener {
     }
 
     /**
-     * Update the mimetype of a blob allong with the icon and size fields of the
+     * Update the mimetype of a blob along with the icon and size fields of the
      * document if the blob is the main blob of the document.
      */
     public void updateBlobProperty(DocumentModel doc,
             MimetypeRegistry mimetypeService, Property dirtyProperty)
             throws Exception {
         String fieldPath = dirtyProperty.getPath();
-        //cas shema without prefix : we need to add shema name as prefix
-        if(!fieldPath.contains(":"))
+        //cas shema without prefix : we need to add schema name as prefix
+        if (!fieldPath.contains(":")) {
             fieldPath = dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
-
+        }
 
         Blob blob = dirtyProperty.getValue(Blob.class);
         if (blob != null && (blob.getMimeType() == null || blob.getMimeType().equals(OCTET_STREAM_MT))) {
@@ -151,7 +151,6 @@ public class MimetypeIconUpdater implements EventListener {
             // service
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
-
         }
 
         if (MAIN_BLOB_FIELD.equals(fieldPath) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
@@ -171,7 +170,6 @@ public class MimetypeIconUpdater implements EventListener {
             doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
                     : 0);
         }
-
     }
 
     /**

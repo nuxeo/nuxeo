@@ -31,7 +31,7 @@ public interface EntryAdaptor {
      * Allow the directory initialization process to configure the adaptor by
      * providing String valued parameters.
      */
-    public void setParameter(String name, String value);
+    void setParameter(String name, String value);
 
     /**
      * Apply an arbitrary transformation of the fetched entry.
@@ -41,7 +41,7 @@ public interface EntryAdaptor {
      * @return the adapted entry
      * @throws DirectoryException if the adapting process fails unexpectedly
      */
-    public DocumentModel adapt(Directory directory, DocumentModel entry)
+    DocumentModel adapt(Directory directory, DocumentModel entry)
             throws DirectoryException;
 
 }

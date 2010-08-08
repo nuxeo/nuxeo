@@ -20,12 +20,11 @@
 package org.nuxeo.ecm.core.search.ejb;
 
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class TestSearchServiceBean extends NXRuntimeTestCase {
 

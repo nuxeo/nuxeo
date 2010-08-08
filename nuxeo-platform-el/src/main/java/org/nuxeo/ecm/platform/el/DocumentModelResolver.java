@@ -147,7 +147,7 @@ public class DocumentModelResolver extends BeanELResolver {
         return value;
     }
 
-    private Property getDocumentProperty(Property docProperty,
+    private static Property getDocumentProperty(Property docProperty,
             Object propertyValue) throws PropertyException {
         Property subProperty = null;
         if ((docProperty instanceof ArrayProperty || docProperty instanceof ListProperty)
@@ -171,7 +171,7 @@ public class DocumentModelResolver extends BeanELResolver {
         return subProperty;
     }
 
-    private Object getDocumentPropertyValue(Property docProperty)
+    private static Object getDocumentPropertyValue(Property docProperty)
             throws PropertyException {
         if (docProperty == null) {
             throw new PropertyException("Null property");

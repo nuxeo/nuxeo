@@ -83,7 +83,8 @@ public class FSImportCommand extends AbstractCommand {
 
         String[] elements = cmdLine.getParameters();
         if (elements.length == 0) {
-            log.error("SYNTAX ERROR: the fsimport command must take at least one argument: fsimport local_file_path [remote_path] [batch_size] ");
+            log.error("SYNTAX ERROR: the fsimport command must take at least one argument: "
+                    + "fsimport local_file_path [remote_path] [batch_size] ");
             printHelp();
             return;
         }

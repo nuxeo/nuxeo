@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.search.api.client.indexing.blobs.BlobExtractor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor;
@@ -37,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  * Blob extractor that leverages Nuxeo transform service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class NXTransformBlobExtractor implements BlobExtractor {
 
@@ -69,13 +67,9 @@ public class NXTransformBlobExtractor implements BlobExtractor {
             result = getConversionService().convert(converterName,
                     new SimpleBlobHolder(blob), null);
             return readContent(result.getBlob().getReader());
-        } catch (ConversionException e) {
-            throw e;
         } catch (IOException e) {
             throw new ClientException("Couldn't read from blob convert with "
                     + converterName, e);
-        } catch (ClientException e) {
-            throw e;
         }
     }
 

@@ -22,11 +22,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestComputedGroupService extends NXRuntimeTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
     public void testLookup() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/computedgroups-framework.xml");
         ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -46,9 +41,9 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-        "test-usermanagerimpl/schemas-config.xml");
+                "test-usermanagerimpl/schemas-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-        "test-usermanagerimpl/directory-config.xml");
+                "test-usermanagerimpl/directory-config.xml");
 
         ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
         assertNotNull(cgs);
@@ -56,14 +51,11 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         ComputedGroupsServiceImpl component = (ComputedGroupsServiceImpl) cgs;
 
         GroupComputerDescriptor desc =  component.getComputerDescriptors().get(0);
-
         assertNotNull(desc);
-
         assertEquals("dummy", desc.getName());
 
         GroupComputer computer = desc.getComputer();
         assertNotNull(computer);
-
         assertTrue(computer.getAllGroupIds().contains("Grp1"));
 
         NuxeoGroup group = cgs.getComputedGroup("Grp1");
@@ -100,9 +92,9 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-        "test-usermanagerimpl/schemas-config.xml");
+                "test-usermanagerimpl/schemas-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-        "test-usermanagerimpl/directory-config.xml");
+                "test-usermanagerimpl/directory-config.xml");
 
         UserManager um = Framework.getLocalService(UserManager.class);
         assertNotNull(um);
@@ -158,67 +150,70 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         assertEquals(2,group.getMemberUsers().size());
     }
 
-
     public void testCompanyComputer() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "companycomputedgroups-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.directory.api");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.sql");
 
-            deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
-            deployBundle("org.nuxeo.ecm.core.schema");
-            deployBundle("org.nuxeo.ecm.core.api");
-            deployBundle("org.nuxeo.ecm.core");
-            deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-            deployBundle("org.nuxeo.ecm.platform.usermanager");
-            deployBundle("org.nuxeo.ecm.directory.api");
-            deployBundle("org.nuxeo.ecm.directory.types.contrib");
-            deployBundle("org.nuxeo.ecm.directory");
-            deployBundle("org.nuxeo.ecm.directory.sql");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/schemas-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/directory-config.xml");
 
-            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-            "test-usermanagerimpl/schemas-config.xml");
-            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-            "test-usermanagerimpl/directory-config.xml");
+        UserManager um = Framework.getLocalService(UserManager.class);
+        assertNotNull(um);
 
-            UserManager um = Framework.getLocalService(UserManager.class);
-            assertNotNull(um);
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        HashSet<String> fulltext = new HashSet<String>();
+        filter.put(um.getGroupIdField(), "Nux");
 
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            HashSet<String> fulltext = new HashSet<String>();
-            filter.put(um.getGroupIdField(), "Nux");
+        DocumentModelList nxGroups = um.searchGroups(filter, fulltext);
+        assertEquals(0, nxGroups.size());
 
-            DocumentModelList nxGroups = um.searchGroups(filter, fulltext);
-            assertEquals(0, nxGroups.size());
-            NuxeoGroup nxGroup = um.getGroup("Nuxeo");
-            assertNull(nxGroup);
+        NuxeoGroup nxGroup = um.getGroup("Nuxeo");
+        assertNull(nxGroup);
 
-            DocumentModel newUser = um.getBareUserModel();
-            newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "toto");
-            newUser.setProperty(um.getUserSchemaName(), "company", "Nuxeo");
-            um.createUser(newUser);
+        DocumentModel newUser = um.getBareUserModel();
+        newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "toto");
+        newUser.setProperty(um.getUserSchemaName(), "company", "Nuxeo");
+        um.createUser(newUser);
 
-            nxGroups = um.searchGroups(filter, fulltext);
-            assertEquals(1, nxGroups.size());
-            nxGroup = um.getGroup("Nuxeo");
-            assertNotNull(nxGroup);
-            assertEquals(1, nxGroup.getMemberUsers().size());
+        nxGroups = um.searchGroups(filter, fulltext);
+        assertEquals(1, nxGroups.size());
 
-            newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "titi");
-            newUser.setProperty(um.getUserSchemaName(), "company", "Nuxeo");
-            um.createUser(newUser);
+        nxGroup = um.getGroup("Nuxeo");
+        assertNotNull(nxGroup);
+        assertEquals(1, nxGroup.getMemberUsers().size());
 
-            nxGroups = um.searchGroups(filter, fulltext);
-            assertEquals(1, nxGroups.size());
-            nxGroup = um.getGroup("Nuxeo");
-            assertNotNull(nxGroup);
-            assertEquals(2, nxGroup.getMemberUsers().size());
+        newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "titi");
+        newUser.setProperty(um.getUserSchemaName(), "company", "Nuxeo");
+        um.createUser(newUser);
 
-            newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "tata");
-            newUser.setProperty(um.getUserSchemaName(), "company", "MyInc");
-            um.createUser(newUser);
+        nxGroups = um.searchGroups(filter, fulltext);
+        assertEquals(1, nxGroups.size());
 
-            nxGroups = um.searchGroups(filter, fulltext);
-            assertEquals(1, nxGroups.size());
-            nxGroup = um.getGroup("MyInc");
-            assertNotNull(nxGroup);
-            assertEquals(1, nxGroup.getMemberUsers().size());
+        nxGroup = um.getGroup("Nuxeo");
+        assertNotNull(nxGroup);
+        assertEquals(2, nxGroup.getMemberUsers().size());
 
+        newUser.setProperty(um.getUserSchemaName(), um.getUserIdField(), "tata");
+        newUser.setProperty(um.getUserSchemaName(), "company", "MyInc");
+        um.createUser(newUser);
+
+        nxGroups = um.searchGroups(filter, fulltext);
+        assertEquals(1, nxGroups.size());
+
+        nxGroup = um.getGroup("MyInc");
+        assertNotNull(nxGroup);
+        assertEquals(1, nxGroup.getMemberUsers().size());
     }
+
 }

@@ -26,7 +26,6 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * @author jcarsique
- * 
  */
 public class StartTXCommand extends AbstractCommand {
 

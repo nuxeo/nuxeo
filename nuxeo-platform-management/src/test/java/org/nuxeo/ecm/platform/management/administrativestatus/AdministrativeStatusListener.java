@@ -41,7 +41,6 @@ public class AdministrativeStatusListener implements EventListener {
         if (eventId.equals("serverUnlocked")) {
             serverUnlockedEventTriggered = true;
         }
-
     }
 
     public static boolean isServerLockedEventTriggered() {

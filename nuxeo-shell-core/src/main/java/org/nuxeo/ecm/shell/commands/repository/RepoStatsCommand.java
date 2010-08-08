@@ -146,7 +146,8 @@ public class RepoStatsCommand extends AbstractCommand {
 
     private long printStatCount;
 
-    private static final String printStatHeader = "time     threads      docs  docs/s     blobs   size(M)     M/s tdocs/s tdoc/th/s";
+    private static final String printStatHeader
+            = "time     threads      docs  docs/s     blobs   size(M)     M/s tdocs/s tdoc/th/s";
 
     private static final SimpleDateFormat timeFormater = new SimpleDateFormat(
             "HH:mm:ss");

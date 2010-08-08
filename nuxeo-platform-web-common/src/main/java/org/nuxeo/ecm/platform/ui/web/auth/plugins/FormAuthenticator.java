@@ -33,7 +33,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
