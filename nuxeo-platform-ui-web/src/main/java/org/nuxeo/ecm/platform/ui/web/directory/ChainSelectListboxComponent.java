@@ -414,7 +414,7 @@ public class ChainSelectListboxComponent extends UIInput {
             for (int i = index; i < size; i++) {
                 chain.setOptions(i, null);
             }
-            LinkedHashMap<String, DirectorySelectItem> options = rebuildOptions();
+            Map<String, DirectorySelectItem> options = rebuildOptions();
             chain.setOptions(index, options);
             return;
         }
@@ -433,7 +433,7 @@ public class ChainSelectListboxComponent extends UIInput {
             for (int i = index; i < chain.getSize(); i++) {
                 chain.setOptions(i, null);
             }
-            LinkedHashMap<String, DirectorySelectItem> options = rebuildOptions();
+            Map<String, DirectorySelectItem> options = rebuildOptions();
             chain.setOptions(index, options);
         } else {
             keyList.add(value);
@@ -473,7 +473,7 @@ public class ChainSelectListboxComponent extends UIInput {
             chain.setSelections(selections);
         }
 
-        LinkedHashMap<String, DirectorySelectItem> options = rebuildOptions();
+        Map<String, DirectorySelectItem> options = rebuildOptions();
         chain.setOptions(index, options);
     }
 
@@ -497,4 +497,5 @@ public class ChainSelectListboxComponent extends UIInput {
     public void setDisplay(String display) {
         this.display = display;
     }
+
 }

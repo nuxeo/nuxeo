@@ -387,7 +387,7 @@ public class NXQLQueryBuilder {
             }
             res += "+" + tokens[i];
         }
-        return "= " + NXQLQueryBuilder.prepareStringLiteral(res, true);
+        return "= " + prepareStringLiteral(res, true);
     }
 
     protected static String serializeUnary(String parameter, String operator,
@@ -503,7 +503,7 @@ public class NXQLQueryBuilder {
                     || "double".equals(fieldType)) {
                 return value;
             } else {
-                return NXQLQueryBuilder.prepareStringLiteral(value, true);
+                return prepareStringLiteral(value, true);
             }
         }
         return value;

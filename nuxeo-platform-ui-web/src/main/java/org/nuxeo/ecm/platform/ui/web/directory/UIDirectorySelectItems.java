@@ -250,7 +250,7 @@ public class UIDirectorySelectItems extends UISelectItems {
                 }
             } else if (value instanceof Collection) {
                 Collection<Object> collection = (Collection<Object>) value;
-                DocumentModel entry = null;
+                DocumentModel entry;
                 for (Object currentItem : collection) {
                     if (currentItem instanceof SelectItemGroup) {
                         SelectItemGroup itemGroup = (SelectItemGroup) currentItem;

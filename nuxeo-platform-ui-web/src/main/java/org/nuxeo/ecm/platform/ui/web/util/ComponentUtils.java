@@ -235,7 +235,7 @@ public final class ComponentUtils {
         }
         log.debug("User-Agent: " + userAgent);
         log.debug("secure: " + secure);
-        if (secure && (userAgent.indexOf("MSIE") > -1)) {
+        if (secure && userAgent.contains("MSIE")) {
             log.debug("Setting \"Cache-Control: max-age=15, must-revalidate\"");
             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
         } else {

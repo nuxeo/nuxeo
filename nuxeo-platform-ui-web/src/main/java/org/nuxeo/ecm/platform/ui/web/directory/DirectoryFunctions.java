@@ -127,7 +127,7 @@ public final class DirectoryFunctions {
         if (entryIds == null) {
             return null;
         }
-        return DirectoryFunctions.getDirectoryEntries(directoryName,
+        return getDirectoryEntries(directoryName,
                 entryIds.toArray(new String[] {}));
     }
 

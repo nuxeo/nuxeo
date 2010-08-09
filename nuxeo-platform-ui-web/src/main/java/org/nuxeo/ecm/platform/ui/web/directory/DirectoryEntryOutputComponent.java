@@ -122,7 +122,7 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
     @Override
     @Deprecated
     public String getDisplay() {
-        return this.display;
+        return display;
     }
 
     /**

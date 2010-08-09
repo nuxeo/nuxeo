@@ -29,7 +29,7 @@ public class ByteSequenceMatcher {
 
 	public interface BytesHandler {
 
-		public void handle(byte[] bytes, int length) throws IOException;
+		void handle(byte[] bytes, int length) throws IOException;
 
 	}
 
@@ -53,7 +53,7 @@ public class ByteSequenceMatcher {
 
 	public ByteSequenceMatcher(InputStream inputStream, int bufferSize) {
 		this.inputStream = inputStream;
-		this.buffer = new byte[bufferSize];
+        buffer = new byte[bufferSize];
 	}
 
 	public BytesHandler getBytesHandler() {
@@ -166,8 +166,8 @@ public class ByteSequenceMatcher {
 			}
 		}
 
-		if (this.readLength == 0) {
-			this.isEOF = true;
+		if (readLength == 0) {
+            isEOF = true;
 		}
 	}
 
@@ -180,6 +180,6 @@ public class ByteSequenceMatcher {
 	}
 
 	public boolean isMatchedAndNotEOF() {
-		return isMatched() && !isEOF();
+		return isMatched && !isEOF;
 	}
 }

@@ -87,8 +87,8 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
             if (value instanceof InputFileInfo) {
                 InputFileInfo info = (InputFileInfo) value;
                 InputFileChoice choice = info.getConvertedChoice();
-                if (!InputFileChoice.tempKeep.equals(choice)
-                        && !InputFileChoice.upload.equals(choice)) {
+                if (InputFileChoice.tempKeep != choice
+                        && InputFileChoice.upload != choice) {
                     return;
                 }
                 String filename = info.getConvertedFilename();

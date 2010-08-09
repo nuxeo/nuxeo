@@ -44,17 +44,17 @@ public class ContentViewCache implements Serializable {
      */
     public static final Integer DEFAULT_CACHE_SIZE = new Integer(5);
 
-    protected Map<String, String> namedCacheKeys = new HashMap<String, String>();
+    protected final Map<String, String> namedCacheKeys = new HashMap<String, String>();
 
-    protected Map<String, ContentView> namedContentViews = new HashMap<String, ContentView>();
+    protected final Map<String, ContentView> namedContentViews = new HashMap<String, ContentView>();
 
-    protected Map<String, Map<String, ContentView>> cacheInstances = new HashMap<String, Map<String, ContentView>>();
+    protected final Map<String, Map<String, ContentView>> cacheInstances = new HashMap<String, Map<String, ContentView>>();
 
     /**
      * Map holding content view names that need to be invalidated for a given
      * event
      */
-    protected Map<String, Set<String>> eventToContentViewName = new HashMap<String, Set<String>>();
+    protected final Map<String, Set<String>> eventToContentViewName = new HashMap<String, Set<String>>();
 
     public void add(ContentView cView) {
         if (cView != null) {

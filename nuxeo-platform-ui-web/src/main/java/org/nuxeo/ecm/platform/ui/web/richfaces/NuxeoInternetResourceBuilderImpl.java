@@ -40,10 +40,9 @@ import org.nuxeo.common.utils.Path;
 
 /**
  * Extended {@link ResourceBuilderImpl} that tries to dynamically generate
- * the JS packs
+ * the JS packs.
  *
  * @author tiry
- *
  */
 public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
 
@@ -52,27 +51,26 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
     protected static final String JS_FRAMEWORK_ALL_KEY = "/org/ajax4jsf/framework.pack.js";
     protected static final String JS_UI_ALL_KEY = "/org/richfaces/ui.pack.js";
 
-    protected Map<String, String> jsRegistredResources = new HashMap<String, String>();
+    protected final Map<String, String> jsRegistredResources = new HashMap<String, String>();
 
-    protected List<String> blackListedScripts = new ArrayList<String>();
+    protected final List<String> blackListedScripts = new ArrayList<String>();
 
-    protected InternetResource UIPack = null;
-    protected InternetResource A4JPack = null;
+    protected InternetResource UIPack;
+    protected InternetResource A4JPack;
 
 
-    protected void trackRegistredJSResource(String key, InternetResource resource)  {
-        if (key==null) {
+    protected void trackRegistredJSResource(String key, InternetResource resource) {
+        if (key == null) {
             key = resource.getKey();
         }
-        if (key!=null && key.endsWith(".js")) {
+        if (key != null && key.endsWith(".js")) {
             if (resource instanceof JarResource) {
                 JarResource jarRes = (JarResource) resource;
                 String path = jarRes.getPath();
                 if (!jsRegistredResources.values().contains(key)) {
                     jsRegistredResources.put(key, path);
                 }
-            }
-            else {
+            } else {
                 log.debug("Non Jar resource for key " + key);
             }
         }
@@ -148,33 +146,31 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
 
 
     protected InternetResource getA4JPack(InternetResource defaultResource, String key) {
-        if (A4JPack==null) {
+        if (A4JPack == null) {
             buildA4JPack(defaultResource, key);
         }
         return A4JPack;
     }
 
-
     protected InternetResource getUIPack(InternetResource defaultResource, String key) {
-        if (UIPack==null) {
+        if (UIPack == null) {
             buildUIPack(defaultResource, key);
         }
         return UIPack;
     }
 
-
     protected synchronized void buildA4JPack(InternetResource defaultResource, String key) {
-        if (A4JPack==null) {
-            StringBuffer sb =null;
+        if (A4JPack == null) {
+            StringBuffer sb;
             try {
-                 sb =  buildAggregatedScript();
+                sb = buildAggregatedScript();
             } catch (IOException e) {
-                 log.error("Error while processing aggregated scripts", e);
-                 sb = new StringBuffer("Error in processing : " + e.getMessage());
+                log.error("Error while processing aggregated scripts", e);
+                sb = new StringBuffer("Error in processing : " + e.getMessage());
             }
             A4JPack = new AggregatedResources(sb, defaultResource.getKey());
             ResourceRenderer renderer = defaultResource.getRenderer(null);
-            if (renderer==null) {
+            if (renderer == null) {
                 renderer = new CompressedScriptRenderer();
             }
             A4JPack.setRenderer(renderer);
@@ -182,10 +178,10 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
     }
 
     protected synchronized void buildUIPack(InternetResource defaultResource, String key) {
-        if (UIPack==null) {
+        if (UIPack == null) {
             UIPack = new AggregatedResources(defaultResource.getKey());
             ResourceRenderer renderer = defaultResource.getRenderer(null);
-            if (renderer==null) {
+            if (renderer == null) {
                 renderer = new CompressedScriptRenderer();
             }
             UIPack.setRenderer(renderer);
@@ -194,7 +190,7 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
 
     protected List<String> getBlackListedScripts() {
         synchronized (blackListedScripts) {
-            if (blackListedScripts.size()==0) {
+            if (blackListedScripts.isEmpty()) {
                 blackListedScripts.add("framework.pack.js");
                 blackListedScripts.add("ui.pack.js");
                 blackListedScripts.add("jquery.js");
@@ -227,4 +223,5 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
         }
         return buf;
     }
+
 }

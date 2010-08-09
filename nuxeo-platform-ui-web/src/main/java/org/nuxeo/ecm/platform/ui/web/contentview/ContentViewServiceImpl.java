@@ -39,13 +39,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ContentViewServiceImpl extends DefaultComponent implements
         ContentViewService {
 
+    public static final String CONTENT_VIEW_EP = "contentViews";
+
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(ContentViewServiceImpl.class);
 
-    public static final String CONTENT_VIEW_EP = "contentViews";
-
-    protected Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
+    protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
 
     public ContentView getContentView(String name) throws ClientException {
         ContentViewDescriptor desc = contentViews.get(name);
@@ -83,7 +83,6 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
         CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
         GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
-        ContentViewPageProvider<?> pageProvider = null;
         if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
                 && genDesc.isEnabled()) {
             log.error(String.format(
@@ -93,7 +92,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         }
 
-        PageProviderDescriptor pageDesc = null;
+        PageProviderDescriptor pageDesc;
+        ContentViewPageProvider<?> pageProvider;
         if (coreDesc != null && coreDesc.isEnabled()) {
             pageProvider = new CoreQueryDocumentPageProvider();
             pageDesc = coreDesc;

@@ -393,7 +393,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @throws Exception
      */
     public static Object defaultValue(String propertyName) throws Exception {
-        Object value = null;
         SchemaManager tm = Framework.getService(SchemaManager.class);
         Field field = null;
         if (propertyName != null && propertyName.contains("/")) {
@@ -413,6 +412,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             field = tm.getField(propertyName);
         }
 
+        Object value = null;
         if (field != null) {
             Type type = field.getType();
             if (type.isListType()) {

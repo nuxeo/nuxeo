@@ -95,7 +95,6 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 toWrite = display != null ? DirectoryHelper.instance().getOptionValue(
                         entryId, label, display, displayIdAndLabel, " ")
                         : label;
-
             }
         }
         if (toWrite == null) {

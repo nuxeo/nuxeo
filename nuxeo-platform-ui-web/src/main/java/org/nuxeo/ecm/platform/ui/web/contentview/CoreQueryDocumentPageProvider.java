@@ -62,7 +62,7 @@ public class CoreQueryDocumentPageProvider extends
 
     public void setPageProviderDescriptor(
             PageProviderDescriptor providerDescriptor) {
-        this.descriptor = providerDescriptor;
+        descriptor = providerDescriptor;
     }
 
     @Override
@@ -111,11 +111,11 @@ public class CoreQueryDocumentPageProvider extends
 
     protected void buildQuery(CoreSession coreSession) {
         try {
-            String newQuery = null;
             SortInfo[] sortArray = null;
             if (sortInfos != null) {
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
+            String newQuery;
             if (descriptor.getWhereClause() == null) {
                 newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
                         getParameters(),
@@ -150,7 +150,6 @@ public class CoreQueryDocumentPageProvider extends
             CoreSession coreSession = getCoreSession();
             buildQuery(coreSession);
         }
-
     }
 
     protected CoreSession getCoreSession() {

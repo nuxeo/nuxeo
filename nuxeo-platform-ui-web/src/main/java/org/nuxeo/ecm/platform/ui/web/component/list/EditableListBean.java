@@ -46,7 +46,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  * <p>
  * Used to add/remove items from a list.
  * <p>
- * Optionnaly used to work around some unwanted behaviour in data tables.
+ * Optionally used to work around some unwanted behaviour in data tables.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -74,7 +74,7 @@ public class EditableListBean {
         this.binding = binding;
     }
 
-    // dont make it static so that jsf can call it
+    // don't make it static so that jsf can call it
     public void performAction(String listComponentId, String index, String type) {
         if (binding == null) {
             log.error("Component binding not set, cannot perform action");
@@ -87,7 +87,7 @@ public class EditableListBean {
         performAction(binding, requestMap);
     }
 
-    // dont make it static so that jsf can call it
+    // don't make it static so that jsf can call it
     public void performAction(ActionEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
@@ -317,7 +317,7 @@ public class EditableListBean {
      *
      * @return dummy list of one item
      */
-    // dont make it static so that jsf can call it
+    // don't make it static so that jsf can call it
     public List<Object> getDummyList() {
         List<Object> dummy = new ArrayList<Object>(1);
         dummy.add("dummy");

@@ -34,13 +34,9 @@ import org.restlet.data.Status;
  *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
-
 public class ThreadSafeRestletFilter extends Filter {
 
     private static final Log log = LogFactory.getLog(ThreadSafeRestletFilter.class);
-
-    public ThreadSafeRestletFilter() {
-    }
 
     @Override
     protected void beforeHandle(Request request, Response response) {
