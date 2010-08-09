@@ -116,6 +116,7 @@ public class LayoutAutomaticGeneration {
                     fieldElement.setText(fieldName);
                 }
 
+                // FIXME: this condition is always true. What's the point?
                 if (needsDateFormat || needsInputStyleClass) {
                     Element properties = widget.addElement("properties");
                     if (needsDateFormat) {

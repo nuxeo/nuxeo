@@ -56,7 +56,7 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  *
  */
 public class DirectorySelectManyWidgetTypeHandler extends
-        AbstractWidgetTypeHandler implements WidgetTypeHandler {
+        AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1495841177711755669L;
 

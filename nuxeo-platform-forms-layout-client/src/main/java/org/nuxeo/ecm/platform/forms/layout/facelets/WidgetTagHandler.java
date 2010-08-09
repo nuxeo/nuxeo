@@ -68,7 +68,7 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = new String[] { "id", "widget",
+    protected final String[] reservedVarsArray = { "id", "widget",
             "value" };
 
     public WidgetTagHandler(TagConfig config) {
