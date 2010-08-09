@@ -37,5 +37,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
 Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management,
  org.nuxeo.ecm.core,
- org.nuxeo.platform.web.common,
- org.nuxeo.platform.scheduler.core
+ org.nuxeo.ecm.platform.web.common,
+ org.nuxeo.ecm.platform.scheduler.core
