@@ -233,7 +233,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
     }
 
     @Override
-    protected Boolean initRepository(Response res, String repoId) {
+    protected boolean initRepository(Response res, String repoId) {
 
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domfactory.createDocument();
