@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = MoveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Move", description = "Move the input document into the target folder")
+@Operation(id = MoveDocument.ID, category = Constants.CAT_DOCUMENT, label = "Move",
+        description = "Move the input document into the target folder.")
 public class MoveDocument {
 
     public static final String ID = "Document.Move";

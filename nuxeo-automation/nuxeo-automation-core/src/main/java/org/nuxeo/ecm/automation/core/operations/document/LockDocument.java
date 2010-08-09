@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = LockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Lock", description = "Lock the input document in the name of the given 'owner'. The lock owner is an username and identify the user that owns the lock on the document. If the owner is not specified the current user will be used as the owner. Return back the locked document")
+@Operation(id = LockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Lock",
+        description = "Lock the input document in the name of the given 'owner'. The lock owner is an username and identifies the user that owns the lock on the document. If the owner is not specified, the current user will be used as the owner. Returns back the locked document.")
 public class LockDocument {
 
     public static final String ID = "Document.Lock";
@@ -42,29 +43,29 @@ public class LockDocument {
     protected CoreSession session;
 
     @Param(name = "owner", required = false)
-    protected String value;
+    protected String owner;
 
     @OperationMethod
     public DocumentRef run(DocumentRef doc) throws Exception {
-        if (value == null) {
-            value = session.getPrincipal().getName();
+        if (owner == null) {
+            owner = session.getPrincipal().getName();
         }
-        session.setLock(doc, value);
+        session.setLock(doc, owner);
         return doc;
     }
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        if (value == null) {
-            value = session.getPrincipal().getName();
+        if (owner == null) {
+            owner = session.getPrincipal().getName();
         }
-        doc.setLock(value);
+        doc.setLock(owner);
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
+        DocumentModelList result = new DocumentModelListImpl(
                 (int) docs.totalSize());
         for (DocumentModel doc : docs) {
             result.add(run(doc));
@@ -74,7 +75,7 @@ public class LockDocument {
 
     @OperationMethod
     public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
+        DocumentModelList result = new DocumentModelListImpl(
                 (int) docs.totalSize());
         for (DocumentRef doc : docs) {
             result.add(session.getDocument(run(doc)));

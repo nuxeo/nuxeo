@@ -44,14 +44,14 @@ public class UpdateDocument {
     protected CoreSession session;
 
     @Param(name = "properties")
-    protected Properties content;
+    protected Properties properties;
 
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        DocumentHelper.setProperties(session, doc, content);
+        DocumentHelper.setProperties(session, doc, properties);
         if (save) {
             doc = session.saveDocument(doc);
         }
