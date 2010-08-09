@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Get a list of files that are attached on the input document. The files location should eb specified using the blob list property xpath. Return a list of files.")
+@Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Gets a list of files that are attached on the input document. The files location should be specified using the blob list property xpath. Returns a list of files.")
 public class GetDocumentBlobs {
 
     public static final String ID = "Blob.GetList";

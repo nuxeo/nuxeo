@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "argument represents the variable name and the 'permission' argument "
         + "the permission to check. If the 'ignore groups' argument is false "
         + "then groups will be part of the result. If the 'resolve groups' "
-        + "argument is true then groups are recusively resolved, adding "
+        + "argument is true then groups are recursively resolved, adding "
         + "user members of these groups in place of them. Be <b>warned</b> "
         + "that this may be a very consuming operation. If the 'prefix "
         + "identifiers' argument is true, then user identifiers are "

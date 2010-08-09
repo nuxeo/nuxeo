@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "list of principals set by this operation on the context from another "
         + "operation. The 'key' argument represents the variable name and the "
         + "'permission' argument the permission to check. If the 'ignore groups' "
-        + "argument is false then groups are recusively resolved, extracting "
+        + "argument is false then groups are recursively resolved, extracting "
         + "user members of these groups. Be <b>warned</b> "
         + "that this may be a very consuming operation.<ul>Note that <li></li>"
         + "<li>groups are not included</li><li>the list pushed into the context "

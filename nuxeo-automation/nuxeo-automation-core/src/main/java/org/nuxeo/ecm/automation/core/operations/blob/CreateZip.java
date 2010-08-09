@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CreateZip.ID, category = Constants.CAT_BLOB, label = "Zip", description = "Create a zip file from the input file(s). If no file name is given the first file name in the input will be used. Returns the zip file.")
+@Operation(id = CreateZip.ID, category = Constants.CAT_BLOB, label = "Zip", description = "Creates a zip file from the input file(s). If no file name is given, the first file name in the input will be used. Returns the zip file.")
 public class CreateZip {
 
     public static final String ID = "Blob.CreateZip";
