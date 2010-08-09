@@ -21,11 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A registry of REST bindings. Provides methods for checking if a given
  * operation is allowed to be invoked in a REST call.
- * 
- * The binding registry is synchronized
+ * <p>
+ * The binding registry is synchronized.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public interface AutomationServer {
 
@@ -62,7 +61,7 @@ public interface AutomationServer {
     /**
      * Remove a binding for the given operation name
      * 
-     * @param name
+     * @param binding
      * @return the removed binding if any otherwise null
      */
     RestBinding removeBinding(RestBinding binding);

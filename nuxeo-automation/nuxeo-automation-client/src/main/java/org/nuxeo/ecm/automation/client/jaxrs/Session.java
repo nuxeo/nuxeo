@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public interface Session {
 

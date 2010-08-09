@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: comment me.
 public interface AdapterFactory<T> {
 
     Class<?> getAcceptType();

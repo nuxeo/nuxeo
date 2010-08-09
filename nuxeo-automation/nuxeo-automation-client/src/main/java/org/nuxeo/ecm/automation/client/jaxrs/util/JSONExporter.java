@@ -53,8 +53,7 @@ public class JSONExporter {
         writer.write(json.toString(2));
     }
 
-    public static JSONObject toJSON(OperationDocumentation doc)
-            throws IOException {
+    public static JSONObject toJSON(OperationDocumentation doc) {
         JSONObject op = new JSONObject();
         op.element("id", doc.id);
         op.element("label", doc.label);

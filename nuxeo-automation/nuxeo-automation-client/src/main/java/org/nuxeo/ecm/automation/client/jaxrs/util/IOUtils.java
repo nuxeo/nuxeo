@@ -34,6 +34,9 @@ public class IOUtils {
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
+    private IOUtils() {
+    }
+
     private static byte[] createBuffer(int preferredSize) {
         if (preferredSize < 1) {
             preferredSize = BUFFER_SIZE;
@@ -70,7 +73,6 @@ public class IOUtils {
         }
     }
 
-
     public static String read(InputStream in) throws IOException {
         InputStreamReader reader = new InputStreamReader(in, "UTF-8");
         return read(reader);
@@ -89,6 +91,5 @@ public class IOUtils {
         }
         return sb.toString();
     }
-
 
 }

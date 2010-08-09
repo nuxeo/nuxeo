@@ -22,12 +22,12 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  * If null is passed as the user name an anonymous session will be created. Note
  * that anonymous sessions are not always accepted by a Nuxeo Server (it depends
  * on the server configuration).
- * 
+ * <p>
  * When you attempt to create a new session using the same authentication info
  * as an already created session the session will be reused (TODO this is
  * optional for implementors?)
- * 
- * Note for implementors: The implementation should provide a constructor that
+ * <p>
+ * Note for implementors: the implementation should provide a constructor that
  * initialize the base URL
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,14 +36,14 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 public interface AutomationClient {
 
     /**
-     * Get the automation service URL.
+     * Gets the automation service URL.
      * 
      * @return
      */
     String getBaseUrl();
 
     /**
-     * Create a new session using the given login.
+     * Creates a new session using the given login.
      * 
      * @param username
      * @param password
@@ -53,7 +53,7 @@ public interface AutomationClient {
     Session getSession(String username, String password) throws Exception;
 
     /**
-     * Create asynchronously a new session using the given login. The given
+     * Creates asynchronously a new session using the given login. The given
      * callback will be notified after the session is created.
      * 
      * @param username
@@ -63,8 +63,8 @@ public interface AutomationClient {
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
-     * Adapt the given object to the given type. Return the adapter instance if
-     * any otherwise null.
+     * Adapts the given object to the given type. Return the adapter instance if
+     * any, otherwise null.
      * <p>
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
@@ -84,6 +84,7 @@ public interface AutomationClient {
      * @param typeToAdapt
      * @param adapterType
      */
+    // FIXME: this javadoc doesn't correspond to the method signature.
     void registerAdapter(AdapterFactory<?> factory);
 
     /**

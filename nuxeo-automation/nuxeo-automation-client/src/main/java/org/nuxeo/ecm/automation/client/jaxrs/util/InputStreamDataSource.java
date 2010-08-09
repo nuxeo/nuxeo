@@ -33,7 +33,7 @@ public class InputStreamDataSource implements DataSource {
     protected String name;
 
     public InputStreamDataSource(InputStream in, String ctype) {
-        this (in, ctype, "MultipartRequest");
+        this(in, ctype, "MultipartRequest");
     }
 
     public InputStreamDataSource(InputStream in, String ctype, String name) {
@@ -43,7 +43,7 @@ public class InputStreamDataSource implements DataSource {
     }
 
     public OutputStream getOutputStream() throws IOException {
-        throw new UnsupportedOperationException("data source is not writeable");
+        throw new UnsupportedOperationException("data source is not writable");
     }
 
     public String getName() {

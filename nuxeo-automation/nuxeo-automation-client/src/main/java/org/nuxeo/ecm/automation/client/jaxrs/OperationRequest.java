@@ -20,12 +20,11 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: comment me.
 public interface OperationRequest {
 
     Session getSession();

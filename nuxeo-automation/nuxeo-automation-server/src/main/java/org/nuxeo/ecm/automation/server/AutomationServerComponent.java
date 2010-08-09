@@ -145,7 +145,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         return true;
     }
 
-    private final Map<String, RestBinding> lookup() {
+    private Map<String, RestBinding> lookup() {
         Map<String, RestBinding> _lookup = lookup;
         if (_lookup == null) {
             synchronized (this) {

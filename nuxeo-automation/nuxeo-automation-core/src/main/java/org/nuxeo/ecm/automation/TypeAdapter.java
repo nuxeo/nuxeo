@@ -19,7 +19,7 @@ package org.nuxeo.ecm.automation;
 /**
  * An object that can adapt a given object instance to an object of another
  * type A type adapter accepts only one type of objects and can produce only
- * one type of object
+ * one type of object.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

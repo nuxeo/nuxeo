@@ -1,5 +1,5 @@
-
 REQUIRED:
+
 1. implement multipart-form-encoded
 2. Web Services
 3. authentication on demand?
@@ -12,6 +12,7 @@ REQUIRED:
 5. improve java client API
 
 OPTIONAL:
+
 1. Implement GWT client
 2. expose doc types?
 3. shell

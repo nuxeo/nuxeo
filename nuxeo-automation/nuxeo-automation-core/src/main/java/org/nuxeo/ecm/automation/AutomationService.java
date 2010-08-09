@@ -84,7 +84,7 @@ public interface AutomationService {
      * operation in the chain) then {@link InvalidChainException} is thrown.
      * The returned object can be used to run the chain.
      *
-     * @param input
+     * @param inputType
      * @param chain
      * @return
      * @throws Exception
@@ -145,7 +145,7 @@ public interface AutomationService {
             throws OperationException;
 
     /**
-     * Register a parameterized operation chain. This chain can be executed
+     * Register a parametrized operation chain. This chain can be executed
      * later by calling <code>run</code> and passing the chain ID. If the
      * replace attribute is true then any chain already registered under the
      * same id will be replaced otherwise an exception is thrown.

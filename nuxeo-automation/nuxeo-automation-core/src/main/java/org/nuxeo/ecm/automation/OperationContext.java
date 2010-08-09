@@ -82,7 +82,7 @@ public class OperationContext extends HashMap<String, Object> {
 
     public OperationContext(CoreSession session) {
         stacks = new HashMap<String, List<Object>>();
-        setCoreSession(session);
+        this.session = session;
         cleanupHandlers = new ArrayList<CleanupHandler>();
     }
 
