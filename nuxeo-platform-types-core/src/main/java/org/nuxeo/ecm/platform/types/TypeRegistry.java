@@ -19,20 +19,47 @@
 
 package org.nuxeo.ecm.platform.types;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.ExtensionRegistry;
 
-public class TypeRegistry {
+public class TypeRegistry extends ExtensionRegistry<Type> {
 
     private static final Log log = LogFactory.getLog(TypeRegistry.class);
 
-    final Map<String, Type> types = new HashMap<String, Type>();
+    protected volatile Map<String, Type> types = new HashMap<String, Type>();
 
+    @Override
+    public void removeContributions() {
+        types = new HashMap<String, Type>();
+    }
+
+    @Override
+    public void addContribution(Type contrib, Extension extension) {
+        Type type = (Type) contrib;
+        String typeId = type.getId();
+        if (type.getRemove()) {
+            log.debug("Removing type with id " + typeId);
+            removeType(typeId);
+        } else {
+            if (hasType(typeId)) {
+                type = mergeTypes(getType(typeId), type);
+                removeType(typeId);
+                log.debug("Merging type with id " + typeId);
+            }
+            addType(type);
+            log.info("Registered platform document type: " + typeId);
+        }
+    }
 
     public synchronized void addType(Type type) {
         if (log.isDebugEnabled()) {
@@ -62,6 +89,156 @@ public class TypeRegistry {
 
     public Type getType(String id) {
         return types.get(id);
+    }
+
+    public static Type mergeTypes(Type oldType, Type newType) {
+        String icon = newType.getIcon();
+        if (icon != null) {
+            oldType.setIcon(icon);
+        }
+        String iconExpanded = newType.getIconExpanded();
+        if (iconExpanded != null) {
+            oldType.setIconExpanded(iconExpanded);
+        }
+        String bigIcon = newType.getBigIcon();
+        if (bigIcon != null) {
+            oldType.setBigIcon(bigIcon);
+        }
+        String bigIconExpanded = newType.getBigIconExpanded();
+        if (bigIconExpanded != null) {
+            oldType.setBigIconExpanded(bigIconExpanded);
+        }
+        String label = newType.getLabel();
+        if (label != null) {
+            oldType.setLabel(label);
+        }
+        String description = newType.getDescription();
+        if (description != null) {
+            oldType.setDescription(description);
+        }
+        String category = newType.getCategory();
+        if (category != null) {
+            oldType.setCategory(category);
+        }
+        Map<String, SubType> newTypeAllowedSubTypes = newType.getAllowedSubTypes();
+        if (newTypeAllowedSubTypes != null) {
+            Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
+            Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
+            for (String newTypeKey : newTypeKeySet) {
+                oldTypeAllowedSubTypes.put(newTypeKey,
+                        newTypeAllowedSubTypes.get(newTypeKey));
+            }
+        }
+
+        // Code added to delete the denied SubType from allowed subtype
+
+        List<String> result = new ArrayList<String>();
+        String[] deniedSubTypes = newType.getDeniedSubTypes();
+        Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
+        boolean toAdd = true;
+
+        if (oldTypeAllowedSubTypes != null) {
+            Set<String> oldTypeKeySet = oldTypeAllowedSubTypes.keySet();
+            for (String allowedSubType : oldTypeKeySet) {
+                for (String deniedSubType : deniedSubTypes) {
+                    if (deniedSubType.equals(allowedSubType)) {
+                        toAdd = false;
+                        break;
+                    }
+                }
+                if (toAdd) {
+                    result.add(allowedSubType);
+                }
+                toAdd = true;
+            }
+        }
+
+        Map<String, SubType> mapResult = new HashMap<String, SubType>();
+        for (String resultTypeName : result) {
+            mapResult.put(resultTypeName,
+                    oldTypeAllowedSubTypes.get(resultTypeName));
+        }
+
+        oldType.setAllowedSubTypes(mapResult);
+
+        // end of added code
+
+        String defaultView = newType.getDefaultView();
+        if (defaultView != null) {
+            oldType.setDefaultView(defaultView);
+        }
+        String createView = newType.getCreateView();
+        if (createView != null) {
+            oldType.setCreateView(createView);
+        }
+        String editView = newType.getEditView();
+        if (editView != null) {
+            oldType.setEditView(editView);
+        }
+
+        for (TypeView view : newType.getViews()) {
+            oldType.setView(view);
+        }
+
+        // overwrite old layout
+        FieldWidget[] layout = newType.getLayout();
+        if (layout != null && layout.length != 0) {
+            oldType.setLayout(layout);
+        }
+
+        Map<String, Layouts> layouts = newType.getLayouts();
+        if (layouts != null) {
+            Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(
+                    oldType.getLayouts());
+            for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
+                String key = entry.getKey();
+                Layouts newLayouts = entry.getValue();
+                if (layoutsMerged.containsKey(key) && newLayouts.getAppend()) {
+                    List<String> allLayouts = new ArrayList<String>();
+                    for (String layoutName : layoutsMerged.get(key).getLayouts()) {
+                        allLayouts.add(layoutName);
+                    }
+                    for (String layoutName : newLayouts.getLayouts()) {
+                        allLayouts.add(layoutName);
+                    }
+                    Layouts mergedLayouts = new Layouts();
+                    mergedLayouts.layouts = allLayouts.toArray(new String[allLayouts.size()]);
+                    layoutsMerged.put(key, mergedLayouts);
+                } else {
+                    layoutsMerged.put(key, newLayouts);
+                }
+            }
+            oldType.setLayouts(layoutsMerged);
+        }
+
+        Map<String, ContentViews> contentViews = newType.getContentViews();
+        if (contentViews != null) {
+            Map<String, ContentViews> cvMerged = new HashMap<String, ContentViews>(
+                    oldType.getContentViews());
+            for (Map.Entry<String, ContentViews> entry : contentViews.entrySet()) {
+                String key = entry.getKey();
+                ContentViews newContentViews = entry.getValue();
+                if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
+                    List<String> allContentViews = new ArrayList<String>();
+                    for (String layoutName : cvMerged.get(key).getContentViews()) {
+                        allContentViews.add(layoutName);
+                    }
+                    for (String layoutName : newContentViews.getContentViews()) {
+                        allContentViews.add(layoutName);
+                    }
+                    ContentViews mergedContentViews = new ContentViews();
+                    mergedContentViews.contentViews = allContentViews.toArray(new String[allContentViews.size()]);
+                    cvMerged.put(key, mergedContentViews);
+                } else {
+                    cvMerged.put(key, newContentViews);
+                }
+            }
+            oldType.setContentViews(cvMerged);
+        }
+
+        // TODO: actions
+
+        return oldType;
     }
 
 }
