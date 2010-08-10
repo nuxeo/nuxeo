@@ -27,7 +27,6 @@ import org.apache.commons.jexl.JexlContext;
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author  <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public class Context implements JexlContext {
 
@@ -44,6 +43,7 @@ public class Context implements JexlContext {
         return vars;
     }
 
+    @SuppressWarnings("unchecked")
     public void setVars(Map vars) {
         this.vars = vars;
     }

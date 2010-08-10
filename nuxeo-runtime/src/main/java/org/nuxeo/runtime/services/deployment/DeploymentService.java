@@ -101,7 +101,7 @@ public class DeploymentService extends DefaultComponent {
                 }
                 for (File file : files) {
                     try {
-                        URL url = file.toURL();
+                        URL url = file.toURI().toURL();
                         log.info("Deploying external component: " + url);
                         deployment.urls = new ArrayList<URL>();
                         ctx.deploy(url);

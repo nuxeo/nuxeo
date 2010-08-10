@@ -75,7 +75,7 @@ public class RepositoryAdapter implements EventListener {
         out.write(content.getBytes());
         out.close();
         DeploymentInfo parent = JBossOSGiAdapter.getEARDeployment();
-        DeploymentHelper.deploy(file.toURL(), parent);
+        DeploymentHelper.deploy(file.toURI().toURL(), parent);
     }
 
     public void undeployRepository(String name) throws Exception {
@@ -84,7 +84,7 @@ public class RepositoryAdapter implements EventListener {
             .getService(RuntimeAdapterMBean.class, RuntimeAdapter.NAME);
         File file = new File(rad.getTempDeployDir(), name + "-ds.xml");
         if (file.isFile()) {
-            DeploymentHelper.undeploy(file.toURL());
+            DeploymentHelper.undeploy(file.toURI().toURL());
         }
     }
 

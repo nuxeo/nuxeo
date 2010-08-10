@@ -62,6 +62,7 @@ public class JBossRuntimeContext extends DefaultRuntimeContext {
         return di.localCl.findResource(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class loadClass(String className) throws ClassNotFoundException {
         return di.ucl.loadClass(className);

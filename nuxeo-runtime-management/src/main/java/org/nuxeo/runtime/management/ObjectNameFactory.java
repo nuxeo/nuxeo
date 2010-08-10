@@ -78,7 +78,7 @@ public class ObjectNameFactory {
         }
         return buffer.toString();
     }
-    
+
     public static String formatMetricQualifiedName(ComponentName name,
             String metricName, String... avas) {
         return formatQualifiedName(name) + ",metric=" + metricName + ","
@@ -101,7 +101,6 @@ public class ObjectNameFactory {
         return name;
     }
 
-    @SuppressWarnings("unchecked")
     public static String formatShortName(ObjectName name) {
         String shortName = removeDotPart(name.getKeyProperty("name"));
         String typeName = name.getKeyProperty("type");

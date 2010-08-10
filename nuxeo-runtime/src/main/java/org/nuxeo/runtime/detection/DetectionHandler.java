@@ -25,14 +25,11 @@ package org.nuxeo.runtime.detection;
  * Methods are called in a separate thread than the heart beat listener.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DetectionHandler {
 
     /**
      * A new peer was detected.
-     *
-     * @param peer the peer
      */
     void peerOnline(Peer peer);
 

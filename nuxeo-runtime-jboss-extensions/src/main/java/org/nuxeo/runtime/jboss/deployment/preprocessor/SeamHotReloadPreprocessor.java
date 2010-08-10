@@ -247,8 +247,8 @@ public class SeamHotReloadPreprocessor {
 
     protected void updateDeploymentInfo(DeploymentInfo di, File newJar)
             throws MalformedURLException {
-        di.url = newJar.toURL();
-        di.watch = newJar.toURL();
+        di.url = newJar.toURI().toURL();
+        di.watch = newJar.toURI().toURL();
     }
 
 }

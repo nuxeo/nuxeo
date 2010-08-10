@@ -74,7 +74,7 @@ public class JarBundleFile implements BundleFile {
             name = name.substring(1);
         }
         try {
-            return new URL("jar:" + new File(jarFile.getName()).toURL() + "!/" + name);
+            return new URL("jar:" + new File(jarFile.getName()).toURI().toURL() + "!/" + name);
         } catch (Exception e) {
             return null;
         }
@@ -126,7 +126,7 @@ public class JarBundleFile implements BundleFile {
         }
         String[] paths = StringUtils.split(cp, ',', true);
         URL base = new URL("jar:"
-                + new File(jarFile.getName()).toURL().toExternalForm() + "!/");
+                + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
         List<BundleFile> nested = new ArrayList<BundleFile>();
         for (String path : paths) {
@@ -176,7 +176,7 @@ public class JarBundleFile implements BundleFile {
 
     public Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException {
         URL base = new URL("jar:"
-                + new File(jarFile.getName()).toURL().toExternalForm() + "!/");
+                + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
         Enumeration<JarEntry> entries = jarFile.entries();
         List<BundleFile> nested = new ArrayList<BundleFile>();
@@ -207,7 +207,7 @@ public class JarBundleFile implements BundleFile {
 
     public URL getURL() {
         try {
-            return new File(jarFile.getName()).toURL();
+            return new File(jarFile.getName()).toURI().toURL();
         } catch (Exception e) {
             return null;
         }
@@ -215,7 +215,7 @@ public class JarBundleFile implements BundleFile {
 
     public URL getJarURL() {
         try {
-            String url = new File(jarFile.getName()).toURL().toExternalForm();
+            String url = new File(jarFile.getName()).toURI().toURL().toExternalForm();
             return new URL("jar:" + url + "!/");
         } catch (Exception e) {
             return null;

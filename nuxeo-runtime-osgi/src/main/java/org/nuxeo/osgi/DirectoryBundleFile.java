@@ -62,7 +62,7 @@ public class DirectoryBundleFile implements BundleFile {
         File entry = new File(file, name);
         if (entry.exists()) {
             try {
-                return entry.toURL();
+                return entry.toURI().toURL();
             } catch (Exception e) {
                 return null;
             }
@@ -139,7 +139,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     public URL getURL() {
         try {
-            return file.toURL();
+            return file.toURI().toURL();
         } catch (Exception e) {
             return null;
         }

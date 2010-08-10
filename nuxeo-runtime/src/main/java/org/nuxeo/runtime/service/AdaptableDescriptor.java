@@ -78,7 +78,6 @@ public class AdaptableDescriptor {
         return superClasses.toArray(new Class<?>[superClasses.size()]);
     }
 
-    @SuppressWarnings("unchecked")
     public static void collectSuperTypes(Class<?> klass, List<Class<?>> superClasses, List<Class<?>> interfaces) {
         Class<?>[] itfs = klass.getInterfaces();
         if (itfs.length > 0) {

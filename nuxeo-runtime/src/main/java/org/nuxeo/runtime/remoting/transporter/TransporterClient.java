@@ -72,10 +72,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
 
     /**
      * Creates the remoting client to server POJO. Is clustered.
-     *
-     * @param locator
-     * @param targetSubsystem
-     * @throws Exception
      */
     private TransporterClient(InvokerLocator locator, String targetSubsystem)
             throws Exception {
@@ -97,8 +93,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
     /**
      * Will set up network registry and detector for clustering (to identify
      * other remoting servers running on network).
-     *
-     * @throws Exception
      */
     private static void setupDetector() throws Exception {
         server = MBeanServerFactory.createMBeanServer();
@@ -189,8 +183,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
     /**
      * Needs to be called by user when no longer need to make calls on remote
      * POJO. Otherwise will maintain remote connection until this is called.
-     *
-     * @param transporterClient
      */
     public static void destroyTransporterClient(Object transporterClient) {
         if (transporterClient instanceof Proxy) {
@@ -214,12 +206,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * getProcessor(). This method will simply convert the proxy call info into
      * a remoting invocation on the target remoting server (using a
      * NameBaseInvocation).
-     *
-     * @param proxy
-     * @param method
-     * @param args
-     * @return
-     * @throws Throwable
      */
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
@@ -255,8 +241,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * are interested in (which will correspond to the proxy type we are using).
      * If one is found, will try to create a remoting client and connect to it.
      * If can't find one, will return false.
-     *
-     * @return
      */
 //    private boolean findAlternativeTarget() {
 //        boolean failover = false;
@@ -303,9 +287,6 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * Converts the Class array supplied via the dynamic proxy to a String array
      * of the respective class names, which is need by the NameBasedInvocation
      * object.
-     *
-     * @param args
-     * @return
      */
     private static String[] createParamSignature(Class[] args) {
         if (args == null || args.length == 0) {

@@ -311,7 +311,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         Set<Extension> pendingExt = mgr.pendingExtensions.remove(name);
         if (pendingExt != null) {
             for (Extension xt : pendingExt) {
-                mgr.loadContributions(this, xt);
+                ComponentManagerImpl.loadContributions(this, xt);
                 try {
                     component.registerExtension(xt);
                 } catch (Exception e) {
@@ -326,7 +326,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 }
             }
         }
-
     }
 
     public synchronized void deactivate() throws Exception {
@@ -439,11 +438,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 //                targets.add(key);
 //            }
         }
-
     }
-
 
     public URL getXmlFileUrl() {
         return xmlFileUrl;
     }
+
 }

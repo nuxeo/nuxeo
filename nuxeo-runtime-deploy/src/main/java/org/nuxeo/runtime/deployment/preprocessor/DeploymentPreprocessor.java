@@ -236,7 +236,7 @@ public class DeploymentPreprocessor {
     }
 
     protected FragmentDescriptor getXMLFragment(File file) throws Exception {
-        FragmentDescriptor fd = (FragmentDescriptor) xmap.load(file.toURL());
+        FragmentDescriptor fd = (FragmentDescriptor) xmap.load(file.toURI().toURL());
         if (fd != null && fd.name == null) {
             fd.name = file.getName();
         }
@@ -246,7 +246,7 @@ public class DeploymentPreprocessor {
     protected void collectXMLFragments(ContainerDescriptor cd, File file)
             throws Exception {
         String fileName = file.getName();
-        Object[] result = xmap.loadAll(file.toURL());
+        Object[] result = xmap.loadAll(file.toURI().toURL());
         for (Object entry : result) {
             FragmentDescriptor fd = (FragmentDescriptor) entry;
             assert fd != null;
@@ -269,7 +269,7 @@ public class DeploymentPreprocessor {
         File file = new File(directory.getAbsolutePath() + '/' + FRAGMENT_FILE);
         String fileName = directory.getName();
         if (file.isFile()) {
-            fd = (FragmentDescriptor) xmap.load(file.toURL());
+            fd = (FragmentDescriptor) xmap.load(file.toURI().toURL());
         } else {
             log.warn("No " + FRAGMENT_FILE + " found in directory:" + directory
                     + " (must exist, must have exact name)");
@@ -375,7 +375,7 @@ public class DeploymentPreprocessor {
         ContainerDescriptor cd = null;
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
         if (file.isFile()) {
-            cd = (ContainerDescriptor) xmap.load(file.toURL());
+            cd = (ContainerDescriptor) xmap.load(file.toURI().toURL());
             if (cd != null) {
                 cd.directory = directory;
                 if (cd.name == null) {

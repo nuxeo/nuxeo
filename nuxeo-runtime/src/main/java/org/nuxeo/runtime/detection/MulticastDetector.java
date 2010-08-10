@@ -31,7 +31,6 @@ import java.util.TimerTask;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MulticastDetector<T> {
 
@@ -124,6 +123,7 @@ public class MulticastDetector<T> {
         return identity;
     }
 
+    @SuppressWarnings("unchecked")
     public Peer<T>[] getPeers() {
         synchronized (peers) {
             return peers.values().toArray(new Peer[peers.size()]);
@@ -233,6 +233,7 @@ public class MulticastDetector<T> {
     }
 
     class CleanupTask extends TimerTask {
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             //System.out.println(identity+": running cleanup task");
@@ -257,7 +258,7 @@ public class MulticastDetector<T> {
         private final boolean online;
         private final Peer peer;
 
-        NotifyTask(Peer peer, boolean online) {
+        NotifyTask(Peer<T> peer, boolean online) {
             this.peer = peer;
             this.online = online;
         }

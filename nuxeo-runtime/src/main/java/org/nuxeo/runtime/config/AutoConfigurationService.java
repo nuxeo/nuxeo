@@ -125,6 +125,7 @@ public class AutoConfigurationService {
         return jndiProperties;
     }
 
+    @SuppressWarnings("unchecked")
     public static InvokerLocator createLocator(String url) throws MalformedURLException {
         InvokerLocator locator = new InvokerLocator(url);
         return createLocator(locator.getProtocol(), locator.getHost(),

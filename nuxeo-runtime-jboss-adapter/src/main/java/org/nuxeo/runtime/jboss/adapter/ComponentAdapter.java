@@ -109,7 +109,7 @@ public class ComponentAdapter extends ServiceMBeanSupport
             }
             // use the ear deployment if any to correctly handle isolation
             DeploymentInfo parent = JBossOSGiAdapter.getEARDeployment();
-            DeploymentHelper.deploy(file.toURL(), parent);
+            DeploymentHelper.deploy(file.toURI().toURL(), parent);
         } catch (Exception e) {
             log.error("Failed to register Mbean for service " + ri.getName(), e);
         } finally {
@@ -131,7 +131,7 @@ public class ComponentAdapter extends ServiceMBeanSupport
             .getService(RuntimeAdapterMBean.class, RuntimeAdapter.NAME);
         File file = new File(rad.getTempDeployDir(), name + "-service.xml");
         try {
-            DeploymentHelper.undeploy(file.toURL());
+            DeploymentHelper.undeploy(file.toURI().toURL());
         } catch (Exception e) {
             log.error("Failed to un-register Mbean for service " + ri.getName(), e);
         }

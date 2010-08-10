@@ -91,7 +91,7 @@ public class RemoteClassLoader extends ClassLoader {
             byte[] bytes = sd.getServer().getClass(component, name);
             if (bytes != null) {
                 File file = createTempFile(name);
-                resource = file.toURL();
+                resource = file.toURI().toURL();
                 if (resource != null) {
                     loadedResources.put(name, resource.toURI());
                     return resource;

@@ -76,7 +76,6 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
         server.invoke(objectName, "bindResources", null, null);
     }
 
-    @SuppressWarnings("unchecked")
     protected Set<ObjectName> doQuery(String name) {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);

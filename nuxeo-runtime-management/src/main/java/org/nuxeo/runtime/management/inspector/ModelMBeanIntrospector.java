@@ -68,7 +68,6 @@ public class ModelMBeanIntrospector {
         this.clazz = clazz;
     }
 
-    @SuppressWarnings("unchecked")
     ModelMBeanInfo introspect() {
         if (managementInfo != null) {
             return managementInfo;
@@ -113,7 +112,6 @@ public class ModelMBeanIntrospector {
         return managementInfo;
     }
 
-    @SuppressWarnings("unchecked")
     protected void doCollectIfaces(List<Class> ifaces, Class clazz) {
         for (Class<?> iface : clazz.getInterfaces()) {
             if (iface.getName().endsWith("MBean")) {

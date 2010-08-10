@@ -44,7 +44,6 @@ public class SystemLoginModule implements LoginModule {
     protected Map sharedState;
     protected boolean trace;
 
-    @SuppressWarnings("unchecked")
     public void initialize(Subject subject, CallbackHandler callbackHandler,
             Map sharedState, Map options) {
         this.subject = subject;
