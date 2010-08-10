@@ -767,7 +767,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Lazy initialization for adapters because they don't survive the
      * serialization.
      */
-    @SuppressWarnings("unchecked")
     private ArrayMap<Class, Object> getAdapters() {
         if (adapters == null) {
             adapters = new ArrayMap<Class, Object>();

@@ -31,21 +31,16 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentTreeReader extends DocumentModelReader {
-
-    private DocumentModel root;
 
     private DocumentTreeIterator iterator;
 
     private int pathSegmentsToRemove = 0;
 
-
     public DocumentTreeReader(CoreSession session, DocumentModel root,
             boolean excludeRoot) throws ClientException {
         super(session);
-        this.root = root;
         iterator = new DocumentTreeIterator(session, root, excludeRoot);
         pathSegmentsToRemove = root.getPath().segmentCount()
                 - (excludeRoot ? 0 : 1);
@@ -61,11 +56,9 @@ public class DocumentTreeReader extends DocumentModelReader {
         this(session, root, false);
     }
 
-
     @Override
     public void close() {
         super.close();
-        root = null;
         iterator.reset();
         iterator = null;
     }

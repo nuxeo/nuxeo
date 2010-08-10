@@ -123,7 +123,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("test.pdf", blob.getFilename());
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetBlobsFromBlobInList() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -159,11 +158,8 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("test1.pdf", blob.getFilename());
         blob = (Blob) blobs.get(1).getValue();
         assertEquals("test2.pdf", blob.getFilename());
-
     }
 
-
-    @SuppressWarnings("unchecked")
     public void testGetBlobsFromTwoSchemas() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 
@@ -194,7 +190,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         fail();
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetTwoBlobsFromOneSchema() throws Exception {
         BlobsExtractor bec = new BlobsExtractor();
 

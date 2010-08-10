@@ -66,6 +66,7 @@ public class HierarchyContext {
 
     private final PositionComparator posComparator;
 
+    @SuppressWarnings("unchecked")
     public HierarchyContext(Model model, RowMapper mapper, SessionImpl session,
             PersistenceContext context) {
         this.model = model;

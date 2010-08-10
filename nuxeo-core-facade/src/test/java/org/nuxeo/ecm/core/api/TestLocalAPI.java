@@ -179,7 +179,7 @@ public class TestLocalAPI extends BaseTestCase {
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void testComplexList() throws Exception {
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -244,6 +244,7 @@ public class TestLocalAPI extends BaseTestCase {
         assertEquals(0, list.size());
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testDataModel() throws Exception {
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),

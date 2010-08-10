@@ -35,14 +35,11 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
  */
 public class DocumentChildrenReader extends DocumentModelReader {
 
-    private DocumentModel root;
-
     private DocumentModelIterator iterator;
 
     public DocumentChildrenReader(CoreSession session, DocumentModel root)
             throws ClientException {
         super(session);
-        this.root = root;
         iterator = session.getChildrenIterator(root.getRef());
     }
 
@@ -54,7 +51,6 @@ public class DocumentChildrenReader extends DocumentModelReader {
     @Override
     public void close() {
         super.close();
-        root = null;
         iterator = null;
     }
 

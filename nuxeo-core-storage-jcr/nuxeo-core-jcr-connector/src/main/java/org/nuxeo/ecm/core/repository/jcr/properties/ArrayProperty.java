@@ -70,7 +70,7 @@ public class ArrayProperty extends JCRScalarProperty {
         // return valueArrayToList(property.getValues(), property.getType());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private Value[] toValueArray(Object array) throws DocumentException {
         if (array == null) {
             return null;

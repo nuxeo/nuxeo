@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 public class DocumentModelWriter extends AbstractDocumentModelWriter {
 
     /**
-     *
      * @param session the session to the repository where to write
      * @param parentPath where to write the tree. this document will be used as
      *            the parent of all top level documents passed as input. Note
@@ -111,7 +110,6 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
                 source.getServerName(), doc.getRepositoryName());
         map.put(source.getDocRef(), doc.getRef());
         return map;
-
     }
 
 }
