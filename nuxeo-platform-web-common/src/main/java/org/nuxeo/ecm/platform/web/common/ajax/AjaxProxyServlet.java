@@ -80,12 +80,15 @@ public class AjaxProxyServlet extends HttpServlet {
         return service;
     }
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getMethod(), req, resp);
     }
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getHeader(X_METHOD_HEADER), req, resp);
     }
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getMethod(), req, resp);
     }
@@ -183,6 +186,7 @@ public class AjaxProxyServlet extends HttpServlet {
             ((PutMethod)httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
         }
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> params = req.getParameterMap();
         for (String paramName : params.keySet()) {
             httpMethod.getParams().setParameter(paramName, params.get(paramName));

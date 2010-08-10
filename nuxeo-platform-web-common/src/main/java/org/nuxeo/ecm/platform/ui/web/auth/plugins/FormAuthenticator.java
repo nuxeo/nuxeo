@@ -54,6 +54,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             log.debug("Forward to Login Screen");
             Map<String, String> parameters = new HashMap<String, String>();
             String redirectUrl = baseURL + loginPage;
+            @SuppressWarnings("unchecked")
             Enumeration<String> paramNames = httpRequest.getParameterNames();
             while (paramNames.hasMoreElements()) {
                 String name = paramNames.nextElement();

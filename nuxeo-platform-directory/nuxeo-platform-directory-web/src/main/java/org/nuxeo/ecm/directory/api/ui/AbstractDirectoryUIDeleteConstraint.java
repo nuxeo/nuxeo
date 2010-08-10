@@ -26,10 +26,11 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * Can be subclassed to make code more robust to API changes.
  *
  * @author Anahide Tchertchian
- *
  */
 public abstract class AbstractDirectoryUIDeleteConstraint implements
         DirectoryUIDeleteConstraint {
+
+    private static final long serialVersionUID = 1L;
 
     protected Map<String, String> properties;
 

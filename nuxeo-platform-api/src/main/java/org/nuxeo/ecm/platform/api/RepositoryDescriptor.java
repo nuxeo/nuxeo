@@ -42,22 +42,15 @@ public class RepositoryDescriptor implements Serializable {
     @XNode("@description")
     public String description;
 
-    @SuppressWarnings("unchecked")
     @XNode("@class")
     public Class connectorClass;
 
     public Server server;
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the description.
-     */
     public String getDescription() {
         return description;
     }

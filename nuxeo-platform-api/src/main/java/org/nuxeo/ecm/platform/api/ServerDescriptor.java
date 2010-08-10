@@ -48,15 +48,12 @@ public class ServerDescriptor implements Serializable {
     @XNode("@port")
     public String port;
 
-    @SuppressWarnings("unchecked")
     @XNode("@jndiContextFactory")
     public Class jndiContextFactory;
 
-    @SuppressWarnings("unchecked")
     @XNode("@serviceConnector")
     public Class serviceConnector;
 
-    @SuppressWarnings("unchecked")
     @XNode("@repositoryConnector")
     public Class repositoryConnector;
 
