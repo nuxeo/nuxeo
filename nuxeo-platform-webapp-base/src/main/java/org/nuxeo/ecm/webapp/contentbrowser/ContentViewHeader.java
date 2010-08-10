@@ -38,7 +38,6 @@ public class ContentViewHeader implements Serializable {
 
     public ContentViewHeader(String name, String title, boolean translateTitle,
             String iconPath) {
-        super();
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;

@@ -76,9 +76,8 @@ public final class CompositionHandler extends TagHandler implements
 
         handlers = new HashMap<String, DefineHandler>();
         Iterator itr = findNextByType(DefineHandler.class);
-        DefineHandler d;
         while (itr.hasNext()) {
-            d = (DefineHandler) itr.next();
+            DefineHandler d = (DefineHandler) itr.next();
             handlers.put(d.getName(), d);
             log.debug(tag + " found Define[" + d.getName() + ']');
         }

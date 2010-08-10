@@ -54,7 +54,7 @@ public class ContentViewActions implements Serializable {
     @In(create = true, required = true)
     protected transient CoreSession documentManager;
 
-    protected ContentViewCache cache = new ContentViewCache();
+    protected final ContentViewCache cache = new ContentViewCache();
 
     protected Long globalPageSize;
 
@@ -96,7 +96,7 @@ public class ContentViewActions implements Serializable {
      * appropriate selection set, see {@link #getCurrentContentView()}
      */
     public void setCurrentGlobalPageSize(Long pageSize) {
-        setGlobalPageSize(pageSize);
+        globalPageSize = pageSize;
     }
 
     /**
@@ -110,7 +110,7 @@ public class ContentViewActions implements Serializable {
      * Sets the global page size
      */
     public void setGlobalPageSize(Long pageSize) {
-        this.globalPageSize = pageSize;
+        globalPageSize = pageSize;
     }
 
     public ContentView getContentView(String name) throws ClientException {
@@ -191,7 +191,7 @@ public class ContentViewActions implements Serializable {
         if (cView != null) {
             Long pageSize = null;
             if (cView.getUseGlobalPageSize()) {
-                pageSize = getGlobalPageSize();
+                pageSize = globalPageSize;
             }
             // initialize provider
             cView.getPageProvider(searchDocumentModel, sortInfos, pageSize,

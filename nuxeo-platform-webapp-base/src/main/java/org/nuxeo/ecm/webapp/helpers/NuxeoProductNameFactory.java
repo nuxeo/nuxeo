@@ -35,19 +35,14 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 @Install(precedence=FRAMEWORK)
 public class NuxeoProductNameFactory implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-
     public static String PNAME_KEY = "org.nuxeo.ecm.product.name";
     public static String PVERSION_KEY = "org.nuxeo.ecm.product.version";
+
+    private static final long serialVersionUID = 1L;
 
     @Factory(value="nuxeoApplicationName", scope=ScopeType.APPLICATION)
     public String getNuxeoProductName() {
         return Framework.getProperty(PNAME_KEY);
     }
-
 
 }

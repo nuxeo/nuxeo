@@ -88,7 +88,7 @@ public class DirectoryTreeDescriptor {
      * Allows the selection of several nodes of the tree.
      */
     @XNode("@multiselect")
-    protected Boolean multiselect = null;
+    protected Boolean multiselect;
 
     /**
      * List of directories ids used to build the classification tree.

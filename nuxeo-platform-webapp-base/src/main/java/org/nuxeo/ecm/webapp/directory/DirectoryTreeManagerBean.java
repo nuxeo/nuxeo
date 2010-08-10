@@ -156,9 +156,8 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         //  boolean isExpanded = nodeState.isExpanded(treeRowKey);
         
         UIComponent component = event.getComponent();
-        UITree treeComponent = null;
         if (component instanceof UITree) {
-            treeComponent = (UITree) component;
+            UITree treeComponent = (UITree) component;
             Object value = treeComponent.getRowData();
             if (value instanceof DirectoryTreeNode) {
                 DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
@@ -172,7 +171,6 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
-
     }
 
     protected Boolean isNodeExpandEvent() {
@@ -188,21 +186,18 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     public Boolean adviseNodeOpened(UITree treeComponent) {
-       
         if (!isNodeExpandEvent()) {
-           
             try {
                 Object value = treeComponent.getRowData();
                 if (value instanceof DirectoryTreeNode) {
                     DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
                     if (treeNode.isOpened()) {
-                        return true;
+                        return Boolean.TRUE;
                     }
                 }
             } catch (ClientException e) {
                 log.error(e);
             }
-           
         }
         return null;
     }
