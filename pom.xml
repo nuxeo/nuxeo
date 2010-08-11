@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -38,33 +37,33 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-	<module>nuxeo-platform-annotations</module>
+        <module>nuxeo-platform-annotations</module>
         <module>nuxeo-platform-queue</module>
-	<module>nuxeo-platform-imaging-tiling</module>
-	<module>nuxeo-platform-syndication</module>
-	<module>nuxeo-platform-jbpm</module>
-	<module>nuxeo-platform-lang</module>
-	<module>nuxeo-platform-mail</module>
-	<module>nuxeo-platform-notification</module>
-	<module>nuxeo-platform-preview</module>
-	<module>nuxeo-platform-publisher</module>
-	<module>nuxeo-platform-forum</module>
-	<!--<module>nuxeo-platform-wiki</module>-->
-	<module>nuxeo-theme-editor</module>
-	<module>nuxeo-platform-webwidgets</module>
-	<module>nuxeo-platform-userworkspace</module>
-	<module>nuxeo-platform-virtualnavigation</module>
-	<module>nuxeo-opensocial</module>
-	<module>nuxeo-generic-wss-handler</module>
-	<module>nuxeo-platform-wss-backend</module>
-	<module>nuxeo-automation</module>
-	<module>nuxeo-features-test</module>
+        <module>nuxeo-platform-imaging-tiling</module>
+        <module>nuxeo-platform-syndication</module>
+        <module>nuxeo-platform-jbpm</module>
+        <module>nuxeo-platform-lang</module>
+        <module>nuxeo-platform-mail</module>
+        <module>nuxeo-platform-notification</module>
+        <module>nuxeo-platform-preview</module>
+        <module>nuxeo-platform-publisher</module>
+        <module>nuxeo-platform-forum</module>
+        <!--<module>nuxeo-platform-wiki</module> -->
+        <module>nuxeo-theme-editor</module>
+        <module>nuxeo-platform-webwidgets</module>
+        <module>nuxeo-platform-userworkspace</module>
+        <module>nuxeo-platform-virtualnavigation</module>
+        <module>nuxeo-opensocial</module>
+        <module>nuxeo-generic-wss-handler</module>
+        <module>nuxeo-platform-wss-backend</module>
+        <module>nuxeo-automation</module>
+        <module>nuxeo-features-test</module>
         <module>nuxeo-platform-jboss-interceptors</module>
       </modules>
-    </profile>	
+    </profile>
   </profiles>
 
   <dependencyManagement>
@@ -569,11 +568,11 @@
         <artifactId>nuxeo-platform-webapp-types</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.nuxeo.ecm.platform</groupId>-->
-      <!--        <artifactId>nuxeo-platform-webapp-core</artifactId>-->
-      <!--        <version>${nuxeo.features.version}</version>-->
-      <!--      </dependency>-->
+      <!-- <dependency> -->
+      <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
+      <!-- <artifactId>nuxeo-platform-webapp-core</artifactId> -->
+      <!-- <version>${nuxeo.features.version}</version> -->
+      <!-- </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-url-core</artifactId>
@@ -1012,13 +1011,8 @@
         <artifactId>nuxeo-opensocial-features</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-platform-login-oauth</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      -->
+      <!-- <dependency> <groupId>org.nuxeo.ecm.opensocial</groupId> <artifactId>nuxeo-platform-login-oauth</artifactId> 
+        <version>${nuxeo.features.version}</version> </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
