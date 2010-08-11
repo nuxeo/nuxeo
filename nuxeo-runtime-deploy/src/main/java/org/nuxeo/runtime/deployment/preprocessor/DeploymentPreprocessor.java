@@ -46,7 +46,7 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DeploymentPreprocessor {
 
@@ -126,7 +126,7 @@ public class DeploymentPreprocessor {
                 fd = getXMLFragment(file);
             } else if (fileName.endsWith("-fragments.xml")) {
                 // we allow declaring multiple fragments in the same file
-                // this is usefull to deploy libraries
+                // this is useful to deploy libraries
                 collectXMLFragments(cd, file);
                 continue;
             } else if (fileName.endsWith(".jar") || fileName.endsWith(".war")
@@ -183,7 +183,7 @@ public class DeploymentPreprocessor {
                 continue; // no contributions
             }
 
-            // get fragment ncontributions and register them
+            // get fragment contributions and register them
             for (TemplateContribution tc : fd.contributions) {
 
                 // register template contributions if any
@@ -203,7 +203,7 @@ public class DeploymentPreprocessor {
                             + fd.name);
                     continue;
                 }
-                // get the marker where contribtuion should be inserted
+                // get the marker where contribution should be inserted
                 td.template.update(tc, cd.context);
             }
         }

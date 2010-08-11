@@ -30,6 +30,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 
 /**
  * Builder for server configuration and datasource files from templates and
@@ -153,8 +154,9 @@ public class ConfigurationGenerator {
             try {
                 setBasicConfiguration();
             } catch (ConfigurationException e) {
-                log.warn("Error reading basic configuration. Server is considered as already configured.");
-                log.debug(e);
+                log.warn(
+                        "Error reading basic configuration. Server is considered as already configured.",
+                        e);
                 return;
             }
         }
@@ -165,13 +167,11 @@ public class ConfigurationGenerator {
         } else if (forceGeneration) {
             log.info("Force files generation...");
             generateFiles();
-            log.info("Configuration files generated.");
         } else if (serverConfigurator.isConfigured()) {
             log.info("Server already configured");
         } else {
             log.info("No current configuration, generating files...");
             generateFiles();
-            log.info("Configuration files generated.");
         }
     }
 
@@ -180,15 +180,21 @@ public class ConfigurationGenerator {
             // Load default configuration
             defaultConfig = new Properties();
             defaultConfig.load(new FileInputStream(getNuxeoDefaultConf()));
+
             // Load user configuration
             userConfig = new Properties(defaultConfig);
             userConfig.load(new FileInputStream(nuxeoConf));
             forceGeneration = Boolean.parseBoolean(userConfig.getProperty(
                     PARAM_FORCE_GENERATION, "false"));
+
+            // Add data and log system properties
+            userConfig.put(Environment.NUXEO_DATA_DIR, System.getProperty(Environment.NUXEO_DATA_DIR));
+            userConfig.put(Environment.NUXEO_LOG_DIR, System.getProperty(Environment.NUXEO_LOG_DIR));
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file", e);
+            throw new ConfigurationException("Missing file: "
+                    + getNuxeoDefaultConf() + " or " + nuxeoConf, e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
@@ -205,6 +211,7 @@ public class ConfigurationGenerator {
         }
         try {
             serverConfigurator.parseAndCopy(userConfig);
+            log.info("Configuration files generated.");
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
@@ -227,8 +234,7 @@ public class ConfigurationGenerator {
         includeTemplates(userTemplatesList);
     }
 
-    private void includeTemplates(String templatesList)
-            throws IOException {
+    private void includeTemplates(String templatesList) throws IOException {
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();

@@ -56,12 +56,6 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
 
     private static JBossOSGiAdapter instance;
 
-    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
-
-    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
-
-    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
-
     private OSGiAdapter osgi;
 
     /**
@@ -138,28 +132,27 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
     protected void startService() throws Exception {
         super.startService();
         instance = this;
-        String dataDir = System.getProperty(NUXEO_DATA_DIR);
-        String logDir = System.getProperty(NUXEO_LOG_DIR);
-        String tmpDir = System.getProperty(NUXEO_TMP_DIR);
-        File workingDir;
+        String dataDir = System.getProperty(Environment.NUXEO_DATA_DIR);
+        String logDir = System.getProperty(Environment.NUXEO_LOG_DIR);
+        String tmpDir = System.getProperty(Environment.NUXEO_TMP_DIR);
         ServerConfig jbossConfig = ServerConfigLocator.locate();
-        if (dataDir != null && !dataDir.isEmpty()) {
-            workingDir = new File(dataDir);
-        } else {
-            workingDir = jbossConfig.getServerDataDir();
-        }
-        // Should not add NXRuntime directory in path
+        File workingDir = jbossConfig.getServerDataDir();
         workingDir = new File(workingDir, "NXRuntime");
         // initialize the Environment
         Environment env = new Environment(workingDir);
 
-        // Data should use a different directory than "home"
-        env.setData(workingDir);
+        if (dataDir != null && !dataDir.isEmpty()) {
+            env.setData(new File(dataDir));
+        } else {
+            // Should not add NXRuntime directory in path
+            env.setData(new File(workingDir, "data"));
+        }
 
         File installDir = FileUtils.getFileFromURL(getEARDeployment().url);
         // TODO: must not use a directory from the ear.
         File configDir = new File(installDir, "config");
         env.setConfig(configDir);
+        
         if (logDir != null && !logDir.isEmpty()) {
             env.setLog(new File(logDir));
         } else {

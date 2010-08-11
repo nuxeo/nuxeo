@@ -40,7 +40,7 @@ import org.nuxeo.common.utils.FileUtils;
 public class JBossConfiguratorTest {
 
     private static final Object PROPERTY_TO_GENERATE = "<config-property name=\""
-            + "property\" type=\"java.lang.String\">URL=jdbc:h2:${jboss.server.data.dir}"
+            + "property\" type=\"java.lang.String\">URL=jdbc:h2:${nuxeo.data.dir}"
             + "/h2/testinclude;AUTO_SERVER=true</config-property>";
 
     private static final Log log = LogFactory.getLog(JBossConfiguratorTest.class);
