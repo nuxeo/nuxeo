@@ -87,8 +87,9 @@ public class FormData implements FormInstance {
         }
     }
 
-    private boolean getIsMultipartContent() {
-        if (!"post".equals(request.getMethod().toLowerCase())) {
+    protected boolean getIsMultipartContent() {
+        String method = request.getMethod().toLowerCase();
+		if (!"post".equals(method) && !"put".equals(method)) {
             return false;
         }
         String contentType = request.getContentType();
