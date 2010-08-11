@@ -17,6 +17,8 @@ import static org.jboss.seam.ScopeType.SESSION;
 @Install(precedence = Install.FRAMEWORK)
 public class TreeInvalidatorBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     protected boolean needsInvalidation = false;
 
     public String forceTreeRefresh() throws IOException {

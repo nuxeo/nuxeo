@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -307,7 +308,7 @@ public class ClipboardActionsBean extends InputController implements
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
-            eventManager.raiseEventsOnDocumentSelected(currentDocument);
+            EventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
 
@@ -331,7 +332,7 @@ public class ClipboardActionsBean extends InputController implements
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
-            eventManager.raiseEventsOnDocumentSelected(targetDoc);
+            EventManager.raiseEventsOnDocumentSelected(targetDoc);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     targetDoc);
 
@@ -390,7 +391,7 @@ public class ClipboardActionsBean extends InputController implements
         facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
                 + resourcesAccessor.getMessages().get("n_moved_docs"), params);
 
-        eventManager.raiseEventsOnDocumentSelected(targetDoc);
+        EventManager.raiseEventsOnDocumentSelected(targetDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 targetDoc);
 

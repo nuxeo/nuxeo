@@ -55,6 +55,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FictiveDocumentModel implements DocumentModel {
 
+    private static final long serialVersionUID = 1L;
+
     protected final DataModelMap dataModels = new DataModelMapImpl();
 
     protected final ScopedMap contextData = new ScopedMap();
@@ -402,6 +404,7 @@ public class FictiveDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
         throw new UnsupportedOperationException();
     }

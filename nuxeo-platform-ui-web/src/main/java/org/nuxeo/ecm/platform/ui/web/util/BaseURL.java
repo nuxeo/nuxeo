@@ -47,14 +47,14 @@ public final class BaseURL {
     }
 
     /**
-     * @return Server URL as : protocol://serverName:port/
+     * @return Server URL as: protocol://serverName:port/
      */
     public static String getServerURL(ServletRequest request, boolean local) {
         return VirtualHostHelper.getServerURL(request, local);
     }
 
     /**
-     * @return WebApp name : ie : nuxeo
+     * @return WebApp name, ie  "nuxeo"
      */
     public static String getWebAppName() {
         ServletRequest request = getRequest();

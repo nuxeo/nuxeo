@@ -63,7 +63,6 @@ public class ErrorPageForwarder {
                 exceptionMessage, userMessage, securityError, servletContext);
     }
 
-    @SuppressWarnings("unchecked")
     public void forwardToErrorPage(HttpServletRequest request,
             HttpServletResponse response, String stackTrace,
             String exceptionMessage, String userMessage, Boolean securityError,
@@ -125,10 +124,10 @@ public class ErrorPageForwarder {
             builder.append("\n");
         }
         builder.append("\n");
-        Enumeration names = request.getAttributeNames();
+        Enumeration<String> names = request.getAttributeNames();
         builder.append("Attributes:\n");
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
+            String name = names.nextElement();
             if (name.equals(SEAM_MESSAGES)) {
                 continue;
             }

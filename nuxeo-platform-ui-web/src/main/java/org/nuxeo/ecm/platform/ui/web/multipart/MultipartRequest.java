@@ -472,12 +472,10 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Enumeration getParameterNames() {
         if (parameters == null) {
             parseRequest();
         }
-
         return Collections.enumeration(parameters.keySet());
     }
 
