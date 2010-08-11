@@ -146,21 +146,7 @@ public class RepositoryImpl implements Repository {
                 }
             }
             if (repositoryDescriptor.binaryManagerListen) {
-                ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
-                if (serverDescriptor == null || serverDescriptor.disabled) {
-                    log.error("Repository descriptor specifies binaryManager listen "
-                            + "without a global listen");
-                } else {
-                    BinaryManagerServlet servlet = new BinaryManagerServlet(
-                            binaryManager);
-                    String servletName = BinaryManagerServlet.getName(binaryManager);
-                    String url = NetServer.add(serverDescriptor, servletName,
-                            servlet, SERVER_PATH_BINARY);
-                    log.info(String.format(
-                            "VCS server for binary manager of repository '%s' started on: %s",
-                            repositoryDescriptor.name, url));
-                    binaryServerStarted = true;
-                }
+                activateBinaryManagerServlet();
             }
             return binaryManager;
         } catch (Exception e) {
@@ -197,11 +183,11 @@ public class RepositoryImpl implements Repository {
     protected void createServer() {
         ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
         if (serverDescriptor != null && !serverDescriptor.disabled) {
-            activateServer();
+            activateServletMapper();
         }
     }
 
-    public void activateServer() {
+    protected void activateServletMapper() {
         if (!serverStarted) {
             MapperServlet servlet = new MapperServlet(repositoryDescriptor.name);
             String servletName = MapperServlet.getName(repositoryDescriptor.name);
@@ -214,7 +200,7 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    public void deactivateServer() {
+    protected void deactivateServletMapper() {
         if (serverStarted) {
             String servletName = MapperServlet.getName(repositoryDescriptor.name);
             NetServer.remove(repositoryDescriptor.listen, servletName);
@@ -222,6 +208,45 @@ public class RepositoryImpl implements Repository {
         }
     }
 
+    protected void activateBinaryManagerServlet() {
+        if (!binaryServerStarted) {
+            ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
+            if (serverDescriptor == null || serverDescriptor.disabled) {
+                log.error("Repository descriptor specifies binaryManager listen "
+                        + "without a global listen");
+            } else {
+                BinaryManagerServlet servlet = new BinaryManagerServlet(
+                        binaryManager);
+                String servletName = BinaryManagerServlet.getName(binaryManager);
+                String url = NetServer.add(serverDescriptor, servletName,
+                        servlet, SERVER_PATH_BINARY);
+                log.info(String.format(
+                        "VCS server for binary manager of repository '%s' started on: %s",
+                        repositoryDescriptor.name, url));
+                binaryServerStarted = true;
+            }
+        }
+    }
+
+    protected void deactivateBinaryManagerServlet() {
+        if (binaryServerStarted) {
+            String servletName = BinaryManagerServlet.getName(binaryManager);
+            NetServer.remove(repositoryDescriptor.listen, servletName);
+            binaryServerStarted = false;
+        }
+    }
+    
+    public void activateServer(){
+        activateServletMapper();
+        activateBinaryManagerServlet();
+    }
+    
+    public void deactivateServer(){
+        deactivateServletMapper();
+        deactivateBinaryManagerServlet();
+    }
+    
+    
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
     }
@@ -366,14 +391,10 @@ public class RepositoryImpl implements Repository {
             clusterMapper = null;
         }
         model = null;
-        if (serverStarted) {
-            deactivateServer();
-        }
-        if (binaryServerStarted) {
-            String servletName = BinaryManagerServlet.getName(binaryManager);
-            NetServer.remove(repositoryDescriptor.listen, servletName);
-            binaryServerStarted = false;
-        }
+        
+        deactivateServletMapper();
+        deactivateBinaryManagerServlet();
+        
         backend.shutdown();
         connectionManager.shutdown();
     }
