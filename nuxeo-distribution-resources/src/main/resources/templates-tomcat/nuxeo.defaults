@@ -2,6 +2,7 @@
 
 # Default configuration values for templates
 # Specific default values are defined in templates/{template_name}/nuxeo.defaults
+nuxeo.data.dir=nxserver/data
 
 # Default template to use if not defined in nuxeo.conf
 nuxeo.template=default
