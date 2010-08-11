@@ -34,6 +34,7 @@ import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.servlet.ServletMapping;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
@@ -124,6 +125,20 @@ public class NetServer {
             boolean stop = removeConnector(serverDescriptor);
             Context context = removeContext(getContextPath(serverDescriptor));
             ServletHandler servletHandler = context.getServletHandler();
+
+            // remove servlet mapping
+            LinkedList<ServletMapping> sml = new LinkedList<ServletMapping>(
+                    Arrays.asList(servletHandler.getServletMappings()));
+            for (Iterator<ServletMapping> it = sml.iterator(); it.hasNext();) {
+                ServletMapping sm = it.next();
+                if (sm.getServletName().equals(servletName)) {
+                    it.remove();
+                    break;
+                }
+            }
+            servletHandler.setServletMappings(sml.toArray(new ServletMapping[0]));
+
+            // remove servlet
             List<ServletHolder> sl = new LinkedList<ServletHolder>(
                     Arrays.asList(servletHandler.getServlets()));
             for (Iterator<ServletHolder> it = sl.iterator(); it.hasNext();) {
@@ -133,8 +148,8 @@ public class NetServer {
                     break;
                 }
             }
-            // remove servlet (also removes dependent mapping)
             servletHandler.setServlets(sl.toArray(new ServletHolder[0]));
+
             if (stop) {
                 shutDown();
             }
