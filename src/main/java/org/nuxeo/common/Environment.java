@@ -31,18 +31,51 @@ public class Environment {
      * Constants that identifies possible hosts for the framework.
      */
     public static final String JBOSS_HOST = "JBoss";
-    public static final String NXSERVER_HOST = "NXServer"; // Jetty or GF3 embedded
+
+    // Jetty or GF3 embedded
+    public static final String NXSERVER_HOST = "NXServer";
+
     public static final String TOMCAT_HOST = "Tomcat";
 
-    // the home directory
+    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+
+    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+
+    /**
+     * the home directory
+     * 
+     * @deprecated never defined
+     */
     public static final String HOME_DIR = "org.nuxeo.app.home";
-    // the web root
+
+    /**
+     * the web root
+     * 
+     * @deprecated never defined
+     */
     public static final String WEB_DIR = "org.nuxeo.app.web";
-    // the config dir
+
+    /**
+     * the config directory
+     * 
+     * @deprecated never defined
+     */
     public static final String CONFIG_DIR = "org.nuxeo.app.config";
-    // the data dir
+
+    /**
+     * the data directory
+     * 
+     * @deprecated never defined
+     */
     public static final String DATA_DIR = "org.nuxeo.app.data";
-    // the log dir
+
+    /**
+     * the log directory
+     * 
+     * @deprecated never defined
+     */
     public static final String LOG_DIR = "org.nuxeo.app.log";
 
     // the application layout (optional)
@@ -57,23 +90,31 @@ public class Environment {
         DEFAULT = env;
     }
 
-    public static Environment  getDefault() {
+    public static Environment getDefault() {
         return DEFAULT;
     }
 
     protected final File home;
+
     protected File data;
+
     protected File log;
+
     protected File config;
+
     protected File web;
+
     protected File temp;
+
     protected final Properties properties;
+
     protected String[] args;
 
     protected boolean isAppServer;
-    protected String hostAppName;
-    protected String hostAppVersion;
 
+    protected String hostAppName;
+
+    protected String hostAppVersion;
 
     public Environment(File home) {
         this(home, null);
@@ -125,6 +166,7 @@ public class Environment {
 
     public void setTemp(File temp) {
         this.temp = temp;
+        this.properties.put(NUXEO_TMP_DIR, temp.getAbsolutePath());
     }
 
     public File getConfig() {
@@ -147,6 +189,7 @@ public class Environment {
 
     public void setLog(File log) {
         this.log = log;
+        this.properties.put(NUXEO_LOG_DIR, log.getAbsolutePath());
     }
 
     public File getData() {
@@ -158,6 +201,7 @@ public class Environment {
 
     public void setData(File data) {
         this.data = data;
+        this.properties.put(NUXEO_DATA_DIR, data.getAbsolutePath());
     }
 
     public File getWeb() {
@@ -184,7 +228,7 @@ public class Environment {
     }
 
     public String getProperty(String key, String defaultValue) {
-        String val =  properties.getProperty(key);
+        String val = properties.getProperty(key);
         return val == null ? defaultValue : val;
     }
 
@@ -198,7 +242,6 @@ public class Environment {
 
     public void loadProperties(Properties properties) {
         this.properties.putAll(properties);
-        this.properties.put(HOME_DIR, home.getAbsolutePath());
     }
 
     public boolean isJBoss() {
