@@ -44,8 +44,14 @@ public interface RepositoryManagement {
      */
     void processClusterInvalidationsNext();
     
+    /**
+     * Activates the remote vcs server
+     * */
     void activateServer();
     
+    /**
+     * Deactivates the remote vcs server
+     * */
     void deactivateServer();
 
 }

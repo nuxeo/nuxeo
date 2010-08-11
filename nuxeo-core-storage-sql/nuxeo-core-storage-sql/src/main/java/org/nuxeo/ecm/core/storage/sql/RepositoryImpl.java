@@ -146,7 +146,7 @@ public class RepositoryImpl implements Repository {
                 }
             }
             if (repositoryDescriptor.binaryManagerListen) {
-                activateBinaryManagerServlet();
+                activateBinaryManagerServlet(binaryManager);
             }
             return binaryManager;
         } catch (Exception e) {
@@ -208,7 +208,7 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected void activateBinaryManagerServlet() {
+    protected void activateBinaryManagerServlet(BinaryManager binaryManager) {
         if (!binaryServerStarted) {
             ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
             if (serverDescriptor == null || serverDescriptor.disabled) {
@@ -238,7 +238,7 @@ public class RepositoryImpl implements Repository {
     
     public void activateServer(){
         activateServletMapper();
-        activateBinaryManagerServlet();
+        activateBinaryManagerServlet(binaryManager);
     }
     
     public void deactivateServer(){
