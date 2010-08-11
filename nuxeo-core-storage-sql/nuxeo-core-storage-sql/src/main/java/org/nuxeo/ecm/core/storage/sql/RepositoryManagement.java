@@ -43,5 +43,9 @@ public interface RepositoryManagement {
      * Makes sure that the next transaction will process cluster invalidations.
      */
     void processClusterInvalidationsNext();
+    
+    void activateServer();
+    
+    void deactivateServer();
 
 }

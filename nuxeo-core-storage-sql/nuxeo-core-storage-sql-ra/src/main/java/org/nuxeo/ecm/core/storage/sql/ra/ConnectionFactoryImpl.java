@@ -299,4 +299,14 @@ public class ConnectionFactoryImpl implements Repository,
     public boolean supportsTags() {
         return true;
     }
+
+    public void activateServer() {
+        managedConnectionFactory.activateServer();
+        
+    }
+
+    public void deactivateServer() {
+        managedConnectionFactory.deactivateServer();
+        
+    }
 }

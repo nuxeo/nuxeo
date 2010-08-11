@@ -323,4 +323,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return props;
     }
 
+    public void activateServer() {
+        repository.activateServer();
+        
+    }
+
+    public void deactivateServer() {
+       repository.deactivateServer();
+        
+    }
+
 }

@@ -197,6 +197,12 @@ public class RepositoryImpl implements Repository {
     protected void createServer() {
         ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
         if (serverDescriptor != null && !serverDescriptor.disabled) {
+            activateServer();
+        }
+    }
+
+    public void activateServer() {
+        if (!serverStarted) {
             MapperServlet servlet = new MapperServlet(repositoryDescriptor.name);
             String servletName = MapperServlet.getName(repositoryDescriptor.name);
             String url = NetServer.add(repositoryDescriptor.listen,
@@ -205,6 +211,14 @@ public class RepositoryImpl implements Repository {
                     "VCS server for repository '%s' started on: %s",
                     repositoryDescriptor.name, url));
             serverStarted = true;
+        }
+    }
+
+    public void deactivateServer() {
+        if (serverStarted) {
+            String servletName = MapperServlet.getName(repositoryDescriptor.name);
+            NetServer.remove(repositoryDescriptor.listen, servletName);
+            serverStarted = false;
         }
     }
 
@@ -353,9 +367,7 @@ public class RepositoryImpl implements Repository {
         }
         model = null;
         if (serverStarted) {
-            String servletName = MapperServlet.getName(repositoryDescriptor.name);
-            NetServer.remove(repositoryDescriptor.listen, servletName);
-            serverStarted = false;
+            deactivateServer();
         }
         if (binaryServerStarted) {
             String servletName = BinaryManagerServlet.getName(binaryManager);
