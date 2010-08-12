@@ -324,6 +324,15 @@ if [ -n "$TMP_DIR" ]; then
 	fi
 fi
 
+# Check old paths (NXP-5370, NXP-5460)
+## look for h2 and derby directories (JBoss)
+if [ "$jboss" = "true" ] && \
+  ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e "$NUXEO_HOME"/server/default/data/derby ] ); then
+  echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
+  echo ERROR: Please move 'h2' and 'derby' directories from "$NUXEO_HOME"/server/default/data/ to "$DATA_DIR"
+  exit 1
+fi
+
 checkalive() {
 	if [ ! -r "$PID" ]; then
 		return 1
