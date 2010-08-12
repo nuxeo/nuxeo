@@ -19,7 +19,9 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -52,6 +54,15 @@ public class JDBCBackend implements RepositoryBackend {
     private Dialect dialect;
 
     private SQLInfo sqlInfo;
+
+    private ClusterNodeHandler clusterNodeHandler;
+
+    /** All the JDBC mappers, used for invalidations distribution. */
+    private final Collection<Mapper> jdbcMappers;
+
+    public JDBCBackend() {
+        jdbcMappers = new CopyOnWriteArrayList<Mapper>();
+    }
 
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
@@ -135,12 +146,38 @@ public class JDBCBackend implements RepositoryBackend {
         sqlInfo = new SQLInfo(repository, model, dialect);
     }
 
-    public Mapper newMapper(Model model, PathResolver pathResolver)
-            throws StorageException {
-        return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource);
+    public Mapper newMapper(Model model, PathResolver pathResolver,
+            boolean create) throws StorageException {
+        Mapper mapper = createMapper(model, pathResolver);
+        if (create) {
+            // first connection, initialize the database
+            mapper.createDatabase();
+            // create cluster mapper if needed
+            RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+            if (repositoryDescriptor.clusteringEnabled) {
+                log.info("Clustering enabled with "
+                        + repositoryDescriptor.clusteringDelay
+                        + " ms delay for repository: " + repository.getName());
+                // use the mapper that created the database as cluster mapper
+                clusterNodeHandler = new ClusterNodeHandler(mapper,
+                        repositoryDescriptor);
+                mapper = createMapper(model, pathResolver);
+            }
+        }
+        jdbcMappers.add(mapper);
+        return mapper;
     }
 
-    public void shutdown() {
+    protected JDBCMapper createMapper(Model model, PathResolver pathResolver)
+            throws StorageException {
+        return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource,
+                clusterNodeHandler, jdbcMappers);
+    }
+
+    public void shutdown() throws StorageException {
+        if (clusterNodeHandler != null) {
+            clusterNodeHandler.close();
+        }
     }
 
 }

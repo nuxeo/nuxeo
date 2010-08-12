@@ -47,8 +47,8 @@ public class NetBackend implements RepositoryBackend {
     public void initializeModel(Model model) throws StorageException {
     }
 
-    public Mapper newMapper(Model model, PathResolver pathResolver)
-            throws StorageException {
+    public Mapper newMapper(Model model, PathResolver pathResolver,
+            boolean create) throws StorageException {
         try {
             return MapperClient.getMapper(repository);
         } catch (StorageException e) {

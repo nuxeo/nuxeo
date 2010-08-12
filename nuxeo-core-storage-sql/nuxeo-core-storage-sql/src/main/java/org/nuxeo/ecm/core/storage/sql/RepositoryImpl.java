@@ -85,21 +85,26 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
+    /** All the mappers, used for invalidations distribution. */
+    private final Collection<Mapper> mappers;
+
     private Model model;
-
-    private Mapper clusterMapper; // used synchronized
-
-    // modified only under clusterMapper synchronization
-    private long clusterLastInvalidationTimeMillis;
 
     private boolean serverStarted;
 
     private boolean binaryServerStarted;
 
+    /**
+     * Transient id for this repository assigned by the server on first
+     * connection. This is not persisted.
+     */
+    public String repositoryId;
+
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
+        mappers = new CopyOnWriteArrayList<Mapper>();
         try {
             schemaManager = Framework.getService(SchemaManager.class);
         } catch (Exception e) {
@@ -235,18 +240,17 @@ public class RepositoryImpl implements Repository {
             binaryServerStarted = false;
         }
     }
-    
-    public void activateServer(){
+
+    public void activateServer() {
         activateServletMapper();
         activateBinaryManagerServlet(binaryManager);
     }
-    
-    public void deactivateServer(){
+
+    public void deactivateServer() {
         deactivateServletMapper();
         deactivateBinaryManagerServlet();
     }
-    
-    
+
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
     }
@@ -286,8 +290,8 @@ public class RepositoryImpl implements Repository {
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
-        boolean initialized = model != null;
-        if (!initialized) {
+        boolean create = model == null;
+        if (create) {
             log.debug("Initializing");
             ModelSetup modelSetup = new ModelSetup();
             modelSetup.repositoryDescriptor = repositoryDescriptor;
@@ -298,23 +302,7 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver);
-
-        if (!initialized) {
-            // first connection, initialize the database
-            mapper.createDatabase();
-            if (repositoryDescriptor.clusteringEnabled) {
-                log.info("Clustering enabled with "
-                        + repositoryDescriptor.clusteringDelay
-                        + " ms delay for repository: " + getName());
-                // use the mapper that created the database as cluster mapper
-                clusterMapper = mapper;
-                clusterMapper.createClusterNode();
-                processClusterInvalidationsNext();
-                mapper = backend.newMapper(model, pathResolver);
-            }
-        }
-
+        Mapper mapper = backend.newMapper(model, pathResolver, create);
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);
@@ -323,7 +311,8 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
-        mapper = new CachingMapper(mapper);
+        mapper = new CachingMapper(mapper, mappers);
+        mappers.add(mapper);
         return new SessionImpl(this, model, mapper, credentials);
     }
 
@@ -379,22 +368,11 @@ public class RepositoryImpl implements Repository {
             session.closeSession();
         }
         sessions.clear();
-        if (clusterMapper != null) {
-            synchronized (clusterMapper) {
-                try {
-                    clusterMapper.removeClusterNode();
-                } catch (StorageException e) {
-                    log.error(e.getMessage(), e);
-                }
-                clusterMapper.close();
-            }
-            clusterMapper = null;
-        }
         model = null;
-        
+
         deactivateServletMapper();
         deactivateBinaryManagerServlet();
-        
+
         backend.shutdown();
         connectionManager.shutdown();
     }
@@ -430,8 +408,7 @@ public class RepositoryImpl implements Repository {
     }
 
     public void processClusterInvalidationsNext() {
-        clusterLastInvalidationTimeMillis = System.currentTimeMillis()
-                - repositoryDescriptor.clusteringDelay - 1;
+        // TODO pass through or something
     }
 
     /*
@@ -441,61 +418,6 @@ public class RepositoryImpl implements Repository {
     // callback by session at close time
     protected void closeSession(SessionImpl session) {
         sessions.remove(session);
-    }
-
-    /**
-     * Sends invalidation data to relevant sessions.
-     * <p>
-     * Called post-transaction by commit/rollback or transactionless save.
-     *
-     * @param invalidations the invalidations
-     * @param fromSession the session from which these invalidations originate
-     * @throws StorageException on failure to insert invalidation information
-     *             into the cluster invalidation tables
-     */
-    protected void invalidate(Invalidations invalidations,
-            SessionImpl fromSession) throws StorageException {
-        // caller makes sure invalidations is not empty
-        // local invalidations
-        for (SessionImpl session : sessions) {
-            if (session != fromSession) {
-                session.invalidate(invalidations);
-            }
-        }
-        // cluster invalidations
-        if (clusterMapper != null) {
-            synchronized (clusterMapper) {
-                clusterMapper.insertClusterInvalidations(invalidations);
-            }
-        }
-        sendInvalidationEvent(invalidations, true, fromSession);
-    }
-
-    /**
-     * Reads cluster invalidations and queues them locally.
-     *
-     * @param fromSession the session that triggered the action
-     */
-    protected void receiveClusterInvalidations(SessionImpl fromSession)
-            throws StorageException {
-        if (clusterMapper != null) {
-            Invalidations invalidations;
-            synchronized (clusterMapper) {
-                if (clusterLastInvalidationTimeMillis
-                        + repositoryDescriptor.clusteringDelay > System.currentTimeMillis()) {
-                    // delay hasn't expired
-                    return;
-                }
-                invalidations = clusterMapper.getClusterInvalidations();
-                clusterLastInvalidationTimeMillis = System.currentTimeMillis();
-            }
-            if (!invalidations.isEmpty()) {
-                for (SessionImpl session : sessions) {
-                    session.invalidate(invalidations);
-                }
-                sendInvalidationEvent(invalidations, false, fromSession);
-            }
-        }
     }
 
     /**
@@ -542,6 +464,9 @@ public class RepositoryImpl implements Repository {
         }
         // TODO check what we can do about invalidations.deleted
 
+        if (modifiedDocIds.isEmpty() && modifiedParentIds.isEmpty()) {
+            return;
+        }
         EventContext ctx = new EventContextImpl(null, null);
         ctx.setRepositoryName(getName());
         ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);

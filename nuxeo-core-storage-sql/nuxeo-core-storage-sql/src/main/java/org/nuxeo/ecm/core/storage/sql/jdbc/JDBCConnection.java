@@ -27,6 +27,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
 
 /**
@@ -75,8 +76,8 @@ public class JDBCConnection {
         resetConnection();
     }
 
-    public String getMapperId() {
-        return "M" + instanceNumber;
+    public Identification getIdentification() {
+        return new Identification(null, "" + instanceNumber);
     }
 
     public void close() {

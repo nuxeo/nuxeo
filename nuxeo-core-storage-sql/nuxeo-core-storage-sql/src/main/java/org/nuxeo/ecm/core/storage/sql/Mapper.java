@@ -32,17 +32,47 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public interface Mapper extends RowMapper, XAResource {
 
     /**
-     * Returns a unique mapper id.
+     * Identifiers assigned by a server to identify a client mapper and its
+     * repository.
+     */
+    public static final class Identification implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final String repositoryId;
+
+        public final String mapperId;
+
+        public Identification(String repositoryId, String mapperId) {
+            this.repositoryId = repositoryId;
+            this.mapperId = mapperId;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + '(' + repositoryId + ','
+                    + mapperId + ')';
+        }
+    }
+
+    /**
+     * Returns the repository id and mapper id assigned.
      * <p>
      * This is used in remote stateless mode to be able to identify to which
-     * mapper an incoming connection is targeted.
+     * mapper an incoming connection is targeted, and from which repository
+     * instance.
      *
-     * @return the unique mapper id
+     * @return the repository and mapper identification
      * @throws StorageException when initial connection failed (for a NetMapper)
      */
-    String getMapperId() throws StorageException;
+    Identification getIdentification() throws StorageException;
+
+    // used for reflection
+    String GET_IDENTIFICATION = "getIdentification";
 
     void close() throws StorageException;
+
+    // used for reflection
+    String CLOSE = "close";
 
     // TODO
     int getTableSize(String tableName) throws StorageException;

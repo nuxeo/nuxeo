@@ -47,8 +47,13 @@ public interface RepositoryBackend {
     /**
      * Creates a new instance a {@link Mapper}. Called once for every new
      * session.
+     *
+     * @param model the model
+     * @param pathResolver the path resolver
+     * @param create {@code true} if the database has to be created
+     *            (initialization)
      */
-    Mapper newMapper(Model model, PathResolver pathResolver)
+    Mapper newMapper(Model model, PathResolver pathResolver, boolean create)
             throws StorageException;
 
     /**

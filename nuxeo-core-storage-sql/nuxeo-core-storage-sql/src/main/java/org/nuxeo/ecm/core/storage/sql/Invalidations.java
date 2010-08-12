@@ -77,6 +77,9 @@ public class Invalidations implements Serializable {
     }
 
     public void add(Invalidations other) {
+        if (other == null) {
+            return;
+        }
         if (other.modified != null) {
             addModified(other.modified);
         }

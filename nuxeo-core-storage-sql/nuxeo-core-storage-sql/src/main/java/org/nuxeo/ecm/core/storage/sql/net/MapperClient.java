@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
@@ -45,7 +46,12 @@ public class MapperClient implements InvocationHandler {
         Mapper mapper = (Mapper) Proxy.newProxyInstance(
                 MapperClient.class.getClassLoader(),
                 new Class<?>[] { Mapper.class }, handler);
-        handler.mapperId = mapper.getMapperId();
+        synchronized (repository) {
+            handler.repositoryId = repository.repositoryId;
+            Identification id = mapper.getIdentification();
+            handler.identification = id;
+            repository.repositoryId = id.repositoryId;
+        }
         return mapper;
     }
 
@@ -55,7 +61,9 @@ public class MapperClient implements InvocationHandler {
 
     public static final Object EOF = Eof.VALUE;
 
-    protected String mapperId;
+    protected String repositoryId;
+
+    protected Identification identification;
 
     protected final String url;
 
@@ -75,9 +83,9 @@ public class MapperClient implements InvocationHandler {
             throws Throwable {
         String methodName = method.getName();
         // special cases
-        if ("getMapperId".equals(methodName)) {
-            if (mapperId != null) {
-                return mapperId;
+        if (Mapper.GET_IDENTIFICATION.equals(methodName)) {
+            if (identification != null) {
+                return identification;
             }
             // else fall through (send to remote)
         } else if ("getTableSize".equals(methodName)) {
@@ -101,8 +109,12 @@ public class MapperClient implements InvocationHandler {
         // this is decoded by NetServlet
 
         String postUrl = url;
-        if (mapperId != null) {
-            postUrl += "?sid=" + mapperId;
+        if (identification != null) {
+            postUrl += '?' + MapperServlet.PARAM_RID + '='
+                    + identification.repositoryId + '&'
+                    + MapperServlet.PARAM_MID + '=' + identification.mapperId;
+        } else if (repositoryId != null) {
+            postUrl += '?' + MapperServlet.PARAM_RID + '=' + repositoryId;
         }
         PostMethod m = new PostMethod(postUrl);
         try {

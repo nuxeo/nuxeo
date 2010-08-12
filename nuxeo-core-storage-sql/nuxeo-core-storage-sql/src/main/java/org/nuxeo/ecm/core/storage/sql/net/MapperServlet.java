@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
@@ -47,9 +50,15 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
  */
 public class MapperServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(MapperServlet.class);
 
-    private static final long serialVersionUID = 1L;
+    public static final String PARAM_RID = "rid";
+
+    public static final String PARAM_MID = "mid";
+
+    private static final AtomicLong repositoryCounter = new AtomicLong(0);
 
     private final String repositoryName;
 
@@ -79,7 +88,7 @@ public class MapperServlet extends HttpServlet {
             try {
                 repo = NXCore.getRepository(repositoryName);
             } catch (NoSuchRepositoryException e) {
-                // No JDNI binding (embedded or unit tests)
+                // No JNDI binding (embedded or unit tests)
                 repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                         repositoryName);
             }
@@ -106,7 +115,7 @@ public class MapperServlet extends HttpServlet {
             for (Entry<String, MapperInvoker> es : invokers.entrySet()) {
                 MapperInvoker invoker = es.getValue();
                 try {
-                    invoker.call("close");
+                    invoker.call(Mapper.CLOSE);
                     invoker.close();
                 } catch (Throwable e) {
                     log.error("Cannot close invoker " + es.getKey());
@@ -122,29 +131,34 @@ public class MapperServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         initialize();
-        String sid = req.getParameter("sid");
-        if ("".equals(sid)) {
-            sid = null;
+        String rid = req.getParameter(PARAM_RID);
+        if (rid == null || "".equals(rid)) {
+            // assign a new repositoryId. client calls this from a synchronized
+            // method
+            rid = "" + repositoryCounter.incrementAndGet();
+        }
+        String mid = req.getParameter(PARAM_MID);
+        if ("".equals(mid)) {
+            mid = null;
         }
         InputStream is = req.getInputStream();
         try {
             // invoker
             MapperInvoker invoker;
-            if (sid == null) {
+            if (mid == null) {
                 // new session
-                String name = "Nuxeo-VCS-NetServlet-"
+                String name = "Nuxeo-VCS-MapperServlet-"
                         + threadNumber.incrementAndGet();
                 invoker = new MapperInvoker(repository, name);
-                sid = (String) invoker.call("getMapperId");
-                // log.info("New sid " + sid);
-                // System.out.println("New sid " + sid + " thread " + name);
-                invokers.put(sid, invoker);
+                Identification id = (Identification) invoker.call(Mapper.GET_IDENTIFICATION);
+                mid = id.mapperId;
+                invokers.put(mid, invoker);
             } else {
                 // existing session
-                invoker = invokers.get(sid);
+                invoker = invokers.get(mid);
                 if (invoker == null) {
                     throw new RuntimeException(
-                            "Unknown session id (maybe timed out): " + sid);
+                            "Unknown session id (maybe timed out): " + mid);
                 }
             }
 
@@ -158,7 +172,6 @@ public class MapperServlet extends HttpServlet {
             // read method and args
             ObjectInputStream ois = new ObjectInputStream(is);
             String methodName = (String) ois.readObject();
-            // log.info("  Sid " + sid + " method " + methodName);
             List<Object> args = new LinkedList<Object>();
             while (true) {
                 Object object = ois.readObject();
@@ -167,19 +180,21 @@ public class MapperServlet extends HttpServlet {
                 }
                 args.add(object);
             }
-            // System.out.println(sid + " " + methodName + " " + args);
 
             // invoke method
             Object res = invoker.call(methodName, args.toArray());
-            // System.out.println("  -> " + res);
 
             // close?
-            if ("close".equals(methodName)) {
+            if (Mapper.CLOSE.equals(methodName)) {
                 // close session
                 invoker.close();
-                invokers.remove(sid);
-                // log.info("Closing sid " + sid);
-                // System.out.println("Closing sid " + sid);
+                invokers.remove(mid);
+            }
+            // getIdentification
+            else if (Mapper.GET_IDENTIFICATION.equals(methodName)) {
+                // add repositoryId to identification
+                Identification id = (Identification) res;
+                res = new Identification(rid, id.mapperId);
             }
 
             // write result
@@ -187,11 +202,9 @@ public class MapperServlet extends HttpServlet {
             oos.flush();
             oos.close();
         } catch (Throwable e) {
-            // e.printStackTrace(); // System.out.println
             log.error(e, e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     e.toString());
         }
     }
-
 }

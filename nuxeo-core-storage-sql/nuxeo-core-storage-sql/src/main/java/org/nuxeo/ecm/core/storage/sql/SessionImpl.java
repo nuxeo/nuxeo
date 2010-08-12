@@ -272,7 +272,7 @@ public class SessionImpl implements Session, XAResource {
         if (readAclsChanged) {
             updateReadAcls();
         }
-        checkReceivedInvalidations();
+        checkInvalidationsConflict();
     }
 
     protected Serializable getContainingDocument(Serializable id)
@@ -409,13 +409,12 @@ public class SessionImpl implements Session, XAResource {
     /**
      * Post-transaction invalidations notification.
      * <p>
-     * Called post-transaction by commit/rollback or transactionless save.
+     * Called post-transaction by session commit/rollback or transactionless
+     * save.
      */
     protected void sendInvalidationsToOthers() throws StorageException {
-        Invalidations invalidations = context.gatherInvalidations();
-        if (!invalidations.isEmpty()) {
-            repository.invalidate(invalidations, this);
-        }
+        // XXX TODO repo invalidate adds to cluster, and sends event
+        context.sendInvalidationsToOthers();
     }
 
     /**
@@ -424,27 +423,17 @@ public class SessionImpl implements Session, XAResource {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        repository.receiveClusterInvalidations(this);
+        // repository.receiveClusterInvalidations(this); // XXX check mapper
+        // // updated
         context.processReceivedInvalidations();
     }
 
     /**
      * Post transaction check invalidations processing.
      */
-    protected void checkReceivedInvalidations() throws StorageException {
-        repository.receiveClusterInvalidations(this);
-        context.checkReceivedInvalidations();
-    }
-
-    /**
-     * Processes invalidations received by another session or cluster node.
-     * <p>
-     * Invalidations from other local session can happen asynchronously at any
-     * time (when the other session commits). Invalidations from another cluster
-     * node happen when the transaction starts.
-     */
-    protected void invalidate(Invalidations invalidations) {
-        context.invalidate(invalidations);
+    protected void checkInvalidationsConflict() throws StorageException {
+        // repository.receiveClusterInvalidations(this);
+        context.checkInvalidationsConflict();
     }
 
     /*

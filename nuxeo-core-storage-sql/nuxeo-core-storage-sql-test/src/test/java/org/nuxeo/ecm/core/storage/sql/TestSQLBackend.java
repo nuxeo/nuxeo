@@ -266,8 +266,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(1.5),
                 nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(123456789), nodea.getSimpleProperty(
-                "tst:count").getValue());
+        assertEquals(Long.valueOf(123456789),
+                nodea.getSimpleProperty("tst:count").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -304,8 +304,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(Double.valueOf(3.14),
                 nodea.getSimpleProperty("tst:rate").getValue());
-        assertEquals(Long.valueOf(1234567891234L), nodea.getSimpleProperty(
-                "tst:count").getValue());
+        assertEquals(Long.valueOf(1234567891234L),
+                nodea.getSimpleProperty("tst:count").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
@@ -437,7 +437,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("test", acls[1].name);
     }
 
-    public void testCrossSessionInvalidations() throws Exception {
+    public void XXX_TODO_testConcurrentModification() throws Exception {
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
         Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
@@ -466,14 +466,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session1.save();
         assertEquals("mama", title1.getString());
         assertEquals("glop", title2.getString());
-        boolean isFailure = false;
         try {
             session2.save();
+            fail("expected ConcurrentModificationException");
         } catch (ConcurrentModificationException e) {
-            isFailure = true;
+            // expected
         }
-        // session1 save should wins
-        assertTrue(isFailure);
     }
 
     public void testConcurrentNameCreation() throws Exception {
@@ -1156,8 +1154,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 version.getSimpleProperty("tst:title").getString());
         assertNull(version.getSimpleProperty("ecm:baseVersion").getString());
         assertNull(version.getSimpleProperty("ecm:isCheckedIn").getValue());
-        assertEquals(nodea.getId(), version.getSimpleProperty(
-                "ecm:versionableId").getString());
+        assertEquals(nodea.getId(),
+                version.getSimpleProperty("ecm:versionableId").getString());
         // assertEquals(Long.valueOf(1), version.getSimpleProperty(
         // "ecm:majorVersion").getLong());
         // assertEquals(Long.valueOf(0), version.getSimpleProperty(
@@ -1165,8 +1163,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotNull(version.getSimpleProperty("ecm:versionCreated").getValue());
         assertEquals("foolab",
                 version.getSimpleProperty("ecm:versionLabel").getValue());
-        assertEquals("bardesc", version.getSimpleProperty(
-                "ecm:versionDescription").getValue());
+        assertEquals("bardesc",
+                version.getSimpleProperty("ecm:versionDescription").getValue());
         // the version child (complex prop)
         Node nodeacv = session.getChildNode(version, "node_a_complex", true);
         assertNotNull(nodeacv);
@@ -1302,9 +1300,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check computed prefetch info
         Model model = ((SessionImpl) session).getModel();
-        assertEquals(new HashSet<String>(Arrays.asList("testschema",
-                "tst:subjects", "tst:tags", //
-                "acls", "versions", "misc", "locks")),
+        assertEquals(
+                new HashSet<String>(Arrays.asList("testschema", "tst:subjects",
+                        "tst:tags", //
+                        "acls", "versions", "misc", "locks")),
                 model.getTypePrefetchedFragments("TestDoc"));
         assertEquals(new HashSet<String>(Arrays.asList("testschema2", //
                 "acls", "versions", "misc", "locks")),
@@ -1557,8 +1556,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                     tagging.getSimpleProperty("relation:target").getValue());
             assertEquals("mytag",
                     tagging.getSimpleProperty("dc:title").getString());
-            assertEquals("Administrator", tagging.getSimpleProperty(
-                    "dc:creator").getString());
+            assertEquals("Administrator",
+                    tagging.getSimpleProperty("dc:creator").getString());
             assertEquals("mytag", tagging.getName());
             assertNotNull(tagging.getSimpleProperty("dc:created").getValue());
 

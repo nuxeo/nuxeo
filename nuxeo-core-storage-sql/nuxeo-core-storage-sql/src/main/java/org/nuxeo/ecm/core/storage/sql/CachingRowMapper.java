@@ -63,10 +63,32 @@ public class CachingRowMapper implements RowMapper {
      */
     private final RowMapper rowMapper;
 
+    /**
+     * All the mappers registered in the same repository.
+     * <p>
+     * Used for invalidations.
+     */
+    private final Collection<Mapper> mappers;
+
+    /**
+     * The invalidations that should be propagated to other sessions at
+     * post-commit time.
+     */
+    private final Invalidations transactionInvalidations;
+
+    /**
+     * The invalidations received from other session, to process at
+     * pre-transaction time. Usage must be synchronized.
+     */
+    private Invalidations receivedInvalidations;
+
     @SuppressWarnings("unchecked")
-    public CachingRowMapper(RowMapper rowMapper) {
+    public CachingRowMapper(RowMapper rowMapper, Collection<Mapper> mappers) {
         this.rowMapper = rowMapper;
+        this.mappers = mappers;
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        transactionInvalidations = new Invalidations();
+        receivedInvalidations = new Invalidations();
     }
 
     /*
@@ -129,10 +151,18 @@ public class CachingRowMapper implements RowMapper {
     }
 
     /*
-     * ----- Cache Management -----
+     * ----- Invalidations / Cache Management -----
      */
 
-    public void invalidateCache(Invalidations invalidations) {
+    public Invalidations processReceivedInvalidations() throws StorageException {
+        Invalidations invalidations;
+        synchronized (receivedInvalidations) {
+            invalidations = receivedInvalidations;
+            receivedInvalidations = new Invalidations();
+        }
+        // add those from the underlying mapper (remote, cluster)
+        invalidations.add(rowMapper.processReceivedInvalidations());
+        // invalidate our cache
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);
@@ -143,17 +173,56 @@ public class CachingRowMapper implements RowMapper {
                 cachePutAbsent(rowId);
             }
         }
-        rowMapper.invalidateCache(invalidations);
+        // TODO XXX do not return invalidations from an underlying mapper coming
+        // from the same repository as ourselves
+
+        return invalidations.isEmpty() ? null : invalidations;
+    }
+
+    public void sendInvalidationsToOthers(Invalidations invalidations)
+            throws StorageException {
+        // local invalidations
+        if (!transactionInvalidations.isEmpty()) {
+            if (invalidations == null) {
+                invalidations = new Invalidations();
+            }
+            invalidations.add(transactionInvalidations);
+            transactionInvalidations.clear();
+        }
+        // local mappers can directly receive invalidations (optim)
+        if (invalidations != null) {
+            for (Mapper mapper : mappers) {
+                if (mapper != this) {
+                    mapper.crossInvalidate(invalidations);
+                }
+            }
+        }
+        // propagate to underlying mapper
+        rowMapper.sendInvalidationsToOthers(invalidations);
+
+        // sendInvalidationEvent(invalidations, true, fromSession); TODO XXX
+    }
+
+    public void crossInvalidate(Invalidations invalidations) {
+        synchronized (receivedInvalidations) {
+            receivedInvalidations.add(invalidations);
+        }
+        // no propagation to underlying mapper
     }
 
     public void clearCache() {
         cache.clear();
+        transactionInvalidations.clear();
         rowMapper.clearCache();
     }
 
     public void rollback(Xid xid) throws XAException {
-        cache.clear();
-        rowMapper.rollback(xid);
+        try {
+            rowMapper.rollback(xid);
+        } finally {
+            cache.clear();
+            transactionInvalidations.clear();
+        }
     }
 
     /*
@@ -193,18 +262,33 @@ public class CachingRowMapper implements RowMapper {
      * Save in the cache then pass all the writes to the mapper.
      */
     public void write(RowBatch batch) throws StorageException {
+        // we avoid gathering invalidations for a write-only table: fulltext
         for (Row row : batch.creates) {
             cachePut(row);
+            if (!Model.FULLTEXT_TABLE_NAME.equals(row.tableName)) {
+                // we need to send modified invalidations for created
+                // fragments because other session's ABSENT fragments have
+                // to be invalidated
+                transactionInvalidations.addModified(new RowId(row));
+            }
         }
         for (RowUpdate rowu : batch.updates) {
             cachePut(rowu.row);
+            if (!Model.FULLTEXT_TABLE_NAME.equals(rowu.row.tableName)) {
+                transactionInvalidations.addModified(new RowId(rowu.row));
+            }
         }
         for (RowId rowId : batch.deletes) {
             if (rowId instanceof Row) {
                 throw new AssertionError();
             }
             cachePutAbsent(rowId);
+            if (!Model.FULLTEXT_TABLE_NAME.equals(rowId.tableName)) {
+                transactionInvalidations.addDeleted(rowId);
+            }
         }
+
+        // propagate to underlying mapper
         rowMapper.write(batch);
     }
 

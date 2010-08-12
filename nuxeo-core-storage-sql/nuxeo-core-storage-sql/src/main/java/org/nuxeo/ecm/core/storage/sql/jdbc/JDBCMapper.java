@@ -37,8 +37,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -89,10 +89,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param pathResolver the path resolver (used for startswith queries)
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
+     * @param clusterNodeHandler the cluster node handler
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo,
-            XADataSource xadatasource) throws StorageException {
-        super(model, sqlInfo, xadatasource);
+            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
+            Collection<Mapper> jdbcMappers) throws StorageException {
+        super(model, sqlInfo, xadatasource, clusterNodeHandler, jdbcMappers);
         this.pathResolver = pathResolver;
         resetConnection();
         try {
@@ -257,8 +259,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 log.warn("Database contains additional unused columns for table "
                         + table.getQuotedName()
                         + ": "
-                        + StringUtils.join(new ArrayList<String>(
-                                columnTypes.keySet()), ", "));
+                        + StringUtils.join(
+                                new ArrayList<String>(columnTypes.keySet()),
+                                ", "));
             }
         }
 

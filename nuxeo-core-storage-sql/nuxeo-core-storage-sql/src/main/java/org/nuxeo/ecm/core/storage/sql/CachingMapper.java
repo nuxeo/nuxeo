@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -38,13 +39,13 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
      */
     private final Mapper mapper;
 
-    public CachingMapper(Mapper mapper) {
-        super(mapper);
+    public CachingMapper(Mapper mapper, Collection<Mapper> mappers) {
+        super(mapper, mappers);
         this.mapper = mapper;
     }
 
-    public String getMapperId() throws StorageException {
-        return mapper.getMapperId();
+    public Identification getIdentification() throws StorageException {
+        return mapper.getIdentification();
     }
 
     public void close() throws StorageException {

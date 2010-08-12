@@ -256,10 +256,38 @@ public interface RowMapper {
             throws StorageException;
 
     /**
-     * Notifies the mapper's cache (if any) that some invalidations have to be
-     * processed.
+     * Processes and returns the invalidations queued for processing by the
+     * cache (if any).
+     * <p>
+     * Called pre-transaction by session start or transactionless save;
+     *
+     * @return some invalidations, or {@code null}
      */
-    void invalidateCache(Invalidations invalidations);
+    Invalidations processReceivedInvalidations() throws StorageException;
+
+    /**
+     * Post-transaction invalidations notification.
+     * <p>
+     * Called post-transaction by session commit/rollback or transactionless
+     * save.
+     *
+     * @param invalidations the known invalidations to send to others, or
+     *            {@code null}
+     */
+    void sendInvalidationsToOthers(Invalidations invalidations)
+            throws StorageException;
+
+    /**
+     * Processes invalidations received from another mapper of the same nature
+     * in the same JVM.
+     * <p>
+     * Invalidations from other mappers can happen asynchronously at any time
+     * (when the other session commits). Invalidations from another cluster node
+     * happen when the transaction starts.
+     *
+     * @param invalidations the invalidations, or {@code null}
+     */
+    void crossInvalidate(Invalidations invalidations) throws StorageException;
 
     /**
      * Clears the mapper's cache (if any)
@@ -271,6 +299,9 @@ public interface RowMapper {
 
     /**
      * Rollback the XA Resource.
+     * <p>
+     * This is in the {@link RowMapper} interface because on rollback the cache
+     * must be invalidated.
      */
     void rollback(Xid xid) throws XAException;
 

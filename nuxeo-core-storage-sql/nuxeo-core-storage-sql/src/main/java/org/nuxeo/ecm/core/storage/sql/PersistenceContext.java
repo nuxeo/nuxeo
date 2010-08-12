@@ -100,18 +100,6 @@ public class PersistenceContext {
      */
     private final Set<Serializable> createdIds;
 
-    /**
-     * The invalidations that should be propagated to other sessions at
-     * post-commit time.
-     */
-    private final Invalidations transactionInvalidations;
-
-    /**
-     * The invalidations received from other session, to process at
-     * pre-transaction time. Usage must be synchronized.
-     */
-    private final Invalidations receivedInvalidations;
-
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
             throws StorageException {
@@ -127,9 +115,6 @@ public class PersistenceContext {
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
-
-        transactionInvalidations = new Invalidations();
-        receivedInvalidations = new Invalidations();
     }
 
     protected int clearCaches() {
@@ -141,7 +126,6 @@ public class PersistenceContext {
         int n = pristine.size();
         pristine.clear();
         modified.clear(); // not empty when rolling back before save
-        transactionInvalidations.clear();
         createdIds.clear();
         return n;
     }
@@ -188,8 +172,6 @@ public class PersistenceContext {
         for (Entry<RowId, Fragment> en : modified.entrySet()) {
             RowId rowId = en.getKey();
             Fragment fragment = en.getValue();
-            // hack to avoid gathering invalidations for a write-only table
-            boolean skipInvalidation = model.FULLTEXT_TABLE_NAME.equals(rowId.tableName);
             switch (fragment.getState()) {
             case CREATED:
                 batch.creates.add(fragment.row);
@@ -197,12 +179,6 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                if (!skipInvalidation) {
-                    // we need to send modified invalidations for created
-                    // fragments because other session's ABSENT fragments have
-                    // to be invalidated
-                    transactionInvalidations.addModified(rowId);
-                }
                 break;
             case MODIFIED:
                 if (fragment.row.isCollection()) {
@@ -220,9 +196,6 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                if (!skipInvalidation) {
-                    transactionInvalidations.addModified(rowId);
-                }
                 break;
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
@@ -230,9 +203,6 @@ public class PersistenceContext {
                 batch.deletes.add(new RowId(rowId));
                 fragment.setDetached();
                 // modified map cleared at end of loop
-                if (!skipInvalidation) {
-                    transactionInvalidations.addDeleted(rowId);
-                }
                 break;
             case PRISTINE:
                 // cannot happen, but has been observed :(
@@ -326,7 +296,7 @@ public class PersistenceContext {
                 }
             }
         }
-        transactionInvalidations.add(invalidations);
+        // TODO XXX transactionInvalidations.add(invalidations);
     }
 
     // called from Fragment
@@ -344,86 +314,69 @@ public class PersistenceContext {
     }
 
     /**
-     * Gathers invalidations from this session.
+     * Post-transaction invalidations notification.
      * <p>
-     * Called post-transaction to gathers invalidations to be sent to others.
+     * Called post-transaction by session commit/rollback or transactionless
+     * save.
      */
-    protected Invalidations gatherInvalidations() {
+    protected void sendInvalidationsToOthers() throws StorageException {
         Invalidations invalidations = new Invalidations();
-        invalidations.add(transactionInvalidations);
-        transactionInvalidations.clear();
         hierContext.gatherInvalidations(invalidations);
-        return invalidations;
+        mapper.sendInvalidationsToOthers(invalidations);
+        // XXX TODO sends event
     }
 
     /**
      * Applies all invalidations accumulated.
      * <p>
-     * Called pre-transaction.
+     * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        synchronized (receivedInvalidations) {
-            if (receivedInvalidations.modified != null) {
-                for (RowId rowId : receivedInvalidations.modified) {
-                    Fragment fragment = pristine.remove(rowId);
-                    if (fragment != null) {
-                        fragment.setInvalidatedModified();
-                    }
-                }
-                hierContext.processReceivedInvalidations(receivedInvalidations.modified);
-            }
-            if (receivedInvalidations.deleted != null) {
-                for (RowId rowId : receivedInvalidations.deleted) {
-                    Fragment fragment = pristine.remove(rowId);
-                    if (fragment != null) {
-                        fragment.setInvalidatedDeleted();
-                    }
-                }
-            }
-            if (!receivedInvalidations.isEmpty()) {
-                mapper.invalidateCache(receivedInvalidations);
-            }
-            receivedInvalidations.clear();
+        Invalidations invalidations = mapper.processReceivedInvalidations();
+        if (invalidations == null) {
+            return;
         }
-    }
-
-    protected void checkReceivedInvalidations() {
-        synchronized (receivedInvalidations) {
-            if (receivedInvalidations.modified != null) {
-                for (RowId rowId : receivedInvalidations.modified) {
-                    if (transactionInvalidations.contains(rowId)) {
-                        throw new ConcurrentModificationException(
-                                "Updating a concurrently modified value: "
-                                        + new RowId(rowId));
-                    }
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                Fragment fragment = pristine.remove(rowId);
+                if (fragment != null) {
+                    fragment.setInvalidatedModified();
                 }
             }
-
-            if (receivedInvalidations.deleted != null) {
-                for (RowId rowId : receivedInvalidations.deleted) {
-                    if (transactionInvalidations.contains(rowId)) {
-                        throw new ConcurrentModificationException(
-                                "Updating a concurrently deleted value: "
-                                        + new RowId(rowId));
-                    }
+            hierContext.processReceivedInvalidations(invalidations.modified);
+        }
+        if (invalidations.deleted != null) {
+            for (RowId rowId : invalidations.deleted) {
+                Fragment fragment = pristine.remove(rowId);
+                if (fragment != null) {
+                    fragment.setInvalidatedDeleted();
                 }
             }
         }
     }
 
-    /**
-     * Processes invalidations received by another session or cluster node.
-     * <p>
-     * Invalidations from other local session can happen asynchronously at any
-     * time (when the other session commits). Invalidations from another cluster
-     * node happen when the transaction starts.
-     */
-    protected void invalidate(Invalidations invalidations) {
-        if (!invalidations.isEmpty()) {
-            synchronized (receivedInvalidations) {
-                receivedInvalidations.add(invalidations);
-            }
-        }
+    protected void checkInvalidationsConflict() {
+        // synchronized (receivedInvalidations) {
+        // if (receivedInvalidations.modified != null) {
+        // for (RowId rowId : receivedInvalidations.modified) {
+        // if (transactionInvalidations.contains(rowId)) {
+        // throw new ConcurrentModificationException(
+        // "Updating a concurrently modified value: "
+        // + new RowId(rowId));
+        // }
+        // }
+        // }
+        //
+        // if (receivedInvalidations.deleted != null) {
+        // for (RowId rowId : receivedInvalidations.deleted) {
+        // if (transactionInvalidations.contains(rowId)) {
+        // throw new ConcurrentModificationException(
+        // "Updating a concurrently deleted value: "
+        // + new RowId(rowId));
+        // }
+        // }
+        // }
+        // }
     }
 
     /**
@@ -480,8 +433,8 @@ public class PersistenceContext {
      * Gets a collection of fragments from the mapper. No order is kept between
      * the inputs and outputs.
      * <p>
-     * Fragments not found are not returned if {@code allowAbsent} is {@code
-     * false}.
+     * Fragments not found are not returned if {@code allowAbsent} is
+     * {@code false}.
      */
     protected List<Fragment> getFromMapper(Collection<RowId> rowIds,
             boolean allowAbsent) throws StorageException {
@@ -566,8 +519,8 @@ public class PersistenceContext {
      * Deleted fragments are skipped.
      * <p>
      * If a simple {@link RowId} is passed, it means that an absent row was
-     * found by the mapper. An absent fragment will be returned, unless {@code
-     * allowAbsent} is {@code false} in which case it will be skipped.
+     * found by the mapper. An absent fragment will be returned, unless
+     * {@code allowAbsent} is {@code false} in which case it will be skipped.
      *
      * @param rowIds the list of rows or row ids
      * @param allowAbsent {@code true} to return an absent fragment as an object
@@ -597,8 +550,8 @@ public class PersistenceContext {
      * If the fragment was deleted, {@code null} is returned.
      * <p>
      * If a simple {@link RowId} is passed, it means that an absent row was
-     * found by the mapper. An absent fragment will be returned, unless {@code
-     * allowAbsent} is {@code false} in which case {@code null} will be
+     * found by the mapper. An absent fragment will be returned, unless
+     * {@code allowAbsent} is {@code false} in which case {@code null} will be
      * returned.
      *
      * @param rowId the row or row id (may be {@code null})

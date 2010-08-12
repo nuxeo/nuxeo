@@ -30,8 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -39,6 +39,7 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -55,13 +56,65 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
  */
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
-            throws StorageException {
+    /**
+     * Cluster node handler, or {@code null} if this {@link Mapper} is not the
+     * cluster node mapper.
+     */
+    private ClusterNodeHandler clusterNodeHandler;
+
+    /**
+     * Received cluster invalidations, or {@code null} if this {@link Mapper} is
+     * not the cluster node mapper. Usage must be synchronized.
+     */
+    private Invalidations clusterNodeInvalidations;
+
+    /** All the JDBC mappers, used for invalidations distribution. */
+    private final Collection<Mapper> jdbcMappers;
+
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo,
+            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
+            Collection<Mapper> jdbcMappers) throws StorageException {
         super(model, sqlInfo, xadatasource);
+        this.clusterNodeHandler = clusterNodeHandler;
+        this.jdbcMappers = jdbcMappers;
+        clusterNodeInvalidations = clusterNodeHandler == null ? null
+                : new Invalidations();
     }
 
-    public void invalidateCache(Invalidations invalidations) {
-        // no cache
+    public Invalidations processReceivedInvalidations() throws StorageException {
+        Invalidations invalidations = null;
+        if (clusterNodeHandler != null) {
+            receiveClusterInvalidations();
+            synchronized (clusterNodeInvalidations) {
+                invalidations = clusterNodeInvalidations;
+                clusterNodeInvalidations = new Invalidations();
+            }
+        }
+        return invalidations;
+    }
+
+    protected void receiveClusterInvalidations() throws StorageException {
+        Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
+        // send received invalidations to all mappers
+        if (invalidations != null && !invalidations.isEmpty()) {
+            for (Mapper mapper : jdbcMappers) {
+                mapper.crossInvalidate(invalidations);
+            }
+        }
+    }
+
+    public void sendInvalidationsToOthers(Invalidations invalidations)
+            throws StorageException {
+        if (clusterNodeHandler != null) {
+            clusterNodeHandler.insertClusterInvalidations(invalidations);
+        }
+    }
+
+    public void crossInvalidate(Invalidations invalidations)
+            throws StorageException {
+        synchronized (clusterNodeInvalidations) {
+            clusterNodeInvalidations.add(invalidations);
+        }
     }
 
     public void clearCache() {
@@ -153,8 +206,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
-        String[] orderBys = { model.MAIN_KEY,
-                model.COLL_TABLE_POS_KEY }; // clusters results
+        String[] orderBys = { model.MAIN_KEY, model.COLL_TABLE_POS_KEY }; // clusters
+                                                                          // results
         Set<String> skipColumns = new HashSet<String>(
                 Arrays.asList(model.COLL_TABLE_POS_KEY));
         SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName,

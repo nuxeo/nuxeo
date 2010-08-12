@@ -34,10 +34,10 @@ public abstract class MonitoredBackend implements RepositoryBackend {
         this.wrapped = wrapped;
     }
 
-    public Mapper newMapper(Model model, PathResolver pathResolver)
-            throws StorageException {
-        return MetricInvocationHandler.newProxy(wrapped.newMapper(model,
-                pathResolver), Mapper.class);
+    public Mapper newMapper(Model model, PathResolver pathResolver,
+            boolean create) throws StorageException {
+        return MetricInvocationHandler.newProxy(
+                wrapped.newMapper(model, pathResolver, create), Mapper.class);
     }
 
     public void initialize(RepositoryImpl repository) throws StorageException {

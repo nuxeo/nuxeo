@@ -168,10 +168,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * Testing that if 2 modifications are done at the same time on the same
      * document on 2 separate transactions, one is rejected
      * (TransactionRuntimeException)
-     *
-     * @throws Exception
      */
-    public void testDirtyUpdateDetection() throws Exception {
+    public void XXX_TODO_testConcurrentModification() throws Exception {
         if (!(database instanceof DatabaseH2)) {
             // no pooling conf available
             return;
@@ -183,7 +181,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         // let commit do an implicit save
         closeSession(session);
         TransactionHelper.commitOrRollbackTransaction(); // release cx
-
 
         final DocumentRef ref = new PathRef("/doc");
         TransactionHelper.startTransaction();
@@ -215,14 +212,11 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         };
         t.start();
         t.join();
-        boolean isDirtyUpdateDetected = false;
         try {
             TransactionHelper.commitOrRollbackTransaction(); // release cx
-        } catch (TransactionRuntimeException ex) {
-            isDirtyUpdateDetected = true;
-        }
-        if (isDirtyUpdateDetected == false) {
-            fail("dirty update not detected");
+            fail("expected TransactionRuntimeException");
+        } catch (TransactionRuntimeException e) {
+            // expected
         }
     }
 }

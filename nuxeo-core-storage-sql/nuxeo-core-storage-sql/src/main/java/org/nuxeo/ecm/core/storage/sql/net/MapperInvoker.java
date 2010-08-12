@@ -30,8 +30,7 @@ import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 
 /**
- * Will execute in a separate thread the commands passed through
- * {@link #methodCalls}.
+ * Will execute in a separate thread the commands passed through {@link #call}.
  */
 public class MapperInvoker extends Thread {
 
@@ -46,10 +45,10 @@ public class MapperInvoker extends Thread {
         }
     }
 
-    protected static class MethodCall {
-        String methodName;
+    protected static final class MethodCall {
+        public final String methodName;
 
-        Object[] args;
+        public final Object[] args;
 
         public MethodCall(String methodName, Object[] args) {
             this.methodName = methodName;
@@ -57,8 +56,8 @@ public class MapperInvoker extends Thread {
         }
     }
 
-    protected static class MethodResult {
-        Object result;
+    protected static final class MethodResult {
+        public final Object result;
 
         public MethodResult(Object result) {
             this.result = result;
@@ -84,6 +83,27 @@ public class MapperInvoker extends Thread {
         init();
     }
 
+    // called in the main thread
+    public void init() throws Throwable {
+        call(INVOKER_INIT);
+    }
+
+    // called in the main thread
+    public void close() throws Throwable {
+        try {
+            call(INVOKER_CLOSE);
+        } finally {
+            interrupt();
+            join();
+        }
+    }
+
+    // called in the main thread
+    public Object call(String methodName, Object... args) throws Throwable {
+        methodCalls.put(new MethodCall(methodName, args));
+        return methodResults.take().result;
+    }
+
     @Override
     public void run() {
         try {
@@ -107,27 +127,6 @@ public class MapperInvoker extends Thread {
         }
     }
 
-    // called in the main thread
-    public void init() throws Throwable {
-        call(INVOKER_INIT);
-    }
-
-    // called in the main thread
-    public void close() throws Throwable {
-        try {
-            call(INVOKER_CLOSE);
-        } finally {
-            interrupt();
-            join();
-        }
-    }
-
-    // called in the main thread
-    public Object call(String methodName, Object... args) throws Throwable {
-        methodCalls.put(new MethodCall(methodName, args));
-        return methodResults.take().result;
-    }
-
     protected Object localCall(String methodName, Object[] args)
             throws Exception {
         if (methodName == INVOKER_INIT) { // == is ok
@@ -138,7 +137,7 @@ public class MapperInvoker extends Thread {
             session.close();
             mapper = null;
             return null;
-        } else if ("close".equals(methodName)) {
+        } else if (Mapper.CLOSE.equals(methodName)) {
             // ignored, done by above invoker close, on the session
             // (we must not close the mapper directly as it may be in a pool)
             return null;
