@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -39,10 +40,6 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public class JBossConfiguratorTest {
 
-    private static final Object PROPERTY_TO_GENERATE = "<config-property name=\""
-            + "property\" type=\"java.lang.String\">URL=jdbc:h2:${nuxeo.data.dir}"
-            + "/h2/testinclude;AUTO_SERVER=true</config-property>";
-
     private static final Log log = LogFactory.getLog(JBossConfiguratorTest.class);
 
     private ConfigurationGenerator configGenerator;
@@ -50,6 +47,8 @@ public class JBossConfiguratorTest {
     private ConfigurationGenerator configGenerator2;
 
     private File nuxeoHome;
+    
+    String propertyToGenerate;
 
     @Before
     public void setUp() throws Exception {
@@ -59,6 +58,16 @@ public class JBossConfiguratorTest {
         nuxeoHome = File.createTempFile("nuxeo", null);
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
+        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
+                nuxeoHome.getPath());
+        System.setProperty(Environment.NUXEO_DATA_DIR,
+                new File(nuxeoHome,"data").getPath());
+        propertyToGenerate = "<config-property name=\""
+            + "property\" type=\"java.lang.String\">URL=jdbc:h2:"+
+            System.getProperty(Environment.NUXEO_DATA_DIR)
+            + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+        System.setProperty(Environment.NUXEO_LOG_DIR,
+                new File(nuxeoHome,"log").getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_HOME,
                 nuxeoHome.getPath());
         FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
@@ -103,7 +112,7 @@ public class JBossConfiguratorTest {
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
         assertTrue(generatedProperty,
-                PROPERTY_TO_GENERATE.equals(generatedProperty));
+                propertyToGenerate.equals(generatedProperty));
     }
 
     @Test
@@ -131,7 +140,7 @@ public class JBossConfiguratorTest {
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
         assertTrue(generatedProperty,
-                PROPERTY_TO_GENERATE.equals(generatedProperty));
+                propertyToGenerate.equals(generatedProperty));
     }
 
     @Test
