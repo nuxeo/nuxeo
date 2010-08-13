@@ -15,10 +15,10 @@
   <!-- ================================= -->
 
   <!-- A time/date based rolling appender -->
-  <appender name="FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-    <param name="File" value="${jboss.server.log.dir}/server.log" />
-    <param name="Append" value="false" />
+  <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/server.log" />
+    <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
@@ -28,9 +28,9 @@
 
   <!--
     A size based file rolling appender
-    <appender name="FILE" class="org.jboss.logging.appender.RollingFileAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-      <param name="File" value="${jboss.server.log.dir}/server.log" />
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+      <param name="File" value="${nuxeo.log.dir}/server.log" />
       <param name="Append" value="false" />
       <param name="MaxFileSize" value="500KB" />
       <param name="MaxBackupIndex" value="1" />
@@ -44,10 +44,10 @@
   <!-- Gather errors in a local file -->
   <!-- ============================= -->
 
-  <appender name="ERROR-FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-    <param name="File" value="${jboss.server.log.dir}/nuxeo-error.log" />
-    <param name="Append" value="false" />
+  <appender name="ERROR-FILE" class="org.apache.log4j.DailyRollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/nuxeo-error.log" />
+    <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
@@ -64,10 +64,10 @@
   <!-- Gather stderr in a local file -->
   <!-- ============================= -->
 
-  <appender name="STDERR-FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-    <param name="File" value="${jboss.server.log.dir}/stderr.log" />
-    <param name="Append" value="false" />
+  <appender name="STDERR-FILE" class="org.apache.log4j.DailyRollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/stderr.log" />
+    <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
@@ -80,7 +80,7 @@
   <!-- ============================== -->
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
@@ -97,7 +97,7 @@
   <!--
     Buffer events and log them asynchronously
     <appender name="ASYNC" class="org.apache.log4j.AsyncAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
       <appender-ref ref="FILE" />
       <appender-ref ref="CONSOLE" />
       <appender-ref ref="SMTP" />
@@ -107,7 +107,7 @@
   <!--
     EMail events to an administrator
     <appender name="SMTP" class="org.apache.log4j.net.SMTPAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
       <param name="Threshold" value="ERROR" />
       <param name="To" value="admin@myhost.domain.com" />
       <param name="From" value="nobody@myhost.domain.com" />
@@ -123,7 +123,7 @@
   <!--
     Syslog events
     <appender name="SYSLOG" class="org.apache.log4j.net.SyslogAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
       <param name="Facility" value="LOCAL7" />
       <param name="FacilityPrinting" value="true" />
       <param name="SyslogHost" value="localhost" />
@@ -136,7 +136,7 @@
   <!--
     Log events to JMS (requires a topic to be created)
     <appender name="JMS" class="org.apache.log4j.net.JMSAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
       <param name="Threshold" value="ERROR" />
       <param name="TopicConnectionFactoryBindingName" value="java:/ConnectionFactory" />
       <param name="TopicBindingName" value="topic/MyErrorsTopic" />
@@ -146,7 +146,7 @@
   <!--
     Log events through SNMP
     <appender name="TRAP_LOG" class="org.apache.log4j.ext.SNMPTrapAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+      <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
       <param name="ImplementationClassName" value="org.apache.log4j.ext.JoeSNMPTrapSender" />
       <param name="ManagementHost" value="127.0.0.1" />
       <param name="ManagementHostTrapListenPort" value="162" />
@@ -370,9 +370,9 @@
   <!--
     Uncomment the following to redirect the org.jgroups and org.jboss.ha
     categories to a cluster.log file.
-    <appender name="CLUSTER" class="org.jboss.logging.appender.RollingFileAppender">
-      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
-      <param name="File" value="${jboss.server.log.dir}/cluster.log" />
+    <appender name="CLUSTER" class="org.apache.log4j.RollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+      <param name="File" value="${nuxeo.log.dir}/cluster.log" />
       <param name="Append" value="false" />
       <param name="MaxFileSize" value="500KB" />
       <param name="MaxBackupIndex" value="1" />
