@@ -38,7 +38,7 @@ public class TomcatConfigurator extends ServerConfigurator {
      */
     @Override
     protected boolean isConfigured() {
-        log.debug("Detected Tomcat server.");
+        log.info("Detected Tomcat server.");
         return new File(generator.getNuxeoHome(), TOMCAT_CONFIG).exists();
     }
 

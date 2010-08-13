@@ -81,7 +81,6 @@ public class DeploymentPreprocessor {
     }
 
     public void init() throws Exception {
-        new ConfigurationGenerator().run();
         root = getContainer(dir);
         if (root != null) {
             // run container commands

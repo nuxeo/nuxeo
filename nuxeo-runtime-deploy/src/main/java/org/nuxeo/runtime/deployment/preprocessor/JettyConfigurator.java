@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JettyConfigurator extends ServerConfigurator {
 
@@ -38,9 +38,8 @@ public class JettyConfigurator extends ServerConfigurator {
      */
     @Override
     protected boolean isConfigured() {
-        log.debug("Detected Jetty server. Template configuration not yet implemented for Jetty.");
-        return true;
-//        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
+        log.info("Detected Jetty server.");
+        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
     }
 
     @Override

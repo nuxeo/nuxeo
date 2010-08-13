@@ -110,6 +110,7 @@ public class ConfigurationGenerator {
             nuxeoConf = new File(nuxeoHome, "bin" + File.separator
                     + "nuxeo.conf");
         }
+        log.info("Nuxeo configuration: " + nuxeoConf.getPath());
 
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
@@ -164,14 +165,14 @@ public class ConfigurationGenerator {
             log.warn("Unrecognized server. Considered as already configured.");
         } else if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
-        } else if (forceGeneration) {
-            log.info("Force files generation...");
-            generateFiles();
-        } else if (serverConfigurator.isConfigured()) {
-            log.info("Server already configured");
-        } else {
+        } else if (!serverConfigurator.isConfigured()) {
             log.info("No current configuration, generating files...");
             generateFiles();
+        } else if (forceGeneration) {
+            log.info("Configuration files generation (nuxeo.force.generation=true)...");
+            generateFiles();
+        } else {
+            log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
         }
     }
 
@@ -188,8 +189,10 @@ public class ConfigurationGenerator {
                     PARAM_FORCE_GENERATION, "false"));
 
             // Add data and log system properties
-            userConfig.put(Environment.NUXEO_DATA_DIR, System.getProperty(Environment.NUXEO_DATA_DIR));
-            userConfig.put(Environment.NUXEO_LOG_DIR, System.getProperty(Environment.NUXEO_LOG_DIR));
+            userConfig.put(Environment.NUXEO_DATA_DIR,
+                    System.getProperty(Environment.NUXEO_DATA_DIR));
+            userConfig.put(Environment.NUXEO_LOG_DIR,
+                    System.getProperty(Environment.NUXEO_LOG_DIR));
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -258,7 +261,7 @@ public class ConfigurationGenerator {
                     }
                     // Load configuration from chosen templates
                     defaultConfig.load(new FileInputStream(chosenTemplateConf));
-                    log.debug("Include " + nextToken);
+                    log.info("Include template: " + chosenTemplate.getPath());
                 } else {
                     log.debug("No default configuration for template "
                             + nextToken);
@@ -282,6 +285,10 @@ public class ConfigurationGenerator {
 
     public List<File> getIncludedTemplates() {
         return includedTemplates;
+    }
+
+    public static void main(String[] args) throws ConfigurationException {
+        new ConfigurationGenerator().run();
     }
 
 }

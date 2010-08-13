@@ -37,7 +37,7 @@ public class JBossConfigurator extends ServerConfigurator {
      */
     @Override
     public boolean isConfigured() {
-        log.debug("Detected JBoss server.");
+        log.info("Detected JBoss server.");
         return new File(generator.getNuxeoHome(), JBOSS_CONFIG).exists();
     }
 
