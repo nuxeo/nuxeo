@@ -19,8 +19,8 @@
 # -Dorg.nuxeo.app.config
 # -Dorg.nuxeo.app.data
 # -Dorg.nuxeo.app.log
-# These options are overrited by the corresponding framework options.
-# See fthe framework options for more details
+# These options are overwritten by the corresponding framework options.
+# See the framework options for more details
 #
 # The java command used is of the form:
 # java [java_options] -jar launcher.jar framework.jar/MainClass[:mainMethod] frameworkClassPath [framework_options]
@@ -36,7 +36,7 @@
 # -console
 #     display a console after starting the framework. The nuxeo console should be available on the framework classpath
 # -bundles=bundle1.jar@1:bundle2.jar@2:.
-#     a list of bundles to start initialy. Each bundle may be terminated by a @START_LEVEL
+#     a list of bundles to start initially. Each bundle may be terminated by a @START_LEVEL
 #     which is specifying when the bundle should be started. If no start level is specified the default is 1.
 #     The 0 start level is set before loading the system bundle. After loading it the start level is set to 1.
 #     After all bundles in start level 1 are started, the start level 2 is entered and the bundles discovered
@@ -80,7 +80,7 @@ fi
 
 NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
 
-#example on how to add external bundles to your environment. Usefull to dev. using IDEs.
+#example on how to add external bundles to your environment. Useful to dev. using IDEs.
 #the eclipse plugin is using this option to start webengine.
 #POST_BUNDLES="-post-bundles /path/to/your/external/bundle:/path/to/second/bundle:/etc"
 
