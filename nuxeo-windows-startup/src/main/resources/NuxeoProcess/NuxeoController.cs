@@ -69,13 +69,15 @@ namespace NuxeoProcess
 
         private String platform = null;
         private String productName ="nuxeo";
+        private static Process confProcess = null;
         private static Process nxProcess = null;
         private static Process stopProcess = null;
         public Dictionary<String, String> nxEnv;
+        private String confArgs = null;
         private String startArgs = null;
         private String stopArgs = null;
         public bool running = false;
-        
+        public bool Configured { get; private set; }
         private bool countActive = false;
 		private int countStatus = 0;
 		
@@ -199,6 +201,24 @@ namespace NuxeoProcess
             return true;
 		}
 		
+		public bool Configure() {
+			if (!SetupEnv()) {
+				return false;
+			}
+			
+            // Run
+			confProcess=new Process();
+			confProcess.StartInfo.FileName=nxEnv["JAVA"];
+			confProcess.StartInfo.Arguments=confArgs;
+			confProcess.StartInfo.UseShellExecute=false;
+			confProcess.StartInfo.CreateNoWindow=true;
+			confProcess.StartInfo.RedirectStandardError=true;
+			confProcess.StartInfo.RedirectStandardOutput=true;
+			confProcess.EnableRaisingEvents=true;
+			confProcess.Start();
+			return true;
+		}
+
 		public bool Start() {
 			if (!SetupEnv()) {
 				return false;
@@ -217,7 +237,6 @@ namespace NuxeoProcess
 			nxProcess.EnableRaisingEvents=true;
 			nxProcess.Exited+=new EventHandler(Process_Exited);
 			nxProcess.Start();
-			
 			nxProcess.OutputDataReceived += new DataReceivedEventHandler(nxProcess_OutputDataReceived);
 			
 			running=true;
@@ -269,6 +288,10 @@ namespace NuxeoProcess
 		}
 		public Process getProcess() {
 			return nxProcess;
+		}
+		
+		public Process getConfProcess() {
+			return confProcess;
 		}
 		
 		public Process getStopProcess() {
