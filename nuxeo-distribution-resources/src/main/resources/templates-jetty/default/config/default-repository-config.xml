@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="default"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
         <schema>
           <field type="largetext">note</field>
@@ -16,7 +16,7 @@
         <indexing>
           <!-- for H2 (Lucene Analyzer): -->
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
-            <index name="default">
+            <index name="default"> 
               <!-- all props implied -->
             </index>
             <index name="title">
@@ -25,12 +25,14 @@
             <index name="description">
               <field>dc:description</field>
             </index>
-          </fulltext>
-          <!-- for PostgreSQL (Text Search Configuration): <fulltext analyzer="english"/> -->
+          </fulltext> 
+          <!-- for PostgreSQL (Text Search Configuration):
+          <fulltext analyzer="english"/>
+          -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- NXP-5370 - use jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name} ? -->
-        <property name="URL">jdbc:h2:vcsh2repo</property>
+        <!-- Shouldn't be jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name} ? -->
+        <property name="URL">jdbc:h2:data/h2/vcsh2repo</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
       </repository>

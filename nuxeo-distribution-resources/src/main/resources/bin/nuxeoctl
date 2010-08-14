@@ -258,7 +258,7 @@ if [ "$jboss" = "true" ]; then
 	JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
 	NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
 	NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
-  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib/*"
   LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #
@@ -270,7 +270,7 @@ elif [ "$tomcat" = "true" ]; then
   CATALINA_TEMP=${CATALINA_TEMP:-$TMP_DIR}
 	DATA_DIR=${DATA_DIR:-nxserver/data}
 	NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
-  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
   TMP_DIR=${TMP_DIR:-$NUXEO_HOME/temp}
   LOG4J_CONF="file:$NUXEO_HOME/lib/log4j.xml"
 
@@ -283,7 +283,7 @@ elif [ "$jetty" = "true" ]; then
 	DATA_DIR=${DATA_DIR:-data}
 	NXC_VERSION=`basename $jettyjar | cut -d"-" -f4-`
 	NUXEO_CLASSPATH="$CLASSPATH:$jettyjar"
-  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/bundles"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/bundles/*:$NUXEO_HOME/lib/*"
 	NUXEO_BUNDLES="$NUXEO_HOME/bundles/.:$NUXEO_HOME/lib/.:$NUXEO_HOME/config"
 	JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader"
 	JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true"
@@ -346,18 +346,18 @@ generate_configuration() {
   createdirs
   check_old_paths
   if [ "$1" = "console" ]; then
-    echo java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH/*" \
+    echo java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
-    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH/*" \
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
   else
-    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH/*" \
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
@@ -587,7 +587,7 @@ case "$1" in
     start
     ;;
   configure)
-    generate_configuration
+    generate_configuration console
     ;;
 	*)
 		echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure)"

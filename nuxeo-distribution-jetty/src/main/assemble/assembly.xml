@@ -38,10 +38,6 @@
         key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
         classifier="doc" />
     </unzip>
-    <copy todir="${jetty}">
-      <fileset dir="src/main/resources" />
-    </copy>
-    <delete file="${jetty}/config/login-anonymous-config.xml" />
 
     <unzip dest="${jetty}/bin">
       <artifact:resolveFile
@@ -50,12 +46,12 @@
     </unzip>
     <chmod dir="${jetty}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
-    <!--
-      Template configuration not yet implemented for Jetty <unzip
-      dest="${jetty}/templates"> <artifact:resolveFile
-      key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-      classifier="templates-jetty" /> </unzip>
-    -->
+    <unzip dest="${jetty}/templates">
+      <artifact:resolveFile
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+        classifier="templates-jetty" />
+    </unzip>
+    <delete file="${jetty}/templates/default/config/login-anonymous-config.xml" />
 
     <copy todir="${jetty}/bundles">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />

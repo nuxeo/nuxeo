@@ -42,11 +42,9 @@
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat" />
     </antcall>
-    <!-- Template configuration not yet implemented for Jetty 
     <antcall target="build-resources">
       <param name="distribution" value="templates-jetty" />
     </antcall>
-    -->
   </target>
 
   <target name="build-resources"
