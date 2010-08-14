@@ -81,26 +81,11 @@ Services backend: Derby
 2.2) postgresql
 
 Recommended configuration for production, based on PostgreSQL.
-Think to add PostgreSQL JDBC driver into server/default/lib/ directory.
+Think to add PostgreSQL JDBC driver into lib/ directory.
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
 
-2.3) mysql
-
-Repository backend: MySQL XA
-Services backend: MySQL
-
-2.4) oracle
-
-Repository backend: Oracle XA
-Services backend: Oracle
-
-2.5) stateful and stateless
-
-Configuration separating stateful and stateless services (see Nuxeo documentation 
-for details) using default values for database.
-
-2.6) custom
+2.3) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.
