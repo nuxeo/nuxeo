@@ -102,6 +102,16 @@ namespace NuxeoService
 				nxControl.DelegatedLog+=new LogEventHandler(nxControllerLog);
 				nxControl.SetDelegateLog(true);
 			}
+			if (nxControl.Configure()==false) {
+				Log("Could not configure the application","ERROR");
+				throw new PlatformNotSupportedException("Could not configure Nuxeo");
+			}
+			Process confProcess=nxControl.getConfProcess();
+			confProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
+			confProcess.BeginOutputReadLine();
+			confProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
+			confProcess.BeginErrorReadLine();
+
 			if (nxControl.Start()==false) {
 				Log("Could not start the application","ERROR");
 				throw new PlatformNotSupportedException("Could not start Nuxeo");

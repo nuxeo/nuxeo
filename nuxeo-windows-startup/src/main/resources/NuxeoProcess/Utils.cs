@@ -12,7 +12,7 @@
 * Lesser General Public License for more details.
 *
 * Contributors:
-*     Mathieu Guillaume
+*     Mathieu Guillaume, Julien Carsique
 */
 
 using System;
@@ -263,22 +263,29 @@ namespace NuxeoProcess
 			nxEnv.Add("PID",PID);
 			
 			// Setup DATA_DIR
-			// We don't set a default to keep backward compatibility
-			String DATA_DIR=null;
+			String DATA_DIR_JBOSS=null;
+			String DATA_DIR_TOMCAT=null;
+			String JBOSS_DATA_DIR=Path.Combine(Path.Combine(Path.Combine(NUXEO_HOME,"server"),"default"),"data");
 			if (nxConfig.ContainsKey("nuxeo.data.dir")) {
-				DATA_DIR=nxConfig["nuxeo.data.dir"];
-				if (!Path.IsPathRooted(DATA_DIR)) {
-					DATA_DIR=Path.Combine(NUXEO_HOME,DATA_DIR);
+				DATA_DIR_JBOSS=nxConfig["nuxeo.data.dir"];
+				if (!Path.IsPathRooted(DATA_DIR_JBOSS)) {
+					DATA_DIR_JBOSS=Path.Combine(NUXEO_HOME,DATA_DIR_JBOSS);
 				}
 				try {
-					if (!Directory.Exists(DATA_DIR)) Directory.CreateDirectory(DATA_DIR);
+					if (!Directory.Exists(DATA_DIR_JBOSS)) Directory.CreateDirectory(DATA_DIR_JBOSS);
 				} catch (Exception e) {
-					Log("Cannot create "+DATA_DIR,"ERROR");
+					Log("Cannot create "+DATA_DIR_JBOSS,"ERROR");
 					Log(e.Message,"ERROR");
 					return false;
 				}
+				DATA_DIR_TOMCAT=DATA_DIR_JBOSS;
+			} else {
+				DATA_DIR_JBOSS=Path.Combine(Path.Combine(JBOSS_DATA_DIR,"NXRuntime"),"data");
+				DATA_DIR_TOMCAT=Path.Combine(Path.Combine(NUXEO_HOME,"nxserver"),"data");
 			}
-			nxEnv.Add("DATA_DIR",DATA_DIR);
+			nxEnv.Add("DATA_DIR_JBOSS",DATA_DIR_JBOSS);
+			nxEnv.Add("DATA_DIR_TOMCAT",DATA_DIR_TOMCAT);
+			nxEnv.Add("JBOSS_DATA_DIR",JBOSS_DATA_DIR);
 			
 			// Setup TMP_DIR
 			// We don't set a default to keep backward compatibility
@@ -421,21 +428,34 @@ namespace NuxeoProcess
 			else NUXEO_CLASSPATH=nxEnv["CLASSPATH"]+Path.PathSeparator+srvStartJar;
 			
 			String NUXEO_ENDORSED=Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"lib"),"endorsed");
-			
-			String NUXEO_DATA="";
-			if (nxEnv["DATA_DIR"]!=null) {
-			    	NUXEO_DATA=" -Djboss.server.data.dir=\""+nxEnv["DATA_DIR"]+"\"";
-			}
-			
+						
 			String NUXEO_TMP="";
 			if (nxEnv["TMP_DIR"]!=null) {
 				NUXEO_TMP=" -Djboss.server.temp.dir=\""+nxEnv["TMP_DIR"]+"\""+
 					" -Djboss.server.temp.dir.overrideJavaTmpDir=true";
 			}
+
+			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"lib");
+			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-runtime-deploy*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar")[0].ToString());
+			
+			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"conf"),"jboss-log4j.xml");
+			confArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_BOOTJAR_PATH+"\""+
+				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+NUXEO_TMP+
+				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
+				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+
+				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR_JBOSS"]+"\""+
+				" -Dlog4j.configuration=\""+LOG4J_CONF+"\""+
+				" org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator";
 			
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=\""+NUXEO_ENDORSED+"\""+
-				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_DATA+NUXEO_TMP+
+				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_TMP+
+				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+
+				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR_JBOSS"]+"\""+
+				" -Djboss.server.data.dir=\""+nxEnv["JBOSS_DATA_DIR"]+"\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
 				" org.jboss.Main -b "+nxEnv["NUXEO_BIND_ADDRESS"];
@@ -444,6 +464,7 @@ namespace NuxeoProcess
 				Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"bin"),"shutdown.jar")+
 				"\" -S";
 			
+			Log("JBoss configure options : "+confArgs,"DEBUG");
 			Log("JBoss startup options : "+startArgs,"DEBUG");
 			Log("JBoss shutdown options : "+stopArgs,"DEBUG");
 			
@@ -462,7 +483,24 @@ namespace NuxeoProcess
 			if (nxEnv["TMP_DIR"]!=null) {
 				CATALINA_TEMP=nxEnv["TMP_DIR"];
 			}
-			    
+
+			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(nxEnv["NUXEO_HOME"],"bundles");
+			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-runtime-deploy*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
+			NUXEO_BOOTJAR_ROOTPATH=Path.Combine(nxEnv["NUXEO_HOME"],"lib");
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar*")[0].ToString());
+
+			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"config"),"log4j.xml");
+			confArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_BOOTJAR_PATH+"\""+
+				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
+				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
+				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+
+				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR_TOMCAT"]+"\""+
+				" -Dnuxeo.tmp.dir=\""+nxEnv["TMP_DIR"]+"\""+
+				" -Dlog4j.configuration=\""+LOG4J_CONF+"\""+
+				" org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator";
+
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
@@ -471,7 +509,7 @@ namespace NuxeoProcess
 				" -Dcatalina.base=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dcatalina.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Djava.io.tmpdir=\""+CATALINA_TEMP+"\""+
-				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR"]+"\""+
+				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR_TOMCAT"]+"\""+
 				" org.apache.catalina.startup.Bootstrap start";
 			
 			stopArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
@@ -481,6 +519,7 @@ namespace NuxeoProcess
 				" -Djava.io.tmpdir=\""+CATALINA_TEMP+"\""+
 				" org.apache.catalina.startup.Bootstrap stop";
 				
+			Log("Tomcat configure options : "+confArgs,"DEBUG");
 			Log("Tomcat startup options : "+startArgs,"DEBUG");
 			Log("Tomcat shutdown options : "+stopArgs,"DEBUG");
 			
