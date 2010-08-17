@@ -54,23 +54,23 @@ import static org.jboss.seam.ScopeType.EVENT;
  */
 @Name("typesTool")
 @Scope(CONVERSATION)
-@Install(precedence=Install.FRAMEWORK) 
+@Install(precedence = Install.FRAMEWORK)
 public class TypesTool implements Serializable {
 
     private static final long serialVersionUID = -5037578301250616973L;
 
-    private static final Log log = LogFactory.getLog(TypesTool.class);
+    protected static final Log log = LogFactory.getLog(TypesTool.class);
 
     private static final int COLUMN_SIZE = 4;
 
     private static String DEFAULT_CATEGORY = "misc";
 
     @In
-    private transient TypeManager typeManager;
+    protected transient TypeManager typeManager;
 
-    private Map<String, List<List<Type>>> typesMap;
+    protected Map<String, List<List<Type>>> typesMap;
 
-    private Type selectedType;
+    protected Type selectedType;
 
     @In(create = true)
     private transient NavigationContext navigationContext;
@@ -97,6 +97,7 @@ public class TypesTool implements Serializable {
             if (docType != null) {
                 typesMap = new HashMap<String, List<List<Type>>>();
                 Map<String, SubType> allowedSubTypes = docType.getAllowedSubTypes();
+                allowedSubTypes = filterSubTypes(allowedSubTypes);
                 Set<String> allowedSubTypesKeySet = allowedSubTypes.keySet();
                 for (String currentKey : allowedSubTypesKeySet) {
                     SubType currentSubType = allowedSubTypes.get(currentKey);
@@ -132,7 +133,12 @@ public class TypesTool implements Serializable {
         }
     }
 
-    private Map<String, List<List<Type>>> organizeType() {
+    protected Map<String, SubType> filterSubTypes(
+            Map<String, SubType> allowedSubTypes) {
+        return allowedSubTypes;
+    }
+
+    protected Map<String, List<List<Type>>> organizeType() {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
         Set<Entry<String, List<List<Type>>>> typeEntrySet = typesMap.entrySet();
         for (Entry<String, List<List<Type>>> set : typeEntrySet) {
@@ -162,8 +168,9 @@ public class TypesTool implements Serializable {
      */
     public List<String> getAllowedSubTypesFor(String docType) {
         Type documentType = typeManager.getType(docType);
-        List<String> allowedSubTypes = new ArrayList<String>(
-                documentType.getAllowedSubTypes().keySet());
+        Map<String, SubType> subTypes = documentType.getAllowedSubTypes();
+        subTypes = filterSubTypes(subTypes);
+        List<String> allowedSubTypes = new ArrayList<String>(subTypes.keySet());
         return allowedSubTypes;
     }
 
