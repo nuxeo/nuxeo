@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.EvaluatorException;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
@@ -49,7 +48,6 @@ import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.dom.css.CSSValue;
 
 import com.steadystate.css.parser.CSSOMParser;
-import com.yahoo.platform.yui.compressor.CssCompressor;
 
 public final class CSSUtils {
 
@@ -482,8 +480,6 @@ public final class CSSUtils {
             compressedSource = out.toString();
 
         } catch (IOException e) {
-            throw new ThemeException("Could not compress CSS", e);
-        } catch (EvaluatorException e) {
             throw new ThemeException("Could not compress CSS", e);
         } finally {
             if (out != null) {

@@ -14,19 +14,18 @@
 
 package org.nuxeo.theme.html;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
+import org.nuxeo.theme.html.JSMin.UnterminatedCommentException;
+import org.nuxeo.theme.html.JSMin.UnterminatedRegExpLiteralException;
+import org.nuxeo.theme.html.JSMin.UnterminatedStringLiteralException;
 import org.nuxeo.theme.themes.ThemeException;
-
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 public final class JSUtils {
 
@@ -35,49 +34,25 @@ public final class JSUtils {
     public static String compressSource(final String source)
             throws ThemeException {
         String compressedSource = source;
-        Reader in = null;
-        Writer out = null;
+        InputStream in = null;
+        OutputStream out = null;
 
-        final boolean munge = true;
-        final boolean verbose = false;
-        final boolean preserveAllSemiColons = false;
-        final boolean disableOptimizations = false;
-        final int linebreakpos = -1;
-
-        final JavaScriptCompressor compressor;
         try {
-            in = new StringReader(source);
+            in = new ByteArrayInputStream(source.getBytes());
+            out = new ByteArrayOutputStream();
 
-            compressor = new JavaScriptCompressor(in, new ErrorReporter() {
-
-                public void warning(String message, String sourceName,
-                        int line, String lineSource, int lineOffset) {
-                    log.warn(String.format("%s: %s (%s) ", line, lineSource,
-                            message));
-                }
-
-                public void error(String message, String sourceName, int line,
-                        String lineSource, int lineOffset) {
-                    log.error(String.format("%s: %s (%s) ", line, lineSource,
-                            message));
-                }
-
-                public EvaluatorException runtimeError(String message,
-                        String sourceName, int line, String lineSource,
-                        int lineOffset) {
-                    log.error(String.format("%s: %s (%s) ", line, lineSource,
-                            message));
-                    return null;
-                }
-            });
-
-            out = new StringWriter();
-            compressor.compress(out, linebreakpos, munge, verbose,
-                    preserveAllSemiColons, disableOptimizations);
+            JSMin compressor = new JSMin(in, out);
+            try {
+                compressor.jsmin();
+            } catch (UnterminatedRegExpLiteralException e) {
+                throw new ThemeException("Could not compress javascript", e);
+            } catch (UnterminatedCommentException e) {
+                throw new ThemeException("Could not compress javascript", e);
+            } catch (UnterminatedStringLiteralException e) {
+                throw new ThemeException("Could not compress javascript", e);
+            }
             compressedSource = out.toString();
         } catch (IOException e) {
-            throw new ThemeException("Could not compress javascript", e);
-        } catch (EvaluatorException e) {
             throw new ThemeException("Could not compress javascript", e);
         } finally {
             if (out != null) {
