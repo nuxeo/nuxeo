@@ -73,7 +73,11 @@
         <artifactId>nuxeo-theme-html</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
