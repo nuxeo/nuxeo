@@ -4,3 +4,5 @@ Bundle-Name: nuxeo-platform-queue-api project
 Bundle-SymbolicName: org.nuxeo.ecm.platform.queue.api;singleton:=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Require: org.nuxeo.runtime
+Provide-Package: org.nuxeo.ecm.platform.queue.api
+Bundle-Version: 0.0.0.SNAPSHOT
