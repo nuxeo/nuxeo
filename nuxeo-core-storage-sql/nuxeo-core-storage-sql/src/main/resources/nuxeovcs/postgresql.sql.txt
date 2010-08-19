@@ -21,6 +21,7 @@
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   NEW.fulltextSFX := COALESCE(NEW.simpletextSFX}, ''::TSVECTOR) || COALESCE(NEW.binarytextSFX, ''::TSVECTOR);
 # ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
+# ${usersSeparator} default is ",", but it depends on the configuration
 
 # Conditions used:
 # fulltextEnabled
@@ -339,7 +340,7 @@ BEGIN
     IF read_acl IS NULL THEN
       read_acl := r.op;
     ELSE
-      read_acl := read_acl || ',' || r.op;
+      read_acl := read_acl || '${usersSeparator}' || r.op;
     END IF;
   END LOOP;
   RETURN read_acl;
@@ -365,7 +366,7 @@ BEGIN
       IF ret is NULL THEN
         ret := read_acl;
       ELSE
-        ret := ret || ',' || read_acl;
+        ret := ret || '${usersSeparator}' || read_acl;
       END IF;
     END IF;
     SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
@@ -392,7 +393,7 @@ DECLARE
   in_cache boolean;
   md5_users varchar(34);
 BEGIN
-  SELECT md5(array_to_string(users, ',')) INTO md5_users;
+  SELECT md5(array_to_string(users, '${usersSeparator}')) INTO md5_users;
   SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM read_acls_cache WHERE users_md5 = md5_users);
   IF in_cache IS NULL THEN
     INSERT INTO read_acls_cache SELECT md5_users, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
@@ -414,13 +415,13 @@ DECLARE
   users_blacklist varchar[];
 BEGIN
   -- Build a black list with negative users
-  SELECT regexp_split_to_array('-' || array_to_string(users, ',-'), ',')
+  SELECT regexp_split_to_array('-' || array_to_string(users, '${usersSeparator}-'), '${usersSeparator}')
     INTO users_blacklist;
   <<acl_loop>>
   FOR r IN SELECT read_acls.id, read_acls.acl FROM read_acls LOOP
     -- RAISE DEBUG 'ACL %', r.id;
     -- split the acl into aces
-    FOR rr IN SELECT ace FROM regexp_split_to_table(r.acl, ',') AS ace LOOP
+    FOR rr IN SELECT ace FROM regexp_split_to_table(r.acl, '${usersSeparator}') AS ace LOOP
        -- RAISE DEBUG '  ACE %', rr.ace;
        IF (rr.ace = ANY(users)) THEN
          -- RAISE DEBUG '  GRANT %', users;

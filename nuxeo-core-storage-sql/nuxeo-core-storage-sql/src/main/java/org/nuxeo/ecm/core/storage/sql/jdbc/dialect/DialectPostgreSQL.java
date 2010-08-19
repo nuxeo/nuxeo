@@ -70,6 +70,8 @@ public class DialectPostgreSQL extends Dialect {
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
+    private static final String DEFAULT_USERS_SEPARATOR = ",";
+    
     protected final String fulltextAnalyzer;
 
     protected final boolean supportsWith;
@@ -77,7 +79,9 @@ public class DialectPostgreSQL extends Dialect {
     protected boolean hierarchyCreated;
 
     protected boolean pathOptimizationsEnabled;
-
+    
+    protected String usersSeparator;
+    
     public DialectPostgreSQL(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -93,6 +97,8 @@ public class DialectPostgreSQL extends Dialect {
             throw new StorageException(e);
         }
         supportsWith = major > 8 || (major == 8 && minor >= 4);
+        usersSeparator = repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                : repositoryDescriptor.usersSeparatorKey;
     }
 
     @Override
@@ -583,6 +589,7 @@ public class DialectPostgreSQL extends Dialect {
             permsList.add("('" + perm + "')");
         }
         properties.put("readPermissions", StringUtils.join(permsList, ", "));
+        properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }
 
@@ -734,5 +741,11 @@ public class DialectPostgreSQL extends Dialect {
                     + "DROP TABLE read_acl_permissions; DROP TABLE read_acls; then restart.");
         }
     }
-
+    
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
+    }
 }

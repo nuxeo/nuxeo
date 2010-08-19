@@ -186,6 +186,7 @@ public class RepositoryDescriptor {
         binaryManagerListen = other.binaryManagerListen;
         binaryManagerConnect = other.binaryManagerConnect;
         sendInvalidationEvents = other.sendInvalidationEvents;
+        usersSeparatorKey = other.usersSeparatorKey;
     }
 
     @XNode("xa-datasource")
@@ -193,5 +194,8 @@ public class RepositoryDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
+    
+    @XNode("usersSeparator@key")
+    public String usersSeparatorKey ;
 
 }

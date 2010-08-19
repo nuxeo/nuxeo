@@ -54,11 +54,17 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class DialectH2 extends Dialect {
 
+    protected static final String DEFAULT_USERS_SEPARATOR = ",";
+    
     private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
+    protected final String usersSeparator;
+    
     public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
+        usersSeparator = repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                : repositoryDescriptor.usersSeparatorKey;
     }
 
     @Override
@@ -304,18 +310,18 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
-        return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?))",
-                idColumnName);
+        return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?, '%s'))",
+                idColumnName, getUsersSeparator());
     }
 
     @Override
     public String getUpdateReadAclsSql() {
-        return "SELECT nx_update_read_acls();";
+        return String.format("SELECT nx_update_read_acls('%s');", getUsersSeparator());
     }
 
     @Override
     public String getRebuildReadAclsSql() {
-        return "SELECT nx_rebuild_read_acls();";
+        return String.format("SELECT nx_rebuild_read_acls('%s');", getUsersSeparator());
     }
 
     @Override
@@ -368,6 +374,7 @@ public class DialectH2 extends Dialect {
                 "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
         properties.put("h2Fulltext",
                 "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
+        properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }
 
@@ -395,5 +402,12 @@ public class DialectH2 extends Dialect {
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
-
+    
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
+    }
+    
 }

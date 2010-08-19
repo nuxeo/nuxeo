@@ -19,7 +19,7 @@
 # ${h2Functions} org.nuxeo.ecm.core.storage.sql.db.H2Functions
 # ${h2Fulltext} org.nuxeo.ecm.core.storage.sql.db.H2Fulltext
 # ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
-
+# ${usersSeparator} default is set to "," but it configurable
 # Conditions used:
 # fulltextEnabled
 
@@ -112,7 +112,7 @@ CREATE TRIGGER nx_trig_hierarchy_modified
 SELECT 1 FROM read_acls LIMIT 1;
 
 #IF: emptyResult
-SELECT * FROM nx_rebuild_read_acls();
+SELECT * FROM nx_rebuild_read_acls('${usersSeparator}');
 
 
 DROP TRIGGER IF EXISTS NX_TRIG_DESC;

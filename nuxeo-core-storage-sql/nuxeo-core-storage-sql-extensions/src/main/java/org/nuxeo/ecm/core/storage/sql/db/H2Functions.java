@@ -43,7 +43,7 @@ import org.h2.tools.SimpleResultSet;
 public class H2Functions extends EmbeddedFunctions {
 
     private static final Log log = LogFactory.getLog(H2Functions.class);
-
+    
     // for debug
     private static boolean isLogEnabled() {
         return false;
@@ -185,7 +185,7 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
 
-    protected static String getLocalReadAcl(Connection conn, String id)
+    protected static String getLocalReadAcl(Connection conn, String id, String userSeparator)
             throws SQLException {
         String sql = "SELECT \"GRANT\", \"USER\"" //
                 + " FROM ACLS" //
@@ -213,7 +213,7 @@ public class H2Functions extends EmbeddedFunctions {
                 if (readAcl.length() == 0) {
                     readAcl.append(op);
                 } else {
-                    readAcl.append("," + op);
+                    readAcl.append(userSeparator  + op);
                 }
             }
         } finally {
@@ -222,7 +222,7 @@ public class H2Functions extends EmbeddedFunctions {
         return readAcl.toString();
     }
 
-    public static String getReadAcl(Connection conn, String id)
+    public static String getReadAcl(Connection conn, String id, String userSeparator)
             throws SQLException {
         StringBuffer readAcl = new StringBuffer();
 
@@ -233,12 +233,12 @@ public class H2Functions extends EmbeddedFunctions {
             boolean first = true;
             do {
                 // local acl
-                String localReadAcl = getLocalReadAcl(conn, id);
+                String localReadAcl = getLocalReadAcl(conn, id, userSeparator);
                 if (localReadAcl != null && (localReadAcl.length() > 0)) {
                     if (readAcl.length() == 0) {
                         readAcl.append(localReadAcl);
                     } else {
-                        readAcl.append(',' + localReadAcl);
+                        readAcl.append(userSeparator + localReadAcl);
                     }
                 }
                 // get parent
@@ -284,7 +284,7 @@ public class H2Functions extends EmbeddedFunctions {
         return readAcl.toString();
     }
 
-    public static ResultSet getReadAclsFor(Connection conn, String principals)
+    public static ResultSet getReadAclsFor(Connection conn, String principals, String userSeparator)
             throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         SimpleResultSet result = new SimpleResultSet();
@@ -309,7 +309,7 @@ public class H2Functions extends EmbeddedFunctions {
             rs = ps.executeQuery();
             while (rs.next()) {
                 String id = rs.getString(1);
-                String[] acl = rs.getString(2).split(",");
+                String[] acl = rs.getString(2).split(userSeparator);
                 for (String ace : acl) {
                     // log.debug("ace: " + ace);
                     if (principalsList.contains(ace)) {
@@ -484,25 +484,25 @@ public class H2Functions extends EmbeddedFunctions {
 
     }
 
-    public static ResultSet rebuildReadAcls(Connection conn)
+    public static ResultSet rebuildReadAcls(Connection conn, String userSeparator)
             throws SQLException {
         SimpleResultSet result = new SimpleResultSet();
         PreparedStatement ps = null;
         try {
             ps = conn.prepareStatement("TRUNCATE TABLE hierarchy_read_acl;");
             ps.executeUpdate();
-            ps = conn.prepareStatement("INSERT INTO hierarchy_read_acl" //
-                    + "  SELECT id, nx_get_read_acl(id)"
-                    + "  FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;");
+            ps = conn.prepareStatement(String.format("INSERT INTO hierarchy_read_acl" //
+                    + "  SELECT id, nx_get_read_acl(id, '%s')"
+                    + "  FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;", userSeparator));
             ps.executeUpdate();
             ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
             ps.executeUpdate();
             // TODO: use md5 of the acl as key
-            ps = conn.prepareStatement("INSERT INTO read_acls" //
+            ps = conn.prepareStatement(String.format("INSERT INTO read_acls" //
                     + "  SELECT acl, acl" //
-                    + "  FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl" //
+                    + "  FROM (SELECT DISTINCT(nx_get_read_acl(id, '%s')) AS acl" //
                     + "        FROM  (SELECT DISTINCT(id) AS id" //
-                    + "               FROM acls) AS uids) AS read_acls_input;");
+                    + "               FROM acls) AS uids) AS read_acls_input;", userSeparator));
             ps.executeUpdate();
             ps = conn.prepareStatement("TRUNCATE TABLE hierarchy_modified_acl;");
             ps.executeUpdate();
@@ -514,18 +514,18 @@ public class H2Functions extends EmbeddedFunctions {
         return result;
     }
 
-    public static ResultSet updateReadAcls(Connection conn) throws SQLException {
+    public static ResultSet updateReadAcls(Connection conn, String usersSeparator) throws SQLException {
         SimpleResultSet result = new SimpleResultSet();
         PreparedStatement ps = null;
         int rowCount = 0;
         try {
             // New hierarchy_read_acl entry
-            ps = conn.prepareStatement("INSERT INTO hierarchy_read_acl" //
-                    + " SELECT id, nx_get_read_acl(id)" //
+            ps = conn.prepareStatement(String.format("INSERT INTO hierarchy_read_acl" //
+                    + " SELECT id, nx_get_read_acl(id , '%s')" //
                     + " FROM (SELECT DISTINCT(id) AS id" //
                     + "   FROM hierarchy_modified_acl" //
                     + "   WHERE is_new AND" //
-                    + "     EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;");
+                    + "     EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;", usersSeparator));
             rowCount = ps.executeUpdate();
             ps = conn.prepareStatement("DELETE FROM hierarchy_modified_acl WHERE is_new;");
             ps.executeUpdate();
@@ -540,11 +540,11 @@ public class H2Functions extends EmbeddedFunctions {
                 ps = conn.prepareStatement("TRUNCATE TABLE read_acls;");
                 ps.executeUpdate();
                 // TODO: use md5 of the acl as key
-                ps = conn.prepareStatement("INSERT INTO read_acls" //
+                ps = conn.prepareStatement(String.format("INSERT INTO read_acls" //
                         + " SELECT acl, acl" //
-                        + " FROM (SELECT DISTINCT(nx_get_read_acl(id)) AS acl" //
+                        + " FROM (SELECT DISTINCT(nx_get_read_acl(id, '%s')) AS acl" //
                         + "       FROM  (SELECT DISTINCT(id) AS id" //
-                        + "              FROM acls) AS uids) AS read_acls_input;");
+                        + "              FROM acls) AS uids) AS read_acls_input;", usersSeparator));
                 ps.executeUpdate();
             }
             ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (" //
@@ -559,7 +559,7 @@ public class H2Functions extends EmbeddedFunctions {
             } while (rowCount > 0);
             // Update hierarchy_read_acl acl_ids
             // TODO use the md5 for acl_id
-            ps = conn.prepareStatement("UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl(id) WHERE acl_id IS NULL;");
+            ps = conn.prepareStatement(String.format("UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl(id, '%s') WHERE acl_id IS NULL;", usersSeparator));
             ps.executeUpdate();
         } finally {
             if (ps != null) {
@@ -569,4 +569,5 @@ public class H2Functions extends EmbeddedFunctions {
 
         return result;
     }
+
 }
