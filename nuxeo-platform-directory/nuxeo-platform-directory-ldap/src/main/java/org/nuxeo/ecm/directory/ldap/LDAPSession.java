@@ -101,7 +101,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final Map<String, Field> schemaFieldMap;
 
-    protected final String substringMatchType;
+    protected String substringMatchType;
 
     protected final String rdnAttribute;
 
@@ -119,6 +119,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
         substringMatchType = directory.getConfig().getSubstringMatchType();
         rdnAttribute = directory.getConfig().getRdnAttribute();
         rdnField = directory.getFieldMapper().getDirectoryField(rdnAttribute);
+    }
+
+    public void setSubStringMatchType(String type) {
+        this.substringMatchType = type;
     }
 
     public Directory getDirectory() {
@@ -549,8 +553,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                        searchBaseDn, filterExpr, StringUtils.join(filterArgs,
-                                ","), scts.getSearchScope(), this));
+                        searchBaseDn, filterExpr,
+                        StringUtils.join(filterArgs, ","),
+                        scts.getSearchScope(), this));
             }
             try {
                 NamingEnumeration<SearchResult> results = dirContext.search(
@@ -870,8 +875,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         // do not try to fetch the password attribute
                         continue;
                     } else {
-                        fieldMap.put(fieldName, getFieldValue(attribute,
-                                fieldName, entryId, fetchReferences));
+                        fieldMap.put(
+                                fieldName,
+                                getFieldValue(attribute, fieldName, entryId,
+                                        fetchReferences));
                     }
                 }
             }
