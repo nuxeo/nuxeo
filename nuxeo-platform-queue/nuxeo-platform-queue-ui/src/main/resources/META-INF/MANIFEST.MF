@@ -4,5 +4,13 @@ Bundle-Name: nuxeo-platform-queue-ui project
 Bundle-SymbolicName: org.nuxeo.ecm.platform.queue.ui;singleton:=true
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.platform.queue.ui
-Require-Bundle: org.nuxeo.ecm.webengine.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
+Bundle-Version: 0.0.0.SNAPSHOT
+Import-Package: javax.ws.rs,
+ org.apache.commons.logging,
+ org.nuxeo.ecm.platform.queue.api,
+ org.nuxeo.ecm.webengine,
+ org.nuxeo.ecm.webengine.model,
+ org.nuxeo.ecm.webengine.model.exceptions,
+ org.nuxeo.ecm.webengine.model.impl,
+ org.nuxeo.runtime.api

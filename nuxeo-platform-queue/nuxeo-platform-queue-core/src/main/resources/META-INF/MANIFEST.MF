@@ -1,9 +1,21 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-platform-queue-core project
-Bundle-SymbolicName: org.nuxeo.ecm.platform.queue;singleton:=true
 Bundle-Vendor: Nuxeo
-Nuxeo-Require: org.nuxeo.runtime
+Bundle-Version: 0.0.0.SNAPSHOT
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-platform-queue-core project
 Nuxeo-Component: OSGI-INF/queue-framework.xml,
  OSGI-INF/nx-queue-persister-contrib.xml
-
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.ecm.platform.queue;singleton:=true
+Nuxeo-Require: org.nuxeo.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.logging,
+ org.nuxeo.common.utils,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.api.adapter,
+ org.nuxeo.ecm.core.api.repository,
+ org.nuxeo.ecm.platform.heartbeat.api,
+ org.nuxeo.ecm.platform.lock.api,
+ org.nuxeo.ecm.platform.queue.api,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
