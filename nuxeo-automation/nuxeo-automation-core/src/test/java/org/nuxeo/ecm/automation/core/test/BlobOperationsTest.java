@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
@@ -214,6 +215,38 @@ public class BlobOperationsTest {
 
         out = (BlobList) service.run(ctx, chain);
         Assert.assertEquals(1, out.size());
+    }
+
+    @Test
+    public void testExportBlobToFile() throws Exception {
+        File dir = File.createTempFile("autoamtion-test-", ".tmp");
+        dir.delete();
+        dir.mkdirs();
+
+        OperationContext ctx = new OperationContext(session);
+        Blob blob = new StringBlob("test", "text/plain");
+        blob.setFilename("myblob");
+        ctx.setInput(blob);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath()).set(
+                "prefix", "test-");
+        Blob out = (Blob) service.run(ctx, chain);
+        Assert.assertTrue(blob == out);
+        File file = new File(dir, "test-" + blob.getFilename());
+        Assert.assertEquals(blob.getString(), FileUtils.readFile(file));
+        file.delete();
+
+        // test again but withpout prefix
+        chain = new OperationChain("testChain");
+        chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath());
+        out = (Blob) service.run(ctx, chain);
+        Assert.assertTrue(blob == out);
+        file = new File(dir, blob.getFilename());
+        Assert.assertEquals(blob.getString(), FileUtils.readFile(file));
+        file.delete();
+
+        dir.delete();
     }
 
     // TODO add post and file2pdf tests

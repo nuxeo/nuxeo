@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.core.operations.RunScript;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
@@ -86,7 +87,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -102,7 +103,6 @@ public class AutomationComponent extends DefaultComponent {
     protected AutomationService service;
 
     protected EventHandlerRegistry handlers;
-
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -150,6 +150,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(SetDocumentBlob.class);
         service.putOperation(PostBlob.class);
         service.putOperation(BlobToPDF.class);
+        service.putOperation(BlobToFile.class);
         service.putOperation(CreateBlob.class);
         service.putOperation(CreateZip.class);
         service.putOperation(AttachBlob.class);
