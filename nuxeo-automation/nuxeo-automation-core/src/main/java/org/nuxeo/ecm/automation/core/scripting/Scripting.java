@@ -28,6 +28,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -84,7 +85,8 @@ public class Scripting {
         map.put("Context", ctx);
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        map.put("Principal", ctx.getPrincipal());
+        map.put("CurrentUser",
+                new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
         map.put("Env", Framework.getProperties());
         map.put("Fn", Functions.INSTANCE);
         if (input instanceof DocumentModel) {
