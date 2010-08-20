@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
@@ -38,215 +39,220 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Used to control the server administrative status: the status of the server
  * can be locked/unlocked.
- *
+ * 
  * @author Mariana Cedica
  */
 public class AdministrativeStatus implements AdministrativeStatusConstants {
 
-    private static final Log log = LogFactory.getLog(AdministrativeStatus.class);
+	private static final Log log = LogFactory
+			.getLog(AdministrativeStatus.class);
 
-    private DocumentModel statusDoc;
+	protected EventProducer eventProducer;
 
-    protected EventProducer eventProducer;
+	/**
+	 * Disable services for this server
+	 * 
+	 * @return true if the locked succeed
+	 */
+	public boolean lockServer() {
+		AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
+				repositoryName, LOCKED, LOCKED_EVENT);
+		try {
+			runner.runUnrestricted();
+			return true;
+		} catch (ClientException e) {
+			log.error("Unable to lock server", e);
+			return false;
+		}
+	}
 
-    /**
-     * Disable services for this server
-     *
-     * @return true if the locked succeed
-     */
-    public boolean lockServer(CoreSession session) {
-        AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
-                session, LOCKED, SEVER_LOCKED_EVENT);
-        try {
-            runner.runUnrestricted();
-            return true;
-        } catch (ClientException e) {
-            log.error("Unable to lock server", e);
-            return false;
-        }
-    }
+	/**
+	 * Enable services for this server
+	 * 
+	 * @param session
+	 * @return
+	 */
+	public boolean unlockServer() {
+		AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
+				repositoryName, UNLOCKED, UNLOCKED_EVENT);
+		try {
+			runner.runUnrestricted();
+			return true;
+		} catch (ClientException e) {
+			log.error("Unable to lock server", e);
+			return false;
+		}
+	}
 
-    /**
-     * Enable services for this server
-     *
-     * @param session
-     * @return
-     */
-    public boolean unlockServer(CoreSession session) {
-        AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
-                session, UNLOCKED, SERVER_UNLOCKED_EVENT);
-        try {
-            runner.runUnrestricted();
-            return true;
-        } catch (ClientException e) {
-            log.error("Unable to lock server", e);
-            return false;
-        }
-    }
+	/**
+	 * Is locked/unlocked
+	 * 
+	 * @param session
+	 * @return
+	 * @throws ClientException
+	 */
+	public String getServerStatus() throws ClientException {
+		return (String) getOrCreateStatusDocument().getPropertyValue(
+				ADMINISTRATIVE_STATUS_PROPERTY);
+	}
 
-    /**
-     * Is locked/unlocked
-     *
-     * @param session
-     * @return
-     * @throws ClientException
-     */
-    public String getServerStatus(CoreSession session) throws ClientException {
-        return (String) getOrCreateStatusDocument(session).getPropertyValue(
-                ADMINISTRATIVE_STATUS_PROPERTY);
-    }
+	public boolean isUnlocked() throws ClientException {
+		return getServerStatus().equals(UNLOCKED);
+	}
 
-    private DocumentModel getOrCreateStatusDocument(CoreSession session)
-            throws ClientException {
-        if (statusDoc == null) {
-            AdministrativeStatusDocCreator docCreator = new AdministrativeStatusDocCreator(
-                    session);
-            try {
-                docCreator.runUnrestricted();
-            } catch (ClientException e) {
-                log.error("Unable to fetch the administrative status document",
-                        e);
-                throw new ClientException(e);
-            }
-            statusDoc = docCreator.getStatusDocument();
-        }
-        return statusDoc;
-    }
+	public boolean isLocked() throws ClientException {
+		return getServerStatus().equals(LOCKED);
+	}
 
-    private class AdministrativeStatusServerChangeState extends
-            UnrestrictedSessionRunner {
+	private DocumentModel getOrCreateStatusDocument() throws ClientException {
+		AdministrativeStatusFetcher fetcher = new AdministrativeStatusFetcher(
+				repositoryName);
+		try {
+			fetcher.runUnrestricted();
+		} catch (ClientException e) {
+			log.error("Unable to fetch the administrative status document", e);
+			throw new ClientException(e);
+		}
+		return fetcher.getDocument();
+	}
 
-        private DocumentModel statusDoc;
+	protected String repositoryName = Framework
+			.getLocalService(RepositoryManager.class).getDefaultRepository()
+			.getName();
 
-        private String serverState;
+	private class AdministrativeStatusServerChangeState extends
+			UnrestrictedSessionRunner {
 
-        private String eventName;
+		private String serverState;
 
-        public AdministrativeStatusServerChangeState(CoreSession session,
-                String state, String eventName) {
-            super(session);
-            this.serverState = state;
-            this.eventName = eventName;
+		private String eventName;
 
-        }
+		public AdministrativeStatusServerChangeState(String repoName,
+				String state, String eventName) {
+			super(repoName);
+			this.serverState = state;
+			this.eventName = eventName;
 
-        @Override
-        public void run() throws ClientException {
-            statusDoc = getOrCreateStatusDocument(session);
-            String actualServerState = (String) statusDoc.getPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY);
-            if (actualServerState != null
-                    && actualServerState.equals(serverState)) {
-                return;
-            }
+		}
 
-            statusDoc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY,
-                    serverState);
-            session.saveDocument(statusDoc);
-            // and notify docStatus created
-            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-            eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
-            notifyEvent(session, eventName, statusDoc, eventProperties);
-        }
+		@Override
+		public void run() throws ClientException {
+			DocumentModel doc = doGetOrCreateDoc(session);
+			String actualServerState = (String) doc
+					.getPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY);
+			if (actualServerState != null
+					&& actualServerState.equals(serverState)) {
+				return;
+			}
 
-    }
+			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, serverState);
+			session.saveDocument(doc);
+			// and notify docStatus created
+			Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+			eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
+			notifyEvent(session, eventName, doc, eventProperties);
+		}
 
-    private class AdministrativeStatusDocCreator extends
-            UnrestrictedSessionRunner {
+	}
 
-        private DocumentModel statusDoc;
+	protected static DocumentModel doGetOrCreateContainer(CoreSession session)
+			throws ClientException {
+		DocumentRef admRootDocRef = new PathRef("/"
+				+ ADMINISTRATIVE_INFO_CONTAINER);
+		if (!session.exists(admRootDocRef)) {
+			DocumentModel model = session.createDocumentModel("/",
+					ADMINISTRATIVE_INFO_CONTAINER,
+					ADMINISTRATIVE_INFO_CONTAINER_TYPE);
+			model = session.createDocument(model);
+			session.save();
+		}
 
-        public AdministrativeStatusDocCreator(CoreSession session) {
-            super(session);
-        }
+		return session.getDocument(admRootDocRef);
+	}
 
-        @Override
-        public void run() throws ClientException {
-            DocumentModel administrativeContainer = getOrCreateAdministrativeContainter(session);
+	protected static DocumentModel doGetOrCreateDoc(CoreSession session)
+			throws ClientException {
+		DocumentModel administrativeContainer = doGetOrCreateContainer(session);
 
-            DocumentRef statusDocRef = new PathRef(
-                    administrativeContainer.getPathAsString() + "/"
-                            + getAdministrativeStatusDocName());
-            if (!session.exists(statusDocRef)) {
-                DocumentModel statusModel = session.createDocumentModel(
-                        administrativeContainer.getPathAsString(),
-                        getAdministrativeStatusDocName(),
-                        ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+		DocumentRef statusDocRef = new PathRef(
+				administrativeContainer.getPathAsString() + "/"
+						+ administrativeStatusDocName());
 
-                // set status unlocked by default
-                statusModel.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY,
-                        UNLOCKED);
-                statusDoc = session.createDocument(statusModel);
-                statusDoc = session.saveDocument(statusModel);
-                session.save();
+		if (!session.exists(statusDocRef)) {
+			DocumentModel doc = session.createDocumentModel(
+					administrativeContainer.getPathAsString(),
+					administrativeStatusDocName(),
+					ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 
-                // and notify docStatus created
-                Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-                eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
-                notifyEvent(session, ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT,
-                        statusDoc, eventProperties);
+			// set status unlocked by default
+			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, UNLOCKED);
+			doc = session.createDocument(doc);
+			session.save();
 
-            } else {
-                statusDoc = session.getDocument(statusDocRef);
-            }
-        }
+			// and notify docStatus created
+			Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+			eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
+			notifyEvent(session, ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT,
+					doc, eventProperties);
 
-        private DocumentModel getOrCreateAdministrativeContainter(
-                CoreSession session) throws ClientException {
-            DocumentRef admRootDocRef = new PathRef("/"
-                    + ADMINISTRATIVE_INFO_CONTAINER);
-            if (!session.exists(admRootDocRef)) {
-                DocumentModel model = session.createDocumentModel("/",
-                        ADMINISTRATIVE_INFO_CONTAINER,
-                        ADMINISTRATIVE_INFO_CONTAINER_TYPE);
-                model = session.createDocument(model);
-                session.save();
-            }
+		}
 
-            return session.getDocument(admRootDocRef);
-        }
+		return session.getDocument(statusDocRef);
 
-        public DocumentModel getStatusDocument() {
-            return statusDoc;
-        }
+	}
 
-    }
+	private class AdministrativeStatusFetcher extends UnrestrictedSessionRunner {
 
-    private String getAdministrativeStatusDocName() throws ClientException {
-        return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + getServerInstanceName();
-    }
+		private DocumentModel doc;
 
-    public String getServerInstanceName() throws ClientException {
-        String instanceName = Framework.getProperties().getProperty(
-                ADMINISTRATIVE_INSTANCE_ID);
-        if (StringUtils.isEmpty(instanceName)) {
-            InetAddress addr;
-            try {
-                addr = InetAddress.getLocalHost();
-                instanceName = addr.getHostName();
-            } catch (UnknownHostException e) {
-                instanceName = "localhost";
-            }
-        }
-        return instanceName;
-    }
+		public AdministrativeStatusFetcher(String repoName) {
+			super(repoName);
+		}
 
-    public void notifyEvent(CoreSession session, String name,
-            DocumentModel document, Map<String, Serializable> eventProperties) {
-        DocumentEventContext envContext = new DocumentEventContext(session,
-                session.getPrincipal(), document);
-        envContext.setProperties(eventProperties);
-        try {
-            getEventProducer().fireEvent(envContext.newEvent(name));
-        } catch (Exception e) {
-            log.error("Unable to fire event", e);
-        }
-    }
+		@Override
+		public void run() throws ClientException {
+			doc = doGetOrCreateDoc(session);
+		}
 
-    protected EventProducer getEventProducer() throws Exception {
-        if (eventProducer == null) {
-            eventProducer = Framework.getService(EventProducer.class);
-        }
-        return eventProducer;
-    }
+		public DocumentModel getDocument() {
+			return doc;
+		}
+
+	}
+
+	protected static String administrativeStatusDocName() throws ClientException {
+		return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + getServerInstanceName();
+	}
+
+	public static String getServerInstanceName() throws ClientException {
+		String instanceName = Framework.getProperties().getProperty(
+				ADMINISTRATIVE_INSTANCE_ID);
+		if (StringUtils.isEmpty(instanceName)) {
+			InetAddress addr;
+			try {
+				addr = InetAddress.getLocalHost();
+				instanceName = addr.getHostName();
+			} catch (UnknownHostException e) {
+				instanceName = "localhost";
+			}
+		}
+		return instanceName;
+	}
+
+	protected static void notifyEvent(CoreSession session, String name,
+			DocumentModel document, Map<String, Serializable> eventProperties) {
+		DocumentEventContext envContext = new DocumentEventContext(session,
+				session.getPrincipal(), document);
+		envContext.setProperties(eventProperties);
+		try {
+			getEventProducer().fireEvent(envContext.newEvent(name));
+		} catch (Exception e) {
+			log.error("Unable to fire event", e);
+		}
+	}
+
+	protected static EventProducer getEventProducer() throws Exception {
+		return Framework.getService(EventProducer.class);
+	}
 
 }

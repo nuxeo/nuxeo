@@ -18,16 +18,17 @@ package org.nuxeo.ecm.platform.management.administrativestatus;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.management.AdministrativeStatusService;
+import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestAdministrativeStatus extends SQLRepositoryTestCase {
 
-    AdministrativeStatusService statusService;
+    AdministrativeStatus statusService;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.platform.management.test");
         openSession();
@@ -35,22 +36,22 @@ public class TestAdministrativeStatus extends SQLRepositoryTestCase {
 
     public void testServerAdministrativeStatus() throws ClientException {
         assertEquals("unlocked",
-                getAdministrativeStatusService().getServerStatus(session));
-        getAdministrativeStatusService().lockServer(session);
+                getAdministrativeStatus().getServerStatus());
+        getAdministrativeStatus().lockServer();
         assertEquals("locked",
-                getAdministrativeStatusService().getServerStatus(session));
+                getAdministrativeStatus().getServerStatus());
         assertTrue(AdministrativeStatusListener.isServerLockedEventTriggered());
-        getAdministrativeStatusService().unlockServer(session);
+        getAdministrativeStatus().unlockServer();
         assertEquals("unlocked",
-                getAdministrativeStatusService().getServerStatus(session));
+                getAdministrativeStatus().getServerStatus());
         assertTrue(AdministrativeStatusListener.isServerUnlockedEventTriggered());
     }
 
-    private AdministrativeStatusService getAdministrativeStatusService()
+    private AdministrativeStatus getAdministrativeStatus()
             throws ClientException {
         if (statusService == null) {
             try {
-                statusService = Framework.getService(AdministrativeStatusService.class);
+                statusService = Framework.getService(AdministrativeStatus.class);
             } catch (Exception e) {
                 throw new ClientException(e);
             }

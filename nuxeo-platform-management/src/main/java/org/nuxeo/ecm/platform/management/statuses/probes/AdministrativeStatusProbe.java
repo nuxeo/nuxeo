@@ -47,8 +47,7 @@ public class AdministrativeStatusProbe implements Probe {
         status = new ProbeStatus("For the server"
                 + getAdministrativeStatusService().getServerInstanceName()
                 + " the administrative status is: ");
-        String serverStatus = getAdministrativeStatusService().getServerStatus(
-                session);
+        String serverStatus = getAdministrativeStatusService().getServerStatus();
         status.setStatus(status.getStatus() + serverStatus);
 
     }

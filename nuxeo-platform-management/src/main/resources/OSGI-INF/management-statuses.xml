@@ -4,6 +4,8 @@
   <implementation
     class="org.nuxeo.ecm.platform.management.statuses.StatusManagementComponent" />
 
+  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+  
   <service>
     <provide interface="org.nuxeo.ecm.platform.management.statuses.ProbeScheduler" />
     <provide interface="org.nuxeo.ecm.platform.management.statuses.ProbeRunner" />
@@ -13,7 +15,7 @@
   <require>org.nuxeo.runtime.management.ResourcePublisher</require>
 
   <extension-point name="probes">
-    <object class="org.nuxeo.ecm.platform.management.probes.ProbeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.management.statuses.ProbeDescriptor" />
   </extension-point>
 
   <extension 
@@ -35,16 +37,16 @@
   </extension>
   
   <extension
-    target="org.nuxeo.ecm.platform.management.probes.ProbeComponent"
+    target="org.nuxeo.ecm.platform.management.statuses"
     point="probes">
     <usecase name="repository"
-      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryProbe"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
     <usecase name="repositoryTest"
-      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryTestProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
     <usecase name="administrativeStatus"
-      class="org.nuxeo.ecm.platform.management.probes.impl.AdministrativeStatusProbe"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.AdministrativeStatusProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </extension>
       
