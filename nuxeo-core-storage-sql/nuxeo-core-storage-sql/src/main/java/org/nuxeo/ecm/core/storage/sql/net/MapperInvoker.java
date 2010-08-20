@@ -25,6 +25,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.CachingRowMapper;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -66,6 +69,8 @@ public class MapperInvoker extends Thread {
 
     private final Repository repository;
 
+    private final InvalidationsQueue eventQueue;
+
     private Session session;
 
     private Mapper mapper;
@@ -74,9 +79,11 @@ public class MapperInvoker extends Thread {
 
     protected final BlockingQueue<MethodResult> methodResults;
 
-    public MapperInvoker(Repository repository, String name) throws Throwable {
+    public MapperInvoker(Repository repository, String name,
+            InvalidationsQueue eventQueue) throws Throwable {
         super(name);
         this.repository = repository;
+        this.eventQueue = eventQueue;
         methodCalls = new LinkedBlockingQueue<MethodCall>(1);
         methodResults = new LinkedBlockingQueue<MethodResult>(1);
         start();
@@ -132,6 +139,8 @@ public class MapperInvoker extends Thread {
         if (methodName == INVOKER_INIT) { // == is ok
             session = repository.getConnection();
             mapper = session.getMapper();
+            // replace event queue with the client-repo specific one
+            ((CachingRowMapper) mapper).setEventQueue(eventQueue);
             return null;
         } else if (methodName == INVOKER_CLOSE) { // == is ok
             session.close();

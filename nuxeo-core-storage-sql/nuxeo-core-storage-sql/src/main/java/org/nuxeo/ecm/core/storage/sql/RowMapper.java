@@ -263,7 +263,7 @@ public interface RowMapper {
      *
      * @return some invalidations, or {@code null}
      */
-    Invalidations processReceivedInvalidations() throws StorageException;
+    Invalidations receiveInvalidations() throws StorageException;
 
     /**
      * Post-transaction invalidations notification.
@@ -274,20 +274,7 @@ public interface RowMapper {
      * @param invalidations the known invalidations to send to others, or
      *            {@code null}
      */
-    void sendInvalidationsToOthers(Invalidations invalidations)
-            throws StorageException;
-
-    /**
-     * Processes invalidations received from another mapper of the same nature
-     * in the same JVM.
-     * <p>
-     * Invalidations from other mappers can happen asynchronously at any time
-     * (when the other session commits). Invalidations from another cluster node
-     * happen when the transaction starts.
-     *
-     * @param invalidations the invalidations, or {@code null}
-     */
-    void crossInvalidate(Invalidations invalidations) throws StorageException;
+    void sendInvalidations(Invalidations invalidations) throws StorageException;
 
     /**
      * Clears the mapper's cache (if any)

@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
@@ -41,12 +42,16 @@ public class ClusterNodeHandler {
     // modified only under clusterMapper synchronization
     private long clusterNodeLastInvalidationTimeMillis;
 
+    /** Propagator of invalidations to the cluster node's mappers. */
+    public final InvalidationsPropagator propagator;
+
     public ClusterNodeHandler(Mapper clusterNodeMapper,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         this.clusterNodeMapper = clusterNodeMapper;
         clusterNodeMapper.createClusterNode();
         clusteringDelay = repositoryDescriptor.clusteringDelay;
         processClusterInvalidationsNext();
+        propagator = new InvalidationsPropagator();
     }
 
     public void close() throws StorageException {
@@ -84,7 +89,7 @@ public class ClusterNodeHandler {
     /**
      * Sends cluster invalidations to other cluster nodes.
      */
-    public void insertClusterInvalidations(Invalidations invalidations)
+    public void sendClusterInvalidations(Invalidations invalidations)
             throws StorageException {
         if (invalidations == null || invalidations.isEmpty()) {
             return;

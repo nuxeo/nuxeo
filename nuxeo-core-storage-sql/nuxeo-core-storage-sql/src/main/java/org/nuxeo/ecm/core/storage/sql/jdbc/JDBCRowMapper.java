@@ -39,6 +39,8 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
@@ -63,32 +65,26 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     private ClusterNodeHandler clusterNodeHandler;
 
     /**
-     * Received cluster invalidations, or {@code null} if this {@link Mapper} is
-     * not the cluster node mapper. Usage must be synchronized.
+     * Queue of invalidations received for this cluster node.
      */
-    private Invalidations clusterNodeInvalidations;
-
-    /** All the JDBC mappers, used for invalidations distribution. */
-    private final Collection<Mapper> jdbcMappers;
+    private final InvalidationsQueue queue;
 
     public JDBCRowMapper(Model model, SQLInfo sqlInfo,
-            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            Collection<Mapper> jdbcMappers) throws StorageException {
+            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler)
+            throws StorageException {
         super(model, sqlInfo, xadatasource);
         this.clusterNodeHandler = clusterNodeHandler;
-        this.jdbcMappers = jdbcMappers;
-        clusterNodeInvalidations = clusterNodeHandler == null ? null
-                : new Invalidations();
+        queue = new InvalidationsQueue();
+        if (clusterNodeHandler != null) {
+            clusterNodeHandler.propagator.addQueue(queue);
+        }
     }
 
-    public Invalidations processReceivedInvalidations() throws StorageException {
+    public Invalidations receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
         if (clusterNodeHandler != null) {
             receiveClusterInvalidations();
-            synchronized (clusterNodeInvalidations) {
-                invalidations = clusterNodeInvalidations;
-                clusterNodeInvalidations = new Invalidations();
-            }
+            invalidations = queue.getInvalidations();
         }
         return invalidations;
     }
@@ -97,23 +93,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
         // send received invalidations to all mappers
         if (invalidations != null && !invalidations.isEmpty()) {
-            for (Mapper mapper : jdbcMappers) {
-                mapper.crossInvalidate(invalidations);
-            }
+            clusterNodeHandler.propagator.propagateInvalidations(invalidations,
+                    null);
         }
     }
 
-    public void sendInvalidationsToOthers(Invalidations invalidations)
+    public void sendInvalidations(Invalidations invalidations)
             throws StorageException {
         if (clusterNodeHandler != null) {
-            clusterNodeHandler.insertClusterInvalidations(invalidations);
-        }
-    }
-
-    public void crossInvalidate(Invalidations invalidations)
-            throws StorageException {
-        synchronized (clusterNodeInvalidations) {
-            clusterNodeInvalidations.add(invalidations);
+            clusterNodeHandler.sendClusterInvalidations(invalidations);
         }
     }
 

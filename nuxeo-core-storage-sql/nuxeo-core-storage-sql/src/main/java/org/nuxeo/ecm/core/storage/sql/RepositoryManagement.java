@@ -43,15 +43,15 @@ public interface RepositoryManagement {
      * Makes sure that the next transaction will process cluster invalidations.
      */
     void processClusterInvalidationsNext();
-    
+
     /**
-     * Activates the remote vcs server
-     * */
+     * Activates the VCS server used for remote connections.
+     */
     void activateServer();
-    
+
     /**
-     * Deactivates the remote vcs server
-     * */
+     * Deactivates the VCS server used for remote connections.
+     */
     void deactivateServer();
 
 }

@@ -64,31 +64,55 @@ public class CachingRowMapper implements RowMapper {
     private final RowMapper rowMapper;
 
     /**
-     * All the mappers registered in the same repository.
-     * <p>
-     * Used for invalidations.
+     * The local invalidations due to writes through this mapper that should be
+     * propagated to other sessions at post-commit time.
      */
-    private final Collection<Mapper> mappers;
+    private final Invalidations localInvalidations;
 
     /**
-     * The invalidations that should be propagated to other sessions at
-     * post-commit time.
+     * The queue of invalidations received from other session, to process at
+     * pre-transaction time.
      */
-    private final Invalidations transactionInvalidations;
+    private final InvalidationsQueue queue;
 
     /**
-     * The invalidations received from other session, to process at
-     * pre-transaction time. Usage must be synchronized.
+     * The propagator of invalidations to other mappers.
      */
-    private Invalidations receivedInvalidations;
+    private final InvalidationsPropagator mapperPropagator;
+
+    /**
+     * The queue of invalidations used for events, a single queue is shared by
+     * all mappers corresponding to the same client repository.
+     */
+    private InvalidationsQueue eventQueue;
+
+    /**
+     * The propagator of event invalidations to all event queues.
+     */
+    private InvalidationsPropagator eventPropagator;
+
+    /**
+     * The session, used for event propagation.
+     */
+    private SessionImpl session;
+
+    protected boolean forRemoteClient;
 
     @SuppressWarnings("unchecked")
-    public CachingRowMapper(RowMapper rowMapper, Collection<Mapper> mappers) {
+    public CachingRowMapper(RowMapper rowMapper,
+            InvalidationsPropagator mapperPropagator,
+            InvalidationsPropagator eventPropagator,
+            InvalidationsQueue repositoryEventQueue) {
         this.rowMapper = rowMapper;
-        this.mappers = mappers;
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        transactionInvalidations = new Invalidations();
-        receivedInvalidations = new Invalidations();
+        localInvalidations = new Invalidations();
+        queue = new InvalidationsQueue();
+        this.mapperPropagator = mapperPropagator;
+        mapperPropagator.addQueue(queue); // TODO when to remove?
+        eventQueue = repositoryEventQueue;
+        this.eventPropagator = eventPropagator;
+        eventPropagator.addQueue(repositoryEventQueue);
+        forRemoteClient = false;
     }
 
     /*
@@ -154,14 +178,11 @@ public class CachingRowMapper implements RowMapper {
      * ----- Invalidations / Cache Management -----
      */
 
-    public Invalidations processReceivedInvalidations() throws StorageException {
-        Invalidations invalidations;
-        synchronized (receivedInvalidations) {
-            invalidations = receivedInvalidations;
-            receivedInvalidations = new Invalidations();
-        }
+    public Invalidations receiveInvalidations() throws StorageException {
+        // accumulated invalidations
+        Invalidations invalidations = queue.getInvalidations();
         // add those from the underlying mapper (remote, cluster)
-        invalidations.add(rowMapper.processReceivedInvalidations());
+        invalidations.add(rowMapper.receiveInvalidations());
         // invalidate our cache
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
@@ -173,46 +194,68 @@ public class CachingRowMapper implements RowMapper {
                 cachePutAbsent(rowId);
             }
         }
-        // TODO XXX do not return invalidations from an underlying mapper coming
-        // from the same repository as ourselves
+
+        // event invalidations
+        Invalidations inval = eventQueue.getInvalidations();
+        if (inval != null && !inval.isEmpty()) {
+            session.sendInvalidationEvent(inval, false);
+        }
 
         return invalidations.isEmpty() ? null : invalidations;
     }
 
-    public void sendInvalidationsToOthers(Invalidations invalidations)
+    // propagate invalidations
+    public void sendInvalidations(Invalidations invalidations)
             throws StorageException {
-        // local invalidations
-        if (!transactionInvalidations.isEmpty()) {
+        // add local invalidations
+        if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
                 invalidations = new Invalidations();
             }
-            invalidations.add(transactionInvalidations);
-            transactionInvalidations.clear();
+            invalidations.add(localInvalidations);
+            localInvalidations.clear();
         }
-        // local mappers can directly receive invalidations (optim)
-        if (invalidations != null) {
-            for (Mapper mapper : mappers) {
-                if (mapper != this) {
-                    mapper.crossInvalidate(invalidations);
-                }
+
+        if (invalidations != null && !invalidations.isEmpty()) {
+            // send to underlying mapper
+            rowMapper.sendInvalidations(invalidations);
+
+            // queue to other local mappers
+            mapperPropagator.propagateInvalidations(invalidations, queue);
+
+            // queue as events for other repositories
+            eventPropagator.propagateInvalidations(invalidations, eventQueue);
+
+            // send event to local repository (synchronous)
+            // only if not the server-side part of a remote client
+            if (!forRemoteClient) {
+                session.sendInvalidationEvent(invalidations, true);
             }
         }
-        // propagate to underlying mapper
-        rowMapper.sendInvalidationsToOthers(invalidations);
-
-        // sendInvalidationEvent(invalidations, true, fromSession); TODO XXX
     }
 
-    public void crossInvalidate(Invalidations invalidations) {
-        synchronized (receivedInvalidations) {
-            receivedInvalidations.add(invalidations);
-        }
-        // no propagation to underlying mapper
+    /**
+     * Used by the server to associate each mapper to a single event
+     * invalidations queue per client repository.
+     */
+    public void setEventQueue(InvalidationsQueue eventQueue) {
+        // don't remove the original global repository queue
+        // eventPropagator.removeQueue(this.eventQueue);
+        this.eventQueue = eventQueue;
+        eventPropagator.addQueue(eventQueue);
+        forRemoteClient = true;
+    }
+
+    /**
+     * Sets the session, used for event propagation.
+     */
+    protected void setSession(SessionImpl session) {
+        this.session = session;
     }
 
     public void clearCache() {
         cache.clear();
-        transactionInvalidations.clear();
+        localInvalidations.clear();
         rowMapper.clearCache();
     }
 
@@ -221,7 +264,7 @@ public class CachingRowMapper implements RowMapper {
             rowMapper.rollback(xid);
         } finally {
             cache.clear();
-            transactionInvalidations.clear();
+            localInvalidations.clear();
         }
     }
 
@@ -269,13 +312,13 @@ public class CachingRowMapper implements RowMapper {
                 // we need to send modified invalidations for created
                 // fragments because other session's ABSENT fragments have
                 // to be invalidated
-                transactionInvalidations.addModified(new RowId(row));
+                localInvalidations.addModified(new RowId(row));
             }
         }
         for (RowUpdate rowu : batch.updates) {
             cachePut(rowu.row);
             if (!Model.FULLTEXT_TABLE_NAME.equals(rowu.row.tableName)) {
-                transactionInvalidations.addModified(new RowId(rowu.row));
+                localInvalidations.addModified(new RowId(rowu.row));
             }
         }
         for (RowId rowId : batch.deletes) {
@@ -284,7 +327,7 @@ public class CachingRowMapper implements RowMapper {
             }
             cachePutAbsent(rowId);
             if (!Model.FULLTEXT_TABLE_NAME.equals(rowId.tableName)) {
-                transactionInvalidations.addDeleted(rowId);
+                localInvalidations.addDeleted(rowId);
             }
         }
 

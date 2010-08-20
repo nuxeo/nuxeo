@@ -50,8 +50,10 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
@@ -93,6 +95,7 @@ public class SessionImpl implements Session, XAResource {
             Credentials credentials) throws StorageException {
         this.repository = repository;
         this.mapper = mapper;
+        ((CachingMapper) mapper).setSession(this);
         // this.credentials = credentials;
         this.model = model;
         context = new PersistenceContext(model, mapper, this);
@@ -434,6 +437,68 @@ public class SessionImpl implements Session, XAResource {
     protected void checkInvalidationsConflict() throws StorageException {
         // repository.receiveClusterInvalidations(this);
         context.checkInvalidationsConflict();
+    }
+
+    /**
+     * Sends a Core Event about the invalidations.
+     * <p>
+     * Containing documents are looked up in this session.
+     *
+     * @param invalidations the invalidations
+     * @param local {@code true} if these invalidations come from this cluster
+     *            node (one of this repository's sessions), {@code false} if
+     *            they come from a remote cluster node
+     */
+    protected void sendInvalidationEvent(Invalidations invalidations,
+            boolean local) {
+        if (!repository.repositoryDescriptor.sendInvalidationEvents) {
+            return;
+        }
+        // compute modified doc ids and parent ids
+        HashSet<String> modifiedDocIds = new HashSet<String>();
+        HashSet<String> modifiedParentIds = new HashSet<String>();
+
+        if (invalidations.modified != null) {
+            for (RowId rowId : invalidations.modified) {
+                String id = (String) rowId.id;
+                String docId;
+                try {
+                    docId = (String) getContainingDocument(id);
+                } catch (StorageException e) {
+                    log.error("Cannot get containing document for: " + id, e);
+                    docId = null;
+                }
+                if (docId == null) {
+                    continue;
+                }
+                if (Invalidations.PARENT.equals(rowId.tableName)) {
+                    if (docId.equals(id)) {
+                        modifiedParentIds.add(docId);
+                    } else { // complex prop added/removed
+                        modifiedDocIds.add(docId);
+                    }
+                } else {
+                    modifiedDocIds.add(docId);
+                }
+            }
+        }
+        // TODO check what we can do about invalidations.deleted
+
+        if (modifiedDocIds.isEmpty() && modifiedParentIds.isEmpty()) {
+            return;
+        }
+        EventContext ctx = new EventContextImpl(null, null);
+        ctx.setRepositoryName(repository.getName());
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS,
+                modifiedParentIds);
+        ctx.setProperty(EventConstants.INVAL_LOCAL, Boolean.valueOf(local));
+        Event event = new EventImpl(EventConstants.EVENT_VCS_INVALIDATIONS, ctx);
+        try {
+            repository.eventService.fireEvent(event);
+        } catch (ClientException e) {
+            log.error("Failed to send invalidation event: " + e, e);
+        }
     }
 
     /*

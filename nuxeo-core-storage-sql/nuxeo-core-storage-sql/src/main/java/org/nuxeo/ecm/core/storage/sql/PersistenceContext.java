@@ -322,8 +322,8 @@ public class PersistenceContext {
     protected void sendInvalidationsToOthers() throws StorageException {
         Invalidations invalidations = new Invalidations();
         hierContext.gatherInvalidations(invalidations);
-        mapper.sendInvalidationsToOthers(invalidations);
-        // XXX TODO sends event
+        mapper.sendInvalidations(invalidations);
+        // events sent in mapper
     }
 
     /**
@@ -332,7 +332,7 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        Invalidations invalidations = mapper.processReceivedInvalidations();
+        Invalidations invalidations = mapper.receiveInvalidations();
         if (invalidations == null) {
             return;
         }

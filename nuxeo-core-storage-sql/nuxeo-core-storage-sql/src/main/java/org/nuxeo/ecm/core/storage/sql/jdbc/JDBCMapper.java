@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -92,9 +93,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param clusterNodeHandler the cluster node handler
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo,
-            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            Collection<Mapper> jdbcMappers) throws StorageException {
-        super(model, sqlInfo, xadatasource, clusterNodeHandler, jdbcMappers);
+            XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler)
+            throws StorageException {
+        super(model, sqlInfo, xadatasource, clusterNodeHandler);
         this.pathResolver = pathResolver;
         resetConnection();
         try {

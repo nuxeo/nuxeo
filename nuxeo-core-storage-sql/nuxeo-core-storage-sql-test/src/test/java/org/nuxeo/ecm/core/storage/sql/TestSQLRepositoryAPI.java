@@ -3159,7 +3159,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void XXX_TODO_testInvalidationEvents() throws Exception {
+    public void testInvalidationEvents() throws Exception {
         Event event;
         Boolean local;
         Set<String> set;

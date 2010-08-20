@@ -19,9 +19,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -57,11 +55,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     private ClusterNodeHandler clusterNodeHandler;
 
-    /** All the JDBC mappers, used for invalidations distribution. */
-    private final Collection<Mapper> jdbcMappers;
-
     public JDBCBackend() {
-        jdbcMappers = new CopyOnWriteArrayList<Mapper>();
     }
 
     public void initialize(RepositoryImpl repository) throws StorageException {
@@ -164,14 +158,13 @@ public class JDBCBackend implements RepositoryBackend {
                 mapper = createMapper(model, pathResolver);
             }
         }
-        jdbcMappers.add(mapper);
         return mapper;
     }
 
     protected JDBCMapper createMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource,
-                clusterNodeHandler, jdbcMappers);
+                clusterNodeHandler);
     }
 
     public void shutdown() throws StorageException {

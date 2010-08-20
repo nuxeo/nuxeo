@@ -39,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -58,14 +60,18 @@ public class MapperServlet extends HttpServlet {
 
     public static final String PARAM_MID = "mid";
 
-    private static final AtomicLong repositoryCounter = new AtomicLong(0);
+    private final AtomicLong repositoryCounter = new AtomicLong(0);
 
     private final String repositoryName;
 
     private Repository repository;
 
+    /** Event invalidations to return to each repository. */
+    private final Map<String, InvalidationsQueue> eventQueues;
+
     public MapperServlet(String repositoryName) {
         this.repositoryName = repositoryName;
+        eventQueues = Collections.synchronizedMap(new HashMap<String, InvalidationsQueue>());
     }
 
     public static String getName(String repositoryName) {
@@ -147,9 +153,13 @@ public class MapperServlet extends HttpServlet {
             MapperInvoker invoker;
             if (mid == null) {
                 // new session
-                String name = "Nuxeo-VCS-MapperServlet-"
+                String name = "Nuxeo-VCS-Server-"
                         + threadNumber.incrementAndGet();
-                invoker = new MapperInvoker(repository, name);
+                InvalidationsQueue eventQueue = eventQueues.get(rid);
+                if (eventQueue == null) {
+                    eventQueues.put(rid, eventQueue = new InvalidationsQueue());
+                }
+                invoker = new MapperInvoker(repository, name, eventQueue);
                 Identification id = (Identification) invoker.call(Mapper.GET_IDENTIFICATION);
                 mid = id.mapperId;
                 invokers.put(mid, invoker);
