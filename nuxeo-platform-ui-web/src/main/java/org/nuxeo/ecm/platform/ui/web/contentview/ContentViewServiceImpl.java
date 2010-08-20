@@ -18,9 +18,11 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -72,6 +74,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getQueryParameters(), desc.getSearchDocumentBinding(),
                 desc.getSearchDocumentType());
         return contentView;
+    }
+
+    public Set<String> getContentViewNames() {
+        return Collections.unmodifiableSet(contentViews.keySet());
     }
 
     public PageProvider<?> getPageProvider(String name,
