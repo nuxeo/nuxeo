@@ -12,24 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     mcedica
+ *     matic
  */
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
-public class ProbeStatus {
-    
-    private String status;
+import java.util.Collection;
 
-    public ProbeStatus(String status){
-        this.status = status;
-    }
-    
-    public String getStatus() {
-        return status;
-    }
+/**
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ */
+public interface ProbeScheduler {
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
+    void enable();
+
+    void disable();
+
+    Collection<ProbeInfo> getScheduledProbesContext();
+
 }

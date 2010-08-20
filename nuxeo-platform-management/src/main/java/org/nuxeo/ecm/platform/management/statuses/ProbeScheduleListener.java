@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -23,11 +23,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ProbeScheduleListener implements EventListener {
 
-    protected ProbeComponent service;
+    protected StatusManagementComponent service;
 
     public void handleEvent(Event event)  {
         if (service == null) {
-            service = (ProbeComponent) Framework.getLocalService(ProbeScheduler.class);
+            service = (StatusManagementComponent) Framework.getLocalService(ProbeScheduler.class);
         }
         service.runnerRegistry.doRun();
     }

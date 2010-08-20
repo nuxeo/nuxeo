@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
 import java.util.Date;
 
@@ -24,9 +24,9 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 public class ProbeInfo implements ProbeMBean {
 
     @SuppressWarnings("unused")
-    private final ProbeComponent scheduler;
+    private final StatusManagementComponent scheduler;
 
-    protected ProbeInfo(ProbeComponent usecaseSchedulerService, Probe usecase,
+    protected ProbeInfo(StatusManagementComponent usecaseSchedulerService, Probe usecase,
             String repositoryName) {
         scheduler = usecaseSchedulerService;
         this.usecase = usecase;

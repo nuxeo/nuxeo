@@ -14,14 +14,14 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.platform.management.probes.impl;
+package org.nuxeo.ecm.platform.management.statuses.probes;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.management.probes.Probe;
-import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
+import org.nuxeo.ecm.platform.management.statuses.Probe;
+import org.nuxeo.ecm.platform.management.statuses.ProbeStatus;
 
 public class RepositoryTestProbe implements Probe {
 

@@ -14,9 +14,9 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.management.administrativestatus.service;
+package org.nuxeo.ecm.platform.management.statuses;
 
-public class AdministrativeStatusConstants {
+public interface AdministrativeStatusConstants {
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER_TYPE = "AdministrativeStatusContainer";
 
@@ -33,16 +33,13 @@ public class AdministrativeStatusConstants {
     public static final String UNLOCKED = "unlocked";
 
     public static final String ADMINISTRATIVE_INSTANCE_ID = "org.nuxeo.ecm.instance.administrative.id";
-    
-    public static final String ADMINISTRATIVE_EVENT_CATEGORY = "administrativeCategory";
-    
-    public static final String ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT = "administrativeStatusDocumentCreated";
-    
-    public static final String SEVER_LOCKED_EVENT = "serverLocked";
-    
-    public static final String SERVER_UNLOCKED_EVENT = "serverUnlocked";
 
-    private AdministrativeStatusConstants() {
-    }
+    public static final String ADMINISTRATIVE_EVENT_CATEGORY = "administrativeCategory";
+
+    public static final String ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT = "administrativeStatusDocumentCreated";
+
+    public static final String SEVER_LOCKED_EVENT = "serverLocked";
+
+    public static final String SERVER_UNLOCKED_EVENT = "serverUnlocked";
 
 }

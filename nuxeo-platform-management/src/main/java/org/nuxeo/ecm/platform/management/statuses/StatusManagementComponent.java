@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
+public class StatusManagementComponent extends DefaultComponent implements ProbeScheduler,
         ProbeSchedulerMBean, ProbeRunner {
 
     protected static final ComponentName NAME = new ComponentName(
@@ -40,7 +40,7 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
 
     protected static String SCHEDULE_ID = "ProbeSchedule";
 
-    public ProbeComponent() {
+    public StatusManagementComponent() {
         super(); // enables breaking
     }
 
@@ -75,7 +75,7 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
     public Set<ProbeInfo> getProbesInfoInSuccess() {
         return runnerRegistry.succeedProbesContext;
     }
-    
+
     public int getProbesInSuccessCount() {
         return runnerRegistry.succeedProbesContext.size();
     }
@@ -99,7 +99,7 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
         protected void doPublish() {
             service.registerResource("probe-scheduler",
                     ObjectNameFactory.formatProbeQualifiedName(NAME),
-                    ProbeSchedulerMBean.class, ProbeComponent.this);
+                    ProbeSchedulerMBean.class, StatusManagementComponent.this);
         }
 
         protected void doUnpublish() {
@@ -211,4 +211,13 @@ public class ProbeComponent extends DefaultComponent implements ProbeScheduler,
         return null;
     }
 
+    protected AdministrativeStatus adminStatus = new AdministrativeStatus();
+
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+       if (adapter.isAssignableFrom(AdministrativeStatus.class)) {
+           return adapter.cast(adminStatus);
+       }
+       return null;
+    }
 }

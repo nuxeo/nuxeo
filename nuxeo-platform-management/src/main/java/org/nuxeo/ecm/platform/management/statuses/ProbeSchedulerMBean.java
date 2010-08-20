@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,34 +12,33 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     mcedica
+ *     matic
  */
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
-import java.util.Collection;
 import java.util.Set;
 
-public interface ProbeRunner {
-    
-    /**
-     * Runs all probes
-     */
-    boolean run() ;
-    
-    /**
-     * Runs a probe.
-     * @return true if probe succeeds, false if not
-     */
-    boolean runProbe(ProbeInfo probe);
-    
-    Collection<ProbeInfo> getRunWithSuccessProbesInfo();
-    
-    Set<String> getProbeNames() ;
-    
-    ProbeInfo getProbeInfo(String probeQualifiedName);
-    
+/**
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ */
+public interface ProbeSchedulerMBean {
+
+    Set<String> getProbeNames();
+
+    int getScheduledProbesCount();
+
     Set<String> getProbesInError();
 
-    Set<String> getProbesInSuccess() ;
-    
+    int getProbesInErrorCount();
+
+    Set<String> getProbesInSuccess();
+
+    int getProbesInSuccessCount();
+
+    void enable();
+
+    void disable();
+
+    boolean isEnabled();
+
 }

@@ -14,20 +14,7 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.management.administrativestatus.service;
-
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_INFO_CONTAINER;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_INFO_CONTAINER_TYPE;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_DOCUMENT;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_DOCUMENT_TYPE;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_PROPERTY;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.LOCKED;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.UNLOCKED;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_INSTANCE_ID;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_EVENT_CATEGORY;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.ADMINISTRATIVE_STATUS_DOC_CREATED_EVENT;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.SEVER_LOCKED_EVENT;
-import static org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusConstants.SERVER_UNLOCKED_EVENT;
+package org.nuxeo.ecm.platform.management.statuses;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -47,23 +34,26 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Used to control the server administrative status: the status of the server
  * can be locked/unlocked.
- * 
+ *
  * @author Mariana Cedica
  */
-public class AdministrativeStatusComponent extends DefaultComponent implements
-        AdministrativeStatusService {
+public class AdministrativeStatus implements AdministrativeStatusConstants {
 
-    private static final Log log = LogFactory.getLog(AdministrativeStatusComponent.class);
+    private static final Log log = LogFactory.getLog(AdministrativeStatus.class);
 
     private DocumentModel statusDoc;
 
     protected EventProducer eventProducer;
 
+    /**
+     * Disable services for this server
+     *
+     * @return true if the locked succeed
+     */
     public boolean lockServer(CoreSession session) {
         AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
                 session, LOCKED, SEVER_LOCKED_EVENT);
@@ -76,6 +66,12 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
         }
     }
 
+    /**
+     * Enable services for this server
+     *
+     * @param session
+     * @return
+     */
     public boolean unlockServer(CoreSession session) {
         AdministrativeStatusServerChangeState runner = new AdministrativeStatusServerChangeState(
                 session, UNLOCKED, SERVER_UNLOCKED_EVENT);
@@ -88,6 +84,13 @@ public class AdministrativeStatusComponent extends DefaultComponent implements
         }
     }
 
+    /**
+     * Is locked/unlocked
+     *
+     * @param session
+     * @return
+     * @throws ClientException
+     */
     public String getServerStatus(CoreSession session) throws ClientException {
         return (String) getOrCreateStatusDocument(session).getPropertyValue(
                 ADMINISTRATIVE_STATUS_PROPERTY);

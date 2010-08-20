@@ -14,13 +14,13 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.platform.management.probes.impl;
+package org.nuxeo.ecm.platform.management.statuses.probes;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusService;
-import org.nuxeo.ecm.platform.management.probes.Probe;
-import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
+import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
+import org.nuxeo.ecm.platform.management.statuses.Probe;
+import org.nuxeo.ecm.platform.management.statuses.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -32,7 +32,7 @@ public class AdministrativeStatusProbe implements Probe {
 
     ProbeStatus status;
 
-    AdministrativeStatusService administrativeStatusService;
+    AdministrativeStatus administrativeStatusService;
 
     public ProbeStatus getProbeStatus() {
         return status;
@@ -53,11 +53,11 @@ public class AdministrativeStatusProbe implements Probe {
 
     }
 
-    private AdministrativeStatusService getAdministrativeStatusService()
+    private AdministrativeStatus getAdministrativeStatusService()
             throws ClientException {
         if (administrativeStatusService == null) {
             try {
-                administrativeStatusService = Framework.getService(AdministrativeStatusService.class);
+                administrativeStatusService = Framework.getService(AdministrativeStatus.class);
             } catch (Exception e) {
                 throw new ClientException(e);
             }

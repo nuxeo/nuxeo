@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.management.administrativestatus;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.management.administrativestatus.service.AdministrativeStatusService;
+import org.nuxeo.ecm.platform.management.AdministrativeStatusService;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestAdministrativeStatus extends SQLRepositoryTestCase {

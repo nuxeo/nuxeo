@@ -14,7 +14,7 @@
  * Contributors:
  *     mariana
  */
-package org.nuxeo.ecm.platform.management.probes;
+package org.nuxeo.ecm.platform.management.statuses;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,13 +23,13 @@ import java.util.Set;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
-import org.nuxeo.ecm.platform.management.probes.ProbeInfo;
+import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
 
-class ProbeRegistry {
+public class ProbeRegistry {
 
-    private final ProbeComponent probeComponent;
+    private final StatusManagementComponent probeComponent;
 
-    ProbeRegistry(ProbeComponent probeComponent) {
+    ProbeRegistry(StatusManagementComponent probeComponent) {
         this.probeComponent = probeComponent;
     }
 
@@ -99,7 +99,7 @@ class ProbeRegistry {
             }
         }
     }
-    
+
     protected void doRunProbe(ProbeInfo probe) {
         if (!isEnabled) {
             return;

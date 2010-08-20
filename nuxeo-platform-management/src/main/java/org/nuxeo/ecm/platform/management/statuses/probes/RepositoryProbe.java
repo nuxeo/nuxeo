@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.probes.impl;
+package org.nuxeo.ecm.platform.management.statuses.probes;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -24,8 +24,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.management.probes.Probe;
-import org.nuxeo.ecm.platform.management.probes.ProbeStatus;
+import org.nuxeo.ecm.platform.management.statuses.Probe;
+import org.nuxeo.ecm.platform.management.statuses.ProbeStatus;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)

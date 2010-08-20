@@ -1,6 +1,6 @@
-Export-Package: org.nuxeo.ecm.management.administrativestatus.service,
- org.nuxeo.ecm.platform.management.adapters,
- org.nuxeo.ecm.platform.management.probes
+Export-Package: org.nuxeo.ecm.platform.management.adapters,
+ org.nuxeo.ecm.platform.management.statuses,
+ org.nuxeo.ecm.platform.management.statuses.probes
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
@@ -10,12 +10,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/management-probe-scheduler-service.xml,
- OSGI-INF/management-probe-scheduler-contrib.xml,
- OSGI-INF/management-resource-publisher-contrib.xml,
- OSGI-INF/management-status-persister-contrib.xml,
- OSGI-INF/management-administrative-status-component.xml
-Provide-Package: org.nuxeo.ecm.platform.management
+Nuxeo-Component: OSGI-INF/management-adapters.xml,
+ OSGI-INF/management-statuses.xml
 Import-Package: javax.annotation;version="1.0",
  javax.servlet.http,
  org.apache.commons.lang,
