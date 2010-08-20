@@ -147,6 +147,7 @@ public class AdministrativeStatus implements AdministrativeStatusConstants {
 
 			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, serverState);
 			session.saveDocument(doc);
+			session.save();
 			// and notify docStatus created
 			Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
 			eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
