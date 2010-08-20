@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.management.web.probes;
 
+import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.PROBES_WEB_OBJECT_TYPE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +25,11 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 
-import org.nuxeo.ecm.platform.management.probes.ProbeInfo;
-import org.nuxeo.ecm.platform.management.probes.ProbeRunner;
+import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
+import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-
-import static org.nuxeo.ecm.platform.management.web.utils.PlatformManagementWebConstants.PROBES_WEB_OBJECT_TYPE;
 
 /**
  * Runs the contributed probs if any
