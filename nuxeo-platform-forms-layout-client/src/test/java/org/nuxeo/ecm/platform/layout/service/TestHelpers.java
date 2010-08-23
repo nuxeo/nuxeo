@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,8 +84,7 @@ public class TestHelpers extends NXRuntimeTestCase {
         assertEquals("#{pageSelection['data']['ref']}", expression);
     }
 
-    public static String getTestFile(String filePath)
-            throws UnsupportedEncodingException {
+    public static String getTestFile(String filePath) {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 

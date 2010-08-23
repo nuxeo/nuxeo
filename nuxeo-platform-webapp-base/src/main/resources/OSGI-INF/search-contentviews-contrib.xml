@@ -543,12 +543,9 @@
         <row>
           <widget>search_language</widget>
         </row>
-        <!-- disabled as it does not work as expected: converter is omitted on submit -->
-        <!-- 
-          <row>
+        <row>
           <widget>search_deleted_documents</widget>
-          </row>
-        -->
+        </row>
       </rows>
     </layout>
 

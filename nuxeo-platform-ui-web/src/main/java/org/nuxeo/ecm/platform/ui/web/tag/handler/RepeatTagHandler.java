@@ -87,7 +87,6 @@ public class RepeatTagHandler extends TagHandler {
     private static final DataModel EMPTY_MODEL = new ListDataModel(
             Collections.emptyList());
 
-    @SuppressWarnings("unchecked")
     private DataModel getDataModel(FaceletContext ctx) {
         DataModel model;
         if (value == null) {

@@ -45,9 +45,9 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 
 /**
  * Manage DocumentsLists Persistence.
- * Uses a SQL Directory as storage Backend
- * @author tiry
+ * Uses a SQL Directory as storage Backend.
  *
+ * @author tiry
  */
 public class DocumentsListsPersistenceManager {
 
@@ -111,14 +111,14 @@ public class DocumentsListsPersistenceManager {
         return Base64.encodeBytes(idDigest);
     }
 
-    private Boolean initPersistentService() {
+    private boolean initPersistentService() {
         if (dirSession != null) {
             return true;
         }
 
         if (directoryService == null) {
-            directoryService= DirectoryHelper.getDirectoryService();
-            if (directoryService==null) {
+            directoryService = DirectoryHelper.getDirectoryService();
+            if (directoryService == null) {
                 return false;
             }
         }
@@ -128,8 +128,7 @@ public class DocumentsListsPersistenceManager {
             directorySchema = directoryService.getDirectorySchema(DIR_NAME);
         } catch (ClientException e) {
             dirSession = null;
-            log.error("Unable to open directory " + DIR_NAME + " : "
-                    + e.getMessage());
+            log.error("Unable to open directory " + DIR_NAME + " : " + e.getMessage());
             return false;
         }
         return true;

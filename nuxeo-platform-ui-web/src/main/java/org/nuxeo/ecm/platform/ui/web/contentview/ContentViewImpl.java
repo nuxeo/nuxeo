@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * instance if cache key is an EL expression.
  * <p>
  * The page provider is initialized calling
- * {@link ContentViewService#getPageProvider(String, Object...)}.
+ * {@link ContentViewService#getPageProvider}.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -93,7 +93,6 @@ public class ContentViewImpl implements ContentView {
             Integer cacheSize, List<String> refreshEventNames,
             boolean useGlobalPageSize, String[] queryParameters,
             String searchDocumentModelBinding, String searchDocumentModelType) {
-        super();
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -158,7 +157,7 @@ public class ContentViewImpl implements ContentView {
     }
 
     public void setCurrentResultLayout(ContentViewLayout layout) {
-        this.currentResultLayout = layout;
+        currentResultLayout = layout;
     }
 
     protected boolean getParametersChanged(Object[] oldParams,
@@ -317,7 +316,7 @@ public class ContentViewImpl implements ContentView {
     }
 
     public void resetSearchDocumentModel() {
-        this.searchDocumentModel = null;
+        searchDocumentModel = null;
         if (pageProvider != null) {
             pageProvider.setSearchDocumentModel(null);
         }

@@ -60,8 +60,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
 
     protected final long refreshPeriod;
 
-    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver)
-            throws IOException {
+    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver) {
         this(compiler, resolver, -1);
     }
 
@@ -80,6 +79,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
         log.fine("Using Refresh Period: " + this.refreshPeriod);
     }
 
+    @Override
     public Facelet getFacelet(String uri) throws IOException, FaceletException,
             FacesException, ELException {
         URL url = (URL) this.relativeLocations.get(uri);

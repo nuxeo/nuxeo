@@ -91,8 +91,7 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(getParameterMap().keySet());
     }
 

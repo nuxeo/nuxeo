@@ -55,9 +55,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class FictiveDocumentModel implements DocumentModel {
 
-    protected DataModelMap dataModels = new DataModelMapImpl();
+    private static final long serialVersionUID = 1L;
 
-    protected ScopedMap contextData = new ScopedMap();
+    protected final DataModelMap dataModels = new DataModelMapImpl();
+
+    protected final ScopedMap contextData = new ScopedMap();
 
     public static DocumentModel createFictiveDocumentModelWith(
             List<String> schemas) {
@@ -174,13 +176,6 @@ public class FictiveDocumentModel implements DocumentModel {
 
         DocumentPart part = DefaultPropertyFactory.newDocumentPart(schema);
         part.init((Serializable) dataModels.get(schema.getName()).getMap());
-        if (part == null) {
-            throw new PropertyNotFoundException(
-                    xpath,
-                    String.format(
-                            "Document '%s' with title '%s' and type '%s' does not have any schema with prefix '%s'",
-                            getRef(), getTitle(), getType(), prefix));
-        }
         return part.resolvePath(path.toString());
     }
 
@@ -409,6 +404,7 @@ public class FictiveDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
         throw new UnsupportedOperationException();
     }

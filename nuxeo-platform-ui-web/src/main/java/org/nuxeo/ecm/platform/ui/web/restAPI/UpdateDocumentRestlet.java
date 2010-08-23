@@ -46,12 +46,11 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         String repoId = (String) req.getAttributes().get("repo");
         String docId = (String) req.getAttributes().get("docid");
 
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         // init repo and document
-        Boolean initOk = super.initRepositoryAndTargetDocument(res, repoId,
-                docId);
+        boolean initOk = initRepositoryAndTargetDocument(res, repoId, docId);
         if (!initOk) {
             return;
         }

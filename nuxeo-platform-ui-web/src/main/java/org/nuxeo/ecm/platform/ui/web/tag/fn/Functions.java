@@ -132,11 +132,6 @@ public final class Functions {
      * Can be used in order to produce something like that
      * "Julien, Alain , Thierry et Marc-Aur?le" where ' , ' and ' et ' is the
      * final one.
-     *
-     * @param collection
-     * @param separator
-     * @param finalSeparator
-     * @return
      */
     public static String joinCollectionWithFinalDelimiter(
             Collection<Object> collection, String separator,

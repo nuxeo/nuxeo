@@ -356,7 +356,6 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
             throws IOException {
         String iconPath = "";
         try {
-
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
             MimetypeEntry mimeEntry = mimeService.getMimetypeEntryByMimeType(blob.getMimeType());
             if (mimeEntry != null) {
@@ -367,7 +366,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
             }
         } catch (Exception err) {
         }
-        if (iconPath != null && iconPath.length() > 0) {
+        if (iconPath.length() > 0) {
             ResponseWriter writer = context.getResponseWriter();
             writer.startElement("img", this);
             String src = context.getApplication().getViewHandler().getResourceURL(

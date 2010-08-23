@@ -40,12 +40,10 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     protected String iconPath;
 
     public ContentViewLayoutImpl() {
-        super();
     }
 
     public ContentViewLayoutImpl(String name, String title,
             boolean translateTitle, String iconPath) {
-        super();
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;

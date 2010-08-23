@@ -180,6 +180,7 @@ public class ChainSelectStatus extends UIOutput {
                 writer.writeAttribute("style", entryCssStyle, "style");
             }
             if (entryCssStyleClass != null) {
+                //FIXME: is this a typo? Should it be entryCssStyleClass down there instead of entryCssStyle?
                 writer.writeAttribute("class", entryCssStyle, "class");
             }
             if (!displayValueOnly && display.equals("value")

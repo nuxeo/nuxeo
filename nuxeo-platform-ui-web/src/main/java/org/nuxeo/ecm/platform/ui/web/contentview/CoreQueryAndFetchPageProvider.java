@@ -55,7 +55,7 @@ public class CoreQueryAndFetchPageProvider extends
 
     public void setPageProviderDescriptor(
             PageProviderDescriptor providerDescriptor) {
-        this.descriptor = providerDescriptor;
+        descriptor = providerDescriptor;
     }
 
     @Override

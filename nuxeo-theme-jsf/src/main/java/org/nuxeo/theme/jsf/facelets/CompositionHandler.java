@@ -32,7 +32,6 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -77,9 +76,8 @@ public final class CompositionHandler extends TagHandler implements
 
         handlers = new HashMap<String, DefineHandler>();
         Iterator itr = findNextByType(DefineHandler.class);
-        DefineHandler d;
         while (itr.hasNext()) {
-            d = (DefineHandler) itr.next();
+            DefineHandler d = (DefineHandler) itr.next();
             handlers.put(d.getName(), d);
             log.debug(tag + " found Define[" + d.getName() + ']');
         }

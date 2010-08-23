@@ -44,6 +44,9 @@ public class NXQLQueryBuilder {
 
     public static final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 
+    private NXQLQueryBuilder() {
+    }
+
     public static String getSortClause(SortInfo... sortInfos) {
         StringBuilder queryBuilder = new StringBuilder();
         if (sortInfos != null) {
@@ -384,7 +387,7 @@ public class NXQLQueryBuilder {
             }
             res += "+" + tokens[i];
         }
-        return "= " + NXQLQueryBuilder.prepareStringLiteral(res, true);
+        return "= " + prepareStringLiteral(res, true);
     }
 
     protected static String serializeUnary(String parameter, String operator,
@@ -500,7 +503,7 @@ public class NXQLQueryBuilder {
                     || "double".equals(fieldType)) {
                 return value;
             } else {
-                return NXQLQueryBuilder.prepareStringLiteral(value, true);
+                return prepareStringLiteral(value, true);
             }
         }
         return value;

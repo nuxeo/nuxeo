@@ -25,11 +25,13 @@ package org.nuxeo.ecm.platform.ui.web.cache;
  * (s:cache does not only require jboss-cache, but also some internal classes
  *
  * @author Thierry Delprat
- *
  */
 public class SeamCacheHelper {
 
     protected static Boolean canUseSeamCache = null;
+
+    private SeamCacheHelper() {
+    }
 
     public static boolean canUseSeamCache() {
         if (canUseSeamCache == null) {

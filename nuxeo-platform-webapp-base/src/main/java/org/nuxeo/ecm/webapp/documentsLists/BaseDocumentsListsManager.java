@@ -260,13 +260,15 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         List<DocumentRef> docRefList = DocumentsListsUtils.getDocRefs(currentDocList);
         for (DocumentModel doc : docList) {
             if (!docRefList.contains(doc.getRef())) {
-                if (currentListIsPersistent)
-                {
-                    if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc));
-                        currentDocList.add(doc);
-                }
-                else
+                if (currentListIsPersistent) {
+                    if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc)) {
+                        // Strange, CHECKME
+                        ;
+                    }
                     currentDocList.add(doc);
+                } else {
+                    currentDocList.add(doc);
+                }
             }
         }
         notifyListUpdated(listName);
@@ -281,7 +283,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
 
         List<DocumentModel> docList = getWorkingList(listName);
         DocumentsListDescriptor currentDescriptor = getWorkingListDescriptor(listName);
-        Boolean currentListIsPersistent = false;
+        boolean currentListIsPersistent = false;
 
         if (currentDescriptor != null) {
             currentListIsPersistent = currentDescriptor.getPersistent();
@@ -289,13 +291,13 @@ public abstract class BaseDocumentsListsManager implements Serializable{
 
         List<DocumentRef> docRefList = DocumentsListsUtils.getDocRefs(docList);
         if (!docRefList.contains(doc.getRef())) {
-            if (currentListIsPersistent)
-            {
-               if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc));
-                   docList.add(doc);
-            }
-            else
-            {
+            if (currentListIsPersistent) {
+                if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc)) {
+                    // Strange, CHECKME
+                    ;
+                }
+                docList.add(doc);
+            } else {
                 docList.add(doc);
             }
         }

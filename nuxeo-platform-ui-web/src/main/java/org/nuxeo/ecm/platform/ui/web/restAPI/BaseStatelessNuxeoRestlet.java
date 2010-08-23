@@ -44,10 +44,9 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
     protected DocumentRef targetDocRef;
     protected DocumentModel targetDocument;
 
-    protected Boolean initRepository(Response res, String repoId) {
-
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+    protected boolean initRepository(Response res, String repoId) {
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         if (repoId == null || repoId.equals("*")) {
             handleError(result, res, "you must specify a repository");
@@ -82,11 +81,11 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         return true;
     }
 
-    protected Boolean initRepositoryAndTargetDocument(Response res,
+    protected boolean initRepositoryAndTargetDocument(Response res,
             String repoId, String docId) {
 
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         if (repoId == null || repoId.equals("*")) {
             handleError(result, res, "you must specify a repository");
@@ -148,9 +147,9 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
     }
 
     @Override
-    public void handle(Request req, Response res) {
+    public void handle(Request request, Response response) {
         try {
-            doHandleStatelessRequest(req, res);
+            doHandleStatelessRequest(request, response);
         }
         finally {
             cleanUp();

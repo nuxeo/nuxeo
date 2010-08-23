@@ -67,9 +67,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
 
         assertEquals("search_layout", contentView.getSearchLayout().getName());
-        assertEquals(null, contentView.getSearchLayout().getTitle());
+        assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
-        assertEquals(null, contentView.getSearchLayout().getIconPath());
+        assertNull(contentView.getSearchLayout().getIconPath());
 
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
@@ -116,9 +116,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNull(resultLayouts.get(1).getIconPath());
 
         assertEquals("search_layout_2", contentView.getSearchLayout().getName());
-        assertEquals(null, contentView.getSearchLayout().getTitle());
+        assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
-        assertEquals(null, contentView.getSearchLayout().getIconPath());
+        assertNull(contentView.getSearchLayout().getIconPath());
 
         assertEquals("CURRENT_SELECTION_2", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();

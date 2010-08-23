@@ -76,13 +76,13 @@ public abstract class ChainSelectBase extends UIInput implements
 
     protected String directoryNames;
 
-    protected String keySeparator = ChainSelectBase.DEFAULT_KEYSEPARATOR;
+    protected String keySeparator = DEFAULT_KEYSEPARATOR;
 
     protected boolean qualifiedParentKeys = false;
 
     protected int depth;
 
-    protected String display = ChainSelectBase.DISPLAY_LABEL;
+    protected String display = DISPLAY_LABEL;
 
     protected boolean translate;
 
@@ -190,7 +190,7 @@ public abstract class ChainSelectBase extends UIInput implements
                 "org.ajax4jsf.ajax.Support");
         support.getAttributes().put("event", "onchange");
         support.getAttributes().put("reRender", reRender);
-        support.getAttributes().put("immediate", true);
+        support.getAttributes().put("immediate", Boolean.TRUE);
         support.getAttributes().put("id", componentId + "_a4jSupport");
         listbox.getChildren().add(support);
 

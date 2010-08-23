@@ -18,9 +18,11 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -39,13 +41,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ContentViewServiceImpl extends DefaultComponent implements
         ContentViewService {
 
+    public static final String CONTENT_VIEW_EP = "contentViews";
+
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(ContentViewServiceImpl.class);
 
-    public static final String CONTENT_VIEW_EP = "contentViews";
-
-    protected Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
+    protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
 
     public ContentView getContentView(String name) throws ClientException {
         ContentViewDescriptor desc = contentViews.get(name);
@@ -74,6 +76,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return contentView;
     }
 
+    public Set<String> getContentViewNames() {
+        return Collections.unmodifiableSet(contentViews.keySet());
+    }
+
     public PageProvider<?> getPageProvider(String name,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... parameters) throws ClientException {
@@ -83,7 +89,6 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
         CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
         GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
-        ContentViewPageProvider<?> pageProvider = null;
         if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
                 && genDesc.isEnabled()) {
             log.error(String.format(
@@ -93,7 +98,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         }
 
-        PageProviderDescriptor pageDesc = null;
+        PageProviderDescriptor pageDesc;
+        ContentViewPageProvider<?> pageProvider;
         if (coreDesc != null && coreDesc.isEnabled()) {
             pageProvider = new CoreQueryDocumentPageProvider();
             pageDesc = coreDesc;

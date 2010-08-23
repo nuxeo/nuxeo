@@ -61,7 +61,7 @@ public class ValueExpressionHelper {
         }
 
         String dmResolverValue;
-        if (fieldName.indexOf(".") != -1) {
+        if (fieldName.contains(".")) {
             expressionElements.add(fieldName);
             // already formatted as an EL expression => do not use brackets
             dmResolverValue = String.format("#{%s}", StringUtils.join(

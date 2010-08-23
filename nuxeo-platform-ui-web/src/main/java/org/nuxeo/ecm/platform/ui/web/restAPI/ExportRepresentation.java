@@ -60,10 +60,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
     protected final boolean isUnrestricted;
 
     protected ExportRepresentation(MediaType mediaType, DocumentModel root) {
-        super(mediaType);
-        repositoryName = root.getRepositoryName();
-        rootId = root.getId();
-        isUnrestricted = false;
+        this(mediaType, root, false);
     }
 
     protected ExportRepresentation(MediaType mediaType, DocumentModel root, boolean unrestricted) {
@@ -104,7 +101,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        Repository repository = null;
+        Repository repository;
         CoreSession documentManager = null;
         LoginContext loginContext = null;
         if (isUnrestricted) {

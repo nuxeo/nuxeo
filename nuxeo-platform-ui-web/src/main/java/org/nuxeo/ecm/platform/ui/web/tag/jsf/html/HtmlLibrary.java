@@ -26,7 +26,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaValueHolderTagHandler;
 import com.sun.facelets.tag.jsf.html.AbstractHtmlLibrary;
 
 /**
- * Replicate the HTML Library with facelet handlers to use a specific namespace.
+ * Replicate the HTML Library with facelet handlers to use a specific
+ * namespace.
  *
  * @author Jacob Hookom
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -98,7 +99,8 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
                 "javax.faces.Group");
 
         this.addHtmlComponent("selectBooleanCheckbox",
-                "javax.faces.HtmlSelectBooleanCheckbox", "javax.faces.Checkbox");
+                "javax.faces.HtmlSelectBooleanCheckbox",
+                "javax.faces.NXCheckbox");
 
         this.addHtmlComponent("selectManyCheckbox",
                 "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");

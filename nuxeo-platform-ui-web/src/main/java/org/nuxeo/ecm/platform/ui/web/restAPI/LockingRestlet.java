@@ -51,12 +51,11 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         String repoId = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
 
-        DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        DOMDocument result = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domFactory = new DOMDocumentFactory();
+        DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         // init repo and document
-        Boolean initOk = super.initRepositoryAndTargetDocument(res, repoId,
-                docid);
+        boolean initOk = initRepositoryAndTargetDocument(res, repoId, docid);
         if (!initOk) {
             return;
         }

@@ -990,7 +990,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
         // try invoking on list
         String myId = super.getClientId(context);
-        boolean found = false;
         if (clientId.equals(myId)) {
             try {
                 callback.invokeContextCallback(context, this);
@@ -1004,6 +1003,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
+        boolean found = false;
         try {
             int first = 0;
             for (int i = first; i < end; i++) {

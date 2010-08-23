@@ -52,7 +52,7 @@ public class ActionListenerMethodTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
-    public final static Class[] ACTION_LISTENER_SIG = new Class[] { ActionEvent.class };
+    public static final Class[] ACTION_LISTENER_SIG = { ActionEvent.class };
 
     public ActionListenerMethodTagHandler(TagConfig config) {
         super(config);
@@ -65,14 +65,12 @@ public class ActionListenerMethodTagHandler extends TagHandler {
             // only process if parent was just created
             if (parent.getParent() == null) {
                 ActionSource src = (ActionSource) parent;
-                ActionListener listener = null;
-                listener = new MethodExpressionActionListener(
-                        this.value.getMethodExpression(ctx, null,
-                                ACTION_LISTENER_SIG));
+                ActionListener listener = new MethodExpressionActionListener(
+                        value.getMethodExpression(ctx, null, ACTION_LISTENER_SIG));
                 src.addActionListener(listener);
             }
         } else {
-            throw new TagException(this.tag,
+            throw new TagException(tag,
                     "Parent is not of type ActionSource, type is: " + parent);
         }
     }

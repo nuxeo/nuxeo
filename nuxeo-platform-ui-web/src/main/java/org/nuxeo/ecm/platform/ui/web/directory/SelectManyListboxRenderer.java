@@ -65,7 +65,7 @@ public class SelectManyListboxRenderer extends Renderer {
         }
 
         Map<String, String[]> requestMap = facesContext.getExternalContext().getRequestParameterValuesMap();
-        String[] value = null;
+        String[] value;
         if (requestMap.containsKey(clientId)) {
             value = requestMap.get(clientId);
             // remove the empty value if selected - key for the "Please select a

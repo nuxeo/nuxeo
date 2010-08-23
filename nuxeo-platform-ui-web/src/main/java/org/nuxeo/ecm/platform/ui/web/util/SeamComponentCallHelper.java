@@ -107,7 +107,6 @@ public final class SeamComponentCallHelper {
      */
     public static Object callSeamComponentByName(String seamName,
             String methodName, Object[] params) {
-        Object result;
 
         Object seamComponent = getSeamComponentByName(seamName);
         Component component = Component.forName(seamName);
@@ -141,7 +140,7 @@ public final class SeamComponentCallHelper {
         }
 
         try {
-            result = m.invoke(seamComponent, params);
+            Object result = m.invoke(seamComponent, params);
             return result;
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Error calling method " + e.getMessage(), e);

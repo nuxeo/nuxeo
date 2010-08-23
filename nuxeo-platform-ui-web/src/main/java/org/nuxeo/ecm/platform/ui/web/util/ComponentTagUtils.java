@@ -77,7 +77,7 @@ public final class ComponentTagUtils {
 
     public static Object resolveElExpression(FacesContext context,
             String elExpression) {
-        if (!ComponentTagUtils.isValueReference(elExpression)) {
+        if (!isValueReference(elExpression)) {
             // literal
             return elExpression;
         } else {

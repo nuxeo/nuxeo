@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.ui.web.contentview;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -39,6 +40,12 @@ public interface ContentViewService extends Serializable {
      * @throws ClientException
      */
     ContentView getContentView(String name) throws ClientException;
+
+    /**
+     * Returns all the registered content view names, or an empty set
+     * if no content view is registered.
+     */
+    Set<String> getContentViewNames();
 
     /**
      * Returns the page provider computed from the content view with given

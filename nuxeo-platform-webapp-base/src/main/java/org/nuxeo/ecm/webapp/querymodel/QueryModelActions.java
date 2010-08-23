@@ -128,7 +128,6 @@ public interface QueryModelActions extends ResultsProviderFarm {
      * Observer on Seam event to perform some necessary invalidations
      *
      * @param qm the query model that's been changed
-     * @throws ClientException
      */
     void queryModelChanged(QueryModel qm);
 

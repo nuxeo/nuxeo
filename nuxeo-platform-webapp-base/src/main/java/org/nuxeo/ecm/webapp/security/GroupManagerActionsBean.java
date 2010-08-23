@@ -176,7 +176,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
 
     public boolean isSelectedGroupReadOnly() {
         Serializable virtualFlag = selectedGroup.getContextData().getScopedValue("virtual");
-        return (virtualFlag!=null && virtualFlag.equals(true));
+        return virtualFlag != null && virtualFlag.equals(true);
     }
 
     public DocumentModel getSelectedGroup() {

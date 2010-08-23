@@ -25,7 +25,6 @@ import javax.servlet.ServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.runtime.api.Framework;
 
 public final class BaseURL {
 
@@ -48,14 +47,14 @@ public final class BaseURL {
     }
 
     /**
-     * @return Server URL as : protocol://serverName:port/
+     * @return Server URL as: protocol://serverName:port/
      */
     public static String getServerURL(ServletRequest request, boolean local) {
         return VirtualHostHelper.getServerURL(request, local);
     }
 
     /**
-     * @return WebApp name : ie : nuxeo
+     * @return WebApp name, ie  "nuxeo"
      */
     public static String getWebAppName() {
         ServletRequest request = getRequest();

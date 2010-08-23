@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -307,7 +308,7 @@ public class ClipboardActionsBean extends InputController implements
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
-            eventManager.raiseEventsOnDocumentSelected(currentDocument);
+            EventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
 
@@ -331,7 +332,7 @@ public class ClipboardActionsBean extends InputController implements
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
-            eventManager.raiseEventsOnDocumentSelected(targetDoc);
+            EventManager.raiseEventsOnDocumentSelected(targetDoc);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     targetDoc);
 
@@ -390,7 +391,7 @@ public class ClipboardActionsBean extends InputController implements
         facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
                 + resourcesAccessor.getMessages().get("n_moved_docs"), params);
 
-        eventManager.raiseEventsOnDocumentSelected(targetDoc);
+        EventManager.raiseEventsOnDocumentSelected(targetDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 targetDoc);
 
@@ -537,10 +538,9 @@ public class ClipboardActionsBean extends InputController implements
             return currentDocument;
         }
 
-        DocumentModel parent;
         DocumentModelList parents = navigationContext.getCurrentPath();
         for (int i = parents.size() - 1; i >= 0; i--) {
-            parent = parents.get(i);
+            DocumentModel parent = parents.get(i);
             if (parent.isFolder()) {
                 return parent;
             }
@@ -906,45 +906,41 @@ public class ClipboardActionsBean extends InputController implements
         }
 
         for (Blob content : blobs) {
-
             String fileName = content.getFilename();
 
-            if (content != null) {
+            SummaryEntry summaryLeaf = new SummaryEntry(doc);
+            summaryLeaf.setParent(parent);
+            summary.put(summaryLeaf.getPath(), summaryLeaf);
 
-                SummaryEntry summaryLeaf = new SummaryEntry(doc);
-                summaryLeaf.setParent(parent);
-                summary.put(summaryLeaf.getPath(), summaryLeaf);
+            BufferedInputStream buffi = new BufferedInputStream(
+                    content.getStream(), BUFFER);
 
-                BufferedInputStream buffi = new BufferedInputStream(
-                        content.getStream(), BUFFER);
-
-                // Workaround to deal with duplicate file names.
-                int tryCount = 0;
-                while (true) {
-                    try {
-                        ZipEntry entry;
-                        if (tryCount == 0) {
-                            entry = new ZipEntry(path + fileName);
-                        } else {
-                            entry = new ZipEntry(path
-                                    + formatFileName(fileName, "(" + tryCount
-                                            + ")"));
-                        }
-                        out.putNextEntry(entry);
-                        break;
-                    } catch (ZipException e) {
-                        tryCount++;
+            // Workaround to deal with duplicate file names.
+            int tryCount = 0;
+            while (true) {
+                try {
+                    ZipEntry entry;
+                    if (tryCount == 0) {
+                        entry = new ZipEntry(path + fileName);
+                    } else {
+                        entry = new ZipEntry(path
+                                + formatFileName(fileName, "(" + tryCount
+                                        + ")"));
                     }
+                    out.putNextEntry(entry);
+                    break;
+                } catch (ZipException e) {
+                    tryCount++;
                 }
-
-                int count = buffi.read(data, 0, BUFFER);
-                while (count != -1) {
-                    out.write(data, 0, count);
-                    count = buffi.read(data, 0, BUFFER);
-                }
-                out.closeEntry();
-                buffi.close();
             }
+
+            int count = buffi.read(data, 0, BUFFER);
+            while (count != -1) {
+                out.write(data, 0, count);
+                count = buffi.read(data, 0, BUFFER);
+            }
+            out.closeEntry();
+            buffi.close();
         }
     }
 

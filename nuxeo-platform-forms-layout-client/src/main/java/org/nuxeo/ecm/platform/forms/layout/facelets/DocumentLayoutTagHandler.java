@@ -68,7 +68,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = new String[] { "id", "name",
+    protected final String[] reservedVarsArray = { "id", "name",
             "mode", "value", "template" };
 
     public DocumentLayoutTagHandler(TagConfig config) {

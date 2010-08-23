@@ -39,6 +39,8 @@ import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
  */
 public class FictiveDataModel implements DataModel {
 
+    private static final long serialVersionUID = 1L;
+
     protected Map<String, Object> data = new HashMap<String, Object>();
 
     protected final DocumentPart dp;

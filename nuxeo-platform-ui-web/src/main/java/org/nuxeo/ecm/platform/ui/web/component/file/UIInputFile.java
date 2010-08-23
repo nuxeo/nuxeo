@@ -156,7 +156,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         ValueExpression ve = getValueExpression("editFilename");
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -285,8 +285,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
         submitted.setChoice(choice);
         InputFileChoice previousChoice = previous.getConvertedChoice();
-        boolean temp = InputFileChoice.tempKeep.equals(previousChoice)
-                || InputFileChoice.upload.equals(previousChoice);
+        boolean temp = InputFileChoice.tempKeep == previousChoice
+                || InputFileChoice.upload == previousChoice;
         List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(),
                 temp);
         if (!choices.contains(choice)) {
@@ -439,23 +439,23 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 InputFileInfo local = getFileInfoLocalValue();
                 InputFileChoice choice = local.getConvertedChoice();
                 // set blob
-                if (InputFileChoice.upload.equals(choice)
-                        || InputFileChoice.delete.equals(choice)
-                        || InputFileChoice.tempKeep.equals(choice)) {
+                if (InputFileChoice.upload == choice
+                        || InputFileChoice.delete == choice
+                        || InputFileChoice.tempKeep == choice) {
                     ve.setValue(context.getELContext(),
                             local.getConvertedBlob());
                     setValue(null);
                     setLocalValueSet(false);
-                } else if (InputFileChoice.keep.equals(choice)) {
+                } else if (InputFileChoice.keep == choice) {
                     // reste local value
                     setValue(null);
                     setLocalValueSet(false);
                 }
                 // set file name
-                if ((InputFileChoice.keep.equals(choice) && getEditFilename())
-                        || InputFileChoice.upload.equals(choice)
-                        || InputFileChoice.delete.equals(choice)
-                        || InputFileChoice.tempKeep.equals(choice)) {
+                if ((InputFileChoice.keep == choice && getEditFilename())
+                        || InputFileChoice.upload == choice
+                        || InputFileChoice.delete == choice
+                        || InputFileChoice.tempKeep == choice) {
                     ValueExpression vef = getValueExpression("filename");
                     if (vef != null) {
                         vef.setValue(context.getELContext(),
@@ -532,16 +532,16 @@ public class UIInputFile extends UIInput implements NamingContainer {
     public Blob getCurrentBlob() {
         Blob blob = null;
         try {
-            InputFileInfo submittedfileInfo = getFileInfoSubmittedValue();
-            if (submittedfileInfo != null) {
-                InputFileChoice choice = submittedfileInfo.getConvertedChoice();
-                if (InputFileChoice.keep.equals(choice)
-                        || InputFileChoice.tempKeep.equals(choice)) {
+            InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
+            if (submittedFileInfo != null) {
+                InputFileChoice choice = submittedFileInfo.getConvertedChoice();
+                if (InputFileChoice.keep == choice
+                        || InputFileChoice.tempKeep == choice) {
                     // rebuild other info from current value
                     InputFileInfo fileInfo = getFileInfoValue();
                     blob = fileInfo.getConvertedBlob();
                 } else {
-                    blob = submittedfileInfo.getConvertedBlob();
+                    blob = submittedFileInfo.getConvertedBlob();
                 }
             } else {
                 InputFileInfo fileInfo = getFileInfoValue();
@@ -559,8 +559,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
             InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
             if (submittedFileInfo != null) {
                 InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep.equals(choice)
-                        || InputFileChoice.tempKeep.equals(choice)) {
+                if (InputFileChoice.keep == choice
+                        || InputFileChoice.tempKeep == choice) {
                     // rebuild it in case it's supposed to be kept
                     InputFileInfo fileInfo = getFileInfoValue();
                     filename = fileInfo.getConvertedFilename();
@@ -587,7 +587,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             fileInfo = getFileInfoValue();
         }
         InputFileChoice currentChoice = fileInfo.getConvertedChoice();
-        boolean temp = InputFileChoice.tempKeep.equals(currentChoice);
+        boolean temp = InputFileChoice.tempKeep == currentChoice;
         List<InputFileChoice> choices = getAvailableChoices(blob, temp);
 
         String radioClientId = getClientId(context)
@@ -606,7 +606,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             props.put("name", radioClientId);
             props.put("id", id);
             props.put("value", radioChoice.name());
-            if (radioChoice.equals(currentChoice)) {
+            if (radioChoice == currentChoice) {
                 props.put("checked", "checked");
             }
             String onchange = getOnchange();
@@ -641,8 +641,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
             }
             writer.write(String.format(html, id, label));
             writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-            if (InputFileChoice.keep.equals(radioChoice)
-                    || InputFileChoice.tempKeep.equals(radioChoice)) {
+            if (InputFileChoice.keep == radioChoice
+                    || InputFileChoice.tempKeep == radioChoice) {
                 UIComponent downloadFacet = getFacet(DOWNLOAD_FACET_NAME);
                 if (downloadFacet != null) {
                     // redefined in template
@@ -687,7 +687,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         ComponentUtils.encodeComponent(context, filenameComp);
                     }
                 }
-            } else if (InputFileChoice.upload.equals(radioChoice)) {
+            } else if (InputFileChoice.upload == radioChoice) {
                 // encode validators info
                 long sizeMax = 0L;
                 String sizeConstraint = null;

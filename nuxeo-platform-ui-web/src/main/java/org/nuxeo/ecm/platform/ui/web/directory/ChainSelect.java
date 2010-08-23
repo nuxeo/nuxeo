@@ -325,9 +325,9 @@ public class ChainSelect extends UIInput {
         return value != null ? value : defaultValue;
     }
 
-    public Boolean getBooleanProperty(String name, Boolean defaultValue) {
+    public Boolean getBooleanProperty(String name, boolean defaultValue) {
         Boolean value = (Boolean) getProperty(name);
-        return value != null ? value : defaultValue;
+        return value != null ? value : Boolean.valueOf(defaultValue);
     }
 
     public Boolean getLocalize() {

@@ -87,6 +87,6 @@ public interface GroupManagerActions extends Serializable {
 
     boolean isSearchOverflow();
 
-    public boolean isSelectedGroupReadOnly();
+    boolean isSelectedGroupReadOnly();
 
 }

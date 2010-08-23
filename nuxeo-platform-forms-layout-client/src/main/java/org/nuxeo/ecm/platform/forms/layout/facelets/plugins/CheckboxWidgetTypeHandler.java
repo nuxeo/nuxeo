@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -40,7 +41,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * schema.
  *
  * @author btatar
- *
  */
 public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
@@ -58,7 +58,8 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, HtmlSelectBooleanCheckbox.COMPONENT_TYPE, null);
+                    leaf, HtmlSelectBooleanCheckbox.COMPONENT_TYPE,
+                    NXCheckboxRenderer.RENDERER_TYPE);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(msgId,
                     widgetId, null);
@@ -66,8 +67,8 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes
-            return helper.getHtmlComponentHandler(
-                    attributes, leaf, HtmlOutputText.COMPONENT_TYPE, null);
+            return helper.getHtmlComponentHandler(attributes, leaf,
+                    HtmlOutputText.COMPONENT_TYPE, null);
         }
     }
 }

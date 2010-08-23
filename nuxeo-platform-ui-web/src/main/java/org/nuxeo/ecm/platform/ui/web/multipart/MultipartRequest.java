@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
  * @author Shane Bryzak
  */
 public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
+
     private static final String PARAM_NAME = "name";
 
     private static final String PARAM_FILENAME = "filename";
@@ -66,7 +67,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
 
     private final boolean createTempFiles;
 
-    private String encoding = null;
+    private String encoding;
 
     private Integer contentLength = 0;
 
@@ -76,7 +77,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     // of portlets
     private volatile boolean canStop = false;
 
-    private Map<String, Param> parameters = null;
+    private Map<String, Param> parameters;
 
     private final List<String> keys = new ArrayList<String>();
 
@@ -176,14 +177,12 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     }
 
     public void cancel() {
-        this.canceled = true;
+        canceled = true;
 
         if (parameters != null) {
-            Iterator<Param> it = parameters.values().iterator();
-            while (it.hasNext()) {
-                Param p = it.next();
-                if (p instanceof FileParam) {
-                    ((FileParam) p).deleteFile();
+            for (Param param : parameters.values()) {
+                if (param instanceof FileParam) {
+                    ((FileParam) param).deleteFile();
                 }
             }
         }
@@ -417,8 +416,9 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
                 String value = m.group(2);
 
                 // Strip double quotes
-                if (value.startsWith("\"") && value.endsWith("\""))
+                if (value.startsWith("\"") && value.endsWith("\"")) {
                     value = value.substring(1, value.length() - 1);
+                }
                 if (!"filename".equals(key)) {
                     paramMap.put(key, value);
                 } else {
@@ -457,7 +457,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
                         param = parameters.get(name);
                     }
                 } catch (IOException e) {
-                    this.cancel();
+                    cancel();
                     throw new FileUploadException(
                             "IO Error parsing multipart request", e);
                 }
@@ -472,27 +472,28 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Enumeration getParameterNames() {
         if (parameters == null) {
             parseRequest();
         }
-
         return Collections.enumeration(parameters.keySet());
     }
 
+    @Override
     public byte[] getFileBytes(String name) {
         Param p = getParam(name);
         return (p != null && p instanceof FileParam) ? ((FileParam) p).getData()
                 : null;
     }
 
+    @Override
     public InputStream getFileInputStream(String name) {
         Param p = getParam(name);
         return (p != null && p instanceof FileParam) ? ((FileParam) p).getInputStream()
                 : null;
     }
 
+    @Override
     public String getFileContentType(String name) {
         Param p = getParam(name);
         return (p != null && p instanceof FileParam) ? ((FileParam) p).getContentType()
@@ -505,12 +506,14 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
                 : null;
     }
 
+    @Override
     public String getFileName(String name) {
         Param p = getParam(name);
         return (p != null && p instanceof FileParam) ? ((FileParam) p).getFilename()
                 : null;
     }
 
+    @Override
     public int getFileSize(String name) {
         Param p = getParam(name);
         return (p != null && p instanceof FileParam) ? ((FileParam) p).getFileSize()
@@ -596,7 +599,7 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
     }
 
     public boolean isStopped() {
-        return this.shouldStop;
+        return shouldStop;
     }
 
     public boolean isDone() {

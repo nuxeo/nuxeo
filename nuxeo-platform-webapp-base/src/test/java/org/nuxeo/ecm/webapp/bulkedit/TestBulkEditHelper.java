@@ -105,7 +105,7 @@ public class TestBulkEditHelper {
     }
 
     @Test
-    public void testGetPropertiesToCopy() throws Exception {
+    public void testGetPropertiesToCopy() {
         DocumentModel doc = FictiveDocumentModel.createFictiveDocumentModelWith("dublincore");
         ScopedMap map = doc.getContextData();
         map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:title", true);

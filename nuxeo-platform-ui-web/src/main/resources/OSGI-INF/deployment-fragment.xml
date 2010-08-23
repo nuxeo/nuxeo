@@ -183,7 +183,7 @@
       <param-value>blueSky</param-value>
     </context-param>
   </extension>
-    
+
   <extension target="web#CONTEXT-PARAM">
     <context-param>
       <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
@@ -218,10 +218,10 @@
     <!-- When a page is requested, what interval in seconds should the compiler
       check for changes. If you don't want the compiler to check for changes
       once the page is compiled, then use a value of -1.
-
+      
       Setting a low refresh period helps during development to be able to edit
       pages in a running application but slows down page rendering.
-
+      
       Default: 2 seconds.
     -->
     <context-param>
@@ -248,21 +248,25 @@
       <param-value>50</param-value>
     </context-param>
 
-	<!-- parameters for RichFaces resources loading -->
-     <context-param>
+    <!-- parameters for RichFaces resources loading -->
+    <context-param>
       <param-name>org.richfaces.LoadStyleStrategy</param-name>
       <param-value>ALL</param-value>
-     </context-param>
-     <context-param>
+    </context-param>
+    <context-param>
       <param-name>org.richfaces.LoadScriptStrategy</param-name>
       <param-value>ALL</param-value>
-     </context-param>
+    </context-param>
 
-	 <!-- use the JS Minimizer built into RichFaces -->
-     <context-param>
-      <param-name>org.nuxeo.ecm.platform.web.common.resources.JSMinimizer</param-name>
-      <param-value>org.nuxeo.ecm.platform.ui.web.richfaces.RichFacesJSMinimizer</param-value>
-     </context-param>
+    <!-- use the JS Minimizer built into RichFaces -->
+    <context-param>
+      <param-name>
+        org.nuxeo.ecm.platform.web.common.resources.JSMinimizer
+      </param-name>
+      <param-value>
+        org.nuxeo.ecm.platform.ui.web.richfaces.RichFacesJSMinimizer
+      </param-value>
+    </context-param>
 
   </extension>
 
@@ -275,9 +279,7 @@
       org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler
     </navigation-handler>
 
-    <el-resolver>
-      org.nuxeo.ecm.platform.el.DocumentModelResolver
-    </el-resolver>
+    <el-resolver>org.nuxeo.ecm.platform.el.DocumentModelResolver</el-resolver>
 
     <!-- This line should not strictly speaking be necessary, but it works
       around a minor bug in the RI.) -->
@@ -481,6 +483,14 @@
     </renderer>
 
     <renderer>
+      <component-family>javax.faces.SelectBoolean</component-family>
+      <renderer-type>javax.faces.NXCheckbox</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
       <component-family>nxdirectory.selectOneListbox</component-family>
       <renderer-type>nxdirectory.selectOneListbox</renderer-type>
       <renderer-class>
@@ -517,6 +527,7 @@
         org.nuxeo.ecm.platform.ui.web.directory.ChainSelectListboxRenderer
       </renderer-class>
     </renderer>
+
   </extension>
 
   <!-- uncomment that to enable filter based auth

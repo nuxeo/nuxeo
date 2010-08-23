@@ -33,9 +33,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 @Scope(ScopeType.STATELESS)
 public class SeamRemotingJSBuilderComponent extends DefaultComponent implements SeamRemotingJSBuilderService {
 
-    public static String EP_REMOTABLE_SEAMBEANS = "remotableSeamBeans";
+    public static final String EP_REMOTABLE_SEAMBEANS = "remotableSeamBeans";
 
-    protected static List<String> beanNames = new ArrayList<String>();
+    protected static final List<String> beanNames = new ArrayList<String>();
 
     @Override
     public void registerContribution(Object contribution,
