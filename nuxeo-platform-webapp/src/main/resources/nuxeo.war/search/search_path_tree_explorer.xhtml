@@ -18,35 +18,16 @@
       
       <script language="javascript">
           // <![CDATA[
-          function getRequestParameter(name) {
-            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-            var regexS = "[\\?&]"+name+"=([^&#]*)";
-            var regex = new RegExp( regexS );
-            var results = regex.exec( window.location.href );
-            if (results == null) {
-              return "";
-            }
-            else {
-              return results[1];
-            }
-          }
-
           function updateParent(value) {
-            elementId = getRequestParameter('inputElementId');
-            if (elementId == "") {
-              elementId = 'searchForm:searchscope';
-            }
-  
-            parentSearchScope = opener.document.getElementById(elementId);
+            parentSearchScope = opener.document.getElementById('#{param.fieldId}');
+
             parentSearchScope.value = value;
             self.close();
           }
 
           function chooseAndSelect(element, value) {
-            elementId = getRequestParameter('inputElementId');
-            if (elementId == "") {
-              elementId = 'searchForm:searchscope';
-            }
+            FORM_NAME = 'searchForm';
+            HIDDEN_FIELD_NAME = 'searchscope';
             SELECTED_CLASS_NAME = 'selectedPath';
 
             hiddenField = document.getElementById(FORM_NAME + ':' + HIDDEN_FIELD_NAME);
@@ -99,7 +80,7 @@
                     highlightedClass="treeNodeHighlightedClass"
                     selectedClass="treeNodeSelectedClass">
                     <a style="cursor:pointer"
-                      onclick="javascript:selectElement(this, '#{node.document.path}')">
+                      onclick="selectElement(this, '#{node.document.path}')">
                       <h:outputText value="#{nxd:titleOrId(node.document)}" />
                     </a>
                   </rich:treeNode>
