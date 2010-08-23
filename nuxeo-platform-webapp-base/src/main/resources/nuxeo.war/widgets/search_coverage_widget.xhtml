@@ -33,8 +33,10 @@
         </f:facet>
       </nxdir:chainSelectStatus>
     </nxdir:chainSelect>
+    <a4j:outputPanel ajaxRendered="true">
+      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
   </a4j:region>
-  <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
-    id="#{widget.id}_message" />
 
 </f:subview>
