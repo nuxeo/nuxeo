@@ -63,7 +63,7 @@ public class AdministrativeStatus extends DefaultObject {
             return getView("administrative-status").arg("serverInstanceId",
                     getAdministrativeStatus().getServerInstanceName()).arg(
                     "administrativeStatus",
-                    getAdministrativeStatus().getServerStatus());
+                    getAdministrativeStatus().getValue());
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
@@ -74,11 +74,11 @@ public class AdministrativeStatus extends DefaultObject {
     @Produces("text/html")
     public Object lockServer() {
         try {
-            getAdministrativeStatus().lockServer();
+            getAdministrativeStatus().setPassive();
             return getView("administrative-status").arg("serverInstanceId",
                     getAdministrativeStatus().getServerInstanceName()).arg(
                     "administrativeStatus",
-                    getAdministrativeStatus().getServerStatus());
+                    getAdministrativeStatus().getValue());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -89,11 +89,11 @@ public class AdministrativeStatus extends DefaultObject {
     @Produces("text/html")
     public Object unlockServer() {
         try {
-            getAdministrativeStatus().unlockServer();
+            getAdministrativeStatus().setActive();
             return getView("administrative-status").arg("serverInstanceId",
                     getAdministrativeStatus().getServerInstanceName()).arg(
                     "administrativeStatus",
-                    getAdministrativeStatus().getServerStatus());
+                    getAdministrativeStatus().getValue());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
