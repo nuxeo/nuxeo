@@ -37,8 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusPersister {
 
-    public static final String ADMINISTRATIVE_INFO_CONTAINER_TYPE = "AdministrativeStatusContainer";
-
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT = "administrative-status";
@@ -49,8 +47,10 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 
 	private static final Log log = LogFactory.getLog(NuxeoAdministrativeStatusPersister.class);
 
+	protected String repositoryName;
+	
 	public String setValue(String serverInstanceName, String newState) {
-		Setter setter = new Setter(repositoryName, serverInstanceName, newState);
+		Setter setter = new Setter(getRepositoryName(), serverInstanceName, newState);
 		try {
 			setter.runUnrestricted();
 		} catch (ClientException e) {
@@ -71,7 +71,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 
 	protected DocumentModel getOrCreateStatusDocument(String serverInstanceName) throws ClientException {
 		Fetcher fetcher = new Fetcher(
-				repositoryName, serverInstanceName);
+		        getRepositoryName(), serverInstanceName);
 		try {
 			fetcher.runUnrestricted();
 		} catch (ClientException e) {
@@ -81,9 +81,6 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 		return fetcher.getDocument();
 	}
 
-	protected String repositoryName = Framework
-			.getLocalService(RepositoryManager.class).getDefaultRepository()
-			.getName();
 
 	private class Setter extends
 			UnrestrictedSessionRunner {
@@ -188,5 +185,12 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 	protected static EventProducer getEventProducer() throws Exception {
 		return Framework.getService(EventProducer.class);
 	}
+	
+    protected String getRepositoryName() {
+        if (repositoryName == null) {
+            repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
+        }
+        return repositoryName;
+    }
 
 }

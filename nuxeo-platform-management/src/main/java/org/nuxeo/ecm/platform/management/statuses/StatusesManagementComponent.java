@@ -160,7 +160,15 @@ public class StatusesManagementComponent extends DefaultComponent implements
 							return;
 						}
 						event.getBundle().getBundleContext().removeFrameworkListener(this);
-						adminStatus.activate();																				// contributed
+			            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+                        ClassLoader nuxeoCL = Framework.class.getClassLoader();		
+						try{
+				            Thread.currentThread().setContextClassLoader(nuxeoCL);
+				            adminStatus.activate();
+						}
+						finally{
+						    Thread.currentThread().setContextClassLoader(jbossCL);
+						}// contributed
 					}
 				});
 	}
