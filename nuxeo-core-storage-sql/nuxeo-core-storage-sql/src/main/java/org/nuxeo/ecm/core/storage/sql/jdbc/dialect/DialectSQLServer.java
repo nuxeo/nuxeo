@@ -365,6 +365,14 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public boolean needsOriginalColumnInGroupBy() {
+        // http://msdn.microsoft.com/en-us/library/ms177673.aspx
+        // A column alias that is defined in the SELECT list cannot be used to
+        // specify a grouping column.
+        return true;
+    }
+
+    @Override
     public String getSecurityCheckSql(String idColumnName) {
         return String.format("dbo.NX_ACCESS_ALLOWED(%s, ?, ?) = 1",
                 idColumnName);
