@@ -19,36 +19,23 @@ package org.nuxeo.ecm.platform.management.administrativestatus;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
 
 public class AdministrativeStatusListener implements EventListener {
 
-    private static boolean serverLockedEventTriggered = false;
+    public static boolean serverActivatedEventTriggered = false;
 
-    private static boolean serverUnlockedEventTriggered = false;
+    public static boolean serverPassivatedEventTriggered = false;
 
     public void handleEvent(Event event) throws ClientException {
-        DocumentEventContext docCtx = null;
-        if (event.getContext() instanceof DocumentEventContext) {
-            docCtx = (DocumentEventContext) event.getContext();
-        } else {
-            return;
-        }
         String eventId = event.getName();
-        if (eventId.equals("serverLocked")) {
-            serverLockedEventTriggered = true;
+        if (eventId.equals(AdministrativeStatus.ACTIVATED_EVENT)) {
+            serverActivatedEventTriggered = true;
         }
-        if (eventId.equals("serverUnlocked")) {
-            serverUnlockedEventTriggered = true;
+        if (eventId.equals(AdministrativeStatus.PASSIVATED_EVENT)) {
+            serverPassivatedEventTriggered = true;
         }
     }
 
-    public static boolean isServerLockedEventTriggered() {
-        return serverLockedEventTriggered;
-    }
-
-    public static boolean isServerUnlockedEventTriggered() {
-        return serverUnlockedEventTriggered;
-    }
 
 }

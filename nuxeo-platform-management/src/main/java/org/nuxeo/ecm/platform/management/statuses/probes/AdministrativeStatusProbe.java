@@ -32,36 +32,35 @@ public class AdministrativeStatusProbe implements Probe {
 
     ProbeStatus status;
 
-    AdministrativeStatus administrativeStatusService;
+    AdministrativeStatus administrativeStatus;
 
     public ProbeStatus getProbeStatus() {
         return status;
     }
 
     public void init(Object service) {
-        // TODO Auto-generated method stub
-
+        
     }
 
     public void runProbe(CoreSession session) throws ClientException {
         status = new ProbeStatus("For the server"
                 + getAdministrativeStatusService().getServerInstanceName()
                 + " the administrative status is: ");
-        String serverStatus = getAdministrativeStatusService().getServerStatus();
+        String serverStatus = getAdministrativeStatusService().getValue();
         status.setStatus(status.getStatus() + serverStatus);
 
     }
 
     private AdministrativeStatus getAdministrativeStatusService()
             throws ClientException {
-        if (administrativeStatusService == null) {
+        if (administrativeStatus == null) {
             try {
-                administrativeStatusService = Framework.getService(AdministrativeStatus.class);
+                administrativeStatus = Framework.getService(AdministrativeStatus.class);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
         }
-        return administrativeStatusService;
+        return administrativeStatus;
     }
 
 }

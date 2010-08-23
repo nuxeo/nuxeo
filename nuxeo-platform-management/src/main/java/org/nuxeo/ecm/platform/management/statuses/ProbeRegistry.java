@@ -27,9 +27,9 @@ import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
 
 public class ProbeRegistry {
 
-    private final StatusManagementComponent probeComponent;
+    private final StatusesManagementComponent probeComponent;
 
-    ProbeRegistry(StatusManagementComponent probeComponent) {
+    ProbeRegistry(StatusesManagementComponent probeComponent) {
         this.probeComponent = probeComponent;
     }
 

@@ -4,10 +4,10 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="administratorStatusListner" async="false" postCommit="false"
+    <listener name="administrativeStatusListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.management.administrativestatus.AdministrativeStatusListener">
-        <event>serverLocked</event>
-        <event>serverUnlocked</event>
+        <event>serverActivated</event>
+        <event>serverPassivated</event>
     </listener>
 
   </extension>

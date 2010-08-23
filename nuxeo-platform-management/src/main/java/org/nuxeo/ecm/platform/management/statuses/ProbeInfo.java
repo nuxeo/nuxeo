@@ -24,9 +24,9 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 public class ProbeInfo implements ProbeMBean {
 
     @SuppressWarnings("unused")
-    private final StatusManagementComponent scheduler;
+    private final StatusesManagementComponent scheduler;
 
-    protected ProbeInfo(StatusManagementComponent usecaseSchedulerService, Probe usecase,
+    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe usecase,
             String repositoryName) {
         scheduler = usecaseSchedulerService;
         this.usecase = usecase;

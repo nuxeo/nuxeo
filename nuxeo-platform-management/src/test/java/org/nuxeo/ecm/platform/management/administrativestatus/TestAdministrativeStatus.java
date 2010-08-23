@@ -16,14 +16,11 @@
  */
 package org.nuxeo.ecm.platform.management.administrativestatus;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestAdministrativeStatus extends SQLRepositoryTestCase {
-
-    AdministrativeStatus statusService;
 
     @Override
     public void setUp() throws Exception {
@@ -31,32 +28,26 @@ public class TestAdministrativeStatus extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.platform.management.test");
+        super.fireFrameworkStarted();
         openSession();
     }
 
-    public void testServerAdministrativeStatus() throws ClientException {
-        assertEquals("unlocked",
-                getAdministrativeStatus().getServerStatus());
-        getAdministrativeStatus().lockServer();
-        assertEquals("locked",
-                getAdministrativeStatus().getServerStatus());
-        assertTrue(AdministrativeStatusListener.isServerLockedEventTriggered());
-        getAdministrativeStatus().unlockServer();
-        assertEquals("unlocked",
-                getAdministrativeStatus().getServerStatus());
-        assertTrue(AdministrativeStatusListener.isServerUnlockedEventTriggered());
+    public void testServerAdministrativeStatus() throws Exception {
+        assertEquals(AdministrativeStatus.ACTIVE,
+                getAdministrativeStatus().getValue());
+        getAdministrativeStatus().setPassive();
+        assertEquals(AdministrativeStatus.PASSIVE,
+                getAdministrativeStatus().getValue());
+        assertTrue(AdministrativeStatusListener.serverPassivatedEventTriggered);
+        getAdministrativeStatus().setActive();
+        assertEquals(AdministrativeStatus.ACTIVE,
+                getAdministrativeStatus().getValue());
+        assertTrue(AdministrativeStatusListener.serverActivatedEventTriggered);
     }
 
     private AdministrativeStatus getAdministrativeStatus()
-            throws ClientException {
-        if (statusService == null) {
-            try {
-                statusService = Framework.getService(AdministrativeStatus.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        return statusService;
+            throws Exception {
+        return Framework.getService(AdministrativeStatus.class);
     }
 
 }
