@@ -18,6 +18,10 @@
 
     <!-- bundles -->
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
       <version>${nuxeo.runtime.version}</version>
