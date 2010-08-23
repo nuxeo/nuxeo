@@ -43,6 +43,8 @@ public class ServerHeartBeatComponent extends DefaultComponent {
                         if (event.getType() != FrameworkEvent.STARTED) {
                             return;
                         }
+                        event.getBundle().getBundleContext().removeFrameworkListener(
+                                this);
                         heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);
                     }
                 });
