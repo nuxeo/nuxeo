@@ -60,14 +60,25 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 	}
 	
 
-	public String getValue(String serverInstanceName)  {
-		try {
-			return (String) getOrCreateStatusDocument(serverInstanceName).getPropertyValue(
-					ADMINISTRATIVE_STATUS_PROPERTY);
-		} catch (Exception e) {
-			throw new ClientRuntimeException(e);
-		}
-	}
+    public String getValue(String serverInstanceName) {
+        try {
+            return getStatusValueFromDocument(serverInstanceName);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected String getStatusValueFromDocument(String serverInstanceName)
+            throws ClientException {
+        Fetcher fetcher = new Fetcher(getRepositoryName(), serverInstanceName);
+        try {
+            fetcher.runUnrestricted();
+        } catch (ClientException e) {
+            log.error("Unable to fetch the administrative status document", e);
+            throw new ClientException(e);
+        }
+        return (String) fetcher.getAdministrativeStatusPropertyValue();
+    }
 
 	protected DocumentModel getOrCreateStatusDocument(String serverInstanceName) throws ClientException {
 		Fetcher fetcher = new Fetcher(
@@ -158,6 +169,8 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 		protected final String serverInstanceName;
 		
 		private DocumentModel doc;
+		
+		private String administrativeStatusPropertyValue;
 
 		public Fetcher(String repoName, String serverInstanceName) {
 			super(repoName);
@@ -167,10 +180,16 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 		@Override
 		public void run() throws ClientException {
 			doc = doGetOrCreateDoc(session,serverInstanceName);
+			administrativeStatusPropertyValue = (String)doc.getPropertyValue(
+	                ADMINISTRATIVE_STATUS_PROPERTY);
 		}
 
 		public DocumentModel getDocument() {
 			return doc;
+		}
+		
+		public String getAdministrativeStatusPropertyValue(){
+		    return administrativeStatusPropertyValue;
 		}
 
 	}
