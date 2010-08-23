@@ -64,6 +64,11 @@ public class AdministrativeStatus {
 			}
 		}
 		value = persister.getValue(serverInstanceName);
+		if (value.equals(ACTIVE)) {
+		    notifyEvent(ACTIVATED_EVENT);
+		} if (value.equals(PASSIVATED_EVENT)) {
+		     notifyEvent(PASSIVATED_EVENT);
+		}
 	}
 
 	protected void deactivate() {
