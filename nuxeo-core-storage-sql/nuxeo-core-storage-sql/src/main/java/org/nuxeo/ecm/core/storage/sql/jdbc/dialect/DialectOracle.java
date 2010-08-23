@@ -381,6 +381,14 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean needsOriginalColumnInGroupBy() {
+        // http://download.oracle.com/docs/cd/B19306_01/server.102/b14200/statements_10002.htm#i2080424
+        // The alias can be used in the order_by_clause but not other clauses in
+        // the query.
+        return true;
+    }
+
+    @Override
     public boolean needsOracleJoins() {
         return true;
     }
@@ -541,8 +549,8 @@ public class DialectOracle extends Dialect {
                         ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements", StringUtils.join(lines,
-                    "\n"));
+            properties.put("fulltextTriggerStatements",
+                    StringUtils.join(lines, "\n"));
         }
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
                 SecurityConstants.BROWSE);

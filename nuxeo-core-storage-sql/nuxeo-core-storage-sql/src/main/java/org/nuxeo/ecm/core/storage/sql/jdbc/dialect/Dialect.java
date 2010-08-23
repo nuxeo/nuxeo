@@ -336,8 +336,8 @@ public abstract class Dialect {
      * Gets the JDBC expression setting a free value for this column type.
      * <p>
      * Needed for columns that need an expression around the value being set,
-     * usually for conversion (this is the case for PostgreSQL fulltext {@code
-     * TSVECTOR} columns for instance).
+     * usually for conversion (this is the case for PostgreSQL fulltext
+     * {@code TSVECTOR} columns for instance).
      *
      * @param type the column type
      * @return the expression containing a free variable
@@ -423,6 +423,14 @@ public abstract class Dialect {
      * Whether a derived table (subselect in a FROM statement) needs an alias.
      */
     public boolean needsAliasForDerivedTable() {
+        return false;
+    }
+
+    /**
+     * Whether a GROUP BY can only be used with the original column name and not
+     * an alias.
+     */
+    public boolean needsOriginalColumnInGroupBy() {
         return false;
     }
 
