@@ -26,8 +26,8 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementRenderer;
 import org.nuxeo.theme.rendering.RenderingInfo;
-import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public final class Connection extends URLConnection {
 

@@ -40,6 +40,8 @@ import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.resources.BankImport;
+import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
@@ -141,6 +143,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerModelExtension(extension);
         } else if (xp.equals("resources")) {
             registerResourceExtension(extension);
+        } else if (xp.equals("banks")) {
+            registerBankOperation(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -167,6 +171,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             unregisterViewExtension(extension);
         } else if (xp.equals("models")) {
             unregisterModelExtension(extension);
+        } else if (xp.equals("banks")) {
+            unregisterBankOperation(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -564,4 +570,22 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             themeManager.unregisterResourceOrdering(resourceType);
         }
     }
+
+    private void unregisterBankOperation(Extension extension) {
+    }
+
+    private void registerBankOperation(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        RuntimeContext extensionContext = extension.getContext();
+        for (Object contrib : contribs) {
+            if (contrib instanceof BankImport) {
+                BankImport bankImport = (BankImport) contrib;
+                String bankName = bankImport.getBankName();
+                String srcFilePath = bankImport.getSrcFilePath();
+                URL srcFileUrl = extensionContext.getResource(srcFilePath);
+                BankManager.importBankData(bankName, srcFileUrl);
+            }
+        }
+    }
+
 }

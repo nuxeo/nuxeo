@@ -49,6 +49,8 @@ import org.nuxeo.theme.presets.PaletteIdentifyException;
 import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.BankManager;
+import org.nuxeo.theme.resources.BankUtils;
 import org.nuxeo.theme.themes.ThemeManager;
 
 @WebObject(type = "theme-banks")

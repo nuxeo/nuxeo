@@ -245,4 +245,10 @@
     </documentation>    
   </extension-point>
 
+  <extension-point name="banks">
+    <documentation>
+    Import of bank data
+    </documentation>
+    <object class="org.nuxeo.theme.resources.BankImport"/>
+  </extension-point>
 </component>
