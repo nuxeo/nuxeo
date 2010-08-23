@@ -54,6 +54,7 @@ public class TestQueueManager extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
         deployBundle("org.nuxeo.ecm.platform.queue.api");
+        deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.platform.queue");
         deployBundle("org.nuxeo.ecm.platform.queue.test");
         super.fireFrameworkStarted();

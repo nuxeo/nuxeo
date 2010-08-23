@@ -22,10 +22,12 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.lock.api.AlreadyLockedException;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.NoSuchLockException;
 import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
+import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
 import org.nuxeo.ecm.platform.queue.api.QueueContent;
 import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueExecutor;
@@ -70,6 +72,11 @@ public class QueueHandlerImpl implements QueueHandler {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    protected boolean isServerActive() throws ClientException {
+    	AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
+    	return administrativeStatus.isActive();
+    }
+    
     /*
      * (non-Javadoc)
      * 
