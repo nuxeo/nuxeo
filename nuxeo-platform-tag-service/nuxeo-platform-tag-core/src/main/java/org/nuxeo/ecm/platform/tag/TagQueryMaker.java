@@ -50,6 +50,8 @@ public class TagQueryMaker extends NXQLQueryMaker {
 
     protected int tagJoinIndex;
 
+    protected Column firstSelectedColumn;
+
     @Override
     public String getName() {
         return "NXTAG";
@@ -108,6 +110,9 @@ public class TagQueryMaker extends NXQLQueryMaker {
     @Override
     protected String getSelectColName(Column col) {
         String name = super.getSelectColName(col);
+        if (firstSelectedColumn == null) {
+            firstSelectedColumn = col;
+        }
         if (type == COUNT_SOURCE
                 && col.getTable().getName().equalsIgnoreCase("relation")
                 && col.getKey().equals("source")) {
@@ -131,8 +136,13 @@ public class TagQueryMaker extends NXQLQueryMaker {
     protected void fixSelect(Select select) {
         if (type == COUNT_SOURCE) {
             // add a GROUP BY on first col
-            String name = dialect.openQuote() + COL_ALIAS_PREFIX + "1"
-                    + dialect.closeQuote();
+            String name;
+            if (dialect.needsOriginalColumnInGroupBy()) {
+                name = firstSelectedColumn.getFullQuotedName();
+            } else {
+                name = dialect.openQuote() + COL_ALIAS_PREFIX + "1"
+                        + dialect.closeQuote();
+            }
             select.setGroupBy(name);
         }
     }
