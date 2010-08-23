@@ -24,7 +24,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * Framework for accessing to running nuxeo server in a cluster using heartbeat
- *
+ * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public class ServerHeartBeatComponent extends DefaultComponent {
@@ -36,15 +36,16 @@ public class ServerHeartBeatComponent extends DefaultComponent {
         super.activate(context);
         heartbeat = new NuxeoServerHeartBeat();
 
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                new FrameworkListener() {
 
-            public void frameworkEvent(FrameworkEvent event) {
-                if(event.getType() != FrameworkEvent.STARTED) {
-                    return;
-                }
-                heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);  // to be contributed
-            }
-        });
+                    public void frameworkEvent(FrameworkEvent event) {
+                        if (event.getType() != FrameworkEvent.STARTED) {
+                            return;
+                        }
+                        heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);
+                    }
+                });
     }
 
     @Override
