@@ -100,7 +100,7 @@
       <artifact group="javax.ws.rs" name="jsr311-api" version="1.1.1" />
       <artifact group="javax.script" name="script-api" />
       <!-- JOD / OOo libs and other converters deps-->
-      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.artofsolving.jodconverter" name="jodconverter-core" />
       <artifact group="org.openoffice" name="ridl" />
       <artifact group="org.openoffice" name="juh" />
       <artifact group="org.openoffice" name="unoil" />
