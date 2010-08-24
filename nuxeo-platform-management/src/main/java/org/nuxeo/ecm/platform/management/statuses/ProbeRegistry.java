@@ -53,17 +53,13 @@ public class ProbeRegistry {
                     "Cannot create management probe for " + descriptor);
         }
         probe.init(service);
-        ProbeInfo context = new ProbeInfo(this.probeComponent, probe, getDefaultRepository().getName());
+        ProbeInfo context = new ProbeInfo(this.probeComponent, probe);
         probeComponent.managementPublisher.doQualifyNames(context,
                 descriptor);
         probeComponent.managementPublisher.doPublishContext(context);
         scheduledProbesContext.put(probeClass, context);
     }
 
-    protected Repository getDefaultRepository() {
-        return Framework.getLocalService(RepositoryManager.class).getDefaultRepository();
-
-    }
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
@@ -81,7 +77,7 @@ public class ProbeRegistry {
         }
         for (ProbeInfo context : scheduledProbesContext.values()) {
             try {
-                context.runner.runWithSafeClassLoader();
+                context.run();
                 failedProbesContext.remove(context);
                 succeedProbesContext.add(context);
             } catch (Exception e) {
@@ -97,7 +93,7 @@ public class ProbeRegistry {
         }
         for (ProbeInfo context : scheduledProbesContext.values()) {
             try {
-                context.runner.runUnrestricted();
+                context.run();
                 failedProbesContext.remove(context);
                 succeedProbesContext.add(context);
             } catch (Exception e) {
@@ -112,7 +108,7 @@ public class ProbeRegistry {
             return;
         }
         try {
-            probe.runner.runWithSafeClassLoader();
+            probe.run();
             failedProbesContext.remove(probe);
             succeedProbesContext.add(probe);
         } catch (Exception e) {

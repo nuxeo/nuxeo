@@ -20,17 +20,17 @@ import java.util.Date;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class ProbeInfo implements ProbeMBean {
 
     @SuppressWarnings("unused")
     private final StatusesManagementComponent scheduler;
 
-    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe usecase,
-            String repositoryName) {
+    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe usecase) {
         scheduler = usecaseSchedulerService;
         this.usecase = usecase;
-        runner = new RepositoryRunner(repositoryName);
     }
 
     protected boolean isEnabled = true;
@@ -132,8 +132,8 @@ public class ProbeInfo implements ProbeMBean {
 
     protected class RepositoryRunner extends UnrestrictedSessionRunner {
 
-        protected RepositoryRunner(String repositoryName) {
-            super(repositoryName);
+        protected RepositoryRunner() {
+            super(Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName());
         }
 
         public void runWithSafeClassLoader() throws ClientException {
@@ -141,7 +141,7 @@ public class ProbeInfo implements ProbeMBean {
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(RepositoryRunner.class.getClassLoader());
             try {
-                ProbeInfo.this.runner.runUnrestricted();
+            runUnrestricted();
             } finally {
                 currentThread.setContextClassLoader(lastLoader);
             }
@@ -176,14 +176,14 @@ public class ProbeInfo implements ProbeMBean {
         }
     }
 
-    protected final RepositoryRunner runner;
-
+    
     public void run() {
         Thread currentThread = Thread.currentThread();
         ClassLoader lastLoader = currentThread.getContextClassLoader();
         currentThread.setContextClassLoader(ProbeInfo.class.getClassLoader());
         try {
-            runner.runUnrestricted();
+            RepositoryRunner runner = new RepositoryRunner();
+            runner.runWithSafeClassLoader();
         } catch (ClientException e) {
         } finally {
             currentThread.setContextClassLoader(lastLoader);
