@@ -83,7 +83,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return Collections.unmodifiableSet(contentViews.keySet());
     }
 
-    public Set<String> getContentViews(String flag) {
+    public Set<String> getContentViewNames(String flag) {
         Set<String> res = new HashSet<String>();
         Set<String> items = contentViewsByFlag.get(flag);
         if (items != null) {

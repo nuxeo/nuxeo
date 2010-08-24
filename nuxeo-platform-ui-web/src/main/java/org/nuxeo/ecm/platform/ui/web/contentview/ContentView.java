@@ -77,7 +77,7 @@ public interface ContentView extends Serializable {
 
     /**
      * Returns the list of flags set on this content view, useful to group
-     * them, see {@link ContentViewService#getContentViews(String)}
+     * them, see {@link ContentViewService#getContentViewNames(String)}
      */
     List<String> getFlags();
 

@@ -51,7 +51,7 @@ public interface ContentViewService extends Serializable {
      * Returns all the registered content view names with given flag declared
      * on their definition
      */
-    Set<String> getContentViews(String flag);
+    Set<String> getContentViewNames(String flag);
 
     /**
      * Returns the page provider computed from the content view with given

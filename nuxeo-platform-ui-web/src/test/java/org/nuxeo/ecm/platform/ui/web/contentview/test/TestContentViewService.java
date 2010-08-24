@@ -165,21 +165,21 @@ public class TestContentViewService extends NXRuntimeTestCase {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
-        Set<String> names = service.getContentViews("foo");
+        Set<String> names = service.getContentViewNames("foo");
         assertNotNull(names);
         assertEquals(1, names.size());
         assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
 
-        names = service.getContentViews("foo2");
+        names = service.getContentViewNames("foo2");
         assertNotNull(names);
         assertEquals(0, names.size());
 
-        names = service.getContentViews("bar");
+        names = service.getContentViewNames("bar");
         assertNotNull(names);
         assertEquals(1, names.size());
         assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
 
-        names = service.getContentViews("not_set");
+        names = service.getContentViewNames("not_set");
         assertNotNull(names);
         assertEquals(0, names.size());
 
@@ -187,20 +187,20 @@ public class TestContentViewService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.ui.test",
                 "test-contentview-override-contrib.xml");
 
-        names = service.getContentViews("foo");
+        names = service.getContentViewNames("foo");
         assertNotNull(names);
         assertEquals(0, names.size());
 
-        names = service.getContentViews("foo2");
+        names = service.getContentViewNames("foo2");
         assertNotNull(names);
         assertEquals(1, names.size());
         assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
 
-        names = service.getContentViews("bar");
+        names = service.getContentViewNames("bar");
         assertNotNull(names);
         assertEquals(0, names.size());
 
-        names = service.getContentViews("not_set");
+        names = service.getContentViewNames("not_set");
         assertNotNull(names);
         assertEquals(0, names.size());
     }
