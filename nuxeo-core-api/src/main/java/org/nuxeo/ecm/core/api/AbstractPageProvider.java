@@ -60,6 +60,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected DocumentModel searchDocumentModel;
 
+    protected String errorMessage;
+
+    protected Throwable error;
+
     public abstract List<T> getCurrentPage();
 
     /**
@@ -300,6 +304,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public void refresh() {
         resultsCount = UNKNOWN_SIZE;
         currentSelectPage = null;
+        errorMessage = null;
+        error = null;
     }
 
     public void setName(String name) {
@@ -433,10 +439,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public PageSelections<T> getCurrentSelectPage() {
         if (currentSelectPage == null) {
-            currentSelectPage = new PageSelections<T>();
-            currentSelectPage.setName(name);
             List<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
             List<T> currentPage = getCurrentPage();
+            currentSelectPage = new PageSelections<T>();
+            currentSelectPage.setName(name);
             if (currentPage != null && !currentPage.isEmpty()) {
                 if (selectedEntries == null || selectedEntries.isEmpty()) {
                     // no selection at all
@@ -486,6 +492,18 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
         this.searchDocumentModel = searchDocumentModel;
         refresh();
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public Throwable getError() {
+        return error;
+    }
+
+    public boolean hasError() {
+        return error != null;
     }
 
 }

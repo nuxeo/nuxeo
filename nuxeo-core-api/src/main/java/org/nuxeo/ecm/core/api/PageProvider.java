@@ -296,4 +296,10 @@ public interface PageProvider<T> extends Serializable {
 
     void setSearchDocumentModel(DocumentModel doc);
 
+    boolean hasError();
+
+    String getErrorMessage();
+
+    Throwable getError();
+
 }
