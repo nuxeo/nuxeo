@@ -69,6 +69,8 @@ public class CoreQueryDocumentPageProvider extends
     public List<DocumentModel> getCurrentPage() {
         checkQueryCache();
         if (currentPageDocuments == null) {
+            error = null;
+            errorMessage = null;
 
             CoreSession coreSession = getCoreSession();
             if (query == null) {
@@ -103,7 +105,9 @@ public class CoreQueryDocumentPageProvider extends
                 }
 
             } catch (Exception e) {
-                throw new ClientRuntimeException(e);
+                error = e;
+                errorMessage = e.getMessage();
+                log.warn(e.getMessage(), e);
             }
         }
         return currentPageDocuments;

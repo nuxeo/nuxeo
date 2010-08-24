@@ -66,42 +66,44 @@
           <ui:param name="listName" value="#{contentView.selectionListName}" />
           <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
           <ui:define name="buttons">
-            <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
-              <div id="selection_buttons">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                          <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
-                            <nxu:dataList var="sel_action" value="#{actions}"
-                              id="clipboardActionsTable_#{contentViewListIndex}_#{status.index}">
-                            <span id="#{sel_action.id}">
-                              <nxh:commandButton
-                                styleClass="button" type="submit"
-                                action="#{sel_action.getLink()}"
-                                value="#{messages[sel_action.label]}"
-                                onclick="#{sel_action.confirm}"
-                                disabled="#{!sel_action.available}"
-                                id="clipboardActionsButton" />
-                             </span>
-                            </nxu:dataList>
-                          </nxu:set>
-                          <br />
-                        </c:forEach>
-                      </td>
-                      <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
-                        <a4j:status>
-                          <f:facet name="start">
-                            <h:graphicImage value="/img/standart_waiter.gif" />
-                          </f:facet>
-                        </a4j:status>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </a4j:outputPanel>
+            <c:if test="#{documents.rowCount != 0}">
+              <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
+                <div id="selection_buttons">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+                            <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
+                              <nxu:dataList var="sel_action" value="#{actions}"
+                                id="clipboardActionsTable_#{contentViewListIndex}_#{status.index}">
+                              <span id="#{sel_action.id}">
+                                <nxh:commandButton
+                                  styleClass="button" type="submit"
+                                  action="#{sel_action.getLink()}"
+                                  value="#{messages[sel_action.label]}"
+                                  onclick="#{sel_action.confirm}"
+                                  disabled="#{!sel_action.available}"
+                                  id="clipboardActionsButton" />
+                               </span>
+                              </nxu:dataList>
+                            </nxu:set>
+                            <br />
+                          </c:forEach>
+                        </td>
+                        <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
+                          <a4j:status>
+                            <f:facet name="start">
+                              <h:graphicImage value="/img/standart_waiter.gif" />
+                            </f:facet>
+                          </a4j:status>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </a4j:outputPanel>
+            </c:if>
           </ui:define>
         </ui:decorate>
 

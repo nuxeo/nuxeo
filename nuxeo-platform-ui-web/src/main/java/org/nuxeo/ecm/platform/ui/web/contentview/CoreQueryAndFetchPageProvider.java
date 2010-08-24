@@ -62,6 +62,8 @@ public class CoreQueryAndFetchPageProvider extends
     public List<Map<String, Serializable>> getCurrentPage() {
         checkQueryCache();
         if (currentItems == null) {
+            errorMessage = null;
+            error = null;
 
             if (query == null) {
                 buildQuery();
@@ -111,7 +113,9 @@ public class CoreQueryAndFetchPageProvider extends
                 }
 
             } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
+                errorMessage = e.getMessage();
+                error = e;
+                log.warn(e.getMessage(), e);
             } finally {
                 if (result != null) {
                     result.close();
