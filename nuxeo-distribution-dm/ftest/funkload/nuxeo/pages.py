@@ -361,7 +361,7 @@ class BasePage:
             ['userServicesForm_SUBMIT', '1'],
             ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
             description=description)
-        fl.assert_('SEARCH_DOCUMENT_LIST' in fl.getBody(),
+        fl.assert_('simple_search' in fl.getBody(),
                      'Not a search result page')
         return self
 
