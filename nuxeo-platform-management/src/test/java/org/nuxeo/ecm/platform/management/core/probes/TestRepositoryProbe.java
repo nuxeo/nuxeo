@@ -16,25 +16,45 @@
  */
 package org.nuxeo.ecm.platform.management.core.probes;
 
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.management.statuses.probes.RepositoryProbe;
-import org.nuxeo.ecm.platform.management.statuses.probes.RepositoryTestProbe;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
+import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestRepositoryProbe extends RepositoryOSGITestCase {
+public class TestRepositoryProbe extends SQLRepositoryTestCase {
 
-   public void testRunRepositoryProbe() throws Exception {
-       openRepositoryWithSystemPrivileges();
-       RepositoryProbe probe = new RepositoryProbe();
-       probe.runProbe(getCoreSession());
+    ProbeRunner probeRunner;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.platform.management");
+        deployBundle("org.nuxeo.ecm.platform.management.test");
+        openSession();
+    }
+    
+    
+    public void testRunRepositoryProbe() throws Exception {
+       ProbeInfo repoProbe = getProbeRunner().getProbeInfo("repository-probe");
+       probeRunner.runProbe(repoProbe);
+       assertTrue(probeRunner.getProbesInSuccess().contains("repository-probe"));
    }
    
-   public void testRunRepositoryTestProbe() throws Exception {
-       openRepositoryWithSystemPrivileges();
-       RepositoryTestProbe probe = new RepositoryTestProbe();
-       probe.runProbe(getCoreSession());
+    public void testRunRepositoryTestProbe() throws Exception {
+        ProbeInfo repoProbe = getProbeRunner().getProbeInfo("repositoryTest-probe");
+        probeRunner.runProbe(repoProbe);
+        assertTrue(probeRunner.getProbesInSuccess().contains("repositoryTest-probe"));
+    }
+    
+   ProbeRunner getProbeRunner() throws Exception {
+       if (probeRunner == null) {
+           probeRunner = Framework.getService(ProbeRunner.class);
+       }
+       return probeRunner;
    }
 
 }

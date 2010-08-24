@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
 
 public class ProbeRegistry {
@@ -51,11 +53,16 @@ public class ProbeRegistry {
                     "Cannot create management probe for " + descriptor);
         }
         probe.init(service);
-        ProbeInfo context = new ProbeInfo(this.probeComponent, probe, "default");
+        ProbeInfo context = new ProbeInfo(this.probeComponent, probe, getDefaultRepository().getName());
         probeComponent.managementPublisher.doQualifyNames(context,
                 descriptor);
         probeComponent.managementPublisher.doPublishContext(context);
         scheduledProbesContext.put(probeClass, context);
+    }
+
+    protected Repository getDefaultRepository() {
+        return Framework.getLocalService(RepositoryManager.class).getDefaultRepository();
+
     }
 
     public void unregisterProbe(ProbeDescriptor descriptor) {

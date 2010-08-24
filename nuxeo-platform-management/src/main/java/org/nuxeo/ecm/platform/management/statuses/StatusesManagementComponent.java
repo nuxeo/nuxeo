@@ -246,6 +246,6 @@ public class StatusesManagementComponent extends DefaultComponent implements
 		if (adapter.isAssignableFrom(AdministrativeStatus.class)) {
 			return adapter.cast(adminStatus);
 		}
-		return null;
+		return super.getAdapter(adapter);
 	}
 }
