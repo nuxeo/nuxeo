@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.el;
 
 import java.io.Serializable;
 
-import javax.ejb.EJBTransactionRolledbackException;
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
@@ -82,8 +81,6 @@ public class DocumentModelResolver extends BeanELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        boolean avoidErrors = false;
-        String errorMessage = null;
         Object value = null;
         if (base instanceof DocumentModel) {
             try {
@@ -100,47 +97,21 @@ public class DocumentModelResolver extends BeanELResolver {
                 Property docProperty = ctx.doc.getProperty(ctx.schema + ":"
                         + property);
                 value = getDocumentPropertyValue(docProperty);
-                context.setPropertyResolved(true);
             } catch (ClientException pe) {
                 // avoid errors, return null
-                avoidErrors = true;
-                errorMessage = pe.getMessage();
+                log.warn(pe.getMessage());
             }
+            context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
                 Property subProperty = getDocumentProperty(docProperty,
                         property);
                 value = getDocumentPropertyValue(subProperty);
-                context.setPropertyResolved(true);
             } catch (PropertyException pe) {
                 // avoid errors, return null
-                avoidErrors = true;
-                errorMessage = pe.getMessage();
+                log.warn(pe.getMessage());
             }
-        }
-
-        // XXX end by bean resolver to overcome a mysterious StackOverflow
-        // error at first login, and maybe resolve Property getters.
-        if (!context.isPropertyResolved()) {
-            try {
-                value = super.getValue(context, base, property);
-            } catch (Exception e) {
-                Throwable t = e;
-                do {
-                    if (t instanceof EJBTransactionRolledbackException) {
-                        // log if ejb rollback (kills seam components silently)
-                        log.error(t, t);
-                        break;
-                    }
-                    t = t.getCause();
-                } while (t != null);
-                context.setPropertyResolved(false);
-            }
-        }
-
-        if (!context.isPropertyResolved() && avoidErrors) {
-            log.warn(errorMessage);
             context.setPropertyResolved(true);
         }
 
@@ -218,12 +189,11 @@ public class DocumentModelResolver extends BeanELResolver {
             try {
                 ctx.doc.setPropertyValue(ctx.schema + ":" + (String) property,
                         (Serializable) value);
-                context.setPropertyResolved(true);
             } catch (ClientException e) {
-                // XXX avoid errors here too?
+                // avoid errors here too
                 log.warn(e.getMessage());
-                context.setPropertyResolved(true);
             }
+            context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
@@ -231,12 +201,11 @@ public class DocumentModelResolver extends BeanELResolver {
                         property);
                 value = FieldAdapterManager.getValueForStorage(value);
                 subProperty.setValue(value);
-                context.setPropertyResolved(true);
             } catch (PropertyException pe) {
-                // XXX avoid errors here too?
+                // avoid errors here too
                 log.warn(pe.getMessage());
-                context.setPropertyResolved(true);
             }
+            context.setPropertyResolved(true);
         }
     }
 
