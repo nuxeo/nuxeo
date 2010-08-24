@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,21 +39,9 @@ public class TestTagService extends SQLRepositoryTestCase {
 
     protected TagService tagService;
 
-    public boolean disableTests() {
-        return !DatabaseHelper.DATABASE.getClass().equals(DatabaseH2.class);
-    }
-
     @Override
     public void setUp() throws Exception {
-        if (disableTests()) {
-            log.error("test disabled for non-H2");
-            return;
-        }
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.tag");
         openSession();
@@ -62,18 +50,19 @@ public class TestTagService extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        if (disableTests()) {
-            return;
-        }
         closeSession();
         super.tearDown();
     }
 
-    public void testTags() throws Exception {
-        if (disableTests()) {
-            return;
+    // Oracle fails if we do too many connections in a short time, sleep
+    // here to prevent this.
+    public void maybeSleep() throws Exception {
+        if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+            Thread.sleep(5 * 1000);
         }
+    }
 
+    public void testTags() throws Exception {
         DocumentModel fold = session.createDocumentModel("/", "fold", "Folder");
         fold = session.createDocument(fold);
         DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
@@ -117,6 +106,8 @@ public class TestTagService extends SQLRepositoryTestCase {
         tags = tagService.getDocumentTags(session, file2Id, "bob");
         assertTrue(tags.isEmpty());
 
+        maybeSleep();
+
         // find docs for tag
         List<String> docIds;
         // tag 1
@@ -134,6 +125,8 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(file1set, new HashSet<String>(docIds));
         docIds = tagService.getTagDocumentIds(session, "othertag", "bob");
         assertTrue(docIds.isEmpty());
+
+        maybeSleep();
 
         // global cloud
         List<Tag> cloud = tagService.getTagCloud(session, null, null, null);
@@ -174,6 +167,8 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(mytag, labels(suggestions));
         suggestions = tagService.getSuggestions(session, "%tag", null);
         assertEquals(twotags, labels(suggestions));
+
+        maybeSleep();
 
         // remove explicit tagging
         tagService.untag(session, file2Id, "mytag", null);
