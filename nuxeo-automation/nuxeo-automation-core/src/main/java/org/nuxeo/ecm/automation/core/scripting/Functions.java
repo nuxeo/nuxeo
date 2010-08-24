@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -114,4 +115,10 @@ public class Functions {
         }
         return result;
     }
+
+    public String getNextId(final String key) throws Exception {
+        UIDSequencer svc = Framework.getService(UIDSequencer.class);
+        return Integer.toString(svc.getNext(key));
+    }
+
 }

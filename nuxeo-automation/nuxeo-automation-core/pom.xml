@@ -31,6 +31,11 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
+    <!-- for uid generator function-->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-uidgen-core</artifactId>
+    </dependency>
     <!-- for versioning info on DocumentWrapper -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
