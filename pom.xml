@@ -757,34 +757,33 @@
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>juh</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>jurt</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>ridl</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>unoil</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>com.artofsolving</groupId>
-        <artifactId>jodconverter</artifactId>
-        <version>2.2.2</version>
+        <groupId>org.artofsolving.jodconverter</groupId>
+        <artifactId>jodconverter-core</artifactId>
+        <version>3.0-beta-3</version>
         <scope>provided</scope>
       </dependency>
-
       <!-- others -->
       <dependency>
         <groupId>com.h2database</groupId>
