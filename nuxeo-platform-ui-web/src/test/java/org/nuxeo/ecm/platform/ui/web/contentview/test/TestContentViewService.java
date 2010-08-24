@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.platform.ui.web.contentview.test;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewLayout;
@@ -77,6 +80,13 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
         assertFalse(contentView.getUseGlobalPageSize());
+
+        List<String> flags = contentView.getFlags();
+        assertNotNull(flags);
+        assertEquals(2, flags.size());
+        assertEquals("foo", flags.get(0));
+        assertEquals("bar", flags.get(1));
+
     }
 
     public void testOverride() throws Exception {
@@ -126,6 +136,73 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
         assertTrue(contentView.getUseGlobalPageSize());
+
+        List<String> flags = contentView.getFlags();
+        assertNotNull(flags);
+        assertEquals(1, flags.size());
+        assertEquals("foo2", flags.get(0));
+
+    }
+
+    public void testGetContentViewNames() throws Exception {
+        ContentViewService service = Framework.getService(ContentViewService.class);
+        assertNotNull(service);
+
+        Set<String> names = service.getContentViewNames();
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        List<String> orderedNames = new ArrayList<String>();
+        orderedNames.addAll(names);
+        Collections.sort(orderedNames);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", orderedNames.get(1));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                orderedNames.get(2));
+
+    }
+
+    public void testGetContentViewByFlag() throws Exception {
+        ContentViewService service = Framework.getService(ContentViewService.class);
+        assertNotNull(service);
+
+        Set<String> names = service.getContentViews("foo");
+        assertNotNull(names);
+        assertEquals(1, names.size());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
+
+        names = service.getContentViews("foo2");
+        assertNotNull(names);
+        assertEquals(0, names.size());
+
+        names = service.getContentViews("bar");
+        assertNotNull(names);
+        assertEquals(1, names.size());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
+
+        names = service.getContentViews("not_set");
+        assertNotNull(names);
+        assertEquals(0, names.size());
+
+        // check after override too
+        deployContrib("org.nuxeo.ecm.platform.ui.test",
+                "test-contentview-override-contrib.xml");
+
+        names = service.getContentViews("foo");
+        assertNotNull(names);
+        assertEquals(0, names.size());
+
+        names = service.getContentViews("foo2");
+        assertNotNull(names);
+        assertEquals(1, names.size());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
+
+        names = service.getContentViews("bar");
+        assertNotNull(names);
+        assertEquals(0, names.size());
+
+        names = service.getContentViews("not_set");
+        assertNotNull(names);
+        assertEquals(0, names.size());
     }
 
 }

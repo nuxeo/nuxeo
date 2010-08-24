@@ -72,6 +72,9 @@ public class ContentViewDescriptor {
     @XNodeList(value = "resultLayouts/layout", type = ArrayList.class, componentType = ContentViewLayoutImpl.class)
     List<ContentViewLayout> resultLayouts;
 
+    @XNodeList(value = "flags/flag", type = ArrayList.class, componentType = String.class)
+    List<String> flags;
+
     @XNode("cacheKey")
     String cacheKey;
 
@@ -176,6 +179,10 @@ public class ContentViewDescriptor {
             return genDesc.getQueryParameters();
         }
         return null;
+    }
+
+    public List<String> getFlags() {
+        return flags;
     }
 
 }

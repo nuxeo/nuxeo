@@ -70,10 +70,16 @@ public interface ContentView extends Serializable {
     String getPagination();
 
     /**
-     * Return the list of action categories to display buttons available on
+     * Returns the list of action categories to display buttons available on
      * selection of items.
      */
     List<String> getActionsCategories();
+
+    /**
+     * Returns the list of flags set on this content view, useful to group
+     * them, see {@link ContentViewService#getContentViews(String)}
+     */
+    List<String> getFlags();
 
     /**
      * Returns the search layout, used to filter results.

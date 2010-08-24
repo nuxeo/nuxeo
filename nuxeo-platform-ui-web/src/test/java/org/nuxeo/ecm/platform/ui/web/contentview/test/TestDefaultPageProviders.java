@@ -333,6 +333,36 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertEquals("Document number 3", docs.get(1).get("dc:title"));
     }
 
+    public void testCoreQueryAndFetchWithError() throws Exception {
+
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        assertNotNull(contentView);
+
+        // do not pass params => query will not be built correctly
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProvider();
+        assertNotNull(pp);
+
+        assertEquals(-1, pp.getResultsCount());
+        assertEquals(0, pp.getNumberOfPages());
+        assertNull(pp.getError());
+        assertNull(pp.getErrorMessage());
+
+        // init results
+        List<Map<String, Serializable>> docs = pp.getCurrentPage();
+
+        assertEquals(-1, pp.getResultsCount());
+        assertNotNull(pp.getError());
+        assertEquals(
+                "Failed to execute query: NXQL: SELECT dc:title FROM Document "
+                        + "WHERE ecm:parentId = ORDER BY dc:title: "
+                        + "org.nuxeo.ecm.core.query.QueryParseException: "
+                        + "Syntax error: Invalid token <ORDER BY> "
+                        + "at offset 51 in query: SELECT dc:title FROM "
+                        + "Document WHERE ecm:parentId = ORDER BY dc:title",
+                pp.getErrorMessage());
+
+    }
+
     public void testCoreQueryWithSearchDocument() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);

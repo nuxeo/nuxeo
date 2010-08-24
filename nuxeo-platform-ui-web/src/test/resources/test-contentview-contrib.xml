@@ -36,6 +36,12 @@
       <refresh>
         <event>documentChildrenChanged</event>
       </refresh>
+
+      <flags>
+        <flag>foo</flag>
+        <flag>bar</flag>
+      </flags>
+
     </contentView>
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">

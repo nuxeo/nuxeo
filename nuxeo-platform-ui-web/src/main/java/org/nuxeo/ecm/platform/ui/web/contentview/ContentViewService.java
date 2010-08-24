@@ -42,10 +42,16 @@ public interface ContentViewService extends Serializable {
     ContentView getContentView(String name) throws ClientException;
 
     /**
-     * Returns all the registered content view names, or an empty set
-     * if no content view is registered.
+     * Returns all the registered content view names, or an empty set if no
+     * content view is registered.
      */
     Set<String> getContentViewNames();
+
+    /**
+     * Returns all the registered content view names with given flag declared
+     * on their definition
+     */
+    Set<String> getContentViews(String flag);
 
     /**
      * Returns the page provider computed from the content view with given

@@ -68,6 +68,8 @@ public class ContentViewImpl implements ContentView {
 
     protected List<ContentViewLayout> resultLayouts;
 
+    protected List<String> flags;
+
     protected ContentViewLayout currentResultLayout;
 
     protected String cacheKey;
@@ -89,8 +91,8 @@ public class ContentViewImpl implements ContentView {
     public ContentViewImpl(String name, String title, boolean translateTitle,
             String iconPath, String selectionList, String pagination,
             List<String> actionCategories, ContentViewLayout searchLayout,
-            List<ContentViewLayout> resultLayouts, String cacheKey,
-            Integer cacheSize, List<String> refreshEventNames,
+            List<ContentViewLayout> resultLayouts, List<String> flags,
+            String cacheKey, Integer cacheSize, List<String> refreshEventNames,
             boolean useGlobalPageSize, String[] queryParameters,
             String searchDocumentModelBinding, String searchDocumentModelType) {
         this.name = name;
@@ -102,6 +104,7 @@ public class ContentViewImpl implements ContentView {
         this.actionCategories = actionCategories;
         this.searchLayout = searchLayout;
         this.resultLayouts = resultLayouts;
+        this.flags = flags;
         this.cacheKey = cacheKey;
         this.cacheSize = cacheSize;
         this.refreshEventNames = refreshEventNames;
@@ -326,6 +329,10 @@ public class ContentViewImpl implements ContentView {
         return searchDocumentModelType;
     }
 
+    public List<String> getFlags() {
+        return flags;
+    }
+
     @Override
     public String toString() {
         return String.format("ContentViewImpl [name=%s, title=%s, "
@@ -333,11 +340,12 @@ public class ContentViewImpl implements ContentView {
                 + "selectionList=%s, pagination=%s, "
                 + "actionCategories=%s, searchLayout=%s, "
                 + "resultLayouts=%s, currentResultLayout=%s, "
-                + "cacheKey=%s, cacheSize=%s, refreshEventNames=%s, "
+                + "flags=%s, cacheKey=%s, cacheSize=%s, refreshEventNames=%s, "
                 + "useGlobalPageSize=%s, searchDocumentModel=%s]", name, title,
                 Boolean.valueOf(translateTitle), iconPath, selectionList,
                 pagination, actionCategories, searchLayout, resultLayouts,
-                currentResultLayout, cacheKey, cacheSize, refreshEventNames,
-                Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
+                currentResultLayout, flags, cacheKey, cacheSize,
+                refreshEventNames, Boolean.valueOf(useGlobalPageSize),
+                searchDocumentModel);
     }
 }

@@ -18,6 +18,9 @@
       </resultLayouts>
       <searchLayout name="search_layout_2" />
       <useGlobalPageSize>true</useGlobalPageSize>
+      <flags>
+        <flag>foo2</flag>
+      </flags>
     </contentView>
 
   </extension>

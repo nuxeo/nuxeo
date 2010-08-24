@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
 
+    protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<String, Set<String>>();
+
     public ContentView getContentView(String name) throws ClientException {
         ContentViewDescriptor desc = contentViews.get(name);
         if (desc == null) {
@@ -69,7 +72,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getIconPath(), desc.getSelectionListName(),
                 desc.getPagination(), desc.getActionCategories(),
                 desc.getSearchLayout(), desc.getResultLayouts(),
-                desc.getCacheKey(), desc.getCacheSize(),
+                desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
                 desc.getRefreshEventNames(), useGlobalPageSize.booleanValue(),
                 desc.getQueryParameters(), desc.getSearchDocumentBinding(),
                 desc.getSearchDocumentType());
@@ -78,6 +81,15 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     public Set<String> getContentViewNames() {
         return Collections.unmodifiableSet(contentViews.keySet());
+    }
+
+    public Set<String> getContentViews(String flag) {
+        Set<String> res = new HashSet<String>();
+        Set<String> items = contentViewsByFlag.get(flag);
+        if (items != null) {
+            res.addAll(items);
+        }
+        return res;
     }
 
     public PageProvider<?> getPageProvider(String name,
@@ -190,10 +202,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             }
             if (contentViews.containsKey(name)) {
                 log.info("Overriding content view with name " + name);
-                desc = mergeContentViews(contentViews.get(name), desc);
+                ContentViewDescriptor oldDesc = contentViews.get(name);
+                removeContentViewFlags(oldDesc);
+                desc = mergeContentViews(oldDesc, desc);
             }
             log.info("Registering content view with name " + name);
             contentViews.put(name, desc);
+            addContentViewFlags(desc);
         }
     }
 
@@ -248,10 +263,12 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (events != null && !events.isEmpty()) {
             oldDesc.eventNames = events;
         }
+
         ContentViewLayoutImpl searchLayout = newDesc.getSearchLayout();
         if (searchLayout != null) {
             oldDesc.searchLayout = searchLayout;
         }
+
         List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
         if (resultLayouts != null) {
             Boolean appendResultLayout = newDesc.appendResultLayouts;
@@ -266,6 +283,12 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 oldDesc.resultLayouts = resultLayouts;
             }
         }
+
+        List<String> flags = newDesc.getFlags();
+        if (flags != null && !flags.isEmpty()) {
+            oldDesc.flags = flags;
+        }
+
         String selectionList = newDesc.getSelectionListName();
         if (selectionList != null) {
             oldDesc.selectionList = selectionList;
@@ -287,7 +310,37 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             String name = desc.getName();
             contentViews.remove(name);
+            removeContentViewFlags(desc);
             log.info("Unregistering content view with name " + name);
+        }
+    }
+
+    protected void addContentViewFlags(ContentViewDescriptor desc) {
+        String name = desc.getName();
+        List<String> flags = desc.getFlags();
+        if (flags != null) {
+            for (String flag : flags) {
+                Set<String> items = contentViewsByFlag.get(flag);
+                if (items == null) {
+                    items = new HashSet<String>();
+                }
+                items.add(name);
+                contentViewsByFlag.put(flag, items);
+            }
+        }
+    }
+
+    protected void removeContentViewFlags(ContentViewDescriptor desc) {
+        String name = desc.getName();
+        List<String> flags = desc.getFlags();
+        if (flags != null) {
+            for (String flag : flags) {
+                Set<String> items = contentViewsByFlag.get(flag);
+                if (items != null) {
+                    items.remove(name);
+                    contentViewsByFlag.put(flag, items);
+                }
+            }
         }
     }
 
