@@ -26,10 +26,10 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 
 /**
- *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @deprecated use {@link DocumentSearchActions} and content views instead
  */
+@Deprecated
 public interface SearchResults extends SelectDataModelListener {
 
     /**
@@ -45,9 +45,11 @@ public interface SearchResults extends SelectDataModelListener {
 
     String repeatSearch() throws ClientException;
 
-    PagedDocumentsProvider getProvider(String providerName) throws ClientException;
+    PagedDocumentsProvider getProvider(String providerName)
+            throws ClientException;
 
-    SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
+    SelectDataModel getResultsSelectModel(String providerName)
+            throws ClientException;
 
     SelectDataModel getResultsSelectModelAdvanced() throws ClientException;
 
@@ -59,8 +61,8 @@ public interface SearchResults extends SelectDataModelListener {
      * This will be called with Seam remoting...
      */
     @WebRemote
-    String processSelectRow(String docRef, String providerName, Boolean selection)
-            throws ClientException;
+    String processSelectRow(String docRef, String providerName,
+            Boolean selection) throws ClientException;
 
     boolean isSortable() throws ClientException;
 

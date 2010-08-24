@@ -39,10 +39,10 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -68,7 +68,9 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ * @deprecated use {@link DocumentSearchActions} and content views instead
  */
+@Deprecated
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
 public class SearchResultsBean extends InputController implements
@@ -107,7 +109,7 @@ public class SearchResultsBean extends InputController implements
         provider = null;
     }
 
-    public void init(){
+    public void init() {
         log.debug("Initializing...");
     }
 
@@ -209,8 +211,7 @@ public class SearchResultsBean extends InputController implements
         if (providerName == null) {
             throw new ClientException("providerName has not been set yet");
         }
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);
@@ -313,7 +314,8 @@ public class SearchResultsBean extends InputController implements
             }
             writer.writeNext(columnNames);
 
-            // GR dump all pages... why not, but we need to restore current page
+            // GR dump all pages... why not, but we need to restore current
+            // page
             // number.
             int currentPage = provider.getCurrentPageIndex();
             int pageCount = provider.getNumberOfPages();
@@ -347,7 +349,8 @@ public class SearchResultsBean extends InputController implements
                             GregorianCalendar gValue = (GregorianCalendar) value;
                             stringValue = df.format(gValue.getTime());
                         } else if (value instanceof Object[]) {
-                            stringValue = StringUtils.join(Arrays.asList((Object[]) value), ", ");
+                            stringValue = StringUtils.join(
+                                    Arrays.asList((Object[]) value), ", ");
                         } else {
                             stringValue = String.valueOf(value);
                         }

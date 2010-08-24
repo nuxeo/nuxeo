@@ -79,7 +79,9 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * on different query types, to retrieve results and handle selections.
  *
  * @author DM
+ * @deprecated use {@link DocumentSearchActions} and content views instead
  */
+@Deprecated
 @Name("searchActions")
 @Scope(ScopeType.CONVERSATION)
 public class SearchActionsBean extends InputController implements
