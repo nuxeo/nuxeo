@@ -31,9 +31,11 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ * @deprecated use {@link DocumentSearchActions} and content views instead
  */
+@Deprecated
 public interface SearchActions extends StatefulBaseLifeCycle,
-    SelectDataModelListener, ResultsProviderFarm {
+        SelectDataModelListener, ResultsProviderFarm {
 
     String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
@@ -51,7 +53,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     void destroy();
 
     /**
-     *
      * @return the query text - to be used in quick search form
      */
     String getSimpleSearchKeywords();
@@ -83,7 +84,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      */
     void setReindexPath(String path);
 
-    List<DocumentModel> getResultDocuments(String providerName) throws ClientException;
+    List<DocumentModel> getResultDocuments(String providerName)
+            throws ClientException;
 
     // action methods
 
@@ -98,7 +100,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     String getDocumentLocation(DocumentModel doc);
 
-    SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
+    SelectDataModel getResultsSelectModel(String providerName)
+            throws ClientException;
 
     /**
      * @return the Document Model backing the advanced search form up
@@ -106,7 +109,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      */
     DocumentModel getDocumentModel() throws ClientException;
 
-    /** Reindex all documents.
+    /**
+     * Reindex all documents.
      *
      * @throws ClientException
      * @deprecated does nothing
@@ -114,7 +118,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     @Deprecated
     void reindexDocuments() throws ClientException;
 
-    /** Reindex all documents under given path (inclusive).
+    /**
+     * Reindex all documents under given path (inclusive).
      *
      * @param path
      * @throws ClientException
@@ -125,6 +130,7 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * Reset the query fields.
+     *
      * @return
      * @throws ClientException
      */
@@ -132,14 +138,15 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * This will be called with Seam remoting...
+     *
      * @param docRef
      * @param selection
      * @return
      * @throws ClientException
      */
     @WebRemote
-    String processSelectRow(String docRef,
-            String providerName, Boolean selection) throws ClientException;
+    String processSelectRow(String docRef, String providerName,
+            Boolean selection) throws ClientException;
 
     /**
      * @return the latest used NXQL query from the scope (null if none)

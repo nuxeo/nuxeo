@@ -35,8 +35,11 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Handles simple, advanced and administrator searches using content views with
- * defined names.
+ * Handles search parameters needed for simple and advanced and administrator
+ * searches.
+ * <p>
+ * Search parameters are referenced in the content views used on search form
+ * and result pages.
  *
  * @author Anahide Tchertchian
  */

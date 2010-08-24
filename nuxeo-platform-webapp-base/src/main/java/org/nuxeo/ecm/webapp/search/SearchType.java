@@ -23,8 +23,9 @@ package org.nuxeo.ecm.webapp.search;
  * Different types of search.
  *
  * @author DM
- *
+ * @deprecated use {@link DocumentSearchActions} and content views instead
  */
+@Deprecated
 public enum SearchType {
 
     NXQL, KEYWORDS, FORM

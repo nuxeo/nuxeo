@@ -65,6 +65,7 @@ public class SearchDeletedDocumentsConverter implements Converter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public String getAsString(FacesContext context, UIComponent component,
             Object value) {
         if (context == null || component == null) {
