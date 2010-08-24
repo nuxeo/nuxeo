@@ -25,8 +25,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.storage.EventConstants;
@@ -39,17 +37,27 @@ import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
  */
 public class TestSQLBackendNet extends TestSQLBackend {
 
-    protected ServerVCS serverVCS;
+    // defined in repo XML config as well
+    private static final String SERVER_REPO_NAME = "test";
+
+    private static final String CLIENT_REPO_NAME = "client";
+
+    private static final String CLIENT_REPO_NAME_2 = CLIENT_REPO_NAME + "2";
 
     public static List<Event> EVENTS = DummyTestListener.EVENTS_RECEIVED;
 
+    protected String repoName;
+
+    protected ServerVCS serverVCS;
+
     @Override
     public void setUp() throws Exception {
+        repoName = CLIENT_REPO_NAME;
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-invalidations-contrib.xml");
         deployRepositoryContrib();
-        serverVCS = new ServerVCS("test");
+        serverVCS = new ServerVCS(SERVER_REPO_NAME);
         serverVCS.start();
     }
 
@@ -70,7 +78,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        descriptor.name = "client";
+        descriptor.name = repoName;
         descriptor.binaryStorePath = "clientbinaries";
         descriptor.binaryManagerConnect = true;
         ServerDescriptor sd = new ServerDescriptor();
@@ -91,6 +99,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
     }
 
     public static class ServerVCS extends Thread {
+
         protected final String repositoryName;
 
         protected Repository repository;
@@ -102,7 +111,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
                 1);
 
         public ServerVCS(String repositoryName) {
-            super("Nuxeo-VCS-Server");
+            super("Nuxeo-VCS-Server-Test");
             this.repositoryName = repositoryName;
         }
 
@@ -196,9 +205,8 @@ public class TestSQLBackendNet extends TestSQLBackend {
             session.save();
             // after save, remote invalidations have been processed
             assertEquals("after", title.getString());
-            assertEquals(2, EVENTS.size());
             // remote inval from client to server
-            checkEvent(EVENTS.get(1), node.getId(), false);
+            checkEvent(1, false, SERVER_REPO_NAME, node.getId());
         }
 
         // called from client thread via reflection: serverCall
@@ -206,8 +214,8 @@ public class TestSQLBackendNet extends TestSQLBackend {
             title.setValue("new");
             assertEquals(2, EVENTS.size());
             session.save();
-            assertEquals(3, EVENTS.size());
-            checkEvent(EVENTS.get(2), node.getId(), true); // server self inval
+            // server self inval
+            checkEvent(2, true, SERVER_REPO_NAME, node.getId());
         }
     }
 
@@ -215,12 +223,13 @@ public class TestSQLBackendNet extends TestSQLBackend {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Serializable nodeId = node.getId();
         SimpleProperty title = node.getSimpleProperty("tst:title");
         title.setValue("before");
         session.save();
         assertEquals("before", title.getString());
 
-        EVENTS.clear();
+        DummyTestListener.clear();
 
         serverVCS.serverCall("testNetInvalidations_Init");
 
@@ -233,9 +242,8 @@ public class TestSQLBackendNet extends TestSQLBackend {
         session.save();
         assertEquals("after", title.getString());
         // events received
-        assertEquals(1, EVENTS.size());
         // repo 1 self inval
-        checkEvent(EVENTS.get(0), node.getId(), true);
+        checkEvent(0, true, CLIENT_REPO_NAME, nodeId);
 
         serverVCS.serverCall("testNetInvalidations_Check");
 
@@ -244,22 +252,22 @@ public class TestSQLBackendNet extends TestSQLBackend {
 
         // check visible change after save
         assertEquals("after", title.getString());
-        assertEquals(3, EVENTS.size());
         session.save();
         assertEquals("new", title.getString());
-        assertEquals(4, EVENTS.size());
         // remote inval from server to client
-        checkEvent(EVENTS.get(3), node.getId(), false);
+        checkEvent(3, false, CLIENT_REPO_NAME, nodeId);
     }
 
     // this test is similar to clustering tests
     public void testTwoClientsInvalidations() throws Exception {
+        repoName = CLIENT_REPO_NAME_2;
         repository2 = newRepository(-1, false);
 
         Session session1 = repository.getConnection();
 
         Node root1 = session1.getRootNode();
         Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Serializable nodeId = node1.getId();
         SimpleProperty title1 = node1.getSimpleProperty("tst:title");
         title1.setValue("before");
         session1.save();
@@ -272,34 +280,35 @@ public class TestSQLBackendNet extends TestSQLBackend {
         SimpleProperty title2 = node2.getSimpleProperty("tst:title");
         assertEquals("before", title2.getString());
 
-        EVENTS.clear();
+        DummyTestListener.clear();
 
         // change title in session 1
         title1.setValue("after");
-        assertEquals(0, EVENTS.size());
         // save session and queue its invalidations to others
         // note that to be correct this has to also send the invalidations
         // server-side
         session1.save();
         assertEquals("after", title1.getString());
-        assertEquals(1, EVENTS.size());
         // repo 1 self inval
-        checkEvent(EVENTS.get(0), node1.getId(), true);
+        checkEvent(0, true, CLIENT_REPO_NAME, nodeId);
 
         // session2 has not saved (committed) yet, so still unchanged
         assertEquals("before", title2.getString());
-        assertEquals(1, EVENTS.size());
         session2.save();
         // after commit/save, invalidations have been processed
         assertEquals("after", title2.getString());
         // and event sent from repo 1 to repo 2
-        assertEquals(2, EVENTS.size());
-        checkEvent(EVENTS.get(1), node1.getId(), false);
+        checkEvent(1, false, CLIENT_REPO_NAME_2, nodeId);
     }
 
-    protected static void checkEvent(Event event, Serializable id, boolean local) {
+    protected static void checkEvent(int i, boolean local, String repo,
+            Serializable id) {
+        assertTrue("size=" + EVENTS.size() + ", i=" + i, i < EVENTS.size());
+        assertEquals(EVENTS.size() - 1, i);
+        Event event = EVENTS.get(i);
         assertEquals(EventConstants.EVENT_VCS_INVALIDATIONS, event.getName());
         EventContext ctx = event.getContext();
+        assertEquals(repo, ctx.getRepositoryName());
         @SuppressWarnings("unchecked")
         Set<String> set = (Set<String>) ctx.getProperty(EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(Collections.singleton(id), set);

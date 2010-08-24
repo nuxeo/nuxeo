@@ -39,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -51,6 +50,8 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
  * actual mapper.
  */
 public class MapperServlet extends HttpServlet {
+
+    public static final String SERVER_THREAD_NAME_PREFIX = "Nuxeo-VCS-Server-";
 
     private static final long serialVersionUID = 1L;
 
@@ -153,11 +154,12 @@ public class MapperServlet extends HttpServlet {
             MapperInvoker invoker;
             if (mid == null) {
                 // new session
-                String name = "Nuxeo-VCS-Server-"
+                String name = SERVER_THREAD_NAME_PREFIX
                         + threadNumber.incrementAndGet();
                 InvalidationsQueue eventQueue = eventQueues.get(rid);
                 if (eventQueue == null) {
-                    eventQueues.put(rid, eventQueue = new InvalidationsQueue());
+                    eventQueues.put(rid, eventQueue = new InvalidationsQueue(
+                            "servlet-for-" + rid));
                 }
                 invoker = new MapperInvoker(repository, name, eventQueue);
                 Identification id = (Identification) invoker.call(Mapper.GET_IDENTIFICATION);

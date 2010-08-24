@@ -24,16 +24,16 @@ import java.util.List;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 
-/**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- */
 public class DummyTestListener implements EventListener {
 
-    public static final List<Event> EVENTS_RECEIVED
-            = Collections.synchronizedList(new LinkedList<Event>());
+    public static final List<Event> EVENTS_RECEIVED = Collections.synchronizedList(new LinkedList<Event>());
 
     public void handleEvent(Event event) {
         EVENTS_RECEIVED.add(event);
+    }
+
+    public static void clear() {
+        EVENTS_RECEIVED.clear();
     }
 
 }

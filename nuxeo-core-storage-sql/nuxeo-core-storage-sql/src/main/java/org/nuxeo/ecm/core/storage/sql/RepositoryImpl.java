@@ -78,8 +78,8 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    /** Propagator of invalidations to all local mappers. */
-    private final InvalidationsPropagator mapperPropagator;
+    /** Propagator of invalidations to all local mappers' caches. */
+    private final InvalidationsPropagator cachePropagator;
 
     /**
      * Propagator of event invalidations to all event queues (only one queue if
@@ -106,9 +106,10 @@ public class RepositoryImpl implements Repository {
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
-        mapperPropagator = new InvalidationsPropagator();
+        cachePropagator = new InvalidationsPropagator();
         eventPropagator = new InvalidationsPropagator();
-        repositoryEventQueue = new InvalidationsQueue();
+        repositoryEventQueue = new InvalidationsQueue("repo-"
+                + repositoryDescriptor.name);
         try {
             schemaManager = Framework.getService(SchemaManager.class);
         } catch (Exception e) {
@@ -315,7 +316,7 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
-        mapper = new CachingMapper(mapper, mapperPropagator, eventPropagator,
+        mapper = new CachingMapper(mapper, cachePropagator, eventPropagator,
                 repositoryEventQueue);
         return new SessionImpl(this, model, mapper, credentials);
     }

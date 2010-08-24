@@ -145,4 +145,19 @@ public class Invalidations implements Serializable {
         return sb.toString();
     }
 
+    public static final class InvalidationsPair implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        public final Invalidations cacheInvalidations;
+
+        public final Invalidations eventInvalidations;
+
+        public InvalidationsPair(Invalidations cacheInvalidations,
+                Invalidations eventInvalidations) {
+            this.cacheInvalidations = cacheInvalidations;
+            this.eventInvalidations = eventInvalidations;
+        }
+    }
+
 }

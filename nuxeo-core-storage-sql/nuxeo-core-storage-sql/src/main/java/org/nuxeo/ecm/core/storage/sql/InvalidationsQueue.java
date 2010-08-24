@@ -26,8 +26,12 @@ public class InvalidationsQueue {
 
     public Invalidations queue; // used under synchronization
 
-    public InvalidationsQueue() {
+    /** used for debugging */
+    public final String name;
+
+    public InvalidationsQueue(String name) {
         queue = new Invalidations();
+        this.name = name;
     }
 
     /**
@@ -46,6 +50,11 @@ public class InvalidationsQueue {
         Invalidations invalidations = queue;
         queue = new Invalidations();
         return invalidations;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + name + ')';
     }
 
 }

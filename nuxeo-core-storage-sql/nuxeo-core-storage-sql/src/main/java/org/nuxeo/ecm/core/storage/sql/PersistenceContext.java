@@ -20,20 +20,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 
@@ -63,6 +63,8 @@ public class PersistenceContext {
 
     // protected because accessed by Fragment.refetch()
     protected final RowMapper mapper;
+
+    private final SessionImpl session;
 
     // public because used by unit tests
     public final HierarchyContext hierContext;
@@ -105,6 +107,7 @@ public class PersistenceContext {
             throws StorageException {
         this.model = model;
         this.mapper = mapper;
+        this.session = session;
         hierContext = new HierarchyContext(model, mapper, session, this);
 
         // use a weak reference for the values, we don't hold them longer than
@@ -332,10 +335,20 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        Invalidations invalidations = mapper.receiveInvalidations();
-        if (invalidations == null) {
+        InvalidationsPair invals = mapper.receiveInvalidations();
+        if (invals == null) {
             return;
         }
+
+        // send remote events
+        if (invals.eventInvalidations != null) {
+            session.sendInvalidationEvent(invals.eventInvalidations, false);
+        }
+
+        if (invals.cacheInvalidations == null) {
+            return;
+        }
+        Invalidations invalidations = invals.cacheInvalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 Fragment fragment = pristine.remove(rowId);

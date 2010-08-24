@@ -39,7 +39,7 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -74,19 +74,20 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             throws StorageException {
         super(model, sqlInfo, xadatasource);
         this.clusterNodeHandler = clusterNodeHandler;
-        queue = new InvalidationsQueue();
+        queue = new InvalidationsQueue("cluster");
         if (clusterNodeHandler != null) {
             clusterNodeHandler.propagator.addQueue(queue);
         }
     }
 
-    public Invalidations receiveInvalidations() throws StorageException {
+    public InvalidationsPair receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
         if (clusterNodeHandler != null) {
             receiveClusterInvalidations();
             invalidations = queue.getInvalidations();
         }
-        return invalidations;
+        return invalidations == null ? null : new InvalidationsPair(
+                invalidations, null);
     }
 
     protected void receiveClusterInvalidations() throws StorageException {

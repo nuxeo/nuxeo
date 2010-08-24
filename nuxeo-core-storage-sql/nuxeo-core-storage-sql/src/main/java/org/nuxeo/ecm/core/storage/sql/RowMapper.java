@@ -28,6 +28,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.
@@ -261,9 +262,10 @@ public interface RowMapper {
      * <p>
      * Called pre-transaction by session start or transactionless save;
      *
-     * @return some invalidations, or {@code null}
+     * @return the invalidations (both for the mapper and the events), or
+     *         {@code null}
      */
-    Invalidations receiveInvalidations() throws StorageException;
+    InvalidationsPair receiveInvalidations() throws StorageException;
 
     /**
      * Post-transaction invalidations notification.

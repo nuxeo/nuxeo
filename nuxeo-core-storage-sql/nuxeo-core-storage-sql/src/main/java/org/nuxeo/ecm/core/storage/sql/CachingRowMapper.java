@@ -31,6 +31,7 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
+import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -70,15 +71,15 @@ public class CachingRowMapper implements RowMapper {
     private final Invalidations localInvalidations;
 
     /**
-     * The queue of invalidations received from other session, to process at
-     * pre-transaction time.
+     * The queue of cache invalidations received from other session, to process
+     * at pre-transaction time.
      */
-    private final InvalidationsQueue queue;
+    private final InvalidationsQueue cacheQueue;
 
     /**
      * The propagator of invalidations to other mappers.
      */
-    private final InvalidationsPropagator mapperPropagator;
+    private final InvalidationsPropagator cachePropagator;
 
     /**
      * The queue of invalidations used for events, a single queue is shared by
@@ -100,15 +101,15 @@ public class CachingRowMapper implements RowMapper {
 
     @SuppressWarnings("unchecked")
     public CachingRowMapper(RowMapper rowMapper,
-            InvalidationsPropagator mapperPropagator,
+            InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
         this.rowMapper = rowMapper;
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
         localInvalidations = new Invalidations();
-        queue = new InvalidationsQueue();
-        this.mapperPropagator = mapperPropagator;
-        mapperPropagator.addQueue(queue); // TODO when to remove?
+        cacheQueue = new InvalidationsQueue("mapper-" + this);
+        this.cachePropagator = cachePropagator;
+        cachePropagator.addQueue(cacheQueue); // TODO when to remove?
         eventQueue = repositoryEventQueue;
         this.eventPropagator = eventPropagator;
         eventPropagator.addQueue(repositoryEventQueue);
@@ -178,11 +179,22 @@ public class CachingRowMapper implements RowMapper {
      * ----- Invalidations / Cache Management -----
      */
 
-    public Invalidations receiveInvalidations() throws StorageException {
-        // accumulated invalidations
-        Invalidations invalidations = queue.getInvalidations();
-        // add those from the underlying mapper (remote, cluster)
-        invalidations.add(rowMapper.receiveInvalidations());
+    public InvalidationsPair receiveInvalidations() throws StorageException {
+        // invalidations from the underlying mapper (remote, cluster)
+        InvalidationsPair invals = rowMapper.receiveInvalidations();
+
+        // add local accumulated invalidations to remote ones
+        Invalidations invalidations = cacheQueue.getInvalidations();
+        if (invals != null) {
+            invalidations.add(invals.cacheInvalidations);
+        }
+
+        // add local accumulated events to remote ones
+        Invalidations events = eventQueue.getInvalidations();
+        if (invals != null) {
+            events.add(invals.eventInvalidations);
+        }
+
         // invalidate our cache
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
@@ -195,13 +207,11 @@ public class CachingRowMapper implements RowMapper {
             }
         }
 
-        // event invalidations
-        Invalidations inval = eventQueue.getInvalidations();
-        if (inval != null && !inval.isEmpty()) {
-            session.sendInvalidationEvent(inval, false);
+        if (invalidations.isEmpty() && events.isEmpty()) {
+            return null;
         }
-
-        return invalidations.isEmpty() ? null : invalidations;
+        return new InvalidationsPair(invalidations.isEmpty() ? null
+                : invalidations, events.isEmpty() ? null : events);
     }
 
     // propagate invalidations
@@ -220,8 +230,8 @@ public class CachingRowMapper implements RowMapper {
             // send to underlying mapper
             rowMapper.sendInvalidations(invalidations);
 
-            // queue to other local mappers
-            mapperPropagator.propagateInvalidations(invalidations, queue);
+            // queue to other local mappers' caches
+            cachePropagator.propagateInvalidations(invalidations, cacheQueue);
 
             // queue as events for other repositories
             eventPropagator.propagateInvalidations(invalidations, eventQueue);
@@ -240,7 +250,6 @@ public class CachingRowMapper implements RowMapper {
      */
     public void setEventQueue(InvalidationsQueue eventQueue) {
         // don't remove the original global repository queue
-        // eventPropagator.removeQueue(this.eventQueue);
         this.eventQueue = eventQueue;
         eventPropagator.addQueue(eventQueue);
         forRemoteClient = true;
