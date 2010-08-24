@@ -87,9 +87,6 @@
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
-      <helpLabels>
-        <label mode="edit">label.dublincore.coverage.info</label>
-      </helpLabels>
       <translated>true</translated>
       <fields>
         <field>search:coverage</field>
