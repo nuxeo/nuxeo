@@ -27,11 +27,15 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
+
+    OOoManagerService oooManagerService;
 
     BaseConverterTest() {
     }
@@ -64,6 +68,15 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.convert");
+        oooManagerService = Framework.getService(OOoManagerService.class);
+        oooManagerService.startOOoManager();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        oooManagerService = Framework.getService(OOoManagerService.class);
+        oooManagerService.stopOOoManager();
+        super.tearDown();
     }
 
     public static String readPdfText(File pdfFile) throws IOException {

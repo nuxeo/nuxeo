@@ -16,7 +16,7 @@ Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-pdf2image-contrib.xml,
  OSGI-INF/commandline-wpd2text-contrib.xml,
- OSGI-INF/ooo-launcher-framework.xml
+ OSGI-INF/ooo-manager-framework.xml
 Bundle-ManifestVersion: 2
 Import-Package: com.artofsolving.jodconverter,
  com.artofsolving.jodconverter.openoffice.connection,

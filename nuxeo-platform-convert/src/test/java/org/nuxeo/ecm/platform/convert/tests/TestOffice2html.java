@@ -70,6 +70,8 @@ public class TestOffice2html extends BaseConverterTest {
         doTestHtmlConverter("application/vnd.oasis.opendocument.text", "hello.odt");
         doTestHtmlConverter("application/vnd.sun.xml.calc", "hello.sxc");
         doTestHtmlConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
+        // Hello Text is present in the generated picture for the following
+        // tests
         //doTestHtmlConverter("application/vnd.sun.xml.impress",  "hello.sxi");
         //doTestHtmlConverter("application/vnd.oasis.opendocument.presentation",  "hello.odp");
     }

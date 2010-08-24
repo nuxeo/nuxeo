@@ -73,15 +73,18 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             return;
         }
 
-        //doTestPDFConverter("text/html",  "hello.html");
-        //doTestPDFConverter("text/xml",  "hello.xml");
+        // doTestPDFConverter("text/html", "hello.html");
+        // doTestPDFConverter("text/xml", "hello.xml");
         doTestPDFConverter("application/vnd.ms-excel", "hello.xls");
         doTestPDFConverter("application/vnd.sun.xml.writer", "hello.sxw");
-        doTestPDFConverter("application/vnd.oasis.opendocument.text", "hello.odt");
+        doTestPDFConverter("application/vnd.oasis.opendocument.text",
+                "hello.odt");
         doTestPDFConverter("application/vnd.sun.xml.calc", "hello.sxc");
-        doTestPDFConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
+        doTestPDFConverter("application/vnd.oasis.opendocument.spreadsheet",
+                "hello.ods");
         doTestPDFConverter("application/vnd.sun.xml.impress", "hello.sxi");
-        doTestPDFConverter("application/vnd.oasis.opendocument.presentation", "hello.odp");
+        doTestPDFConverter("application/vnd.oasis.opendocument.presentation",
+                "hello.odp");
     }
 
     protected class ConversionThread extends Thread {
