@@ -25,54 +25,35 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
 
 /**
  * The UID sequence manager implementation as a stateless session bean.
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Bogdan Stefanescu
  */
 @Stateless
 @Local(UIDSequencerManager.class)
 @Remote(UIDSequencerManager.class)
 public class UIDSequencerManagerBean implements UIDSequencerManager {
 
-    public static final String RemoteJNDIName = "nuxeo/"
-            + UIDSequencerManagerBean.class.getSimpleName() + "/remote";
-
-    public static final String LocalJNDIName = "nuxeo/"
-            + UIDSequencerManagerBean.class.getSimpleName() + "/local";
-
-    private static final Log log = LogFactory.getLog(UIDSequencerManagerBean.class);
-
     @PersistenceContext(unitName = "NXUIDSequencer")
     private EntityManager em;
 
-    protected UIDSequenceBean doGetOrCreateSeq(String key) {
-        final Query q = em.createNamedQuery("UIDSequence.findByKey");
-        q.setParameter("key", key);
-        UIDSequenceBean sequence;
-        try {
-            sequence = (UIDSequenceBean)q.getSingleResult();
-        } catch (NoResultException e) {
-            sequence = new UIDSequenceBean(key);
-            em.persist(sequence);
-            log.debug("created seq " + key);
-        }
-        return sequence;
+    protected UIDSequencerImpl service() {
+        return new UIDSequencerImpl();
     }
+
     /**
      * Handle transaction synchronizing on a static field so that two calls to
      * this method will give a distinct index (see NXP-2157)
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int getNext(String key) {
-        return doGetOrCreateSeq(key).nextIndex();
+        return service().getNext(em, key);
     }
 
 }

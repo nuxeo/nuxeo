@@ -19,17 +19,16 @@
 
 package org.nuxeo.ecm.platform.uidgen.ejb;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencerFactory;
+import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
 
 /**
- * EJB Sequence factory. Will provide ejb based implementation UIDSequencerManager
- *
+ * EJB Sequence factory. Will provide ejb based implementation
+ * UIDSequencerManager
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class EjbSequencerFactory implements UIDSequencerFactory {
@@ -40,22 +39,14 @@ public class EjbSequencerFactory implements UIDSequencerFactory {
         log.debug("create UIDSequencer ... ");
         try {
             return getSequencerManager();
-        } catch (NamingException e) {
+        } catch (Exception e) {
             log.error(e);
             return null;
         }
     }
 
-    private static UIDSequencerManager getSequencerManager() throws NamingException {
-        final InitialContext ctx = new InitialContext();
-        try {
-        return (UIDSequencerManager) ctx
-                .lookup(UIDSequencerManagerBean.RemoteJNDIName);
-        } catch (NamingException e) {
-            log.error("SequencerManager not bound, jndi name="
-                    + UIDSequencerManagerBean.RemoteJNDIName);
-            throw e;
-        }
+    private static UIDSequencer getSequencerManager() throws Exception {
+        return new UIDSequencerImpl();
     }
 
 }

@@ -15,9 +15,14 @@
   <implementation
     class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.uidgen.UIDSequencer"/>
+  </service>
+
+
   <extension-point name="sequencerFactory">
     <documentation>
-      The class implementing UIDSequencerFactory to use as a sequencer factory.
+      This extension point is deprecated and will be removed.
       <code>
         <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
       </code>
@@ -46,6 +51,28 @@
     <listener name="uidlistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" priority="10">
       <event>documentCreated</event>
     </listener>
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+        point="hibernate">
+        <hibernateConfiguration name="NXUIDSequencer">
+            <datasource>nxuidsequencer</datasource>
+            <properties>
+                      <property name="hibernate.hbm2ddl.auto">update</property>
+            </properties>
+        </hibernateConfiguration>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+        point="services">
+
+      <documentation> Define the sequencer session bean binding. </documentation>
+
+      <service class="org.nuxeo.ecm.platform.uidgen.UIDSequencer" group="platform/services">
+        <locator>%UIDSequencerManagerBean</locator>
+      </service>
+
   </extension>
 
 </component>

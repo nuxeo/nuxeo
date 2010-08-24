@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
- *
+ * 
  * @author Julien Thimonier <jt@nuxeo.com>
  */
 public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
@@ -34,9 +34,12 @@ public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
         openRepository();
-        deployBundle("org.nuxeo.ecm.platform.uidgen.core.tests");
-        // deployContrib("org.nuxeo.ecm.platform.uidgen.core",
-        // "../test-classes/nxuidgenerator-bundle-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.uidgen.core");
+        // deployBundle("org.nuxeo.ecm.platform.uidgen.core.tests");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-test-contrib.xml");
+        DataSourceHelper.setup();
     }
 
     protected DocumentModel createFileDocument() throws ClientException {

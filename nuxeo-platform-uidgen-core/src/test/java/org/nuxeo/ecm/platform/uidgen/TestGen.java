@@ -51,17 +51,20 @@ public class TestGen extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.uidgen.core");
 
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "test-uid-CoreExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle.xml");
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-test-contrib.xml");
+
+        DataSourceHelper.setup();
 
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"),
-                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"),
-                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(
+                SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(
+                SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
     }
 
@@ -73,9 +76,7 @@ public class TestGen extends NXRuntimeTestCase {
         gdoc.setProperty("dublincore", "description", "testGdoc_description");
         gdoc.setProperty("geide", "application_emetteur", "T4");
 
-        final UIDSequencer sequencer = new DummySequencer();
-        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
-                docTypeName, sequencer);
+        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(docTypeName);
         String uid = generator.createUID(gdoc);
 
         final int year = new GregorianCalendar().get(Calendar.YEAR);
@@ -91,9 +92,7 @@ public class TestGen extends NXRuntimeTestCase {
         gdoc.setProperty("geide", "application_emetteur", "T4");
         gdoc.setProperty("geide", "atelier_emetteur", "ATELIER");
 
-        final UIDSequencer sequencer = new DummySequencer();
-        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
-                "GeideDoc", sequencer);
+        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType("GeideDoc");
 
         String uid = generator.createUID(gdoc);
 
@@ -111,9 +110,7 @@ public class TestGen extends NXRuntimeTestCase {
         gdoc.setProperty("geide", "application_emetteur", "T4");
         gdoc.setProperty("geide", "atelier_emetteur", "ATELIER3_");
 
-        final UIDSequencer sequencer = new DummySequencer();
-        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
-                docTypeName, sequencer);
+        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(docTypeName);
 
         for (int i = 1; i < 100; i++) {
             String uid = generator.createUID(gdoc);
@@ -142,7 +139,8 @@ public class TestGen extends NXRuntimeTestCase {
             // TODO make it real
 
             EventContext ctx = new DocumentEventContext(null, null, gdoc);
-            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED, ctx);
+            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED,
+                    ctx);
             new DocUIDGeneratorListener().handleEvent(event);
 
             String uid = (String) gdoc.getProperty("uid", "uid");

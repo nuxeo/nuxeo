@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     bstefanescu
  */
 package org.nuxeo.ecm.platform.uidgen;
 
+import javax.naming.InitialContext;
+
+import org.h2.jdbcx.JdbcDataSource;
+import org.nuxeo.common.jndi.NamingContextFactory;
+
 /**
- * @deprecated do not use - it should be removed. Having a UID sequencer is
- *             useless. If you need to customize the {@link UIDGenerator} then
- *             extend {@link UIDAbstractGenerator}. The sequencer is simply
- *             returning unique integers for a given key.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public interface UIDSequencerFactory {
+public class DataSourceHelper {
 
-    UIDSequencer createUIDSequencer();
+    static int cnt = 0;
+
+    public static void setup() throws Exception {
+        NamingContextFactory.setAsInitial();
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:mem:nxuidsequencer#" + (cnt++)
+                + ";DB_CLOSE_DELAY=-1");
+        new InitialContext().bind("java:comp/env/jdbc/nxuidsequencer", ds);
+    }
 
 }

@@ -20,11 +20,12 @@
 package org.nuxeo.ecm.platform.uidgen;
 
 import org.nuxeo.ecm.platform.uidgen.generators.UIDGenerator1;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Provides different UID generators based on the given doc type.
- * It is up to each UID generator to use the provided sequencer.
- *
+ * Provides different UID generators based on the given doc type. It is up to
+ * each UID generator to use the provided sequencer.
+ * 
  * @author DM
  */
 public final class UIDGenFactory {
@@ -33,9 +34,14 @@ public final class UIDGenFactory {
     private UIDGenFactory() {
     }
 
+    public static UIDGenerator createGeneratorForDocType(String docTypeName) {
+        return createGeneratorForDocType(docTypeName,
+                Framework.getLocalService(UIDSequencer.class));
+    }
+
     /**
-     * Mockup generator factory.
-     * Will instantiate a Generator based on document type.
+     * Mockup generator factory. Will instantiate a Generator based on document
+     * type.
      */
     public static UIDGenerator createGeneratorForDocType(String docTypeName,
             UIDSequencer sequencer) {

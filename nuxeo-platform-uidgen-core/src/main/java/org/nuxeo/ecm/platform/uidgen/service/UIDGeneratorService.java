@@ -28,19 +28,15 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.uidgen.UIDGenerator;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencerFactory;
-import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
- *
+ * 
  * Service that writes MetaData.
- *
+ * 
  * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class UIDGeneratorService extends DefaultComponent {
@@ -49,21 +45,28 @@ public class UIDGeneratorService extends DefaultComponent {
 
     public static final String UID_GENERATORS_EXTENSION_POINT = "generators";
 
+    /**
+     * Extension point is deprecated should be removed - preserved for now only
+     * for startup warnings.
+     */
     public static final String EXTENSION_POINT_SEQUENCER_FACTORY = "sequencerFactory";
 
     private static final Log log = LogFactory.getLog(UIDGeneratorService.class);
 
-    /**
-     * Sequencer factory. Specified in nuxeo bundle descriptor
-     */
-    private UIDSequencerFactory sequencerFactory;
-
-    private UIDSequencer sequencer;
-
     private final Map<String, UIDGenerator> generators = new HashMap<String, UIDGenerator>();
 
     public UIDGeneratorService() {
-        log.debug("<init>");
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        super.deactivate(context);
+        UIDSequencerImpl.dispose();
     }
 
     @Override
@@ -83,49 +86,17 @@ public class UIDGeneratorService extends DefaultComponent {
             final Object[] contribs = extension.getContributions();
             registerGenerators(extension, contribs);
         } else if (EXTENSION_POINT_SEQUENCER_FACTORY.equals(extPoint)) {
-            log.info("register contributions for extension point: "
-                    + EXTENSION_POINT_SEQUENCER_FACTORY);
-
-            String className = null;
-
-            final Element el = extension.getElement();
-            // System.err.println(el);
-            final NodeList nl = el.getChildNodes();
-            for (int i = 0; i < nl.getLength(); i++) {
-                final Node node = nl.item(i);
-                // System.err.println(node);
-                if (node.getNodeName().equals("className")) {
-                    // System.err.println("found node " + node.getFirstChild());
-                    className = node.getTextContent();
-                    break;
-                }
-            }
-
-            log.info("Sequencer factory class: " + className);
-
-            if (null == className) {
-                throw new RuntimeServiceException(
-                        "Sequencer class not defined.");
-            }
-
-            // set sequencerFactory as field to be invoked lazy
-            // TODO handle nicely invokation exceptions below
-            sequencerFactory = (UIDSequencerFactory) extension.getContext().loadClass(
-                    className).newInstance();
+            String msg = "UIDSequencer factory no more supported from version 5.4. Faulty component: "
+                    + extension.getComponent();
+            Framework.getRuntime().getWarnings().add(msg);
+            log.error(msg);
         } else {
             log.warn("extension not handled: " + extPoint);
         }
     }
 
-    private UIDSequencer getSequencer() {
-        if (sequencer != null) {
-            return sequencer;
-        }
-
-        sequencer = sequencerFactory.createUIDSequencer();
-        log.info("Sequencer instantiated successfully: " + sequencer);
-
-        return sequencer;
+    public UIDSequencerImpl getSequencer() {
+        return new UIDSequencerImpl();
     }
 
     private void registerGenerators(Extension extension, final Object[] contribs)
@@ -160,7 +131,7 @@ public class UIDGeneratorService extends DefaultComponent {
      * Registers given UIDGenerator for the given document types. If there is
      * already a generator registered for one of document type it will be
      * discarded (and replaced with the new generator)
-     *
+     * 
      * @param generator
      * @param docTypes
      */
@@ -182,12 +153,6 @@ public class UIDGeneratorService extends DefaultComponent {
     public void unregisterExtension(Extension extension) throws Exception {
         log.debug("<unregisterExtension>");
         super.unregisterExtension(extension);
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        log.debug("<deactivate>");
-        super.deactivate(context);
     }
 
     /**
@@ -214,7 +179,7 @@ public class UIDGeneratorService extends DefaultComponent {
     /**
      * Creates a new UID for the given doc and sets the field configured in the
      * generator component with this value.
-     *
+     * 
      * @param doc
      * @throws DocumentException
      */
@@ -226,7 +191,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     *
+     * 
      * @param doc
      * @return a new UID for the given document
      * @throws DocumentException
@@ -240,4 +205,11 @@ public class UIDGeneratorService extends DefaultComponent {
         }
     }
 
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (UIDSequencer.class.isAssignableFrom(adapter)) {
+            return adapter.cast(getSequencer());
+        }
+        return null;
+    }
 }

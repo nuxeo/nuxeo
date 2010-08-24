@@ -13,8 +13,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/nxuidgenerator-service.xml,
- OSGI-INF/nxuidgenerator-contrib-service.xml
+Nuxeo-Component: OSGI-INF/nxuidgenerator-service.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.ejb,
  javax.naming,

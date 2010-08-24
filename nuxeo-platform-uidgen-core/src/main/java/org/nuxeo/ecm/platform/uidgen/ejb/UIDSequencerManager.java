@@ -28,14 +28,4 @@ import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 @Remote
 public interface UIDSequencerManager extends UIDSequencer {
 
-    /**
-     * For the given key returns the incremented UID which is also
-     * stored in the same sequence entry.
-     * This is a "one time use" function for a document.
-     *
-     * @param key
-     * @return
-     */
-    int getNext(String key);
-
 }
