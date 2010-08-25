@@ -1,6 +1,4 @@
-Export-Package: com.anwrt.ooserver.daemon,
- org.nuxeo.ecm.platform.convert.ooolauncher,
- org.nuxeo.ecm.platform.convert.oooserver,
+Export-Package: org.nuxeo.ecm.platform.convert.ooomanager,
  org.nuxeo.ecm.platform.convert.plugins
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -16,12 +14,9 @@ Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-pdf2image-contrib.xml,
  OSGI-INF/commandline-wpd2text-contrib.xml,
- OSGI-INF/ooo-manager-framework.xml
+ OSGI-INF/ooo-launcher-framework.xml
 Bundle-ManifestVersion: 2
-Import-Package: com.artofsolving.jodconverter,
- com.artofsolving.jodconverter.openoffice.connection,
- com.artofsolving.jodconverter.openoffice.converter,
- com.sun.star.beans;ridl=split,
+Import-Package: com.sun.star.beans;ridl=split,
  com.sun.star.bridge,
  com.sun.star.comp.helper,
  com.sun.star.connection,
@@ -33,7 +28,11 @@ Import-Package: com.artofsolving.jodconverter,
  com.sun.star.uno,
  javax.annotation;version="1.0",
  javax.xml.parsers,
+ org.apache.commons.io,
  org.apache.commons.logging,
+ org.artofsolving.jodconverter,
+ org.artofsolving.jodconverter.document,
+ org.artofsolving.jodconverter.office,
  org.nuxeo.common.utils,
  org.nuxeo.common.xmap.annotation,
  org.nuxeo.ecm.core;api=split,
