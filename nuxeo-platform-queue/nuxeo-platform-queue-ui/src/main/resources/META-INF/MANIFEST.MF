@@ -8,6 +8,7 @@ Nuxeo-Require: org.nuxeo.ecm.webengine.core
 Bundle-Version: 0.0.0.SNAPSHOT
 Import-Package: javax.ws.rs,
  org.apache.commons.logging,
+ org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.queue.api,
  org.nuxeo.ecm.webengine,
  org.nuxeo.ecm.webengine.model,
