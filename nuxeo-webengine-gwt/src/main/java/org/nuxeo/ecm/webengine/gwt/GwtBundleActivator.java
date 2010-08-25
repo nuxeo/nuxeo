@@ -30,32 +30,32 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
 /**
- * This activator must be used as an activator by bundles that wants to
+ * This activator must be used as an activator by bundles that wants to 
  * deploy GWT resources in a nuxeo server.
- *
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class GwtBundleActivator implements BundleActivator, FrameworkListener {
-
-    private static final Log log = LogFactory.getLog(GwtBundleActivator.class);
-
+    
+    private static final Log log = LogFactory.getLog(GwtBundleActivator.class); 
+    
     public static final String GWT_DEV_MODE_PROP = "nuxeo.gwt_dev_mode";
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
     public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
 
-
+    
     protected BundleContext context;
-
+    
     public void start(BundleContext context) throws Exception {
         this.context = context;
         context.addFrameworkListener(this);
     }
-
+    
     public void stop(BundleContext context) throws Exception {
         context.removeFrameworkListener(this);
     }
-
+    
     public static void installGwtApp(Bundle bundle) throws Exception {
         if (GWT_DEV_MODE) {
             return;
@@ -76,13 +76,13 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
             markerFile.createNewFile();
         }
     }
-
+    
     public void frameworkEvent(FrameworkEvent event) {
         if (FrameworkEvent.STARTED == event.getType()) {
             try {
                 installGwtApp(context.getBundle());
             } catch (Exception e) {
-                throw new RuntimeException("Failed to install GWT application: "+context.getBundle().getSymbolicName(), e);
+                throw new RuntimeException("Failed to install GWT application: "+context.getBundle().getSymbolicName());
             }
         }
     }
