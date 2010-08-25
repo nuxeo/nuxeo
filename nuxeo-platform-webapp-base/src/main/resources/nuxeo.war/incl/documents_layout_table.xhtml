@@ -16,14 +16,10 @@
 
   <ui:insert name="empty_folder_label">
     <h:outputText value="#{messages['label.content.emptyFolder']}"
-      rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+      rendered="#{documents.rowCount == 0}" />
   </ui:insert>
 
-  <ui:insert name="error_message">
-    <c:if test="#{provider.hasError()}">
-      #{provider.errorMessage}
-    </c:if>
-  </ui:insert>
+  <ui:insert name="error_message" />
 
   <ui:include src="/pagination/pageNavigationControls.xhtml" />
 

@@ -65,6 +65,18 @@
           <ui:param name="documents" value="#{provider.currentSelectPage}" />
           <ui:param name="listName" value="#{contentView.selectionListName}" />
           <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
+          
+          <ui:define name="empty_folder_label">
+            <h:outputText value="#{messages['label.content.emptyFolder']}"
+              rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+          </ui:define>
+        
+          <ui:define name="error_message">
+            <c:if test="#{provider.hasError()}">
+              #{provider.errorMessage}
+            </c:if>
+          </ui:define>
+ 
           <ui:define name="buttons">
             <c:if test="#{documents.rowCount != 0}">
               <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
