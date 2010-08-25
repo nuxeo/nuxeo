@@ -17,8 +17,9 @@ Import-Package: javax.annotation;version="1.0",
  org.apache.commons.lang,
  org.apache.commons.logging,
  org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.core.api.repository,
  org.nuxeo.ecm.core.api.security,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.event.impl,
@@ -28,10 +29,12 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.management,
- org.nuxeo.runtime.model
+ org.nuxeo.runtime.model,
+ org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
 Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.platform.web.common,
  org.nuxeo.ecm.platform.scheduler.core
+Require-Bundle: org.nuxeo.ecm.core;bundle-version="0.0.0"
