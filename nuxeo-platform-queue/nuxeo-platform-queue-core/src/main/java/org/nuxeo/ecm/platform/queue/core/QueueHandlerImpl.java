@@ -73,10 +73,10 @@ public class QueueHandlerImpl implements QueueHandler {
     }
 
     protected boolean isServerActive() throws ClientException {
-    	AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
-    	return administrativeStatus.isActive();
+        AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
+        return administrativeStatus.isActive();
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -87,11 +87,18 @@ public class QueueHandlerImpl implements QueueHandler {
     public void handleNewContentIfUnknown(QueueContent content)
             throws QueueException {
 
+        try {
+            if (!isServerActive()) {
+                return;
+            }
+        } catch (ClientException e2) {
+            throw new Error(e2);
+        }
         URI resource;
         try {
             resource = content.getResourceURI();
         } catch (URISyntaxException e1) {
-            throw new Error(e1);
+            throw new Error("Could not get the server status",e1);
         }
 
         QueueFactory factory = Framework.getLocalService(QueueFactory.class);
