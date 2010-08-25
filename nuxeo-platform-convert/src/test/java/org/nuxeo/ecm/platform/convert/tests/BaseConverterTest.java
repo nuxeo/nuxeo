@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.convert.tests;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -34,6 +36,8 @@ import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
     OOoManagerService oooManagerService;
 
@@ -69,13 +73,19 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.convert");
         oooManagerService = Framework.getService(OOoManagerService.class);
-        oooManagerService.startOOoManager();
+        try {
+            oooManagerService.startOOoManager();
+        } catch (Exception e) {
+            log.warn("Can't run OpenOffice, JOD converter will not be available.");
+        }
     }
 
     @Override
     public void tearDown() throws Exception {
         oooManagerService = Framework.getService(OOoManagerService.class);
-        oooManagerService.stopOOoManager();
+        if (oooManagerService.isOOoManagerStarted()) {
+            oooManagerService.stopOOoManager();
+        }
         super.tearDown();
     }
 
