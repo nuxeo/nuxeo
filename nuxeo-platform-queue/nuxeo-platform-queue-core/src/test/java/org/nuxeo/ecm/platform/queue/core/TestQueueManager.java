@@ -45,6 +45,8 @@ public class TestQueueManager extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.lock.api");
         deployBundle("org.nuxeo.ecm.platform.lock.core");
@@ -54,7 +56,6 @@ public class TestQueueManager extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
         deployBundle("org.nuxeo.ecm.platform.queue.api");
-        deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.platform.queue");
         deployBundle("org.nuxeo.ecm.platform.queue.test");
         super.fireFrameworkStarted();
