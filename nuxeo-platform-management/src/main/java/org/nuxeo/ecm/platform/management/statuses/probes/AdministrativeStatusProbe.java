@@ -32,16 +32,13 @@ public class AdministrativeStatusProbe implements Probe {
 
     protected ProbeStatus status;
 
-    @Override
     public ProbeStatus getProbeStatus() {
         return status;
     }
 
-    @Override
     public void init(Object service) {
     }
 
-    @Override
     public void runProbe(CoreSession session) throws ClientException {
         status = new ProbeStatus(formatStatus());
     }
