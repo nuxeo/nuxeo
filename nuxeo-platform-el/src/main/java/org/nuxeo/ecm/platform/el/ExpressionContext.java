@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.el.ArrayELResolver;
+import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELContext;
 import javax.el.ELResolver;
@@ -63,9 +64,10 @@ public class ExpressionContext extends ELContext {
     private static class MyResolver extends CompositeELResolver {
 
         private MyResolver() {
+            add(new DocumentModelResolver());
             add(new MapELResolver());
             add(new ArrayELResolver());
-            add(new DocumentModelResolver());
+            add(new BeanELResolver());
         }
 
     }
