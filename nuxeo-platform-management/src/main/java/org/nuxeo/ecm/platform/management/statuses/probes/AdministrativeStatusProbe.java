@@ -25,42 +25,30 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Retrieves the administrative status of the server.
- * 
+ *
  * @author Mariana Cedica
  */
 public class AdministrativeStatusProbe implements Probe {
 
-    ProbeStatus status;
+    protected ProbeStatus status;
 
-    AdministrativeStatus administrativeStatus;
-
+    @Override
     public ProbeStatus getProbeStatus() {
         return status;
     }
 
+    @Override
     public void init(Object service) {
-        
     }
 
+    @Override
     public void runProbe(CoreSession session) throws ClientException {
-        status = new ProbeStatus("For the server"
-                + getAdministrativeStatusService().getServerInstanceName()
-                + " the administrative status is: ");
-        String serverStatus = getAdministrativeStatusService().getValue();
-        status.setStatus(status.getStatus() + serverStatus);
-
+        status = new ProbeStatus(formatStatus());
     }
 
-    private AdministrativeStatus getAdministrativeStatusService()
-            throws ClientException {
-        if (administrativeStatus == null) {
-            try {
-                administrativeStatus = Framework.getService(AdministrativeStatus.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        return administrativeStatus;
+    public String formatStatus() {
+        AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
+        return "<span class=\"server\">" + administrativeStatus.getServerInstanceName() + "</span> is <span class=\"value\">" + administrativeStatus.getValue() + "</span>";
     }
 
 }
