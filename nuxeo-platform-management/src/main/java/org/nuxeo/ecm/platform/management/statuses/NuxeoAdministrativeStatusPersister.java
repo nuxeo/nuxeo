@@ -104,6 +104,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 				String serverInstanceName, String state) {
 			super(repoName);
 			this.newState = state;
+			this.serverInstanceName = serverInstanceName;
 		}
 
 		@Override
@@ -132,6 +133,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 			DocumentModel doc = session.createDocumentModel("/",
 					ADMINISTRATIVE_INFO_CONTAINER,
 					"Folder");
+			doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
 			doc = session.createDocument(doc);
 			session.save();
 		}
@@ -155,6 +157,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 
 			// set status active by default
 			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, AdministrativeStatus.ACTIVE);
+			doc.setPropertyValue("dc:title", ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 			doc = session.createDocument(doc);
 			session.save();
 

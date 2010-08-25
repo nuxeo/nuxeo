@@ -2,8 +2,10 @@
 <component name="org.nuxeo.ecm.platform.management.statuses">
 
   <implementation
-    class="org.nuxeo.ecm.platform.management.statuses.StatusManagementComponent" />
+    class="org.nuxeo.ecm.platform.management.statuses.StatusesManagementComponent" />
 
+  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+  
   <service>
     <provide interface="org.nuxeo.ecm.platform.management.statuses.ProbeScheduler" />
     <provide interface="org.nuxeo.ecm.platform.management.statuses.ProbeRunner" />
@@ -13,7 +15,7 @@
   <require>org.nuxeo.runtime.management.ResourcePublisher</require>
 
   <extension-point name="probes">
-    <object class="org.nuxeo.ecm.platform.management.probes.ProbeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.management.statuses.ProbeDescriptor" />
   </extension-point>
 
   <extension 
@@ -29,38 +31,35 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="probeListener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.management.probes.ProbeScheduleListener">
+    <listener name="probeListener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.management.statuses.ProbeScheduleListener">
 		<event>probeSchedule</event>
     </listener>
   </extension>
   
-  <extension
-    target="org.nuxeo.ecm.platform.management.probes.ProbeComponent"
-    point="probes">
-    <usecase name="repository"
-      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryProbe"
-      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-    <usecase name="repositoryTest"
-      class="org.nuxeo.ecm.platform.management.probes.impl.RepositoryTestProbe"
-      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-    <usecase name="administrativeStatus"
-      class="org.nuxeo.ecm.platform.management.probes.impl.AdministrativeStatusProbe"
-      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-  </extension>
-      
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="status" src="schemas/status.xsd" />
   </extension>
   
-   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-   
-  <doctype name="AdministrativeStatusContainer" extends="Folder">
-    <facet name="HiddenInNavigation" />
-   </doctype>
-  
-  <doctype name="AdministrativeStatus" extends="Document">
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="AdministrativeStatus" extends="Document">
+      <schema name="dublincore" />
       <schema name="status" />
     </doctype>
   </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.management.statuses"
+    point="probes">
+    <usecase name="repository"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+    <usecase name="repositoryTest"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryTestProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+    <usecase name="administrativeStatus"
+      class="org.nuxeo.ecm.platform.management.statuses.probes.AdministrativeStatusProbe"
+      serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </extension>
+      
 
 </component>
