@@ -9,19 +9,18 @@
     <version>5.4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-ui-api</artifactId>
-  <name>Nuxeo Web Framework API</name>
-  <description>Nuxeo Platform UI Web API</description>
+  <artifactId>nuxeo-platform-ui-web-test</artifactId>
+  <name>Nuxeo Web Test Framework</name>
+  <description>Nuxeo Web Test Framework</description>
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
     </dependency>
   </dependencies>
 

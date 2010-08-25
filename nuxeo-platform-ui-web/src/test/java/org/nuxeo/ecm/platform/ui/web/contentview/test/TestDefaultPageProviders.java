@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
 import org.nuxeo.ecm.platform.ui.web.contentview.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.ui.web.contentview.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewCache;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewLayout;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
+import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**

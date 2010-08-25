@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.ui.web.contentview.test;
+package org.nuxeo.ecm.platform.ui.web.jsf;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -48,6 +48,7 @@ import javax.faces.validator.Validator;
  * Mock faces context that can be used to resolve expressions in tests.
  * <p>
  * Usage:
+ *
  * <pre>
  * MockFacesContext facesContext = new MockFacesContext() {
  *     public Object evaluateExpressionGet(FacesContext context,
@@ -64,7 +65,7 @@ import javax.faces.validator.Validator;
  *
  * @author Anahide Tchertchian
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings(value = { "deprecation", "unchecked" })
 public abstract class MockFacesContext extends FacesContext {
 
     public void setCurrent() {
