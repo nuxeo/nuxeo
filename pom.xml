@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -46,20 +47,22 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-	<module>nuxeo-core-facade</module>
-	<module>nuxeo-core-query-test</module>
-	<module>nuxeo-core-storage-jcr</module>
-	<module>nuxeo-core-test</module>
+        <module>nuxeo-core-facade</module>
+        <module>nuxeo-core-query-test</module>
+        <module>nuxeo-core-storage-jcr</module>
+        <module>nuxeo-core-test</module>
       </modules>
-    </profile>	
+    </profile>
   </profiles>
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-core</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-core</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-core
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-core</url>
   </scm>
 
@@ -155,7 +158,7 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-ra</artifactId>
         <version>${nuxeo.core.version}</version>
-        <type>jar</type> <!-- a dependency on the JAR is also needed -->
+        <type>jar</type><!-- a dependency on the JAR is also needed -->
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -166,13 +169,13 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-test</artifactId>
         <version>${nuxeo.core.version}</version>
-	<scope>test</scope>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-test</artifactId>
         <version>${nuxeo.core.version}</version>
-	<scope>test</scope>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -183,7 +186,7 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-query-test</artifactId>
         <version>${nuxeo.core.version}</version>
-	<scope>test</scope>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -310,16 +313,16 @@
 
 
   <dependencies>
-      <dependency>
-        <groupId>jmock</groupId>
-        <artifactId>jmock</artifactId>
-	<scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-	<scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
