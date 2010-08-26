@@ -34,9 +34,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * 
+ *
  * Service that writes MetaData.
- * 
+ *
  * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class UIDGeneratorService extends DefaultComponent {
@@ -95,8 +95,12 @@ public class UIDGeneratorService extends DefaultComponent {
         }
     }
 
-    public UIDSequencerImpl getSequencer() {
-        return new UIDSequencerImpl();
+    public UIDSequencer getSequencer() {
+        try {
+            return Framework.getService(UIDSequencer.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Service is not available.");
+        }
     }
 
     private void registerGenerators(Extension extension, final Object[] contribs)
@@ -131,7 +135,7 @@ public class UIDGeneratorService extends DefaultComponent {
      * Registers given UIDGenerator for the given document types. If there is
      * already a generator registered for one of document type it will be
      * discarded (and replaced with the new generator)
-     * 
+     *
      * @param generator
      * @param docTypes
      */
@@ -179,7 +183,7 @@ public class UIDGeneratorService extends DefaultComponent {
     /**
      * Creates a new UID for the given doc and sets the field configured in the
      * generator component with this value.
-     * 
+     *
      * @param doc
      * @throws DocumentException
      */
@@ -191,7 +195,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @return a new UID for the given document
      * @throws DocumentException
@@ -208,7 +212,7 @@ public class UIDGeneratorService extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (UIDSequencer.class.isAssignableFrom(adapter)) {
-            return adapter.cast(getSequencer());
+            return adapter.cast(new UIDSequencerImpl());
         }
         return null;
     }
