@@ -13,7 +13,7 @@
  
  <form method="POST" 
   action="${This.path}" accept-charset="utf-8">
-        <input type="submit" class="button" value="Run" />&nbsp;
+        <input type="submit" class="button" value="Run" />
 </form> 
 
  <div class="index_probe">
