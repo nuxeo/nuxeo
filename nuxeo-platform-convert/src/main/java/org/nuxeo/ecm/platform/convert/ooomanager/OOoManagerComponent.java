@@ -171,7 +171,7 @@ public class OOoManagerComponent extends DefaultComponent implements
             started = true;
             log.debug("Starting ooo manager.");
         } catch (Exception e) {
-            throw new RuntimeException("Could not start OOoManager.", e);
+            log.warn("Could not start OOoManager, JOD Converter won't be available.");
         }
     }
 
