@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AdministrativeStatusProbe implements Probe {
 
-     @Override
      public void init(Object service) {
      }
 
