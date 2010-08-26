@@ -24,7 +24,7 @@
         <ui:decorate template="/incl/content_view.xhtml">
           <ui:define name="empty_folder_label">
             <h:outputText value="#{messages['label.content.empty.search']}"
-              rendered="#{documents.rowCount == 0}" />
+              rendered="#{documents.rowCount == 0} and not provider.hasError()}" />
           </ui:define>
           <ui:define name="content_view_header_before_selector">
             <div class="action_bar">
