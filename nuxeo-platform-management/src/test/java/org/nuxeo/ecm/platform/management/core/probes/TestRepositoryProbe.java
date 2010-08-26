@@ -27,7 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TestRepositoryProbe extends SQLRepositoryTestCase {
 
     ProbeRunner probeRunner;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -36,20 +36,20 @@ public class TestRepositoryProbe extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.management.test");
         openSession();
     }
-    
-    
+
+
     public void testRunRepositoryProbe() throws Exception {
        ProbeInfo repoProbe = getProbeRunner().getProbeInfo("repository-probe");
        probeRunner.runProbe(repoProbe);
        assertTrue(probeRunner.getProbesInSuccess().contains("repository-probe"));
    }
-   
+
     public void testRunRepositoryTestProbe() throws Exception {
         ProbeInfo repoProbe = getProbeRunner().getProbeInfo("repositoryTest-probe");
         probeRunner.runProbe(repoProbe);
         assertTrue(probeRunner.getProbesInSuccess().contains("repositoryTest-probe"));
     }
-    
+
    ProbeRunner getProbeRunner() throws Exception {
        if (probeRunner == null) {
            probeRunner = Framework.getService(ProbeRunner.class);

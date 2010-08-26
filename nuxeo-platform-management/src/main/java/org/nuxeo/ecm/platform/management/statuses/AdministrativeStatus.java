@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.management.statuses;
 
 import java.io.Serializable;
@@ -33,107 +50,107 @@ public class AdministrativeStatus {
     public static final String PASSIVATED_EVENT = "serverPassivated";
 
 
-	protected void notifyEvent(String name) {
-		Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-		eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
-		EventContext ctx = new InlineEventContext(new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME),eventProperties);
-		Event event = ctx.newEvent(name);
-		try {
-			Framework.getService(EventProducer.class).fireEvent(event);
-		} catch (Exception e) {
-			throw new ClientRuntimeException(e);
-		}
-	}
+    protected void notifyEvent(String name) {
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
+        EventContext ctx = new InlineEventContext(new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME),eventProperties);
+        Event event = ctx.newEvent(name);
+        try {
+            Framework.getService(EventProducer.class).fireEvent(event);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
 
-	protected AdministrativeStatusPersister persister = new NuxeoAdministrativeStatusPersister();
+    protected AdministrativeStatusPersister persister = new NuxeoAdministrativeStatusPersister();
 
-	protected String value;
+    protected String value;
 
-	protected String serverInstanceName;
+    protected String serverInstanceName;
 
-	protected void activate() {
-		 serverInstanceName = Framework.getProperties().getProperty(
-				ADMINISTRATIVE_INSTANCE_ID);
-		if (StringUtils.isEmpty(serverInstanceName)) {
-			InetAddress addr;
-			try {
-				addr = InetAddress.getLocalHost();
-				serverInstanceName = addr.getHostName();
-			} catch (UnknownHostException e) {
-				serverInstanceName = "localhost";
-			}
-		}
-		value = persister.getValue(serverInstanceName);
-		if (value.equals(ACTIVE)) {
-		    notifyEvent(ACTIVATED_EVENT);
-		} if (value.equals(PASSIVATED_EVENT)) {
-		     notifyEvent(PASSIVATED_EVENT);
-		}
-	}
+    protected void activate() {
+         serverInstanceName = Framework.getProperties().getProperty(
+                ADMINISTRATIVE_INSTANCE_ID);
+        if (StringUtils.isEmpty(serverInstanceName)) {
+            InetAddress addr;
+            try {
+                addr = InetAddress.getLocalHost();
+                serverInstanceName = addr.getHostName();
+            } catch (UnknownHostException e) {
+                serverInstanceName = "localhost";
+            }
+        }
+        value = persister.getValue(serverInstanceName);
+        if (value.equals(ACTIVE)) {
+            notifyEvent(ACTIVATED_EVENT);
+        } if (value.equals(PASSIVATED_EVENT)) {
+             notifyEvent(PASSIVATED_EVENT);
+        }
+    }
 
-	protected void deactivate() {
-		serverInstanceName = null;
-		value = null;
-	}
+    protected void deactivate() {
+        serverInstanceName = null;
+        value = null;
+    }
 
-	/**
-	 * Disable services for this server
-	 *
-	 */
-	public void setPassive() {
-		value = PASSIVE;
-		String lastValue = persister.setValue(serverInstanceName, value);
-		if (!lastValue.equals(value)) {
-			notifyEvent(PASSIVATED_EVENT);
-		}
-	}
+    /**
+     * Disable services for this server
+     *
+     */
+    public void setPassive() {
+        value = PASSIVE;
+        String lastValue = persister.setValue(serverInstanceName, value);
+        if (!lastValue.equals(value)) {
+            notifyEvent(PASSIVATED_EVENT);
+        }
+    }
 
 
-	/**
-	 * Enable services for this server
-	 *
-	 */
-	public void setActive() {
-		value = ACTIVE;
-		String lastValue = persister.setValue(serverInstanceName, value);
-		if (!lastValue.equals(value)) {
-			notifyEvent(ACTIVATED_EVENT);
-		}
-	}
+    /**
+     * Enable services for this server
+     *
+     */
+    public void setActive() {
+        value = ACTIVE;
+        String lastValue = persister.setValue(serverInstanceName, value);
+        if (!lastValue.equals(value)) {
+            notifyEvent(ACTIVATED_EVENT);
+        }
+    }
 
-	/**
-	 * Returns the stringified value of this status, ie: "passive" or "active"
-	 *
-	 * @return
-	 */
+    /**
+     * Returns the stringified value of this status, ie: "passive" or "active"
+     *
+     * @return
+     */
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * Return this server unique name
-	 *
-	 */
-	public String getServerInstanceName() {
-		return serverInstanceName;
-	}
+    /**
+     * Return this server unique name
+     *
+     */
+    public String getServerInstanceName() {
+        return serverInstanceName;
+    }
 
-	/**
-	 * Returns true if server is in active state
-	 *
-	 * @return
-	 */
-	public boolean isActive() {
-		return value.equals(ACTIVE);
-	}
+    /**
+     * Returns true if server is in active state
+     *
+     * @return
+     */
+    public boolean isActive() {
+        return value.equals(ACTIVE);
+    }
 
-	/**
-	 * Returns true if server is in passive state
-	 * @return
-	 */
-	boolean isPassive() {
-		return value.equals(PASSIVE);
-	}
+    /**
+     * Returns true if server is in passive state
+     * @return
+     */
+    boolean isPassive() {
+        return value.equals(PASSIVE);
+    }
 
 }

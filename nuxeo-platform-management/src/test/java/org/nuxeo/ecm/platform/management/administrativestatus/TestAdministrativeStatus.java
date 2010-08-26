@@ -20,6 +20,9 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus.ACTIVE;
+import static org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus.PASSIVE;
+
 public class TestAdministrativeStatus extends SQLRepositoryTestCase {
 
     @Override
@@ -28,20 +31,19 @@ public class TestAdministrativeStatus extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.platform.management");
         deployBundle("org.nuxeo.ecm.platform.management.test");
-        super.fireFrameworkStarted();
+        fireFrameworkStarted();
         openSession();
     }
 
     public void testServerAdministrativeStatus() throws Exception {
-        assertEquals(AdministrativeStatus.ACTIVE,
-                getAdministrativeStatus().getValue());
+        assertEquals(ACTIVE, getAdministrativeStatus().getValue());
+
         getAdministrativeStatus().setPassive();
-        assertEquals(AdministrativeStatus.PASSIVE,
-                getAdministrativeStatus().getValue());
+        assertEquals(PASSIVE, getAdministrativeStatus().getValue());
         assertTrue(AdministrativeStatusListener.serverPassivatedEventTriggered);
+
         getAdministrativeStatus().setActive();
-        assertEquals(AdministrativeStatus.ACTIVE,
-                getAdministrativeStatus().getValue());
+        assertEquals(ACTIVE, getAdministrativeStatus().getValue());
         assertTrue(AdministrativeStatusListener.serverActivatedEventTriggered);
     }
 
