@@ -46,7 +46,7 @@ public interface ProbeMBean {
 
     Date getLastFailedDate();
 
-    Exception getLastFailedCause();
+    ProbeStatus getLastFailureStatus();
 
     void run();
 

@@ -20,26 +20,30 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface ProbeRunner {
-    
+
     /**
      * Runs all probes
      */
     boolean run() ;
-    
+
     /**
      * Runs a probe.
      * @return true if probe succeeds, false if not
      */
     boolean runProbe(ProbeInfo probe);
-    
-    Collection<ProbeInfo> getRunWithSuccessProbesInfo();
-    
+
+    Collection<ProbeInfo> getScheduledProbes();
+
+    Collection<ProbeInfo> getSuccessProbes();
+
+    Collection<ProbeInfo> getFailureProbes();
+
     Set<String> getProbeNames() ;
-    
-    ProbeInfo getProbeInfo(String probeQualifiedName);
-    
+
+    ProbeInfo getProbeInfo(String name);
+
     Set<String> getProbesInError();
 
     Set<String> getProbesInSuccess() ;
-    
+
 }

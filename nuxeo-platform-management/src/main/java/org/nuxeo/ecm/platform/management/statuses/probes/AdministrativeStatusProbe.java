@@ -30,22 +30,22 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AdministrativeStatusProbe implements Probe {
 
-    protected ProbeStatus status;
+     @Override
+     public void init(Object service) {
+     }
 
-    public ProbeStatus getProbeStatus() {
-        return status;
-    }
+    public ProbeStatus runProbe(CoreSession session) throws ClientException {
+        AdministrativeStatus adm = Framework.getLocalService(AdministrativeStatus.class);
+        String info = format(adm);
+        if (!adm.isActive()) {
+            return ProbeStatus.newFailure(info);
+        }
+        return ProbeStatus.newSuccess(info);
+     }
 
-    public void init(Object service) {
-    }
+    protected static String format(AdministrativeStatus status) {
+        return "<span class=\"server\">" + status.getServerInstanceName() + "</span> is <span class=\"value\">" + status.getValue() + "</span>";
+     }
 
-    public void runProbe(CoreSession session) throws ClientException {
-        status = new ProbeStatus(formatStatus());
-    }
-
-    public String formatStatus() {
-        AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
-        return "<span class=\"server\">" + administrativeStatus.getServerInstanceName() + "</span> is <span class=\"value\">" + administrativeStatus.getValue() + "</span>";
-    }
 
 }

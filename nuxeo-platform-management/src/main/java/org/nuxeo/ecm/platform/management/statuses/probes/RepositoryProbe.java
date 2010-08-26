@@ -32,9 +32,7 @@ import org.nuxeo.ecm.platform.management.statuses.ProbeStatus;
  */
 public class RepositoryProbe implements Probe {
 
-    ProbeStatus status;
-
-    public void runProbe(CoreSession session) throws ClientException {
+    public ProbeStatus runProbe(CoreSession session) throws ClientException {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(),
@@ -43,7 +41,6 @@ public class RepositoryProbe implements Probe {
         model.setProperty("dublincore", "title", "huum");
         model.setProperty("uid", "major_version", 1L);
         session.createDocument(model);
-        status = new ProbeStatus("Created document " + model.getPathAsString());
         ACP acp = model.getACP();
         ACL acl = acp.getOrCreateACL();
         acl.add(new ACE(SecurityConstants.EVERYONE,
@@ -52,14 +49,10 @@ public class RepositoryProbe implements Probe {
         session.save();
         session.removeDocument(model.getRef());
         session.save();
-        status.setStatus(status.getStatus() + " and  removed it ");
+        return  ProbeStatus.newSuccess("Created document " + model.getPathAsString() +" and  removed it ");
     }
 
     public void init(Object service) {
-    }
-
-    public ProbeStatus getProbeStatus() {
-        return status;
     }
 
 }

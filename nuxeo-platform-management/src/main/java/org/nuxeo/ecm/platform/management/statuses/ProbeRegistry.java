@@ -21,13 +21,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
 
 public class ProbeRegistry {
+
+    protected final static Log log = LogFactory.getLog(ProbeRegistry.class);
 
     private final StatusesManagementComponent probeComponent;
 
@@ -35,11 +36,11 @@ public class ProbeRegistry {
         this.probeComponent = probeComponent;
     }
 
-    protected final Map<Class<? extends Probe>, ProbeInfo> scheduledProbesContext = new HashMap<Class<? extends Probe>, ProbeInfo>();
+    protected final Map<Class<? extends Probe>, ProbeInfo> scheduled = new HashMap<Class<? extends Probe>, ProbeInfo>();
 
-    protected final Set<ProbeInfo> failedProbesContext = new HashSet<ProbeInfo>();
+    protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
 
-    protected final Set<ProbeInfo> succeedProbesContext = new HashSet<ProbeInfo>();
+    protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
 
     public void registerProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
@@ -57,13 +58,13 @@ public class ProbeRegistry {
         probeComponent.managementPublisher.doQualifyNames(context,
                 descriptor);
         probeComponent.managementPublisher.doPublishContext(context);
-        scheduledProbesContext.put(probeClass, context);
+        scheduled.put(probeClass, context);
     }
 
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
-        ProbeInfo context = scheduledProbesContext.remove(probeClass);
+        ProbeInfo context = scheduled.remove(probeClass);
         if (context == null) {
             throw new IllegalArgumentException("not registered probe"
                     + descriptor);
@@ -75,14 +76,14 @@ public class ProbeRegistry {
         if (!isEnabled) {
             return;
         }
-        for (ProbeInfo context : scheduledProbesContext.values()) {
+        for (ProbeInfo context : scheduled.values()) {
             try {
                 context.run();
-                failedProbesContext.remove(context);
-                succeedProbesContext.add(context);
+                failed.remove(context);
+                succeed.add(context);
             } catch (Exception e) {
-                succeedProbesContext.remove(context);
-                failedProbesContext.add(context);
+                succeed.remove(context);
+                failed.add(context);
             }
         }
     }
@@ -91,29 +92,38 @@ public class ProbeRegistry {
         if (!isEnabled) {
             return;
         }
-        for (ProbeInfo context : scheduledProbesContext.values()) {
+        for (ProbeInfo context : scheduled.values()) {
             try {
                 context.run();
-                failedProbesContext.remove(context);
-                succeedProbesContext.add(context);
-            } catch (Exception e) {
-                succeedProbesContext.remove(context);
-                failedProbesContext.add(context);
+                if (context.isInError()) {
+                    succeed.remove(context);
+                    failed.add(context);
+                } else {
+                    failed.remove(context);
+                    succeed.add(context);
+            }
+            } catch (Throwable e) {
+              log.error("Error caught while executing " + context.getShortcutName(), e);
             }
         }
     }
 
     protected void doRunProbe(ProbeInfo probe) {
-        if (!isEnabled) {
+        if (!isEnabled || !probe.isEnabled) {
             return;
         }
         try {
             probe.run();
-            failedProbesContext.remove(probe);
-            succeedProbesContext.add(probe);
-        } catch (Exception e) {
-            succeedProbesContext.remove(probe);
-            failedProbesContext.add(probe);
+            if (probe.isInError()) {
+                succeed.remove(probe);
+                failed.add(probe);
+            } else {
+                failed.remove(probe);
+                succeed.add(probe);
+            }
+        } catch (Throwable e) {
+            succeed.remove(probe);
+            failed.add(probe);
         }
     }
 

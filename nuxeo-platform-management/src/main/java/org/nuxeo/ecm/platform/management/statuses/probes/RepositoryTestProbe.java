@@ -27,23 +27,18 @@ public class RepositoryTestProbe implements Probe {
 
     private static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/'";
 
-    ProbeStatus status;
-
     public void init(Object service) {
         // TODO Auto-generated method stub
     }
 
-    public void runProbe(CoreSession session) throws ClientException {
-        status = new ProbeStatus("Running " + queryString + ":");
+    public ProbeStatus runProbe(CoreSession session) throws ClientException {
+        String info = "Running " + queryString + ":";
         DocumentModelList list = session.query(queryString);
         for (DocumentModel documentModel : list) {
-            status.setStatus(status.getStatus() + " "
-                    + documentModel.getTitle());
+           info += " "
+                    + documentModel.getTitle();
         }
-    }
-
-    public ProbeStatus getProbeStatus() {
-        return status;
+        return ProbeStatus.newSuccess(info);
     }
 
 }

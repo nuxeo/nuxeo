@@ -17,19 +17,39 @@
 package org.nuxeo.ecm.platform.management.statuses;
 
 public class ProbeStatus {
-    
-    private String status;
 
-    public ProbeStatus(String status){
-        this.status = status;
-    }
-    
-    public String getStatus() {
-        return status;
+    protected final  boolean success;
+
+    protected final String info;
+
+    protected ProbeStatus(String info, Boolean success){
+        this.info = info;
+        this.success = success;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public static ProbeStatus newFailure(String info) {
+        return new ProbeStatus(info, false);
     }
-    
+
+    public static ProbeStatus newError(Throwable t) {
+        return new ProbeStatus("Caught error " + t, false);
+    }
+
+    public static ProbeStatus newSuccess(String info) {
+        return new ProbeStatus(info, true);
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public boolean isFailure() {
+        return !success;
+    }
+
 }
+

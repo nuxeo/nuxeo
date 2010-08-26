@@ -27,6 +27,6 @@ public interface ProbeScheduler {
 
     void disable();
 
-    Collection<ProbeInfo> getScheduledProbesContext();
+    Collection<ProbeInfo> getScheduledProbes();
 
 }

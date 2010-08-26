@@ -55,32 +55,32 @@ public class StatusesManagementComponent extends DefaultComponent implements
 	}
 
 	public Set<String> getProbeNames() {
-		return doExtractProbesName(runnerRegistry.scheduledProbesContext
+		return doExtractProbesName(runnerRegistry.scheduled
 				.values());
 	}
 
 	public int getScheduledProbesCount() {
-		return runnerRegistry.scheduledProbesContext.size();
+		return runnerRegistry.scheduled.size();
 	}
 
 	public Set<String> getProbesInError() {
-		return doExtractProbesName(runnerRegistry.failedProbesContext);
+		return doExtractProbesName(runnerRegistry.failed);
 	}
 
 	public int getProbesInErrorCount() {
-		return runnerRegistry.failedProbesContext.size();
+		return runnerRegistry.failed.size();
 	}
 
 	public Set<String> getProbesInSuccess() {
-		return doExtractProbesName(runnerRegistry.succeedProbesContext);
+		return doExtractProbesName(runnerRegistry.succeed);
 	}
 
 	public Set<ProbeInfo> getProbesInfoInSuccess() {
-		return runnerRegistry.succeedProbesContext;
+		return runnerRegistry.succeed;
 	}
 
 	public int getProbesInSuccessCount() {
-		return runnerRegistry.succeedProbesContext.size();
+		return runnerRegistry.succeed.size();
 	}
 
 	public void disable() {
@@ -108,7 +108,7 @@ public class StatusesManagementComponent extends DefaultComponent implements
 		protected void doUnpublish() {
 			service.unregisterResource("probe-scheduler",
 					ObjectNameFactory.formatProbeQualifiedName(NAME));
-			for (ProbeInfo context : runnerRegistry.scheduledProbesContext
+			for (ProbeInfo context : runnerRegistry.scheduled
 					.values()) {
 				doUnpublishContext(context);
 			}
@@ -161,7 +161,7 @@ public class StatusesManagementComponent extends DefaultComponent implements
 						}
 						event.getBundle().getBundleContext().removeFrameworkListener(this);
 			            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-                        ClassLoader nuxeoCL = Framework.class.getClassLoader();		
+                        ClassLoader nuxeoCL = Framework.class.getClassLoader();
 						try{
 				            Thread.currentThread().setContextClassLoader(nuxeoCL);
 				            adminStatus.activate();
@@ -201,7 +201,7 @@ public class StatusesManagementComponent extends DefaultComponent implements
 	}
 
 	public ProbeInfo getScheduledRunner(Class<? extends Probe> usecaseClass) {
-		ProbeInfo runner = runnerRegistry.scheduledProbesContext
+		ProbeInfo runner = runnerRegistry.scheduled
 				.get(usecaseClass);
 		if (runner == null) {
 			throw new IllegalArgumentException("no probe scheduled for "
@@ -210,8 +210,17 @@ public class StatusesManagementComponent extends DefaultComponent implements
 		return runner;
 	}
 
-	public Collection<ProbeInfo> getScheduledProbesContext() {
-		return runnerRegistry.scheduledProbesContext.values();
+	public Collection<ProbeInfo> getScheduledProbes() {
+		return runnerRegistry.scheduled.values();
+	}
+
+	public Collection<ProbeInfo> getSuccessProbes() {
+	    return runnerRegistry.succeed;
+	}
+
+
+	public Collection<ProbeInfo> getFailureProbes() {
+	        return runnerRegistry.succeed;
 	}
 
 	public boolean run() {
@@ -225,11 +234,11 @@ public class StatusesManagementComponent extends DefaultComponent implements
 	}
 
 	public Collection<ProbeInfo> getRunWithSuccessProbesInfo() {
-		return runnerRegistry.succeedProbesContext;
+		return runnerRegistry.succeed;
 	}
 
 	public ProbeInfo getProbeInfo(String probeQualifiedName) {
-		Collection<ProbeInfo> runners = runnerRegistry.scheduledProbesContext
+		Collection<ProbeInfo> runners = runnerRegistry.scheduled
 				.values();
 		for (ProbeInfo runner : runners) {
 			if (probeQualifiedName.equals(runner.shortcutName)) {

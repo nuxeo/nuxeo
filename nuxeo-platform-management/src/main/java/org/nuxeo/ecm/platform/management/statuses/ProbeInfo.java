@@ -28,9 +28,9 @@ public class ProbeInfo implements ProbeMBean {
     @SuppressWarnings("unused")
     private final StatusesManagementComponent scheduler;
 
-    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe usecase) {
+    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe probe) {
         scheduler = usecaseSchedulerService;
-        this.usecase = usecase;
+        this.probe = probe;
     }
 
     protected boolean isEnabled = true;
@@ -39,7 +39,7 @@ public class ProbeInfo implements ProbeMBean {
 
     protected String qualifiedName;
 
-    protected final Probe usecase;
+    protected final Probe probe;
 
     protected long runnedCount = 0L;
 
@@ -47,32 +47,33 @@ public class ProbeInfo implements ProbeMBean {
 
     protected long lastDuration = 0L;
 
-    protected long succeedCount = 0L;
+    protected long successCount = 0L;
 
     protected Date lastSucceedDate;
 
-    protected long failedCount = 0L;
+    protected ProbeStatus lastSuccesStatus;
 
-    protected Date lastFailedDate;
+    protected long failureCount = 0L;
 
-    protected Exception lastFailedCause;
+    protected Date lastFailureDate;
 
-    protected ProbeStatus probeStatus;
+    protected ProbeStatus lastFailureStatus;
+
 
     public long getFailedCount() {
-        return failedCount;
+        return failureCount;
     }
 
     public long getLastDuration() {
         return lastDuration;
     }
 
-    public Exception getLastFailedCause() {
-        return lastFailedCause;
+    public ProbeStatus getLastFailureStatus() {
+        return lastFailureStatus;
     }
 
     public Date getLastFailedDate() {
-        return lastFailedDate;
+        return lastFailureDate;
     }
 
     public Date getLastRunnedDate() {
@@ -88,7 +89,7 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public long getSucceedCount() {
-        return succeedCount;
+        return successCount;
     }
 
     public void disable() {
@@ -104,26 +105,29 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public boolean isInError() {
-        if (lastFailedDate == null) {
+        if (lastFailureDate == null) {
             return false;
         }
         if (lastSucceedDate != null) {
-            return lastFailedDate.after(lastSucceedDate);
+            return lastFailureDate.after(lastSucceedDate);
         }
         return true;
     }
 
-    public ProbeStatus getProbeStatus() {
-        return probeStatus;
+    public ProbeStatus getStatus() {
+        if (isInError()) {
+            return lastFailureStatus;
+        }
+        return lastSuccesStatus;
     }
-    
+
     public String getShortcutName(){
         return shortcutName;
-        
+
     }
 
     public void setProbeStatus(ProbeStatus probeStatus) {
-        this.probeStatus = probeStatus;
+        this.lastSuccesStatus = probeStatus;
     }
 
     protected static Long doGetDuration(Date fromDate, Date toDate) {
@@ -154,21 +158,21 @@ public class ProbeInfo implements ProbeMBean {
             }
             Date startingDate = new Date();
             try {
-                usecase.runProbe(session);
-                setProbeStatus(usecase.getProbeStatus());
-                succeedCount += 1;
-                lastSucceedDate = startingDate;
-            } catch (ClientException e) {
-                failedCount += 1;
-                lastFailedDate = new Date();
-                lastFailedCause = e;
-                throw e;
-            } catch (RuntimeException e) {
-                failedCount += 1;
-                lastFailedDate = new Date();
-                lastFailedCause = e;
-                throw new ClientException(e); // avoid breaking main loop
-            } finally {
+                ProbeStatus status = probe.runProbe(session);
+                if (status.isSuccess()) {
+                    lastSucceedDate = startingDate;
+                    lastSuccesStatus = status;
+                    successCount += 1;
+                } else {
+                    lastFailureStatus = status;
+                    failureCount += 1;
+                    lastFailureDate = startingDate;
+                }
+            } catch (Throwable e) {
+                failureCount += 1;
+                lastFailureDate = new Date();
+                lastFailureStatus = ProbeStatus.newError(e);
+           } finally {
                 runnedCount += 1;
                 lastRunnedDate = startingDate;
                 lastDuration = doGetDuration(startingDate, new Date());
@@ -176,7 +180,7 @@ public class ProbeInfo implements ProbeMBean {
         }
     }
 
-    
+
     public void run() {
         Thread currentThread = Thread.currentThread();
         ClassLoader lastLoader = currentThread.getContextClassLoader();
