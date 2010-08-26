@@ -23,16 +23,14 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
 import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
-import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 
-@WebObject(type = PROBE_WEB_OBJECT_TYPE, administrator=Access.GRANT)
+@WebObject(type = PROBE_WEB_OBJECT_TYPE)
 public class ProbeObject extends DefaultObject {
 
     private ProbeRunner probeRunner;

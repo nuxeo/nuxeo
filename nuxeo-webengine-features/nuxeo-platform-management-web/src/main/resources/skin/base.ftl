@@ -1,13 +1,12 @@
 <html>
 <head>
   <title>
-    <@block name="title">PA HA</@block>
+    <@block name="title">Nuxeo Management</@block>
   </title>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 
-  <!--link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8"-->
-  <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
-  <link rel="stylesheet" href="${skinPath}/css/studio_style.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="shortcut icon" href="${skinPath}/images/favicon.png"></link>
+  <link rel="stylesheet" href="${skinPath}/css/studio_style.css" type="text/css" media="screen" charset="utf-8"/>
 
   <@block name="stylesheets" />
 
@@ -19,6 +18,8 @@
 </head>
 
 <body>
+
+<h1>Nuxeo Management</h1>
 
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr valign="middle">

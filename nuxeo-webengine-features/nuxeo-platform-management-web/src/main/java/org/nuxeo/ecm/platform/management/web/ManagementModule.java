@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author mcedica
  *
  */
-@WebObject(type = MANAGEMENT_WEB_MODULE , administrator=Access.GRANT)
+@WebObject(type = MANAGEMENT_WEB_MODULE)
 @Produces("text/html; charset=UTF-8")
 public class ManagementModule extends DefaultObject {
 
