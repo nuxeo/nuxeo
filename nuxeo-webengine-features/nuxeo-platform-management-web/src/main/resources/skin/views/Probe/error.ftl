@@ -1,4 +1,4 @@
-<@extends src="baseProbe.ftl">
+<@extends src="base.ftl">
 
 <@block name="stylesheets">
 <style>
