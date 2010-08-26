@@ -34,21 +34,20 @@ import org.apache.chemistry.opencmis.client.runtime.objecttype.FolderTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.PolicyTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.RelationshipTypeImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.api.Ace;
-import org.apache.chemistry.opencmis.commons.api.Acl;
-import org.apache.chemistry.opencmis.commons.api.AllowableActions;
-import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.DocumentTypeDefinition;
-import org.apache.chemistry.opencmis.commons.api.FolderTypeDefinition;
-import org.apache.chemistry.opencmis.commons.api.ObjectData;
-import org.apache.chemistry.opencmis.commons.api.PolicyTypeDefinition;
-import org.apache.chemistry.opencmis.commons.api.Properties;
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyId;
-import org.apache.chemistry.opencmis.commons.api.RelationshipTypeDefinition;
-import org.apache.chemistry.opencmis.commons.api.RenditionData;
-import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
+import org.apache.chemistry.opencmis.commons.definitions.DocumentTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.FolderTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PolicyTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.RelationshipTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
@@ -64,6 +63,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
         this.session = session;
     }
 
+    @Override
     public CmisObject convertObject(ObjectData data, OperationContext context) {
         if (data == null || data.getProperties() == null
                 || data.getProperties().getProperties() == null) {
@@ -81,90 +81,88 @@ public class NuxeoObjectFactory implements ObjectFactory {
         return NuxeoObject.construct(session, (NuxeoObjectData) data, type);
     }
 
+    @Override
     public ObjectType getTypeFromObjectData(ObjectData objectData) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Ace createAce(String principal, List<String> permissions) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Acl createAcl(List<Ace> aces) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T> Property<T> createProperty(PropertyDefinition<?> type, T value) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T> Property<T> createPropertyMultivalue(PropertyDefinition<?> type,
             List<T> values) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Ace createAce(String principal, List<String> permissions,
-            boolean isDirect) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Acl createAcl(List<Ace> aces, Boolean isExact) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public AllowableActions createAllowableAction(Map<String, Boolean> actions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
+    @Override
     public ContentStream createContentStream(String filename, long length,
             String mimetype, InputStream stream) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Acl convertAces(List<Ace> aces) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Acl convertAcl(Acl acl) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public AllowableActions convertAllowableActions(
-            AllowableActions allowableActions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
+    @Override
     public ContentStream convertContentStream(ContentStream contentStream) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<String> convertPolicies(List<Policy> policies) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Map<String, Property<?>> convertProperties(ObjectType objectType,
             Properties properties) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Properties convertProperties(Map<String, ?> properties,
             ObjectType type, Set<Updatability> updatabilityFilter) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<PropertyData<?>> convertQueryProperties(Properties properties) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public QueryResult convertQueryResult(ObjectData objectData) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Rendition convertRendition(String objectId, RenditionData rendition) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ObjectType convertTypeDefinition(TypeDefinition typeDefinition) {
         if (typeDefinition instanceof DocumentTypeDefinition) {
             // TODO cast shouldn't be needed

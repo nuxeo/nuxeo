@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -48,22 +48,27 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
         return propertyDefinition;
     }
 
+    @Override
     public String getId() {
         return propertyDefinition.getId();
     }
 
+    @Override
     public String getLocalName() {
         return propertyDefinition.getLocalName();
     }
 
+    @Override
     public String getDisplayName() {
         return propertyDefinition.getDisplayName();
     }
 
+    @Override
     public String getQueryName() {
         return propertyDefinition.getQueryName();
     }
 
+    @Override
     public List<T> getValues() {
         return Collections.singletonList(getFirstValue());
     }
@@ -80,10 +85,12 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
                 + propertyDefinition.getId());
     }
 
+    @Override
     public List<Object> getExtensions() {
         return null;
     }
 
+    @Override
     public void setExtensions(List<Object> extensions) {
         throw new UnsupportedOperationException();
     }

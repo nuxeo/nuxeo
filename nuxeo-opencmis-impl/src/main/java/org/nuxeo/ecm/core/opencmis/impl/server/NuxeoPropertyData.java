@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyId;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
@@ -209,6 +209,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
+    @Override
     public T getFirstValue() {
         try {
             Serializable value = doc.getPropertyValue(name);
@@ -296,6 +297,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             this.value = value;
         }
 
+        @Override
         public T getFirstValue() {
             return value;
         }
@@ -315,6 +317,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             this.value = value;
         }
 
+        @Override
         public String getFirstValue() {
             return value;
         }
@@ -331,6 +334,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             String path = doc.getPathAsString();
             return path == null ? "" : path;
@@ -348,6 +352,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             if (doc.getName() == null) {
                 return null;
@@ -377,6 +382,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             try {
                 String[] value = (String[]) doc.getPropertyValue("dc:contributors");
@@ -402,6 +408,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             Blob blob = getBlob(doc);
             return blob == null ? null : blob.getFilename();
@@ -438,6 +445,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public BigInteger getFirstValue() {
             Blob blob = getBlob(doc);
             return blob == null ? null : BigInteger.valueOf(blob.getLength());
@@ -455,6 +463,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             Blob blob = getBlob(doc);
             return blob == null ? null : blob.getMimeType();
@@ -472,6 +481,7 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
+        @Override
         public String getFirstValue() {
             String name;
             try {

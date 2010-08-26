@@ -16,11 +16,12 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Property;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData;
@@ -36,51 +37,77 @@ public class NuxeoProperty<T> implements Property<T> {
         prop = (NuxeoPropertyData<T>) object.data.getProperty(id);
     }
 
+    @Override
     public PropertyDefinition<T> getDefinition() {
         return prop.getPropertyDefinition();
     }
 
+    @Override
     public String getDisplayName() {
         return prop.getDisplayName();
     }
 
+    @Override
     public String getId() {
         return prop.getId();
     }
 
+    @Override
     public String getLocalName() {
         return prop.getLocalName();
     }
 
+    @Override
     public String getQueryName() {
         return prop.getQueryName();
     }
 
+    @Override
     public PropertyType getType() {
         return prop.getPropertyDefinition().getPropertyType();
     }
 
+    @Override
     public T getFirstValue() {
         return (T) prop.getFirstValue();
     }
 
+    @Override
     public String getValueAsString() {
         return String.valueOf(getFirstValue());
     }
 
+    @Override
+    public String getValuesAsString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append('[');
+        for (Iterator<T> it = getValues().iterator(); it.hasNext();) {
+            buf.append(String.valueOf(it.next()));
+            if (it.hasNext()) {
+                buf.append(", ");
+            }
+        }
+        buf.append(']');
+        return buf.toString();
+    }
+
+    @Override
     public List<T> getValues() {
         return (List<T>) prop.getValues();
     }
 
+    @Override
     public boolean isMultiValued() {
         return prop.getPropertyDefinition().getCardinality() == Cardinality.MULTI;
     }
 
+    @Override
     public List<Object> getExtensions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setExtensions(List<Object> extensions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();

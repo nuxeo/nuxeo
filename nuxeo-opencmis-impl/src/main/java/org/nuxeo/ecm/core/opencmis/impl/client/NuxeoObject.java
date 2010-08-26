@@ -30,10 +30,10 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
-import org.apache.chemistry.opencmis.client.api.PagingIterable;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
@@ -41,26 +41,26 @@ import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.api.Ace;
-import org.apache.chemistry.opencmis.commons.api.Acl;
-import org.apache.chemistry.opencmis.commons.api.AllowableActions;
-import org.apache.chemistry.opencmis.commons.api.BindingsObjectFactory;
-import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.api.PropertyBooleanDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDateTimeDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyDecimalDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyHtmlDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyId;
-import org.apache.chemistry.opencmis.commons.api.PropertyIdDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyIntegerDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyStringDefinition;
-import org.apache.chemistry.opencmis.commons.api.PropertyUriDefinition;
+import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDecimalDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyHtmlDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIdDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
@@ -69,6 +69,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -113,75 +114,92 @@ public abstract class NuxeoObject implements CmisObject {
         return session.getRepositoryId();
     }
 
+    @Override
     public String getId() {
         return getPropertyValue(PropertyIds.OBJECT_ID);
     }
 
+    @Override
     public ObjectType getType() {
         return type;
     }
 
+    @Override
     public BaseTypeId getBaseTypeId() {
         String baseType = getPropertyValue(PropertyIds.BASE_TYPE_ID);
         return baseType == null ? null : BaseTypeId.fromValue(baseType);
     }
 
+    @Override
     public ObjectType getBaseType() {
         String baseType = getPropertyValue(PropertyIds.BASE_TYPE_ID);
         return baseType == null ? null : session.getTypeDefinition(baseType);
     }
 
+    @Override
     public String getName() {
         return getPropertyValue(PropertyIds.NAME);
     }
 
+    @Override
     public String getChangeToken() {
         return getPropertyValue(PropertyIds.CHANGE_TOKEN);
     }
 
+    @Override
     public String getCreatedBy() {
         return getPropertyValue(PropertyIds.CREATED_BY);
     }
 
+    @Override
     public GregorianCalendar getCreationDate() {
         return getPropertyValue(PropertyIds.CREATION_DATE);
     }
 
+    @Override
     public GregorianCalendar getLastModificationDate() {
         return getPropertyValue(PropertyIds.LAST_MODIFICATION_DATE);
     }
 
+    @Override
     public String getLastModifiedBy() {
         return getPropertyValue(PropertyIds.LAST_MODIFIED_BY);
     }
 
+    @Override
     public void setName(String name) {
         setProperty(PropertyIds.NAME, name);
     }
 
+    @Override
     public void delete(boolean allVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ObjectId updateProperties() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ObjectId updateProperties(Map<String, ?> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T> T getPropertyValue(String id) {
         return (T) data.getProperty(id).getFirstValue();
     }
 
+    @Override
     public <T> Property<T> getProperty(String id) {
         return new NuxeoProperty<T>(this, type, id);
     }
 
+    @Override
     public List<Property<?>> getProperties() {
         Collection<PropertyDefinition<?>> defs = type.getPropertyDefinitions().values();
         List<Property<?>> list = new ArrayList<Property<?>>(defs.size());
@@ -191,72 +209,85 @@ public abstract class NuxeoObject implements CmisObject {
         return list;
     }
 
+    @Override
     public <T> void setProperty(String id, T value) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T> List<T> getPropertyMultivalue(String id) {
         return (List<T>) data.getProperty(id).getValues();
     }
 
+    @Override
     public <T> void setPropertyMultivalue(String id, List<T> value) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
             AclPropagation aclPropagation) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void applyPolicy(ObjectId policyId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Acl getAcl() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Acl getAcl(boolean onlyBasicPermissions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public AllowableActions getAllowableActions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<Policy> getPolicies() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removePolicy(ObjectId policyId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<Relationship> getRelationships() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public PagingIterable<Relationship> getRelationships(
+    public ItemIterable<Relationship> getRelationships(
             boolean includeSubRelationshipTypes,
             RelationshipDirection relationshipDirection, ObjectType type,
             OperationContext context, int itemsPerPage) {
@@ -264,26 +295,31 @@ public abstract class NuxeoObject implements CmisObject {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<Rendition> getRenditions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isChanged() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void refresh() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void refreshIfOld(long durationInMillis) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public long getRefreshTimestamp() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -297,11 +333,13 @@ public abstract class NuxeoObject implements CmisObject {
             super(session, data, type);
         }
 
+        @Override
         public void addToFolder(ObjectId folderId, boolean allVersions) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Folder> getParents() {
             String objectId = getId();
             List<ObjectParentData> parentsData = session.getBinding().getNavigationService().getObjectParents(
@@ -330,18 +368,27 @@ public abstract class NuxeoObject implements CmisObject {
             return parents;
         }
 
+        @Override
         public List<String> getPaths() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public FileableCmisObject move(ObjectId sourceFolderId,
                 ObjectId targetFolderId) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void removeFromFolder(ObjectId folderId) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<Object> getExtensions(ExtensionLevel level) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
@@ -355,6 +402,7 @@ public abstract class NuxeoObject implements CmisObject {
             super(session, data, type);
         }
 
+        @Override
         public Document createDocument(Map<String, ?> properties,
                 ContentStream contentStream, VersioningState versioningState,
                 List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
@@ -485,6 +533,7 @@ public abstract class NuxeoObject implements CmisObject {
             return (Document) session.getObject(new ObjectIdImpl(id), context);
         }
 
+        @Override
         public Document createDocumentFromSource(ObjectId source,
                 Map<String, ?> properties, VersioningState versioningState,
                 List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
@@ -493,6 +542,7 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Folder createFolder(Map<String, ?> properties,
                 List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
                 OperationContext context) {
@@ -500,6 +550,7 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Policy createPolicy(Map<String, ?> properties,
                 List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
                 OperationContext context) {
@@ -507,50 +558,57 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<String> deleteTree(boolean allversions,
                 UnfileObject unfile, boolean continueOnFailure) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<ObjectType> getAllowedChildObjectTypes() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingIterable<Document> getCheckedOutDocs(int itemsPerPage) {
+        @Override
+        public ItemIterable<Document> getCheckedOutDocs() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingIterable<Document> getCheckedOutDocs(OperationContext context,
-                int itemsPerPage) {
+        @Override
+        public ItemIterable<Document> getCheckedOutDocs(OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingIterable<CmisObject> getChildren(int itemsPerPage) {
+        @Override
+        public ItemIterable<CmisObject> getChildren() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
-        public PagingIterable<CmisObject> getChildren(OperationContext context,
-                int itemsPerPage) {
+        @Override
+        public ItemIterable<CmisObject> getChildren(OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Tree<FileableCmisObject>> getDescendants(int depth) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Tree<FileableCmisObject>> getDescendants(int depth,
                 OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Folder getFolderParent() {
             if (isRootFolder()) {
                 return null;
@@ -562,24 +620,37 @@ public abstract class NuxeoObject implements CmisObject {
             return parents.get(0);
         }
 
+        @Override
         public List<Tree<FileableCmisObject>> getFolderTree(int depth) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Tree<FileableCmisObject>> getFolderTree(int depth,
                 OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getPath() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean isRootFolder() {
             return session.getRepositoryInfo().getRootFolderId().equals(getId());
+        }
+
+        @Override
+        public ItemIterable<Relationship> getRelationships(
+                boolean includeSubRelationshipTypes,
+                RelationshipDirection relationshipDirection, ObjectType type,
+                OperationContext context) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -591,11 +662,13 @@ public abstract class NuxeoObject implements CmisObject {
             super(session, data, type);
         }
 
+        @Override
         public void cancelCheckOut() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ObjectId checkIn(boolean major, Map<String, ?> properties,
                 ContentStream contentStream, String checkinComment,
                 List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
@@ -603,11 +676,13 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ObjectId checkOut() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Document copy(List<Property<?>> properties,
                 VersioningState versioningState, List<Policy> policies,
                 List<Ace> addACEs, List<Ace> removeACEs) {
@@ -615,114 +690,151 @@ public abstract class NuxeoObject implements CmisObject {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void deleteAllVersions() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ObjectId deleteContentStream() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Document> getAllVersions() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<Document> getAllVersions(OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getCheckinComment() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ContentStream getContentStream() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public ContentStream getContentStream(String streamId) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public String getContentStreamFileName() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getContentStreamId() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public long getContentStreamLength() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getContentStreamMimeType() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Document getObjectOfLatestVersion(boolean major) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Document getObjectOfLatestVersion(boolean major,
                 OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getVersionLabel() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getVersionSeriesCheckedOutBy() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getVersionSeriesCheckedOutId() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public String getVersionSeriesId() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Boolean isImmutable() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Boolean isLatestMajorVersion() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Boolean isLatestVersion() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Boolean isMajorVersion() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Boolean isVersionSeriesCheckedOut() {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public ObjectId setContentStream(ContentStream contentStream,
                 boolean overwrite) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ItemIterable<Relationship> getRelationships(
+                boolean includeSubRelationshipTypes,
+                RelationshipDirection relationshipDirection, ObjectType type,
+                OperationContext context) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }

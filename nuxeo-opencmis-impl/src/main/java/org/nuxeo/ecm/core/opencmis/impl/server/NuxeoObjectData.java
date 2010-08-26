@@ -22,22 +22,21 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.chemistry.opencmis.commons.api.Ace;
-import org.apache.chemistry.opencmis.commons.api.Acl;
-import org.apache.chemistry.opencmis.commons.api.AllowableActions;
-import org.apache.chemistry.opencmis.commons.api.BindingsObjectFactory;
-import org.apache.chemistry.opencmis.commons.api.ChangeEventInfo;
-import org.apache.chemistry.opencmis.commons.api.ExtensionsData;
-import org.apache.chemistry.opencmis.commons.api.ObjectData;
-import org.apache.chemistry.opencmis.commons.api.PolicyIdList;
-import org.apache.chemistry.opencmis.commons.api.Properties;
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.api.RenditionData;
-import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.ChangeEventInfo;
+import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
+import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.PolicyIdList;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
@@ -45,6 +44,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListI
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -106,15 +106,18 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
+    @Override
     public String getId() {
         return doc.getId();
     }
 
+    @Override
     public BaseTypeId getBaseTypeId() {
         return doc.isFolder() ? BaseTypeId.CMIS_FOLDER
                 : BaseTypeId.CMIS_DOCUMENT;
     }
 
+    @Override
     public Properties getProperties() {
         return getProperties(propertyIds);
     }
@@ -139,6 +142,7 @@ public class NuxeoObjectData implements ObjectData {
         return NuxeoPropertyData.construct(this, pd);
     }
 
+    @Override
     public AllowableActions getAllowableActions() {
         if (!Boolean.TRUE.equals(includeAllowableActions)) {
             return null;
@@ -200,6 +204,7 @@ public class NuxeoObjectData implements ObjectData {
         return aa;
     }
 
+    @Override
     public List<RenditionData> getRenditions() {
         if (renditionFilter == null || renditionFilter.length() == 0) {
             return null;
@@ -207,6 +212,7 @@ public class NuxeoObjectData implements ObjectData {
         return new ArrayList<RenditionData>(0); // TODO
     }
 
+    @Override
     public List<ObjectData> getRelationships() {
         if (includeRelationships == null
                 || includeRelationships == IncludeRelationships.NONE) {
@@ -215,6 +221,7 @@ public class NuxeoObjectData implements ObjectData {
         return new ArrayList<ObjectData>(0); // TODO
     }
 
+    @Override
     public Acl getAcl() {
         if (!Boolean.TRUE.equals(includeAcl)) {
             return null;
@@ -225,10 +232,12 @@ public class NuxeoObjectData implements ObjectData {
         return acl; // TODO
     }
 
+    @Override
     public Boolean isExactAcl() {
         return Boolean.FALSE; // TODO
     }
 
+    @Override
     public PolicyIdList getPolicyIds() {
         if (!Boolean.TRUE.equals(includePolicyIds)) {
             return null;
@@ -236,15 +245,18 @@ public class NuxeoObjectData implements ObjectData {
         return new PolicyIdListImpl(); // TODO
     }
 
+    @Override
     public ChangeEventInfo getChangeEventInfo() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<Object> getExtensions() {
         return Collections.emptyList();
     }
 
+    @Override
     public void setExtensions(List<Object> extensions) {
     }
 

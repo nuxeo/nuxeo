@@ -25,26 +25,24 @@ import java.util.Map.Entry;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.api.Acl;
-import org.apache.chemistry.opencmis.commons.api.AllowableActions;
-import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.ExtensionsData;
-import org.apache.chemistry.opencmis.commons.api.FailedToDeleteData;
-import org.apache.chemistry.opencmis.commons.api.Holder;
-import org.apache.chemistry.opencmis.commons.api.ObjectData;
-import org.apache.chemistry.opencmis.commons.api.ObjectInFolderContainer;
-import org.apache.chemistry.opencmis.commons.api.ObjectInFolderList;
-import org.apache.chemistry.opencmis.commons.api.ObjectList;
-import org.apache.chemistry.opencmis.commons.api.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.api.Properties;
-import org.apache.chemistry.opencmis.commons.api.PropertyData;
-import org.apache.chemistry.opencmis.commons.api.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.api.RenditionData;
-import org.apache.chemistry.opencmis.commons.api.RepositoryInfo;
-import org.apache.chemistry.opencmis.commons.api.TypeDefinition;
-import org.apache.chemistry.opencmis.commons.api.TypeDefinitionContainer;
-import org.apache.chemistry.opencmis.commons.api.TypeDefinitionList;
-import org.apache.chemistry.opencmis.commons.api.server.CallContext;
+import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
+import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
+import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
+import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
+import org.apache.chemistry.opencmis.commons.data.ObjectList;
+import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
+import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
@@ -56,16 +54,9 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.server.spi.CmisAclService;
-import org.apache.chemistry.opencmis.server.spi.CmisDiscoveryService;
-import org.apache.chemistry.opencmis.server.spi.CmisMultiFilingService;
-import org.apache.chemistry.opencmis.server.spi.CmisNavigationService;
-import org.apache.chemistry.opencmis.server.spi.CmisObjectService;
-import org.apache.chemistry.opencmis.server.spi.CmisPolicyService;
-import org.apache.chemistry.opencmis.server.spi.CmisRelationshipService;
-import org.apache.chemistry.opencmis.server.spi.CmisRepositoryService;
-import org.apache.chemistry.opencmis.server.spi.CmisVersioningService;
-import org.apache.chemistry.opencmis.server.spi.ObjectInfoHolder;
+import org.apache.chemistry.opencmis.commons.server.CmisService;
+import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
+import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -82,10 +73,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 /**
  * Nuxeo implementation of the CMIS Services.
  */
-public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
-        CmisMultiFilingService, CmisNavigationService, CmisObjectService,
-        CmisPolicyService, CmisRelationshipService, CmisRepositoryService,
-        CmisVersioningService {
+public class NuxeoCmisService implements CmisService {
 
     public static final String REPOSITORY = "NuxeService.Repository";
 
@@ -110,6 +98,7 @@ public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
         documentFilter = new CompoundFilter(facetFilter, lcFilter);
     }
 
+    @Override
     public void close() {
     }
 
@@ -124,49 +113,52 @@ public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
         }
     }
 
-    public RepositoryInfo getRepositoryInfo(CallContext context,
-            String repositoryId, ExtensionsData extension) {
+    @Override
+    public RepositoryInfo getRepositoryInfo(String repositoryId,
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO link LatestChangeLogToken to session state
         return repository.getRepositoryInfo(coreSession);
     }
 
-    public List<RepositoryInfo> getRepositoryInfos(CallContext context,
-            ExtensionsData extension) {
+    @Override
+    public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public TypeDefinition getTypeDefinition(CallContext context,
-            String repositoryId, String typeId, ExtensionsData extension) {
+    @Override
+    public TypeDefinition getTypeDefinition(String repositoryId, String typeId,
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         return repository.getTypeDefinition(typeId);
 
     }
 
-    public TypeDefinitionList getTypeChildren(CallContext context,
-            String repositoryId, String typeId,
-            Boolean includePropertyDefinitions, BigInteger maxItems,
-            BigInteger skipCount, ExtensionsData extension) {
+    @Override
+    public TypeDefinitionList getTypeChildren(String repositoryId,
+            String typeId, Boolean includePropertyDefinitions,
+            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<TypeDefinitionContainer> getTypeDescendants(
-            CallContext context, String repositoryId, String typeId,
-            BigInteger depth, Boolean includePropertyDefinitions,
-            ExtensionsData extension) {
+            String repositoryId, String typeId, BigInteger depth,
+            Boolean includePropertyDefinitions, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectData getObject(CallContext context, String repositoryId,
-            String objectId, String filter, Boolean includeAllowableActions,
+    @Override
+    public ObjectData getObject(String repositoryId, String objectId,
+            String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         DocumentModel doc;
         try {
@@ -325,44 +317,47 @@ public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
         }
     }
 
-    public ObjectData create(CallContext context, String repositoryId,
-            Properties properties, String folderId,
-            ContentStream contentStream, VersioningState versioningState,
-            List<String> policies, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
+    @Override
+    public String create(String repositoryId, Properties properties,
+            String folderId, ContentStream contentStream,
+            VersioningState versioningState, List<String> policies,
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createDocument(CallContext context, String repositoryId,
-            Properties properties, String folderId,
-            ContentStream contentStream, VersioningState versioningState,
-            List<String> policies, Acl addAces, Acl removeAces,
-            ExtensionsData extension) {
+    @Override
+    public String createDocument(String repositoryId, Properties properties,
+            String folderId, ContentStream contentStream,
+            VersioningState versioningState, List<String> policies,
+            Acl addAces, Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
                 folderId), BaseTypeId.CMIS_DOCUMENT, contentStream);
         return object.getId();
     }
 
-    public String createFolder(CallContext context, String repositoryId,
-            Properties properties, String folderId, List<String> policies,
-            Acl addAces, Acl removeAces, ExtensionsData extension) {
+    @Override
+    public String createFolder(String repositoryId, Properties properties,
+            String folderId, List<String> policies, Acl addAces,
+            Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createPolicy(CallContext context, String repositoryId,
-            Properties properties, String folderId, List<String> policies,
-            Acl addAces, Acl removeAces, ExtensionsData extension) {
+    @Override
+    public String createPolicy(String repositoryId, Properties properties,
+            String folderId, List<String> policies, Acl addAces,
+            Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createRelationship(CallContext context, String repositoryId,
+    @Override
+    public String createRelationship(String repositoryId,
             Properties properties, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
@@ -370,17 +365,18 @@ public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
         throw new UnsupportedOperationException();
     }
 
-    public String createDocumentFromSource(CallContext context,
-            String repositoryId, String sourceId, Properties properties,
-            String folderId, VersioningState versioningState,
-            List<String> policies, Acl addAces, Acl removeAces,
-            ExtensionsData extension) {
+    @Override
+    public String createDocumentFromSource(String repositoryId,
+            String sourceId, Properties properties, String folderId,
+            VersioningState versioningState, List<String> policies,
+            Acl addAces, Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(CallContext context, String repositoryId,
+    @Override
+    public void deleteContentStream(String repositoryId,
             Holder<String> objectId, Holder<String> changeToken,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
@@ -388,298 +384,318 @@ public class NuxeoCmisService implements CmisAclService, CmisDiscoveryService,
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObjectOrCancelCheckOut(CallContext context,
-            String repositoryId, String objectId, Boolean allVersions,
-            ExtensionsData extension) {
+    @Override
+    public void deleteObjectOrCancelCheckOut(String repositoryId,
+            String objectId, Boolean allVersions, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public FailedToDeleteData deleteTree(CallContext context,
-            String repositoryId, String folderId, Boolean allVersions,
-            UnfileObject unfileObjects, Boolean continueOnFailure,
-            ExtensionsData extension) {
+    @Override
+    public FailedToDeleteData deleteTree(String repositoryId, String folderId,
+            Boolean allVersions, UnfileObject unfileObjects,
+            Boolean continueOnFailure, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public AllowableActions getAllowableActions(CallContext context,
-            String repositoryId, String objectId, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ContentStream getContentStream(CallContext context,
-            String repositoryId, String objectId, String streamId,
-            BigInteger offset, BigInteger length, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData getObjectByPath(CallContext context, String repositoryId,
-            String path, String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Properties getProperties(CallContext context, String repositoryId,
-            String objectId, String filter, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<RenditionData> getRenditions(CallContext context,
-            String repositoryId, String objectId, String renditionFilter,
-            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData moveObject(CallContext context, String repositoryId,
-            Holder<String> objectId, String targetFolderId,
-            String sourceFolderId, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void setContentStream(CallContext context, String repositoryId,
-            Holder<String> objectId, Boolean overwriteFlag,
-            Holder<String> changeToken, ContentStream contentStream,
-            ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData updateProperties(CallContext context,
-            String repositoryId, Holder<String> objectId,
-            Holder<String> changeToken, Properties properties, Acl acl,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Acl applyAcl(CallContext context, String repositoryId,
-            String objectId, Acl addAces, Acl removeAces,
-            AclPropagation aclPropagation, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Acl applyAcl(CallContext context, String repositoryId,
-            String objectId, Acl aces, AclPropagation aclPropagation) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Acl getAcl(CallContext context, String repositoryId,
-            String objectId, Boolean onlyBasicPermissions,
-            ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectList getContentChanges(CallContext context,
-            String repositoryId, Holder<String> changeLogToken,
-            Boolean includeProperties, String filter, Boolean includePolicyIds,
-            Boolean includeAcl, BigInteger maxItems, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectList query(CallContext context, String repositoryId,
-            String statement, Boolean searchAllVersions,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData addObjectToFolder(CallContext context,
-            String repositoryId, String objectId, String folderId,
-            Boolean allVersions, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData removeObjectFromFolder(CallContext context,
-            String repositoryId, String objectId, String folderId,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectList getCheckedOutDocs(CallContext context,
-            String repositoryId, String folderId, String filter,
-            String orderBy, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            BigInteger maxItems, BigInteger skipCount,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectInFolderList getChildren(CallContext context,
-            String repositoryId, String folderId, String filter,
-            String orderBy, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, BigInteger maxItems,
-            BigInteger skipCount, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<ObjectInFolderContainer> getDescendants(CallContext context,
-            String repositoryId, String folderId, BigInteger depth,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData getFolderParent(CallContext context, String repositoryId,
-            String folderId, String filter, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<ObjectInFolderContainer> getFolderTree(CallContext context,
-            String repositoryId, String folderId, BigInteger depth,
-            String filter, Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<ObjectParentData> getObjectParents(CallContext context,
-            String repositoryId, String objectId, String filter,
-            Boolean includeAllowableActions,
-            IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includeRelativePathSegment, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData applyPolicy(CallContext context, String repositoryId,
-            String policyId, String objectId, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<ObjectData> getAppliedPolicies(CallContext context,
-            String repositoryId, String objectId, String filter,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removePolicy(CallContext context, String repositoryId,
-            String policyId, String objectId, ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectList getObjectRelationships(CallContext context,
-            String repositoryId, String objectId,
-            Boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, String typeId,
-            String filter, Boolean includeAllowableActions,
-            BigInteger maxItems, BigInteger skipCount,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void cancelCheckOut(CallContext context, String repositoryId,
+    @Override
+    public AllowableActions getAllowableActions(String repositoryId,
             String objectId, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectData checkIn(CallContext context, String repositoryId,
-            Holder<String> objectId, Boolean major, Properties properties,
-            ContentStream contentStream, String checkinComment,
-            List<String> policies, Acl addAces, Acl removeAces,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
+    @Override
+    public ContentStream getContentStream(String repositoryId, String objectId,
+            String streamId, BigInteger offset, BigInteger length,
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectData checkOut(CallContext context, String repositoryId,
-            Holder<String> objectId, ExtensionsData extension,
-            Holder<Boolean> contentCopied, ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public List<ObjectData> getAllVersions(CallContext context,
-            String repositoryId, String versionSeriesId, String filter,
-            Boolean includeAllowableActions, ExtensionsData extension,
-            ObjectInfoHolder objectInfos) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public ObjectData getObjectOfLatestVersion(CallContext context,
-            String repositoryId, String versionSeriesId, Boolean major,
+    @Override
+    public ObjectData getObjectByPath(String repositoryId, String path,
             String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
-            ExtensionsData extension, ObjectInfoHolder objectInfos) {
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Properties getPropertiesOfLatestVersion(CallContext context,
-            String repositoryId, String versionSeriesId, Boolean major,
+    @Override
+    public Properties getProperties(String repositoryId, String objectId,
             String filter, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<RenditionData> getRenditions(String repositoryId,
+            String objectId, String renditionFilter, BigInteger maxItems,
+            BigInteger skipCount, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectInfo getObjectInfo(String repositoryId, String objectId) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void moveObject(String repositoryId, Holder<String> objectId,
+            String targetFolderId, String sourceFolderId,
+            ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setContentStream(String repositoryId, Holder<String> objectId,
+            Boolean overwriteFlag, Holder<String> changeToken,
+            ContentStream contentStream, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateProperties(String repositoryId, Holder<String> objectId,
+            Holder<String> changeToken, Properties properties,
+            ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Acl applyAcl(String repositoryId, String objectId, Acl addAces,
+            Acl removeAces, AclPropagation aclPropagation,
+            ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Acl applyAcl(String repositoryId, String objectId, Acl aces,
+            AclPropagation aclPropagation) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Acl getAcl(String repositoryId, String objectId,
+            Boolean onlyBasicPermissions, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectList getContentChanges(String repositoryId,
+            Holder<String> changeLogToken, Boolean includeProperties,
+            String filter, Boolean includePolicyIds, Boolean includeAcl,
+            BigInteger maxItems, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectList query(String repositoryId, String statement,
+            Boolean searchAllVersions, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addObjectToFolder(String repositoryId, String objectId,
+            String folderId, Boolean allVersions, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeObjectFromFolder(String repositoryId, String objectId,
+            String folderId, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectList getCheckedOutDocs(String repositoryId, String folderId,
+            String filter, String orderBy, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectInFolderList getChildren(String repositoryId, String folderId,
+            String filter, String orderBy, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegment, BigInteger maxItems,
+            BigInteger skipCount, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ObjectInFolderContainer> getDescendants(String repositoryId,
+            String folderId, BigInteger depth, String filter,
+            Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegment, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectData getFolderParent(String repositoryId, String folderId,
+            String filter, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ObjectInFolderContainer> getFolderTree(String repositoryId,
+            String folderId, BigInteger depth, String filter,
+            Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegment, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ObjectParentData> getObjectParents(String repositoryId,
+            String objectId, String filter, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includeRelativePathSegment, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void applyPolicy(String repositoryId, String policyId,
+            String objectId, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ObjectData> getAppliedPolicies(String repositoryId,
+            String objectId, String filter, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removePolicy(String repositoryId, String policyId,
+            String objectId, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectList getObjectRelationships(String repositoryId,
+            String objectId, Boolean includeSubRelationshipTypes,
+            RelationshipDirection relationshipDirection, String typeId,
+            String filter, Boolean includeAllowableActions,
+            BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void cancelCheckOut(String repositoryId, String objectId,
+            ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void checkIn(String repositoryId, Holder<String> objectId,
+            Boolean major, Properties properties, ContentStream contentStream,
+            String checkinComment, List<String> policies, Acl addAces,
+            Acl removeAces, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void checkOut(String repositoryId, Holder<String> objectId,
+            ExtensionsData extension, Holder<Boolean> contentCopied) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ObjectData> getAllVersions(String repositoryId,
+            String objectId, String versionSeriesId, String filter,
+            Boolean includeAllowableActions, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectData getObjectOfLatestVersion(String repositoryId,
+            String objectId, String versionSeriesId, Boolean major,
+            String filter, Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePolicyIds, Boolean includeAcl,
+            ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Properties getPropertiesOfLatestVersion(String repositoryId,
+            String objectId, String versionSeriesId, Boolean major,
+            String filter, ExtensionsData extension) {
+        checkRepositoryId(repositoryId);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteObject(String repositoryId, String objectId,
+            Boolean allVersions, ExtensionsData extension) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

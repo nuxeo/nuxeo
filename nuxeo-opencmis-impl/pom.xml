@@ -18,7 +18,7 @@
   <description>Nuxeo Core: OpenCMIS Implementation</description>
 
   <properties>
-    <opencmis.version>0.1-incubating-SNAPSHOT</opencmis.version>
+    <opencmis.version>0.1.0-incubating-SNAPSHOT</opencmis.version>
   </properties>
 
   <build>
@@ -82,53 +82,29 @@
     </dependency>
     <!-- OpenCMIS -->
     <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-commons-api</artifactId>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-api</artifactId>
       <version>${opencmis.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-commons-impl</artifactId>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-impl</artifactId>
       <version>${opencmis.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-provider-impl</artifactId>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-support</artifactId>
       <version>${opencmis.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-server-spi</artifactId>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-client-api</artifactId>
       <version>${opencmis.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-server-impl</artifactId>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-client-impl</artifactId>
       <version>${opencmis.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-server-support</artifactId>
-      <version>${opencmis.version}</version>
-    </dependency>
-    <!-- OpenCMIS test -->
-    <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-client-api</artifactId>
-      <version>${opencmis.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-client-impl</artifactId>
-      <version>${opencmis.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.opencmis</groupId>
-      <artifactId>opencmis-server-inmemory</artifactId>
-      <version>${opencmis.version}</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- scope provided -->

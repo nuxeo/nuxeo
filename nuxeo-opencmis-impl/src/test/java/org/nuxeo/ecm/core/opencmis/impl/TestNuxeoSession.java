@@ -25,11 +25,11 @@ import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
-import org.apache.chemistry.opencmis.commons.api.Ace;
-import org.apache.chemistry.opencmis.commons.api.CmisBinding;
-import org.apache.chemistry.opencmis.commons.api.ContentStream;
-import org.apache.chemistry.opencmis.commons.api.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.junit.Test;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
@@ -51,11 +51,9 @@ public class TestNuxeoSession extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         // deployed for fulltext indexing
-        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
         // // MyDocType
         // deployContrib("org.nuxeo.ecm.core.chemistry.tests.test",
         // "OSGI-INF/types-contrib.xml");
