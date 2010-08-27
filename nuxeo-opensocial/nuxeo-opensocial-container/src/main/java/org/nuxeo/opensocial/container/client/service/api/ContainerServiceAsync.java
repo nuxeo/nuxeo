@@ -29,14 +29,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * ContainerServiceAsync
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public interface ContainerServiceAsync {
 
     /**
      * Retrieve a specific container
-     * 
+     *
      * @param gwtParams
      * @param AsyncCallback <Container>
      * @throws ContainerServiceException
@@ -46,7 +46,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Save layout of container
-     * 
+     *
      * @param gwtParams
      * @param layoutName
      * @param AsyncCallback <Container>
@@ -56,7 +56,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Save preferences of gadget with form parameter
-     * 
+     *
      * @param gadget
      * @param form : new preferences
      * @param gwtParams
@@ -67,7 +67,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Remove gadget
-     * 
+     *
      * @param gadget
      * @param gwtParams
      * @param AsyncCallback <GadgetBean>
@@ -77,7 +77,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Add gadget
-     * 
+     *
      * @param gadgetName
      * @param gwtParams
      * @param AsyncCallback <GadgetBean>
@@ -87,7 +87,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Save collection of gadgets
-     * 
+     *
      * @param collection
      * @param gwtParams
      * @param AsyncCallback <GadgetBean>
@@ -97,7 +97,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Save Gadget
-     * 
+     *
      * @param gadget
      * @param gwtParams
      * @param AsyncCallback <GadgetBean>
@@ -107,7 +107,7 @@ public interface ContainerServiceAsync {
 
     /**
      * Get collection of gadget name sorted by category
-     * 
+     *
      * @param gwtParams
      * @param AsyncCallback <Map<String, ArrayList<String>>>
      */

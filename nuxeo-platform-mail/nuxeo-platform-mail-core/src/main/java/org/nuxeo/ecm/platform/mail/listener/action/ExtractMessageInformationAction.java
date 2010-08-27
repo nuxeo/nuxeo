@@ -71,7 +71,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     public static final String MESSAGE_RFC822_MIMETYPE = "message/rfc822";
 
     private String bodyContent;
-    
+
     @Override
     public boolean execute(ExecutionContext context) throws Exception {
         bodyContent = "";
@@ -215,7 +215,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             throws Exception {
         String filename = getFilename(part, defaultFilename);
         List<FileBlob> blobs = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
-        
+
         if (part.isMimeType("multipart/alternative")) {
             bodyContent += getText(part);
         } else {
@@ -240,17 +240,17 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                         log.error(e);
                     }
                     fileBlob.setMimeType(mime);
-    
+
                     fileBlob.setFilename(filename);
-    
+
                     blobs.add(fileBlob);
                 }
             }
-    
+
             if (part.isMimeType("multipart/*")) {
                 // This is a Multipart
                 Multipart mp = (Multipart) part.getContent();
-    
+
                 int count = mp.getCount();
                 for (int i = 0; i < count; i++) {
                     getAttachmentParts(mp.getBodyPart(i), defaultFilename,
@@ -304,7 +304,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
         return null;
     }
-    
+
     /**
      * Interprets the body accordingly to the charset used. It relies on the
      * content type being ****;charset={charset};******

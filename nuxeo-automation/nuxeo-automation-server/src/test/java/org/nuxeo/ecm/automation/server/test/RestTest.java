@@ -65,7 +65,7 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
@@ -251,7 +251,7 @@ public class RestTest {
 
     /**
      * test blob input / output
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -404,7 +404,7 @@ public class RestTest {
 
     /**
      * Upload blobs to create a zip and download it
-     * 
+     *
      * @throws Exception
      */
     @Test

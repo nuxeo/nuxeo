@@ -35,9 +35,9 @@ import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.form.FormPanel;
 
 /**
- * 
+ *
  * @author Guillaume Cusnieux
- * 
+ *
  */
 public class GadgetForm {
 

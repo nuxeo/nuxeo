@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Adapter for import/export of relations
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class IORelationAdapter extends AbstractIOResourceAdapter {

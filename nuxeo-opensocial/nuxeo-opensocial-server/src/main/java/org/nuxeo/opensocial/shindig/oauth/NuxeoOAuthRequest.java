@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.opensocial.shindig.oauth;
 
 import java.io.IOException;
@@ -48,11 +65,11 @@ import com.google.common.collect.Maps;
 /***
  * This is complete crap. I end up copying the class because the idiots made all
  * the implementation classes private for no reason.
- * 
+ *
  * Look for the string "NUXEO NUXEO NUXEO CHANGE" to see my changes.
- * 
+ *
  * irritated @author Ian Smith<ismith@nuxeo.com>
- * 
+ *
  */
 public class NuxeoOAuthRequest extends OAuthRequest {
 
@@ -438,10 +455,10 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         /*
          * NUXEO NUXEO NUXEO CHANGE! We cannot reliably determine how to compute
          * this so we just omit it.
-         * 
+         *
          * String app = realRequest.getSecurityToken().getAppId(); if (app !=
          * null) { params.add(new Parameter(OPENSOCIAL_APPID, app)); }
-         * 
+         *
          * String appUrl = realRequest.getSecurityToken().getAppUrl(); if
          * (appUrl != null) { params.add(new Parameter(OPENSOCIAL_APPURL,
          * appUrl)); }
@@ -634,7 +651,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     /**
      * Parse OAuth WWW-Authenticate header and either add them to an existing
      * message or create a new message.
-     * 
+     *
      * @param msg
      * @param resp
      * @return the updated message.
@@ -838,7 +855,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
 
     /**
      * Get honest-to-goodness user data.
-     * 
+     *
      * @throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate if the
      *             service provider returns an OAuth related error instead of
      *             user data.
@@ -881,7 +898,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
 
     /**
      * Access token data is returned to the gadget as json key/value pairs:
-     * 
+     *
      * { "user_id": "12345678" }
      */
     private HttpResponseBuilder formatAccessTokenData() {
@@ -900,7 +917,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     /**
      * Look for an OAuth protocol problem. For cases where no access token is in
      * play
-     * 
+     *
      * @param response
      * @throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate
      */
@@ -960,12 +977,12 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      * But when constructing a request we need to be able to extract just the
      * OAuth-related parameters because they, and only they, may have to be put
      * into an Authorization: header or some such thing.
-     * 
+     *
      * @param message the OAuthMessage object, which holds non-OAuth parameters
      *            such as foo=bar (which may have been in the original URI query
      *            part, or perhaps in the POST body), as well as OAuth-related
      *            parameters (such as oauth_timestamp or oauth_signature).
-     * 
+     *
      * @return a list that contains only the oauth_related parameters.
      */
     static List<Map.Entry<String, String>> selectOAuthParams(
@@ -1055,7 +1072,7 @@ class HorribleHackExceptionBecauseStupidClassIsPackagePrivate extends Exception 
     /**
      * Handle OAuth protocol errors for SPs that don't support the problem
      * reporting extension
-     * 
+     *
      * @param status HTTP status code, assumed to be between 400 and 499
      *            inclusive
      */

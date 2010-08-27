@@ -25,12 +25,12 @@ import org.nuxeo.ecm.platform.publisher.impl.service.ProxyNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 
 /**
- * 
+ *
  * {@link PublicationNode} implementation that point to a remote tree on a
  * remote server.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class ClientRemotePublicationNode extends AbstractRemotableNode {
 

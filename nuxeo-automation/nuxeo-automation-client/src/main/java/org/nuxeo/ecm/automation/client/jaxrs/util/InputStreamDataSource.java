@@ -58,4 +58,3 @@ public class InputStreamDataSource implements DataSource {
         return ctype;
     }
 }
-

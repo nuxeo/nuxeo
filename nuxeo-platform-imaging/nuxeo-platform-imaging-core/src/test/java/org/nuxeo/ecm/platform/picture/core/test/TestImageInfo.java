@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author btatar
- * 
+ *
  */
 public class TestImageInfo extends RepositoryOSGITestCase {
 

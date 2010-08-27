@@ -33,7 +33,7 @@ import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class AbstractAutomationClient implements AutomationClient {
 

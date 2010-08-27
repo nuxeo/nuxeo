@@ -31,8 +31,10 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
@@ -49,7 +51,6 @@ public class DebugResource {
         xmap.register(OperationChainContribution.class);
     }
 
-
     public AutomationService getOperationService() throws Exception {
         return Framework.getLocalService(AutomationService.class);
     }
@@ -58,7 +59,6 @@ public class DebugResource {
         return JSONExporter.toJSON();
     }
 
-    //TODO HTML page
     @GET
     @Produces("text/html")
     public Object doGet() throws Exception {
@@ -81,11 +81,16 @@ public class DebugResource {
     @POST
     public Response doPost(@FormParam("input") String input,
             @FormParam("chain") String chainXml) throws Exception {
+        CoreSession session = WebEngine.getActiveContext().getCoreSession();
+        if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+            return Response.status(403).build();
+        }
         try {
-            ByteArrayInputStream in = new ByteArrayInputStream(chainXml.getBytes());
-            OperationChainContribution contrib = (OperationChainContribution)xmap.load(in);
+            ByteArrayInputStream in = new ByteArrayInputStream(
+                    chainXml.getBytes());
+            OperationChainContribution contrib = (OperationChainContribution) xmap.load(in);
             OperationChain chain = contrib.toOperationChain(Framework.getRuntime().getContext().getBundle());
-            OperationContext ctx = new OperationContext(WebEngine.getActiveContext().getCoreSession());
+            OperationContext ctx = new OperationContext(session);
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();
@@ -100,7 +105,8 @@ public class DebugResource {
     public Response doChainIdPost(@FormParam("input") String input,
             @FormParam("chainId") String chainId) throws Exception {
         try {
-            OperationContext ctx = new OperationContext(WebEngine.getActiveContext().getCoreSession());
+            OperationContext ctx = new OperationContext(
+                    WebEngine.getActiveContext().getCoreSession());
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();

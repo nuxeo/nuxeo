@@ -32,12 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class ControlOperation {
 
     @Param(name="message") protected String message;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
-    public void printInfo() throws Exception {        
+    public void printInfo() throws Exception {
         Helper.updateContext(ctx, "ctrl:void:void", message, ((DocumentModel)ctx.getInput()).getTitle());
     }
 

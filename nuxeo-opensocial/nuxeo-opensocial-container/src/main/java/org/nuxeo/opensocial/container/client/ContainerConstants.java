@@ -21,7 +21,7 @@ import com.google.gwt.i18n.client.Constants;
 
 /**
  * Internationalization of gwt container ContainerConstants.properties
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public interface ContainerConstants extends Constants {

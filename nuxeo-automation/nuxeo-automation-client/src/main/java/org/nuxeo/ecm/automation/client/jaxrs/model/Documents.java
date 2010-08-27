@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Documents extends ArrayList<Document> implements OperationInput {
 

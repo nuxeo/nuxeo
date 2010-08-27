@@ -44,23 +44,23 @@ public interface QueueManager {
      *
      * @return the list
      */
-    public List<QueueItem> listOrphanedItems();
+    List<QueueItem> listOrphanedItems();
 
     /**
      * Check for the existence of an atomic content on persistence back-end.
-     * 
+     *
      * @param content the content
      * @return true if content is already present on persistence back-end
      * @throws QueueException
      */
-    public boolean knowsContent(QueueContent content) throws QueueException;
+    boolean knowsContent(QueueContent content) throws QueueException;
 
     /**
      * Remove content from persistence back-end.
      *
      * @param content the content
      */
-    public void forgetContent(QueueContent content);
+    void forgetContent(QueueContent content);
 
     /**
      * Update additional item informations on persistence back-end.
@@ -68,7 +68,7 @@ public interface QueueManager {
      * @param content the content
      * @param additionalInfos the additional infos
      */
-    public void updateItem(QueueContent content,
+    void updateItem(QueueContent content,
             Map<String, Serializable> additionalInfos);
 
 }

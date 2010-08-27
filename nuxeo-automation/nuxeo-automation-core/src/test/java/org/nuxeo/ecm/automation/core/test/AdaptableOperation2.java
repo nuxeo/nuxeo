@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 public class AdaptableOperation2 {
 
     @Param(name="message") protected String message;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
     public DocumentRef printInfo(DocumentRef ref) throws Exception {
         Helper.updateContext(ctx, "A2:docref:docref", message, session.getDocument(ref).getPathAsString());
@@ -45,9 +45,9 @@ public class AdaptableOperation2 {
 
     @OperationMethod
     public DocumentRef noInput() throws Exception {
-        DocumentModel doc = session.getRootDocument(); 
+        DocumentModel doc = session.getRootDocument();
         Helper.updateContext(ctx, "A2:void:docref", message, doc.getPathAsString());
         return doc.getRef();
     }
-        
+
 }

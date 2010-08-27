@@ -46,9 +46,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Personal user workspace manager actions bean.
- * 
+ *
  * @author btatar
- * 
+ *
  */
 @Name("userWorkspaceManagerActions")
 @Scope(SESSION)
@@ -141,7 +141,7 @@ public class UserWorkspaceManagerActionsBean implements
                 && currentDocument.getPath().segment(0) != null) {
             lastAccessedDocument = navigationContext.getCurrentDocument();
         }
-        navigationContext.setCurrentDocument(currentUserPersonalWorkspace);     
+        navigationContext.setCurrentDocument(currentUserPersonalWorkspace);
         showingPersonalWorkspace = true;
 
 

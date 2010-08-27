@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.opensocial.servlet;
 
 import java.util.ArrayList;
@@ -11,9 +28,9 @@ import org.osgi.framework.FrameworkEvent;
  * This class is just a wrapper to hold the initialization of Guice (et al)
  * until we have received the "go ahead" from the Runtime and that everything is
  * fully initialized.
- * 
+ *
  * @author Ian Smith<ismith@nuxeo.com>
- * 
+ *
  */
 public class ContextListenerDelayer implements ServletContextListener {
 
@@ -46,7 +63,7 @@ public class ContextListenerDelayer implements ServletContextListener {
 
     /*
      * No need to delay this method.
-     * 
+     *
      * @seejavax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
      * ServletContextEvent)
      */

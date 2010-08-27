@@ -24,7 +24,7 @@ public interface PrincipalConverter {
 
     /**
      * Converts a Nuxeo Principal to an OpenSocial Person
-     * 
+     *
      * @param principal
      * @return
      */

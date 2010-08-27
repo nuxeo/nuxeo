@@ -28,9 +28,9 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
 
 /**
  * {@link PublishedDocument} marshaler using simple XML representation.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class DefaultPublishedDocumentMarshaler extends
         AbstractDefaultXMLMarshaler implements PublishedDocumentMarshaler {

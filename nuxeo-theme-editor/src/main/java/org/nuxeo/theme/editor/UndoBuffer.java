@@ -17,7 +17,7 @@ package org.nuxeo.theme.editor;
 public class UndoBuffer {
 
     private String savedVersion;
-    
+
     private String message;
 
     public UndoBuffer() {

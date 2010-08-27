@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 @WebObject(type = "Queue", guard = "group=administrators")
 public class QueueObject extends DefaultObject {

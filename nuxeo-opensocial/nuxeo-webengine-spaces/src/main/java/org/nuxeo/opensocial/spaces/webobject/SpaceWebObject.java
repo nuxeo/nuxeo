@@ -136,7 +136,7 @@ public class SpaceWebObject extends DefaultObject {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.webengine.model.impl.AbstractResource#getAdapter(java.lang
      * .Class)

@@ -42,10 +42,10 @@ import com.google.inject.Singleton;
 
 /**
  * @author cusgu
- * 
+ *
  *         Patch FeedProcessor in order to retrieve extra elements from RSS 2.0
  *         feeds : - enclosure
- * 
+ *
  */
 @Singleton
 public class NXMakeRequestHandler extends MakeRequestHandler {

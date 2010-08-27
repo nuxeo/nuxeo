@@ -21,7 +21,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * GadgetPosition
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class GadgetPosition implements IsSerializable {

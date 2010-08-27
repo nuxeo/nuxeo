@@ -41,12 +41,12 @@ public class LoginPage extends WebPage {
 
     @FindBy(how=How.ID, using="logout")
     protected WebElement logout;
-    
+
     @FindBy(how=How.ID, using="logstate")
     protected WebElement logstate;
-    
 
-    
+
+
     public void login(String username, String password) {
         inputUsername.clear();
         inputUsername.sendKeys(username);
@@ -54,21 +54,21 @@ public class LoginPage extends WebPage {
         inputPassword.sendKeys(password);
         login.click();
     }
-    
+
     public void ensureLogin(String username, String password) {
         login(username, password);
         isAuthenticated(5);
-    }    
-    
+    }
+
     public void logout() {
         logout.click();
     }
-    
+
     public void ensureLogout() {
         logout();
         isNotAuthenticated(5);
     }
-    
+
     public boolean isAuthenticated(int timeoutInSeconds) {
         try {
             findElement(By.id("logout"), timeoutInSeconds);

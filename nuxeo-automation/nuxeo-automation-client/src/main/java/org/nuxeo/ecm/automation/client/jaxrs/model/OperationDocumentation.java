@@ -23,9 +23,9 @@ import java.util.List;
 /**
  * This is a copy of OperationDocumentation from automation-core - must be keep
  * in sync
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class OperationDocumentation implements
         Comparable<OperationDocumentation>, Serializable {

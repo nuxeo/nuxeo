@@ -18,9 +18,9 @@ package org.nuxeo.ecm.platform.queue.api;
 
 /**
  * Generic queue exception.
- * 
+ *
  * @author \Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>'
- * 
+ *
  */
 public class QueueException extends Exception {
 

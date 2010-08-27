@@ -26,7 +26,7 @@ import com.gwtext.client.widgets.event.PanelListenerAdapter;
 
 /**
  * Portlet Listener serve for catch portlet event's and save collapsed
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class PortletListener extends PanelListenerAdapter {

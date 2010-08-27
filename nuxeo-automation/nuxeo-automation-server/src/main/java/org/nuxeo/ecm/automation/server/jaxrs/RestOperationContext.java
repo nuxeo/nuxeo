@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.session.UserSession;
  * <p>
  * This way temporary resources like files used by operations are removed after
  * the response is sent to the client.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RestOperationContext extends OperationContext {

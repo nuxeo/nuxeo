@@ -16,15 +16,23 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.io.IOException;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class OperationResource extends ExecutableResource {
 
@@ -36,8 +44,16 @@ public class OperationResource extends ExecutableResource {
     }
 
     @GET
+    @Produces("application/json")
     public Object doGet() {
-        return null;// TODO
+        try {
+            OperationDocumentation doc = ((OperationTypeImpl) type).getDocumentation();
+            JSONObject json = org.nuxeo.ecm.automation.core.doc.JSONExporter.toJSON(doc);
+            return javax.ws.rs.core.Response.ok(json.toString(2)).type(
+                    "application/json").build();
+        } catch (IOException e) {
+            return Response.status(500).build();
+        }
     }
 
     @Override

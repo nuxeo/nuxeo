@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.opensocial.servlet;
 
 import java.io.IOException;
@@ -19,11 +36,11 @@ import org.osgi.framework.FrameworkEvent;
  * This class is just a wrapper to hold the initialization of the shindig
  * AuthenticationServletFilter because it cannot run without Guice and we have
  * delayed the Guice initialization.
- * 
+ *
  * @see org.nuxeo.opensocial.servlet.ContextListenerDelayer
- * 
+ *
  * @author Ian Smith<ismith@nuxeo.com>
- * 
+ *
  */
 public class AuthenticationFilterDelayer implements Filter {
 
@@ -63,7 +80,7 @@ public class AuthenticationFilterDelayer implements Filter {
     /*
      * In normal operation, this is just a pass through to the wrapped and
      * "true" AuthenticationFilter.
-     * 
+     *
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      * javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
@@ -81,7 +98,7 @@ public class AuthenticationFilterDelayer implements Filter {
     /*
      * The wrapped object expects to get this message now, but we delay it until
      * we receive the right FrameworkEvent.
-     * 
+     *
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -114,7 +131,7 @@ public class AuthenticationFilterDelayer implements Filter {
     /*
      * Note: This is static! This echos the framework event to all the instances
      * of this class.
-     * 
+     *
      * @param event framework event (such as "we are started now")
      */
     public static void activate(FrameworkEvent event) {

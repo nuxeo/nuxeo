@@ -29,22 +29,22 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  * <p>
  * Note for implementors: the implementation should provide a constructor that
  * initialize the base URL
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface AutomationClient {
 
     /**
      * Gets the automation service URL.
-     * 
+     *
      * @return
      */
     String getBaseUrl();
 
     /**
      * Creates a new session using the given login.
-     * 
+     *
      * @param username
      * @param password
      * @return
@@ -55,7 +55,7 @@ public interface AutomationClient {
     /**
      * Creates asynchronously a new session using the given login. The given
      * callback will be notified after the session is created.
-     * 
+     *
      * @param username
      * @param password
      * @param cb
@@ -68,7 +68,7 @@ public interface AutomationClient {
      * <p>
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
-     * 
+     *
      * @param <T>
      * @param objToAdapt
      * @param adapterType
@@ -80,7 +80,7 @@ public interface AutomationClient {
      * Register and adapter for a given type. Registration is not thread safe.
      * You should register adapters at initialization time. An adapter type can
      * be bound to a single adaptable type.
-     * 
+     *
      * @param typeToAdapt
      * @param adapterType
      */

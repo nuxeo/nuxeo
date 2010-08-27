@@ -106,8 +106,8 @@ public class PermissionService extends DefaultAdapter {
     public Response postDeletePermission() {
         return deletePermission();
     }
-    
-    @GET 
+
+    @GET
     @Path("delete")
     public Response deletePermission() {
         try {

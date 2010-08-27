@@ -24,70 +24,70 @@ import org.nuxeo.wss.WSSException;
 
 public interface WSSListItem {
 
-    public String getAuthor();
+    String getAuthor();
 
-    public String getSubPath();
+    String getSubPath();
 
-    public String getRelativeSubPath(String siteRootPath);
+    String getRelativeSubPath(String siteRootPath);
 
-    public String getRelativeFilePath(String siteRootPath);
+    String getRelativeFilePath(String siteRootPath);
 
-    public String getDescription();
+    String getDescription();
 
-    public void setDescription(String description);
+    void setDescription(String description);
 
-    public InputStream getStream();
+    InputStream getStream();
 
-    public void setStream(InputStream stream, String fileName) throws WSSException;
+    void setStream(InputStream stream, String fileName) throws WSSException;
 
-    public String getName();
+    String getName();
 
-    public String getEtag();
+    String getEtag();
 
-    public String getType();
+    String getType();
 
-    public boolean isFolderish();
+    boolean isFolderish();
 
-    public String getIcon();
+    String getIcon();
 
-    public void setIcon(String icon);
-
-
-    public String getModifiedTS();
+    void setIcon(String icon);
 
 
-    public String getCreatedTS();
+    String getModifiedTS();
 
 
-    public int getSize();
-
-    public String getSizeAsString();
-
-    public void checkOut(String userName) throws WSSException;
-
-    public void uncheckOut(String userName) throws WSSException;
-
-    public String getLastModificator();
+    String getCreatedTS();
 
 
-    public String getCheckoutTS();
+    int getSize();
 
-    public String getCheckoutExpiryTS();
+    String getSizeAsString();
 
-    public String getCheckoutUser();
+    void checkOut(String userName) throws WSSException;
 
-    public String getDisplayName();
+    void uncheckOut(String userName) throws WSSException;
 
-    public boolean isSite();
+    String getLastModificator();
 
-    public Date getCreationDate();
 
-    public Date getModificationDate();
+    String getCheckoutTS();
 
-    public boolean canCheckOut(String userName);
+    String getCheckoutExpiryTS();
 
-    public boolean canUnCheckOut(String userName);
+    String getCheckoutUser();
 
-    public boolean isCheckOut();
+    String getDisplayName();
+
+    boolean isSite();
+
+    Date getCreationDate();
+
+    Date getModificationDate();
+
+    boolean canCheckOut(String userName);
+
+    boolean canUnCheckOut(String userName);
+
+    boolean isCheckOut();
 
 }

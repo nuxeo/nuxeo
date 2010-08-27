@@ -27,11 +27,11 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentL
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
- * 
+ *
  * {@link DocumentLocation} marshaler using simple XML representation.
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class DefaultDocumentLocationMarshaler extends
         AbstractDefaultXMLMarshaler implements DocumentLocationMarshaler {

@@ -27,7 +27,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * SAX ContentHandler to parse CAML Batch requests.
- * <p/>
+ * <p>
  * References :
  * - http://msdn.microsoft.com/en-us/library/dd586422(office.11).aspx
  *

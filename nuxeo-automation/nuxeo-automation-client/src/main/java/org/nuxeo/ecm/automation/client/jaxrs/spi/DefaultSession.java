@@ -35,7 +35,7 @@ import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEA
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DefaultSession implements Session {
 

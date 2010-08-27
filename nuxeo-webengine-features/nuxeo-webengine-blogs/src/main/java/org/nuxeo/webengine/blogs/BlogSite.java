@@ -109,7 +109,7 @@ public class BlogSite extends Site {
 
         }
     }
-    
+
     @Override
     protected String getErrorTemplateName() {
         return "no_blog.ftl";

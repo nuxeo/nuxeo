@@ -39,7 +39,7 @@ import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_MULTIPART_MI
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Request extends HashMap<String, String> {
 
@@ -112,7 +112,7 @@ public class Request extends HashMap<String, String> {
     /**
      * Must read the object from the server response and return it or throw a
      * {@link RemoteException} if server sent an error.
-     * 
+     *
      * @param status
      * @param ctype
      * @param stream

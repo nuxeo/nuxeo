@@ -30,7 +30,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
  * ContainerService
- * 
+ *
  * @author Guillaume Cusnieux
  */
 @RemoteServiceRelativePath("gwtcontainer")
@@ -38,7 +38,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Retrieve a specific container
-     * 
+     *
      * @param gwtParams
      * @return Container
      * @throws ContainerServiceException
@@ -48,7 +48,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Save layout of container
-     * 
+     *
      * @param gwtParams
      * @param layoutName
      * @return
@@ -59,7 +59,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Save preferences of gadget with form parameter
-     * 
+     *
      * @param gadget
      * @param form : new preferences
      * @param gwtParams
@@ -71,7 +71,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Remove gadget
-     * 
+     *
      * @param gadget
      * @param gwtParams
      * @return GadgetBean removed
@@ -82,7 +82,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Add gadget
-     * 
+     *
      * @param gadgetName
      * @param gwtParams
      * @return GadgetBean added
@@ -93,7 +93,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Save collection of gadget
-     * 
+     *
      * @param beans
      * @param gwtParams
      * @throws ContainerServiceException
@@ -103,7 +103,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Get collection of gadget name sorted by category
-     * 
+     *
      * @param gwtParams
      * @return key is category - value is list of gadget name
      * @throws ContainerServiceException
@@ -113,7 +113,7 @@ public interface ContainerService extends RemoteService {
 
     /**
      * Save Gadget
-     * 
+     *
      * @param gadget
      * @param gwtParams
      * @return Gadget bean saved

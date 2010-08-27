@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 /**
  * Retrieve the emails from users/groups who have the given permission on given
  * document.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentPrincipalEmails.ID, category = Constants.CAT_USERS_GROUPS, label = "Get Principal Emails", description = ""

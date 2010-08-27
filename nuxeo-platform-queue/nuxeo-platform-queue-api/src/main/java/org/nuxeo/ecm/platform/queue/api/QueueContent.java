@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.queue.api;
 
 import java.io.Serializable;
@@ -8,7 +25,7 @@ import java.net.URISyntaxException;
  * Content that needs long processing. Asynchronous operation is started by the
  * queue when the content is handled. Content will remain in queue until it's
  * removed by an end of asynchronous operation call.
- * 
+ *
  * @see QueueManager
  **/
 
@@ -37,7 +54,7 @@ final public class QueueContent {
 
     /**
      * return the
-     * 
+     *
      * @return
      */
     public URI getResourceURI() throws URISyntaxException {
@@ -46,7 +63,7 @@ final public class QueueContent {
 
     /**
      * Gives the user who is performing the job
-     * 
+     *
      * @return
      */
     public URI getOwner() {
@@ -55,7 +72,7 @@ final public class QueueContent {
 
     /**
      * Gives the queue name on which the content should be handled
-     * 
+     *
      * @return
      */
 
@@ -65,7 +82,7 @@ final public class QueueContent {
 
     /**
      * Uniquely names the content inside a queue.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -74,7 +91,7 @@ final public class QueueContent {
 
     /**
      * Gives the delay for locking purpose
-     * 
+     *
      * @return
      */
     public long getDelay() {
@@ -87,7 +104,7 @@ final public class QueueContent {
 
     /**
      * Gives information about the task being processed
-     * 
+     *
      * @return
      */
     public String getComments() {
@@ -100,7 +117,7 @@ final public class QueueContent {
 
     /**
      * Additional info for any queue job having to re run the test.
-     * 
+     *
      * @return
      */
     public Serializable getAdditionalInfo() {

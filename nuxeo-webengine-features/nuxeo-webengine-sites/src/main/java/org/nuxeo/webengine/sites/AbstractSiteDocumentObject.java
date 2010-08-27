@@ -182,9 +182,9 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
-    
+
     /**
-     * JAX-RS specs doesn't allow  multiple REST designator on a single method so we need to use another method to do a POST  
+     * JAX-RS specs doesn't allow  multiple REST designator on a single method so we need to use another method to do a POST
      * @param searchParam
      * @return
      */
@@ -193,7 +193,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     public Object _getSearchParameters() {
         return getSearchParameters();
     }
-    
+
     @Override
     @Path(value = "{path}")
     public Resource traverse(@PathParam("path") String path) {

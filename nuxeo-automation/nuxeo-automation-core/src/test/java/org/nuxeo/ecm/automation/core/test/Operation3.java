@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 public class Operation3 {
 
     @Param(name="message") protected String message;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
     public DocumentModel printInfo1(DocumentModel doc) throws Exception {
         //System.out.println("O2:doc:doc: "+doc.getId()+". Session: "+session+". message: "+message);

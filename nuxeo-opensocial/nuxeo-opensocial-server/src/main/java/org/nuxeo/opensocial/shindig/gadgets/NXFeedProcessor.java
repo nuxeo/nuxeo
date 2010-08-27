@@ -40,7 +40,7 @@ public class NXFeedProcessor extends FeedProcessor {
 
     /**
      * Converts feed XML to JSON.
-     * 
+     *
      * @param feedUrl The url that the feed was retrieved from.
      * @param feedXml The raw XML of the feed to be converted.
      * @param getSummaries True if summaries should be returned.

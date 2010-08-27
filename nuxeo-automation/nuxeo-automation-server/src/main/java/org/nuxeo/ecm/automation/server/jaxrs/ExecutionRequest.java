@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ExecutionRequest {
 

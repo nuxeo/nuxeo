@@ -48,7 +48,7 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @Provider
 @Consumes("multipart/form-data")

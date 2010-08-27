@@ -25,9 +25,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Testing the queue manager.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class TestQueueManagerLocator extends SQLRepositoryTestCase {
 

@@ -49,9 +49,9 @@ import com.google.inject.util.Modules;
  * to order of initialization issues. This object uses Guice and we want to be
  * sure all the nuxeo initialization is finished prior to Guice being
  * initialized since the user might want to configure it.
- * 
+ *
  * @See org.nuxeo.opensocial.servlet.ContextListenerDelayer
- * 
+ *
  */
 public class GuiceContextListener implements ServletContextListener {
     public static final String INJECTOR_ATTRIBUTE = "guice-injector";

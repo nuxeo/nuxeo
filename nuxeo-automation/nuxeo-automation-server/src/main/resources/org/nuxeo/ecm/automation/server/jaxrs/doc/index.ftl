@@ -134,6 +134,8 @@ pre {
 	       <div><b>Inputs:</b> ${This.getInputsAsString(operation)}</div>
 	       <div><b>Outputs:</b> ${This.getOutputsAsString(operation)}</div>
         </div>
+        <h2>Links</h2>
+        <div><a href="${operation.id}">JSON definition</a></div>
       <#else>
         <h1>Index</h1>
         <#list operations as item>

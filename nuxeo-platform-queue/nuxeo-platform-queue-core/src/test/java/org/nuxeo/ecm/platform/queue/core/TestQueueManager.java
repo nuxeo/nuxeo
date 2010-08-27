@@ -34,9 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Testing the queue manager.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class TestQueueManager extends SQLRepositoryTestCase {
 
@@ -66,9 +66,9 @@ public class TestQueueManager extends SQLRepositoryTestCase {
      * Having that we have an server running one task but had not yet finished
      * his task. When that server is crashing and restart, the queue manager
      * should see it as orphans.
-     * 
+     *
      * This test doesn't unsure that it is running with multiple servers.
-     * 
+     *
      */
     public void testOrphansQueueItem() throws Exception {
         URI owner = new URI("queueowner:owner1");

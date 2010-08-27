@@ -45,12 +45,12 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * 
+ *
  * Runtime component that expose the PictureTilingService interface Also exposes
  * the configuration Extension Point
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class PictureTilingComponent extends DefaultComponent implements
         PictureTilingService {

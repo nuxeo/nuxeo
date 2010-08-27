@@ -43,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS Root Resource class specialized for WebEngine
- * 
+ *
  * @author 10044893.
- * 
+ *
  */
 @WebObject(type = "spaces", facets = "Folderish")
 @Produces("text/html; charset=UTF-8")
@@ -66,7 +66,7 @@ public class SpacesModuleRoot extends ModuleRoot {
 
     /**
      * Default view ( index.ftl ) - Lists all available universes
-     * 
+     *
      * @return
      */
     @GET
