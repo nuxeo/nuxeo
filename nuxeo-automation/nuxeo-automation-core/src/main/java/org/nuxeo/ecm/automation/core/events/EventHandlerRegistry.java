@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * This service should be moved in another project
+ * TODO: This service should be moved in another project.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -39,7 +39,7 @@ public class EventHandlerRegistry {
 
     private static final Log log = LogFactory.getLog(OperationEventListener.class);
 
-    protected AutomationService svc;
+    protected final AutomationService svc;
 
     protected Map<String, List<EventHandler>> handlers;
 

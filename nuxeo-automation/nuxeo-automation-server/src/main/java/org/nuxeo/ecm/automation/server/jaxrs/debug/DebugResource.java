@@ -42,11 +42,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DebugResource {
 
-    static XMap xmap = new XMap();
+    static final XMap xmap = new XMap();
     static {
         xmap.register(OperationChainContribution.class);
     }

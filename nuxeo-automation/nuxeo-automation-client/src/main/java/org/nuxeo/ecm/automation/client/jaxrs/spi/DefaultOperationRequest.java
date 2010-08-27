@@ -31,21 +31,20 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation.Param;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultOperationRequest implements OperationRequest {
 
-    protected OperationDocumentation op;
+    protected final OperationDocumentation op;
 
-    protected DefaultSession session;
+    protected final DefaultSession session;
 
-    protected Map<String, String> params;
+    protected final Map<String, String> params;
 
-    protected Map<String, String> ctx;
+    protected final Map<String, String> ctx;
+
+    protected final Map<String, String> headers;
 
     protected OperationInput input;
-
-    protected Map<String, String> headers;
 
     public DefaultOperationRequest(DefaultSession session,
             OperationDocumentation op) {

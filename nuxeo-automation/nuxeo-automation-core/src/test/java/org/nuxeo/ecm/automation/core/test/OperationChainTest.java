@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +41,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -77,9 +79,9 @@ public class OperationChainTest {
     }
 
     protected void assertContextOk(OperationContext ctx, String chain, String message, String title) {
-        Assert.assertEquals(chain, ctx.get("chain"));
-        Assert.assertEquals(message, ctx.get("message"));
-        Assert.assertEquals(title, ctx.get("title"));
+        assertEquals(chain, ctx.get("chain"));
+        assertEquals(message, ctx.get("message"));
+        assertEquals(title, ctx.get("title"));
     }
 
     // ------ Tests comes here --------
@@ -297,7 +299,7 @@ public class OperationChainTest {
 
         try {
             service.run(ctx, chain);
-            Assert.fail("Invalid chain not detected!");
+            fail("Invalid chain not detected!");
         } catch (InvalidChainException e) {
             // test passed
         }
@@ -306,7 +308,6 @@ public class OperationChainTest {
     /**
      * When using a null context input an exception must be thrown if the first operation
      * doesn't accept void input.
-     * @throws Exception
      */
     @Test public void testInvalidInput() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -316,7 +317,7 @@ public class OperationChainTest {
 
         try {
             service.run(ctx, chain);
-            Assert.fail("Null input was handled by a non void operation!");
+            fail("Null input was handled by a non void operation!");
         } catch (OperationException e) {
             // test passed
         }
@@ -456,7 +457,7 @@ public class OperationChainTest {
 
         try {
             service.run(ctx, chain);
-            Assert.fail("Required parameter test failure!");
+            fail("Required parameter test failure!");
         } catch (OperationException e) {
             // test passed
         }
@@ -477,7 +478,7 @@ public class OperationChainTest {
         chain.add("o4").set("message", "Hello 1!").set("doc", src.getRef());
 
         Object out = service.run(ctx, chain);
-        Assert.assertEquals(src.getId(), ((DocumentModel)out).getId());
+        assertEquals(src.getId(), ((DocumentModel)out).getId());
 
         assertContextOk(ctx,
                 "O4:void:doc",
@@ -500,7 +501,7 @@ public class OperationChainTest {
         chain.add("GetVar").set("name", "myvar").set("flag", true);
 
         Object out = service.run(ctx, chain);
-        Assert.assertEquals(src.getTitle(), out);
+        assertEquals(src.getTitle(), out);
     }
 
     @Test public void testStringListOperation() throws Exception {
@@ -510,9 +511,10 @@ public class OperationChainTest {
         chain.add("slo").set("emails", "a,b,c");
 
         StringList out = (StringList)service.run(ctx, chain);
-        Assert.assertEquals(3, out.size());
-        Assert.assertTrue(out.contains("a"));
-        Assert.assertTrue(out.contains("b"));
-        Assert.assertTrue(out.contains("c"));
+        assertEquals(3, out.size());
+        assertTrue(out.contains("a"));
+        assertTrue(out.contains("b"));
+        assertTrue(out.contains("c"));
     }
+
 }

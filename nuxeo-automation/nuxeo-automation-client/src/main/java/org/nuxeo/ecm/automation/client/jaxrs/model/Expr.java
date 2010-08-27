@@ -19,11 +19,10 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Expr {
 
-    protected String value;
+    protected final String value;
 
     public Expr(String value) {
         this.value = "expr:"+value;

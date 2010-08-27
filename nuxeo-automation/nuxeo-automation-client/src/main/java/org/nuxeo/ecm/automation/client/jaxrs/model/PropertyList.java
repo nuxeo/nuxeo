@@ -20,14 +20,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyList {
 
-    protected List<Object> list;
+    protected final List<Object> list;
 
     public PropertyList() {
         list = new ArrayList<Object>();

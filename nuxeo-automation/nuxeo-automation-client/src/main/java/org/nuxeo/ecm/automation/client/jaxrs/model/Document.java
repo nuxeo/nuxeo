@@ -38,28 +38,23 @@ import java.util.Date;
  */
 public class Document implements OperationInput {
 
-    protected String id;
+    protected final String id;
 
-    protected String path;
+    protected final String path;
 
-    protected String type;
+    protected final String type;
 
     // TODO can be stored in map
 
-    protected String state;
+    protected final String state;
 
-    protected String lock;
+    protected final String lock;
 
-    protected PropertyMap properties;
+    protected final PropertyMap properties;
 
     /**
      * Reserved to framework. Should be only called by client framework when
-     * unmarshalling documents
-     *
-     * @param id
-     * @param type
-     * @param path
-     * @param properties
+     * unmarshalling documents.
      */
     public Document(String id, String type, String path, String state,
             String lock, PropertyMap properties) {

@@ -39,11 +39,11 @@ import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEA
  */
 public class DefaultSession implements Session {
 
-    protected AbstractAutomationClient client;
+    protected final AbstractAutomationClient client;
 
-    protected Connector connector;
+    protected final Connector connector;
 
-    protected LoginInfo login;
+    protected final LoginInfo login;
 
     public DefaultSession(AbstractAutomationClient client, Connector connector,
             LoginInfo login) {

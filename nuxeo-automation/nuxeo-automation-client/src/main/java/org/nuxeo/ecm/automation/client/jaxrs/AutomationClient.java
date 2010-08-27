@@ -77,7 +77,7 @@ public interface AutomationClient {
     <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
 
     /**
-     * Register and adapter for a given type. Registration is not thread safe.
+     * Register an adapter for a given type. Registration is not thread safe.
      * You should register adapters at initialization time. An adapter type can
      * be bound to a single adaptable type.
      *

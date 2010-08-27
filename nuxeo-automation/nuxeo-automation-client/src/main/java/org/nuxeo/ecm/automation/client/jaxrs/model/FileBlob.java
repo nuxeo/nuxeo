@@ -21,14 +21,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileBlob extends Blob implements HasFile {
 
-    protected File file;
+    protected final File file;
 
     public FileBlob(File file) {
         super(file.getName(), getMimeTypeFromExtension(file.getPath()));

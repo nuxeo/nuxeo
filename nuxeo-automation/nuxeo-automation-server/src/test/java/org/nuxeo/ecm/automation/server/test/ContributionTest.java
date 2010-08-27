@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.AutomationServer;
@@ -30,9 +28,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.*;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -51,18 +50,20 @@ public class ContributionTest {
      */
     @Test
     public void testContribution() throws Exception {
-        Assert.assertEquals(2, server.getBindings().length);
+        assertEquals(2, server.getBindings().length);
         RestBinding binding = server.getChainBinding("principals");
-        Assert.assertTrue(binding.isDisabled());
-        Assert.assertFalse(binding.isSecure());
-        Assert.assertFalse(binding.isAdministrator());
-        Assert.assertNull(binding.getGroups());
+
+        assertTrue(binding.isDisabled());
+        assertFalse(binding.isSecure());
+        assertFalse(binding.isAdministrator());
+        assertNull(binding.getGroups());
+
         binding = server.getChainBinding("audit");
-        Assert.assertFalse(binding.isDisabled());
-        Assert.assertTrue(binding.isSecure());
-        Assert.assertTrue(binding.isAdministrator());
-        Assert.assertEquals(1, binding.getGroups().length);
-        Assert.assertEquals("members", binding.getGroups()[0]);
+        assertFalse(binding.isDisabled());
+        assertTrue(binding.isSecure());
+        assertTrue(binding.isAdministrator());
+        assertEquals(1, binding.getGroups().length);
+        assertEquals("members", binding.getGroups()[0]);
     }
 
 }

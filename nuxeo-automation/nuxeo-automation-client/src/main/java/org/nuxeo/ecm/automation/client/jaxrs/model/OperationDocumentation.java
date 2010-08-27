@@ -32,11 +32,11 @@ public class OperationDocumentation implements
 
     private static final long serialVersionUID = 1L;
 
-    public String id;
+    public final String id;
 
     /**
-     * an array of size multiple of 2. Each pair in the array is the input and
-     * output type of a method
+     * An array of size multiple of 2. Each pair in the array is the input and
+     * output type of a method.
      */
     public String[] signature;
 

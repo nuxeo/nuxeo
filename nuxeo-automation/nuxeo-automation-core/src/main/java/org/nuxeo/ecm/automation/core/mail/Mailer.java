@@ -50,7 +50,7 @@ public class Mailer {
      * default session, otherwise local configuration (through {@link #config})
      * will be used to create a session.
      */
-    protected String sessionName;
+    protected final String sessionName;
 
     /**
      * Create a mailer that can be configured using the API.

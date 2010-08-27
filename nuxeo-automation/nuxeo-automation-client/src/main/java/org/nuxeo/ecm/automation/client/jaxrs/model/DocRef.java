@@ -18,11 +18,10 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocRef implements OperationInput {
 
-    protected String ref;
+    protected final String ref;
 
     public DocRef(String ref) {
         this.ref = ref;

@@ -41,9 +41,9 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
 
     private static final long serialVersionUID = 1L;
 
-    protected CoreSession session;
+    protected final CoreSession session;
 
-    protected DocumentModel doc;
+    protected final DocumentModel doc;
 
     public DocumentWrapper(CoreSession session, DocumentModel doc) {
         this.session = session;

@@ -62,13 +62,13 @@ public class OperationContext extends HashMap<String, Object> {
      */
     protected boolean commit = true;
 
-    protected transient List<CleanupHandler> cleanupHandlers;
+    protected final transient List<CleanupHandler> cleanupHandlers;
 
     /**
      * Each stack use a key the type of the objects in the stack: document,
      * documents, blob or blobs
      */
-    protected transient Map<String, List<Object>> stacks;
+    protected final transient Map<String, List<Object>> stacks;
 
     /**
      * The execution input that will be updated after an operation run with the

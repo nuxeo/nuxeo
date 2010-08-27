@@ -24,13 +24,12 @@ import javax.activation.DataSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class InputStreamDataSource implements DataSource {
 
-    protected InputStream in;
-    protected String ctype;
-    protected String name;
+    protected final InputStream in;
+    protected final String ctype;
+    protected final String name;
 
     public InputStreamDataSource(InputStream in, String ctype) {
         this(in, ctype, "MultipartRequest");
@@ -57,4 +56,5 @@ public class InputStreamDataSource implements DataSource {
     public String getContentType() {
         return ctype;
     }
+
 }

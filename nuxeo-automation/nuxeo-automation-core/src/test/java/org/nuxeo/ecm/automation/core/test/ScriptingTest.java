@@ -33,6 +33,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -70,7 +72,8 @@ public class ScriptingTest {
 
     @Test
     public void testPrincipalWrapper() throws Exception {
-        Assert.assertNotNull(Scripting.newExpression("CurrentUser.name").eval(
+        assertNotNull(Scripting.newExpression("CurrentUser.name").eval(
                 ctx));
     }
+
 }
