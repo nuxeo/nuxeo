@@ -425,4 +425,8 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
+    public DetachedNuxeoPrincipal getDetachedNuxeoPrincipal(NuxeoPrincipal principal) {
+        throw new UnsupportedOperationException();
+    }
+
 }
