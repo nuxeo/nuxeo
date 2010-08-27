@@ -41,6 +41,7 @@
     <module>nuxeo-core-event-compat</module>
     <module>nuxeo-core-event-jms</module>
     <module>nuxeo-core-persistence</module>
+    <module>nuxeo-core-management</module>
   </modules>
 
   <profiles>
@@ -248,6 +249,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-persistence</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-management</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
