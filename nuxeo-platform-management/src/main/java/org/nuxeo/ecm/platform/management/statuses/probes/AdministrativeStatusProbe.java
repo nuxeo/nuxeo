@@ -44,7 +44,9 @@ public class AdministrativeStatusProbe implements Probe {
      }
 
     protected static String format(AdministrativeStatus status) {
-        return "<span class=\"server\">" + status.getServerInstanceName() + "</span> is <span class=\"value\">" + status.getValue() + "</span>";
+        return "<span class=\"server\">" + status.getServerInstanceName() +
+           "is bound on <span class=\"host\">" + Framework.getProperty("org.nuxeo.runtime.server.host", "localhost") + "</span>" +
+            "</span> and <span class=\"status\">" + status.getValue() + "</span>" ;
      }
 
 

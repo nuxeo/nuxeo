@@ -44,8 +44,6 @@ public class ProbeRegistry {
 
     public void registerProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
-        Class<?> serviceClass = descriptor.getServiceClass();
-        Object service = Framework.getLocalService(serviceClass);
         Probe probe;
         try {
             probe = probeClass.newInstance();
@@ -53,7 +51,11 @@ public class ProbeRegistry {
             throw new ManagementRuntimeException(
                     "Cannot create management probe for " + descriptor);
         }
-        probe.init(service);
+        Class<?> serviceClass = descriptor.getServiceClass();
+        if (serviceClass != null) {
+            Object service = Framework.getLocalService(serviceClass);
+            probe.init(service);
+        }
         ProbeInfo context = new ProbeInfo(this.probeComponent, probe);
         probeComponent.managementPublisher.doQualifyNames(context,
                 descriptor);
