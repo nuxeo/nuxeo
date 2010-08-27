@@ -28,7 +28,6 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
  * an OfficeDocumentConverter.
  *
  * @author Laurent Doguin
- *
  */
 public interface OOoManagerService {
 

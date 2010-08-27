@@ -42,9 +42,8 @@ public class CommitTXCommand extends AbstractCommand {
     public void run(CommandLine cmdLine) throws NamingException,
             SystemException, RollbackException, HeuristicMixedException,
             HeuristicRollbackException {
-        UserTransaction ut;
         try {
-            ut = TransactionHelper.lookupUserTransaction();
+            UserTransaction ut = TransactionHelper.lookupUserTransaction();
             ut.commit();
         } catch (NamingException e) {
             throw e;

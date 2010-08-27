@@ -92,7 +92,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected String getCommandName(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         String commandName = initParameters.get(CMD_NAME_PARAMETER);
-        if ((parameters != null) && (parameters.containsKey(CMD_NAME_PARAMETER))) {
+        if (parameters != null && parameters.containsKey(CMD_NAME_PARAMETER)) {
             commandName = (String) parameters.get(CMD_NAME_PARAMETER);
         }
         return commandName;

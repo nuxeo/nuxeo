@@ -31,8 +31,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "specificAuthenticationChain")
 public class SpecificAuthChainDescriptor {
 
-    private static final long serialVersionUID = 276543987313289764L;
-
     @XNode(value="@name")
     protected String name;
 

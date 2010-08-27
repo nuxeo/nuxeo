@@ -42,7 +42,7 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
             for (String out : cmdOutput) {
                 if (out!=null && out.trim().length()>0) {
                     sb.append(out.trim());
-                    sb.append("\n");
+                    sb.append('\n');
                 }
             }
         }

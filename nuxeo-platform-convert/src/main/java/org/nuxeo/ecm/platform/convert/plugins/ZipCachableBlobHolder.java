@@ -105,10 +105,9 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
     public void addDirectoryToList(File directory, String prefix)
             throws ConversionException {
         File[] directoryContent = directory.listFiles();
-        int beginIndex;
         for (File file : directoryContent) {
             if (file.isDirectory()) {
-                beginIndex = prefix.length();
+                int beginIndex = prefix.length();
                 prefix += file.getName() + File.separatorChar;
                 addDirectoryToList(file, prefix);
                 prefix = prefix.substring(0, beginIndex);
@@ -141,7 +140,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         try {
             return getMimeTypeService().getMimetypeFromFile(file);
         } catch (ConversionException e) {
-            throw new ConversionException("Could not get MimeTypeRegistry");
+            throw new ConversionException("Could not get MimeTypeRegistry", e);
         } catch (MimetypeNotFoundException e) {
             return "application/octet-stream";
         } catch (MimetypeDetectionException e) {
@@ -154,7 +153,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             try {
                 mimeTypeService = Framework.getService(MimetypeRegistry.class);
             } catch (Exception e) {
-                throw new ConversionException("Could not get MimeTypeRegistry");
+                throw new ConversionException("Could not get MimeTypeRegistry", e);
             }
         }
         return mimeTypeService;

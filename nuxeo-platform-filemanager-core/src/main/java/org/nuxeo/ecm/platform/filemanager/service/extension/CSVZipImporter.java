@@ -187,8 +187,8 @@ public class CSVZipImporter extends AbstractFileImporter {
                     }
                 }
 
-                Serializable fieldValue = null;
                 if (field != null) {
+                    Serializable fieldValue = null;
                     if (field.getType().isSimpleType()) {
                         if (field.getType() instanceof StringType) {
                             fieldValue = stringValue;
@@ -197,8 +197,8 @@ public class CSVZipImporter extends AbstractFileImporter {
                         } else if (field.getType() instanceof LongType) {
                             fieldValue = Long.parseLong(stringValue);
                         } else if (field.getType() instanceof DateType) {
-                            Date date;
                             try {
+                                Date date;
                                 if (stringValue.length() == 10) {
                                     date = new SimpleDateFormat("dd/MM/yyyy").parse(stringValue);
                                 } else if (stringValue.length() == 8) {

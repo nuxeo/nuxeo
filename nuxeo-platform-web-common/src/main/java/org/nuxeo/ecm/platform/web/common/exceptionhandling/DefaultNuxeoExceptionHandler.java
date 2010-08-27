@@ -43,9 +43,6 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected NuxeoExceptionHandlerParameters parameters;
 
-    public DefaultNuxeoExceptionHandler() {
-    }
-
     public void setParameters(NuxeoExceptionHandlerParameters parameters) {
         this.parameters = parameters;
     }

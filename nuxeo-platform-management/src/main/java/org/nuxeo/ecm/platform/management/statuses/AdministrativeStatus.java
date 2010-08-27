@@ -72,9 +72,8 @@ public class AdministrativeStatus {
          serverInstanceName = Framework.getProperties().getProperty(
                 ADMINISTRATIVE_INSTANCE_ID);
         if (StringUtils.isEmpty(serverInstanceName)) {
-            InetAddress addr;
             try {
-                addr = InetAddress.getLocalHost();
+                InetAddress addr = InetAddress.getLocalHost();
                 serverInstanceName = addr.getHostName();
             } catch (UnknownHostException e) {
                 serverInstanceName = "localhost";

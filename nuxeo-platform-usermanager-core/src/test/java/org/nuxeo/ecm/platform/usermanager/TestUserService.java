@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("search_only", userManager.getUserListingMode());
         assertEquals("search_oh_yeah", userManager.getGroupListingMode());
         assertEquals(Arrays.asList("tehroot"), fum.defaultAdministratorIds);
-        assertEquals(Collections.emptyList(), fum.administratorsGroups);
+        assertEquals(Collections.<String>emptyList(), fum.administratorsGroups);
         assertEquals("defgr", userManager.getDefaultGroup());
         assertEquals("name", userManager.getUserSortField());
         assertEquals("sn", fum.groupSortField);
@@ -78,7 +79,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("parentg", fum.groupParentGroupsField);
 
         // anonymous user
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put("first", "Anonymous");
         props.put("last", "Coward");
         assertEquals("Guest", fum.getAnonymousUserId());
@@ -87,18 +88,21 @@ public class TestUserService extends NXRuntimeTestCase {
         // virtual users
         // custom admin
         assertTrue(fum.virtualUsers.containsKey("MyCustomAdministrator"));
+
         VirtualUser customAdmin = fum.virtualUsers.get("MyCustomAdministrator");
         assertNotNull(customAdmin);
         assertEquals("MyCustomAdministrator", customAdmin.getId());
         assertEquals(1, customAdmin.getGroups().size());
         assertTrue(customAdmin.getGroups().contains("administrators"));
         assertEquals("secret", customAdmin.getPassword());
+
         props.clear();
         props.put("first", "My Custom");
         props.put("last", "Administrator");
         assertEquals(props, customAdmin.getProperties());
         // custom member
         assertTrue(fum.virtualUsers.containsKey("MyCustomMember"));
+
         VirtualUser customMember = fum.virtualUsers.get("MyCustomMember");
         assertNotNull(customMember);
         assertEquals("MyCustomMember", customMember.getId());
@@ -106,6 +110,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertTrue(customMember.getGroups().contains("members"));
         assertTrue(customMember.getGroups().contains("othergroup"));
         assertEquals("secret", customMember.getPassword());
+
         props.clear();
         props.put("first", "My Custom");
         props.put("last", "Member");
@@ -129,15 +134,17 @@ public class TestUserService extends NXRuntimeTestCase {
         // anonymous user removed
         assertNull(fum.anonymousUser);
 
-        // custom admin overriden
+        // custom admin overridden
         assertTrue(fum.virtualUsers.containsKey("MyCustomAdministrator"));
+
         VirtualUser customAdmin = fum.virtualUsers.get("MyCustomAdministrator");
         assertNotNull(customAdmin);
         assertEquals("MyCustomAdministrator", customAdmin.getId());
         assertEquals(1, customAdmin.getGroups().size());
         assertTrue(customAdmin.getGroups().contains("administrators2"));
         assertEquals("secret2", customAdmin.getPassword());
-        Map<String, String> props = new HashMap<String, String>();
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put("first", "My Custom 2");
         props.put("last", "Administrator 2");
         assertEquals(props, customAdmin.getProperties());

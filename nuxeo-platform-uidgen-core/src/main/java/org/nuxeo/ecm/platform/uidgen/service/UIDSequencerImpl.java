@@ -96,7 +96,7 @@ public class UIDSequencerImpl implements UIDSequencer {
     }
 
     public int getNext(EntityManager em, String key) {
-        UIDSequenceBean seq = null;
+        UIDSequenceBean seq;
         try {
             seq = (UIDSequenceBean) em.createNamedQuery("UIDSequence.findByKey").setParameter(
                     "key", key).getSingleResult();

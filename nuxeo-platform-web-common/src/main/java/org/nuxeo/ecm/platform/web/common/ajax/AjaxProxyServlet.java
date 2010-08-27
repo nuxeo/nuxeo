@@ -45,35 +45,31 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.service.LRUCachingMap
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Simple proxy servlets.
+ * <p>
  * Used for Ajax requests that needs to be proxied to avoid XSiteScripting issues.
- *
+ * <p>
  * In order to avoid "open proxiying", only urls configured in the {@link AjaxProxyComponent}
  * via the extension point "proxyableURL" can be proxied.
  *
  * @author tiry
- *
  */
 public class AjaxProxyServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public static String X_METHOD_HEADER = "X-Requested-Method";
 
     private static final Log log = LogFactory.getLog(AjaxProxyServlet.class);
 
-    protected static AjaxProxyService service = null;
+    protected static AjaxProxyService service;
 
     protected static Map<String, String> requestsCache = new LRUCachingMap<String, String>(250);
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     protected static AjaxProxyService getService() {
-        if (service==null) {
+        if (service == null) {
             service = Framework.getLocalService(AjaxProxyService.class);
         }
 
@@ -97,24 +93,24 @@ public class AjaxProxyServlet extends HttpServlet {
 
         // fetch parameters
         String requestType = req.getParameter("type");
-        if (requestType==null) {
-            requestType="text";
+        if (requestType == null) {
+            requestType = "text";
         }
         String targetURL = req.getParameter("url");
-        if (targetURL==null) {
+        if (targetURL == null) {
             return;
         }
         String cache = req.getParameter("cache");
 
-        ProxyURLConfigEntry entry =  getService().getConfigForURL(targetURL);
-        if (entry==null || !entry.isGranted()) {
+        ProxyURLConfigEntry entry = getService().getConfigForURL(targetURL);
+        if (entry == null || !entry.isGranted()) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             log.warn("client requested proxying for unauthorized url " + targetURL);
             return;
         }
 
         String body = null;
-        boolean foundInCache=true;
+        boolean foundInCache = true;
         String cacheKey = targetURL;
 
         if (entry.useCache()) {
@@ -129,8 +125,8 @@ public class AjaxProxyServlet extends HttpServlet {
             }
         }
 
-        if (body==null) {
-            foundInCache=false;
+        if (body == null) {
+            foundInCache = false;
             body = doRequest(method, targetURL, req);
         }
 
@@ -145,12 +141,11 @@ public class AjaxProxyServlet extends HttpServlet {
 
         if (requestType.equals("text")) {
             resp.setContentType("text/plain");
-        }
-        else if (requestType.equals("xml")) {
+        } else if (requestType.equals("xml")) {
             resp.setContentType("text/xml");
         }
 
-        if (cache!=null) {
+        if (cache != null) {
             SimpleCacheFilter.addCacheHeader(resp, cache);
         }
 
@@ -159,7 +154,7 @@ public class AjaxProxyServlet extends HttpServlet {
     }
 
     protected String getSessionId(HttpServletRequest req) {
-        String jSessionId=null;
+        String jSessionId = null;
         for (Cookie cookie : req.getCookies()) {
             if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
                 jSessionId = cookie.getValue();
@@ -169,21 +164,19 @@ public class AjaxProxyServlet extends HttpServlet {
         return jSessionId;
     }
 
-
     protected String doRequest(String method, String targetURL, HttpServletRequest req) throws IOException {
 
         HttpClient client = new HttpClient();
         HttpMethod httpMethod = null;
-        String body = null;
 
         if ("GET".equals(method)) {
             httpMethod = new GetMethod(targetURL);
         } else if ("POST".equals(method)) {
             httpMethod = new PostMethod(targetURL);
-            ((PostMethod)httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
+            ((PostMethod) httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
         } else if ("PUT".equals(method)) {
             httpMethod = new PutMethod(targetURL);
-            ((PutMethod)httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
+            ((PutMethod) httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
         }
 
         @SuppressWarnings("unchecked")
@@ -193,7 +186,7 @@ public class AjaxProxyServlet extends HttpServlet {
         }
 
         client.executeMethod(httpMethod);
-        body = httpMethod.getResponseBodyAsString();
+        String body = httpMethod.getResponseBodyAsString();
         httpMethod.releaseConnection();
         return body;
     }

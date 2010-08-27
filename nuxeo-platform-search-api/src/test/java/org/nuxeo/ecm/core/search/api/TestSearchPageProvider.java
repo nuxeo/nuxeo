@@ -45,7 +45,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class TestSearchPageProvider extends NXRuntimeTestCase {
 
@@ -113,7 +112,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testGetNumberOfPages() {
         ResultSet set = new ResultSetImpl((SQLQuery) null, null, 0, 10,
-                Collections.EMPTY_LIST, 17, 10);
+                Collections.<ResultItem>emptyList(), 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
     }
@@ -121,7 +120,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testGetCurerntPageSize() {
         ResultSet set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
-                Collections.EMPTY_LIST, 17, 7);
+                Collections.<ResultItem>emptyList(), 17, 7);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(7, provider.getCurrentPageSize());
     }
@@ -171,13 +170,14 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      */
     @SuppressWarnings("unchecked")
     public void testEmptyResults() {
-        SearchPageProvider provider =
-            new SearchPageProvider(new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
+        SearchPageProvider provider = new SearchPageProvider(
+                new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.<ResultItem>emptyList(), 0, 0));
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousPageAvailable());
         assertEquals(0, provider.getCurrentPageIndex());
         assertEquals(0, provider.getCurrentPageOffset());
         assertEquals(0, provider.getCurrentPageSize());
+
         provider.rewind();
         provider.last();
         // GR this could be discussed. I mostly want to

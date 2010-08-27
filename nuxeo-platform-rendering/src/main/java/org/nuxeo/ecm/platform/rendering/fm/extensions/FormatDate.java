@@ -33,7 +33,6 @@ import freemarker.template.TemplateModelException;
  * Format a date with the specified locale.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- *
  */
 public class FormatDate implements TemplateMethodModelEx {
 
@@ -65,4 +64,5 @@ public class FormatDate implements TemplateMethodModelEx {
 
         return new SimpleScalar(df.format(date));
     }
+
 }

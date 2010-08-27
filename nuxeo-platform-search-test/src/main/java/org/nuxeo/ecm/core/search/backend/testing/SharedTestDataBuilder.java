@@ -162,7 +162,7 @@ public class SharedTestDataBuilder {
                                 "novel", // category
                                 "A very very long string :-)", // content
                                 "Famous novel", // abstract
-                                Collections.EMPTY_LIST, // tags
+                                Collections.<String>emptyList(), // tags
                                 null, // published
                                 1789  // pages
                         ),

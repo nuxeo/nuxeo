@@ -59,7 +59,6 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
             } else {
                 blobs.add(blob);
             }
-
         }
         return new SimpleCachableBlobHolder(blobs);
     }

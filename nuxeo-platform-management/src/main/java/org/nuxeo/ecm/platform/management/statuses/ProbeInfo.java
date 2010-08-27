@@ -93,15 +93,15 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public void disable() {
-        ProbeInfo.this.isEnabled = false;
+        isEnabled = false;
     }
 
     public void enable() {
-        ProbeInfo.this.isEnabled = true;
+        isEnabled = true;
     }
 
     public boolean isEnabled() {
-        return ProbeInfo.this.isEnabled;
+        return isEnabled;
     }
 
     public boolean isInError() {
@@ -127,7 +127,7 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public void setProbeStatus(ProbeStatus probeStatus) {
-        this.lastSuccesStatus = probeStatus;
+        lastSuccesStatus = probeStatus;
     }
 
     protected static Long doGetDuration(Date fromDate, Date toDate) {

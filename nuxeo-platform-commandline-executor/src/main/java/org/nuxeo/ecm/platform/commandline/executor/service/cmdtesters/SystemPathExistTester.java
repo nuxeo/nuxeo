@@ -30,10 +30,6 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public class SystemPathExistTester implements CommandTester {
 
-    public SystemPathExistTester() {
-        // NOP
-    }
-
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {
         String cmd = cmdDescriptor.getCommand();
         try {

@@ -32,9 +32,7 @@ import org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public class PlacefulServiceTest extends TestCase {
     private static final String ID = "0000-1111-2222-3333";
