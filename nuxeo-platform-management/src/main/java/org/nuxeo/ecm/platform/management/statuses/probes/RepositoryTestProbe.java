@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.management.statuses.ProbeStatus;
 
 public class RepositoryTestProbe implements Probe {
 
-    private static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/'";
+    private static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' LIMIT 2";
 
     public void init(Object service) {
         // TODO Auto-generated method stub

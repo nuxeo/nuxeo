@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-@XObject("usecase")
+@XObject("probe")
 public class ProbeDescriptor {
 
     @XNode("@name")
@@ -32,10 +32,10 @@ public class ProbeDescriptor {
     private String qualifiedName;
 
     @XNode("@serviceClass")
-    private Class<?> serviceClass;
+    private Class<?> serviceClass = StatusesManagementComponent.class;
 
     @XNode("@class")
-    private Class<? extends Probe> usecaseClass;
+    private Class<? extends Probe> probeClass;
 
     public String getShortcutName() {
         return shortcutName;
@@ -46,7 +46,7 @@ public class ProbeDescriptor {
     }
 
     public Class<? extends Probe> getProbeClass() {
-        return usecaseClass;
+        return probeClass;
     }
 
     public Class<?> getServiceClass() {

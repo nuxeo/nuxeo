@@ -51,7 +51,7 @@ public class ProbeInfo implements ProbeMBean {
 
     protected Date lastSucceedDate;
 
-    protected ProbeStatus lastSuccesStatus;
+    protected ProbeStatus lastSuccessStatus;
 
     protected long failureCount = 0L;
 
@@ -115,10 +115,13 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public ProbeStatus getStatus() {
+        if (lastFailureStatus == null && lastSuccessStatus == null) {
+            return ProbeStatus.newFailure("not yet runned");
+        }
         if (isInError()) {
             return lastFailureStatus;
         }
-        return lastSuccesStatus;
+        return lastSuccessStatus;
     }
 
     public String getShortcutName(){
@@ -127,7 +130,7 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public void setProbeStatus(ProbeStatus probeStatus) {
-        lastSuccesStatus = probeStatus;
+        lastSuccessStatus = probeStatus;
     }
 
     protected static Long doGetDuration(Date fromDate, Date toDate) {
@@ -161,7 +164,7 @@ public class ProbeInfo implements ProbeMBean {
                 ProbeStatus status = probe.runProbe(session);
                 if (status.isSuccess()) {
                     lastSucceedDate = startingDate;
-                    lastSuccesStatus = status;
+                    lastSuccessStatus = status;
                     successCount += 1;
                 } else {
                     lastFailureStatus = status;
