@@ -200,15 +200,23 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 log.error("Cannot register content view without a name");
                 return;
             }
+            boolean enabled = desc.isEnabled();
             if (contentViews.containsKey(name)) {
                 log.info("Overriding content view with name " + name);
                 ContentViewDescriptor oldDesc = contentViews.get(name);
                 removeContentViewFlags(oldDesc);
-                desc = mergeContentViews(oldDesc, desc);
+                if (enabled) {
+                    desc = mergeContentViews(oldDesc, desc);
+                } else {
+                    contentViews.remove(name);
+                    log.info("Disabled content view with name " + name);
+                }
             }
-            log.info("Registering content view with name " + name);
-            contentViews.put(name, desc);
-            addContentViewFlags(desc);
+            if (enabled) {
+                log.info("Registering content view with name " + name);
+                contentViews.put(name, desc);
+                addContentViewFlags(desc);
+            }
         }
     }
 

@@ -23,6 +23,8 @@
       </flags>
     </contentView>
 
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH" enabled="false" />
+
   </extension>
 
 </component>

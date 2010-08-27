@@ -90,15 +90,22 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.ui.test",
-                "test-contentview-override-contrib.xml");
-
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        assertNotNull(contentView);
+
+        deployContrib("org.nuxeo.ecm.platform.ui.test",
+                "test-contentview-override-contrib.xml");
+
+        // check content view has been disabled correctly
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        assertNull(contentView);
+
         assertNull(service.getContentView("foo"));
 
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -159,6 +166,20 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
                 orderedNames.get(2));
 
+        // check after override too
+        deployContrib("org.nuxeo.ecm.platform.ui.test",
+                "test-contentview-override-contrib.xml");
+
+        names = service.getContentViewNames();
+        assertNotNull(names);
+        assertEquals(2, names.size());
+        orderedNames = new ArrayList<String>();
+        orderedNames.addAll(names);
+        Collections.sort(orderedNames);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                orderedNames.get(1));
+
     }
 
     public void testGetContentViewByFlag() throws Exception {
@@ -167,8 +188,12 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         Set<String> names = service.getContentViewNames("foo");
         assertNotNull(names);
-        assertEquals(1, names.size());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
+        assertEquals(2, names.size());
+        List<String> orderedNames = new ArrayList<String>();
+        orderedNames.addAll(names);
+        Collections.sort(orderedNames);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", orderedNames.get(1));
 
         names = service.getContentViewNames("foo2");
         assertNotNull(names);

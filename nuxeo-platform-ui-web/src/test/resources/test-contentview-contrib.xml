@@ -75,6 +75,11 @@
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
       </genericPageProvider>
+
+      <flags>
+        <flag>foo</flag>
+      </flags>
+
     </contentView>
 
   </extension>

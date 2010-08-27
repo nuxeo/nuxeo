@@ -36,6 +36,9 @@ public class ContentViewDescriptor {
     @XNode("@name")
     String name;
 
+    @XNode("@enabled")
+    boolean enabled = true;
+
     @XNode("title")
     String title;
 
@@ -183,6 +186,10 @@ public class ContentViewDescriptor {
 
     public List<String> getFlags() {
         return flags;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }
