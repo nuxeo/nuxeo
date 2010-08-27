@@ -50,13 +50,13 @@
   <extension
     target="org.nuxeo.ecm.platform.management.statuses"
     point="probes">
-    <usecase name="repository"
+    <probe name="repository"
       class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-    <usecase name="repositoryTest"
+    <probe name="repositoryTest"
       class="org.nuxeo.ecm.platform.management.statuses.probes.RepositoryTestProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
-    <usecase name="administrativeStatus"
+    <probe name="administrativeStatus"
       class="org.nuxeo.ecm.platform.management.statuses.probes.AdministrativeStatusProbe"
       serviceClass="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
   </extension>
