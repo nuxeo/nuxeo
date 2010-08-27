@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.DetachedNuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 
@@ -265,6 +266,11 @@ public class MockUserManager implements UserManager {
     }
 
     public List<String> getAdministratorsGroups() {
+        throw new UnsupportedOperationException();
+    }
+
+    public DetachedNuxeoPrincipal getDetachedNuxeoPrincipal(
+            NuxeoPrincipal principal) {
         throw new UnsupportedOperationException();
     }
 
