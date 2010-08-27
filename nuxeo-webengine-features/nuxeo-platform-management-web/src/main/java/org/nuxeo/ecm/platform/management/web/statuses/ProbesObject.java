@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 
 @WebObject(type = PROBES_WEB_OBJECT_TYPE)
+@Produces("text/html; charset=UTF-8")
 public class ProbesObject extends DefaultObject {
 
     private ProbeRunner probeRunner;
@@ -51,6 +53,7 @@ public class ProbesObject extends DefaultObject {
 
     @GET
     @Path("availability")
+    @Produces("text/plain")
     public Object doGetAvailability() {
         probeRunner.run();
         return getView("availability").arg("isAvailable", probeRunner.getProbesInError().isEmpty());

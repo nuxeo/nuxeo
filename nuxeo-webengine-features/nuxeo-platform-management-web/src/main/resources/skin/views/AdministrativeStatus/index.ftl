@@ -19,12 +19,12 @@
 <#if administrativeStatus == 'passive'>
 <form method="POST" 
   action="${This.path}/activate" accept-charset="utf-8">
-  	    <input type="submit" class="button" value="Activate" />&nbsp;
+  	    <input type="submit" class="button" value="Activate" />
 </form>
 <#else>
 <form method="POST" 
   action="${This.path}/passivate" accept-charset="utf-8">
-  	    <input type="submit" class="button" value="Passivate" />&nbsp;
+  	    <input type="submit" class="button" value="Passivate" />
 </form>  
 </#if>
 

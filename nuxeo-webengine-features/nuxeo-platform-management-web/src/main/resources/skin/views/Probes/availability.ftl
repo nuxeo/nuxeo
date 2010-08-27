@@ -1,5 +1,5 @@
 <#if isAvailable>
 OK
 <#else>
-NOK
+KO
 </#if>
