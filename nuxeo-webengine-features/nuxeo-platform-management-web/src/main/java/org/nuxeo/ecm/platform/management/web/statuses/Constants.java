@@ -26,4 +26,5 @@ public interface Constants {
 
     final static String MANAGEMENT_WEB_MODULE = "Management";
 
+    final static String USER_MANAGER_OBJECT_TYPE = "userService";
 }

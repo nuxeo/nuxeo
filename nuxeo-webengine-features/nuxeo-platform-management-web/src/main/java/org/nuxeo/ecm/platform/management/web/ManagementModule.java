@@ -20,6 +20,7 @@ import static org.nuxeo.ecm.platform.management.web.statuses.Constants.ADMINISTR
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.MANAGEMENT_WEB_MODULE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBES_WEB_OBJECT_TYPE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBE_WEB_OBJECT_TYPE;
+import static org.nuxeo.ecm.platform.management.web.statuses.Constants.USER_MANAGER_OBJECT_TYPE;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -76,6 +77,9 @@ public class ManagementModule extends DefaultObject {
                 return newObject(getAdministrativeStatusObjectTypeName(), path);
             }
 
+            if(getUserManagerObjectTypeName().equals(path)) {
+                return newObject(getUserManagerObjectTypeName());
+            }
             return newObject(getProbeObjectTypeName(), probeRunner, path);
 
 
@@ -94,5 +98,9 @@ public class ManagementModule extends DefaultObject {
 
     public String getProbesObjectTypeName() {
         return PROBES_WEB_OBJECT_TYPE;
+    }
+
+    public String getUserManagerObjectTypeName(){
+        return USER_MANAGER_OBJECT_TYPE;
     }
 }
