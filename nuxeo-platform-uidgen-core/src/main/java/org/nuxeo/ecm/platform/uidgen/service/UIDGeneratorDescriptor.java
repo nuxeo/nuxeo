@@ -146,7 +146,7 @@ public class UIDGeneratorDescriptor {
         if (propertyNames.length == 0) {
             log.warn("Cannot set propertyName.");
         }
-        this.propertyNames[0] = propertyName;
+        propertyNames[0] = propertyName;
     }
 
     public String[] getPropertyNames() {
@@ -154,7 +154,7 @@ public class UIDGeneratorDescriptor {
     }
 
     public void setPropertyNames(String[] propNames) {
-        this.propertyNames = propNames;
+        propertyNames = propNames;
     }
 
 }

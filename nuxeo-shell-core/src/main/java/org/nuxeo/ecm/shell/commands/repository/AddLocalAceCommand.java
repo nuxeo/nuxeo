@@ -28,9 +28,9 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * Command for adding local ace to the current document.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class AddLocalAceCommand extends AbstractCommand {
 
@@ -38,7 +38,7 @@ public class AddLocalAceCommand extends AbstractCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.shell.commands.repository.AbstractCommand#run(org.nuxeo
      * .ecm.shell.CommandLine)
@@ -63,7 +63,7 @@ public class AddLocalAceCommand extends AbstractCommand {
 
     /**
      * Add to the document a new local ace (on top, index 0).
-     * 
+     *
      * @param session
      * @param doc
      * @param user

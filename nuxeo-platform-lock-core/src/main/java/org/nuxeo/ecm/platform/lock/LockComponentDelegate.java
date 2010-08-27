@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.lock;
 /**
  * For delegate objects of the LockComponent being activated and deactivated
  * with the component.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public interface LockComponentDelegate {

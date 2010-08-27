@@ -34,7 +34,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- *
  * Service that writes MetaData.
  *
  * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
@@ -54,9 +53,6 @@ public class UIDGeneratorService extends DefaultComponent {
     private static final Log log = LogFactory.getLog(UIDGeneratorService.class);
 
     private final Map<String, UIDGenerator> generators = new HashMap<String, UIDGenerator>();
-
-    public UIDGeneratorService() {
-    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -134,10 +130,7 @@ public class UIDGeneratorService extends DefaultComponent {
     /**
      * Registers given UIDGenerator for the given document types. If there is
      * already a generator registered for one of document type it will be
-     * discarded (and replaced with the new generator)
-     *
-     * @param generator
-     * @param docTypes
+     * discarded (and replaced with the new generator).
      */
     private void registerGeneratorForDocTypes(final UIDGenerator generator,
             final String[] docTypes) {
@@ -183,9 +176,6 @@ public class UIDGeneratorService extends DefaultComponent {
     /**
      * Creates a new UID for the given doc and sets the field configured in the
      * generator component with this value.
-     *
-     * @param doc
-     * @throws DocumentException
      */
     public void setUID(DocumentModel doc) throws DocumentException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);
@@ -195,10 +185,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     *
-     * @param doc
      * @return a new UID for the given document
-     * @throws DocumentException
      */
     public String createUID(DocumentModel doc) throws DocumentException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);
@@ -216,4 +203,5 @@ public class UIDGeneratorService extends DefaultComponent {
         }
         return null;
     }
+
 }

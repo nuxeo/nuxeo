@@ -36,10 +36,9 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * Tests for NXP-2461: Manage LDAP directories with missing entries for
- * identifier field
+ * identifier field.
  *
  * @author Anahide Tchertchian
- *
  */
 public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
@@ -70,13 +69,14 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
         try {
             DocumentModel entry = session.getEntry("Administrator");
             assertNull(entry);
-            entry = session.getEntry("ogrisel+Administrator@nuxeo.com");
 
+            entry = session.getEntry("ogrisel+Administrator@nuxeo.com");
             assertEquals("ogrisel+Administrator@nuxeo.com", entry.getId());
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "username"));
             assertEquals("Manager", entry.getProperty(USER_SCHEMANAME,
                     "lastName"));
+
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
@@ -88,6 +88,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             // assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
             // assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
+
             List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
@@ -242,6 +243,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             DocumentModelList entries = session.query(filter, fulltext);
             assertNotNull(entries);
             assertEquals(2, entries.size());
+
             List<String> entryIds = new ArrayList<String>();
             for (DocumentModel entry : entries) {
                 entryIds.add(entry.getId());

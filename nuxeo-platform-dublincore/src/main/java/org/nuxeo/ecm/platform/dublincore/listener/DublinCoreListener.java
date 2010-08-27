@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
 /**
  * Core Event Listener for updating DublinCore.
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
@@ -52,7 +52,7 @@ public class DublinCoreListener implements EventListener {
      * Core event notification.
      * <p>
      * Gets core events and updates DublinCore if needed.
-     * 
+     *
      * @param event event fired at core layer
      */
     public void handleEvent(Event event) throws ClientException {

@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 /**
  * Implementation of the lockRecordProvider that is running a
  * JPALockRecordProvider in its single Thread.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public class ThreadedLockRecordProvider implements LockRecordProvider,

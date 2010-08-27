@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  * JPA implementation of the LockRecordProvider to get/create/update/delete
  * lockRecord. This class is using its own transaction manager (need to be run
  * in its own thread if already one running).
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public class JPALockRecordProvider implements LockRecordProvider,
@@ -63,7 +63,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
      * Lazy initialisation for solving datasource not being published at
      * activation time TODO can be replaces with a framework listener on started
      * event
-     * 
+     *
      * @return
      */
     protected PersistenceProvider openProvider() {
@@ -114,7 +114,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.lock.LockRecordProvider#delete(java.net.URI)
      */
     public void delete(URI resource) {
@@ -133,7 +133,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.lock.LockRecordProvider#getRecord(java.net.URI)
      */
@@ -150,7 +150,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.lock.LockRecordProvider#updateRecord(java.net.URI,
      * java.net.URI, java.lang.String, long)
@@ -177,7 +177,7 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.lock.LockRecordProvider#createRecord(java.net.URI,
      * java.net.URI, java.lang.String, long)

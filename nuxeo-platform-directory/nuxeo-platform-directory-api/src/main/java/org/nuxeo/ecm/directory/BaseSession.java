@@ -46,7 +46,7 @@ public abstract class BaseSession implements Session {
 
     /**
      * Returns a bare document model suitable for directory implementations.
-     * <p/>
+     * <p>
      * Can be used for creation screen
      *
      * @since 5.2M4

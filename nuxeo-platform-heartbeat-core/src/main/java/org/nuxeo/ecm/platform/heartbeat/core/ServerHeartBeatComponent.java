@@ -24,7 +24,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * Framework for accessing to running nuxeo server in a cluster using heartbeat
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public class ServerHeartBeatComponent extends DefaultComponent {

@@ -32,7 +32,7 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author Florent Guillaume
- * 
+ *
  */
 public class MultiDirectory extends AbstractDirectory {
 

@@ -100,5 +100,5 @@ public abstract class AbstractDirectory implements Directory {
     public void invalidateDirectoryCache() throws DirectoryException{
         getCache().invalidateAll();
     }
-    
+
 }

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class DisconnectCommand extends AbstractCommand {
 

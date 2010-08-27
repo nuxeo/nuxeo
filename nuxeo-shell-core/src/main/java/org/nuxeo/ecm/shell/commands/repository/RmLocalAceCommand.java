@@ -27,9 +27,9 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * Command for removing local ace to the current document.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class RmLocalAceCommand extends AbstractCommand {
 
@@ -37,7 +37,7 @@ public class RmLocalAceCommand extends AbstractCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.shell.commands.repository.AbstractCommand#run(org.nuxeo
      * .ecm.shell.CommandLine)
@@ -61,7 +61,7 @@ public class RmLocalAceCommand extends AbstractCommand {
 
     /**
      * Remove to the document the specified ace
-     * 
+     *
      * @param session
      * @param doc
      * @param user

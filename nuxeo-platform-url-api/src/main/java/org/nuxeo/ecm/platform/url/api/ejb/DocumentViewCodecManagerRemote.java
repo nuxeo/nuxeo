@@ -22,10 +22,9 @@ package org.nuxeo.ecm.platform.url.api.ejb;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 
 /**
- * Remote interface for DocumentViewCodecManager
+ * Remote interface for DocumentViewCodecManager.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface DocumentViewCodecManagerRemote extends
         DocumentViewCodecManager {

@@ -22,10 +22,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
- * Testing local acls commands
- * 
+ * Testing local acls commands.
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class TestLocalAceCommands extends SQLRepositoryTestCase {
 
@@ -123,6 +122,6 @@ public class TestLocalAceCommands extends SQLRepositoryTestCase {
                 new PathRef("/docname_for_testing"), SecurityConstants.READ));
         assertTrue("User1 should have write permission", session.hasPermission(
                 new PathRef("/docname_for_testing"), SecurityConstants.WRITE));
-
     }
+
 }

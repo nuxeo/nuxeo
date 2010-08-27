@@ -21,11 +21,10 @@ package org.nuxeo.ecm.directory.ldap;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
  */
 public class TestLDAPSessionBBB extends TestLDAPSession {
 
-    @Override()
+    @Override
     public void setUp() throws Exception {
         EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAPWithBBB.xml";
         super.setUp();

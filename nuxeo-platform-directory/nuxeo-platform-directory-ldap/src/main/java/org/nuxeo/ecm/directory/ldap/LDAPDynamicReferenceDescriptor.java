@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Dynamic Reference descriptor for Ldap References. Used to setup a dynamic
  * reference with a set of attributes instead of an url (dynamicAttributeId).
- * 
+ *
  * <ul>
  * <li>filter: Attribut that contains the filter, example
  * "msExchDynamicDLFilter"</li>
@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * <li>baseDN: Attribut that contains the BaseDN used for search, example
  * "msExchDynamicDLBaseDN"</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:nulrich@nuxeo.com">Nicolas Ulrich</a>
  */
 @XObject(value = "dynamicReference")

@@ -24,8 +24,8 @@ import javax.naming.NamingException;
 /**
  * Utility to fetch SRV records from a DNS server to get the list of available
  * ldap servers from the DN representation of the domain.
- *
- * http://en.wikipedia.org/wiki/SRV_record
+ * <p>
+ * See: http://en.wikipedia.org/wiki/SRV_record
  *
  * @author Robert Browning
  */
@@ -34,25 +34,25 @@ public interface DNSServiceResolver {
     /**
      * DNS Cache Expiry property
      */
-    public static final String DNS_CACHE_EXPIRY = "org.nuxeo.ecm.directory.ldap.dns.cache.expiry";
+    String DNS_CACHE_EXPIRY = "org.nuxeo.ecm.directory.ldap.dns.cache.expiry";
 
     /**
-     * Prefix to locate LDAP service on DNS Server<br/>
-     * <br/>
+     * Prefix to locate LDAP service on DNS Server.
+     * <p>
      * <b>service</b>: _ldap<br/>
      * <b>protocol</b>: _tcp
      */
-    public static final String LDAP_SERVICE_PREFIX = "_ldap._tcp";
+    String LDAP_SERVICE_PREFIX = "_ldap._tcp";
 
     /**
      * Returns a list of LDAP servers for the specified domain by performing an
-     * SRV DNS lookup on _ldap._tcp.${domain}
+     * SRV DNS lookup on _ldap._tcp.${domain}.
      *
      * @param domain
      * @return the list of SRV dns entries
      * @throws NamingException
      */
-    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain)
+    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain)
             throws NamingException;
 
     /**
@@ -64,7 +64,7 @@ public interface DNSServiceResolver {
      * @return the list of SRV dns entries
      * @throws NamingException
      */
-    public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain,
+    List<DNSServiceEntry> resolveLDAPDomainServers(final String domain,
             final String prefix) throws NamingException;
 
 }

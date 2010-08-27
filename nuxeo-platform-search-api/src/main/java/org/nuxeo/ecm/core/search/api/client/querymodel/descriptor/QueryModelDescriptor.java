@@ -322,7 +322,7 @@ public class QueryModelDescriptor {
     public Integer getMax() {
         return max;
     }
-    
+
     public void setMax(Integer max) {
         this.max = max;
     }

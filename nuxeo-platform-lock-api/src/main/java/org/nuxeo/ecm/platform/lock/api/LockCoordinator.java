@@ -25,7 +25,7 @@ import java.net.URI;
  * operating on the resource and block the others. If the winner do not return
  * to the coordinator in the delay he gave, one of the other takes the place and
  * the game is replayed.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public interface LockCoordinator {
@@ -33,7 +33,7 @@ public interface LockCoordinator {
     /**
      * Enter in the competition. Return immediately if the resource is available.
      * Otherwise wait for the expiration.
-     * 
+     *
      * @param resource
      * @param timeout automatically unlock for that time
      * @throws AlreadyLockedException
@@ -44,7 +44,7 @@ public interface LockCoordinator {
 
     /**
      * Save addition information to the resource
-     * 
+     *
      * @param self
      * @param resource
      * @param info
@@ -56,7 +56,7 @@ public interface LockCoordinator {
     /**
      * Unlock the resource. No further information will be available anymore
      * about this lock resource.
-     * 
+     *
      * @param resource
      * @throws InterruptedException
      */
@@ -65,7 +65,7 @@ public interface LockCoordinator {
 
     /**
      * Return live lock information only.
-     * 
+     *
      * @param resource
      * @return
      * @throws InterruptedException

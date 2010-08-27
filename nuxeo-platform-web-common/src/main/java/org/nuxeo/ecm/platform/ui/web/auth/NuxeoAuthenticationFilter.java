@@ -67,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- * 
+ *
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -565,7 +565,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     /**
      * Save requested URL before redirecting to login form.
-     * 
+     *
      * Returns true if target url is a valid startup page.
      */
     public boolean saveRequestedURLBeforeRedirect(

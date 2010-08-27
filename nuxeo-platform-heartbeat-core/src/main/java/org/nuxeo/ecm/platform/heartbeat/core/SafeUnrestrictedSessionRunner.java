@@ -23,7 +23,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * When running from another thread, need run unrestricted getting the class
  * loader of the running J2EE.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public abstract class SafeUnrestrictedSessionRunner extends
