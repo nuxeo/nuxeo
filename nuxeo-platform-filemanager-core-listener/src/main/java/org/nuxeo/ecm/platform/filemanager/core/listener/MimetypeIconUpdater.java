@@ -70,7 +70,7 @@ public class MimetypeIconUpdater implements EventListener {
 
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
-    MimetypeRegistry mimetypeService = null;
+    MimetypeRegistry mimetypeService;
 
     public MimetypeRegistry getMimetypeRegistry() throws Exception {
         if (mimetypeService == null) {

@@ -40,18 +40,12 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
     protected boolean isTargetEmpty(DocumentModel eventDoc) throws ClientException  {
         // If we already have children : exit !!!
-        if (!session.getChildren(eventDoc.getRef()).isEmpty()) {
-            return false;
-        }
-        else {
-            return true;
-        }
-
+        return session.getChildren(eventDoc.getRef()).isEmpty();
     }
 
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
-        super.initSession(eventDoc);
+        initSession(eventDoc);
 
         if (eventDoc.isVersion() || !isTargetEmpty(eventDoc)) {
             return;
@@ -62,7 +56,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         for (TemplateItemDescriptor item : template) {
             String itemPath = eventDoc.getPathAsString();
             if (item.getPath() != null) {
-                itemPath = itemPath + "/" + item.getPath();
+                itemPath += "/" + item.getPath();
             }
             DocumentModel newChild = session.createDocumentModel(itemPath,
                     item.getId(), item.getTypeName());
@@ -99,7 +93,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
                 existingACL.add(new ACE(ace.getPrincipal(),
                         ace.getPermission(), ace.getGranted()));
             }
-            // readd the acl to invalidate the ACPImpl cache
+            // read the acl to invalidate the ACPImpl cache
             acp.addACL(existingACL);
             session.setACP(ref, acp, true);
         }

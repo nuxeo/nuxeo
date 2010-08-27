@@ -70,7 +70,7 @@ public abstract class BaseSession implements Session {
 
     /**
      * Returns a bare document model suitable for directory implementations.
-     * <p/>
+     * <p>
      * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See
      * {@code Session#isReadOnlyEntry(DocumentModel)}
      *
@@ -79,8 +79,7 @@ public abstract class BaseSession implements Session {
     public static DocumentModel createEntryModel(String sessionId,
             String schema, String id, Map<String, Object> values,
             boolean readOnly) throws PropertyException {
-        DocumentModel entry = BaseSession.createEntryModel(sessionId, schema,
-                id, values);
+        DocumentModel entry = createEntryModel(sessionId, schema, id, values);
         if (readOnly) {
             setReadOnlyEntry(entry);
         }

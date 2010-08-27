@@ -58,17 +58,14 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class CSVZipImporter extends AbstractFileImporter {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private static String MARKER = "meta-data.csv";
+    private static final String MARKER = "meta-data.csv";
 
     private static final Log log = LogFactory.getLog(CSVZipImporter.class);
 
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
-        ZipFile zip = null;
+        ZipFile zip;
 
         try {
             zip = new ZipFile(file);

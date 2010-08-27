@@ -40,8 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Laurent Doguin
  */
-public class ZipCachableBlobHolder extends SimpleCachableBlobHolder implements
-        CachableBlobHolder {
+public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected Blob zipBlob;
 
@@ -59,7 +58,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder implements
     public Blob getBlob(String path) throws IOException,
             MimetypeNotFoundException, MimetypeDetectionException,
             ConversionException {
-        String filePath = key.concat(path);
+        String filePath = key + path;
         File file = new File(filePath);
         Blob blob = new FileBlob(file);
         String mimeType = getMimeTypeService().getMimetypeFromBlob(blob);
@@ -110,14 +109,14 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder implements
         for (File file : directoryContent) {
             if (file.isDirectory()) {
                 beginIndex = prefix.length();
-                prefix = prefix.concat(file.getName() + File.separatorChar);
+                prefix += file.getName() + File.separatorChar;
                 addDirectoryToList(file, prefix);
                 prefix = prefix.substring(0, beginIndex);
             } else {
                 Blob blob = new FileBlob(file);
                 String mimeType = getMimeType(file);
                 blob.setMimeType(mimeType);
-                blob.setFilename(prefix.concat(file.getName()));
+                blob.setFilename(prefix + file.getName());
                 if (file.getName().equalsIgnoreCase("index.html")) {
                     blobs.add(0, blob);
                 } else {

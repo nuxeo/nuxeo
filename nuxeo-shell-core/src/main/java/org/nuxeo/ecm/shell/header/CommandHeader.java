@@ -21,12 +21,11 @@ package org.nuxeo.ecm.shell.header;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CommandHeader {
 
-    public String description = null;
-    public String help = null;
+    public String description;
+    public String help;
     public CommandPattern pattern;
 
 }

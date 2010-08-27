@@ -37,20 +37,17 @@ import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * {@link UserManager} implementation that is aware of {@link ComputedGroup}.
  *
  * @author Thierry Delprat
- *
  */
-public class UserManagerWithComputedGroups extends UserManagerImpl implements
-        UserManager {
+public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     private static final long serialVersionUID = 1L;
 
-    protected static ComputedGroupsService cgs = null;
+    protected static ComputedGroupsService cgs;
 
-    protected static Boolean useComputedGroup = null;
+    protected static Boolean useComputedGroup;
 
     public static final String VIRTUAL_GROUP_MARKER = "__virtualGroup";
 
@@ -179,8 +176,8 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
             return null;
         }
 
-        String schemaName = super.getGroupSchemaName();
-        String id = super.getGroupIdField();
+        String schemaName = getGroupSchemaName();
+        String id = getGroupIdField();
         DocumentModel groupDoc = BaseSession.createEntryModel(null, schemaName,
                 grpName, null);
 
@@ -190,7 +187,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl implements
         groupDoc.setProperty(schemaName, getGroupIdField(), grp.getName());
 
         final ScopedMap contextData = groupDoc.getContextData();
-        contextData.putScopedValue("virtual", true);
+        contextData.putScopedValue("virtual", Boolean.TRUE);
 
         return groupDoc;
     }

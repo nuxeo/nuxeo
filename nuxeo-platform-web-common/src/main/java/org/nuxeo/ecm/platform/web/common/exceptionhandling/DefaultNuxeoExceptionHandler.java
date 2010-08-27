@@ -41,7 +41,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
 
-    protected NuxeoExceptionHandlerParameters parameters = null;
+    protected NuxeoExceptionHandlerParameters parameters;
 
     public DefaultNuxeoExceptionHandler() {
     }

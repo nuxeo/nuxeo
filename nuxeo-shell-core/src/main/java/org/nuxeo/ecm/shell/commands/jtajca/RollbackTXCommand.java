@@ -25,7 +25,6 @@ import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.shell.CommandLine;
 import org.nuxeo.ecm.shell.commands.repository.AbstractCommand;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -33,7 +32,6 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * @author jcarsique
- * 
  */
 public class RollbackTXCommand extends AbstractCommand {
     private static final Log log = LogFactory.getLog(RollbackTXCommand.class);

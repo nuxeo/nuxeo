@@ -52,7 +52,7 @@ public class FilterRule {
 
     String[] conditions;
 
-    protected String cacheKey = null;
+    protected String cacheKey;
 
     public FilterRule() {
     }

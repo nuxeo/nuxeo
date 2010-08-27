@@ -162,7 +162,6 @@ public class LDAPTreeReference extends AbstractReference {
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
         Set<String> sourceIds = new TreeSet<String>();
-        SearchResult targetLdapEntry = null;
         String targetDn = null;
 
         // step #1: fetch the dn of the targetId entry in the target
@@ -170,7 +169,7 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPDirectory targetDir = getTargetLDAPDirectory();
         LDAPSession targetSession = (LDAPSession) targetDir.getSession();
         try {
-            targetLdapEntry = targetSession.getLdapEntry(targetId, true);
+            SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId, true);
             if (targetLdapEntry == null) {
                 // no parent accessible => return empty list
                 return EMPTY_STRING_LIST;
@@ -239,7 +238,6 @@ public class LDAPTreeReference extends AbstractReference {
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
         Set<String> targetIds = new TreeSet<String>();
-        SearchResult sourceLdapEntry = null;
         String sourceDn = null;
 
         // step #1: fetch the dn of the sourceId entry in the source
@@ -247,7 +245,7 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPDirectory sourceDir = getSourceLDAPDirectory();
         LDAPSession sourceSession = (LDAPSession) sourceDir.getSession();
         try {
-            sourceLdapEntry = sourceSession.getLdapEntry(sourceId, true);
+            SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId, true);
             if (sourceLdapEntry == null) {
                 throw new DirectoryException(sourceId + " does not exist in "
                         + sourceDirectoryName);

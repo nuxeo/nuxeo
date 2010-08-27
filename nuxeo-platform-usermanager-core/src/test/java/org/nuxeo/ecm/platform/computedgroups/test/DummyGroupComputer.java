@@ -7,7 +7,7 @@ import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
-public class DummyGroupComputer extends AbstractGroupComputer implements GroupComputer {
+public class DummyGroupComputer extends AbstractGroupComputer {
 
     List<String> grpNames = new ArrayList<String>();
 

@@ -28,7 +28,7 @@ import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 public class ProbeRegistry {
 
-    protected final static Log log = LogFactory.getLog(ProbeRegistry.class);
+    protected static final Log log = LogFactory.getLog(ProbeRegistry.class);
 
     private final StatusesManagementComponent probeComponent;
 

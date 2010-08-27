@@ -25,7 +25,6 @@ import org.nuxeo.runtime.api.Framework;
  * Testing the queue manager.
  * 
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
  */
 public class TestServerHeartBeat extends SQLRepositoryTestCase {
 
@@ -34,7 +33,7 @@ public class TestServerHeartBeat extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
-        super.fireFrameworkStarted();
+        fireFrameworkStarted();
         openSession();
     }
 
@@ -44,13 +43,14 @@ public class TestServerHeartBeat extends SQLRepositoryTestCase {
     public void testLife() throws Exception {
         ServerHeartBeat hb = Framework.getLocalService(ServerHeartBeat.class);
         assertTrue("server isn't started", hb.isStarted());
+
         Thread.sleep(hb.getHeartBeatDelay());
         ServerInfo info1 = hb.getMyInfo();
         assertNotNull("server info should not be null", info1);
+
         Thread.sleep(hb.getHeartBeatDelay());
         ServerInfo info2 = hb.getMyInfo();
         assertNotSame("The server infos time should had changed",
                 info1.getUpdateTime(), info2.getUpdateTime());
-
     }
 }

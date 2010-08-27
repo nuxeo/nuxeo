@@ -62,9 +62,8 @@ public class EventJob implements Job {
             ctx.setProperties(dataMap);
 
             Event event = new EventImpl(eventId, ctx);
-            EventService evtService = null;
 
-            evtService = Framework.getService(EventService.class);
+            EventService evtService = Framework.getService(EventService.class);
 
             if (evtService != null) {
                 log.info("Sending scheduled event id=" + eventId

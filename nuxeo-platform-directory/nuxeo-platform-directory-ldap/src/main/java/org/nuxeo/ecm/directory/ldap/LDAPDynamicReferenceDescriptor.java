@@ -38,12 +38,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class LDAPDynamicReferenceDescriptor {
 
     @XNode("@filter")
-    public String filter = null;
+    public String filter;
 
     @XNode("@baseDN")
-    public String baseDN = null;
+    public String baseDN;
 
     @XNode("@type")
-    public String type = null;
+    public String type;
 
 }

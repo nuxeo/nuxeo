@@ -45,7 +45,7 @@ public class TypeRegistry extends ExtensionRegistry<Type> {
 
     @Override
     public void addContribution(Type contrib, Extension extension) {
-        Type type = (Type) contrib;
+        Type type = contrib;
         String typeId = type.getId();
         if (type.getRemove()) {
             log.debug("Removing type with id " + typeId);

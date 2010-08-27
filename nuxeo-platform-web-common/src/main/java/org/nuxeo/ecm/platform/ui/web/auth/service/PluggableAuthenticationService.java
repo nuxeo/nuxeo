@@ -82,9 +82,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private List<String> authChain;
 
-    private Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<String, SpecificAuthChainDescriptor>();
+    private final Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<String, SpecificAuthChainDescriptor>();
 
-    private List<OpenUrlDescriptor> openUrls = new ArrayList<OpenUrlDescriptor>();
+    private final List<OpenUrlDescriptor> openUrls = new ArrayList<OpenUrlDescriptor>();
 
     private final List<String> startupURLs = new ArrayList<String>();
 
@@ -244,8 +244,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public List<String> getAuthChain(HttpServletRequest request) {
 
-        if (specificAuthChains == null || specificAuthChains.size() == 0) {
-            return getAuthChain();
+        if (specificAuthChains == null || specificAuthChains.isEmpty()) {
+            return authChain;
         }
 
         String specificAuthChainName = getSpecificAuthChainName(request);
@@ -253,10 +253,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
 
         if (desc!=null) {
-            return desc.computeResultingChain(getAuthChain());
+            return desc.computeResultingChain(authChain);
         }
         else {
-            return getAuthChain();
+            return authChain;
         }
     }
 
@@ -267,7 +267,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
 
             List<Pattern> urlPatterns = desc.getUrlPatterns();
-            if (urlPatterns.size() > 0) {
+            if (!urlPatterns.isEmpty()) {
                 // test on URI
                 String requestUrl = request.getRequestURI();
                 for (Pattern pattern : urlPatterns) {

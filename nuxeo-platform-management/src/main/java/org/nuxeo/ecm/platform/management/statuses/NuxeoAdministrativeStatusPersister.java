@@ -77,7 +77,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
             log.error("Unable to fetch the administrative status document", e);
             throw new ClientException(e);
         }
-        return (String) fetcher.getAdministrativeStatusPropertyValue();
+        return fetcher.getAdministrativeStatusPropertyValue();
     }
 
     protected DocumentModel getOrCreateStatusDocument(String serverInstanceName) throws ClientException {
@@ -93,8 +93,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
     }
 
 
-    private class Setter extends
-            UnrestrictedSessionRunner {
+    private class Setter extends UnrestrictedSessionRunner {
 
         protected String serverInstanceName;
         protected String newState;
@@ -160,11 +159,9 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
             doc.setPropertyValue("dc:title", ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
             doc = session.createDocument(doc);
             session.save();
-
         }
 
         return session.getDocument(statusDocRef);
-
     }
 
     private class Fetcher extends UnrestrictedSessionRunner {
@@ -200,9 +197,6 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
     protected String administrativeStatusDocName(String serverInstanceName) throws ClientException {
         return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + serverInstanceName;
     }
-
-
-
 
     protected static EventProducer getEventProducer() throws Exception {
         return Framework.getService(EventProducer.class);
