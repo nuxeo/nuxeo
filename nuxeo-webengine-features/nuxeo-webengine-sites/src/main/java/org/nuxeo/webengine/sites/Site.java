@@ -67,7 +67,7 @@ public class Site extends AbstractSiteDocumentObject {
 
     /**
      * Must use the same method name as super.traverse() otherwise we introduce ambiguous sub-resources locators
-     * which will fail in jersey. 
+     * which will fail in jersey.
      */
     @Path("{page}")
     public Resource traverse(@PathParam("page") String page) {

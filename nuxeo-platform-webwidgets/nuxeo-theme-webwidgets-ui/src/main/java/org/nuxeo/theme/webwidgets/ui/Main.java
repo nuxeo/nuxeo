@@ -151,13 +151,13 @@ public class Main extends ModuleRoot {
             @QueryParam("data") String dataName,
             @QueryParam("provider") String providerName,
             @QueryParam("timestamp") String timestamp) {
-        
+
         HttpServletRequest request = ctx.getRequest();
         String etag = request.getHeader("If-None-Match");
         if (timestamp.equals(etag)) {
             return Response.notModified().build();
         }
-        
+
         WidgetData data = null;
         try {
             data = Manager.getWidgetData(providerName, widgetUid, dataName);

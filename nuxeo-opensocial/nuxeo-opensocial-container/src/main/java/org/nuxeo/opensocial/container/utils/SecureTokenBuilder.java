@@ -48,7 +48,7 @@ public class SecureTokenBuilder {
 
     /**
      * XXX LeroyMerlin's old version.
-     * 
+     *
      * @param viewer
      * @param owner
      * @param gadgetUrl
@@ -83,7 +83,7 @@ public class SecureTokenBuilder {
 
     /**
      * XXX LeroyMerlin's old version.
-     * 
+     *
      * @param viewer
      * @param owner
      * @param gadgetUrl

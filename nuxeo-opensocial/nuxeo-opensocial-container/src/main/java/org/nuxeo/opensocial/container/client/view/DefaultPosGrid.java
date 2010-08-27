@@ -18,7 +18,7 @@
 package org.nuxeo.opensocial.container.client.view;
 
 /**
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class DefaultPosGrid implements PosGrid {

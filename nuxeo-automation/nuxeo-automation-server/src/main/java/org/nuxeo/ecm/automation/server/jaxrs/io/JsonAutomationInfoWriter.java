@@ -37,7 +37,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @Provider
 @Produces( { "application/json+nxautomation", "application/json" })

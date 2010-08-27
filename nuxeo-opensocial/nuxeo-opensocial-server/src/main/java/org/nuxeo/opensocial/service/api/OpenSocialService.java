@@ -30,21 +30,21 @@ public interface OpenSocialService {
 
     /**
      * Returns our own gadget Spec Factory
-     * 
+     *
      * @return
      */
     GadgetSpecFactory getGadgetSpecFactory();
 
     /**
      * Specify the GUICE injector to user for the service
-     * 
+     *
      * @param injector
      */
     void setInjector(Injector injector);
 
     /**
      * Get the symetric key for the given container
-     * 
+     *
      * @param defaultContainer the container name
      * @return
      */
@@ -52,7 +52,7 @@ public interface OpenSocialService {
 
     /**
      * Returns the proxy settings if set
-     * 
+     *
      * @return
      */
     ProxySelector getProxySelector();
@@ -60,7 +60,7 @@ public interface OpenSocialService {
     /**
      * Returns a file handle to the base64 encoded key that is used to sign
      * internal requests.
-     * 
+     *
      * @return
      */
     File getSigningStateKeyFile();
@@ -73,7 +73,7 @@ public interface OpenSocialService {
     /**
      * Returns a file handle to the default private key for communicating with
      * external resources.
-     * 
+     *
      * @return
      */
     File getOAuthPrivateKeyFile();
@@ -87,7 +87,7 @@ public interface OpenSocialService {
     /**
      * PortalConfig array that represents the contribution from the user in the
      * opensocial xp. This is normally null.
-     * 
+     *
      * @return
      */
     PortalConfig[] getPortalConfig();
@@ -95,7 +95,7 @@ public interface OpenSocialService {
     /**
      * Returns the name of the private key. Most service providers don't use
      * this.
-     * 
+     *
      * @return
      */
     String getOAuthPrivateKeyName();
@@ -103,7 +103,7 @@ public interface OpenSocialService {
     /**
      * Where the Oauth "return callback" shoud go. This has to be configured to
      * the name (and path) that other servers see the nuxeo instanec as.
-     * 
+     *
      * @return
      */
     String getOAuthCallbackUrl();

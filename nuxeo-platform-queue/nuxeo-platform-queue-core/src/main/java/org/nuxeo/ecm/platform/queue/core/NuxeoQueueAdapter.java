@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
@@ -131,7 +131,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getHandlingCount()
      */
     public int getHandlingCount() {
@@ -151,7 +151,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getLastHandlingDate()
      */
     public Date getLastHandlingDate() {
@@ -160,7 +160,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#getStatus()
      */
     public QueueItemState getStatus() {
@@ -172,7 +172,7 @@ public class NuxeoQueueAdapter implements QueueItem, NuxeoQueueConstants {
 
     /*
      * (non-Javadoc)serverId
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueItem#isOrphaned()
      */
     public boolean isOrphaned() {

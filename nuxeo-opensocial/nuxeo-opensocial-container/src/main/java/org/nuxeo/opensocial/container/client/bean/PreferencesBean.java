@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * PreferencesBean
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class PreferencesBean implements IsSerializable {

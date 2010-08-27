@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Publishing validator related exception.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class PublishingValidatorException extends ClientException {

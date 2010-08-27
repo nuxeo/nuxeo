@@ -49,7 +49,7 @@ public class PreferenceManager {
 
     /**
      * Get Default Preferences
-     * 
+     *
      * @param gadget
      * @return ArrayList<PreferencesBean>
      * @throws ClientException
@@ -68,7 +68,7 @@ public class PreferenceManager {
 
     /**
      * Merge preferences of gadget with preferences saving in Nuxeo
-     * 
+     *
      * @param defaultPrefs
      * @param loadPrefs
      * @return rrayList<PreferencesBean>
@@ -103,7 +103,7 @@ public class PreferenceManager {
 
     /**
      * Get default preferences with OpensocialService (Parse XML gadget)
-     * 
+     *
      * @param gadget
      * @return List<UserPref>
      */

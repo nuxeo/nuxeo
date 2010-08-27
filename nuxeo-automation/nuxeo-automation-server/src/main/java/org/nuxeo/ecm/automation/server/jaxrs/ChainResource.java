@@ -23,7 +23,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ChainResource extends ExecutableResource {
 

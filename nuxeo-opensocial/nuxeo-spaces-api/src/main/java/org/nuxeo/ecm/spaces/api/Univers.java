@@ -34,7 +34,7 @@ public interface Univers {
 
     /**
      * UID
-     * 
+     *
      * @return a unique identifier for a given instance of Univers
      *         implementation
      */
@@ -42,37 +42,37 @@ public interface Univers {
 
     /**
      * Universe name
-     * 
+     *
      * @return the name of this universe
      */
     String getName();
 
     /**
      * Universe title
-     * 
+     *
      * @return the title of this universe
      */
     String getTitle();
 
     /**
      * Universe description
-     * 
+     *
      * @return the description of this universe
      */
     String getDescription();
 
     /**
      * for comparison
-     * 
+     *
      * @param space
      * @return
      */
     boolean isEqualTo(Univers univers);
 
     List<Space> getSpaces(CoreSession session) throws SpaceException;
-  
+
   /**
-   * @param session 
+   * @param session
    * @return list of {@link SpaceProvider}
    */
   List<SpaceProvider> getSpaceProviders(CoreSession session) throws SpaceException;

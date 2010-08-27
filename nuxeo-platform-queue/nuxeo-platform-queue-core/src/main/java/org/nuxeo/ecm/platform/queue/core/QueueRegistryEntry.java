@@ -21,9 +21,9 @@ import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 
 /**
  * Entry of the Queue Registry.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueRegistryEntry {
 

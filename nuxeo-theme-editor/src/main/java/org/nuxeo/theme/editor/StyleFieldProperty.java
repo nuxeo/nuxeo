@@ -31,7 +31,7 @@ public class StyleFieldProperty {
     private final String value;
 
     private final String type;
-    
+
     private final String id;
 
     private static final Pattern cssChoicePattern = Pattern.compile("\\[(.*?)\\]");
@@ -51,7 +51,7 @@ public class StyleFieldProperty {
     public String getValue() {
         return value;
     }
-    
+
     public String getLabel() {
         return name;
     }
@@ -96,6 +96,6 @@ public class StyleFieldProperty {
     public String getId() {
         return id;
     }
-    
-    
+
+
 }

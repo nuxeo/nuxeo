@@ -37,11 +37,11 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * 
+ *
  * DocumentModel marsheler using Core IO services
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 

@@ -46,7 +46,7 @@ public class PortalConfig {
      * symmetric key is used to sign the message going from shindig to shindig
      * to verify that the message receivied by the make request servlet is not
      * "forged".
-     * 
+     *
      * This value can and, in most cases should, be left empty. When it is left
      * empty, the system will use a random set of bytes for this key.
      */

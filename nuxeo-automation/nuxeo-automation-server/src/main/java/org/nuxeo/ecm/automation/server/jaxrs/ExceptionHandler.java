@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ExceptionHandler {
 
@@ -66,7 +66,7 @@ public class ExceptionHandler {
 
     /**
      * Try to find the best matching HTTP status for the given exception
-     * 
+     *
      * @param cause
      * @return
      */

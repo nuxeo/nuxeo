@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html; charset=UTF-8")
 public class AdministrativeStatusObject extends DefaultObject {
 
-	AdministrativeStatus administrativeStatus;
+    AdministrativeStatus administrativeStatus;
 
     @Override
     public void initialize(Object... args) {

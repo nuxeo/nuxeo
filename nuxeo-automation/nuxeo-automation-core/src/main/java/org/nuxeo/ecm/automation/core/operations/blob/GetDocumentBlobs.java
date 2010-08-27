@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
 /**
  * Save the input document
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Gets a list of files that are attached on the input document. The files location should be specified using the blob list property xpath. Returns a list of files.")

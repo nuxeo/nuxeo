@@ -33,12 +33,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 public class Operation1 {
 
     @Param(name="message") protected String message;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
-    public DocumentModel printInfo1(DocumentModel doc) throws Exception {        
+    public DocumentModel printInfo1(DocumentModel doc) throws Exception {
         //System.out.println("O1:doc:doc: "+doc.getId()+". Session: "+session+". message: "+message);
         Helper.updateContext(ctx, "O1:doc:doc", message, doc.getTitle());
         return doc;
@@ -47,9 +47,9 @@ public class Operation1 {
     @OperationMethod
     public DocumentModel printInfo3(DocumentRef ref) throws Exception {
         //System.out.println("O1:ref:doc: "+ref+". Session: "+session+". message: "+message);
-        DocumentModel doc = session.getDocument(ref); 
+        DocumentModel doc = session.getDocument(ref);
         Helper.updateContext(ctx, "O1:ref:doc", message, doc.getTitle());
         return doc;
     }
-    
+
 }

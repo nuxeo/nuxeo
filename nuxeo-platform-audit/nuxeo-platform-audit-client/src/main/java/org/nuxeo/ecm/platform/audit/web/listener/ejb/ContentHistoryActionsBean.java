@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  * Content history actions bean.
  * <p>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("contentHistoryActions")

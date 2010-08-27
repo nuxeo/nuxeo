@@ -24,7 +24,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Test3 {
 

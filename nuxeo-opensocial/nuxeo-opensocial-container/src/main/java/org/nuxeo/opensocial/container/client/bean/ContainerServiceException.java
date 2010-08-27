@@ -21,7 +21,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * ContainerServiceException
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ContainerServiceException extends Exception implements

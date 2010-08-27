@@ -27,9 +27,9 @@ import com.google.inject.Inject;
 public class ModulePage extends WebPage {
 
     @Inject protected WebEngineHomePage home;
-    
+
     public WebEngineHomePage getHome() {
         return home;
     }
-    
+
 }

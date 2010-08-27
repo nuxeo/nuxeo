@@ -32,12 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class VoidOperation1 {
 
     @Param(name="message") protected String message;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
-    public DocumentModel printInfo1() throws Exception {        
+    public DocumentModel printInfo1() throws Exception {
         //System.out.println("O1:doc:doc: "+doc.getId()+". Session: "+session+". message: "+message);
         Helper.updateContext(ctx, "V1:void:doc", message, "");
         return session.getRootDocument();
@@ -49,5 +49,5 @@ public class VoidOperation1 {
         Helper.updateContext(ctx, "V1:doc:doc", message, doc.getPathAsString());
         return doc;
     }
-    
+
 }

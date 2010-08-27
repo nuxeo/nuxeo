@@ -23,7 +23,7 @@ import com.gwtext.client.widgets.form.Field;
 
 /**
  * ColorListener
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ColorListener extends ColorPaletteListenerAdapter {

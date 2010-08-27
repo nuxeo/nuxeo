@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @Path("automation")
 public class AutomationResource {
@@ -68,7 +68,7 @@ public class AutomationResource {
     /**
      * Get the content of the blob or blobs (multipart/mixed) located by the
      * given doc uid and property path.
-     * 
+     *
      * @param uid
      * @param path
      * @return

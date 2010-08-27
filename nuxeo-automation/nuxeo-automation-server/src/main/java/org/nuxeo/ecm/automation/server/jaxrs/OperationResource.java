@@ -32,7 +32,7 @@ import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class OperationResource extends ExecutableResource {
 

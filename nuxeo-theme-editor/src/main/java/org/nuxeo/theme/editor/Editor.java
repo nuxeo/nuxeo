@@ -1012,14 +1012,14 @@ public class Editor {
             Widget widget = (Widget) FormatFactory.create("widget");
             widget.setName(viewName);
             ElementFormatter.setFormat(fragment, widget);
-            
+
             // Style
             Style style = (Style) FormatFactory.create("style");
             ElementFormatter.setFormat(fragment, style);
 
             themeManager.makeElementUseNamedStyle(fragment, styleName,
                     currentThemeName);
-            
+
             String themeName = currentThemeName.split("/")[0];
             themeManager.fillScratchPage(themeName, fragment);
 

@@ -30,7 +30,7 @@ import org.nuxeo.theme.themes.ThemeIOException;
 public class Utils {
 
     private static final Log log = LogFactory.getLog(Utils.class);
-    
+
     private static final String STYLE_CATEGORIES_RESOURCE = "/nxthemes/editor/styles/categories.properties";
 
     private static final Properties cssStyleCategories = new OrderedProperties();
@@ -38,7 +38,7 @@ public class Utils {
     static {
         org.nuxeo.theme.Utils.loadProperties(cssStyleCategories, STYLE_CATEGORIES_RESOURCE);
     }
-    
+
     private Utils() {
         // This class is not supposed to be instantiated.
     }
@@ -77,5 +77,5 @@ public class Utils {
         return cssStyleCategories;
     }
 
-    
+
 }

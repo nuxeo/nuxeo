@@ -29,11 +29,11 @@ public class WebEngineHomePage extends WebPage {
     public LoginPage getLoginPage() {
         return getPage(LoginPage.class);
     }
-    
+
     protected WebElement getModuleLink(String name) {
         return findElement(By.partialLinkText(name));
     }
-    
+
     public boolean hasModule(String name) {
         return hasElement(By.partialLinkText(name));
     }

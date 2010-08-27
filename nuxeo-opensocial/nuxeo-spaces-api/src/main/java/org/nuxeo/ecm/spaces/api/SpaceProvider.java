@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.spaces.api;
 
 import java.util.Collection;
@@ -9,7 +26,7 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 
 public interface SpaceProvider {
 
-    public void initialize(Map<String, String> params) throws Exception;
+    void initialize(Map<String, String> params) throws Exception;
 
     Space getSpace(String spaceName, CoreSession session) throws SpaceException;
 
@@ -29,10 +46,10 @@ public interface SpaceProvider {
     long size(CoreSession session) throws SpaceException;
 
     boolean isReadOnly(CoreSession session);
-    
+
     /**
      * Gets {@link SpaceProvider}'s name.
-     * 
+     *
      * @return provider name
      * @throws SpaceException if space manager is not reachable
      */

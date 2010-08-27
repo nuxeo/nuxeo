@@ -22,9 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Interface for {@link DocumentModel} marshaler
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public interface DocumentModelMarshaler {
 

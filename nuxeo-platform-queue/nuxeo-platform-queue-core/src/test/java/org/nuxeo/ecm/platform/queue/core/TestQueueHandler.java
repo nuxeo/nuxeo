@@ -28,9 +28,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Testing the queue
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class TestQueueHandler extends SQLRepositoryTestCase {
 

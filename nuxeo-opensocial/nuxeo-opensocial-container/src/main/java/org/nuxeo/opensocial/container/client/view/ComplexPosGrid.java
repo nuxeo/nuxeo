@@ -19,7 +19,7 @@ package org.nuxeo.opensocial.container.client.view;
 
 /**
  * ComplexPosGrid
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public class ComplexPosGrid extends DefaultPosGrid implements PosGrid {

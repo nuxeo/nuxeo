@@ -27,12 +27,12 @@ public interface TaskList extends Serializable {
 
     DocumentModel getDocument();
 
-    public String getName();
+    String getName();
 
-    public String getUUID();
+    String getUUID();
 
-    public void addTask(VirtualTaskInstance task);
+    void addTask(VirtualTaskInstance task);
 
-    public List<VirtualTaskInstance> getTasks();
+    List<VirtualTaskInstance> getTasks();
 
 }

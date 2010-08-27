@@ -33,9 +33,9 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceNotFoundException;
 import org.nuxeo.ecm.spaces.core.impl.docwrapper.DocSpaceImpl;
 
 /**
- * 
+ *
  * @author 10044893
- * 
+ *
  */
 public class RootDocSpaceProvider extends AbstractSpaceProvider {
 

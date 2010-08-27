@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * Core Event listener that cleans relation on deleted documents; it should be
  * executed after PublishRelationsListener so as to be able to copy relations
  * from the deleted proxies.
- * 
+ *
  * @author mcedica
  */
 public class DeleteRelationsListener implements EventListener {

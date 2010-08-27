@@ -40,24 +40,24 @@ public class EndAction extends AbstractMailAction {
 
     @Override
     public boolean execute(ExecutionContext context) throws Exception {
-    	try {
-    		Message message = context.getMessage();
-    		// erase marker: mail has been treated
-    		// VDU it could be nice to have a field in schema 'protocol' that says
-    		// messages stay in server or not. This only work with IMAP* protocols, as POP3*
-    		// protocols does not support flags other than DELETED.
-    		//            message.setFlag(Flag.FLAGGED, false);
-    		boolean leaveOnServer = (Boolean) context.getInitialContext().get(LEAVE_ON_SERVER_KEY);
-    		String protocolType = (String) context.getInitialContext().get(PROTOCOL_TYPE_KEY);
-//    		log.debug(PROTOCOL_TYPE_KEY + ": " + protocolType);
-//    		log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
-    		if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
-    			message.setFlag(Flag.SEEN, true);
-    		} else {
-    			message.setFlag(Flag.DELETED, true);
-    		}
-    		return true;
-    	} catch (Exception e) {
+        try {
+            Message message = context.getMessage();
+            // erase marker: mail has been treated
+            // VDU it could be nice to have a field in schema 'protocol' that says
+            // messages stay in server or not. This only work with IMAP* protocols, as POP3*
+            // protocols does not support flags other than DELETED.
+            //            message.setFlag(Flag.FLAGGED, false);
+            boolean leaveOnServer = (Boolean) context.getInitialContext().get(LEAVE_ON_SERVER_KEY);
+            String protocolType = (String) context.getInitialContext().get(PROTOCOL_TYPE_KEY);
+//            log.debug(PROTOCOL_TYPE_KEY + ": " + protocolType);
+//            log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
+            if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
+                message.setFlag(Flag.SEEN, true);
+            } else {
+                message.setFlag(Flag.DELETED, true);
+            }
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }

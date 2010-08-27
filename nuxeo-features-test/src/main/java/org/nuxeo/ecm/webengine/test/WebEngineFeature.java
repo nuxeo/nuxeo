@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
     "org.nuxeo.ecm.webengine.test:authentication-config.xml",
     "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
-    "org.nuxeo.ecm.webengine.test:login-config.xml",    
+    "org.nuxeo.ecm.webengine.test:login-config.xml",
     "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml"
 })
 @Features({ JettyFeature.class, PlatformFeature.class, WebDriverFeature.class })
@@ -54,7 +54,7 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
     public void initialize(FeaturesRunner runner) throws Exception {
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
-    
+
     public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
@@ -65,7 +65,7 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
             FileUtils.copyToFile(in, dest);
         } finally {
             in.close();
-        }   
+        }
     }
 
     private static URL getResource(String resource) {

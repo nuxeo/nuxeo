@@ -38,14 +38,14 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueHandlerImpl implements QueueHandler {
     public static final Log log = LogFactory.getLog(QueueHandlerImpl.class);
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleEndOfProcessing(
      * org.nuxeo.ecm.platform.queue.api.AtomicContent)
@@ -63,7 +63,7 @@ public class QueueHandlerImpl implements QueueHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleNewContent(org.nuxeo
      * .ecm.platform.queue.api.AtomicContent)
@@ -79,7 +79,7 @@ public class QueueHandlerImpl implements QueueHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleNewContentIfUnknown
      * (org.nuxeo.ecm.platform.queue.api.AtomicContent)

@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 
 /**
  * Constants for relations management.
- * 
+ *
  * @author Anahide Tchertchian
  * @author Eugen Ionica
  */

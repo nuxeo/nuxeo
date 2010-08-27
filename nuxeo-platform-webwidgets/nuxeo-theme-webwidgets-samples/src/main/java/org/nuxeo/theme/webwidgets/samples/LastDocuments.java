@@ -41,11 +41,11 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
+ *
  * Provide JSON data for the WebWidget "Last Created Documents"
- * 
+ *
  * @author <a href="mailto:nulrich@nuxeo.com">Nicolas Ulrich</a>
- * 
+ *
  */
 @WebObject(type = "lastdocuments")
 @Produces("text/html")
@@ -62,7 +62,7 @@ public class LastDocuments extends DefaultObject {
      * Return JSon data that contains a list of document properties (url, title,
      * date of creation and author). This list is used by the WebWidget
      * "Last Created Documents"
-     * 
+     *
      * @param nb_docs number of elements to return
      * @return JSon data
      * @throws Exception

@@ -41,7 +41,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.JSONExporter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class JsonMarshalling {
 

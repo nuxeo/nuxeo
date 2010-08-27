@@ -224,7 +224,7 @@ public class SessionManager extends AbstractComponent {
         }
         setSelectedCssCategories(categories);
     }
-    
+
     public static synchronized void setSelectedCssCategories(List<String> categories) {
         getUserSession().put(SELECTED_CSS_CATEGORIES, categories);
     }

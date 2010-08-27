@@ -29,5 +29,5 @@ public class AdminModulePage extends ModulePage {
         to(config.getHome()+"/admin/repository"+path);
         return getPage(DocumentPage.class);
     }
-    
+
 }

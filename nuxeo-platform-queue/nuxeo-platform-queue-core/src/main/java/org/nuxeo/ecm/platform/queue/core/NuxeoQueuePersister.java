@@ -43,9 +43,9 @@ import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants {
 
@@ -92,7 +92,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicPersister#hasContent(org.nuxeo
      * .ecm.platform.queue.api.AtomicContent)
@@ -133,7 +133,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.AtomicPersister#listKnownItems()
      */
     public List<QueueItem> listKnownItems(String queueName) {
@@ -176,7 +176,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicPersister#saveContent(org.nuxeo
      * .ecm.platform.queue.api.AtomicContent)
@@ -251,7 +251,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueuePersister#setExecuteTime(org.nuxeo
      * .ecm.platform.queue.api.QueueContent, java.util.Date)
@@ -306,7 +306,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.AtomicPersister#updateItem(org.nuxeo
      * .ecm.platform.queue.api.AtomicItem)

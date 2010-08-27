@@ -103,9 +103,6 @@ public class SpaceContribDescriptor implements
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
       return "SpaceContribDescriptor [klass=" + klass + ", name=" + name

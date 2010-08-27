@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.opensocial.shindig.crypto;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -9,12 +26,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * configured into the opensocial implementation. This contribution is usually
  * packaged as default-opensocial-config.xml and resides in the config
  * directory.
- * 
+ *
  * The implementation of opensocial is based on shindig 1.1 and is integrated
  * inside nuxeo itself (there is no extra "shindig process").
- * 
+ *
  * @author iansmith
- * 
+ *
  */
 @XObject("opensocial")
 public class OpenSocialDescriptor {
@@ -26,7 +43,7 @@ public class OpenSocialDescriptor {
      * symmetric key is used to sign the message going from shindig to shindig
      * to verify that the message receivied by the make request servlet is not
      * "forged".
-     * 
+     *
      * This value can and, in most cases should, be left empty. When it is left
      * empty, the system will use a random set of bytes for this key.
      */
@@ -37,7 +54,7 @@ public class OpenSocialDescriptor {
      * This is the URL that shindig should tell other servers to use to call us
      * back on. If you have changed where nuxeo is mounted (not in /nuxeo) you
      * may need to set this to have your prefix.
-     * 
+     *
      * If you are running nuxeo in the default configuration, you should not
      * need to configure this.
      */
@@ -57,15 +74,15 @@ public class OpenSocialDescriptor {
      * the "consumer private key" in the language of OAuth. It must be of type
      * RSA because we currently do not have support for the HMAC style keys. The
      * generation of this private key can be done like this on unix:
-     * 
+     *
      * <PRE>
      * openssl req -newkey rsa:1024 -days 365 -nodes -x509 -keyout testkey.pem -out testkey.pem -subj '/CN=mytestkey'
      * openssl pkcs8 -in testkey.pem -out oauthkey.pem -topk8 -nocrypt -outform PEM
      * </PRE>
-     * 
+     *
      * The result is in oauth and should be pasted into the configuration file
      * as the externalPrivateKey value.
-     * 
+     *
      */
     @XNode("externalPrivateKey")
     protected String externalPrivateKey;
@@ -86,7 +103,7 @@ public class OpenSocialDescriptor {
      * paste the "certificate" portion of the testkey.pem file into this field.
      * It is not used by nuxeo in any way, but <b>will</b> be needed when you
      * configure an external provider.
-     * 
+     *
      * Note that many providers accept the certificate then run a computation to
      * extract the public key from it. This means that the value displayed when
      * you look at the provider configuration may be different than the one you
@@ -114,7 +131,7 @@ public class OpenSocialDescriptor {
 
     /**
      * For now, this is always null because it isn't used.
-     * 
+     *
      * @return
      */
     public PortalConfig[] getPortalConfig() {

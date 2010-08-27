@@ -108,7 +108,7 @@ public interface Gadget {
      */
     int getPosition() throws ClientException;
 
-    public void setPosition(int position) throws ClientException;
+    void setPosition(int position) throws ClientException;
 
     /**
      * Determines if the display state of the gadget

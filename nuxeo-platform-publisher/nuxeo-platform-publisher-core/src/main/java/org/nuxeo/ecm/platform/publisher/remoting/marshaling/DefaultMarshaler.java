@@ -28,11 +28,11 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.*;
 import java.util.*;
 
 /**
- * 
+ *
  * Default marshaler for RPC calls between 2 servers
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
         RemotePublisherMarshaler {

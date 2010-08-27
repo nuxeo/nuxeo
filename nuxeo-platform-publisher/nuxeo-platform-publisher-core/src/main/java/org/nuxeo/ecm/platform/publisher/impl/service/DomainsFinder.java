@@ -44,7 +44,7 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     }
 
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
-    	List<DocumentModel> result = new ArrayList<DocumentModel>();
+        List<DocumentModel> result = new ArrayList<DocumentModel>();
         DocumentRef rootRef = session.getRootDocument().getRef();
 
         Filter filter = new LifeCycleFilter("deleted", false);

@@ -97,7 +97,7 @@ public class UniversWebObject extends DefaultObject {
 
     /**
      * Read a space with spaces API
-     * 
+     *
      * @param spacename
      * @return
      */

@@ -59,7 +59,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * This Action Listener represents a Thread inside a forum.
- * 
+ *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
  */
 @Name("threadAction")

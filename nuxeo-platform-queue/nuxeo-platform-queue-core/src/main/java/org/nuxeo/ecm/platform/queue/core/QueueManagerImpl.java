@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueManagerImpl implements QueueManager {
 
@@ -44,7 +44,7 @@ public class QueueManagerImpl implements QueueManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManager#forgetContent(org.nuxeo
      * .ecm.platform.queue.api.QueueContent)
@@ -55,7 +55,7 @@ public class QueueManagerImpl implements QueueManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManager#knowsContent(org.nuxeo.
      * ecm.platform.queue.api.QueueContent)
@@ -66,7 +66,7 @@ public class QueueManagerImpl implements QueueManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueManager#listHandledItems()
      */
     public List<QueueItem> listHandledItems() {
@@ -79,7 +79,7 @@ public class QueueManagerImpl implements QueueManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueManager#listOrphanedItems()
      */
     public List<QueueItem> listOrphanedItems() {
@@ -95,7 +95,7 @@ public class QueueManagerImpl implements QueueManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManager#updateItem(org.nuxeo.ecm
      * .platform.queue.api.QueueContent, java.util.Map)

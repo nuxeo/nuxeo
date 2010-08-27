@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.queue.api;
  * Exception throws when the factory is trying to get queue information but
  * can't find it in its registry. Usually refering to an not well registered
  * extension point.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueNotFoundException extends QueueException {
 

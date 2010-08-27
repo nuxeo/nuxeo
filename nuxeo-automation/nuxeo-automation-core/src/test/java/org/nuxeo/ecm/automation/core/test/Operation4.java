@@ -33,10 +33,10 @@ public class Operation4 {
 
     @Param(name="message") protected String message;
     @Param(name="doc") protected DocumentModel doc;
-    
+
     @Context OperationContext ctx;
     @Context CoreSession session;
-    
+
     @OperationMethod
     public DocumentModel printInfo() throws Exception {
         Helper.updateContext(ctx, "O4:void:doc", message, doc.getTitle());

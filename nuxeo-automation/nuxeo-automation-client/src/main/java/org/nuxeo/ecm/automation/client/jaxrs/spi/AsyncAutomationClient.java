@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class AsyncAutomationClient extends AbstractAutomationClient {
 

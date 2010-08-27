@@ -22,66 +22,66 @@ import java.util.Map;
 
 /**
  * Infos about an handled content. Orphaned
- * 
+ *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
- * 
+ *
  */
 public interface QueueItem {
 
     /**
      * Gets the handled content.
-     * 
+     *
      * @return the handled content
      */
-    public QueueContent getHandledContent();
+    QueueContent getHandledContent();
 
     /**
      * Identify the server handling the content
-     * 
+     *
      * @return
      */
-    public URI getHandlingServerID();
+    URI getHandlingServerID();
 
     /**
      * Gets the status.
-     * 
+     *
      * @return the status
      */
-    public QueueItemState getStatus();
+    QueueItemState getStatus();
 
     /**
      * Checks if is orphaned.
-     * 
+     *
      * @return true, if is orphaned
      */
-    public boolean isOrphaned();
+    boolean isOrphaned();
 
     /**
      * Gets the first handling date.
-     * 
+     *
      * @return the first handling date
      */
-    public Date getFirstHandlingDate();
+    Date getFirstHandlingDate();
 
     /**
      * Gets the last handling date.
-     * 
+     *
      * @return the last handling date
      */
-    public Date getLastHandlingDate();
+    Date getLastHandlingDate();
 
     /**
      * Gets the handling count.
-     * 
+     *
      * @return the handling count
      */
-    public int getHandlingCount();
+    int getHandlingCount();
 
     /**
      * Gets the additionalnfos.
-     * 
+     *
      * @return the additionalnfos
      */
-    public Map<String, Serializable> getAdditionalnfos();
+    Map<String, Serializable> getAdditionalnfos();
 
 }

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueFactoryImpl implements QueueFactory {
 
@@ -37,7 +37,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueFactory#createQueue(java.net.URI,
      * org.nuxeo.ecm.platform.queue.api.AtomicPersister,
@@ -50,7 +50,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueFactory#getPersister(org.nuxeo.
      * ecm.platform.queue.api.AtomicContent)
@@ -62,7 +62,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueFactory#getExecutor(org.nuxeo.ecm
      * .platform.queue.api.AtomicContent)
@@ -74,7 +74,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueFactory#getExecutor(java.lang.String
      * )
@@ -92,7 +92,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueFactory#getPersister(java.lang.
      * String)
@@ -109,7 +109,7 @@ public class QueueFactoryImpl implements QueueFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.nuxeo.ecm.platform.queue.api.QueueFactory#getRegisteredQueues()
      */
     public List<String> getRegisteredQueues() {

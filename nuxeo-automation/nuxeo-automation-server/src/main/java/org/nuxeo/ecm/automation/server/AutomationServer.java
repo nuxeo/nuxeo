@@ -23,14 +23,14 @@ import javax.servlet.http.HttpServletRequest;
  * operation is allowed to be invoked in a REST call.
  * <p>
  * The binding registry is synchronized.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface AutomationServer {
 
     /**
      * Get a binding given an operation.
-     * 
+     *
      * @param name the operation name.
      * @return
      */
@@ -38,7 +38,7 @@ public interface AutomationServer {
 
     /**
      * Get a binding given a chain name
-     * 
+     *
      * @param name
      * @return
      */
@@ -46,21 +46,21 @@ public interface AutomationServer {
 
     /**
      * Get an array of registered bindings.
-     * 
+     *
      * @return
      */
     RestBinding[] getBindings();
 
     /**
      * Register a new operation binding
-     * 
+     *
      * @param binding
      */
     void addBinding(RestBinding binding);
 
     /**
      * Remove a binding for the given operation name
-     * 
+     *
      * @param binding
      * @return the removed binding if any otherwise null
      */
@@ -68,7 +68,7 @@ public interface AutomationServer {
 
     /**
      * Check if the given operation name is allowed in a REST call.
-     * 
+     *
      * @param name
      * @return
      */

@@ -21,7 +21,7 @@ import com.google.gwt.i18n.client.Messages;
 
 /**
  * Internationalization of gwt container ContainerMessages.properties
- * 
+ *
  * @author Guillaume Cusnieux
  */
 public interface ContainerMessages extends Messages {

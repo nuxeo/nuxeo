@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.syndication.workflow;
 
 /**
  * Dashboard item.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Deprecated
@@ -30,8 +30,8 @@ public interface DashBoardItem extends
     /**
      * REQUIRED FOR OPEN SOCIAL DASHBOARD
      */
-    public String getDocumentLink();
+    String getDocumentLink();
 
-    public void prependToComment(String setOfNames);
+    void prependToComment(String setOfNames);
 
 }

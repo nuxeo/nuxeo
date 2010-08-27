@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Create atomic objects.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  */
@@ -28,7 +28,7 @@ public interface QueueFactory {
     /**
      * Create an register a new queue given a content class, an atomic processor
      * and a dedicated content persister.
-     * 
+     *
      * @param contentClass the content class
      * @param persister the persister
      */
@@ -37,7 +37,7 @@ public interface QueueFactory {
 
     /**
      * Return a persister for a queue
-     * 
+     *
      * @param content
      * @return
      * @throws QueueException
@@ -47,7 +47,7 @@ public interface QueueFactory {
 
     /**
      * Return a persister for a queue
-     * 
+     *
      * @param queueName
      * @return
      */
@@ -55,7 +55,7 @@ public interface QueueFactory {
 
     /**
      * Get an executor for a queue
-     * 
+     *
      * @param content
      * @return
      * @throws QueueException
@@ -65,7 +65,7 @@ public interface QueueFactory {
 
     /**
      * Get an executor for a queue
-     * 
+     *
      * @param queueName
      * @return
      * @throws QueueException
@@ -74,7 +74,7 @@ public interface QueueFactory {
 
     /**
      * Return the list of registered queues
-     * 
+     *
      * @return
      */
     List<String> getRegisteredQueues();

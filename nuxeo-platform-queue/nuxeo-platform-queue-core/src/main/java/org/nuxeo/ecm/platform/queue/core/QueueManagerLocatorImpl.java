@@ -28,15 +28,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation of the queue manager locator.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class QueueManagerLocatorImpl implements QueueManagerLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#locateQueue(org.
      * nuxeo.ecm.platform.queue.api.QueueContent)
@@ -48,7 +48,7 @@ public class QueueManagerLocatorImpl implements QueueManagerLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#locateQueue(java
      * .lang.String)
@@ -62,7 +62,7 @@ public class QueueManagerLocatorImpl implements QueueManagerLocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#getRegisteredQueues
      * ()
