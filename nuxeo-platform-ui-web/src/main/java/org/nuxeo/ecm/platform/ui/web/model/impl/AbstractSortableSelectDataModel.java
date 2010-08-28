@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.ui.web.model.SortableDataModel;
  * Abstract method design pattern.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 public abstract class AbstractSortableSelectDataModel extends
         SelectDataModelImpl implements SortableDataModel {

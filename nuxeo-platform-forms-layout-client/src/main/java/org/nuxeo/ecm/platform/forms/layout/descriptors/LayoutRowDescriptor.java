@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
  * Layout row descriptor.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("row")
 public class LayoutRowDescriptor implements LayoutRowDefinition {

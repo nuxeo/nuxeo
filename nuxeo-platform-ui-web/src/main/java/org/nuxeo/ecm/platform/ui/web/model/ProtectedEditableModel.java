@@ -27,7 +27,6 @@ import javax.faces.model.DataModel;
  * Used to expose only some methods of {@link EditableModel} to user interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface ProtectedEditableModel {
 

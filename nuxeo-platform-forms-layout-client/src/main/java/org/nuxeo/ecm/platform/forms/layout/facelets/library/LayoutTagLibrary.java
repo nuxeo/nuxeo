@@ -74,10 +74,10 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
      * name, separated by a space.
      */
     public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         if (defs != null) {
             for (FieldDefinition def : defs) {
-                buff.append(def.getPropertyName() + " ");
+                buff.append(def.getPropertyName()).append(" ");
             }
         }
         return buff.toString().trim();

@@ -32,7 +32,6 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  * {@link MetaActionSourceRule} set.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MetaActionSourceTagHandler extends HtmlComponentHandler {
 

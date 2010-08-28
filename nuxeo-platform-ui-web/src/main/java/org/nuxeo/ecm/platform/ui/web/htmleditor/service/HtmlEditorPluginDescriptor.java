@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * TinyMCE plugin descriptor.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 @XObject(value = "htmlEditorPlugin")
 public class HtmlEditorPluginDescriptor {

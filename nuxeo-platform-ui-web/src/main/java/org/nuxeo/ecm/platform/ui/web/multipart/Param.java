@@ -27,9 +27,10 @@ import java.io.IOException;
 import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
 
 abstract class Param implements BytesHandler {
+
     private final String name;
 
-    public Param(String name) {
+    Param(String name) {
         this.name = name;
     }
 

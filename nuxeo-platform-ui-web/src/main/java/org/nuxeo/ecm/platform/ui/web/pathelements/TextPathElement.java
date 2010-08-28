@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.pathelements;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class TextPathElement implements PathElement {
 

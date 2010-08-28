@@ -38,8 +38,7 @@ public final class BaseURL {
         if (facesContext == null) {
             return null;
         }
-        ServletRequest request = (ServletRequest) facesContext.getExternalContext().getRequest();
-        return request;
+        return (ServletRequest) facesContext.getExternalContext().getRequest();
     }
 
     public static String getServerURL() {
@@ -79,7 +78,7 @@ public final class BaseURL {
             localURL = serverUrl + getWebAppName() + '/';
         }
         if (localURL == null) {
-            log.error("Could not retrieve loacl url correctly");
+            log.error("Could not retrieve local url correctly");
         }
         return localURL;
     }

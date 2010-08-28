@@ -39,7 +39,6 @@ import com.sun.facelets.tag.TagConfig;
  * creation of layouts and widgets instances.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface WebLayoutManager extends LayoutManager {
 

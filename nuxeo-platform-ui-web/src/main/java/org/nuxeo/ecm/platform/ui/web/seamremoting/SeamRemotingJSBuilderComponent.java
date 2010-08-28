@@ -54,14 +54,14 @@ public class SeamRemotingJSBuilderComponent extends DefaultComponent implements 
     @Factory(value="SeamRemotingBeanNames", scope=ScopeType.APPLICATION)
     public String getSeamRemotingJavaScriptURLParameters() {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int idx = 0;
         for (String beanName : beanNames) {
             sb.append(beanName);
             idx++;
             if (idx < beanNames.size()) {
-                sb.append("&");
+                sb.append('&');
             }
         }
         return sb.toString();

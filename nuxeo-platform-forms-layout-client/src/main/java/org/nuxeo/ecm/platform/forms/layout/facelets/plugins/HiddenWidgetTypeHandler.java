@@ -38,7 +38,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Hidden widget
  *
  * @author <a href="mailto:cpriceputu@nuxeo.com">Cristian Priceputu</a>
- *
  */
 public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

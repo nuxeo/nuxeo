@@ -44,7 +44,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author arussel
- *
  */
 public class ErrorPageForwarder {
 
@@ -77,8 +76,8 @@ public class ErrorPageForwarder {
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
-                Manager.class)
+        Manager manager = Contexts.isEventContextActive()
+                ? (Manager) Contexts.getEventContext().get(Manager.class)
                 : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
         String conversationId = manager == null ? null
                 : manager.getCurrentConversationId();
@@ -93,7 +92,7 @@ public class ErrorPageForwarder {
         }
         // we get the message from the seam attribute as the EL won't work in
         // xhtml
-        String user_message = request.getAttribute(SEAM_MESSAGES) == null ? "An unexpected error occured."
+        String user_message = request.getAttribute(SEAM_MESSAGES) == null ? "An unexpected error occurred."
                 : (String) ((Map) request.getAttribute(SEAM_MESSAGES)).get(userMessage);
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
         request.setAttribute("exception_message", exceptionMessage);

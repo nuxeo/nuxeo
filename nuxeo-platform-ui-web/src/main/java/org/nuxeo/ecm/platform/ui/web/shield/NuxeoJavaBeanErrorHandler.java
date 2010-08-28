@@ -32,6 +32,7 @@ import javax.interceptor.Interceptors;
  * @author arussel
  * @deprecated No need anymore, error is processed in NuxeoExceptionFilter
  */
+// TODO: remove (not used)
 @Target(TYPE)
 @Retention(RUNTIME)
 @Interceptors(NuxeoErrorInterceptor.class)

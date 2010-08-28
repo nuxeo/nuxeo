@@ -76,11 +76,10 @@ public interface NavigationContext {
     DocumentModel getCurrentDomain();
 
     /**
-     * Find the path to current domain.
+     * Finds the path to current domain.
      * <p>
      * This method tries hard to always returns an answer. If no current domain
      * has been selected, then it will choose one.
-     * </p>
      *
      * @return the path
      */
@@ -90,16 +89,12 @@ public interface NavigationContext {
 
     /**
      * Current Document other than Domain or Workspace.
-     *
-     * @return the current document.
      */
     DocumentModel getCurrentDocument();
 
     /**
      * Returns the currentSuperSpace (Section, Workspace...). Uses SuperSpace
      * facet for that.
-     *
-     * @return
      */
     DocumentModel getCurrentSuperSpace() throws ClientException;
 
@@ -108,8 +103,6 @@ public interface NavigationContext {
     /**
      * This is used for documents about to be created, which are not yet
      * persisted thus not all their fields might be valid (like its reference).
-     *
-     * @return
      */
     DocumentModel getChangeableDocument();
 
@@ -117,8 +110,6 @@ public interface NavigationContext {
 
     /**
      * Saves the current copy of the document to server.
-     *
-     * @throws ClientException
      */
     void saveCurrentDocument() throws ClientException;
 
@@ -134,20 +125,14 @@ public interface NavigationContext {
     /**
      * @return list of children for the current document composing the current
      *         page
-     * @throws ClientException
      */
     DocumentModelList getCurrentDocumentChildrenPage() throws ClientException;
 
-    /**
-     * @throws ClientException
-     */
     List<PathElement> getCurrentPathList() throws ClientException;
 
     /**
      * Returns a list of the DocumentsModels (to build the BreadCrumb for
      * example).
-     *
-     * @return DocumentModelList
      */
     DocumentModelList getCurrentPath() throws ClientException;
 
@@ -168,7 +153,6 @@ public interface NavigationContext {
      * other common structures (breadcrumbs, etc).
      *
      * @param doc DocumentModel that will be set as current document
-     * @throws ClientException
      */
     void updateDocumentContext(DocumentModel doc) throws ClientException;
 
@@ -181,10 +165,7 @@ public interface NavigationContext {
      * Performs context updates and returns the view associated with the
      * document and action passed.
      *
-     * @param doc
-     * @param action
      * @return document view associated with the result
-     * @throws ClientException
      */
     String getActionResult(DocumentModel doc, UserAction action)
             throws ClientException;
@@ -192,8 +173,6 @@ public interface NavigationContext {
     /**
      * go to the root server, the root document or to the dashboard if the
      * latest document are not accessible.
-     *
-     * @return
      */
     String goHome();
 
@@ -206,19 +185,11 @@ public interface NavigationContext {
 
     /**
      * Updates the context and returns the view for the given document ref.
-     *
-     * @param docRef
-     * @return
-     * @throws ClientException
      */
     String navigateToRef(DocumentRef docRef) throws ClientException;
 
     /**
      * Updates the context and returns the view for the given document.
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
      */
     String navigateToDocument(DocumentModel doc) throws ClientException;
 
@@ -252,11 +223,6 @@ public interface NavigationContext {
     /**
      * Initializes the context for the given refs and returns the default view
      * for the doc.
-     *
-     * @param serverLocation
-     * @param docRef
-     * @return
-     * @throws ClientException
      */
     String navigateTo(RepositoryLocation serverLocation, DocumentRef docRef)
             throws ClientException;
@@ -264,10 +230,6 @@ public interface NavigationContext {
     /**
      * Initializes the context for the given refs and returns the default view
      * for the doc.
-     *
-     * @param documentUrl
-     * @return
-     * @throws ClientException
      */
     String navigateToURL(String documentUrl) throws ClientException;
 
@@ -276,9 +238,6 @@ public interface NavigationContext {
      * for the doc.
      * <p>
      * Takes parameter String docRef from the Request.
-     *
-     * @return
-     * @throws ClientException
      */
     String navigateToURL() throws ClientException;
 
@@ -291,7 +250,6 @@ public interface NavigationContext {
      * the CoreSession (aka the 'documentManager' Seam component).
      *
      * @param serverLocation new server location to connect to
-     * @throws ClientException
      */
     void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException;
@@ -299,94 +257,64 @@ public interface NavigationContext {
     /**
      * Returns the current documentManager if any or create a new session to
      * the currently selected repository location.
-     *
-     * @throws ClientException
      */
     CoreSession getOrCreateDocumentManager() throws ClientException;
 
-    /**
-     * @param docModel
-     * @param versionModel
-     * @return
-     */
     String navigateToDocument(DocumentModel docModel, VersionModel versionModel)
             throws ClientException;
 
     /**
      * Gets the currentDocument and puts it in Page context.
-     *
-     * @return
      */
     DocumentModel factoryCurrentDocument();
 
     /**
      * Gets the currentDomain and puts it in Page context.
-     *
-     * @return
      */
     DocumentModel factoryCurrentDomain();
 
     /**
      * Gets the currentWorkspace and puts it in Page context.
-     *
-     * @return
      */
     DocumentModel factoryCurrentWorkspace();
 
     /**
      * Gets the currentSuperSpace and puts it in Page context.
-     *
-     * @return
      */
     DocumentModel factoryCurrentSuperSpace() throws ClientException;
 
     /**
      * Gets the currentContentRootWorkspace and puts it in Page context.
-     *
-     * @return
      */
     DocumentModel factoryCurrentContentRoot();
 
     /**
      * Gets the current ServerLocation and puts it in Page Context.
-     *
-     * @return
      */
     RepositoryLocation factoryCurrentServerLocation();
 
     /**
      * Gets children of currentDocuments and put it in Page context.
-     *
-     * @return
-     * @throws ClientException
      */
     DocumentModelList factoryCurrentDocumentChildren() throws ClientException;
 
     /**
      * Gets current document for edition.
-     *
-     * @return
      */
     DocumentModel factoryChangeableDocument();
 
     /**
      * Gets the current Content Root (Workspaces, Sections, Templates...).
-     *
-     * @return
      */
     DocumentModel getCurrentContentRoot();
 
     /**
      * Gets the current Workspace.
-     *
-     * @return
      */
     DocumentModel getCurrentWorkspace();
 
     /**
      * Sets the current ContentRoot.
-     *
-     * @param currentContentRoot
      */
     void setCurrentContentRoot(DocumentModel currentContentRoot);
 
@@ -397,8 +325,6 @@ public interface NavigationContext {
 
     /**
      * Will trigger reloading of current document data from the server.
-     *
-     * @throws ClientException
      */
     void invalidateCurrentDocument() throws ClientException;
 

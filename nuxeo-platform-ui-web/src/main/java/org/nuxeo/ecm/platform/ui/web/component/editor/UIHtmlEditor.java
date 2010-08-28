@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
  * Html editor component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class UIHtmlEditor extends UIInput {
 
@@ -55,7 +54,7 @@ public class UIHtmlEditor extends UIInput {
 
     private String editorSelector;
 
-    private Boolean disableHtmlInit=false;
+    private Boolean disableHtmlInit = false;
 
     public Boolean getDisableHtmlInit() {
         return disableHtmlInit;

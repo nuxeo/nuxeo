@@ -34,7 +34,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Service used to register plugins for TinyMCE.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
         HtmlEditorPluginService {

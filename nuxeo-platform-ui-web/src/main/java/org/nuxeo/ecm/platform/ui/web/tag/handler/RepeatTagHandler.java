@@ -46,20 +46,15 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * Repeat handler.
- *
  * <p>
  * This handler is different from the standard one because it performs a real
  * iteration on the tree structure, instead of keeping the same components and
  * saving their state in each of the iteration.
- * </p>
- *
  * <p>
  * A real iteration is the only viable solution when using variables that will
  * have an impact on the tree structure, like a layout name and mode.
- * </p>
  *
  * @author Anahide Tchertchian
- *
  */
 public class RepeatTagHandler extends TagHandler {
 

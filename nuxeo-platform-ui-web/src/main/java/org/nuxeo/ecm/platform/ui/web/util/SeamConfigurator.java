@@ -36,10 +36,9 @@ import org.jboss.seam.core.Init;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Update Seam configuration as needed when app starts
+ * Component that updates the Seam configuration as needed when app starts
  *
  * @author Thierry Delprat
- *
  */
 @Name("NuxeoSeamConfigurator")
 @Scope(APPLICATION)

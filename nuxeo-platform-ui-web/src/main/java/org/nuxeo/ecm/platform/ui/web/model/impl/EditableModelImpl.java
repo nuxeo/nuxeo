@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.ui.web.util.DeepCopy;
  * Only accepts lists or arrays of Serializable objects for now.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @SuppressWarnings("unchecked")
 public class EditableModelImpl extends DataModel implements EditableModel,

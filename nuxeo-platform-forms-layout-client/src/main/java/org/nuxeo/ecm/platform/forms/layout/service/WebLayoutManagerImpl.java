@@ -154,7 +154,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             widgetTypeClass = WebLayoutManagerImpl.class.getClassLoader().loadClass(
                     className);
         } catch (Exception e) {
-            log.error("Caught error when instanciating widget type handler", e);
+            log.error("Caught error when instantiating widget type handler", e);
             return;
         }
         WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,

@@ -21,7 +21,6 @@ import java.io.Serializable;
  * Abstract method design pattern.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 public interface SortableDataModel extends Serializable {
 

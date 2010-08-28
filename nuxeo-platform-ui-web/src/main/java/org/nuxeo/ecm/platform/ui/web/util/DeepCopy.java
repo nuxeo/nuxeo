@@ -59,10 +59,8 @@ public final class DeepCopy {
                     new ByteArrayInputStream(bos.toByteArray()));
             copy = in.readObject();
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         } catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
             throw new RuntimeException(cnfe);
         }
         return copy;

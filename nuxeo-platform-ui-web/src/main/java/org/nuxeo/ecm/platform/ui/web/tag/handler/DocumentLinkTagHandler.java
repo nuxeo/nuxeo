@@ -43,7 +43,6 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  * Useful when redirecting to a document using a post.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DocumentLinkTagHandler extends HtmlComponentHandler {
 
@@ -73,7 +72,6 @@ public class DocumentLinkTagHandler extends HtmlComponentHandler {
 
     /**
      * Sets action after component has been created.
-     *
      */
     @Override
     protected void onComponentCreated(FaceletContext ctx, UIComponent c,

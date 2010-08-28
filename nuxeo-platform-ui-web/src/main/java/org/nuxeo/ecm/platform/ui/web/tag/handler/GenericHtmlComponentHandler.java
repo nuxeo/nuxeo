@@ -29,15 +29,14 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Generic HTML component handler.
- *
+ * <p>
  * Handler evaluating the "value" attribute as a regular value expression, or
  * invoking a method expression.
- *
+ * <p>
  * The method can have parameters and the expression must use parentheses even
  * if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class GenericHtmlComponentHandler extends HtmlComponentHandler {
 

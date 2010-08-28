@@ -38,7 +38,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Secret widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class SecretWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

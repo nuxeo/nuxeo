@@ -51,7 +51,6 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  * Helps generating custom tag handlers and custom tag attributes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public final class FaceletHandlerHelper {
 
@@ -91,8 +90,7 @@ public final class FaceletHandlerHelper {
      * Returns a id unique within the facelet context using given id as base.
      */
     public String generateUniqueId(String base) {
-        String id = context.generateUniqueId(base);
-        return id;
+        return context.generateUniqueId(base);
     }
 
     public String generateValidIdString(String base) {

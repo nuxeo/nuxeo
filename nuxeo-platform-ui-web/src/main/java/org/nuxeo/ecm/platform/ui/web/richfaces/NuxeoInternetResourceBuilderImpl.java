@@ -85,10 +85,9 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
             String scriptNameByKey = new Path(key).lastSegment();
             String scriptNameByPath = new Path(jsRegistredResources.get(key)).lastSegment();
 
-            if ((!blackList.contains(scriptNameByKey)) &&  (!blackList.contains(scriptNameByPath))) {
+            if (!blackList.contains(scriptNameByKey) && !blackList.contains(scriptNameByPath)) {
                 scripts.add(key);
-            }
-            else {
+            } else {
                 log.debug("bypass script with key " + key);
             }
         }
@@ -131,14 +130,12 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
         InternetResource res = null;
 
         if (JS_FRAMEWORK_ALL_KEY.equals(key)) {
-            res= super.getResource(key);
+            res = super.getResource(key);
             res = getA4JPack(res, key);
-        }
-        else if (JS_UI_ALL_KEY.equals(key)) {
-            res= super.getResource(key);
+        } else if (JS_UI_ALL_KEY.equals(key)) {
+            res = super.getResource(key);
             res = getUIPack(res, key);
-        }
-        else {
+        } else {
             res = super.getResource(key);
         }
         return res;

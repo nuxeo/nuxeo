@@ -60,7 +60,6 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
         } else {
             return Boolean.valueOf(newValue);
         }
-
     }
 
 }

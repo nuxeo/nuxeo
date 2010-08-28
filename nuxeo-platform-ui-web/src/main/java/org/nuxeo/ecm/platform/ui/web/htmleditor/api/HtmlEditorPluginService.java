@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public interface HtmlEditorPluginService {
 

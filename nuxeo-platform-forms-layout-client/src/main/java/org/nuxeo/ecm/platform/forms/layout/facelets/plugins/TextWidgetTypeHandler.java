@@ -39,7 +39,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Text widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

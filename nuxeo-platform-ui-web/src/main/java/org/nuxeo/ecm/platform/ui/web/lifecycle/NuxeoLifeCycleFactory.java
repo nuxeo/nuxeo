@@ -29,16 +29,13 @@ import com.sun.faces.lifecycle.LifecycleFactoryImpl;
 /**
  * This life cycle factory is used to override the default behaviour when
  * registering phase listeners.
- *
  * <p>
  * When using jsf 1.2.0_09, all configs from both nuxeo.ear and
  * server/default/tmp are registered twice. Due to changes in configuration,
  * some phase listeners are registered twice too, for instance
  * SeamPhaseListener.
- * </p>
  *
  * @author Anahide Tchertchian
- *
  */
 public class NuxeoLifeCycleFactory extends LifecycleFactoryImpl {
 

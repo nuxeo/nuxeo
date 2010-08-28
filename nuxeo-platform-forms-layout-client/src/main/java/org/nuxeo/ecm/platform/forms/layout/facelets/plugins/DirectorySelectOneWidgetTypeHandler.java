@@ -40,7 +40,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Select one directory widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DirectorySelectOneWidgetTypeHandler extends
         AbstractWidgetTypeHandler {

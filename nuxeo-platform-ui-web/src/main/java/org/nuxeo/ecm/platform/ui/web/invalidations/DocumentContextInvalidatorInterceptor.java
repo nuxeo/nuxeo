@@ -34,12 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
- *
  * Interceptor used for automatic injection/invalidation tied to
  * currentDocumentModel
  *
  * @author tiry
- *
  */
 @Interceptor(stateless = true, within = BijectionInterceptor.class)
 public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
@@ -65,7 +63,6 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
                 }
             }
         }
-        return;
     }
 
     private void doInvalidationCall(Object target, Method meth)

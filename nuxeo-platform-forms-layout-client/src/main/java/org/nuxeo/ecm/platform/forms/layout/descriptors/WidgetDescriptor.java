@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  * Widget definition descriptor.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("widget")
 public class WidgetDescriptor implements WidgetDefinition {

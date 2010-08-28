@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.cache;
 
 /**
- *
  * Helper class to check if Seam s:cache tag can be used
  * (s:cache does not only require jboss-cache, but also some internal classes
  *
@@ -28,7 +27,7 @@ package org.nuxeo.ecm.platform.ui.web.cache;
  */
 public class SeamCacheHelper {
 
-    protected static Boolean canUseSeamCache = null;
+    protected static Boolean canUseSeamCache;
 
     private SeamCacheHelper() {
     }

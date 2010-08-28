@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class VersionDocumentPathElement extends DocumentPathElement {
 

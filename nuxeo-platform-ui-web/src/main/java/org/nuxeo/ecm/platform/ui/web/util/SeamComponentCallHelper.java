@@ -31,23 +31,28 @@ import org.jboss.seam.util.EJB;
 /**
  *
  * This class provides helper methods for accessing a Seam Component
- *
- * Why this class:
+ * <p>
+ * Why this class?
+ * <p>
  * At startup time, Seam generates CGLib Wrappers around each Seam component.
  * This wrapper holds all interceptors that are used for bijection.
  * Because of that, accessing a Seam component by its reference will lead
  * to call a disinjected instance (all @In member variables are null).
- *
+ * <p>
  * Seam components are usually accessed via EL or via injected references,
  * in this cases, Seam takes care of everything and you get a functional instance.
  * But in some cases, you need to access a Seam component:
- *  - from an object that has no direct access to Seam (ie: can't use injection),
- *  - from an object that stored a call-back reference (storing the 'this' of the Seam component).
+ * <ul>
+ * <li>from an object that has no direct access to Seam (ie: can't use injection),
+ * <li>from an object that stored a call-back reference (storing the 'this' of the Seam component).
+ * </ul>
  * In these cases, this helper class is useful.
  *
  * This class provides helper functions for :
- *  - getting a Wrapped Seam component via its name or its reference,
- *  - executing a method via a method name on a Seam component.
+ * <ul>
+ * <li>getting a Wrapped Seam component via its name or its reference,
+ * <li>executing a method via a method name on a Seam component.
+ * </ul>
  *
  * @author tiry
  */
@@ -232,23 +237,23 @@ public final class SeamComponentCallHelper {
         Map<Method, Integer> candidates = new HashMap<Method, Integer>();
 
         // for (Method m : cls.getDeclaredMethods()) {
-        for (Method m : cls.getMethods()) {
+        for (Method method : cls.getMethods()) {
 
-            if (name.equals(m.getName())
-                    && m.getParameterTypes().length == params.length) {
+            if (name.equals(method.getName())
+                    && method.getParameterTypes().length == params.length) {
                 int score = 0;
                 // XXX should do better check !!!
-                candidates.put(m, score);
+                candidates.put(method, score);
             }
         }
 
         Method bestMethod = null;
         int bestScore = 0;
 
-        for (Method m : candidates.keySet()) {
-            int thisScore = candidates.get(m);
+        for (Method method : candidates.keySet()) {
+            int thisScore = candidates.get(method);
             if (bestMethod == null || thisScore > bestScore) {
-                bestMethod = m;
+                bestMethod = method;
                 bestScore = thisScore;
             }
         }

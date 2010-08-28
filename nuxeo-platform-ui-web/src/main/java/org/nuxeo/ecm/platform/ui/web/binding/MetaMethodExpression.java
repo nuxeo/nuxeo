@@ -40,23 +40,22 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 /**
  * Meta method expression used to invoke the EL expression that is already the
  * result of a method expression.
- * 
+ * <p>
  * For instance it is useful to use this expression to provide action links
  * defined in NXActions extensions with links like
  * #{documentAction.createDocument('Domain')}.
- * 
+ * <p>
  * There is no more than one level of abstraction:
  * <ul>
  * <li>the expression method value can be a standard method expression (with
- * parameters or not) ;
+ * parameters or not);
  * <li>the expression method value can result in another expression method value
  * after being invoke, in which case it is reinvoked again using the same
- * context ;
+ * context;
  * <li>no further method invoking will be performed.
  * </ul>
  * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
  */
 public class MetaMethodExpression extends MethodExpression implements
         Serializable {

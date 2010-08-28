@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Layout column descriptor, acts as an alias of {@link LayoutRowDescriptor}.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("column")
 public class LayoutColumnDescriptor extends LayoutRowDescriptor {

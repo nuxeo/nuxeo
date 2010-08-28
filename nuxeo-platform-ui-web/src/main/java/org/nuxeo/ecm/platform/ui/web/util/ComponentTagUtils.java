@@ -42,15 +42,14 @@ public final class ComponentTagUtils {
      * Returns true if the specified value conforms to the syntax requirements
      * of a value binding expression.
      *
-     * @param value The value to evaluate (not null)
+     * @param value the value to evaluate (not null)
      */
     public static boolean isValueReference(String value) {
         if (value == null) {
             return false;
         }
         return value.contains("#{") && value.indexOf("#{") < value.indexOf('}')
-                || value.contains("${")
-                && value.indexOf("${") < value.indexOf('}');
+                || value.contains("${") && value.indexOf("${") < value.indexOf('}');
     }
 
     /**
@@ -60,7 +59,7 @@ public final class ComponentTagUtils {
      * The method can have parameters and the expression must use parentheses
      * even if no parameters are needed.
      *
-     * @param value The value to evaluate (not null)
+     * @param value the value to evaluate (not null)
      */
     public static boolean isMethodReference(String value) {
         boolean isValue = isValueReference(value);

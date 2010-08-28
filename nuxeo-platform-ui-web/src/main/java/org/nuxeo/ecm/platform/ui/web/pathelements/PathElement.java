@@ -23,8 +23,8 @@ import java.io.Serializable;
 
 /**
  * This interface represents an element in the breadcrumb element list.
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
+ * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public interface PathElement extends Serializable {
 

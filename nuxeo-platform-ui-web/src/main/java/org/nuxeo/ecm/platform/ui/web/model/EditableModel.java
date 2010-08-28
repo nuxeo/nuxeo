@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.ListDiff;
  * Follows data model interface and adds method to deal with edit/add/modify.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface EditableModel {
 

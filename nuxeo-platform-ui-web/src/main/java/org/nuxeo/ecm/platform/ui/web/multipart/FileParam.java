@@ -48,7 +48,7 @@ class FileParam extends Param {
 	private FileOutputStream fOut = null;
 	private File tempFile = null;
 
-	public FileParam(String name) {
+	FileParam(String name) {
 		super(name);
 	}
 

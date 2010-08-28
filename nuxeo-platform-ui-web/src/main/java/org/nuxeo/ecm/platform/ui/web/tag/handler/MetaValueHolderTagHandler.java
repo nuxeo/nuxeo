@@ -32,7 +32,6 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  * {@link MetaValueHolderRule} set.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MetaValueHolderTagHandler extends HtmlComponentHandler {
 

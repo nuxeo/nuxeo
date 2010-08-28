@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.ui.web.component.file;
  * Available choice when uploading a file.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public enum InputFileChoice {
 

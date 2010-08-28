@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ArchivedVersionsPathElement implements PathElement {
 

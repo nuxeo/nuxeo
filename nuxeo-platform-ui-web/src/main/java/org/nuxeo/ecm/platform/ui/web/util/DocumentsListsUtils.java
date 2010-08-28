@@ -28,11 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- *
  * Simple utility class to provide DocumentList related functions.
  *
  * @author tiry
- *
  */
 public final class DocumentsListsUtils {
 
@@ -43,9 +41,6 @@ public final class DocumentsListsUtils {
 
     /**
      * Returns list of the document types contained in the list of document.
-     *
-     * @param documentsList
-     * @return
      */
     public static List<String> getTypesInList(List<DocumentModel> documentsList) {
         List<String> res = new ArrayList<String>();
@@ -60,9 +55,6 @@ public final class DocumentsListsUtils {
 
     /**
      * Returns list of DocumentRef corresponding to the list of documents.
-     *
-     * @param documentsList
-     * @return
      */
     public static List<DocumentRef> getDocRefs(List<DocumentModel> documentsList) {
         List<DocumentRef> references = new ArrayList<DocumentRef>();
@@ -78,9 +70,6 @@ public final class DocumentsListsUtils {
      * Removes one document from a list.
      * <p>
      * Removal is based on DocumentRef.
-     *
-     * @param documentList
-     * @param documentToRemove
      *
      * @return <code>true</code> if the given list contains specified document and it has been removed
      */
@@ -111,17 +100,14 @@ public final class DocumentsListsUtils {
      * Removes some documents from a list.
      * <p>
      * Removal is based on DocumentRef.
-     *
-     * @param documentList
-     * @param documentsToRemove
      */
     public static void removeDocumentsFromList(List<DocumentModel> documentList,
             List<DocumentModel> documentsToRemove) {
-        if ((null == documentsToRemove) || documentsToRemove.isEmpty()) {
+        if (null == documentsToRemove || documentsToRemove.isEmpty()) {
             return;
         }
 
-        if ((null == documentList) || documentList.isEmpty()) {
+        if (null == documentList || documentList.isEmpty()) {
             return;
         }
 
@@ -136,9 +122,6 @@ public final class DocumentsListsUtils {
 
     /**
      * Returns the list of parents documentRef.
-     *
-     * @param documentList
-     * @return
      */
     public static List<DocumentRef> getParentRefFromDocumentList(List<DocumentModel> documentList) {
         List<DocumentRef> parentRefs = new ArrayList<DocumentRef>();

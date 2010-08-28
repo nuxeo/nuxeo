@@ -40,12 +40,10 @@ public class FileUtils {
     /**
      * Creates a serializable blob from a stream, with filename and mimetype
      * detection.
-     *
      * <p>
      * Creates an in-memory blob if data is under 64K, otherwise constructs a
      * serializable FileBlob which stores data in a temporary file on the hard
      * disk.
-     * </p>
      *
      * @param file the input stream holding data
      * @param filename the file name. Will be set on the blob and will used for
@@ -94,7 +92,6 @@ public class FileUtils {
      * Returns a clean filename, stripping upload path on client side.
      * <p>
      * Fixes NXP-544
-     * </p>
      */
     public static String getCleanFileName(String filename) {
         String res = null;

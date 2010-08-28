@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.Blob;
  * Generic component helper methods.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public final class ComponentUtils {
 
@@ -59,10 +58,6 @@ public final class ComponentUtils {
 
     /**
      * Calls a component encodeBegin/encodeChildren/encodeEnd methods.
-     *
-     * @param context
-     * @param component
-     * @throws IOException
      */
     public static void encodeComponent(FacesContext context,
             UIComponent component) throws IOException {
@@ -120,10 +115,6 @@ public final class ComponentUtils {
     /**
      * Copies attributes and value expressions with given name from parent
      * component to child component.
-     *
-     * @param parent
-     * @param child
-     * @param valueNames
      */
     public static void copyValues(UIComponent parent, UIComponent child,
             String[] valueNames) {

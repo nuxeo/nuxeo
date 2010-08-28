@@ -49,7 +49,6 @@ import com.sun.facelets.tag.jsf.core.ConvertDateTimeHandler;
  * Date time widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

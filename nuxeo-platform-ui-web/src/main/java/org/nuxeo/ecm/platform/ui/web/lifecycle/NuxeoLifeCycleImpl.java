@@ -51,7 +51,7 @@ public class NuxeoLifeCycleImpl extends Lifecycle {
     /**
      * Checks for duplicate listeners using the instance class name.
      *
-     * @return tru if a listener with same class is already registered.
+     * @return true if a listener with same class is already registered.
      */
     protected boolean checkDuplicateListener(PhaseListener listener) {
         if (listener != null) {

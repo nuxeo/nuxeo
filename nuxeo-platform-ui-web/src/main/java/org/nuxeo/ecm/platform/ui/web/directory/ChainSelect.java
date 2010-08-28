@@ -50,7 +50,6 @@ import com.sun.facelets.component.UIRepeat;
  * Refactor me and it's christmas.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelect extends UIInput {
 

@@ -39,7 +39,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Textarea widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

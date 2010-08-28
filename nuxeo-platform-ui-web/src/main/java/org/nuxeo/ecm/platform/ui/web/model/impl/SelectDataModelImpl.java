@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
  * handling it would be more generic.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class SelectDataModelImpl extends DataModel implements SelectDataModel {
 

@@ -57,20 +57,20 @@ public class SetTagHandler extends MetaTagHandler {
 
     public SetTagHandler(TagConfig config) {
         super(config);
-        this.value = this.getRequiredAttribute("value");
-        this.var = this.getRequiredAttribute("var");
-        this.cache = this.getAttribute("cache");
+        value = getRequiredAttribute("value");
+        var = getRequiredAttribute("var");
+        cache = getAttribute("cache");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        String varStr = this.var.getValue(ctx);
-        Boolean cacheValue = false;
+        String varStr = var.getValue(ctx);
+        boolean cacheValue = false;
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
         }
 
-        ValueExpression ve = this.value.getValueExpression(ctx, Object.class);
+        ValueExpression ve = value.getValueExpression(ctx, Object.class);
         if (cacheValue) {
             // resolve value and put it as is in variable mapper
             Object res = ve.getValue(ctx);
