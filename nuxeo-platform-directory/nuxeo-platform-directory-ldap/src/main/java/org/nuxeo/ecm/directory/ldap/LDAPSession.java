@@ -229,13 +229,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
-    @Deprecated
-    // Remove in 5.2.
-    public DocumentModel getEntryFromSource(String id)
-            throws DirectoryException {
-        return getEntry(id, true);
-    }
-
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         try {
