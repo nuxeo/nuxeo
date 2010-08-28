@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class CommentableAdapterFactory implements DocumentAdapterFactory {
 

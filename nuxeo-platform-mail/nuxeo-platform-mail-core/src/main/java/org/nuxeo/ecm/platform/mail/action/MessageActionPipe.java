@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 
 /**
- * A list of action being executed on a message.
+ * A list of actions being executed on a message.
  *
  * @author Alexandre Russel
  */

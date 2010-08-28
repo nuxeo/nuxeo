@@ -99,7 +99,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
     protected CoreSession getCoreSession(Request req, Response res,
             String repoName) {
         try {
-            Repository repository = null;
+            Repository repository;
 
             if (repoName == null) {
                 repository = Framework.getService(RepositoryManager.class).getDefaultRepository();
@@ -192,7 +192,6 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             summary.setPages(provider.getNumberOfPages());
             summary.setPageNumber(page);
 
-
             if (lang!=null) {
                 String[] cols = columnsDefinition.split(DocumentModelListSerializer.colDefinitonDelimiter);
                 List<String> labels = new ArrayList<String>();
@@ -209,7 +208,6 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                         columnsDefinition, getHttpRequest(req));
             }
         } catch (Exception e) {
-
             handleError(res, e);
         } finally {
             try {

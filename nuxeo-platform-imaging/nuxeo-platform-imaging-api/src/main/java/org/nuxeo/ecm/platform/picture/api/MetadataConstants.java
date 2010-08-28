@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.picture.api;
 
-
 /**
  * @author Max Stepanov
  * @author Catalin Baican

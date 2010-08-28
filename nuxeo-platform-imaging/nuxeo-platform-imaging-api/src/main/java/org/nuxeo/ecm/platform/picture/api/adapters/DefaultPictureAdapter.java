@@ -51,7 +51,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     public boolean createPicture(Blob blob, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
-        this.fileContent = blob;
+        fileContent = blob;
         if (blob == null) {
             clearViews();
             return true;
@@ -94,7 +94,6 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
                         xpath + "content").getValue(Blob.class));
                 String type = blob.getBlob().getMimeType();
                 if (type != "image/png") {
-
                     Map<String, Serializable> options = new HashMap<String, Serializable>();
                     options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,
                             angle);

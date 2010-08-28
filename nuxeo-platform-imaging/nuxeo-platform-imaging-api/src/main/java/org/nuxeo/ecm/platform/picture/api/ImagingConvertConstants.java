@@ -39,4 +39,7 @@ public class ImagingConvertConstants {
     public static final String CONVERSION_FORMAT = "conversionFormat";
     public static final String JPEG_CONVERSATION_FORMAT = "jpg";
 
+    private ImagingConvertConstants() {
+    }
+
 }

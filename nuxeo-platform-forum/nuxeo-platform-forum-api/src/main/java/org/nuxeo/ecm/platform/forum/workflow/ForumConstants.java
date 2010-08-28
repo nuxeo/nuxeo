@@ -29,13 +29,16 @@ public final class ForumConstants {
      */
     @Deprecated
     public static final String FORUM_MODERATORS_LIST = "moderatorsList";
+
     public static final String PENDING_STATE = "moderation_pending";
     public static final String PUBLISHED_STATE = "moderation_published";
     public static final String TRANSITION_TO_PUBLISHED_STATE = "moderation_publish";
     public static final String TRANSITION_TO_REJECTED_STATE = "moderation_reject";
+
     public static final String PROCESS_INSTANCE_NAME = "forum_moderation";
     public static final String COMMENT_ID = "commentId";
     public static final String THREAD_REF = "threadRef";
+
     public static final String PROCESS_TRANSITION_TO_PUBLISH = "moderation_publish";
     public static final String PROCESS_TRANSITION_TO_REJECTED = "moderation_reject";
 

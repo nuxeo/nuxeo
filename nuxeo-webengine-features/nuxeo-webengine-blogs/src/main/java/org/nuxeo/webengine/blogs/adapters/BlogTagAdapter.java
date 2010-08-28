@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.webengine.sites.TagAdapter;
 
 /**
- *
  * Adapter used to display all documents for a certain tag.
  *
  * @author rux
@@ -36,18 +35,21 @@ public class BlogTagAdapter extends TagAdapter {
 
     @GET
     @Path(value = "{id}")
+    @Override
     public Object changePerspective(@PathParam("id") String tagId) {
         return super.changePerspective(tagId);
     }
 
     @POST
     @Path("addTagging")
+    @Override
     public Object addTagging() {
         return super.addTagging();
     }
 
     @GET
     @Path("removeTagging")
+    @Override
     public Object removeTagging() {
         return super.removeTagging();
     }

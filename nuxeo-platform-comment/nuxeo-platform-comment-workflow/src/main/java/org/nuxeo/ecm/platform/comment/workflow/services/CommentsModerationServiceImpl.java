@@ -192,6 +192,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         } catch (Exception e) {
             log.error("Error while sending event", e);
         }
-
     }
+
 }

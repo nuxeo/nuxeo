@@ -44,7 +44,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Log entry .
+ * Log entry.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -272,18 +272,4 @@ public class LogEntry implements Serializable {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    /**
-    @Deprecated
-    public static LogEntry createEntryFromMessage(DocumentMessage message) {
-        LogEntry entry = new LogEntry();
-        entry.setEventId(message.getEventId());
-        entry.setDocUUID(message.getId());
-        entry.setDocPath(message.getPathAsString());
-        entry.setDocType(message.getType());
-        entry.setPrincipalName(message.getPrincipalName());
-        entry.setCategory(message.getCategory());
-        entry.setDocLifeCycle(message.getDocCurrentLifeCycle());
-        return entry;
-    }
-    **/
 }

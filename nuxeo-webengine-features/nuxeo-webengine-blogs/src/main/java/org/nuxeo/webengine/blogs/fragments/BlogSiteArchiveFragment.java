@@ -34,7 +34,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to retrieving the
- * archive of a certain <b>BlogSite</b>
+ * archive of a certain <b>BlogSite</b>.
  *
  * @author rux
  */

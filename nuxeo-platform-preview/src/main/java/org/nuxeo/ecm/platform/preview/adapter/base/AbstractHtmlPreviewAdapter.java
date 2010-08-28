@@ -95,7 +95,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     }
 
     protected String getPreviewTitle() throws ClientException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(adaptedDoc.getTitle());
         sb.append(" ");

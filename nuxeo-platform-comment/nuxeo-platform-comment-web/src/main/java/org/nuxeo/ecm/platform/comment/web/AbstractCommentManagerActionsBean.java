@@ -99,7 +99,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     protected List<UIComment> flatComments;
 
     @In(create = true)
-    protected transient UserSession userSession;
+    protected UserSession userSession;
 
     @In(create = true)
     protected NavigationContext navigationContext;

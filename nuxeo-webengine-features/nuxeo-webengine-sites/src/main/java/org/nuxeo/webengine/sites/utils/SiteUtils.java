@@ -87,7 +87,7 @@ public class SiteUtils {
     }
 
     /**
-     * Gets the number of comment added on a page (published actually, if the
+     * Gets the number of comments added on a page (published actually, if the
      * moderation is on).
      */
     public static int getNumberCommentsForPage(CoreSession session,
@@ -109,9 +109,7 @@ public class SiteUtils {
     /**
      * Retrieves user details for a certain username.
      *
-     * @param username
      * @return user first name + user last name
-     * @throws Exception
      */
     public static String getUserDetails(String username) throws Exception {
         UserManager userManager = getUserManager();
@@ -274,7 +272,7 @@ public class SiteUtils {
 
     /**
      * This method is used to retrieve the <b>WebPage</b> where this
-     * <b>WebComment</b> was published
+     * <b>WebComment</b> was published.
      *
      * @param comment
      * @return the <b>WebPage</b>

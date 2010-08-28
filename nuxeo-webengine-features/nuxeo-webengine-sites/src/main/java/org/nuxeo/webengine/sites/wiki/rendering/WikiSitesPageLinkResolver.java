@@ -53,7 +53,7 @@ public class WikiSitesPageLinkResolver implements WikiFilter {
 
         WebContext ctx = WebEngine.getActiveContext();
         Resource resource = ctx.getTargetObject();
-        StringBuffer links = new StringBuffer();
+        StringBuilder links = new StringBuilder();
         StringBuffer relativePath = new StringBuffer();
 
         if (pageName.startsWith(".")) {

@@ -37,11 +37,11 @@ import org.nuxeo.runtime.api.Framework;
 import com.thoughtworks.xstream.XStream;
 
 /**
-*
-* Serializes and exposes via a web service basic info for a given user
-* using a DetachedNuxeoPrincipal
-* @author Mariana Cedica
-*/
+ * Serializes and exposes via a web service basic info for a given user
+ * using a DetachedNuxeoPrincipal.
+ *
+ * @author Mariana Cedica
+ */
 @WebObject(type = "userService")
 public class UserService extends DefaultObject {
 
@@ -54,7 +54,7 @@ public class UserService extends DefaultObject {
         try {
             userManager = Framework.getService(UserManager.class);
         } catch (Exception e) {
-            log.error("Unable to retreive the userManager", e);
+            log.error("Unable to retrieve the userManager", e);
         }
     }
 
@@ -71,4 +71,5 @@ public class UserService extends DefaultObject {
         }
         return null;
     }
+
 }

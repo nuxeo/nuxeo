@@ -35,6 +35,7 @@ public class BlogPerspectiveAdapter extends PerspectiveAdapter {
 
     @POST
     @Path(value = "{path}")
+    @Override
     public Object changePerspective(@PathParam("path") String perspective) {
         try {
             return super.changePerspective(perspective);

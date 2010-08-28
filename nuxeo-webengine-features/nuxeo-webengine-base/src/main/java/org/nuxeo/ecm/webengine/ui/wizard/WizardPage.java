@@ -49,15 +49,15 @@ public class WizardPage implements Serializable {
     protected WizardPage prev; // to implement a stack of pages
 
     public WizardPage(String id, Class<? extends Form> formType) {
-        this (id, formType, MIDDLE);
+        this(id, formType, MIDDLE);
     }
 
     public WizardPage(String id, Class<? extends Form> formType, int style) {
-        this (id, formType, NEXT_PAGE, style);
+        this(id, formType, NEXT_PAGE, style);
     }
 
     public WizardPage(String id, Class<? extends Form> formType, String nextPageId) {
-        this (id, formType, nextPageId, MIDDLE);
+        this(id, formType, nextPageId, MIDDLE);
     }
 
     public WizardPage(String id, Class<? extends Form> formType, String nextPageId, int style) {

@@ -21,7 +21,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- *
  */
 @XObject("managedEvent")
 public class ManagedEventIdDescriptor {

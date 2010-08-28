@@ -52,7 +52,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 @Stateless
 @SerializedConcurrentAccess
@@ -236,16 +235,16 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         } catch (ClientException ce) {
             throw new AuditException(ce.getMessage(), ce);
         }
-        String[] doc_categories = {EVENT_DOCUMENT_CATEGORY, EVENT_LIFE_CYCLE_CATEGORY};
+        String[] docCategories = {EVENT_DOCUMENT_CATEGORY, EVENT_LIFE_CYCLE_CATEGORY};
 
         List<LogEntry> logEntries;
         if (dateRangeQuery != null && dateRangeQuery.length() > 0) {
             logEntries = getLogsBean().queryLogsByPage(null, dateRangeQuery,
-                    doc_categories, path, page, pageSize);
+                    docCategories, path, page, pageSize);
         } else {
             Date limit = DateParser.parseW3CDateTime(startDate);
             logEntries = getLogsBean().queryLogsByPage(null, limit,
-                    doc_categories, path, page, pageSize);
+                    docCategories, path, page, pageSize);
         }
         boolean hasMorePage = logEntries.size() >= pageSize;
 

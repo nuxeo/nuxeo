@@ -38,5 +38,4 @@ public class ItemFactoryDescriptor implements Serializable {
         return className;
     }
 
-
 }

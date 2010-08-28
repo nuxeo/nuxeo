@@ -35,14 +35,11 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
- *
  * Web object implementation corresponding to the root module for management
- * (module used for administrative purpose)
+ * (module used for administrative purpose).
  *
  * @author mcedica
- *
  */
 @WebObject(type = MANAGEMENT_WEB_MODULE)
 @Produces("text/html; charset=UTF-8")
@@ -57,7 +54,7 @@ public class ManagementModule extends DefaultObject {
         try {
             probeRunner = Framework.getService(ProbeRunner.class);
         } catch (Exception e) {
-            log.error("Unable to retreive the probeRunner", e);
+            log.error("Unable to retrieve the probeRunner", e);
         }
     }
 
@@ -103,4 +100,5 @@ public class ManagementModule extends DefaultObject {
     public String getUserManagerObjectTypeName(){
         return USER_MANAGER_OBJECT_TYPE;
     }
+
 }

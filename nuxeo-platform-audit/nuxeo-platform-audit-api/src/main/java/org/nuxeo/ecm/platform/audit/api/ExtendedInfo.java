@@ -47,9 +47,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @DiscriminatorColumn(name = "DISCRIMINATOR")
 public class ExtendedInfo implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private ExtendedInfo() {
@@ -267,9 +264,6 @@ public class ExtendedInfo implements Serializable {
     @DiscriminatorValue(value = "BLOB")
     public static class BlobInfo extends ExtendedInfo {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = 1L;
 
         private BlobInfo() {

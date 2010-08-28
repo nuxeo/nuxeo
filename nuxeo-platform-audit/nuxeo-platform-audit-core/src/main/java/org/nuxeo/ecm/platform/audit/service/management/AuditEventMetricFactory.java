@@ -43,9 +43,8 @@ public class AuditEventMetricFactory implements ResourceFactory {
     }
 
     public static String formatQualifiedName(String name) {
-        String qualifiedName = ObjectNameFactory.formatMetricQualifiedName(
+        return ObjectNameFactory.formatMetricQualifiedName(
                 NXAuditEventsService.NAME, name);
-        return qualifiedName;
     }
 
     public static String formatShortcutName(String name) {

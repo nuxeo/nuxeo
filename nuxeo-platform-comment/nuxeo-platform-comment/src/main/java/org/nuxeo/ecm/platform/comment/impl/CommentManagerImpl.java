@@ -122,9 +122,9 @@ public class CommentManagerImpl implements CommentManager {
 
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
-        RelationManager relationManager;
         Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
         ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, docModel.getSessionId());
+        RelationManager relationManager;
         try {
             relationManager = getRelationManager();
         } catch (Exception e) {
@@ -560,9 +560,9 @@ public class CommentManagerImpl implements CommentManager {
 
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException {
-        RelationManager relationManager;
         Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
         ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, comment.getSessionId());
+        RelationManager relationManager;
         try {
             relationManager = getRelationManager();
         } catch (Exception e) {

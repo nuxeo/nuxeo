@@ -81,8 +81,7 @@ public class CheckSenderAction implements MessageAction {
             }
             DocumentModel dm = list.get(0);
             principal = dm.getId();
-        }
-        finally {
+        } finally {
             session.close();
         }
         return principal;

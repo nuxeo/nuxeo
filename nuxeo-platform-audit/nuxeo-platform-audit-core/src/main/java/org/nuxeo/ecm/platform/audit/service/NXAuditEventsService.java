@@ -154,10 +154,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doRegisterEvent(EventDescriptor desc) {
         String eventName = desc.getName();
-        Boolean eventEnabled = desc.getEnabled();
-        if (eventEnabled == null) {
-            eventEnabled = true;
-        }
+        boolean eventEnabled = desc.getEnabled();
         if (eventEnabled) {
             eventNames.add(eventName);
             if (log.isDebugEnabled()) {
@@ -166,7 +163,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         } else if (eventNames.contains(eventName) && !eventEnabled) {
             doUnregisterEvent(desc);
         }
-
     }
 
     protected void doRegisterExtendedInfo(ExtendedInfoDescriptor desc) {
@@ -204,6 +200,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doUnregisterExtendedInfo(ExtendedInfoDescriptor desc) {
+        // FIXME: this doesn't look right
         extendedInfoDescriptors.remove(desc.getKey());
         if (log.isDebugEnabled()) {
             log.debug("Unregistered extended info: " + desc.getKey());
@@ -211,6 +208,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doUnregisterAdapter(AdapterDescriptor desc) {
+        // FIXME: this doesn't look right
         documentAdapters.remove(desc.getName());
         if (log.isDebugEnabled()) {
             log.debug("Unregistered adapter: " + desc.getName());

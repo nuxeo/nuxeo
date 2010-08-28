@@ -30,10 +30,9 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Simple helper class to trace Job execution using Audit Service
+ * Simple helper class to trace job execution using the Audit Service.
  *
  * @author Thierry Delprat
- *
  */
 public class JobHistoryHelper {
 
@@ -41,22 +40,22 @@ public class JobHistoryHelper {
     public static final String JOB_ENDED_SUFFIX = "Ended";
     public static final String JOB_FAILED_SUFFIX = "Failed";
 
-    protected AuditLogger logger = null;
+    protected AuditLogger logger;
 
-    protected String jobName = null;
+    protected String jobName;
 
     protected final String jobStartedEventId;
 
-    protected final String jobEndedventId;
+    protected final String jobEndedEventId;
 
     protected final String jobFailedEventId;
 
     public JobHistoryHelper(String jobName) {
         this.jobName = jobName;
 
-        this.jobStartedEventId = jobName + JOB_STARTED_SUFFIX;
-        this.jobEndedventId = jobName + JOB_ENDED_SUFFIX;
-        this.jobFailedEventId = jobName + JOB_FAILED_SUFFIX;
+        jobStartedEventId = jobName + JOB_STARTED_SUFFIX;
+        jobEndedEventId = jobName + JOB_ENDED_SUFFIX;
+        jobFailedEventId = jobName + JOB_FAILED_SUFFIX;
     }
 
     protected LogEntry getNewLogEntry() {
@@ -75,9 +74,7 @@ public class JobHistoryHelper {
     }
 
     /**
-     * Log an event for Job startup
-     *
-     * @throws Exception
+     * Logs an event for Job startup.
      */
     public void logJobStarted() throws Exception {
         LogEntry entry = getNewLogEntry();
@@ -88,23 +85,18 @@ public class JobHistoryHelper {
     }
 
     /**
-     * Log an event for a successful Job completion
-     *
-     * @throws Exception
+     * Logs an event for a successful Job completion.
      */
     public void logJobEnded() throws Exception {
         LogEntry entry = getNewLogEntry();
-        entry.setEventId(jobEndedventId);
+        entry.setEventId(jobEndedEventId);
         List<LogEntry> entries = new ArrayList<LogEntry>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
     }
 
     /**
-     * Log an event for a failed Job execution
-     *
-     * @param errMessage
-     * @throws Exception
+     * Logs an event for a failed Job execution.
      */
     public void logJobFailed(String errMessage) throws Exception {
         LogEntry entry = getNewLogEntry();
@@ -118,8 +110,7 @@ public class JobHistoryHelper {
     protected Date getLastRunWithStatus(String status) throws Exception {
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        StringBuffer query = new StringBuffer(
-                "from LogEntry log where log.eventId=");
+        StringBuilder query = new StringBuilder("from LogEntry log where log.eventId=");
         query.append("'");
         query.append(status);
         query.append("' AND log.category='");
@@ -128,7 +119,7 @@ public class JobHistoryHelper {
 
         List result = reader.nativeQuery(query.toString(), 1, 1);
 
-        if (result.size() != 0) {
+        if (!result.isEmpty()) {
             LogEntry entry = (LogEntry) result.get(0);
             return entry.getEventDate();
         }
@@ -137,30 +128,21 @@ public class JobHistoryHelper {
     }
 
     /**
-     * Get last date the Job was successfully run
-     *
-     * @return
-     * @throws Exception
+     * Gets the last date the Job was successfully run.
      */
     public Date getLastSuccessfulRun() throws Exception {
-        return getLastRunWithStatus(jobEndedventId);
+        return getLastRunWithStatus(jobEndedEventId);
     }
 
     /**
-     * Get last date the Job was failed
-     *
-     * @return
-     * @throws Exception
+     * Gets the last date the Job was failed.
      */
     public Date getLastFailedRun() throws Exception {
         return getLastRunWithStatus(jobFailedEventId);
     }
 
     /**
-     * Get last date the Job was started
-     *
-     * @return
-     * @throws Exception
+     * Gets the last date the Job was started.
      */
     public Date getLastStarted() throws Exception {
         return getLastRunWithStatus(jobStartedEventId);

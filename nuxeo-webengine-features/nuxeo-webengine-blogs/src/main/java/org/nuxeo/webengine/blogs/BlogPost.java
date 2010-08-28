@@ -79,7 +79,6 @@ public class BlogPost extends Page {
                 ctx.setProperty(DATE_BEFORE,
                         simpleDateFormat.format(calendar.getTime()));
             }
-
         }
     }
 

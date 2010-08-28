@@ -218,12 +218,11 @@ public final class MailCoreHelper {
                 rootFolder.fetch(allMessages, fetchProfile);
 
                 List<Message> unreadMessagesList = new ArrayList<Message>();
-                for (int i = 0; i < allMessages.length; i++) {
-                    Flags flags = allMessages[i].getFlags();
+                for (Message message : allMessages) {
+                    Flags flags = message.getFlags();
                     int unreadMessagesListSize = unreadMessagesList.size();
-                    if (flags != null && !flags.contains(Flag.SEEN)
-                            && unreadMessagesListSize < emailsLimitLongValue) {
-                        unreadMessagesList.add(allMessages[i]);
+                    if (flags != null && !flags.contains(Flag.SEEN) && unreadMessagesListSize < emailsLimitLongValue) {
+                        unreadMessagesList.add(message);
                         if (unreadMessagesListSize == emailsLimitLongValue - 1) {
                             break;
                         }

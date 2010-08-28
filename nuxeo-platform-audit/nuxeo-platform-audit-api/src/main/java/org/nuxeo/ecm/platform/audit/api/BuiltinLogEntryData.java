@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.audit.api;
  * Log entry builtin constants.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class BuiltinLogEntryData {
 

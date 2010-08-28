@@ -48,6 +48,7 @@ public class BlogSites extends Sites {
         return BLOG_DOC_TYPE;
     }
 
+    @Override
     public String getWebPageDocumentType() {
         return BLOG_POST_DOC_TYPE;
     }

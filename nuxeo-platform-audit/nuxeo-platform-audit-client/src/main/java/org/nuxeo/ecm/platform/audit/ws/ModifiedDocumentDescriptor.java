@@ -26,7 +26,6 @@ import java.util.Date;
  * Web service modified document descriptor.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ModifiedDocumentDescriptor implements Serializable {
 

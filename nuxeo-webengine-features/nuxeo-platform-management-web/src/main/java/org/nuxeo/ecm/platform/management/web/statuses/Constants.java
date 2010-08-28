@@ -16,15 +16,19 @@
  */
 package org.nuxeo.ecm.platform.management.web.statuses;
 
-public interface Constants {
+public class Constants {
 
-    final static String ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE = "AdministrativeStatus";
+    public static final String ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE = "AdministrativeStatus";
 
-    final static String PROBE_WEB_OBJECT_TYPE = "Probe";
+    public static final String PROBE_WEB_OBJECT_TYPE = "Probe";
 
-    final static String PROBES_WEB_OBJECT_TYPE = "Probes";
+    public static final String PROBES_WEB_OBJECT_TYPE = "Probes";
 
-    final static String MANAGEMENT_WEB_MODULE = "Management";
+    public static final String MANAGEMENT_WEB_MODULE = "Management";
 
-    final static String USER_MANAGER_OBJECT_TYPE = "userService";
+    public static final String USER_MANAGER_OBJECT_TYPE = "userService";
+
+    private Constants() {
+    }
+
 }

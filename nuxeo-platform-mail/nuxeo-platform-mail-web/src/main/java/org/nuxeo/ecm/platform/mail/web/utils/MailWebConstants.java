@@ -28,4 +28,6 @@ public final class MailWebConstants {
 
     public static final String CURRENT_PAGE = null;
 
+    private MailWebConstants() {
+    }
 }

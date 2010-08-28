@@ -182,7 +182,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             try {
                 converionService = Framework.getService(ConversionService.class);
             } catch (Exception e) {
-                log.error("Unable to get converion Service.", e);
+                log.error("Unable to get conversion Service.", e);
                 throw new ClientException(e);
             }
         }

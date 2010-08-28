@@ -22,7 +22,6 @@ import org.nuxeo.theme.models.AbstractModel;
  * mechanism
  *
  * @author rux
- *
  */
 public class BlogSiteArchiveMonthModel extends AbstractModel {
 
@@ -40,7 +39,6 @@ public class BlogSiteArchiveMonthModel extends AbstractModel {
         this.monthShort = monthShort;
         this.path = path;
         this.totalMonthCount = totalMonthCount;
-
     }
 
     public String getPath() {

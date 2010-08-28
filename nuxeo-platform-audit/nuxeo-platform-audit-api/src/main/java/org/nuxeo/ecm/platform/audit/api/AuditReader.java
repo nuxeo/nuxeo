@@ -24,11 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * Interface for reading data from the Audit service
+ * Interface for reading data from the Audit service.
  *
  * @author tiry
- *
  */
 public interface AuditReader {
 
@@ -49,7 +47,6 @@ public interface AuditReader {
      * Returns a given log entry given its id.
      *
      * @param id the log entry identifier
-     *
      * @return a LogEntry instance
      */
     LogEntry getLogEntryByID(long id);
@@ -64,7 +61,6 @@ public interface AuditReader {
      *
      * @param eventIds the event ids.
      * @param dateRange a preset date range.
-     *
      * @return a list of log entries.
      */
     List<LogEntry> queryLogs(String[] eventIds, String dateRange);
@@ -117,23 +113,13 @@ public interface AuditReader {
 
     /**
      * Returns a batched list of log entries. WhereClause is a native where
-     * clause for the backend : here EJBQL 3.0 can be used
-     *
-     * @param whereClause
-     * @param pageNb
-     * @param pageSize
-     * @return
+     * clause for the backend: here EJBQL 3.0 can be used.
      */
     List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
 
     /**
      * Returns a batched list of entries. query string is a native query
      * clause for the backend : here EJBQL 3.0 can be used
-     *
-     * @param query
-     * @param pageNb
-     * @param pageSize
-     * @return
      */
     List<?> nativeQuery(String query, int pageNb, int pageSize);
 

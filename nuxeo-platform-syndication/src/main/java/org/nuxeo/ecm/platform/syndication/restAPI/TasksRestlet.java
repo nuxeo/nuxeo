@@ -54,6 +54,7 @@ import org.restlet.data.Response;
  * @author arussel
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
+
     private JbpmService jbpmService;
 
     private final Log log = LogFactory.getLog(TasksRestlet.class);

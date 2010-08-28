@@ -264,9 +264,8 @@ public abstract class Wizard extends DefaultObject {
      */
     @GET
     public Object doGet() {
-        this.error = session.removeError();
+        error = session.removeError();
         return getView(page.getId());
     }
-
 
 }

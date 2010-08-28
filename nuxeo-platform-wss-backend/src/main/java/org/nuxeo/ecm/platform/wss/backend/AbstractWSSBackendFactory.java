@@ -25,9 +25,6 @@ public abstract class AbstractWSSBackendFactory implements WSSBackendFactory {
 
     public static final String BACKEND_KEY = "org.nuxeo.ecm.platform.wss.backend";
 
-    public AbstractWSSBackendFactory() {
-    }
-
     public WSSBackend getBackend(WSSRequest request) {
 
         if (request == null) {

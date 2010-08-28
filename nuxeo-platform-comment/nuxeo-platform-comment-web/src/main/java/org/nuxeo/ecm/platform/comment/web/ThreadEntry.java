@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:frederic.baude@gmail.com">Frederic Baude</a>
  *
  */
-public class ThreadEntry implements Serializable{
+public class ThreadEntry implements Serializable {
 
     private static final long serialVersionUID = 8765190624691092L;
 
@@ -44,6 +44,8 @@ public class ThreadEntry implements Serializable{
         return comment;
     }
 
+    // TODO: remove for 5.4 unless there is an issue with that
+    @Deprecated
     public void setComment(DocumentModel comment) {
         this.comment = comment;
     }
@@ -52,6 +54,8 @@ public class ThreadEntry implements Serializable{
         return depth;
     }
 
+    // TODO: remove for 5.4 unless there is an issue with that
+    @Deprecated
     public void setDepth(int depth) {
         this.depth = depth;
     }

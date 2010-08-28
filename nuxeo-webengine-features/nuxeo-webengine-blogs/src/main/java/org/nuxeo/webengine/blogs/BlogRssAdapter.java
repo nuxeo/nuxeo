@@ -27,8 +27,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.webengine.sites.RssAdapter;
 
 /**
- *
- * Adapter used as a rss feed. The version of the RSS format is 2.0
+ * Adapter used as a rss feed. The version of the RSS format is 2.0.
  *
  * @author mcedica
  */

@@ -51,15 +51,7 @@ public interface WSAudit extends BaseNuxeoWebService {
             throws AuditException;
 
     /**
-     * Return the list of deleted documents within a timestamp.
-     *
-     * @param sessionId
-     * @param dateRangeQuery
-     * @param path
-     * @param page
-     * @param pageSize
-     * @return
-     * @throws AuditException
+     * Returns the list of deleted documents within a timestamp.
      */
     ModifiedDocumentDescriptorPage listDeletedDocumentsByPage(
             @WebParam(name = "sessionId")
