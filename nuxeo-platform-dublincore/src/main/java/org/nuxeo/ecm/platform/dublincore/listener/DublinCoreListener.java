@@ -57,7 +57,7 @@ public class DublinCoreListener implements EventListener {
      */
     public void handleEvent(Event event) throws ClientException {
 
-        DocumentEventContext docCtx = null;
+        DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) event.getContext();
         } else {

@@ -185,7 +185,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
     }
 
-    public Boolean isOOoManagerStarted() {
+    public boolean isOOoManagerStarted() {
         return started;
     }
 

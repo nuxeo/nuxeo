@@ -26,7 +26,6 @@ import java.util.Map;
  * Layout definition interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface LayoutDefinition extends Serializable {
 

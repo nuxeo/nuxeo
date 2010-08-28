@@ -126,11 +126,7 @@ public final class FileManagerUtils {
     }
 
     /**
-     * Looking if an existing Document with the same filename exists.
-     *
-     * @param documentManager
-     * @param path
-     * @param filename
+     * Looks if an existing Document with the same filename exists.
      */
     public static DocumentModel getExistingDocByFileName(
             CoreSession documentManager, String path, String filename)
@@ -153,11 +149,7 @@ public final class FileManagerUtils {
     }
 
     /**
-     * Looking if an existing Document with the same title exists.
-     *
-     * @param documentManager
-     * @param path
-     * @param title
+     * Looks if an existing Document with the same title exists.
      */
     public static DocumentModel getExistingDocByTitle(
             CoreSession documentManager, String path, String title)

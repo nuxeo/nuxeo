@@ -28,7 +28,6 @@ import java.util.Map;
  * A widget knows how to render itself in a given mode.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface WidgetDefinition extends Serializable {
 

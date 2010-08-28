@@ -43,7 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
 public class NuxeoServerHeartBeat implements ServerHeartBeat {
 
@@ -102,7 +101,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
                     "An error occurred while starting creating/updating the server start",
                     e);
         }
-        // start a schedule that regulary update the current server start
+        // start a schedule that regularly updates the current server start
         timer = new Timer("Server heart beat scheduler");
         timer.schedule(new TimerTask() {
             @Override
@@ -149,7 +148,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         }
         timer.cancel();
         timer = null;
-        log.info("Heatbeat scheduler stopped");
+        log.info("Heartbeat scheduler stopped");
     }
 
     public ServerInfo getInfo(URI serverURI) throws ServerNotFoundException {
@@ -165,7 +164,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
             serverinfo = docToServerInfo(doc);
         } catch (Throwable e) {
             throw new ServerNotFoundException(
-                    "An error occured while trying to get the server info", e);
+                    "An error occurred while trying to get the server info", e);
         }
         return serverinfo;
 
@@ -176,7 +175,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         try {
             String defaultRepositoryName = Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepository().getName();
-            GetInfos serverinfoRunner = new GetInfos(defaultRepositoryName);
+            GetInfo serverinfoRunner = new GetInfo(defaultRepositoryName);
             DocumentModelList doclist = serverinfoRunner.doclist;
 
             for (DocumentModel documentModel : doclist) {
@@ -192,10 +191,10 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         return serverinfos;
     }
 
-    class GetInfos extends UnrestrictedSessionRunner {
+    class GetInfo extends UnrestrictedSessionRunner {
         DocumentModelList doclist;
 
-        public GetInfos(String repository) {
+        public GetInfo(String repository) {
             super(repository);
         }
 

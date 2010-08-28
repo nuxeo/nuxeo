@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.forms.layout.api;
  * List of built in widget modes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class BuiltinWidgetModes {
 

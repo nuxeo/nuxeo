@@ -26,7 +26,6 @@ import java.util.Map;
  * Layout row definition interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface LayoutRowDefinition extends Serializable {
 

@@ -26,6 +26,7 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
  * @deprecated use {@link AbstractFileImporter}
  */
 @Deprecated
+// TODO: remove
 public abstract class AbstractPlugin extends AbstractFileImporter {
 
 }

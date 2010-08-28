@@ -37,6 +37,6 @@ public interface OOoManagerService {
 
     void startOOoManager() throws IOException;
 
-    Boolean isOOoManagerStarted();
+    boolean isOOoManagerStarted();
 
 }

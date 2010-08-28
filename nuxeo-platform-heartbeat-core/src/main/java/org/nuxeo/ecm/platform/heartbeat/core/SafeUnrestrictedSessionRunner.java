@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class SafeUnrestrictedSessionRunner extends
         UnrestrictedSessionRunner {
 
-    public SafeUnrestrictedSessionRunner(String repositoryName) {
+    protected SafeUnrestrictedSessionRunner(String repositoryName) {
         super(repositoryName);
     }
 

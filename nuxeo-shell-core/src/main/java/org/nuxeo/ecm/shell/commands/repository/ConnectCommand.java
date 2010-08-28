@@ -26,7 +26,6 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * @author jcarsique
- *
  */
 public class ConnectCommand extends AbstractCommand {
     private static final Log log = LogFactory.getLog(ConnectCommand.class);

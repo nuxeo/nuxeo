@@ -36,7 +36,7 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     protected BlobHolder buildResult(List<String> cmdOutput,
             CmdParameters cmdParams) throws ConversionException {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (cmdOutput!=null) {
             for (String out : cmdOutput) {
@@ -67,6 +67,5 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
             Map<String, Serializable> parameters) throws ConversionException {
         return new HashMap<String, String>();
     }
-
 
 }

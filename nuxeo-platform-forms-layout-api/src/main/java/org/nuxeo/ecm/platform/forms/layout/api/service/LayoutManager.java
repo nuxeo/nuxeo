@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
  * It manages registries of layout definitions and widget types.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface LayoutManager extends Serializable {
 

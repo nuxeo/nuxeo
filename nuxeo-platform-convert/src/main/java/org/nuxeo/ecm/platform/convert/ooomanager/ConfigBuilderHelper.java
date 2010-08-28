@@ -83,8 +83,7 @@ public class ConfigBuilderHelper {
 
         if (isLinux()) {
             possiblePaths.addAll(Arrays.asList(UNIX_JPIPE_PATHS));
-        }
-        else if (isMac()) {
+        } else if (isMac()) {
             possiblePaths.addAll(Arrays.asList(MAC_JPIPE_PATHS));
         }
 

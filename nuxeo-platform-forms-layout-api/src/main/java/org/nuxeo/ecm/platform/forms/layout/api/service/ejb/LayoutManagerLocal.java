@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
  * Local interface for layout manager.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface LayoutManagerLocal extends LayoutManager {
 
