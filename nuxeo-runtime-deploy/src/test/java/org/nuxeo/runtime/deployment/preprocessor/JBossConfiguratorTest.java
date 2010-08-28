@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class JBossConfiguratorTest {
 
@@ -47,7 +47,7 @@ public class JBossConfiguratorTest {
     private ConfigurationGenerator configGenerator2;
 
     private File nuxeoHome;
-    
+
     String propertyToGenerate;
 
     @Before

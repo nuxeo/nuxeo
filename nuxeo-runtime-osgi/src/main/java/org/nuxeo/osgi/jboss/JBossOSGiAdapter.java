@@ -48,7 +48,7 @@ import org.osgi.framework.FrameworkEvent;
  * <p>
  * If you need to use this service inside multiple EARs you must use isolated
  * class loaders.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
@@ -61,7 +61,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
     /**
      * This method is safe only when using isolated EARs if there are multiple
      * nuxeo EARs in the system.
-     * 
+     *
      * @return the instance or null if not yet instantiated
      */
     public static JBossOSGiAdapter getInstance() {
@@ -152,7 +152,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
         // TODO: must not use a directory from the ear.
         File configDir = new File(installDir, "config");
         env.setConfig(configDir);
-        
+
         if (logDir != null && !logDir.isEmpty()) {
             env.setLog(new File(logDir));
         } else {

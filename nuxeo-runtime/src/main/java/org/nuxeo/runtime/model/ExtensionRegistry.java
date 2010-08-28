@@ -26,11 +26,11 @@ import org.apache.commons.logging.LogFactory;
  * supports extension merge. The registry keeps track of registered extensions
  * to be able to remove them without breaking the merges. The implementation is
  * still required to do the actual merge of two contributions when needed.
- * 
+ *
  * @param <T> - the type of contribution managed by this registry
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class ExtensionRegistry<T> {
 
@@ -79,8 +79,6 @@ public abstract class ExtensionRegistry<T> {
      * Remove all registered contributions. This method will be called by
      * unregisterExtension to reset the registry so that remaining contributions
      * are registered again
-     * 
-     * @param extensionPoint
      */
     public abstract void removeContributions();
 

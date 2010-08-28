@@ -220,7 +220,7 @@ public class NuxeoApp {
             return result;
         }
     }
-    
+
     public void fireFrameworkStarted() throws Exception {
         if (osgi.getSystemBundle() == null) {
             osgi.setSystemBundle(new SystemBundle(osgi, new SystemBundleFile(

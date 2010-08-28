@@ -28,7 +28,7 @@ import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Main {
 

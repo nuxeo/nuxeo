@@ -35,7 +35,7 @@ import org.nuxeo.common.Environment;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- * 
+ *
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -52,7 +52,7 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     * 
+     *
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
@@ -147,7 +147,7 @@ public class ConfigurationGenerator {
 
     /**
      * Runs the configuration files generation.
-     * 
+     *
      * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {

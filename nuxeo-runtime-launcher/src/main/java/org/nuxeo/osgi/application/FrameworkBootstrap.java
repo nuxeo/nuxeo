@@ -186,7 +186,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     * 
+     *
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {

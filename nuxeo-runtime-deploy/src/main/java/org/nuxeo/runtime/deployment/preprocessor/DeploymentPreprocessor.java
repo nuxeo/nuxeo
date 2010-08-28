@@ -46,7 +46,7 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DeploymentPreprocessor {
 

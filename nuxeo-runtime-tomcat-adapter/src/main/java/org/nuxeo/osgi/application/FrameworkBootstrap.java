@@ -49,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * TODO: needs to be kept in sync with the one from nuxeo-runtime-launcher until
  * they will be merged
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkBootstrap {
@@ -199,7 +199,7 @@ public class FrameworkBootstrap {
 
     /**
      * Fill the classloader with all jars found in the defined classpath.
-     * 
+     *
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {

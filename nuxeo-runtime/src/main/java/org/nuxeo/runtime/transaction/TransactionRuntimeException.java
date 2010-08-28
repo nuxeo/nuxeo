@@ -23,7 +23,7 @@ package org.nuxeo.runtime.transaction;
  * Reified checked errors caught while operating the transaction. The error is
  * logged but the error condition is re-throwed as a runtime, enabling
  * transaction helper callers being able to be aware about the error..
- * 
+ *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  *
  */

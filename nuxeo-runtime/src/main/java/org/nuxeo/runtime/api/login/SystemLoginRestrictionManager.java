@@ -28,9 +28,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manage restrictions for usage of SystemLogin.
- * <p/>
+ * <p>
  * The main point is to prevent system login from untrusted remote nuxeo runtime instances.
- * <p/>
+ * <p>
  * Restrictions can be adjusted via system properties :
  * <ul>
  * <li>org.nuxeo.systemlogin.restrict : true/false (default true) ; turns on/off restrictions

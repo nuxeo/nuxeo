@@ -24,7 +24,6 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class CompositeContribution extends ExtensibleContribution {
 
