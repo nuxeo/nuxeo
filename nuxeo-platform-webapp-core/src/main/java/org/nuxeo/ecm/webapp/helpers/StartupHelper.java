@@ -135,9 +135,17 @@ public class StartupHelper implements Serializable {
             // delegate server initialized to the default helper
             String result = initServerAndFindStartupPage();
 
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+
+            if (request.getParameter(LANGUAGE_PARAMETER) != null) {
+                String localeStr = request.getParameter(LANGUAGE_PARAMETER);
+                localeSelector.setLocaleString(localeStr);
+            }
+
             if (!DOMAINS_VIEW.equals(result)) {
-                // something went wrong during server lookup do not try to go
-                // further
+                // we're not redirecting to the domains view. Don't initialize
+                // further,
+                // we assume it has been done or something went wrong
                 return result;
             }
             if (documentManager == null) {
@@ -146,13 +154,6 @@ public class StartupHelper implements Serializable {
 
             // get the domains from selected server
             DocumentModel rootDocument = documentManager.getRootDocument();
-
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-
-            if (request.getParameter(LANGUAGE_PARAMETER) != null) {
-                String localeStr = request.getParameter(LANGUAGE_PARAMETER);
-                localeSelector.setLocaleString(localeStr);
-            }
 
             if (!documentManager.hasPermission(rootDocument.getRef(),
                     SecurityConstants.READ_CHILDREN)) {
