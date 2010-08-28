@@ -70,8 +70,6 @@ public class DocsQueryProviderDef implements Serializable {
 
     /**
      * The document models path to search within.
-     *
-     * @return
      */
     public String getStartingPath() {
         return startingPath;

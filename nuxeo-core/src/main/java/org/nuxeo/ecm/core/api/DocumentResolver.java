@@ -49,9 +49,6 @@ public class DocumentResolver implements Serializable {
     /**
      * Resolves the document given its reference.
      *
-     * @param session
-     * @param docRef
-     * @return
      * @throws DocumentException if the document could not be resolved
      */
     public static Document resolveReference(Session session, DocumentRef docRef)

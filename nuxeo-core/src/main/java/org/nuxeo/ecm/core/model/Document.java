@@ -229,7 +229,6 @@ public interface Document extends DocumentContainer, PropertyContainer,
     <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException;
 
-
     /**
      * Load document part properties from storage and fill them inside the given document part.
      *

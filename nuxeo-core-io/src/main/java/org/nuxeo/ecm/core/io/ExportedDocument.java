@@ -74,8 +74,6 @@ public interface ExportedDocument {
 
     /**
      * The number of files describing the document.
-     *
-     * @return
      */
     int getFilesCount();
 

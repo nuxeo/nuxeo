@@ -49,8 +49,6 @@ public interface IODocumentManager extends Serializable {
     /**
      * @param customDocReader reader from the input stream
      * @param customDocWriter
-     * @return
-     * @throws ImportDocumentException
      */
     DocumentTranslationMap importDocuments(DocumentReader customDocReader,
             DocumentWriter customDocWriter) throws ImportDocumentException;

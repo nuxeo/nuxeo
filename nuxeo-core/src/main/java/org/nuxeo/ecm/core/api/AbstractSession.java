@@ -3054,7 +3054,7 @@ public abstract class AbstractSession implements CoreSession,
                 result[4] = getSession().getSecurityManager().getMergedACP(doc);
             }
 
-            if ((refreshFlags & (DocumentModel.REFRESH_CONTENT)) != 0) {
+            if ((refreshFlags & DocumentModel.REFRESH_CONTENT) != 0) {
                 if (!readPermChecked) {
                     checkPermission(doc, READ);
                     readPermChecked = true;

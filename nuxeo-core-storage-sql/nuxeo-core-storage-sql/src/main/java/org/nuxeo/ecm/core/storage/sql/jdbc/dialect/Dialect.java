@@ -305,19 +305,14 @@ public abstract class Dialect {
     /**
      * Indicates if dialect supports paging
      *
-     * @return
+     * @return true if the dialect supports paging
      */
     public boolean supportsPaging() {
         return false;
     }
 
     /**
-     *
-     * Get paging clause to be appended at the end of select statement
-     *
-     * @param limit
-     * @param offset
-     * @return
+     * Gets paging clause to be appended at the end of select statement
      */
     public String getPagingClause(long limit, long offset) {
         throw new UnsupportedOperationException("paging is not supported");
