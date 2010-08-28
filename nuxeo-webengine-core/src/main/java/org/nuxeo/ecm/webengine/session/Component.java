@@ -72,8 +72,6 @@ public interface Component extends Serializable {
 
     /**
      * Checks whether this component was initialized and can be used.
-     *
-     * @return
      */
     boolean isLive();
 

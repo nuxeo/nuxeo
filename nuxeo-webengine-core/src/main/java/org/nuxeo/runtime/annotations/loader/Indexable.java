@@ -35,8 +35,7 @@ import java.lang.annotation.Target;
 public @interface Indexable {
 
     /**
-     * The name of annotation arguments that should be indexed
-     * @return
+     * The name of annotation arguments that should be indexed.
      */
     String[] value() default {};
 

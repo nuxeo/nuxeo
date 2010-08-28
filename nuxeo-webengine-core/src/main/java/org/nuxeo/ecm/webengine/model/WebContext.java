@@ -97,19 +97,11 @@ public interface WebContext extends Adaptable {
 
     /**
      * The same as {@link #getMessage(String)} but with parameter support
-     *
-     * @param key
-     * @param args
-     * @return
      */
     String getMessage(String key, Object... args);
 
     /**
      * The same as {@link #getMessage(String)} but with parameter support
-     *
-     * @param key
-     * @param args
-     * @return
      */
     String getMessage(String key, List<Object> args);
 
@@ -125,20 +117,12 @@ public interface WebContext extends Adaptable {
     /**
      * The same as {@link #getMessage(String)} but uses the given locale, with
      * parameter support
-     *
-     * @param key
-     * @param args
-     * @return
      */
     String getMessageL(String key, String locale, Object... args);
 
     /**
      * The same as {@link #getMessage(String)} but uses the given locale, with
-     * parameter support
-     *
-     * @param key
-     * @param args
-     * @return
+     * parameter support.
      */
     String getMessageL(String key, String locale, List<Object> args);
 
@@ -156,8 +140,6 @@ public interface WebContext extends Adaptable {
 
     /**
      * Sets the current locale, that will be kept in context.
-     *
-     * @param locale
      */
     void setLocale(Locale locale);
 
@@ -501,7 +483,6 @@ public interface WebContext extends Adaptable {
      *
      * @see org.nuxeo.ecm.webengine.security.Guard
      * @param guard the guard to check
-     * @return
      */
     boolean checkGuard(String guard) throws ParseException;
 

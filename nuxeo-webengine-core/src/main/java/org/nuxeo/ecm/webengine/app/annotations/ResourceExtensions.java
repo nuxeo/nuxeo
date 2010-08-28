@@ -32,8 +32,7 @@ import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 public @interface ResourceExtensions {
 
     /**
-     * An array of resource extension classes (i.e. resources annotated with {@link ResourceExtension})
-     * @return
+     * An array of resource extension classes (ie resources annotated with {@link ResourceExtension}).
      */
     Class<? extends ResourceContribution>[] value();
     

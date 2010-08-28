@@ -21,26 +21,33 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * 
  * When implementing a resource store you should implement equals and hashCode method.
  * A store is equals to another if the store location is the same.
  *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ResourceStore {
 
-    void put( final String name, final InputStream data ) throws IOException;
-    void put( final String name, final byte[] data ) throws IOException;
-    InputStream getStream( final String name );
-    byte[] getBytes( final String name );
-    void remove( final String name );
-    boolean exists( final String name );
+    void put(final String name, final InputStream data) throws IOException;
+
+    void put(final String name, final byte[] data) throws IOException;
+
+    InputStream getStream(final String name);
+
+    byte[] getBytes(final String name);
+
+    void remove(final String name);
+
+    boolean exists(final String name);
+
     long lastModified(String name);
-    URL getURL( final String name );
+
+    URL getURL(final String name);
+
     /**
-     * A string that uniquely identify the location of that store - to stores are considered equals if the location is the same
-     * @return
+     * A string that uniquely identify the location of that store.
+     * Two stores are considered equals if their locations are the same.
      */
-    public String getLocation();
+    String getLocation();
+
 }

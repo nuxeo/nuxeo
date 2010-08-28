@@ -127,8 +127,7 @@ public class DefaultModule implements Module {
     }
 
     /**
-     * @param path a normalized path (absolute path)
-     * @return
+     * @param path a normalized path (absolute path).
      */
     protected ScriptFile findFile(String path) throws IOException {
         ScriptFile file = fileCache.get(path);
@@ -151,7 +150,8 @@ public class DefaultModule implements Module {
         if (superModule != null) {            
             ModuleHandler mh = engine.getApplicationManager().getModuleHandler(superModule.getName());
             if (mh == null) {
-                log.warn("Imported module not found: "+superModule+". Needed by module: "+handler.getBundledApplication().getId());
+                log.warn("Imported module not found: "+superModule
+                        +". Needed by module: "+handler.getBundledApplication().getId());
             } else {                    
                 base = mh; 
             }
@@ -239,69 +239,69 @@ public class DefaultModule implements Module {
 
     @Deprecated
     public String getMediaTypeId(MediaType mt) {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
 
     @Deprecated 
     public String getSkinPathPrefix() {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
 
     @Deprecated
     public Resource getRootObject(WebContext ctx) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
 
     
     @Deprecated
     public AdapterType getAdapter(Resource ctx, String name) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
     @Deprecated
     public List<String> getAdapterNames(Resource ctx) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
     @Deprecated
     public AdapterType[] getAdapters() {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
     @Deprecated
     public List<AdapterType> getAdapters(Resource ctx) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
     @Deprecated
     public List<String> getEnabledAdapterNames(Resource ctx) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
     @Deprecated
     public List<AdapterType> getEnabledAdapters(Resource ctx) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
 
     @Deprecated
     public List<ResourceBinding> getResourceBindings() {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
     
     
     @Deprecated
     public ResourceType getType(String typeName) {
-        throw new UnsupportedOperationException("deprectaed");
+        throw new UnsupportedOperationException("deprecated");
     }
 
     @Deprecated
     public ResourceType[] getTypes() {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
 
     @Deprecated
     public Validator getValidator(String docType) {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
 
     @Deprecated
     public boolean isDerivedFrom(String moduleName) {
-        throw new UnsupportedOperationException("deprectaed");        
+        throw new UnsupportedOperationException("deprecated");        
     }
 
 }

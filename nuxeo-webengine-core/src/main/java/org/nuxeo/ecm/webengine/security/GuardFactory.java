@@ -28,9 +28,9 @@ package org.nuxeo.ecm.webengine.security;
 public interface GuardFactory {
 
     /**
-     * Create a new guard and initialize it using the given string
+     * Create a new guard and initialize it using the given string.
+     *
      * @param value some value to initialize the guard
-     * @return
      */
     Guard newGuard(String value);
 

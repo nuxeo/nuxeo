@@ -105,8 +105,7 @@ public class DefaultApplicationManager implements ApplicationManager {
     }
     
     /**
-     * Get the module registry 
-     * @return
+     * Gets the module registry.
      */
     public ModuleRegistry getRegistry() {
         ModuleRegistry _registry = registry;

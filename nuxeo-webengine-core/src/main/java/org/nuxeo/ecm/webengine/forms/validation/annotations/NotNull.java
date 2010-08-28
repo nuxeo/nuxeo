@@ -30,8 +30,7 @@ import java.lang.annotation.Target;
 public @interface NotNull {
 
     /**
-     * A default value if null (empty)
-     * @return
+     * A default value if null (empty).
      */
     String value() default "";
 

@@ -26,7 +26,6 @@ import org.osgi.framework.Bundle;
  * Manage a WebEngine module. 
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ModuleHandler {
     
@@ -90,8 +89,7 @@ public class ModuleHandler {
     }
     
     /**
-     * The module name to be displayed in UI
-     * @return
+     * The module name to be displayed in UI.
      */
     public String getName() {
         return ((WebEngineModule)app.getApplication()).getName();
@@ -100,7 +98,6 @@ public class ModuleHandler {
     public Class<?>[] getRootClasses() {
         return ((WebEngineModule)app.getApplication()).getRootClasses();
     }
-
 
     public Class<? extends ResourceContribution>[] getContributions() {
         return ((WebEngineModule)app.getApplication()).getContributions();

@@ -66,7 +66,6 @@ public class BundledApplication extends Application {
     
     /**
      * The application ID. This is the same as the bundle symbolic name owning the application.
-     * @return
      */
     public String getId() {
         return app.getClass().getName();

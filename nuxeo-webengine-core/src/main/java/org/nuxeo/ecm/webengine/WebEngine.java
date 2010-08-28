@@ -174,8 +174,6 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * TODO: This is deprecating ModuleManager
-     * 
-     * @return
      */
     public ApplicationManager getApplicationManager() {
         return apps;
@@ -319,9 +317,7 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
-     * Make a copy to avoid concurrent modification exceptions
-     * 
-     * @return
+     * Makes a copy to avoid concurrent modification exceptions.
      */
     public File[] getRegisteredModules() {
         return registeredModules.toArray(new File[registeredModules.size()]);

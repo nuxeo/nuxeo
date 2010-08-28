@@ -65,8 +65,7 @@ public abstract class ResourceContribution {
     }
     
     /**
-     * Override this to specify a link target page
-     * @return
+     * Override this to specify a link target page.
      */
     public String getLinkTarget() {
         return null;
@@ -94,10 +93,11 @@ public abstract class ResourceContribution {
     }
     
     /**
-     * Check if the given resource is accepted.
+     * Checks if the given resource is accepted.
      * Override this method if you need to filter your contributions using custom logic. 
      * The default implementation is using the target facets declared in the {@link ResourceExtension} 
-     * annotation to check contribution enablement.   
+     * annotation to check contribution enablement.
+     *
      * @param target
      * @return true if the target resource is accepted and contribution can be done, false otherwise
      */
@@ -105,8 +105,8 @@ public abstract class ResourceContribution {
         if (targetFacets == null || targetFacets.length == 0) {
             return true;
         }
-        for (int i=0; i<targetFacets.length; i++) {
-            if (target.hasFacet(targetFacets[i])) {
+        for (String facet : targetFacets) {
+            if (target.hasFacet(facet)) {
                 return true;
             }
         }
@@ -114,9 +114,7 @@ public abstract class ResourceContribution {
     }
 
     /**
-     * Create a resource instance to handle the request 
-     * @param target
-     * @return
+     * Creates a resource instance to handle the request.
      */
     public abstract Object newInstance(Resource target);
 
@@ -124,4 +122,5 @@ public abstract class ResourceContribution {
     public String toString() {
         return "Contribution "+getClass().getName()+" on "+target+" at "+key;
     }
+
 }

@@ -91,8 +91,7 @@ public abstract class WebEngineModule extends Application {
     }
 
     /**
-     * The module name to be displayed in UI
-     * @return
+     * The module name to be displayed in UI.
      */
     public String getName() {
         WebModule wm = getClass().getAnnotation(WebModule.class);

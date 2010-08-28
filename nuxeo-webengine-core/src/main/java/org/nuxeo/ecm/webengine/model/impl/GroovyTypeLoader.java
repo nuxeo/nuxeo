@@ -143,11 +143,7 @@ public class GroovyTypeLoader {
     /**
      * Gets a type descriptor given an absolute className.
      * <p>
-     * If this class doesn't define a type or type adapter return null.
-     *
-     * @param className
-     * @return
-     * @throws ClassNotFoundException
+     * If this class doesn't define a type or type adapter, return null.
      */
     protected TypeDescriptor loadType(String className) throws ClassNotFoundException {
         ClassProxy clazz = loader.getGroovyClassProxy(className);

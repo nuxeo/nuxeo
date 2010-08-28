@@ -150,8 +150,6 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * If not already opened, opens a new core session against the default
      * repository.
-     *
-     * @return
      */
     public CoreSession getCoreSession() {
         return getCoreSession(null);
@@ -230,11 +228,6 @@ public abstract class UserSession extends HashMap<String, Object> {
      * {@link #getComponent(Class, String)}.
      * <p>
      * If the component was not found in that session, returns null.
-     *
-     * @param <T>
-     * @param type
-     * @param name
-     * @return
      */
     @SuppressWarnings("unchecked")
     public synchronized <T extends Component> T findComponent(Class<T> type,
@@ -255,18 +248,12 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * If the component was not yet created in this session, it will be created
      * and registered against the session.
-     *
-     * @param <T>
-     * @param type
-     * @param name
-     * @return
-     * @throws SessionException
      */
     @SuppressWarnings("unchecked")
     public synchronized <T extends Component> T getComponent(Class<T> type,
             String name) throws SessionException {
         ComponentMap<T> map = (ComponentMap<T>) comps.get(type);
-        T comp = null;
+        T comp;
         if (map == null) {
             map = new ComponentMap<T>();
             comps.put(type, map);
@@ -318,10 +305,6 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * The ID is of the form <code>type#name</code> for non-null names and
      * <code>type</code> for null names.
-     *
-     * @param <T>
-     * @param id
-     * @return
      */
     @SuppressWarnings("unchecked")
     public <T extends Component> T getComponent(String id)
@@ -347,9 +330,7 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     /**
      * Register a cleanup handler that will be invoked when HTTP request terminate.
-     * This method is not thread safe
-     * @param request
-     * @param handler
+     * This method is not thread safe.
      */
     @SuppressWarnings("unchecked")
     public static void addRequestCleanupHandler(HttpServletRequest request, RequestCleanupHandler handler) {
@@ -360,4 +341,5 @@ public abstract class UserSession extends HashMap<String, Object> {
         }
         handlers.add(handler);
     }
+
 }

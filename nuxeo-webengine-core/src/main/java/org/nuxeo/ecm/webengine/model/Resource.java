@@ -95,9 +95,7 @@ public interface Resource extends Adaptable {
     AdapterResource getActiveAdapter();
 
     /**
-     * Check the given guard expression in the context of this resource
-     * @param guard
-     * @return
+     * Checks the given guard expression in the context of this resource.
      */
     boolean checkGuard(String guard) throws ParseException;
 

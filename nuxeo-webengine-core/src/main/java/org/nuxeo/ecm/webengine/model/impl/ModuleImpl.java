@@ -362,7 +362,6 @@ public class ModuleImpl implements Module {
 
     /**
      * @param path a normalized path (absolute path)
-     * @return
      */
     protected ScriptFile findFile(String path) throws IOException {
         ScriptFile file = fileCache.get(path);
@@ -387,8 +386,6 @@ public class ModuleImpl implements Module {
     /**
      * TODO There are no more reasons to lazy load the type registry since module are lazy loaded.
      * Type registry must be loaded at module creation
-     *
-     * @return
      */
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
