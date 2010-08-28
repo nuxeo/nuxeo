@@ -25,14 +25,14 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmServiceBean")
 @Scope(ScopeType.APPLICATION)
 public class JbpmServiceBusinessDelegate {
 
     @Factory(value = "jbpmService", scope = ScopeType.APPLICATION)
-    public JbpmService bpmManagmentServiceFactory() throws Exception {
+    public JbpmService bpmManagementServiceFactory() throws Exception {
         return Framework.getService(JbpmService.class);
     }
+
 }

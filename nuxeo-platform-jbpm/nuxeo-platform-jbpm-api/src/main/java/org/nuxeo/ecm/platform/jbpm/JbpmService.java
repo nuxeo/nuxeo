@@ -395,7 +395,7 @@ public interface JbpmService {
      *
      * @param name the name of the event
      * @param comment the comment
-     * @param recipients thre recipients property of the event context
+     * @param recipients the recipients property of the event context
      * @throws ClientException
      */
     void notifyEventListeners(String name, String comment, String[] recipients,

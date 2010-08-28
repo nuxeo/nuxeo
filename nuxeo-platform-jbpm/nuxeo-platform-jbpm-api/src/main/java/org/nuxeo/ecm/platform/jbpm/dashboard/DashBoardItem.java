@@ -80,9 +80,9 @@ public interface DashBoardItem extends Serializable {
     Date getStartDate();
 
     /**
-     * Returns the date when the task needs to be closed.
+     * Returns the date at which the task needs to be closed.
      *
-     * @return the date when the task needes to be closed
+     * @return the date at which the task needs to be closed
      */
     Date getDueDate();
 

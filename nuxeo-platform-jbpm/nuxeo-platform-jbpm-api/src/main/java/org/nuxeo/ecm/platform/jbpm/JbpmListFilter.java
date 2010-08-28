@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * alive.
  *
  * @author arussel
- *
  */
 public interface JbpmListFilter extends Serializable {
 

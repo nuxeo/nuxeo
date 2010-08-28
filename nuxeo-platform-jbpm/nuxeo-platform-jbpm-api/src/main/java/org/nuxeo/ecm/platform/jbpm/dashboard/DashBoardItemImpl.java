@@ -37,25 +37,25 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 919752175741886376L;
 
-    protected Long id;
+    protected final Long id;
 
-    protected String name;
+    protected final String name;
 
-    protected String description;
+    protected final String description;
 
-    protected Date startDate;
+    protected final Date startDate;
 
-    protected Date dueDate;
+    protected final Date dueDate;
 
-    protected boolean expired;
+    protected final boolean expired;
 
     protected final String directive;
 
+    protected final DocumentModel document;
+
+    protected final TaskInstance task;
+
     protected String comment;
-
-    protected DocumentModel document;
-
-    protected TaskInstance task;
 
     @SuppressWarnings("unchecked")
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {

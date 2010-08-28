@@ -55,7 +55,7 @@ public abstract class AbstractProcessDefinitionDeployer implements
                     is.close();
                 } catch (IOException e) {
                     throw new NuxeoJbpmException(
-                            "Error cloising process definition url.", e);
+                            "Error closing process definition url.", e);
                 }
                 return null;
             }

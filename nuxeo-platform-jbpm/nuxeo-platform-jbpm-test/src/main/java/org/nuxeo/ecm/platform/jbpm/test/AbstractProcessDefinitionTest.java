@@ -56,12 +56,19 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
                 getConfigurationResource());
         configuration = JbpmConfiguration.parseInputStream(isConf);
         assertNotNull(configuration);
+
         jbpmContext = configuration.createJbpmContext();
         InputStream is = getClass().getResourceAsStream(
                 getProcessDefinitionResource());
         assertNotNull(is);
+
         pd = ProcessDefinition.parseXmlInputStream(is);
         assertNotNull(pd);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        jbpmContext.close();
     }
 
     public String getConfigurationResource() {
@@ -70,15 +77,11 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
 
     public abstract String getProcessDefinitionResource();
 
-    @Override
-    protected void tearDown() throws Exception {
-        jbpmContext.close();
-    }
-
     public List<Principal> getPrincipalsList() {
         List<Principal> pList = new ArrayList<Principal>();
         pList.add(new SimplePrincipal("bob"));
         pList.add(new SimplePrincipal("trudy"));
         return pList;
     }
+
 }

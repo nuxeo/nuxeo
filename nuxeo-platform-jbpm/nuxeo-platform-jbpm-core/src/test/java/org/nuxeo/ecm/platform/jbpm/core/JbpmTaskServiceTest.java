@@ -129,15 +129,18 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
         TaskInstance task = tasks.get(0);
         assertEquals("Test Task Name", task.getName());
-        assertEquals(null, task.getActorId());
+        assertNull(task.getActorId());
+
         List<String> pooledActorIds = getPooledActorIds(task);
         assertEquals(2, pooledActorIds.size());
         assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
                 pooledActorIds.get(0));
         assertEquals(NuxeoPrincipal.PREFIX + user1.getName(),
                 pooledActorIds.get(1));
+
         List<Comment> comments = task.getComments();
         assertEquals(1, comments.size());
+
         Comment comment = comments.get(0);
         assertEquals(user3.getName(), comment.getActorId());
         assertEquals("test comment", comment.getMessage());
@@ -196,19 +199,21 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         final Long taskId = task.getId();
         task = getTask(taskId);
         assertNotNull(task);
-
         assertEquals("Test Task Name", task.getName());
-        assertEquals(null, task.getActorId());
+        assertNull(task.getActorId());
+
         pooledActorIds = getPooledActorIds(task);
         assertEquals(2, pooledActorIds.size());
         assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
                 pooledActorIds.get(0));
         assertEquals(NuxeoPrincipal.PREFIX + user1.getName(),
                 pooledActorIds.get(1));
+
         comments = task.getComments();
         // FIXME: cannot add end comment right now
         // assertEquals(2, comments.size());
         assertEquals(1, comments.size());
+
         comment = comments.get(0);
         assertEquals(user3.getName(), comment.getActorId());
         assertEquals("test comment", comment.getMessage());
@@ -233,7 +238,6 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task.getVariable(JbpmTaskService.TaskVariableName.createdFromTaskService.name()));
         assertEquals("true",
                 task.getVariable(JbpmService.TaskVariableName.validated.name()));
-
     }
 
     public void testMultipleTaskWithReject() throws Exception {
@@ -266,13 +270,16 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
         TaskInstance task1 = tasks.get(0);
         assertEquals("Test Task Name", task1.getName());
-        assertEquals(null, task1.getActorId());
+        assertNull(task1.getActorId());
+
         List<String> pooledActorIds = getPooledActorIds(task1);
         assertEquals(1, pooledActorIds.size());
         assertEquals(NuxeoPrincipal.PREFIX + user1.getName(),
                 pooledActorIds.get(0));
+
         List<Comment> comments = task1.getComments();
         assertEquals(1, comments.size());
+
         Comment comment = comments.get(0);
         assertEquals(user3.getName(), comment.getActorId());
         assertEquals("test comment", comment.getMessage());
@@ -328,17 +335,19 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         final Long taskId = task1.getId();
         task1 = getTask(taskId);
         assertNotNull(task1);
-
         assertEquals("Test Task Name", task1.getName());
-        assertEquals(null, task1.getActorId());
+        assertNull(task1.getActorId());
+
         pooledActorIds = getPooledActorIds(task1);
         assertEquals(1, pooledActorIds.size());
         assertEquals(NuxeoPrincipal.PREFIX + user1.getName(),
                 pooledActorIds.get(0));
+
         comments = task1.getComments();
         // FIXME: cannot add end comment right now
         // assertEquals(2, comments.size());
         assertEquals(1, comments.size());
+
         comment = comments.get(0);
         assertEquals(user3.getName(), comment.getActorId());
         assertEquals("test comment", comment.getMessage());
@@ -369,13 +378,16 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         // check second task
         TaskInstance task2 = tasks.get(0);
         assertEquals("Test Task Name", task2.getName());
-        assertEquals(null, task2.getActorId());
+        assertNull(task2.getActorId());
+
         pooledActorIds = getPooledActorIds(task2);
         assertEquals(1, pooledActorIds.size());
         assertEquals(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS,
                 pooledActorIds.get(0));
+
         comments = task2.getComments();
         assertEquals(1, comments.size());
+
         comment = comments.get(0);
         assertEquals(user3.getName(), comment.getActorId());
         assertEquals("test comment", comment.getMessage());
@@ -434,8 +446,8 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task.getPooledActors());
         assertNotNull(pooledActors);
         List<String> pooledActorIds = new ArrayList<String>(pooledActors.size());
-        for (int i = 0; i < pooledActors.size(); i++) {
-            pooledActorIds.add(pooledActors.get(i).getActorId());
+        for (PooledActor pooledActor : pooledActors) {
+            pooledActorIds.add(pooledActor.getActorId());
         }
         Collections.sort(pooledActorIds);
         return pooledActorIds;

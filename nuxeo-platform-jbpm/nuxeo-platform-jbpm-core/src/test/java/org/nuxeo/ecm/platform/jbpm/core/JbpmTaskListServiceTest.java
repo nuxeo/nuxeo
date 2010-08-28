@@ -62,23 +62,25 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
 
         openSession();
+    }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        JbpmServiceImpl.contexts.set(null);
     }
 
     public void testUserWorkspaceService() throws Exception {
-
         DocumentModel userWorkspace = getUserWorkspace(session);
         assertNotNull(userWorkspace);
-
     }
 
     public void testAdapter() throws ClientException {
-
         DocumentModel doc = session.createDocumentModel("/", "list1",
                 "TaskList");
         doc = session.createDocument(doc);
-
         assertNotNull(doc);
+
         TaskList list = doc.getAdapter(TaskList.class);
         assertNotNull(list);
 
@@ -93,19 +95,16 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
 
         assertEquals(list.getTasks().get(0).getActors(), Arrays.asList("user1",
                 "user2"));
-        assertEquals(list.getTasks().get(0).getDirective(), "directive1");
-        assertEquals(list.getTasks().get(0).getComment(), "comment1");
+        assertEquals("directive1", list.getTasks().get(0).getDirective());
+        assertEquals("comment1", list.getTasks().get(0).getComment());
         assertEquals(list.getTasks().get(0).getDueDate(), date);
-
     }
 
     public void testAdapterFail() throws ClientException {
-
         try {
             session.getRootDocument().getAdapter(TaskList.class);
-            fail("Should throw excpetion");
+            fail("Should throw exception");
         } catch (Exception e) {
-
         }
     }
 
@@ -118,7 +117,6 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         // Create a task list
         TaskList list = service.createTaskList(session, "List");
         assertNotNull(list);
-
         assertEquals("List", list.getName());
 
         // Add a task
@@ -134,8 +132,8 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         assertEquals(1, list.getTasks().size());
         assertEquals(list.getTasks().get(0).getActors(), Arrays.asList("user1",
                 "user2"));
-        assertEquals(list.getTasks().get(0).getDirective(), "directive1");
-        assertEquals(list.getTasks().get(0).getComment(), "comment1");
+        assertEquals("directive1", list.getTasks().get(0).getDirective());
+        assertEquals("comment1", list.getTasks().get(0).getComment());
         assertEquals(list.getTasks().get(0).getDueDate(), date);
 
         // Save the list
@@ -147,7 +145,6 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         // Try to load unknown list
         TaskList listFake = service.getTaskList(session, "ListFake");
         assertNull(listFake);
-
         assertEquals(1, service.getTaskLists(session).size());
 
         // Load the list
@@ -158,8 +155,8 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
 
         assertEquals(list.getTasks().get(0).getActors(), Arrays.asList("user1",
                 "user2"));
-        assertEquals(list.getTasks().get(0).getDirective(), "directive1");
-        assertEquals(list.getTasks().get(0).getComment(), "comment1");
+        assertEquals("directive1", list.getTasks().get(0).getDirective());
+        assertEquals("comment1", list.getTasks().get(0).getComment());
         assertEquals(list.getTasks().get(0).getDueDate(), date);
 
         // Try to delete an unknown it
@@ -173,23 +170,13 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
 
         // Check it is deleted
         TaskList list3 = service.getTaskList(session, list.getUUID());
-
         assertNull(list3);
-
     }
 
     private static DocumentModel getUserWorkspace(CoreSession session)
             throws ClientException {
         UserWorkspaceService uws = Framework.getLocalService(UserWorkspaceService.class);
-        DocumentModel userWorkspace = uws.getCurrentUserPersonalWorkspace(
-                session, null);
-        return userWorkspace;
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        JbpmServiceImpl.contexts.set(null);
+        return uws.getCurrentUserPersonalWorkspace(session, null);
     }
 
 }

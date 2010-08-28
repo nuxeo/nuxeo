@@ -19,21 +19,16 @@
 
 package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
-import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-
-import javax.xml.transform.TransformerException;
 
 import junit.framework.TestCase;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class MD5HasherTest extends TestCase {
 
@@ -76,8 +71,8 @@ public class MD5HasherTest extends TestCase {
 
         document = hasher.trimDocument(document);
         list = document.getChildNodes();
-
         assertNode(list, "foo", 0);
+
         list = list.item(0).getChildNodes();
         assertEquals(1, list.getLength());
         assertNode(list, "bar", 0);
@@ -102,8 +97,7 @@ public class MD5HasherTest extends TestCase {
                 hasher.MD5("The quick brown fox jumps over the lazy dog".getBytes()));
     }
 
-    public void testGetMD5FromURL() throws NoSuchAlgorithmException,
-            SAXException, IOException, TransformerException {
+    public void testGetMD5FromURL() throws Exception {
         assertEquals(hasher.getMD5FromURL(getURL(smallCommentedFile)),
                 hasher.getMD5FromURL(getURL(smallXmlFile)));
     }
