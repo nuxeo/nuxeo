@@ -23,7 +23,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus;
+import org.nuxeo.ecm.core.management.statuses.AdministrativeStatus;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -46,7 +46,7 @@ public class AdministrativeStatusObject extends DefaultObject {
     @Override
     public void initialize(Object... args) {
         super.initialize(args);
-        administrativeStatus = Framework.getLocalService(org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus.class);
+        administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
     }
 
     @GET

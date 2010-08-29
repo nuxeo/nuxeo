@@ -24,8 +24,8 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
-import org.nuxeo.ecm.platform.management.statuses.ProbeInfo;
-import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.statuses.ProbeInfo;
+import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 

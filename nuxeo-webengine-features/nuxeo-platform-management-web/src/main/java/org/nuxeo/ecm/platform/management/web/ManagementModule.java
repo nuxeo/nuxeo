@@ -28,7 +28,8 @@ import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
