@@ -38,8 +38,13 @@ public class AdministrativeStatusProbe implements Probe {
      }
 
     protected static String format(AdministrativeStatus status) {
-        return "<span class=\"server\">" + status.getServerInstanceName() + "</span> is <span class=\"value\">" + status.getValue() + "</span>";
-     }
-
+        StringBuffer buf = new StringBuffer();
+        buf.append("<dl>").append("\n");
+        buf.append(" <dt>server</dt>").append("<dd class='server'>" + status.getServerInstanceName() + "</dd>").append("\n");
+        buf.append(" <dt>host</dt>").append("<dd class='host'>" + Framework.getProperty("org.nuxeo.runtime.server.host", "localhost") + "</dd>").append("\n");
+        buf.append(" <dt>status</dt>").append("<dd class='status'>" + status.getValue() + "</dd>").append("\n");
+        buf.append("</dl>").append("\n");
+        return buf.toString();
+    }
 
 }
