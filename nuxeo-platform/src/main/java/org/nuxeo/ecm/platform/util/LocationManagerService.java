@@ -30,7 +30,6 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author Thierry Delprat
- *
  */
 public class LocationManagerService extends DefaultComponent {
 

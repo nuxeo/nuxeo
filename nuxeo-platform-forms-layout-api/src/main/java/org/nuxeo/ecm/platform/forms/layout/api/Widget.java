@@ -137,7 +137,6 @@ public interface Widget extends Serializable {
      * <p>
      * For instance a standard widget will have a level of 0, and its potential
      * subwidgets will have a level of 1.
-     * </p>
      */
     int getLevel();
 

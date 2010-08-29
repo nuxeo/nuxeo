@@ -20,10 +20,9 @@
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 /**
- * List of built in modes.
+ * List of built-in modes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class BuiltinModes {
 

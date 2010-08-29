@@ -51,43 +51,28 @@ public interface ServerHeartBeat {
 
     /**
      * Is the heart beat updates process started and running?
-     *
-     * @return
      */
     boolean isStarted();
 
-    /**
-     *
-     * @return
-     */
     long getHeartBeatDelay();
 
     /**
      * Returns the list of server running.
-     *
-     * @return
      */
     List<ServerInfo> getInfos();
 
     /**
      * Get the running server information.
-     *
-     * @return
-     * @throws ServerNotFoundException
      */
     ServerInfo getMyInfo() throws ServerNotFoundException;
 
     /**
      * Get the running server information.
-     *
-     * @return
      */
     ServerInfo getInfo(URI serverURI) throws ServerNotFoundException;
 
     /**
      * Get the running server URI.
-     *
-     * @return
      */
     URI getMyURI();
 

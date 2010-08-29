@@ -1108,4 +1108,20 @@ public class UserManagerImpl implements UserManager {
         return administratorGroups;
     }
 
+    public DetachedNuxeoPrincipal getDetachedNuxeoPrincipal(NuxeoPrincipal principal) {
+        DetachedNuxeoPrincipal detachedPrincipal = new DetachedNuxeoPrincipal(principal.getPrincipalId());
+
+        detachedPrincipal.name = principal.getName();
+        detachedPrincipal.firstName = principal.getFirstName();
+        detachedPrincipal.lastName = principal.getLastName();
+        detachedPrincipal.password = principal.getPassword();
+        detachedPrincipal.company = principal.getCompany();
+        detachedPrincipal.groups = principal.getGroups();
+        detachedPrincipal.allGroups = principal.getAllGroups();
+        detachedPrincipal.roles = principal.getRoles();
+        detachedPrincipal.isAdministrator = principal.isAdministrator();
+        detachedPrincipal.isAnonymous = principal.isAnonymous();
+        return detachedPrincipal;
+    }
+
 }

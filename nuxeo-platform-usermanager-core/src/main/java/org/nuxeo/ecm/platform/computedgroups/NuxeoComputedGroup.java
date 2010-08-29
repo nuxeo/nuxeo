@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.runtime.api.Framework;
+
 /**
- *
+
  * Computed group implementation class.
- * Delegate part of the implementation logic to the {@link ComputedGroupsService} that is pluggable
+ * Delegates part of the implementation logic to the
+ * {@link ComputedGroupsService} that is pluggable.
  *
  * @author Thierry Delprat
  *
@@ -35,22 +37,21 @@ public class NuxeoComputedGroup implements ComputedGroup {
     private static final long serialVersionUID = 1L;
 
     protected String name;
-    protected List<String> parents = null;
-    protected List<String> subGroups = null;
-    protected List<String> members = null;
+    protected List<String> parents;
+    protected List<String> subGroups;
+    protected List<String> members;
 
     public NuxeoComputedGroup(String name) {
         this.name=name;
     }
 
     public List<String> getMemberUsers() {
-
-        if (members==null) {
+        if (members == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-            if (cgs!=null) {
-                members =  cgs.getComputedGroupMembers(name);
+            if (cgs != null) {
+                members = cgs.getComputedGroupMembers(name);
             }
-            if (members==null) {
+            if (members == null) {
                 members = new ArrayList<String>();
             }
         }
@@ -62,26 +63,26 @@ public class NuxeoComputedGroup implements ComputedGroup {
     }
 
     public List<String> getParentGroups() {
-        if (parents==null) {
+        if (parents == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-            if (cgs!=null) {
-                parents =  cgs.getComputedGroupParent(name);
+            if (cgs != null) {
+                parents = cgs.getComputedGroupParent(name);
             }
-            if (parents==null) {
-                parents= new ArrayList<String>();
+            if (parents == null) {
+                parents = new ArrayList<String>();
             }
         }
         return parents;
     }
 
     public List<String> getMemberGroups() {
-        if (subGroups==null) {
+        if (subGroups == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-            if (cgs!=null) {
-                subGroups =  cgs.getComputedGroupSubGroups(name);
+            if (cgs != null) {
+                subGroups = cgs.getComputedGroupSubGroups(name);
             }
-            if (subGroups==null) {
-                subGroups =  new ArrayList<String>();
+            if (subGroups == null) {
+                subGroups = new ArrayList<String>();
             }
         }
         return subGroups;

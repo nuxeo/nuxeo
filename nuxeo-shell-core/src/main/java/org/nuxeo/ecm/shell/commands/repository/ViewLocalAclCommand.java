@@ -28,9 +28,9 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * Command for viewing local acl to the current document.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- * 
+ *
  */
 public class ViewLocalAclCommand extends AbstractCommand {
 
@@ -38,7 +38,7 @@ public class ViewLocalAclCommand extends AbstractCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nuxeo.ecm.shell.commands.repository.AbstractCommand#run(org.nuxeo
      * .ecm.shell.CommandLine)
@@ -63,7 +63,7 @@ public class ViewLocalAclCommand extends AbstractCommand {
 
     /**
      * Display current local ace
-     * 
+     *
      * @param session
      * @param doc
      * @throws Exception

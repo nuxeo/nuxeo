@@ -29,9 +29,9 @@ import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
  * Directory ui descriptor
- * 
+ *
  * @author Anahide Tchertchian
- * 
+ *
  */
 @XObject("directory")
 public class DirectoryUIDescriptor implements DirectoryUI {

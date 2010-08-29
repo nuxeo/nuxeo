@@ -43,21 +43,16 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 /**
  * Simple Plugin that imports IO Zip achive into Nuxeo using the IO core service.
  *
- *
  * @author tiry
- *
  */
 public class ExportedZipImporter extends AbstractFileImporter {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1876876876L;
 
     private static final Log log = LogFactory.getLog(ExportedZipImporter.class);
 
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
-        ZipFile zip = null;
+        ZipFile zip;
 
         try {
             zip = new ZipFile(file);
@@ -94,9 +89,6 @@ public class ExportedZipImporter extends AbstractFileImporter {
             return null;
         }
 
-        DocumentRef resultingRef = null;
-
-        DocumentWriter writer = null;
         boolean importWithIds = false;
         DocumentReader reader = new NuxeoArchiveReader(tmp);
         ExportedDocument root = reader.read();
@@ -109,10 +101,11 @@ public class ExportedZipImporter extends AbstractFileImporter {
             }
         }
 
-        writer = new DocumentModelWriter(documentManager, path, 10);
+        DocumentWriter writer = new DocumentModelWriter(documentManager, path, 10);
         reader.close();
         reader = new NuxeoArchiveReader(tmp);
 
+        DocumentRef resultingRef;
         if (overwrite && importWithIds) {
             resultingRef = rootRef;
         } else {

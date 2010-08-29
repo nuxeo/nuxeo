@@ -39,7 +39,6 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
  */
 public class TestLDAPSession extends LDAPDirectoryTestCase {
 
@@ -56,6 +55,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("Administrator", entry.getId());
             assertEquals("Manager", entry.getProperty(USER_SCHEMANAME,
                     "lastName"));
+
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
@@ -65,6 +65,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "firstName"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
+
             List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
@@ -84,6 +85,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
                     "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
+
             try {
                 entry2.getProperty(USER_SCHEMANAME, "userPassword");
                 fail();

@@ -42,9 +42,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class CommandContext extends HashMap<String, Object> {
+
     private static final Log log = LogFactory.getLog(CommandContext.class);
 
     private static final long serialVersionUID = 921391738618179230L;
@@ -153,7 +153,7 @@ public class CommandContext extends HashMap<String, Object> {
     }
 
     public void setRepositoryInstance(RepositoryInstance repository) {
-        this.repositoryInstance = repository;
+        repositoryInstance = repository;
     }
 
     public DocumentModel fetchDocument() throws Exception {
@@ -188,7 +188,7 @@ public class CommandContext extends HashMap<String, Object> {
             if (isLocal()) {
                 // TODO: do here the authentication ...
             } else if (!NuxeoClient.getInstance().isConnected()) {
-                initalizeConnection();
+                initializeConnection();
             }
             // open repository
             String repoName = cmdLine.getOption("repository");
@@ -206,31 +206,31 @@ public class CommandContext extends HashMap<String, Object> {
         return repositoryInstance;
     }
 
-    protected void initalizeConnection() throws Exception {
+    protected void initializeConnection() throws Exception {
         askForCredentials();
         // try connecting to all candidate hosts
         Exception exc = null;
-        for (String h : getCandidateHosts()) {
+        for (String h : candidateHosts) {
             try {
                 log.info("Trying to connect to nuxeo server at " + h + ':'
                         + port + " as "
                         + (username == null ? "system user" : username) + "...");
                 NuxeoClient.getInstance().connect(h, port);
-                setHost(h);
+                host = h;
                 break;
             } catch (CannotConnectException e) {
                 exc = e;
                 continue; // try next host
             }
         }
-        if (getHost() == null) {
+        if (host == null) {
             throw new RuntimeException("Could not connect to server", exc);
         }
         log.info("Connection established");
     }
 
     protected void askForCredentials() throws IOException {
-        if (password == null && isInteractive()) {
+        if (password == null && interactive) {
             if (username == null
                     || SecurityConstants.SYSTEM_USERNAME.equals(username)) {
                 InteractiveCommand.getConsole().printString("Username? ");
@@ -260,7 +260,7 @@ public class CommandContext extends HashMap<String, Object> {
             throw new IllegalArgumentException("No local repository"
                     + (repoName == null ? "" : " named '" + repoName + "'"));
         }
-        return new LocalRepositoryInstanceHandler(repository, getUsername()).getProxy();
+        return new LocalRepositoryInstanceHandler(repository, username).getProxy();
     }
 
     public DocumentModel getDocumentByPath(DocumentRef base, Path path)

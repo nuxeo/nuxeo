@@ -32,9 +32,12 @@ public class ConfigBuilderHelper {
 
     private static final String JPIPE_LIB_PATH_PROPERTY_KEY = "jod.jpipe.lib.path";
 
-    private static String[] UNIX_JPIPE_PATHS = { "/usr/lib/ure/lib" };
+    private static final String[] UNIX_JPIPE_PATHS = { "/usr/lib/ure/lib" };
 
-    private static String[] MAC_JPIPE_PATHS = { "/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib" };
+    private static final String[] MAC_JPIPE_PATHS = { "/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib" };
+
+    private ConfigBuilderHelper() {
+    }
 
     protected static void hackClassLoader() throws IOException {
         try {
@@ -76,17 +79,15 @@ public class ConfigBuilderHelper {
     }
 
     protected static String findJlibPipe() {
-
-        List<String> possiblePathes = new ArrayList<String>();
+        List<String> possiblePaths = new ArrayList<String>();
 
         if (isLinux()) {
-            possiblePathes.addAll(Arrays.asList(UNIX_JPIPE_PATHS));
-        }
-        else if (isMac()) {
-            possiblePathes.addAll(Arrays.asList(MAC_JPIPE_PATHS));
+            possiblePaths.addAll(Arrays.asList(UNIX_JPIPE_PATHS));
+        } else if (isMac()) {
+            possiblePaths.addAll(Arrays.asList(MAC_JPIPE_PATHS));
         }
 
-        for (String path : possiblePathes) {
+        for (String path : possiblePaths) {
             if (new File(path).exists()) {
                 return path;
             }
@@ -103,4 +104,5 @@ public class ConfigBuilderHelper {
         String osName = System.getProperty("os.name").toLowerCase();
         return osName.toLowerCase().startsWith("linux");
     }
+
 }

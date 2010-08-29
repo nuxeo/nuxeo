@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  * The common:size is also maintained as the length of the main blob to preserve
  * backward compatibility.
  * <p>
- * The logics of this event listener is divided into static public methods to
+ * The logic of this event listener is divided into static public methods to
  * make it easy to override this event listener with a custom implementation.
  *
  * @author ogrisel
@@ -70,7 +70,7 @@ public class MimetypeIconUpdater implements EventListener {
 
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
-    MimetypeRegistry mimetypeService = null;
+    MimetypeRegistry mimetypeService;
 
     public MimetypeRegistry getMimetypeRegistry() throws Exception {
         if (mimetypeService == null) {
@@ -107,7 +107,6 @@ public class MimetypeIconUpdater implements EventListener {
             catch (Exception e) {
                 throw new ClientException("Error in MimetypeIconUpdater listener", e);
             }
-
         }
     }
 
@@ -118,6 +117,7 @@ public class MimetypeIconUpdater implements EventListener {
      * @deprecated now we use {@link BlobsExtractor} that cache path fields.
      */
     @Deprecated
+    // TODO: remove
     public void recursivelyUpdateBlobs(DocumentModel doc,
             MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)
             throws Exception {

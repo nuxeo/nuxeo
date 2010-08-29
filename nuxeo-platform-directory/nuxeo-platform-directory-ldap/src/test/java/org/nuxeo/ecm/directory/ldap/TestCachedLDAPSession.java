@@ -26,7 +26,6 @@ import org.nuxeo.ecm.directory.DirectoryCache;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
  */
 public class TestCachedLDAPSession extends TestLDAPSession {
 

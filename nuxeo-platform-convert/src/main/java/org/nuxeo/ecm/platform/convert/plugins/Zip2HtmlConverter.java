@@ -44,7 +44,7 @@ public class Zip2HtmlConverter implements Converter {
             }
             return new ZipCachableBlobHolder(blob);
         } catch (Exception e) {
-            throw new ConversionException("Could not get Zip File from BlobHolder");
+            throw new ConversionException("Could not get Zip File from BlobHolder", e);
         }
     }
 

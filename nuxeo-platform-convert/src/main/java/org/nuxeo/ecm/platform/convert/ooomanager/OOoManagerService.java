@@ -28,7 +28,6 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
  * an OfficeDocumentConverter.
  *
  * @author Laurent Doguin
- *
  */
 public interface OOoManagerService {
 
@@ -38,6 +37,6 @@ public interface OOoManagerService {
 
     void startOOoManager() throws IOException;
 
-    Boolean isOOoManagerStarted();
+    boolean isOOoManagerStarted();
 
 }

@@ -40,7 +40,6 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
 
     private static final Log log = LogFactory.getLog(AsynchronousUnicityCheckListener.class);
 
-
     public void handleEvent(EventBundle events) throws ClientException {
         if (!isUnicityCheckEnabled()) {
             return;
@@ -77,7 +76,5 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
         log.info("Duplicated file detected");
         raiseDuplicatedFileEvent(session, principal, newDoc, existingDocs);
     }
-
-
 
 }

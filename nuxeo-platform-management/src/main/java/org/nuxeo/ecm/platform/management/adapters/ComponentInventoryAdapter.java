@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.management.adapters;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -62,9 +63,7 @@ public class ComponentInventoryAdapter
 
     public Set<String> getProvidedServices() {
         Set<String> names = new HashSet<String>();
-        for (String name : info.getProvidedServiceNames()) {
-            names.add(name);
-        }
+        names.addAll(Arrays.asList(info.getProvidedServiceNames()));
         return names;
     }
 

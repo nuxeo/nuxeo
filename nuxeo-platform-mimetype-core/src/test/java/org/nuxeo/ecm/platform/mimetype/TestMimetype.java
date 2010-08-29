@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 
-/*
+/**
  * Test the mimetype class behavior.
  *
  * @author <a href="ja@nuxeo.com">Julien Anguenot</a>

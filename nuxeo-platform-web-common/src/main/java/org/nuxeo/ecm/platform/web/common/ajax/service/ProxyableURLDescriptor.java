@@ -49,9 +49,6 @@ public class ProxyableURLDescriptor {
 
     protected Pattern compiledPattern;
 
-    public ProxyableURLDescriptor() {
-    }
-
     public String getName() {
         if (name == null) {
             return pattern;

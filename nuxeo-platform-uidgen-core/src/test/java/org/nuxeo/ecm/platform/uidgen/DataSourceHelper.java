@@ -23,7 +23,7 @@ import org.nuxeo.common.jndi.NamingContextFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DataSourceHelper {
 

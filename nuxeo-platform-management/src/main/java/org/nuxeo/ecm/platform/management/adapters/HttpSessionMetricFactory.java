@@ -25,7 +25,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public class HttpSessionMetricFactory extends AbstractResourceFactory {
 
-    protected static HttpSessionMetricAdapter mbeanAdapter =
+    protected static final HttpSessionMetricAdapter mbeanAdapter =
             new HttpSessionMetricAdapter();
 
     public void registerResources() {

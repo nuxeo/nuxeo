@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
- * 
+ *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
 public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {

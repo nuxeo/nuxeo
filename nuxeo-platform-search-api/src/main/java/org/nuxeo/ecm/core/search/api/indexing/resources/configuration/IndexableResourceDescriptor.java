@@ -55,7 +55,7 @@ public class IndexableResourceDescriptor implements IndexableResourceConf {
     protected boolean allFieldsIndexable = false;
 
     @XNodeList(value = "excludedField", type = HashSet.class, componentType = String.class)
-    protected Set<String> excludedFields = Collections.EMPTY_SET;
+    protected Set<String> excludedFields = Collections.emptySet();
 
     @XNodeMap(value = "field", key = "@name", type = HashMap.class, componentType = IndexableFieldDescriptor.class)
     protected Map<String, IndexableResourceDataConf> fields;

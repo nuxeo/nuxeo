@@ -111,9 +111,9 @@ public class TestAction extends NXRuntimeTestCase {
         DefaultActionFilter f3 = (DefaultActionFilter) as.getFilterRegistry()
                 .getFilter("createChild");
 
-        assertEquals(DummyFilter.class, f1.getClass());
-        assertEquals(DefaultActionFilter.class, f2.getClass());
-        assertEquals(DefaultActionFilter.class, f3.getClass());
+        assertSame(DummyFilter.class, f1.getClass());
+        assertSame(DefaultActionFilter.class, f2.getClass());
+        assertSame(DefaultActionFilter.class, f3.getClass());
 
         assertEquals("MyCustomFilter", f1.getId());
         assertEquals("theFilter", f2.getId());

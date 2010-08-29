@@ -40,7 +40,8 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  * @author tiry
  */
 public class ShellExecutor extends AbstractExecutor implements Executor {
-    private static Log log = LogFactory.getLog(ShellExecutor.class);
+
+    private static final Log log = LogFactory.getLog(ShellExecutor.class);
 
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
 

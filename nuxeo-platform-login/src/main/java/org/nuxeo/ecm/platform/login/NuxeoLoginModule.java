@@ -356,7 +356,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
-    private NuxeoPrincipal validateUsernamePassword(String username, String password)
+    protected NuxeoPrincipal validateUsernamePassword(String username, String password)
             throws Exception {
         if (!manager.checkUsernamePassword(username, password)) {
             return null;

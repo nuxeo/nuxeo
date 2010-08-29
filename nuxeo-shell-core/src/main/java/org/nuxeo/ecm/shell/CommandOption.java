@@ -54,7 +54,7 @@ public class CommandOption {
     @XNode("@type")
     String type;
 
-    @XContent()
+    @XContent
     String help;
 
     public CommandOption() {

@@ -186,17 +186,16 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
     // ----- HtmlSanitizerService -----
 
     public void sanitizeDocument(DocumentModel doc) throws ClientException {
-        if (getPolicy() == null) {
+        if (policy == null) {
             log.error("Cannot sanitize, no policy registered");
             return;
         }
-        for (HtmlSanitizerDescriptor sanitizer : getSanitizers()) {
+        for (HtmlSanitizerDescriptor sanitizer : sanitizers) {
             if (!sanitizer.types.isEmpty()
                     && !sanitizer.types.contains(doc.getType())) {
                 continue;
             }
             for (FieldDescriptor field : sanitizer.fields) {
-                Property prop;
                 String fieldName = field.getContentField();
                 String filterField = field.getFilterField();
                 if (filterField!=null) {
@@ -210,6 +209,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                         continue;
                     }
                 }
+                Property prop;
                 try {
                     prop = doc.getProperty(fieldName);
                 } catch (PropertyNotFoundException e) {
@@ -234,12 +234,12 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
     }
 
     public String sanitizeString(String string, String info) {
-        if (getPolicy() == null) {
+        if (policy == null) {
             log.error("Cannot sanitize, no policy registered");
             return string;
         }
         try {
-            CleanResults cr = new AntiSamy().scan(string, getPolicy());
+            CleanResults cr = new AntiSamy().scan(string, policy);
             for (Object err : cr.getErrorMessages()) {
                 log.debug(String.format("Sanitizing %s: %s", info == null ? ""
                         : info, err));

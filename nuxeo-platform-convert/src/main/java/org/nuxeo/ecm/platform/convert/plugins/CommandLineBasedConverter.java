@@ -56,7 +56,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected CommandLineExecutorService cls;
 
-    protected CommandLineExecutorService getCommandeLineService() {
+    protected CommandLineExecutorService getCommandLineService() {
         if (cls == null) {
             cls = Framework.getLocalService(CommandLineExecutorService.class);
         }
@@ -92,7 +92,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected String getCommandName(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         String commandName = initParameters.get(CMD_NAME_PARAMETER);
-        if ((parameters != null) && (parameters.containsKey(CMD_NAME_PARAMETER))) {
+        if (parameters != null && parameters.containsKey(CMD_NAME_PARAMETER)) {
             commandName = (String) parameters.get(CMD_NAME_PARAMETER);
         }
         return commandName;
@@ -127,8 +127,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     }
 
-    protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters,
-            Map<String, String> parameters) throws ConversionException {
+    protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters, Map<String, String> parameters) throws ConversionException {
         CmdParameters params = new CmdParameters();
         List<String> filesToDelete = new ArrayList<String>();
 
@@ -149,30 +148,22 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
                 }
             }
 
-            ExecResult result = getCommandeLineService().execCommand(commandName, params);
+            ExecResult result = getCommandLineService().execCommand(commandName, params);
 
             if (!result.isSuccessful()) {
-                throw new ConversionException("CommandLine returned code "
-                        + result.getReturnCode() + ":\n  "
-                        + StringUtils.join(result.getOutput(), "\n  "),
-                        result.getError());
+                throw new ConversionException("CommandLine returned code " + result.getReturnCode() + ":\n  " + StringUtils.join(result.getOutput(), "\n  "), result.getError());
             }
 
             return new CmdReturn(params, result.getOutput());
-        }
-        catch (CommandNotAvailable e) {
+        } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions
             throw new ConversionException("Unable to find targetCommand", e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ConversionException("Error while converting via CommandLineService", e);
 
-        }
-        finally {
-            if (filesToDelete != null) {
-                for (String fileToDelete : filesToDelete) {
-                    new File(fileToDelete).delete();
-                }
+        } finally {
+            for (String fileToDelete : filesToDelete) {
+                new File(fileToDelete).delete();
             }
         }
     }
@@ -182,7 +173,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         if (initParameters == null) {
             initParameters = new HashMap<String, String>();
         }
-        getCommandeLineService();
+        getCommandLineService();
     }
 
     public ConverterCheckResult isConverterAvailable() {
@@ -192,7 +183,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             return new ConverterCheckResult();
         }
 
-        CommandAvailability ca = getCommandeLineService().getCommandAvailability(commandName);
+        CommandAvailability ca = getCommandLineService().getCommandAvailability(commandName);
 
         if (ca.isAvailable()) {
             return new ConverterCheckResult();

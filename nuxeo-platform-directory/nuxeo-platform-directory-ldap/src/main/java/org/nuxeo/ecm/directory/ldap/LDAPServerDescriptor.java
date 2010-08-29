@@ -322,7 +322,7 @@ public class LDAPServerDescriptor {
      * @author Bob Browning
      */
     protected interface LdapEntry {
-        public abstract String getUrl() throws NamingException;
+        String getUrl() throws NamingException;
     }
 
     /**
@@ -331,10 +331,11 @@ public class LDAPServerDescriptor {
      * @author Bob Browning
      */
     protected class LdapEntryDescriptor implements LdapEntry {
+
         protected LDAPUrlDescriptor url;
 
         public LdapEntryDescriptor(LDAPUrlDescriptor descriptor) {
-            this.url = descriptor;
+            url = descriptor;
         }
 
         @Override
@@ -419,22 +420,29 @@ public class LDAPServerDescriptor {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (!super.equals(obj))
+            }
+            if (!super.equals(obj)) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             LdapEntryDomain other = (LdapEntryDomain) obj;
-            if (!getOuterType().equals(other.getOuterType()))
+            if (!getOuterType().equals(other.getOuterType())) {
                 return false;
+            }
             if (domain == null) {
-                if (other.domain != null)
+                if (other.domain != null) {
                     return false;
-            } else if (!domain.equals(other.domain))
+                }
+            } else if (!domain.equals(other.domain)) {
                 return false;
-            if (useSsl != other.useSsl)
+            }
+            if (useSsl != other.useSsl) {
                 return false;
+            }
             return true;
         }
     }

@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
 
 /**
  * LockCoordinator implementation.
- * 
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
 public class LockCoordinatorImpl implements LockCoordinator,

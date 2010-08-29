@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Provides different UID generators based on the given doc type. It is up to
  * each UID generator to use the provided sequencer.
- * 
+ *
  * @author DM
  */
 public final class UIDGenFactory {

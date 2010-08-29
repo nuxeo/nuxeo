@@ -51,9 +51,6 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
 
     private PluggableAuthenticationService service;
 
-    public NuxeoSecurityExceptionHandler() {
-    }
-
     @Override
     public void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,

@@ -72,7 +72,6 @@ import org.nuxeo.runtime.model.Extension;
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
-
 public class FileManagerService extends DefaultComponent implements FileManager {
 
     public static final ComponentName NAME = new ComponentName(

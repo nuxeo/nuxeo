@@ -40,14 +40,16 @@ public class LayoutRowImpl implements LayoutRow {
 
     final Map<String, Serializable> properties;
 
+    // Not used
     public LayoutRowImpl(Widget[] widgets) {
         this.widgets = widgets;
-        this.properties = null;
+        properties = null;
     }
 
+    //Not used
     public LayoutRowImpl(List<Widget> widgets) {
         this.widgets = widgets.toArray(new Widget[] {});
-        this.properties = null;
+        properties = null;
     }
 
     public LayoutRowImpl(List<Widget> widgets,

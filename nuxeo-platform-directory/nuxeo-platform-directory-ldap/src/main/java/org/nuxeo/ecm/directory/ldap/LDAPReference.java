@@ -94,10 +94,10 @@ public class LDAPReference extends AbstractReference {
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
 
     @XNode("@staticAttributeId")
-    protected String staticAttributeId = null;
+    protected String staticAttributeId;
 
     @XNode("@dynamicAttributeId")
-    protected String dynamicAttributeId = null;
+    protected String dynamicAttributeId;
 
     @XNode("@field")
     public void setFieldName(String fieldName) {

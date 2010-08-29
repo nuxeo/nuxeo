@@ -42,9 +42,12 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+
 public class DigestComputer implements EventListener {
 
-    private Boolean initDone = false;
+    private boolean initDone = false;
 
     private List<String> xpathFields;
 
@@ -54,7 +57,7 @@ public class DigestComputer implements EventListener {
 
     private static final Log log = LogFactory.getLog(DigestComputer.class);
 
-    private Boolean initIfNeeded() {
+    private boolean initIfNeeded() {
         if (!initDone) {
             try {
                 FileManager fm = Framework.getService(FileManager.class);
@@ -128,16 +131,15 @@ public class DigestComputer implements EventListener {
 
         EventContext ctx = event.getContext();
         String evt = event.getName();
-        if (DocumentEventTypes.ABOUT_TO_CREATE.equals(evt)
-                || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(evt)) {
+        if (ABOUT_TO_CREATE.equals(evt) || BEFORE_DOC_UPDATE.equals(evt)) {
 
             if (ctx instanceof DocumentEventContext) {
                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
-                    DocumentModel doc = docCtx.getSourceDocument();
-                    if (doc==null || (doc.isProxy())) {
-                        return;
-                    }
-                    addDigestToDocument(doc);
+                DocumentModel doc = docCtx.getSourceDocument();
+                if (doc == null || doc.isProxy()) {
+                    return;
+                }
+                addDigestToDocument(doc);
             }
         }
     }

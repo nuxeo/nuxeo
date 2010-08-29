@@ -83,8 +83,6 @@ public final class IndexableResourcesFactory {
             return null;
         }
 
-        String sid = null;
-
         // Ask resource configurations for this given doctype.
         String docType = dm.getType();
         IndexableDocType docTypeConf = getIndexableDocType(docType);
@@ -113,6 +111,7 @@ public final class IndexableResourcesFactory {
 
         // Computes corresponding indexable resources.
         List<IndexableResource> resources = new ArrayList<IndexableResource>();
+        String sid = null;
         if (resourceNames != null) {
             for (String resourceName : resourceNames) {
                 IndexableResourceConf conf = getResourceConf(resourceName, false);

@@ -56,8 +56,8 @@ public class PasswordHelper {
      * @return {@code true} if the password is hashed
      */
     public static boolean isHashed(String password) {
-        return password.startsWith(PasswordHelper.HSSHA)
-                || password.startsWith(PasswordHelper.HSMD5);
+        return password.startsWith(HSSHA)
+                || password.startsWith(HSMD5);
     }
 
     /**
@@ -82,7 +82,7 @@ public class PasswordHelper {
             digestalg = MD5;
             prefix = HSMD5;
         } else {
-            throw new RuntimeException("Unknwon algorithm: " + algorithm);
+            throw new RuntimeException("Unknown algorithm: " + algorithm);
         }
 
         byte[] salt = new byte[SALT_LEN];

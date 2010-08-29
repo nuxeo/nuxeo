@@ -15,7 +15,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-
 /**
  * FileManagerServiceCommon plugin default interface.
  * <p>
@@ -28,6 +27,7 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
  * @deprecated use {@link FileImporter} instead
  */
 @Deprecated
+// TODO: remove (not used)
 public interface Plugin extends FileImporter {
 
 }

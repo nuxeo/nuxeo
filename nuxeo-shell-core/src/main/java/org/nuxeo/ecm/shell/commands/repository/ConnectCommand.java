@@ -26,7 +26,6 @@ import org.nuxeo.ecm.shell.CommandLine;
 
 /**
  * @author jcarsique
- * 
  */
 public class ConnectCommand extends AbstractCommand {
     private static final Log log = LogFactory.getLog(ConnectCommand.class);
@@ -45,7 +44,7 @@ public class ConnectCommand extends AbstractCommand {
                 context.setPassword(parameters[1]);
             }
         }
-        
+
         try {
             log.info("First try to connect...");
             context.getRepositoryInstance().getRootDocument();

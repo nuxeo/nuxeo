@@ -72,9 +72,9 @@ public class WhereClauseDescriptor {
                         escaper);
                 if (predicateString == null) {
                     continue;
-                } else {
-                    predicateString = predicateString.trim();
                 }
+
+                predicateString = predicateString.trim();
                 if (!predicateString.equals("")) {
                     elements.add(predicateString);
                 }

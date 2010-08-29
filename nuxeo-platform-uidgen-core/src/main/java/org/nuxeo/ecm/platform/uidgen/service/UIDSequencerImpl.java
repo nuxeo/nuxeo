@@ -29,13 +29,12 @@ import org.nuxeo.ecm.platform.uidgen.ejb.UIDSequenceBean;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This implementation is using a static persistence provider to be able to
+ * This implementation uses a static persistence provider to be able to
  * instantiate this class without passing by Framework.getService -> this is to
  * avoid potential problems do to sequencer factories. Anyway sequencer
- * factories should be removed (I don't think they are really needed)
- * 
+ * factories should be removed (I don't think they are really needed).
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class UIDSequencerImpl implements UIDSequencer {
 
@@ -97,7 +96,7 @@ public class UIDSequencerImpl implements UIDSequencer {
     }
 
     public int getNext(EntityManager em, String key) {
-        UIDSequenceBean seq = null;
+        UIDSequenceBean seq;
         try {
             seq = (UIDSequenceBean) em.createNamedQuery("UIDSequence.findByKey").setParameter(
                     "key", key).getSingleResult();

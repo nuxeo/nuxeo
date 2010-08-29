@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.Serializable;
@@ -19,13 +36,13 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     protected BlobHolder buildResult(List<String> cmdOutput,
             CmdParameters cmdParams) throws ConversionException {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (cmdOutput!=null) {
             for (String out : cmdOutput) {
                 if (out!=null && out.trim().length()>0) {
                     sb.append(out.trim());
-                    sb.append("\n");
+                    sb.append('\n');
                 }
             }
         }
@@ -50,6 +67,5 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
             Map<String, Serializable> parameters) throws ConversionException {
         return new HashMap<String, String>();
     }
-
 
 }

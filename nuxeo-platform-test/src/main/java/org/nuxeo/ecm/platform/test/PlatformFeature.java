@@ -50,7 +50,7 @@ public class PlatformFeature extends SimpleFeature {
             throws Exception {
         //NuxeoRunner.bindDatasource("nxsqldirectory", createDataSource("jdbc:hsqldb:mem:directories"));
     }
-    
+
     public static DataSource createDataSource(String dbName) {
         jdbcDataSource datasource = new jdbcDataSource();
         datasource.setDatabase(dbName);
@@ -59,5 +59,5 @@ public class PlatformFeature extends SimpleFeature {
         return datasource;
     }
 
-    
+
 }

@@ -30,7 +30,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author jcarsique Command for initializing transaction management
- * 
+ *
  */
 public class InitTXCommand extends AbstractCommand {
     private static final Log log = LogFactory.getLog(InitTXCommand.class);

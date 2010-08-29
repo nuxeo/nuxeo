@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
  * Remote interface for layout manager.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface LayoutManagerRemote extends LayoutManager {
 

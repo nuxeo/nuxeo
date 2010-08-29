@@ -18,11 +18,7 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -37,7 +33,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
  *
  */
 public abstract class AbstractAttributeBasedGroupComputer extends
-        AbstractGroupComputer implements GroupComputer {
+        AbstractGroupComputer {
 
     protected abstract String getAttributeForGroupComputation();
 
@@ -100,7 +96,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         String grpName = (String) filter.get(getUM().getGroupIdField());
         if (grpName != null) {
             Map<String, Serializable> gFilter = new HashMap<String, Serializable>();
-            HashSet<String> gFulltext = new HashSet<String>();
+            Set<String> gFulltext = new HashSet<String>();
             gFilter.put(getAttributeForGroupComputation(), grpName);
             gFulltext.add(getAttributeForGroupComputation());
             for (DocumentModel userDoc : getUM().searchUsers(gFilter, gFulltext)) {

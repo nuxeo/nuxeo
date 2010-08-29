@@ -108,7 +108,7 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
-    private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
+    private boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
             DocumentFormat destinationFormat) {
 
         // TODO: solve this
@@ -154,7 +154,7 @@ public class JODBasedConverter implements ExternalConverter {
 
                 // Get original file extension
                 String ext = inputBlob.getFilename();
-                int dotPosition = ext.lastIndexOf(".");
+                int dotPosition = ext.lastIndexOf('.');
                 if (dotPosition == -1) {
                     ext = ".bin";
                 } else {
@@ -173,7 +173,6 @@ public class JODBasedConverter implements ExternalConverter {
                 if (sourceMimetype != null) {
                     // Try to fetch it from the registry.
                     sourceFormat = getSourceFormat(sourceMimetype);
-
                 }
 
                 // If not found in the registry or not given as a parameter.
@@ -251,7 +250,7 @@ public class JODBasedConverter implements ExternalConverter {
             } catch (Exception e) {
                 log.error(
                         String.format(
-                                "An error occured trying to convert a file to from %s to %s: %s",
+                                "An error occurred trying to convert a file to from %s to %s: %s",
                                 sourceMimetype, getDestinationMimeType(),
                                 e.getMessage()), e);
                 throw new ConversionException("Error in JODConverter", e);

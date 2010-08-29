@@ -27,7 +27,6 @@ import java.io.Serializable;
  * Will help to identify a document field.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface FieldDefinition extends Serializable {
 

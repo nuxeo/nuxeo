@@ -39,6 +39,8 @@ import org.osgi.framework.FrameworkListener;
 public class OOoManagerComponent extends DefaultComponent implements
         OOoManagerService, FrameworkListener {
 
+    protected static final Log log = LogFactory.getLog(OOoManagerComponent.class);
+
     private static final String CONNECTION_PROTOCOL_PROPERTY_KEY = "jod.connection.protocol";
 
     private static final String MAX_TASKS_PER_PROCESS_PROPERTY_KEY = "jod.max.tasks.per.process";
@@ -56,8 +58,6 @@ public class OOoManagerComponent extends DefaultComponent implements
     private static OfficeManager officeManager;
 
     protected OOoManagerDescriptor descriptor = new OOoManagerDescriptor();
-
-    protected Log log = LogFactory.getLog(OOoManagerComponent.class);
 
     protected boolean started = false;
 
@@ -185,7 +185,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
     }
 
-    public Boolean isOOoManagerStarted() {
+    public boolean isOOoManagerStarted() {
         return started;
     }
 

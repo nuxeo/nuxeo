@@ -47,14 +47,14 @@ public abstract class AbstractUnicityChecker {
 
     protected FileManager fileManager;
 
-    protected static Boolean unicityCheckEnabled = null;
+    protected static Boolean unicityCheckEnabled;
 
     protected static final String DUPLICATED_FILE = "duplicatedFile";
 
     protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session,
             Event event) {
 
-        List<String> xpathFields = null;
+        List<String> xpathFields;
 
         try {
             xpathFields = getFileManagerService().getFields();
@@ -63,16 +63,14 @@ public abstract class AbstractUnicityChecker {
             return;
         }
 
-        if (xpathFields == null || xpathFields.size() == 0) {
+        if (xpathFields == null || xpathFields.isEmpty()) {
             unicityCheckEnabled = false;
             log.info("Unicity check has been automatically disabled");
             return;
         }
 
-        Blob blob = null;
-
         for (String field : xpathFields) {
-            blob = null;
+            Blob blob;
             try {
                 blob = (Blob) doc2Check.getPropertyValue(field);
             } catch (PropertyNotFoundException pnfe) {
@@ -147,7 +145,7 @@ public abstract class AbstractUnicityChecker {
                 unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
             } catch (ClientException e) {
                 log.error("Unable to get FileManagerService", e);
-                unicityCheckEnabled=false;
+                unicityCheckEnabled = false;
             }
         }
         return unicityCheckEnabled;

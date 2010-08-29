@@ -1,24 +1,36 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.directory.ldap.filter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * </p>This class is used to apply corrections to a filter expression. It is
- * mainly used for filters that come from an Active Directory.</p>
- *
+ * This class is used to apply corrections to a filter expression. It is
+ * mainly used for filters that come from an Active Directory.
  * <p>
  * You can apply the corrections you want, in the desired order. The available
  * jobs are listed in the enum FilterJobs.
- * </p>
- *
  * <p>
  * Example: <code>FilterExpressionCorrector.correctFilter(filterValue,
                             FilterJobs.JOB1, FilterJobs.JOB2);</code>
- * </p>
  *
  * @author Nicolas Ulrich <nulrich@nuxeo.com>
- *
  */
 public class FilterExpressionCorrector {
 
@@ -48,9 +60,9 @@ public class FilterExpressionCorrector {
     }
 
     /**
-     * This job find "!expression" and replace it by "!(expression)"
+     * This job finds "!expression" and replaces it by "!(expression)"
      */
-    private static ICorrectorJob notJob = new ICorrectorJob() {
+    private static final ICorrectorJob notJob = new ICorrectorJob() {
 
         public String run(final String filter) {
 
@@ -82,14 +94,13 @@ public class FilterExpressionCorrector {
     /**
      * Apply the chosen Correctors to the filter expression
      *
-     * @param filterExpresion The filter expression to correct
+     * @param filterExpression The filter expression to correct
      * @param jobs List of the jobs you want to apply.
-     * @return
      */
-    public static String correctFilter(final String filterExpresion,
+    public static String correctFilter(final String filterExpression,
             final FilterJobs... jobs) {
 
-        String result = filterExpresion;
+        String result = filterExpression;
 
         for (FilterJobs job : jobs) {
             result = job.run(result);

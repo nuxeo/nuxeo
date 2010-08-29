@@ -478,4 +478,9 @@ public interface UserManager extends Serializable {
     @Deprecated
     void updateGroup(NuxeoGroup group) throws ClientException;
 
+    /**
+     * Returns a detachedNuxeoPrincipal
+     *
+     */
+    DetachedNuxeoPrincipal getDetachedNuxeoPrincipal(NuxeoPrincipal principal);
 }

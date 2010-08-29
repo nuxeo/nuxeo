@@ -52,7 +52,7 @@ public class FilterRule {
 
     String[] conditions;
 
-    protected String cacheKey = null;
+    protected String cacheKey;
 
     public FilterRule() {
     }
@@ -75,9 +75,7 @@ public class FilterRule {
     }
 
     /**
-     * Preprocess conditions to add the necessary EL to have variables resolved via SeamContext
-     *
-     * @param conditions
+     * Preprocess conditions to add the necessary EL to have variables resolved via SeamContext.
      */
     private static void preprocessConditions(String[] conditions) {
         for (int i = 0; i < conditions.length; i++) {

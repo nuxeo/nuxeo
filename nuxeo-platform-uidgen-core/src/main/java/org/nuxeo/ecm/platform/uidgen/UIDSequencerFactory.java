@@ -23,9 +23,9 @@ package org.nuxeo.ecm.platform.uidgen;
  *             useless. If you need to customize the {@link UIDGenerator} then
  *             extend {@link UIDAbstractGenerator}. The sequencer is simply
  *             returning unique integers for a given key.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface UIDSequencerFactory {
 

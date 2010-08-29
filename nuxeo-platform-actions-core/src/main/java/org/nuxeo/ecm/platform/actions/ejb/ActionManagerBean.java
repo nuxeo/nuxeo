@@ -60,12 +60,12 @@ public class ActionManagerBean implements ActionManager {
         }
     }
 
-    public List<Action> getActions(String category, ActionContext ctx) {
-        return getActions(category, ctx, true);
+    public List<Action> getActions(String category, ActionContext context) {
+        return getActions(category, context, true);
     }
 
-    public List<Action> getActions(String category, ActionContext ctx, boolean hideUnavailableActions) {
-        return actionService.getActions(category, ctx, hideUnavailableActions);
+    public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
+        return actionService.getActions(category, context, hideUnavailableActions);
     }
 
     public boolean isEnabled(String actionId, ActionContext context) {

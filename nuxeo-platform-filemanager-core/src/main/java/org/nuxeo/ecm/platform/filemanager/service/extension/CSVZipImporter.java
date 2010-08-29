@@ -58,17 +58,14 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class CSVZipImporter extends AbstractFileImporter {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private static String MARKER = "meta-data.csv";
+    private static final String MARKER = "meta-data.csv";
 
     private static final Log log = LogFactory.getLog(CSVZipImporter.class);
 
     public static ZipFile getArchiveFileIfValid(File file) throws IOException {
-        ZipFile zip = null;
+        ZipFile zip;
 
         try {
             zip = new ZipFile(file);
@@ -190,8 +187,8 @@ public class CSVZipImporter extends AbstractFileImporter {
                     }
                 }
 
-                Serializable fieldValue = null;
                 if (field != null) {
+                    Serializable fieldValue = null;
                     if (field.getType().isSimpleType()) {
                         if (field.getType() instanceof StringType) {
                             fieldValue = stringValue;
@@ -200,8 +197,8 @@ public class CSVZipImporter extends AbstractFileImporter {
                         } else if (field.getType() instanceof LongType) {
                             fieldValue = Long.parseLong(stringValue);
                         } else if (field.getType() instanceof DateType) {
-                            Date date;
                             try {
+                                Date date;
                                 if (stringValue.length() == 10) {
                                     date = new SimpleDateFormat("dd/MM/yyyy").parse(stringValue);
                                 } else if (stringValue.length() == 8) {

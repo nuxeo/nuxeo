@@ -67,7 +67,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
         @Override
         protected DNSServiceResolver getSRVResolver() {
             return service;
-        };
+        }
 
     }
 
