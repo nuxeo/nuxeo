@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.tests">
+  
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="administrativeStatusListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.management.statuses.TestStatuses$Listener">
+        <event>serverActivated</event>
+        <event>serverPassivated</event>
+    </listener>
+
+  </extension>
+
+</component>
