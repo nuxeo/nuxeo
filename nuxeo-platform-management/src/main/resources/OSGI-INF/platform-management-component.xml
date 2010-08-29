@@ -10,9 +10,9 @@
   <implementation class="org.nuxeo.ecm.platform.management.PlatformManagementComponent"/>
   
   <extension 
-  	target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
-  	point="schedule">
-  	<schedule id="probeSchedule">
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+    <schedule id="probeSchedule">
           <username>ProbeScheduler</username>
           <password></password>
           <eventId>probeSchedule</eventId>
@@ -23,7 +23,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="probeScheduleListener" enabled="false" async="false" postCommit="false" class="org.nuxeo.ecm.platform.management.statuses.ProbeScheduleListener">
-		<event>probeSchedule</event>
+        <event>probeSchedule</event>
     </listener>
   </extension>
   

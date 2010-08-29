@@ -1,6 +1,5 @@
 Export-Package: org.nuxeo.ecm.platform.management.adapters,
- org.nuxeo.ecm.platform.management.statuses,
- org.nuxeo.ecm.platform.management.statuses.probes
+ org.nuxeo.ecm.platform.management.statuses
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
