@@ -149,8 +149,6 @@ public class CommentService extends DefaultAdapter {
         return redirect(dobj.getPath());
     }
 
-
-
     public static CommentManager getCommentManager() throws Exception {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         if (commentManager == null) {
@@ -172,6 +170,7 @@ public class CommentService extends DefaultAdapter {
     /**
      * Can be overwritten to allow creation of localized comment. Defaults to
      * create comment in comments root.
+     *
      * @param session the core session
      * @param target commented document
      * @param comment comment itself
@@ -184,6 +183,7 @@ public class CommentService extends DefaultAdapter {
 
     /**
      * Can be overwritten to allow workflow. Defaults to publish right away.
+     *
      * @param session the core session
      * @param target commented document
      * @param comment comment itself
@@ -195,6 +195,7 @@ public class CommentService extends DefaultAdapter {
 
     /**
      * Can be overwritten to allow workflow. Defaults to delete right away.
+     *
      * @param target commented document
      * @param comment comment itself
      */
@@ -205,6 +206,7 @@ public class CommentService extends DefaultAdapter {
 
     /**
      * Can be overwritten to allow workflow. Defaults to reject and delete right away.
+     *
      * @param target commented document
      * @param comment comment itself
      */
@@ -217,6 +219,7 @@ public class CommentService extends DefaultAdapter {
 
     /**
      * Can be overwritten to allow workflow. Defaults to approve right away.
+     *
      * @param target commented document
      * @param comment comment itself
      */

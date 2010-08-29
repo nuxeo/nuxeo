@@ -39,7 +39,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class GadgetService {
 
     /**
-     * Registering avaible service
+     * Registering available service
      */
     public static native void registerService()
     /*-{

@@ -41,9 +41,9 @@ public class OpenSocialDescriptor {
      * For example, sometimes the interpretation of a gadget results in a call
      * to the "make request" servlet for access to external resources. This
      * symmetric key is used to sign the message going from shindig to shindig
-     * to verify that the message receivied by the make request servlet is not
+     * to verify that the message received by the make request servlet is not
      * "forged".
-     *
+     * <p>
      * This value can and, in most cases should, be left empty. When it is left
      * empty, the system will use a random set of bytes for this key.
      */
@@ -54,7 +54,7 @@ public class OpenSocialDescriptor {
      * This is the URL that shindig should tell other servers to use to call us
      * back on. If you have changed where nuxeo is mounted (not in /nuxeo) you
      * may need to set this to have your prefix.
-     *
+     * <p>
      * If you are running nuxeo in the default configuration, you should not
      * need to configure this.
      */
@@ -103,7 +103,7 @@ public class OpenSocialDescriptor {
      * paste the "certificate" portion of the testkey.pem file into this field.
      * It is not used by nuxeo in any way, but <b>will</b> be needed when you
      * configure an external provider.
-     *
+     * <p>
      * Note that many providers accept the certificate then run a computation to
      * extract the public key from it. This means that the value displayed when
      * you look at the provider configuration may be different than the one you

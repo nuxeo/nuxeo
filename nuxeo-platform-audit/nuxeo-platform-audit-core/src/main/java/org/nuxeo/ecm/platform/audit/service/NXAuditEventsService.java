@@ -574,7 +574,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
         if (log.isDebugEnabled()) {
-            log.debug("synched " + nbAddedEntries + " entries on " + path);
+            log.debug("synced " + nbAddedEntries + " entries on " + path);
         }
 
         return nbAddedEntries;
@@ -583,7 +583,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     protected long doSyncNode(LogEntryProvider provider, CoreSession session,
             DocumentModel node, boolean recurs) {
 
-        long nbSynchedEntries = 1;
+        long nbSyncedEntries = 1;
 
         Principal principal = guardedPrincipal(session);
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
@@ -599,21 +599,21 @@ public class NXAuditEventsService extends DefaultComponent implements
                 } else {
                     provider.addLogEntry(doCreateAndFillEntryFromDocument(
                             child, principal));
-                    nbSynchedEntries += 1;
+                    nbSyncedEntries += 1;
                 }
             }
         } catch (AuditException e) {
-            throw new AuditRuntimeException("error occured while synching", e);
+            throw new AuditRuntimeException("error occurred while syncing", e);
         }
 
         if (recurs) {
             for (DocumentModel folderChild : folderishChildren) {
-                nbSynchedEntries += doSyncNode(provider, session, folderChild,
+                nbSyncedEntries += doSyncNode(provider, session, folderChild,
                         recurs);
             }
         }
 
-        return nbSynchedEntries;
+        return nbSyncedEntries;
     }
 
     public void addLogEntry(final LogEntry entry) {

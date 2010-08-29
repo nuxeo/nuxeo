@@ -120,7 +120,7 @@ public class RestTest {
     public void testInvalidLogin() throws Exception {
         try {
             client.getSession("foo", "bar");
-            fail("login is suposed to fail");
+            fail("login is supposed to fail");
         } catch (RemoteException e) {
             assertEquals(401, e.getStatus());
         }

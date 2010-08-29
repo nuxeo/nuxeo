@@ -64,7 +64,7 @@ public class PictureTilingCacheInfo {
 
     protected String syncShrink = "oneOncePerInstance";
 
-    protected Date lastAccessTime = null;
+    protected Date lastAccessTime;
 
     protected void updateAccessTime() {
         lastAccessTime = new Date();

@@ -36,22 +36,22 @@ public class HideShowAnnotationsButton extends Composite {
 
     public HideShowAnnotationsButton(
             final AnnotationController annotationController) {
-        final TranslationConstants translationContants = GWT.create(TranslationConstants.class);
+        final TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
         final ToggleButton button = new ToggleButton(
-                annotationController.isAnnotationsVisible() ? translationContants.hideAnnotations()
-                        : translationContants.showAnnotations());
+                annotationController.isAnnotationsVisible() ? translationConstants.hideAnnotations()
+                        : translationConstants.showAnnotations());
         button.setStyleName("annotation-hide-show-button");
         button.setDown(!annotationController.isAnnotationsVisible());
 
         button.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 if (!button.isDown()) {
-                    button.setTitle(translationContants.hideAnnotations());
-                    button.setText(translationContants.hideAnnotations());
+                    button.setTitle(translationConstants.hideAnnotations());
+                    button.setText(translationConstants.hideAnnotations());
                     showAnnotations();
                 } else {
-                    button.setTitle(translationContants.showAnnotations());
-                    button.setText(translationContants.showAnnotations());
+                    button.setTitle(translationConstants.showAnnotations());
+                    button.setText(translationConstants.showAnnotations());
                     hideAnnotations();
                 }
             }

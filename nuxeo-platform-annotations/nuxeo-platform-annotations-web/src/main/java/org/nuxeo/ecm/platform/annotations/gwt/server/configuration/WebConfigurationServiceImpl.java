@@ -67,14 +67,14 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     protected DocumentViewCodecManager documentViewCodecManager;
 
-    private NuxeoPrincipal curentUser;
+    private NuxeoPrincipal currentUser;
 
     static {
         try {
             webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
         } catch (Exception e) {
             log.error(
-                    "Unnable to find WebAnnotationConfigurationService service",
+                    "Unable to find WebAnnotationConfigurationService service",
                     e);
         }
     }
@@ -98,7 +98,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
         UserInfoMapper userInfoMapper = webAnnotationConfigurationService.getUserInfoMapper();
         if (userInfoMapper != null) {
-            conf.setUserInfo(userInfoMapper.getUserInfo(curentUser));
+            conf.setUserInfo(userInfoMapper.getUserInfo(currentUser));
         }
 
         WebPermission webPermission = webAnnotationConfigurationService.getWebPermission();
@@ -122,7 +122,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
     @Override
     protected void service(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        curentUser = (NuxeoPrincipal) request.getUserPrincipal();
+        currentUser = (NuxeoPrincipal) request.getUserPrincipal();
         super.service(request, response);
     }
 
@@ -145,7 +145,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
             }
         }
 
-        return true; // if any error, default to autorize annotations
+        return true; // if any error, default to authorize annotations
     }
 
     protected DocumentViewCodecManager getDocumentViewCodecManager() {

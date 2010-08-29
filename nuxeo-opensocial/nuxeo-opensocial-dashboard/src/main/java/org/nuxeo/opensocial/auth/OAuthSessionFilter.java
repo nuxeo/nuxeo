@@ -70,7 +70,6 @@ public class OAuthSessionFilter implements NuxeoAuthenticationPlugin {
 
     public void initPlugin(Map<String, String> parameters) {
         // nothing to do
-
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {

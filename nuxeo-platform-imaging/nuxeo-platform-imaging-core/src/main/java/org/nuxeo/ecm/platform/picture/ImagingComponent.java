@@ -57,9 +57,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().crop(in, x, y,
                     width, height);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -72,9 +72,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().resize(in,
                     width, height);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -86,9 +86,9 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().rotate(in, angle);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -100,9 +100,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
                     width, height);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -115,9 +115,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().resize(blob,
                     finalFormat, width, height, depth);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -129,9 +129,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().rotate(blob,
                     angle);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class", e);
+            log.error("Failed to instantiate ImageUtils Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -144,9 +144,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     in);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -159,9 +159,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     file);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -173,9 +173,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     blob);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMetadata Class", e);
+            log.error("Failed to instantiate ImageMetadata Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -187,9 +187,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(
                     file);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMime Class", e);
+            log.error("Failed to instantiate ImageMime Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMime Class", e);
+            log.error("Failed to instantiate ImageMime Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }
@@ -201,9 +201,9 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(
                     in);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMime Class", e);
+            log.error("Failed to instantiate ImageMime Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMime Class", e);
+            log.error("Failed to instantiate ImageMime Class", e);
         } catch (ClientException e) {
             log.error(e, e);
         }

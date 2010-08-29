@@ -27,13 +27,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Item holding information about a Document under a process.
- *
  * <p>
- * Aimed at being used in Dashboad fragments.
- * </p>
+ * Aimed at being used in Dashboard fragments.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface DocumentProcessItem extends Serializable {
 

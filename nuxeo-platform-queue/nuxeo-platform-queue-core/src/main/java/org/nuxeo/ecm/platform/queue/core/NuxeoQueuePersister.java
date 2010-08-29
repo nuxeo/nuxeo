@@ -60,7 +60,7 @@ public class NuxeoQueuePersister implements QueuePersister {
             runner.runUnrestricted();
         } catch (ClientException e) {
             throw new Error(
-                    "An unexpected problem occured while trying to remove the content",
+                    "An unexpected problem occurred while trying to remove the content",
                     e);
         }
     }
@@ -100,7 +100,7 @@ public class NuxeoQueuePersister implements QueuePersister {
             return runner.hasContent;
         } catch (ClientException e) {
             throw new QueueException(
-                    "A problem occured while trying to save the content", e,
+                    "A problem occurred while trying to save the content", e,
                     content);
         }
 
@@ -207,7 +207,7 @@ public class NuxeoQueuePersister implements QueuePersister {
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID,
                     heartbeat.getMyURI().toASCIIString());
 
-            // serializing addtional info to a string
+            // serializing additional info to a string
             Serializable additionalInfo = content.getAdditionalInfo();
             String addinfo = null;
             if (additionalInfo != null) {

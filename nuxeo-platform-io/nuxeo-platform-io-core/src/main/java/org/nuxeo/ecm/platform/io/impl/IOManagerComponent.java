@@ -67,7 +67,7 @@ public class IOManagerComponent extends DefaultComponent {
                 adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader().loadClass(
                         className).newInstance();
             } catch (Exception e) {
-                log.error("Caught error when instanciating adapter", e);
+                log.error("Caught error when instantiating adapter", e);
                 return;
             }
             adapter.setProperties(desc.getProperties());

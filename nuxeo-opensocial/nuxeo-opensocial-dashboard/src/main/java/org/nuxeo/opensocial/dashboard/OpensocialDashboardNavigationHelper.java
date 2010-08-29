@@ -81,7 +81,7 @@ public class OpensocialDashboardNavigationHelper implements
   protected void createPersonnalDashbordIfNeeded() {
     if (!personnalDashboardCreated) {
       String containerId = getPersonalDashboardContainerIdRef();
-      // creation if neeeded !!!
+      // creation if needed !!!
     }
   }
 

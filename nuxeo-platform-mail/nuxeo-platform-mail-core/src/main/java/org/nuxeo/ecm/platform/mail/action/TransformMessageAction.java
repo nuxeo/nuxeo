@@ -111,7 +111,7 @@ public class TransformMessageAction implements MessageAction {
         for (int i = 0; i < parts.getCount(); i++) {
             Part part = parts.getBodyPart(i);
             if (part.getDataHandler().getContent() instanceof MimeMultipart) {
-                log.debug("** found embeded multipart message");
+                log.debug("** found embedded multipart message");
                 processMultipartMessage((MimeMultipart) part.getDataHandler().getContent());
                 continue;
             }
@@ -125,24 +125,24 @@ public class TransformMessageAction implements MessageAction {
         String partFileName = getFileName(part);
 
         if (partFileName != null) {
-            log.debug("Add named atachement: " + partFileName);
+            log.debug("Add named attachment: " + partFileName);
             setFile(partFileName, part.getInputStream());
             return;
         }
 
         if (!contentTypeIsReadableText(partContentType)) {
-            log.debug("Add unnamed binary atachement.");
+            log.debug("Add unnamed binary attachment.");
             setFile(null, part.getInputStream());
             return;
         }
 
         if (contentTypeIsPlainText(partContentType)) {
-            log.debug("found plain text unnamed attachement [save for later processing]");
+            log.debug("found plain text unnamed attachment [save for later processing]");
             messageBodyParts.get("text").add(part);
             return;
         }
 
-        log.debug("found html unnamed attachement [save for later processing]");
+        log.debug("found html unnamed attachment [save for later processing]");
         messageBodyParts.get("html").add(part);
     }
 
@@ -151,7 +151,7 @@ public class TransformMessageAction implements MessageAction {
             log.debug("entering case 2: no plain text found -> html is the body of the message.");
             addPartsToTextMessage(messageBodyParts.get("html"));
         } else {
-            log.debug("entering case 1: text is saved as message body and html as attachemens.");
+            log.debug("entering case 1: text is saved as message body and html as attachment.");
             addPartsToTextMessage(messageBodyParts.get("text"));
             addPartsAsAttachements(messageBodyParts.get("html"));
         }
@@ -224,7 +224,7 @@ public class TransformMessageAction implements MessageAction {
     }
 
     private void setFile(String fileName, InputStream inputStream) throws IOException {
-        log.debug("* adding attachement: " + fileName);
+        log.debug("* adding attachment: " + fileName);
         Map<String, Object> map = new HashMap<String, Object>();
         FileBlob fileBlob = new FileBlob(inputStream);
         map.put("file", fileBlob);

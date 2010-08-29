@@ -65,7 +65,7 @@ public class PictureConfigurationService extends DefaultComponent{
     public static void registerPictureAdapter(PictureAdapterDescriptor pictureAdapter,
             ComponentInstance contributor) {
         pictureAdapterDescriptors.put(pictureAdapter.getTypeName(), pictureAdapter);
-        log.debug("registered Picture Adapterdescriptor: "
+        log.debug("registered Picture AdapterDescriptor: "
                 + pictureAdapter.getName());
     }
 

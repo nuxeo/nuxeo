@@ -96,7 +96,7 @@ public class Sites extends DefaultObject {
                         SiteUtils.getString(webSite, WEBCONTAINER_NAME));
                 sites.add(site);
             } catch (Exception e) {
-                log.error("Problem retrieving the existings websites ...", e);
+                log.error("Problem retrieving the existing websites ...", e);
             }
         }
         return sites;

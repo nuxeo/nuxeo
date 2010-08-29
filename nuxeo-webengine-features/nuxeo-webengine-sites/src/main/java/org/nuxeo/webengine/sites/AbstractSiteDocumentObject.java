@@ -110,9 +110,9 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             resp = SiteUtils.getLogoResponse(parentWebSite);
         } catch (Exception e) {
             if (doc == null) {
-                log.error("Problems retriveing the logo", e);
+                log.error("Problems retrieving the logo", e);
             } else {
-                log.error("Problems retriveing the logo for" + doc.getName(), e);
+                log.error("Problems retrieving the logo for" + doc.getName(), e);
             }
         }
         // return a default image, maybe you want to change this in future
