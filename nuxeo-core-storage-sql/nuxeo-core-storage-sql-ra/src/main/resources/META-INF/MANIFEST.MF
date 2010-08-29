@@ -39,3 +39,4 @@ Nuxeo-Require: org.nuxeo.ecm.core,
   org.nuxeo.ecm.core.query,
   org.nuxeo.ecm.core.schema,
   org.nuxeo.ecm.core.storage.sql
+Require-Bundle: org.nuxeo.ecm.core.storage.sql

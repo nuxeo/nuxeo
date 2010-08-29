@@ -21,12 +21,16 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,8 +39,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
@@ -134,6 +140,24 @@ public class MapperServlet extends HttpServlet {
 
     private final AtomicInteger threadNumber = new AtomicInteger();
 
+    protected UsernamePasswordCredentials getCredentials(HttpServletRequest req) {
+        String auth = req.getHeader("Authorization");
+        StringTokenizer st = new StringTokenizer(auth);
+        String method = st.nextToken();
+        if (!method.equalsIgnoreCase("Basic")) {
+            log.warn("unsupported auth method : " + method);
+            return new UsernamePasswordCredentials("<unknown>","<unknown>");
+        }
+        String credentials = st.nextToken();
+        String userPassword = new String(Base64.decode(credentials));
+        int index = userPassword.indexOf(":");
+        if (index == -1) {
+            log.warn("no password provided in  " + userPassword);
+            return new UsernamePasswordCredentials(userPassword, "<unknown>");
+        }
+        return new UsernamePasswordCredentials(userPassword.substring(0, index), userPassword.substring(index+1));
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -161,7 +185,9 @@ public class MapperServlet extends HttpServlet {
                     eventQueues.put(rid, eventQueue = new InvalidationsQueue(
                             "servlet-for-" + rid));
                 }
-                invoker = new MapperInvoker(repository, name, eventQueue);
+                String remoteIP = req.getRemoteAddr();
+                String remotePrincipal = req.getHeader("X-Nuxeo-Principal");
+                invoker = new MapperInvoker(repository, name, eventQueue, new MapperClientInfo(remoteIP, remotePrincipal));
                 Identification id = (Identification) invoker.call(Mapper.GET_IDENTIFICATION);
                 mid = id.mapperId;
                 invokers.put(mid, invoker);
@@ -173,7 +199,7 @@ public class MapperServlet extends HttpServlet {
                             "Unknown session id (maybe timed out): " + mid);
                 }
             }
-
+            invoker.clientInfo.handledRequest(req);
             // set up output stream
             resp.setContentType("application/octet-stream");
             // resp.setCharacterEncoding("ISO-8859-1"); // important
@@ -195,7 +221,6 @@ public class MapperServlet extends HttpServlet {
 
             // invoke method
             Object res = invoker.call(methodName, args.toArray());
-
             // close?
             if (Mapper.CLOSE.equals(methodName)) {
                 // close session
@@ -208,7 +233,6 @@ public class MapperServlet extends HttpServlet {
                 Identification id = (Identification) res;
                 res = new Identification(rid, id.mapperId);
             }
-
             // write result
             oos.writeObject(res);
             oos.flush();
@@ -218,5 +242,16 @@ public class MapperServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     e.toString());
         }
+    }
+
+    public Collection<MapperClientInfo> getClientInfos() {
+        if (invokers == null) {
+            return Collections.emptyList();
+        }
+        List<MapperClientInfo> infos = new ArrayList<MapperClientInfo>(invokers.size());
+        for (MapperInvoker invoker:invokers.values()) {
+            infos.add(invoker.clientInfo);
+        }
+        return infos;
     }
 }

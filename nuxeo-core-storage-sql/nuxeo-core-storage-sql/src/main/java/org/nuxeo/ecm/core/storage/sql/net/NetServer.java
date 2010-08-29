@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
@@ -58,6 +59,9 @@ public class NetServer {
                 servlet, path);
     }
 
+    public static Servlet get(ServerDescriptor serverDescriptor, String servletName) {
+        return instance().getServlet(serverDescriptor, servletName);
+    }
     public static void remove(ServerDescriptor serverDescriptor,
             String servletName) {
         instance().removeRepositoryServer(serverDescriptor, servletName);
@@ -157,6 +161,17 @@ public class NetServer {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected Servlet getServlet(ServerDescriptor serverDescriptor, String servletName) {
+        Context context = getContext(getContextPath(serverDescriptor));
+        ServletHandler handler = context.getServletHandler();
+        ServletHolder holder = handler.getServlet(servletName);
+        try {
+            return holder.getServlet();
+        } catch (ServletException e) {
+            throw new Error("No such servlet " + serverDescriptor.getUrl() + ":" + servletName, e);
         }
     }
 

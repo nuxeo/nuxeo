@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
@@ -50,10 +51,11 @@ public interface RepositoryBackend {
      *
      * @param model the model
      * @param pathResolver the path resolver
+     * @param credentials TODO
      * @param create {@code true} if the database has to be created
      *            (initialization)
      */
-    Mapper newMapper(Model model, PathResolver pathResolver, boolean create)
+    Mapper newMapper(Model model, PathResolver pathResolver, Credentials credentials, boolean create)
             throws StorageException;
 
     /**

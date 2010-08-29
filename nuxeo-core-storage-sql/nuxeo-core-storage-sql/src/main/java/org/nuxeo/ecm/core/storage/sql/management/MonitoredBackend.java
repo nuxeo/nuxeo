@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
+import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -35,9 +36,9 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     public Mapper newMapper(Model model, PathResolver pathResolver,
-            boolean create) throws StorageException {
+            Credentials credentials, boolean create) throws StorageException {
         return MetricInvocationHandler.newProxy(
-                wrapped.newMapper(model, pathResolver, create), Mapper.class);
+                wrapped.newMapper(model, pathResolver, null, create), Mapper.class);
     }
 
     public void initialize(RepositoryImpl repository) throws StorageException {

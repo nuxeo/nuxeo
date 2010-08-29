@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.storage.sql.net;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -26,9 +27,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CachingRowMapper;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 
@@ -75,17 +76,21 @@ public class MapperInvoker extends Thread {
 
     private Mapper mapper;
 
+    private MapperClientInfo info;
+
+    protected MapperClientInfo clientInfo;
+
     protected final BlockingQueue<MethodCall> methodCalls;
 
     protected final BlockingQueue<MethodResult> methodResults;
 
     public MapperInvoker(Repository repository, String name,
-            InvalidationsQueue eventQueue) throws Throwable {
+            InvalidationsQueue eventQueue, MapperClientInfo info) throws Throwable {
         super(name);
         this.repository = repository;
         this.eventQueue = eventQueue;
-        methodCalls = new LinkedBlockingQueue<MethodCall>(1);
-        methodResults = new LinkedBlockingQueue<MethodResult>(1);
+        this.methodCalls = new LinkedBlockingQueue<MethodCall>(1);
+        this.methodResults = new LinkedBlockingQueue<MethodResult>(1);
         start();
         init();
     }
@@ -107,6 +112,8 @@ public class MapperInvoker extends Thread {
 
     // called in the main thread
     public Object call(String methodName, Object... args) throws Throwable {
+        clientInfo.lastRequestTime = Calendar.getInstance().getTimeInMillis();
+        clientInfo.requestCount += 1;
         methodCalls.put(new MethodCall(methodName, args));
         return methodResults.take().result;
     }

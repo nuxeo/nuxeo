@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 
 /**
  * The managed connection factory receives requests from the application server
@@ -325,12 +327,27 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     public void activateServer() {
         repository.activateServer();
-        
+
     }
 
     public void deactivateServer() {
        repository.deactivateServer();
-        
+
+    }
+
+    @Override
+    public Collection<MapperClientInfo> getClientInfos() {
+        return repository.getClientInfos();
+    }
+
+    @Override
+    public boolean isServerActivated() {
+       return repository.isServerActivated();
+    }
+
+    @Override
+    public String getServerURL() {
+        return repository.getServerURL();
     }
 
 }

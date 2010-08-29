@@ -28,6 +28,7 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
+import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 
 /**
  * An MBean to manage SQL storage repositories.
@@ -38,8 +39,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     private static final Log log = LogFactory.getLog(RepositoryStatus.class);
 
-    protected List<RepositoryManagement> getRepositories()
-            throws NamingException {
+    protected List<RepositoryManagement> getRepositories() throws NamingException {
         List<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
         InitialContext context = new InitialContext();
         // we search both JBoss-like and Glassfish-like prefixes
@@ -114,6 +114,34 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             buf.append(repository.clearCaches());
             buf.append("<br />");
         }
+        return buf.toString();
+    }
+
+    @Override
+    public String listRemoteSessions() {
+        List<RepositoryManagement> repositories;
+        try {
+            repositories = getRepositories();
+        } catch (NamingException e) {
+            log.error("Error getting repositories", e);
+            return "Error!";
+        }
+        StringBuilder buf = new StringBuilder();
+        buf.append("<dl>").append("\n");
+        for (RepositoryManagement repository : repositories) {
+            buf.append("<dt class='repository'>").append(repository.getName()).append("</dt>").append("\n");
+            buf.append("<dd>").append("\n");
+            buf.append(" <dl>").append("\n");
+            buf.append("  <dt>location</dt>");
+            buf.append("  <dd class='location'>").append(repository.getServerURL()).append("</dd>");
+            for (MapperClientInfo info : repository.getClientInfos()) {
+                buf.append("  <dt>").append(info.getRemoteUser()).append("  </dt>");
+                buf.append("  <dd>").append(info.getRemoteIP()).append("  </dd>").append("\n");
+            }
+            buf.append(" </dl>").append("\n");
+            buf.append("</dd>").append("\n");
+        }
+        buf.append("</dl>").append("\n");
         return buf.toString();
     }
 

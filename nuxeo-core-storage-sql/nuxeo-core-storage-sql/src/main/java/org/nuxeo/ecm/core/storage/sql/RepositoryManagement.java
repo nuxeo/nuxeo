@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.net.URI;
+import java.util.Collection;
+
+import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
+
 /**
  * @author Florent Guillaume
  */
@@ -45,6 +50,16 @@ public interface RepositoryManagement {
     void processClusterInvalidationsNext();
 
     /**
+     * Is the server available remotely ?
+     */
+    boolean isServerActivated();
+
+    /**
+     * Which is the remote location ?
+     */
+    String getServerURL();
+
+    /**
      * Activates the VCS server used for remote connections.
      */
     void activateServer();
@@ -53,5 +68,10 @@ public interface RepositoryManagement {
      * Deactivates the VCS server used for remote connections.
      */
     void deactivateServer();
+
+    /**
+     * Get infos about current VCS server clients
+     */
+    Collection<MapperClientInfo> getClientInfos();
 
 }

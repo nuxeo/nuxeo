@@ -27,6 +27,7 @@ import javax.sql.XADataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -141,7 +142,7 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     public Mapper newMapper(Model model, PathResolver pathResolver,
-            boolean create) throws StorageException {
+            Credentials credentials, boolean create) throws StorageException {
         Mapper mapper = createMapper(model, pathResolver);
         if (create) {
             // first connection, initialize the database

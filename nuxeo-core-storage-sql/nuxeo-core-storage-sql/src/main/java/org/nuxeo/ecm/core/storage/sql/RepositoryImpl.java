@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -29,6 +30,8 @@ import javax.resource.cci.ResourceAdapterMetaData;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerClient;
 import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerServlet;
+import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 import org.nuxeo.ecm.core.storage.sql.net.MapperServlet;
 import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
@@ -126,7 +130,6 @@ public class RepositoryImpl implements Repository {
         params.setDefaultMaxConnectionsPerHost(20);
         params.setMaxTotalConnections(20);
         httpClient = new HttpClient(connectionManager);
-
         binaryManager = createBinaryManager();
         backend = createBackend();
         createServer();
@@ -246,6 +249,15 @@ public class RepositoryImpl implements Repository {
         }
     }
 
+    public boolean isServerActivated() {
+        return serverStarted;
+    }
+
+    public String getServerURL() {
+        String host = Framework.getProperty("org.nuxeo.runtime.server.host", "localhost:");
+        return String.format("http://%s:%d/%s",host, repositoryDescriptor.listen.port, repositoryDescriptor.listen.path);
+    }
+
     public void activateServer() {
         activateServletMapper();
         activateBinaryManagerServlet(binaryManager);
@@ -256,6 +268,13 @@ public class RepositoryImpl implements Repository {
         deactivateBinaryManagerServlet();
     }
 
+    public Collection<MapperClientInfo> getClientInfos() {
+        if (!serverStarted) {
+            return Collections.emptyList();
+        }
+        MapperServlet servlet = (MapperServlet)NetServer.get(repositoryDescriptor.listen, MapperServlet.getName(repositoryDescriptor.name));
+        return servlet.getClientInfos();
+    }
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
     }
@@ -307,7 +326,7 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver, create);
+        Mapper mapper = backend.newMapper(model, pathResolver, credentials, create);
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);

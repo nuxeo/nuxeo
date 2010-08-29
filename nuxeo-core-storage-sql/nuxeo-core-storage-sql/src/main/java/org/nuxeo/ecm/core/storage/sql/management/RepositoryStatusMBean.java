@@ -28,7 +28,12 @@ public interface RepositoryStatusMBean {
     String listActiveSessions();
 
     /**
-     * Returns the opened sessions count.
+     * Lists the remote opened sessions
+     */
+    String listRemoteSessions();
+
+    /**
+     * Return the opened sessions count
      */
     int getActiveSessionsCount();
 

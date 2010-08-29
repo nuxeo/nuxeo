@@ -23,26 +23,29 @@ import java.lang.reflect.Proxy;
 
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 
 /**
  * Mapper sending calls to a remote {@link NetServer}.
  */
 public class MapperClient implements InvocationHandler {
 
-    public static Mapper getMapper(RepositoryImpl repository)
+    public static Mapper getMapper(RepositoryImpl repository, Credentials credentials)
             throws StorageException {
-        MapperClient handler = new MapperClient(repository);
+        MapperClient handler = new MapperClient(repository, credentials);
         Mapper mapper = (Mapper) Proxy.newProxyInstance(
                 MapperClient.class.getClassLoader(),
                 new Class<?>[] { Mapper.class }, handler);
@@ -69,9 +72,21 @@ public class MapperClient implements InvocationHandler {
 
     protected final HttpClient httpClient;
 
-    protected MapperClient(RepositoryImpl repository) {
+    protected final AuthScope httpAuthScope;
+
+    protected final Header httpPrincipalHeader;
+
+    protected MapperClient(RepositoryImpl repository, Credentials credentials) {
         httpClient = repository.getHttpClient();
-        url = getUrl(repository.getRepositoryDescriptor());
+        RepositoryDescriptor desc = repository.getRepositoryDescriptor();
+        url = getUrl(desc);
+        httpAuthScope = getHttpAuthScope(desc);
+        httpPrincipalHeader = new Header("X-Nuxeo-Principal", credentials.getUserName());
+    }
+
+    protected static AuthScope getHttpAuthScope(RepositoryDescriptor desc) {
+        ServerDescriptor sd = desc.connect.get(0);
+        return new AuthScope(sd.host, sd.port);
     }
 
     protected static String getUrl(RepositoryDescriptor repositoryDescriptor) {
@@ -117,6 +132,7 @@ public class MapperClient implements InvocationHandler {
             postUrl += '?' + MapperServlet.PARAM_RID + '=' + repositoryId;
         }
         PostMethod m = new PostMethod(postUrl);
+        m.setRequestHeader(httpPrincipalHeader);
         try {
             ObjectWriterRequestEntity writer = new ObjectWriterRequestEntity();
             writer.add(methodName, args);
