@@ -218,8 +218,7 @@ public class FrameworkBootstrap {
 
     protected void buildLibsClassPath(String libsCp) throws IOException {
         String[] ar = libsCp.split(":");
-        for (int i = 0; i < ar.length; i++) {
-            String entry = ar[i];
+        for (String entry : ar) {
             File entryFile;
             if (entry.endsWith("/*")) {
                 entryFile = newFile(entry.substring(0, entry.length() - 2));
@@ -239,8 +238,7 @@ public class FrameworkBootstrap {
     protected void buildBundlesClassPath(String bundlesCp,
             List<File> bundleFiles) throws IOException {
         String[] ar = bundlesCp.split(":");
-        for (int i = 0; i < ar.length; i++) {
-            String entry = ar[i];
+        for (String entry : ar) {
             File entryFile;
             if (entry.endsWith("/*")) {
                 entryFile = newFile(entry.substring(0, entry.length() - 2));
@@ -248,8 +246,7 @@ public class FrameworkBootstrap {
                 if (files != null) {
                     for (File file : files) {
                         String path = file.getPath();
-                        if (path.endsWith(".jar") || path.endsWith(".zip")
-                                || path.endsWith(".war")) {
+                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")) {
                             bundleFiles.add(file);
                             loader.addURL(file.toURI().toURL());
                         }

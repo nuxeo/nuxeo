@@ -35,11 +35,11 @@ public class NuxeoLauncher2 implements LifecycleListener {
 
     protected FrameworkBootstrap bootstrap;
 
-    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+    public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
-    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+    public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
 
-    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+    public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
     public void setHome(String home) {
         this.home = home;

@@ -103,7 +103,7 @@ public class ConfigurationGenerator {
         if (nuxeoHomePath != null && nuxeoConfPath != null) {
             nuxeoHome = new File(nuxeoHomePath);
             nuxeoConf = new File(nuxeoConfPath);
-            nuxeoDefaultConf = new File(getNuxeoHome(), TEMPLATES
+            nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES
                     + File.separator + NUXEO_DEFAULT_CONF);
         } else {
             nuxeoHome = new File(System.getProperty("user.dir")).getParentFile();
@@ -118,9 +118,9 @@ public class ConfigurationGenerator {
         isTomcat = System.getProperty("tomcat.home") != null;
         if (!isJBoss && !isJetty && !isTomcat) {
             // fallback on jar detection
-            isJBoss = new File(getNuxeoHome(), "bin/run.jar").exists();
-            isTomcat = new File(getNuxeoHome(), "bin/bootstrap.jar").exists();
-            String[] files = getNuxeoHome().list();
+            isJBoss = new File(nuxeoHome, "bin/run.jar").exists();
+            isTomcat = new File(nuxeoHome, "bin/bootstrap.jar").exists();
+            String[] files = nuxeoHome.list();
             for (String file : files) {
                 if (file.startsWith("nuxeo-runtime-launcher")) {
                     isJetty = true;
@@ -147,8 +147,6 @@ public class ConfigurationGenerator {
 
     /**
      * Runs the configuration files generation.
-     *
-     * @throws ConfigurationException
      */
     public void run() throws ConfigurationException {
         if (userConfig == null) {
@@ -180,7 +178,7 @@ public class ConfigurationGenerator {
         try {
             // Load default configuration
             defaultConfig = new Properties();
-            defaultConfig.load(new FileInputStream(getNuxeoDefaultConf()));
+            defaultConfig.load(new FileInputStream(nuxeoDefaultConf));
 
             // Load user configuration
             userConfig = new Properties(defaultConfig);
@@ -197,7 +195,7 @@ public class ConfigurationGenerator {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file: "
-                    + getNuxeoDefaultConf() + " or " + nuxeoConf, e);
+                    + nuxeoDefaultConf + " or " + nuxeoConf, e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
@@ -222,7 +220,7 @@ public class ConfigurationGenerator {
         }
     }
 
-    protected void browseTemplates() throws FileNotFoundException, IOException,
+    protected void browseTemplates() throws IOException,
             ConfigurationException {
         if (userConfig == null) {
             setBasicConfiguration();
@@ -243,11 +241,10 @@ public class ConfigurationGenerator {
             String nextToken = st.nextToken();
             File chosenTemplate = new File(nextToken);
             if (!chosenTemplate.exists()) {
-                chosenTemplate = new File(
-                        getNuxeoDefaultConf().getParentFile(), nextToken);
+                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(), nextToken);
             }
             if (includedTemplates.contains(chosenTemplate)) {
-                log.debug("Aleady included " + nextToken);
+                log.debug("Already included " + nextToken);
             } else if (chosenTemplate.exists()) {
                 File chosenTemplateConf = new File(chosenTemplate,
                         NUXEO_DEFAULT_CONF);

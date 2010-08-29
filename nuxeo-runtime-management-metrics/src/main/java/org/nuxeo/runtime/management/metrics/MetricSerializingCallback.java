@@ -30,7 +30,7 @@ public class MetricSerializingCallback extends CallbackSkeleton {
 
     protected static final Log log = LogFactory.getLog(MetricSerializingCallback.class);
 
-    protected MetricSerializer serializer;
+    protected final MetricSerializer serializer;
 
     public MetricSerializingCallback(MetricSerializer serializer) {
         this.serializer = serializer;

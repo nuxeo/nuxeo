@@ -74,11 +74,11 @@ public class FrameworkLoader {
 
     public static final String ARGS = "org.nuxeo.app.args";
 
-    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+    public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
-    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+    public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
 
-    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+    public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
 

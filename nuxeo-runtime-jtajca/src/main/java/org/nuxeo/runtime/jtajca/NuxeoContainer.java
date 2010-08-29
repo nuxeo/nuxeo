@@ -59,12 +59,12 @@ public class NuxeoContainer {
     }
 
     public static void install() throws NamingException {
-        NuxeoContainer.initTransactionManager(new TransactionManagerConfiguration());
-        NuxeoContainer.initConnectionManager(new ConnectionManagerConfiguration());
+        initTransactionManager(new TransactionManagerConfiguration());
+        initConnectionManager(new ConnectionManagerConfiguration());
         InitialContext context = new InitialContext();
-        context.rebind("java:comp/TransactionManager", NuxeoContainer.getTransactionManager());
-        context.rebind("java:comp/UserTransaction", NuxeoContainer.getUserTransaction());
-        context.rebind("java:comp/NuxeoConnectionManager", NuxeoContainer.getConnectionManager());
+        context.rebind("java:comp/TransactionManager", getTransactionManager());
+        context.rebind("java:comp/UserTransaction", getUserTransaction());
+        context.rebind("java:comp/NuxeoConnectionManager", getConnectionManager());
     }
 
     public static TransactionManager getTransactionManager() {

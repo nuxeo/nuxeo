@@ -119,7 +119,7 @@ public interface RuntimeHarness {
      * The first contribution file found by the class loader will be used.
      * You have no guarantee in case of name collisions.
      *
-     * @deprecated use the less ambiguous {@link #deployContrib(BundleFile,String)}
+     * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
      * @param contrib the relative path to the contribution file
      */
     @Deprecated

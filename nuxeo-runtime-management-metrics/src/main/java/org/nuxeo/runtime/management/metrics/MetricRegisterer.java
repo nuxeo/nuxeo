@@ -33,7 +33,7 @@ public class MetricRegisterer {
 
     protected final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
-    protected Map<ObjectName, Object> registry = new HashMap<ObjectName, Object>();
+    protected final Map<ObjectName, Object> registry = new HashMap<ObjectName, Object>();
 
     protected ObjectName newObjectName(String name) {
         try {

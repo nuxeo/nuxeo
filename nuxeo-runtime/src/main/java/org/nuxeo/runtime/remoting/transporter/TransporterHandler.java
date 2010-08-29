@@ -34,7 +34,7 @@ import org.jboss.remoting.invocation.NameBasedInvocation;
 /**
  * Simple handler that uses reflection to make calls on target POJO (as supplied
  * in the constructor) when receive invocation requests.
- *
+ * <p>
  * Updated from jboss-remoting-2.0.0 - to handle primitive types
  *
  * @author <a href="mailto:telrod@e2technologies.net">Tom Elrod</a>
@@ -52,10 +52,6 @@ public class TransporterHandler implements ServerInvocationHandler {
      * NameBasedInvocation, and converts that to a method call on the target POJO
      * (using reflection). Then returns the Object returned from the method call
      * on the target POJO.
-     *
-     * @param invocation
-     * @return
-     * @throws Throwable
      */
     public Object invoke(InvocationRequest invocation) throws Throwable {
         Object request = invocation.getParameter();
@@ -83,8 +79,6 @@ public class TransporterHandler implements ServerInvocationHandler {
 
     /**
      * Sets the mbean server that the handler can reference.
-     *
-     * @param server
      */
     public void setMBeanServer(MBeanServer server) {
         // NOOP
@@ -92,8 +86,6 @@ public class TransporterHandler implements ServerInvocationHandler {
 
     /**
      * Sets the invoker that owns this handler.
-     *
-     * @param invoker
      */
     public void setInvoker(ServerInvoker invoker) {
         // NOOP
@@ -102,8 +94,6 @@ public class TransporterHandler implements ServerInvocationHandler {
     /**
      * Adds a callback handler that will listen for callbacks from the server
      * invoker handler.
-     *
-     * @param callbackHandler
      */
     public void addListener(InvokerCallbackHandler callbackHandler) {
         // NOOP
@@ -112,8 +102,6 @@ public class TransporterHandler implements ServerInvocationHandler {
     /**
      * Removes the callback handler that was listening for callbacks from the
      * server invoker handler.
-     *
-     * @param callbackHandler
      */
     public void removeListener(InvokerCallbackHandler callbackHandler) {
         //NOOP

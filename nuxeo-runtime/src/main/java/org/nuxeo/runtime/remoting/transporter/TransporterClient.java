@@ -64,11 +64,11 @@ public class TransporterClient implements InvocationHandler, Serializable {
 
     private static NetworkRegistry registry;
 
-    private Client remotingClient;
+    private final Client remotingClient;
 
 //    private boolean isClustered = false;
 
-    private String subSystem;
+    private final String subSystem;
 
     /**
      * Creates the remoting client to server POJO. Is clustered.

@@ -59,6 +59,12 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     public static final String SYSTEM_USERNAME = "system";
 
+    protected static final String instanceId = RuntimeInstanceIdentifier.getId();
+
+    protected static final SystemLoginRestrictionManager systemLoginManager = new SystemLoginRestrictionManager();
+
+    protected static final Log log = LogFactory.getLog(LoginComponent.class);
+
     private LoginConfiguration config;
 
     private final Map<String, SecurityDomain> domains = new Hashtable<String, SecurityDomain>();
@@ -66,12 +72,6 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     private SecurityDomain systemLogin;
 
     private SecurityDomain clientLogin;
-
-    protected static final String instanceId = RuntimeInstanceIdentifier.getId();
-
-    protected static final SystemLoginRestrictionManager systemLoginManager = new SystemLoginRestrictionManager();
-
-    protected static final Log log = LogFactory.getLog(LoginComponent.class);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -252,7 +252,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
         private final String userName;
 
-        protected String sourceInstanceId = instanceId;
+        protected final String sourceInstanceId = instanceId;
 
         SystemID() {
             userName = null;

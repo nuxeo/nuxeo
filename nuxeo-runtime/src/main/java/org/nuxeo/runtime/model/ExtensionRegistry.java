@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class ExtensionRegistry<T> {
 
-    private final static Log log = LogFactory.getLog(ExtensionRegistry.class);
+    private static final Log log = LogFactory.getLog(ExtensionRegistry.class);
 
     protected LinkedList<Extension> extensions = new LinkedList<Extension>();
 

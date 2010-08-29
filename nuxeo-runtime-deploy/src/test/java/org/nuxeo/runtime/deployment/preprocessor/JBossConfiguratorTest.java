@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -82,27 +83,23 @@ public class JBossConfiguratorTest {
     }
 
     @Test
-    public void testConfifuration() throws Exception {
+    public void testConfiguration() throws Exception {
         configGenerator.browseTemplates();
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
-        assertTrue(config.getProperty("nuxeo.templates").equals("default,testinclude"));
-        assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults.template.1").equals(
-                "true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults.template.2").equals(
-                "true"));
-        assertTrue(config.getProperty("test.nuxeo.conf.override.defaults").equals(
-                "true"));
-        assertTrue(config.getProperty(
-                "test.nuxeo.conf.override.defaults.template").equals("true"));
-        assertTrue(config.getProperty("nuxeo.db.name").equals("testinclude"));
-        assertTrue(config.getProperty("nuxeo.db.user").equals("sa"));
+        assertEquals("default,testinclude", config.getProperty("nuxeo.templates"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.1"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.2"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults.template"));
+        assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
+        assertEquals("sa", config.getProperty("nuxeo.db.user"));
     }
 
     @Test
-    public void testGenerateFiles() throws ConfigurationException, IOException {
+    public void testGenerateFiles() throws Exception {
         configGenerator.run();
         log.debug(configGenerator.getIncludedTemplates());
         File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
@@ -111,8 +108,7 @@ public class JBossConfiguratorTest {
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
-        assertTrue(generatedProperty,
-                propertyToGenerate.equals(generatedProperty));
+        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
     @Test
@@ -120,27 +116,22 @@ public class JBossConfiguratorTest {
         configGenerator2.run();
         log.debug(configGenerator2.getIncludedTemplates());
         Properties config = configGenerator2.getUserConfig();
-        assertTrue(config.getProperty("nuxeo.templates").equals("common,testinclude2"));
-        assertTrue(config.getProperty("test.nuxeo.conf").equals("true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults").equals("true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults.template.1").equals(
-                "true"));
-        assertTrue(config.getProperty("test.nuxeo.defaults.template.2").equals(
-                "true"));
-        assertTrue(config.getProperty("test.nuxeo.conf.override.defaults").equals(
-                "true"));
-        assertTrue(config.getProperty(
-                "test.nuxeo.conf.override.defaults.template").equals("true"));
-        assertTrue(config.getProperty("nuxeo.db.name").equals("testinclude"));
-        assertTrue(config.getProperty("nuxeo.db.user").equals("sa"));
+        assertEquals("common,testinclude2", config.getProperty("nuxeo.templates"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.1"));
+        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.2"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults"));
+        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults.template"));
+        assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
+        assertEquals("sa", config.getProperty("nuxeo.db.user"));
         File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
         assertTrue(new File(configDir, "test2").exists());
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
-        assertTrue(generatedProperty,
-                propertyToGenerate.equals(generatedProperty));
+        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
     @Test
