@@ -49,6 +49,12 @@ public class AdministrativeStatus {
 
     public static final String PASSIVATED_EVENT = "serverPassivated";
 
+    protected AdministrativeStatusPersister persister = new NuxeoAdministrativeStatusPersister();
+
+    protected String value;
+
+    protected String serverInstanceName;
+
 
     protected void notifyEvent(String name) {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
@@ -61,12 +67,6 @@ public class AdministrativeStatus {
             throw new ClientRuntimeException(e);
         }
     }
-
-    protected AdministrativeStatusPersister persister = new NuxeoAdministrativeStatusPersister();
-
-    protected String value;
-
-    protected String serverInstanceName;
 
     protected void activate() {
          serverInstanceName = Framework.getProperties().getProperty(
@@ -93,8 +93,7 @@ public class AdministrativeStatus {
     }
 
     /**
-     * Disable services for this server
-     *
+     * Disables services for this server
      */
     public void setPassive() {
         value = PASSIVE;
@@ -104,10 +103,8 @@ public class AdministrativeStatus {
         }
     }
 
-
     /**
-     * Enable services for this server
-     *
+     * Enables services for this server
      */
     public void setActive() {
         value = ACTIVE;
@@ -118,35 +115,28 @@ public class AdministrativeStatus {
     }
 
     /**
-     * Returns the stringified value of this status, ie: "passive" or "active"
-     *
-     * @return
+     * Returns the stringified value of this status, ie: "passive" or "active".
      */
-
     public String getValue() {
         return value;
     }
 
     /**
-     * Return this server unique name
-     *
+     * Returns this server unique name.
      */
     public String getServerInstanceName() {
         return serverInstanceName;
     }
 
     /**
-     * Returns true if server is in active state
-     *
-     * @return
+     * Returns true if server is in active state.
      */
     public boolean isActive() {
         return value.equals(ACTIVE);
     }
 
     /**
-     * Returns true if server is in passive state
-     * @return
+     * Returns true if server is in passive state.
      */
     boolean isPassive() {
         return value.equals(PASSIVE);

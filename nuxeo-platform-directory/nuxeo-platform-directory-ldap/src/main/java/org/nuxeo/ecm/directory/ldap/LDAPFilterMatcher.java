@@ -96,10 +96,6 @@ public class LDAPFilterMatcher {
 
     /**
      * Handle attribute presence check (eg: <tt>(attr1=*)</tt>)
-     *
-     * @param attributes
-     * @param presenceElement
-     * @return
      */
     private boolean presenceMatch(Attributes attributes,
             PresenceNode presenceElement) {
@@ -110,10 +106,7 @@ public class LDAPFilterMatcher {
      * Handle simple equality test on any non-null value (eg:
      * <tt>(attr2=value2)</tt>).
      *
-     * @param attributes
-     * @param simpleElement
      * @return true if the equality holds
-     * @throws DirectoryException
      */
     private static boolean simpleMatch(Attributes attributes, SimpleNode simpleElement)
             throws DirectoryException {
@@ -142,10 +135,7 @@ public class LDAPFilterMatcher {
      * Implement the substring match on any non-null value of a string attribute
      * (eg: <tt>(attr3=val*)</tt>).
      *
-     * @param attributes
-     * @param substringElement
      * @return the result of the regex evaluation
-     * @throws DirectoryException
      */
     private boolean substringMatch(Attributes attributes,
             SubstringNode substringElement) throws DirectoryException {
@@ -190,10 +180,7 @@ public class LDAPFilterMatcher {
      * Handle conjunction, disjunction and negation nodes and recursively call
      * the generic matcher on children.
      *
-     * @param attributes
-     * @param branchElement
      * @return the boolean value of the evaluation of the sub expression
-     * @throws DirectoryException never...
      */
     private boolean branchMatch(Attributes attributes, BranchNode branchElement)
             throws DirectoryException {

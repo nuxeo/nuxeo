@@ -34,11 +34,6 @@ public interface JndiContextFactory {
 
     /**
      * Creates the JNDI initial context.
-     *
-     * @param host
-     * @param port
-     * @return
-     * @throws javax.naming.NamingException
      */
     InitialContext createJndiContext(String host, String port) throws NamingException;
 

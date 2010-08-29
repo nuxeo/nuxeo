@@ -67,8 +67,6 @@ public class NoteImporter extends AbstractFileImporter {
     /**
      * Return the note document type. Can be override if the document to be
      * created is an extension of the Note type.
-     *
-     * @return
      */
     protected String getNoteTypeName() {
         return NOTE_TYPE;

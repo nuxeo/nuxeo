@@ -47,9 +47,6 @@ public class DirectoryException extends ClientException {
 
     /**
      * Wraps the received exception into a {@link ClientException}.
-     *
-     * @param exception
-     * @return
      */
     public static DirectoryException wrap(Throwable exception) {
         DirectoryException clientException;

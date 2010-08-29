@@ -96,7 +96,6 @@ public class FilterExpressionCorrector {
      *
      * @param filterExpression The filter expression to correct
      * @param jobs List of the jobs you want to apply.
-     * @return
      */
     public static String correctFilter(final String filterExpression,
             final FilterJobs... jobs) {
