@@ -83,8 +83,6 @@ public interface TreeItem extends Serializable {
 
     /**
      * Gets the label to be displayed for this item.
-     *
-     * @return
      */
     String getLabel();
 
@@ -107,7 +105,6 @@ public interface TreeItem extends Serializable {
      * <p>
      * The children items are created using the content provider
      * the first time you call {@link #expand()}
-     * @return
      */
     TreeItem[] getChildren();
 
@@ -161,8 +158,6 @@ public interface TreeItem extends Serializable {
      * <p>
      * This will load children items from the provider
      * if they are not already loaded or if invalidated.
-     *
-     * @return
      */
     TreeItem[] expand();
 

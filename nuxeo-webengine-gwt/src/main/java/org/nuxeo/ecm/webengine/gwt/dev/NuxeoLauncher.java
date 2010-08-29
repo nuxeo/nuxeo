@@ -45,33 +45,29 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     protected static RedirectService redirect;
 
     /**
-     * You can overwrite this to add your own pom artifacts in the graph
-     * @param app
+     * You can overwrite this to add your own pom artifacts in the graph.
      */
     protected void initializeGraph(NuxeoApp app) {
         //app.addPom("org.my", "my-artifact", "1.0", 1);
     }
 
     protected void buildDone(NuxeoApp app) {
-        
     }
     
     protected void aboutToStartFramework(NuxeoApp app) {
-        
-    }    
+    }
     
     /**
-     * You can overwrite this add custom initialization after nuxeo started
-     * @param app
+     * You can overwrite this add custom initialization after nuxeo started.
      */
     protected void frameworkStarted(NuxeoApp app) {
         // do nothing
     }
-    
-    
+
     /**
-     * Get a custom configuration for the Nuxeo to build.
+     * Gets a custom configuration for the Nuxeo to build.
      * By default no custom configuration is used - but bult-in configuration selected through profiles.
+     *
      * @return null if no custom configuration is wanted.
      */
     protected URL getConfiguration() {
@@ -79,8 +75,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     }
     
     /**
-     * Override this if you don;t want to cache the nuxeo build
-     * @return
+     * Override this if you don't want to cache the nuxeo build.
      */
     protected boolean useCache() {
         return true;
@@ -176,10 +171,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         }
 
     }
-    
-    
-    
-  
+
     public class MyNuxeoApp extends NuxeoApp {
         public MyNuxeoApp(File home) throws Exception {
             super (home);
@@ -208,10 +200,9 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             NuxeoLauncher.this.frameworkStarted(this);
         }
     }
-    
 
     /**
-     * check for calls to nuxeo server to redirect them to avoid SOP errors  
+     * Checks for calls to nuxeo server to redirect them to avoid SOP errors.
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,

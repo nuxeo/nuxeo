@@ -44,11 +44,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  */
 public abstract class GwtResource extends DefaultObject {
 
-
     /**
-     * Get a static resource from the GWT module. 
-     * @param path
-     * @return
+     * Gets a static resource from the GWT module.
      */
     @GET
     @Path("{path:.*}")

@@ -74,10 +74,6 @@ public class JSonTreeSerializer implements TreeItemVisitor {
 
     /**
      * You may override this method to change the output JSON.
-     *
-     * @param item
-     * @param children
-     * @return
      */
     protected JSONObject item2JSON(TreeItem item, JSONArray children) {
         JSONObject json = new JSONObject();

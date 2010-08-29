@@ -61,8 +61,11 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
      * In production mode the last path element from the request URL is considered
      * as the GWT module identifier and the GWT application root will be resolved to
      * <code>${nxserver}/web/root.war/gwt/gwtModuleId</code>
-     * <p>The GWT web application will be copied there at startup time by using the extension to {@link InstallGwtAppComponent} extension point <code>install</code>.
-     * in your GWT bundle</p>
+     * <p>
+     * The GWT web application will be copied there at startup time by using the extension to
+     * {@link InstallGwtAppComponent} extension point <code>install</code>.
+     * in your GWT bundle.
+     *
      * @see {@link #_doGetSerializationPolicy(HttpServletRequest, String, String)}
      */
     @Override

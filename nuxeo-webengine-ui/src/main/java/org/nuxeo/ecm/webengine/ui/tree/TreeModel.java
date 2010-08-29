@@ -29,37 +29,35 @@ import org.nuxeo.common.utils.Path;
  * The tree data is lazy loaded by using the data provider specified at tree view creation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface TreeModel extends Serializable {
 
     /**
-     * Get the content provider used by this tree
-     * @return
+     * Gets the content provider used by this tree.
      */
     ContentProvider getContentProvider();
 
     /**
-     * Set the content provider to be used by this tree
-     * @param provider
+     * Sets the content provider to be used by this tree.
      */
     void setContentProvider(ContentProvider provider);
 
     /**
-     * Set the input data
+     * Sets the input data.
      *
-     * @param input may be null
+     * @param input (may be null)
      */
     void setInput(Object input);
 
     /**
-     * Get the current input of the tree
+     * Gets the current input of the tree.
+     *
      * @return the tree input data. may be null.
      */
     Object getInput();
 
     /**
-     * Get the trre root item or null if tree has no input
+     * Get the tree root item, or null if tree has no input.
      *
      * @return the root
      */
@@ -86,17 +84,15 @@ public interface TreeModel extends Serializable {
     TreeItem findAndReveal(String path);
 
     /**
-     * Like {@link #find(Path)} but the path is expressed as a {@link Path} object
-     * @param path
-     * @return
+     * Like {@link #find(Path)} but the path is expressed as a {@link Path} object.
+     *
      * @see #find(String)
      */
     TreeItem find(Path path);
 
     /**
-     * Like {@link #findAndReveal(Path)} but the path is expressed as a {@link Path} object
-     * @param path
-     * @return
+     * Like {@link #findAndReveal(Path)} but the path is expressed as a {@link Path} object.
+     *
      * @see #findAndReveal(String)
      */
     TreeItem findAndReveal(Path path);
