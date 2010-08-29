@@ -51,34 +51,34 @@ public class Request extends HashMap<String, String> {
     protected static Pattern ATTR_PATTERN = Pattern.compile(
             ";?\\s*filename\\s*=\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
 
-    protected int method;
+    protected final int method;
 
-    protected String url;
+    protected final String url;
+
+    protected final boolean isMultiPart;
 
     protected Object entity;
-
-    protected boolean isMultiPart;
 
     protected Object result;
 
     public Request(int method, String url) {
         this.method = method;
         this.url = url;
-        this.isMultiPart = false;
+        isMultiPart = false;
     }
 
     public Request(int method, String url, MimeMultipart entity) {
         this.method = method;
         this.url = url;
         this.entity = entity;
-        this.isMultiPart = true;
+        isMultiPart = true;
     }
 
     public Request(int method, String url, String entity) {
         this.method = method;
         this.url = url;
         this.entity = entity;
-        this.isMultiPart = false;
+        isMultiPart = false;
     }
 
     public int getMethod() {
@@ -112,12 +112,6 @@ public class Request extends HashMap<String, String> {
     /**
      * Must read the object from the server response and return it or throw a
      * {@link RemoteException} if server sent an error.
-     *
-     * @param status
-     * @param ctype
-     * @param stream
-     * @return
-     * @throws Exception
      */
     public Object handleResult(int status, String ctype, String disp,
             InputStream stream) throws Exception {

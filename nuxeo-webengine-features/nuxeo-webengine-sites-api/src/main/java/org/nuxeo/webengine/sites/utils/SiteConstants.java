@@ -67,7 +67,6 @@ public final class SiteConstants {
     public static final String WEBPAGE_CONTENT = "webp:content";
     public static final String WEBPAGE_DESCRIPTION = "dc:description";
 
-
     /*
      * Arguments in FreeMarker
      */

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.audit.service.management;
 
 /**
  * @author matic
- *
  */
 public interface AuditEventMetricMBean {
 

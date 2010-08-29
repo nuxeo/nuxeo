@@ -18,7 +18,7 @@ package org.nuxeo.ecm.automation;
 
 /**
  * The chain could not be validated. (i.e. no valid path found in the chain
- * graph)
+ * graph).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

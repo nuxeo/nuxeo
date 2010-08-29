@@ -54,13 +54,13 @@ import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
         + "you can put the operation chain ID of your choice among the one you contributed. "
         + "Those operations will be executed when the user validates the task, "
         + "depending on  whether he accepts or rejects the task. "
-        + "You have to specifiy a variable name (the <b>key for ... </b> parameter) to resolve target users and groups to which the task will be assigned. "
+        + "You have to specify a variable name (the <b>key for ... </b> parameter) to resolve target users and groups to which the task will be assigned. "
         + "You can use Get Users and Groups to update a context variable with some users and groups. "
         + "If you check <b>create one task per actor</b>, each of the actors will have a task to achieve, "
         + "versus \"the first who achieve the task makes it disappear for the others\".</p>")
 public class CreateTask {
 
-    public final static String ID = "Workflow.CreateTask";
+    public static final String ID = "Workflow.CreateTask";
 
     private static final Log log = LogFactory.getLog(CreateTask.class);
 

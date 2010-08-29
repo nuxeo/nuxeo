@@ -20,20 +20,18 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * @author matic
- *
  */
 public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
+
+    protected final NXAuditEventsService service;
+
+    protected final String eventName;
 
     protected AuditEventMetricMBeanAdapter(NXAuditEventsService service,
             String name) {
         this.service = service;
         this.eventName = name;
     }
-
-    protected final NXAuditEventsService service;
-
-    protected final String eventName;
-
 
     public Long getCount() {
         return service.getEventsCount(eventName);

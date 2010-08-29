@@ -30,7 +30,7 @@ public class MvelExpression implements Expression {
 
     protected transient volatile Serializable compiled;
 
-    protected String expr;
+    protected final String expr;
 
     public MvelExpression(String expr) {
         this.expr = expr;

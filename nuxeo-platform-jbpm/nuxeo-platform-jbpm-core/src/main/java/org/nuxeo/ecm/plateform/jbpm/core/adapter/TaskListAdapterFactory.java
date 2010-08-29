@@ -16,6 +16,7 @@
  *
  */
 
+// FIXME: plateforme -> platform
 package org.nuxeo.ecm.plateform.jbpm.core.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -24,7 +25,6 @@ import org.nuxeo.ecm.platform.jbpm.TaskListImpl;
 
 /**
  * @author nulrich
- *
  */
 public class TaskListAdapterFactory implements DocumentAdapterFactory {
 
@@ -39,11 +39,11 @@ public class TaskListAdapterFactory implements DocumentAdapterFactory {
     }
 
     public static boolean checkDocument(DocumentModel doc) {
-
         if (!doc.hasSchema("taskList")) {
             throw new RuntimeException(
                     "Document should contain schema taskList");
         }
         return true;
     }
+
 }

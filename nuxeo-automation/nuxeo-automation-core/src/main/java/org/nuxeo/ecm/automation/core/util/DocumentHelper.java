@@ -43,11 +43,8 @@ import org.nuxeo.ecm.core.schema.types.Type;
 public class DocumentHelper {
 
     /**
-     * Save the document and clear context data to avoid incrementing version
+     * Saves the document and clear context data to avoid incrementing version
      * in next operations if not needed.
-     *
-     * @param doc
-     * @return
      */
     public static DocumentModel saveDocument(CoreSession session,
             DocumentModel doc) throws ClientException {
@@ -56,14 +53,10 @@ public class DocumentHelper {
     }
 
     /**
-     * Remove a property from a document given the xpath. If the xpath points
+     * Removes a property from a document given the xpath. If the xpath points
      * to a list property the list will be cleared. If the path points to a
      * blob in a list the property is removed from the list. Otherwise the
      * xpath should point to a non list property that will be removed.
-     *
-     * @param doc
-     * @param xpath
-     * @throws ClientException
      */
     public static void removeProperty(DocumentModel doc, String xpath)
             throws ClientException {
@@ -81,14 +74,11 @@ public class DocumentHelper {
     }
 
     /**
-     * Given a document property update its value with the given blob. The
+     * Given a document property, updates its value with the given blob. The
      * property can be a blob list or a blob. If a blob list the blob is
      * appended to the list, if a blob then it will be set as the property
      * value. Both blob list formats are supported: the file list (blob holder
      * list) and simple blob list.
-     *
-     * @param p
-     * @param blob
      */
     public static void addBlob(Property p, Blob blob) throws PropertyException {
         if (p.isList()) {
@@ -113,16 +103,12 @@ public class DocumentHelper {
     }
 
     /**
-     * Set the properties given as a map of xpath:value to the given document.
+     * Sets the properties given as a map of xpath:value to the given document.
      * There is one special property: ecm:acl that can be used to set the local
      * acl. The format of this property value is: [string username]:[string
      * permission]:[boolean grant], [string username]:[string
      * permission]:[boolean grant], ... TODO list properties are not yet
      * supported
-     *
-     * @param doc
-     * @param values
-     * @throws Exception
      */
     public static void setProperties(CoreSession session, DocumentModel doc,
             Map<String, String> values) throws Exception {
@@ -161,4 +147,5 @@ public class DocumentHelper {
         }
         session.setACP(doc.getRef(), acp, false);
     }
+
 }

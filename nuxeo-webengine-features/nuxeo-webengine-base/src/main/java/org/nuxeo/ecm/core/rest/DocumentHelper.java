@@ -80,8 +80,8 @@ public class DocumentHelper {
             if (newDoc.getTitle().length() == 0) {
                 newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
             }
-            Module m = context.getModule();
-            Validator v = m.getValidator(newDoc.getType());
+            Module module = context.getModule();
+            Validator v = module.getValidator(newDoc.getType());
             if (v != null) {
                 newDoc = v.validate(newDoc);
             }
@@ -101,15 +101,15 @@ public class DocumentHelper {
             if (va != null) {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
                 ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, va);
             } else {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.FALSE);
             }
-            Module m = ctx.getModule();
-            Validator v = m.getValidator(doc.getType());
+            Module module = ctx.getModule();
+            Validator v = module.getValidator(doc.getType());
             if (v != null) {
                 doc = v.validate(doc);
             }

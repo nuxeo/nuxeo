@@ -21,9 +21,6 @@ package org.nuxeo.ecm.platform.comment.workflow.utils;
  */
 public final class CommentsConstants {
 
-    private CommentsConstants() {
-    }
-
     /*
      * Constants used for Comments
      */
@@ -57,4 +54,8 @@ public final class CommentsConstants {
     public static final String COMMENT_CREATION_DATE = "comment:creationDate";
     public static final String COMMENT_AUTHOR = "comment:author";
     public static final String COMMENT_TEXT = "comment:text";
+
+    private CommentsConstants() {
+    }
+    
 }

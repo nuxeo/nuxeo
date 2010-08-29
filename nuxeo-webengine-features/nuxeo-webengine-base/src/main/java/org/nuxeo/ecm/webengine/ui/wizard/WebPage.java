@@ -18,8 +18,6 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

@@ -30,6 +30,9 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  */
 public class SiteQueriesCollection {
 
+    private SiteQueriesCollection() {
+    }
+
     /**
      * Queries sites by URL and document type. It should be exactly one
      * returned.
@@ -43,9 +46,7 @@ public class SiteQueriesCollection {
                 + "AND ecm:currentLifeCycleState != 'deleted' "
                 + "AND webc:isWebContainer = 1", documentType, url);
 
-        DocumentModelList list = session.query(queryString);
-
-        return list;
+        return session.query(queryString);
     }
 
     /**

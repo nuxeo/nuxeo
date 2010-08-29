@@ -28,9 +28,9 @@ import javax.activation.DataSource;
  */
 public class InputStreamDataSource implements DataSource {
 
-    protected InputStream in;
-    protected String ctype;
-    protected String name;
+    protected final InputStream in;
+    protected final String ctype;
+    protected final String name;
 
     public InputStreamDataSource(InputStream in, String ctype) {
         this (in, ctype, "MultipartRequest");

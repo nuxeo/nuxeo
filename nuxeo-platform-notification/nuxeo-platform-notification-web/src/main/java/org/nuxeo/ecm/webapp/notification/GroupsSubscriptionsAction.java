@@ -84,9 +84,6 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     /**
      * Gets all the notifications registered in the system.
-     *
-     * @return
-     * @throws ClientException
      */
     public List<SelectItem> getNotificationList() throws ClientException {
         String parentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
@@ -103,8 +100,6 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     /**
      * Registers the user's choices.
-     *
-     * @throws ClientException
      */
     public void updateSubscriptions() throws ClientException {
         List<String> selectedNotifications = getSelectedNotifications();
@@ -154,7 +149,6 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     /**
      * @return the previously selected notifications.
-     * @throws ClientException
      */
     public List<String> getSelectedNotifications() throws ClientException {
         if (selectedNotifications == null) {
@@ -165,9 +159,6 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     /**
      * Returns the notifications that the user already subscribed for.
-     *
-     * @return
-     * @throws ClientException
      */
     private List<String> getSubscriptionsForCurrentUser()
             throws ClientException {
@@ -185,9 +176,6 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     /**
      * Returns the users that subscribed to a notification.
-     *
-     * @return
-     * @throws ClientException
      */
     public List<String> getSubscribedUsersForNotification(String notification)
             throws ClientException {
@@ -197,11 +185,8 @@ public class GroupsSubscriptionsAction extends InputController implements
     }
 
     /**
-     * Returns a hashmap that contains all users and groups subscribed to
+     * Returns a map that contains all users and groups subscribed to
      * notifications(keys).
-     *
-     * @return
-     * @throws ClientException
      */
     public Map<String, List<String>> getUsersByNotificationsForCurrentDocument()
             throws ClientException {
@@ -250,16 +235,10 @@ public class GroupsSubscriptionsAction extends InputController implements
         selectedGrant = selectedPermission;
     }
 
-    /**
-     * @return the selectedNotification.
-     */
     public String getSelectedNotification() {
         return selectedNotification;
     }
 
-    /**
-     * @param selectedNotification The selectedNotification to set.
-     */
     public void setSelectedNotification(String selectedNotification) {
         this.selectedNotification = selectedNotification;
     }

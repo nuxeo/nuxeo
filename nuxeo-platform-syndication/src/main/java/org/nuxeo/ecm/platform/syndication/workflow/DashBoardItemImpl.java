@@ -33,14 +33,11 @@ public class DashBoardItemImpl extends
         org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItemImpl implements
         DashBoardItem {
 
+    private static final long serialVersionUID = 1L;
+
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
         super(task, document);
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * REQUIRED FOR OPEN SOCIAL DASHBOARD
@@ -57,11 +54,12 @@ public class DashBoardItemImpl extends
         }
     }
 
-    public void prependToComment(String setOFNames) {
-        if (this.comment == null) {
-            this.comment = setOFNames;
+    public void prependToComment(String setOfNames) {
+        if (comment == null) {
+            comment = setOfNames;
         } else {
-            this.comment = "[" + setOFNames + "]" + this.comment;
+            comment = "[" + setOfNames + "]" + comment;
         }
     }
+
 }

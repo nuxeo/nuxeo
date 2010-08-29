@@ -51,7 +51,6 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Produces({"application/json+nxentity", "application/json"})
@@ -62,7 +61,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
-        return -1;
+        return -1L;
     }
 
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
@@ -137,12 +136,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
 
     /**
-     * convert the given core property to JSON format. The given filesBaseUrl is the baseUrl that can be used to locate blob content.
+     * Converts the given core property to JSON format.
+     * The given filesBaseUrl is the baseUrl that can be used to locate blob content
      * and is useful to generate blob urls.
-     * @param filesBaseUrl
-     * @param prop
-     * @return
-     * @throws PropertyException
      */
     protected static Object propertyToJsonValue(final String filesBaseUrl, Property prop) throws Exception {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();

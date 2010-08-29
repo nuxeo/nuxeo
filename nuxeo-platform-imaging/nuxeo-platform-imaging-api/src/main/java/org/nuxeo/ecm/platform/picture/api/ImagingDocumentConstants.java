@@ -32,4 +32,7 @@ public class ImagingDocumentConstants {
 
     public static final String PICTURETEMPLATES_PROPERTY_NAME = "picturebook:picturetemplates";
 
+    private ImagingDocumentConstants() {
+    }
+
 }

@@ -31,34 +31,22 @@ package org.nuxeo.ecm.automation.client.jaxrs;
  * initialize the base URL
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface AutomationClient {
 
     /**
      * Gets the automation service URL.
-     *
-     * @return
      */
     String getBaseUrl();
 
     /**
      * Creates a new session using the given login.
-     *
-     * @param username
-     * @param password
-     * @return
-     * @throws Exception
      */
     Session getSession(String username, String password) throws Exception;
 
     /**
      * Creates asynchronously a new session using the given login. The given
      * callback will be notified after the session is created.
-     *
-     * @param username
-     * @param password
-     * @param cb
      */
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
@@ -68,16 +56,11 @@ public interface AutomationClient {
      * <p>
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
-     *
-     * @param <T>
-     * @param objToAdapt
-     * @param adapterType
-     * @return
      */
     <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
 
     /**
-     * Register and adapter for a given type. Registration is not thread safe.
+     * Register an adapter for a given type. Registration is not thread safe.
      * You should register adapters at initialization time. An adapter type can
      * be bound to a single adaptable type.
      *

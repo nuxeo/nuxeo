@@ -17,6 +17,7 @@ package org.nuxeo.ecm.platform.queue.api;
 
 import java.util.List;
 
+// FIXME: not clear.
 /**
  * Create atomic objects.
  *
@@ -25,8 +26,9 @@ import java.util.List;
  */
 public interface QueueFactory {
 
+    // FIXME: this comment is not consistent with the method signature
     /**
-     * Create an register a new queue given a content class, an atomic processor
+     * Creates and registers a new queue given a content class, an atomic processor
      * and a dedicated content persister.
      *
      * @param contentClass the content class
@@ -35,8 +37,9 @@ public interface QueueFactory {
     void createQueue(String name, QueuePersister persister,
             QueueExecutor executor);
 
+    // FIXME: for a queue or for a queue content?
     /**
-     * Return a persister for a queue
+     * Returns a persister for a queue.
      *
      * @param content
      * @return
@@ -46,36 +49,24 @@ public interface QueueFactory {
             throws QueueNotFoundException;
 
     /**
-     * Return a persister for a queue
-     *
-     * @param queueName
-     * @return
+     * Return a persister for a queue.
      */
     QueuePersister getPersister(String queueName) throws QueueNotFoundException;
 
+    // FIXME: for a queue or for a queue content?
     /**
-     * Get an executor for a queue
-     *
-     * @param content
-     * @return
-     * @throws QueueException
+     * Gets an executor for a queue
      */
     QueueExecutor getExecutor(QueueContent content)
             throws QueueNotFoundException;
 
     /**
-     * Get an executor for a queue
-     *
-     * @param queueName
-     * @return
-     * @throws QueueException
+     * Gets an executor for a queue.
      */
     QueueExecutor getExecutor(String queueName) throws QueueNotFoundException;
 
     /**
-     * Return the list of registered queues
-     *
-     * @return
+     * Returns the list of registered queues.
      */
     List<String> getRegisteredQueues();
 

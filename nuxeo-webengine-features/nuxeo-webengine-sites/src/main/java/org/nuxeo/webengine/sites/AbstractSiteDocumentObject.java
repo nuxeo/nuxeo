@@ -184,9 +184,8 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     /**
-     * JAX-RS specs doesn't allow  multiple REST designator on a single method so we need to use another method to do a POST
-     * @param searchParam
-     * @return
+     * JAX-RS specs doesn't allow  multiple REST designator on a single method
+     * so we need to use another method to do a POST.
      */
     @POST
     @Path("search")
@@ -331,7 +330,6 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
      *
      * @param session the nuxeo core session
      * @return the parent web site of the current web object
-     * @throws Exception
      */
     protected DocumentModel getParentWebSite(CoreSession session)
             throws Exception {

@@ -29,7 +29,7 @@ public class BaseModule extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> set = new HashSet<Class<?>>();
+        Set<Class<?>> set = new HashSet<Class<?>>();
         set.add(Main.class);
         return set;
     }

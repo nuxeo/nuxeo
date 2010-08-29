@@ -64,7 +64,7 @@ public class WizardSession extends HashMap<String, Object> {
         if (lastPage == null) {
             lastPage = page;
         } else {
-            page.prev = (WizardPage)lastPage;
+            page.prev = lastPage;
             lastPage = page;
         }
         return page;

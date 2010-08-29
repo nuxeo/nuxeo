@@ -18,8 +18,6 @@ package org.nuxeo.ecm.automation.core.test;
 
 import java.io.File;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +51,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -110,7 +113,7 @@ public class BlobOperationsTest {
         // suffix));
 
         Blob out = (Blob) service.run(ctx, chain);
-        Assert.assertEquals("blob content", out.getString());
+        assertEquals("blob content", out.getString());
 
         // chain 2 is removing the blob created earlier
         chain = new OperationChain("testRemoveChain");
@@ -119,7 +122,7 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlob.ID);
 
         out = (Blob) service.run(ctx, chain);
-        Assert.assertNotNull(out);
+        assertNotNull(out);
     }
 
     @Test
@@ -141,7 +144,7 @@ public class BlobOperationsTest {
             chain.add(RestoreDocumentInput.ID).set("name", "doc");
             chain.add(GetDocumentBlob.ID);
             Blob out = (Blob) service.run(ctx, chain);
-            Assert.assertEquals("blob content", out.getString());
+            assertEquals("blob content", out.getString());
         } finally {
             file.delete();
         }
@@ -168,9 +171,9 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
-        Assert.assertEquals(2, out.size());
-        Assert.assertEquals("blob1", out.get(0).getString());
-        Assert.assertEquals("blob2", out.get(1).getString());
+        assertEquals(2, out.size());
+        assertEquals("blob1", out.get(0).getString());
+        assertEquals("blob2", out.get(1).getString());
 
         // chain 2 is removing the blobs we constructed earlier.
         chain = new OperationChain("testRemoveChain");
@@ -179,7 +182,7 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlobs.ID);
 
         out = (BlobList) service.run(ctx, chain);
-        Assert.assertEquals(0, out.size());
+        assertEquals(0, out.size());
     }
 
     @Test
@@ -203,9 +206,9 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
-        Assert.assertEquals(2, out.size());
-        Assert.assertEquals("blob1", out.get(0).getString());
-        Assert.assertEquals("blob2", out.get(1).getString());
+        assertEquals(2, out.size());
+        assertEquals("blob1", out.get(0).getString());
+        assertEquals("blob2", out.get(1).getString());
 
         // chain 2 is removing the blobs we constructed earlier.
         chain = new OperationChain("testRemoveChain");
@@ -214,7 +217,7 @@ public class BlobOperationsTest {
         chain.add(GetDocumentBlobs.ID);
 
         out = (BlobList) service.run(ctx, chain);
-        Assert.assertEquals(1, out.size());
+        assertEquals(1, out.size());
     }
 
     @Test
@@ -232,18 +235,21 @@ public class BlobOperationsTest {
         chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath()).set(
                 "prefix", "test-");
         Blob out = (Blob) service.run(ctx, chain);
-        Assert.assertTrue(blob == out);
+        assertTrue(blob == out);
+
         File file = new File(dir, "test-" + blob.getFilename());
-        Assert.assertEquals(blob.getString(), FileUtils.readFile(file));
+        assertEquals(blob.getString(), FileUtils.readFile(file));
+
         file.delete();
 
         // test again but withpout prefix
         chain = new OperationChain("testChain");
         chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath());
         out = (Blob) service.run(ctx, chain);
-        Assert.assertTrue(blob == out);
+        assertSame(blob, out);
+
         file = new File(dir, blob.getFilename());
-        Assert.assertEquals(blob.getString(), FileUtils.readFile(file));
+        assertEquals(blob.getString(), FileUtils.readFile(file));
         file.delete();
 
         dir.delete();

@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class CommentConverterImpl implements CommentConverter {
 

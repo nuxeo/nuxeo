@@ -28,7 +28,7 @@ public final class JbpmEventNames {
 
     /**
      * Fired when WF Seam Bean are first created. Used to create the WF
-     * EventListner that catches Seam events
+     * EventListener that catches Seam events
      */
     public static final String WF_INIT = "workflowInit";
 
@@ -77,7 +77,7 @@ public final class JbpmEventNames {
      */
     public static final String WORKFLOW_TASK_REJECTED = "workflowTaskRejected";
 
-    public static final String WORKFLOW_TASK_ASSIGNED = "worfklowTaskAssigned";
+    public static final String WORKFLOW_TASK_ASSIGNED = "workflowTaskAssigned";
 
     /**
      * Fired when an assignment has been updated.

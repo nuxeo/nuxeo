@@ -42,64 +42,32 @@ public class QueueManagerImpl implements QueueManager {
         this.queueName = queueName;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManager#forgetContent(org.nuxeo
-     * .ecm.platform.queue.api.QueueContent)
-     */
     public void forgetContent(QueueContent content) {
         persister.forgetContent(content);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManager#knowsContent(org.nuxeo.
-     * ecm.platform.queue.api.QueueContent)
-     */
     public boolean knowsContent(QueueContent content) throws QueueException {
         return persister.hasContent(content);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueManager#listHandledItems()
-     */
     public List<QueueItem> listHandledItems() {
-        ArrayList<QueueItem> handledItems = new ArrayList<QueueItem>();
+        List<QueueItem> handledItems = new ArrayList<QueueItem>();
         for (QueueItem item : persister.listKnownItems(queueName)) {
             handledItems.add(item);
         }
         return handledItems;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueManager#listOrphanedItems()
-     */
     public List<QueueItem> listOrphanedItems() {
-        ArrayList<QueueItem> orphansList = new ArrayList<QueueItem>();
+        List<QueueItem> orphansList = new ArrayList<QueueItem>();
         for (QueueItem item : persister.listKnownItems(queueName)) {
             if (item.isOrphaned()) {
                 orphansList.add(item);
             }
         }
         return orphansList;
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManager#updateItem(org.nuxeo.ecm
-     * .platform.queue.api.QueueContent, java.util.Map)
-     */
     public void updateItem(QueueContent content,
             Map<String, Serializable> additionalInfos) {
 

@@ -72,7 +72,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
                 domain = "/" + domain;
             }
             if (!domain.endsWith("/")) {
-                domain = domain + "/";
+                domain += "/";
             }
         }
         return domain;

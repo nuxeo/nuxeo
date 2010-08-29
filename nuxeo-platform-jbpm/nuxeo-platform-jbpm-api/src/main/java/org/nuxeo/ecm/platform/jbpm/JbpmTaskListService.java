@@ -35,9 +35,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface JbpmTaskListService {
 
     /**
-     * Create a new task list
+     * Creates a new task list.
      *
-     * @param Name of the new list
+     * @param listName the name of the new list
      * @return the created list
      * @throws ClientException
      */
@@ -45,7 +45,7 @@ public interface JbpmTaskListService {
             throws ClientException;
 
     /**
-     * Save the list
+     * Saves the list.
      *
      * @param list to save
      * @throws ClientException
@@ -54,7 +54,7 @@ public interface JbpmTaskListService {
             throws ClientException;
 
     /**
-     * Retrieve a task list from it name
+     * Retrieves a task list from it name.
      *
      * @param Name of the list to load
      * @return
@@ -64,7 +64,8 @@ public interface JbpmTaskListService {
             throws ClientException;
 
     /**
-     * Delete a list of participant
+     * Delete a list of participant.
+     *
      * @param session
      * @param listName The name of the list to delete
      * @throws ClientException

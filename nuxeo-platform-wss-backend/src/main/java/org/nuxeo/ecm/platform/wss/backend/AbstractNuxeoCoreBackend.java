@@ -29,10 +29,6 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
 
     protected CoreSession session;
 
-    public AbstractNuxeoCoreBackend() {
-        super();
-    }
-
     protected CoreSession getCoreSession() throws Exception {
         if (session == null) {
             RepositoryManager rm;

@@ -24,9 +24,6 @@ import org.nuxeo.ecm.core.api.Sorter;
 
 public class CommentSorter implements Sorter {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private boolean asc = true;
@@ -45,7 +42,7 @@ public class CommentSorter implements Sorter {
              return asc ? 1 : -1;
          }
 
-        int cmp=0;
+        int cmp = 0;
         try {
             Calendar created1 = doc1.getProperty("dc:created").getValue(Calendar.class);
             Calendar created2 = doc2.getProperty("dc:created").getValue(Calendar.class);

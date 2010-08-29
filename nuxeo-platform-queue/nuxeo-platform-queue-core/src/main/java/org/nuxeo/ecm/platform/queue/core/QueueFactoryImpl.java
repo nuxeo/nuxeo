@@ -35,50 +35,21 @@ public class QueueFactoryImpl implements QueueFactory {
 
     Map<String, QueueRegistryEntry> queueRegistry = new HashMap<String, QueueRegistryEntry>();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueFactory#createQueue(java.net.URI,
-     * org.nuxeo.ecm.platform.queue.api.AtomicPersister,
-     * org.nuxeo.ecm.platform.queue.api.AtomicExecutor)
-     */
     public void createQueue(String name, QueuePersister persister,
             QueueExecutor executor) {
         queueRegistry.put(name, new QueueRegistryEntry(executor, persister));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueFactory#getPersister(org.nuxeo.
-     * ecm.platform.queue.api.AtomicContent)
-     */
     public QueuePersister getPersister(QueueContent content)
             throws QueueNotFoundException {
         return getPersister(content.getDestination());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueFactory#getExecutor(org.nuxeo.ecm
-     * .platform.queue.api.AtomicContent)
-     */
     public QueueExecutor getExecutor(QueueContent content)
             throws QueueNotFoundException {
         return getExecutor(content.getDestination());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueFactory#getExecutor(java.lang.String
-     * )
-     */
     public QueueExecutor getExecutor(String queueName)
             throws QueueNotFoundException {
         QueueRegistryEntry entry = queueRegistry.get(queueName);
@@ -90,13 +61,6 @@ public class QueueFactoryImpl implements QueueFactory {
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueFactory#getPersister(java.lang.
-     * String)
-     */
     public QueuePersister getPersister(String queueName)
             throws QueueNotFoundException {
         QueueRegistryEntry entry = queueRegistry.get(queueName);
@@ -107,12 +71,8 @@ public class QueueFactoryImpl implements QueueFactory {
         return entry.getPersister();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.QueueFactory#getRegisteredQueues()
-     */
     public List<String> getRegisteredQueues() {
         return new ArrayList<String>(queueRegistry.keySet());
     }
+
 }

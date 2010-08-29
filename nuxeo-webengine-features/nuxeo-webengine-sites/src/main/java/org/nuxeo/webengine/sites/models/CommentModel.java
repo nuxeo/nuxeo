@@ -23,7 +23,6 @@ import org.nuxeo.theme.models.AbstractModel;
  * fragment initialization mechanism
  *
  * @author rux
- *
  */
 public class CommentModel extends AbstractModel {
 

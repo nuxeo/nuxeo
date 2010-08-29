@@ -52,7 +52,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
  *
  * @author DM
  */
-// FIXME: design issue - this is a util class (only static methods) with no subclasses (misleading name).
+// FIXME: design issue - this is a utility class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
 
     public static final String DOCUMENT_TAG = "documentLogs";
@@ -81,9 +81,6 @@ public class IOLogEntryBase {
 
     /**
      * Could be overridden to put other (additional) data.
-     *
-     * @param logEntryElement
-     * @param logEntry
      */
     protected static void writeLogEntry(Element logEntryElement, LogEntry logEntry) {
         logEntryElement.addAttribute("category", logEntry.getCategory());
@@ -107,8 +104,6 @@ public class IOLogEntryBase {
 
     /**
      * Will translate from a jdoc to a list of LogEntry objects.
-     *
-     * @param doc
      */
     @SuppressWarnings({"unchecked"})
     protected static List<LogEntry> readDocument(Document doc) {

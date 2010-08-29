@@ -33,7 +33,6 @@ public class CommentWorkflowFilter implements JbpmListFilter {
     protected final String commentId;
 
     public CommentWorkflowFilter(String commentId) {
-        super();
         this.commentId = commentId;
     }
 

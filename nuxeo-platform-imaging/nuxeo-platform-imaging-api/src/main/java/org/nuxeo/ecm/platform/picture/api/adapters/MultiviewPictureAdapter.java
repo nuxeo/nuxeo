@@ -120,7 +120,6 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
             for (Map<String, Object> map : list) {
                 PictureView view = mapToView(map);
                 views.put(view.getTitle(), view);
-
             }
         }
     }

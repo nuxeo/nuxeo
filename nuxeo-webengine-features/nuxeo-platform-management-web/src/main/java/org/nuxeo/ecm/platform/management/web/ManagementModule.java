@@ -20,6 +20,7 @@ import static org.nuxeo.ecm.platform.management.web.statuses.Constants.ADMINISTR
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.MANAGEMENT_WEB_MODULE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBES_WEB_OBJECT_TYPE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBE_WEB_OBJECT_TYPE;
+import static org.nuxeo.ecm.platform.management.web.statuses.Constants.USER_MANAGER_OBJECT_TYPE;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -35,14 +36,11 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
- *
  * Web object implementation corresponding to the root module for management
- * (module used for administrative purpose)
+ * (module used for administrative purpose).
  *
  * @author mcedica
- *
  */
 @WebObject(type = MANAGEMENT_WEB_MODULE)
 @Produces("text/html; charset=UTF-8")
@@ -57,7 +55,7 @@ public class ManagementModule extends DefaultObject {
         try {
             probeRunner = Framework.getService(ProbeRunner.class);
         } catch (Exception e) {
-            log.error("Unable to retreive the probeRunner", e);
+            log.error("Unable to retrieve the probeRunner", e);
         }
     }
 
@@ -77,6 +75,9 @@ public class ManagementModule extends DefaultObject {
                 return newObject(getAdministrativeStatusObjectTypeName(), path);
             }
 
+            if(getUserManagerObjectTypeName().equals(path)) {
+                return newObject(getUserManagerObjectTypeName());
+            }
             return newObject(getProbeObjectTypeName(), probeRunner, path);
 
 
@@ -96,4 +97,9 @@ public class ManagementModule extends DefaultObject {
     public String getProbesObjectTypeName() {
         return PROBES_WEB_OBJECT_TYPE;
     }
+
+    public String getUserManagerObjectTypeName(){
+        return USER_MANAGER_OBJECT_TYPE;
+    }
+
 }

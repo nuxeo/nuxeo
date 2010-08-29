@@ -35,9 +35,9 @@ public class OperationParameters implements Serializable {
 
     private static final long serialVersionUID = -3215180388563955264L;
 
-    protected String oid;
+    protected final String oid;
 
-    protected Map<String, Object> params;
+    protected final Map<String, Object> params;
 
     public OperationParameters(String oid) {
         this(oid, new HashMap<String, Object>());
@@ -49,18 +49,14 @@ public class OperationParameters implements Serializable {
     }
 
     /**
-     * The operation ID
-     *
-     * @return
+     * The operation ID.
      */
     public String id() {
         return oid;
     }
 
     /**
-     * The map of runtime parameters
-     *
-     * @return
+     * The map of runtime parameters.
      */
     public final Map<String, Object> map() {
         return params;

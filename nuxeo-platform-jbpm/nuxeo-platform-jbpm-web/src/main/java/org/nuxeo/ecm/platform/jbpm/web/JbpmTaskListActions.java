@@ -82,7 +82,6 @@ public class JbpmTaskListActions implements Serializable {
 
     @Factory(value = "availableLists", scope = ScopeType.EVENT)
     public List<TaskList> availableListsFactory() throws Exception {
-
         JbpmTaskListService service = Framework.getService(JbpmTaskListService.class);
         List<TaskList> lists = service.getTaskLists(documentManager);
 
@@ -117,18 +116,14 @@ public class JbpmTaskListActions implements Serializable {
         facesMessages.add(
                 FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("label.review.list.created"));
-
     }
 
     public void deleteTaskList() throws Exception {
-
         if (selectedListId == null) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.notselected"));
-
             return;
-
         }
 
         JbpmTaskListService service = Framework.getService(JbpmTaskListService.class);
@@ -137,11 +132,9 @@ public class JbpmTaskListActions implements Serializable {
         facesMessages.add(
                 FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("label.review.list.deleted"));
-
     }
 
     public void loadTaskList() throws Exception {
-
         if (selectedListId == null) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
@@ -178,10 +171,7 @@ public class JbpmTaskListActions implements Serializable {
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.added"));
-
         }
-
-        return;
     }
 
 }

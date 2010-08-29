@@ -90,11 +90,7 @@ public class InvokableMethod {
     }
 
     /**
-     * Return 0 for no match
-     *
-     * @param in
-     * @param consume
-     * @return
+     * Return 0 for no match.
      */
     public int inputMatch(Class<?> in) {
         if (consume == in) {
@@ -113,11 +109,7 @@ public class InvokableMethod {
     }
 
     /**
-     * Return 0 for no match
-     *
-     * @param in
-     * @param consume
-     * @return
+     * Returns 0 for no match.
      */
     public int outputMatch(Class<?> out) {
         if (produce == out) {
@@ -152,7 +144,7 @@ public class InvokableMethod {
         } catch (Exception e) {
             // be more explicit about the operation that failed
             throw new OperationException("Failed to invoke operation "
-                    + getOperation().getId(), e);
+                    + op.getId(), e);
         }
     }
 

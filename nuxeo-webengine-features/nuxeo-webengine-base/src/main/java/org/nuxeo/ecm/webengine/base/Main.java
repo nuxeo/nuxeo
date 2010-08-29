@@ -56,8 +56,8 @@ public class Main extends ModuleRoot {
 
     public Main(@Context UriInfo info, @Context HttpHeaders headers) {
         ctx = WebEngine.getActiveContext();
-        ((DefaultContext)ctx).setUriInfo(info);
-        ((DefaultContext)ctx).setHttpHeaders(headers);
+        ((DefaultContext) ctx).setUriInfo(info);
+        ((DefaultContext) ctx).setHttpHeaders(headers);
         path = ctx.getBasePath();
         mgr = ctx.getEngine().getModuleManager();
     }
@@ -76,7 +76,6 @@ public class Main extends ModuleRoot {
         setRoot(true);
         ctx.push(this);
     }
-
 
     @GET
     public Object doGet() {

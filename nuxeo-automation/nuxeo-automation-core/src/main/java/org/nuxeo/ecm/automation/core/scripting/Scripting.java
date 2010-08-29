@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Scripting {
 
-    protected static Map<String, Script> cache = new ConcurrentHashMap<String, Script>();
+    protected static final Map<String, Script> cache = new ConcurrentHashMap<String, Script>();
 
     public static Expression newExpression(String expr) {
         return new MvelExpression(expr);
@@ -102,7 +102,7 @@ public class Scripting {
     }
 
     public static class MvelScript implements Script {
-        Serializable c;
+        final Serializable c;
 
         public MvelScript(Serializable c) {
             this.c = c;
@@ -114,7 +114,7 @@ public class Scripting {
     }
 
     public static class GroovyScript implements Script {
-        Serializable c;
+        final Serializable c;
 
         public GroovyScript(Serializable c) {
             this.c = c;

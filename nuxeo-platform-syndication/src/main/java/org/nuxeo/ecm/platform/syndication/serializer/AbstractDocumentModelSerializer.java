@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.platform.syndication.serializer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +41,7 @@ import org.restlet.data.Response;
 public abstract class AbstractDocumentModelSerializer implements
         DocumentModelListSerializer {
 
-    protected UserManager um = null;
+    protected UserManager um;
 
     public String serialize(DocumentModelList docList,
             List<String> columnsDefinition, HttpServletRequest req) throws ClientException {
@@ -86,7 +89,6 @@ public abstract class AbstractDocumentModelSerializer implements
         serialize(summary, docList, columnsDefinition, res, req);
     }
 
-
     protected String getFullUserName(String login) throws Exception {
         String fullname = login;
         if (um==null) {
@@ -101,7 +103,7 @@ public abstract class AbstractDocumentModelSerializer implements
 
     @SuppressWarnings("unchecked")
     protected ResultField getDocumentProperty(DocumentModel doc, String colDef) throws ClientException {
-        ResultField res = null;
+        ResultField res;
         if (colDef.equals(urlField)) {
             String url = getDocumentURL(doc);
             return new ResultField(urlField, url);

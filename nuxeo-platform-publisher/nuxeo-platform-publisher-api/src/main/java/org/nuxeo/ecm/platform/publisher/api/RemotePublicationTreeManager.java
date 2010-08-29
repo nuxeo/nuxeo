@@ -80,7 +80,6 @@ public interface RemotePublicationTreeManager {
      * @param publishedDocument the current published document that will be
      *            approved
      * @param comment
-     * @throws ClientException
      */
     void validatorPublishDocument(String sid, PublishedDocument publishedDocument,
             String comment) throws ClientException;
@@ -91,7 +90,6 @@ public interface RemotePublicationTreeManager {
      * @param publishedDocument the currently published document that will be
      *            rejected
      * @param comment
-     * @throws ClientException
      */
     void validatorRejectPublication(String sid, PublishedDocument publishedDocument,
             String comment) throws ClientException;
@@ -100,10 +98,8 @@ public interface RemotePublicationTreeManager {
      * Returns {@code true} if the current user can publish to the specified
      * publicationNode, {@code false} otherwise.
      *
-     * @param publicationNode
      * @return {@code true} if the current user can publish to the specified
      *         publicationNode, {@code false} otherwise.
-     * @throws ClientException
      */
     boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException;
 
@@ -111,10 +107,8 @@ public interface RemotePublicationTreeManager {
      * Returns {@code true} if the current user can unpublish the given
      * publishedDocument, {@code false} otherwise.
      *
-     * @param publishedDocument
      * @return {@code true} if the current user can unpublish the given
      *         publishedDocument, {@code false} otherwise.
-     * @throws ClientException
      */
     boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException;
 
@@ -123,10 +117,6 @@ public interface RemotePublicationTreeManager {
     /**
      * Returns {@code true} if the current user can manage the publishing of the
      * given published document, ie. approve or reject the document.
-     *
-     * @param publishedDocument
-     * @return
-     * @throws ClientException
      */
     boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException;
 
@@ -135,10 +125,6 @@ public interface RemotePublicationTreeManager {
     /**
      * Returns {@code true} if the given {@code documentModel} is a
      * PublicationNode of the current tree, {@code false} otherwise.
-     *
-     * @param documentModel
-     * @return
-     * @throws ClientException
      */
     boolean isPublicationNode(String sid, DocumentModel documentModel) throws ClientException;
 
@@ -146,8 +132,6 @@ public interface RemotePublicationTreeManager {
      * Returns a PublicationNode for the current tree built on the given {@code
      * documentModel}.
      *
-     * @param documentModel
-     * @return
      * @throws ClientException if the given documentModel cannot be a
      *             PublicationNode.
      */

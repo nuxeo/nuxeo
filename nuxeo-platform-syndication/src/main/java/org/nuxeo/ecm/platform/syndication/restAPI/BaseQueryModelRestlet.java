@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.syndication.serializer.ResultSummary;
 import org.nuxeo.ecm.platform.syndication.serializer.SerializerHelper;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -99,7 +100,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
     protected CoreSession getCoreSession(Request req, Response res,
             String repoName) {
         try {
-            Repository repository = null;
+            Repository repository;
 
             if (repoName == null) {
                 repository = Framework.getService(RepositoryManager.class).getDefaultRepository();
@@ -145,8 +146,8 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                     qmd, req);
 
             // get Page number
-            String pageS = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    PAGE_PARAM);
+            Form form = req.getResourceRef().getQueryAsForm();
+            String pageS = form.getFirstValue(PAGE_PARAM);
             int page = 0;
             if (pageS != null) {
                 try {
@@ -161,23 +162,19 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             }
 
             // get format
-            String format = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "format");
+            String format = form.getFirstValue("format");
             if (format == null) {
                 format = getDefaultFormat();
             }
 
-
             // get Columns definition
-            String columnsDefinition = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "columns");
+            String columnsDefinition = form.getFirstValue("columns");
             if (columnsDefinition == null) {
-                columnsDefinition = getDefaultColumns();
+                columnsDefinition = defaultColumns;
             }
 
             // get format
-            String lang = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "lang");
+            String lang = form.getFirstValue("lang");
 
             // fetch result
             DocumentModelList dmList = provider.getPage(page);
@@ -192,8 +189,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
             summary.setPages(provider.getNumberOfPages());
             summary.setPageNumber(page);
 
-
-            if (lang!=null) {
+            if (lang != null) {
                 String[] cols = columnsDefinition.split(DocumentModelListSerializer.colDefinitonDelimiter);
                 List<String> labels = new ArrayList<String>();
                 for (String col : cols) {
@@ -209,7 +205,6 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                         columnsDefinition, getHttpRequest(req));
             }
         } catch (Exception e) {
-
             handleError(res, e);
         } finally {
             try {
@@ -298,16 +293,15 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
     protected List<Object> extractQueryParameters(Request req) {
         List<Object> qp = new ArrayList<Object>();
-        List<String> rp = new ArrayList<String>(
-                req.getResourceRef().getQueryAsForm().getNames());
+        Form form = req.getResourceRef().getQueryAsForm();
+        List<String> rp = new ArrayList<String>(form.getNames());
 
         // Sort QP as order is important
         Collections.sort(rp);
 
         for (String k : rp) {
             if (k.startsWith(QPKEY)) {
-                String param = req.getResourceRef().getQueryAsForm().getFirstValue(
-                        k);
+                String param = form.getFirstValue(k);
                 if (param != null) {
                     if (param.equals(QPUSER)) {
                         qp.add(getUserPrincipal(req).getName());
@@ -317,17 +311,13 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
                 }
             }
             if (k.startsWith(SORT_PARAM_COLOMN)) {
-                sortColomn = req.getResourceRef().getQueryAsForm().getFirstValue(
-                        k);
+                sortColomn = form.getFirstValue(k);
             }
             if (k.startsWith(SORT_PARAM_ASCENDING)) {
-                String param = req.getResourceRef().getQueryAsForm().getFirstValue(
-                        k);
-                if (param != null
-                        && (param.equals("TRUE") || param.equals("true") || param.equals("1"))) {
+                String param = form.getFirstValue(k);
+                if ("true".equalsIgnoreCase(param) || "1".equals(param)) {
                     sortAscending = true;
-                } else if (param != null
-                        && (param.equals("FALSE") || param.equals("false") || param.equals("0"))) {
+                } else if ("false".equalsIgnoreCase(param) || "0".equals(param)) {
                     sortAscending = false;
                 }
             }

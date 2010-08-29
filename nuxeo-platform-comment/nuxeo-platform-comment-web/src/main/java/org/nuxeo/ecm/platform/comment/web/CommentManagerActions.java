@@ -37,65 +37,52 @@ public interface CommentManagerActions {
     String CHILDREN_COMMENT_LIST = "CHILDREN_COMMENT_LIST";
 
     /**
-     * @return availables action for COMMENTS_ACTIONS
+     * @return available action for COMMENTS_ACTIONS
      */
     List<Action> getActionsForComment();
 
     /**
-     * @param category
-     * @return availables action for given category
+     * @return available action for given category
      */
     List<Action> getActionsForComment(String category);
 
     /**
      * Bean initialization method.
-     *
-     * @throws Exception
      */
     void initialize() throws Exception;
 
     /**
-     * Clean all bean's context variables.
+     * Clean all the bean's context variables.
      */
     void documentChanged();
 
     /**
-     * initialize uiComments with currentDocument.
-     *
-     * @throws ClientException
+     * Initializes uiComments with currentDocument.
      */
     void initComments() throws ClientException;
 
     /**
-     * initialize uiComments with given Document.
-     *
-     * @param commentedDoc
-     * @throws ClientException
+     * Initializes uiComments with given Document.
      */
     void initComments(DocumentModel commentedDoc) throws ClientException;
 
     /**
-     * Initialize uiComments with currentDocument if uiComments is null.
+     * Initializes uiComments with currentDocument if uiComments is null.
      *
      * @return list of ThreadEntry for currentDocument
-     * @throws ClientException
      */
     List<ThreadEntry> getCommentsAsThread() throws ClientException;
 
     /**
      * Initialize uiComments with given Document if uiComments is null.
      *
-     * @param commentedDoc
-     * @returnlist of ThreadEntry for given Document.
-     * @throws ClientException
+     * @return list of ThreadEntry for given Document.
      */
     List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc)
             throws ClientException;
 
     /**
-     * @param doc
-     * @returnlist of ThreadEntry for given Document.
-     * @throws ClientException
+     * @return list of ThreadEntry for given Document.
      */
     List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc)
             throws ClientException;
@@ -108,26 +95,19 @@ public interface CommentManagerActions {
      * creates a new comment from
      *
      * @return null to avoid navigation
-     * @throws ClientException
      */
     String addComment() throws ClientException;
 
     /**
-     * Same as addComent() method but using the given document instead of
+     * Same as addComment() method but using the given document instead of
      * currentDocument.
      *
-     * @param docToComment
      * @return null to avoid navigation
-     * @throws ClientException
      */
     String createComment(DocumentModel docToComment) throws ClientException;
 
     /**
      * Add the given comment DocumentModel to commentableDoc.
-     *
-     * @param comment
-     * @return
-     * @throws ClientException
      */
     DocumentModel addComment(DocumentModel comment) throws ClientException;
 
@@ -162,9 +142,7 @@ public interface CommentManagerActions {
     /***
      * Retrieves a given number of comments from currentDocument.
      *
-     * @param commentNumber the number of comment to fetch.
-     * @return
-     * @throws ClientException
+     * @param commentNumber the number of comment to fetch
      */
     List<UIComment> getLastCommentsByDate(String commentNumber)
             throws ClientException;
@@ -172,10 +150,8 @@ public interface CommentManagerActions {
     /***
      * Retrieves a given number of comments from the given Document.
      *
-     * @param commentNumber the number of comment to fetch.
+     * @param commentNumber the number of comment to fetch
      * @param commentedDoc
-     * @return
-     * @throws ClientException
      */
     List<UIComment> getLastCommentsByDate(String commentNumber,
             DocumentModel commentedDoc) throws ClientException;

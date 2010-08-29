@@ -36,34 +36,29 @@ import org.nuxeo.runtime.api.Framework;
 @Local(CommentsModerationService.class)
 public class CommentsModerationBean implements CommentsModerationService {
 
-
     protected CommentsModerationService getCommentsModerationService() {
         return Framework.getLocalService(CommentsModerationService.class);
     }
 
-
     public void approveComent(CoreSession session, DocumentModel document,
-            String commentID) throws ClientException {
-        getCommentsModerationService().approveComent(session, document, commentID);
+            String commentId) throws ClientException {
+        getCommentsModerationService().approveComent(session, document, commentId);
     }
 
     public void publishComment(CoreSession session, DocumentModel comment)
             throws ClientException {
         getCommentsModerationService().publishComment(session, comment);
-
     }
 
     public void rejectComment(CoreSession session, DocumentModel document,
-            String commentID) throws ClientException {
-        getCommentsModerationService().rejectComment(session, document, commentID);
-
+            String commentId) throws ClientException {
+        getCommentsModerationService().rejectComment(session, document, commentId);
     }
 
     public void startModeration(CoreSession session, DocumentModel document,
-            String commentID, ArrayList<String> moderators)
+            String commentId, ArrayList<String> moderators)
             throws ClientException {
-        getCommentsModerationService().startModeration(session, document, commentID, moderators);
-
+        getCommentsModerationService().startModeration(session, document, commentId, moderators);
     }
 
 }

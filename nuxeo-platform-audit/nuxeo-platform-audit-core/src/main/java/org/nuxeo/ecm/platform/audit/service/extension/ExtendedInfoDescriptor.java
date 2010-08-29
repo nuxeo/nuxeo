@@ -29,7 +29,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Extended info descriptor
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @XObject("extendedInfo")
 public class ExtendedInfoDescriptor implements Serializable {

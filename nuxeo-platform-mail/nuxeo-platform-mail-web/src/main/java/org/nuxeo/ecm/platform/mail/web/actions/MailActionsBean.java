@@ -91,10 +91,7 @@ public class MailActionsBean implements Serializable {
 
     public boolean isMailFolder() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (MAIL_FOLDER_TYPE.equals(currentDocument.getType())) {
-            return true;
-        } else {
-            return false;
-        }
+        return MAIL_FOLDER_TYPE.equals(currentDocument.getType());
     }
+
 }

@@ -38,6 +38,7 @@ public class LinkedDocument implements Serializable {
     public boolean isBrokenDocument() {
         return brokenDocument;
     }
+
     public void setBrokenDocument(boolean brokenDocument) {
         this.brokenDocument = brokenDocument;
     }
@@ -45,18 +46,23 @@ public class LinkedDocument implements Serializable {
     public DocumentModel getDocument() {
         return document;
     }
+
     public void setDocument(DocumentModel document) {
         this.document = document;
     }
+
     public DocumentRef getDocumentRef() {
         return documentRef;
     }
+
     public void setDocumentRef(DocumentRef documentRef) {
         this.documentRef = documentRef;
     }
+
     public RepositoryLocation getRepository() {
         return repository;
     }
+
     public void setRepository(RepositoryLocation repository) {
         this.repository = repository;
     }

@@ -25,16 +25,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface Gadget {
 
     /**
-     * Unique identifier of a gadget
-     *
-     * @return
+     * Unique identifier of a gadget.
      */
     String getId();
 
     /**
-     * name
-     *
-     * @return
+     * Name.
      */
     String getName() throws ClientException;
 
@@ -45,9 +41,7 @@ public interface Gadget {
     void setDefinitionUrl(URL url) throws ClientException;
 
     /**
-     * description
-     *
-     * @return
+     * Description.
      */
     String getDescription() throws ClientException;
 

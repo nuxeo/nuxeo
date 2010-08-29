@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource
  * Audit indexable resource.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface AuditIndexableResource extends IndexableResource {
 

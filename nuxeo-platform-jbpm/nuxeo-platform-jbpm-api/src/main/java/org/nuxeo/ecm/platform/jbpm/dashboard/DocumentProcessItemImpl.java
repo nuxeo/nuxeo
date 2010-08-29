@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Document process item implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class DocumentProcessItemImpl implements DocumentProcessItem {
 
@@ -41,7 +40,7 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
 
     protected String docTitle;
 
-    protected final Date procesinstanceStartDate;
+    protected final Date processInstanceStartDate;
 
     protected final String processInstanceName;
 
@@ -55,7 +54,7 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
             docTitle = null;
         }
         processInstanceName = processInstance.getProcessDefinition().getName();
-        procesinstanceStartDate = processInstance.getStart();
+        processInstanceStartDate = processInstance.getStart();
     }
 
     public DocumentModel getDocumentModel() {
@@ -75,7 +74,7 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
     }
 
     public Date getProcessInstanceStartDate() {
-        return procesinstanceStartDate;
+        return processInstanceStartDate;
     }
 
 }

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -51,9 +52,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
     // XXX TODO : add an API to be able to get one entry ?
     // XXX TODO : add an API to browse hierarchical voc
 
-
-
-    private String getTranslation(String key, java.util.Locale local) {
+    private String getTranslation(String key, Locale local) {
         try {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", local,
                     Thread.currentThread().getContextClassLoader());
@@ -69,12 +68,12 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domfactory.createDocument();
 
-        java.util.Locale translationLocal = java.util.Locale.getDefault();
+        Locale translationLocal = Locale.getDefault();
         String lang = req.getResourceRef().getQueryAsForm().getFirstValue(
                 "lang");
 
         if (lang != null && !"".equals(lang)) {
-            for (java.util.Locale loc : java.util.Locale.getAvailableLocales()) {
+            for (Locale loc : Locale.getAvailableLocales()) {
                 if (loc.getLanguage().equalsIgnoreCase(lang)) {
                     translationLocal = loc;
                     continue;
@@ -188,7 +187,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
             String parentLabel = (String) parentEntry.getProperty(
                     parentDirectorySchema, "label");
             String parentTranslatedLabel = getTranslation(parentLabel,
-                    java.util.Locale.getDefault());
+                    Locale.getDefault());
             String newVocaName = parentVocabulary;
             parentVocabulary = directoryService.getParentDirectoryName(parentVocabulary);
             if (parentVocabulary == null) {

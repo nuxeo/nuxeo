@@ -33,7 +33,6 @@ public class EventDescriptor implements Serializable {
     private  String lifeCycle;
 
     public EventDescriptor() {
-
     }
 
     public EventDescriptor(String eventId, Date eventDate, String docPath, String docUUID, String lifeCycle) {

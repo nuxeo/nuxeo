@@ -20,8 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +45,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -122,9 +122,8 @@ public class EventOperationsTest {
         folder = session.getDocument(folder.getRef());
 
         DocumentModel doc = session.getChild(folder.getRef(), "note");
-        Assert.assertEquals("MyDoc", doc.getTitle());
-        Assert.assertEquals("Note", doc.getType());
-
+        assertEquals("MyDoc", doc.getTitle());
+        assertEquals("Note", doc.getType());
     }
 
     /**
@@ -161,16 +160,15 @@ public class EventOperationsTest {
         CoreSession session2 = Framework.getService(RepositoryManager.class).getDefaultRepository().open();
 
         DocumentModel doc = session2.getChild(folder.getRef(), "note_pc");
-        Assert.assertEquals("MyDocPc", doc.getTitle());
-        Assert.assertEquals("Note", doc.getType());
+        assertEquals("MyDocPc", doc.getTitle());
+        assertEquals("Note", doc.getType());
         CoreInstance.getInstance().close(session2);
-
     }
 
     @Test public void testXmlEncoding() throws Exception {
         EventHandlerRegistry reg = Framework.getLocalService(EventHandlerRegistry.class);
         List<EventHandler> eh = reg.getEventHandlers("aboutToCreate");
-        Assert.assertEquals("a < b & b > c", eh.get(0).getExpression());
+        assertEquals("a < b & b > c", eh.get(0).getExpression());
     }
 
 }

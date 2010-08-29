@@ -38,9 +38,7 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
  *
  * @author <a href="mailto:christophe.capon@vilogia.fr">Christophe Capon</a>
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- *
  */
-
 public class CheckMailUnicity extends AbstractMailAction {
 
     private static final Log log = LogFactory.getLog(CheckMailUnicity.class);

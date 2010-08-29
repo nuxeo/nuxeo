@@ -53,24 +53,24 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence=FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
 
+    public static final String STD_NAV_TREE = "CONTENT_TREE";
+
+    public static final String STD_NAV_TREE_LABEL = "label.content.tree";
+
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(MultiNavTreeManager.class);
 
-    public final static String STD_NAV_TREE = "CONTENT_TREE";
+    private static List<NavTreeDescriptor> availableNavigationTrees;
 
-    public final static String STD_NAV_TREE_LABEL = "label.content.tree";
+    private static String thePath = "";
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
     @In(required = false, create = true)
     protected DirectoryTreeManager directoryTreeManager;
-
-    private static List<NavTreeDescriptor> availableNavigationTrees;
-
-    private static String thePath = "";
 
     private String selectedNavigationTree;
 
@@ -105,7 +105,6 @@ public class MultiNavTreeManager implements Serializable {
                 return desc;
             }
         }
-
 
         return null;
     }

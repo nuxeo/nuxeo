@@ -54,6 +54,7 @@ import org.restlet.data.Response;
  * @author arussel
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
+
     private JbpmService jbpmService;
 
     private final Log log = LogFactory.getLog(TasksRestlet.class);
@@ -88,8 +89,8 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         String myTasksRequested = request.getResourceRef().getQueryAsForm().getFirstValue(
                 "mytasks");
         boolean wantMyTasks = true;
-        if ((myTasksRequested != null)
-                && (myTasksRequested.equalsIgnoreCase("false"))) {
+        if (myTasksRequested != null
+                && myTasksRequested.equalsIgnoreCase("false")) {
             wantMyTasks = false;
         }
 

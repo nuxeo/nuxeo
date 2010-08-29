@@ -168,8 +168,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             return null;
         } else {
             try {
-                Logs service;
-                service = Framework.getService(Logs.class);
+                Logs service = Framework.getService(Logs.class);
                 Logs logsBean = service;
                 /*
                  * In case the document is a proxy,meaning is the result of a
@@ -210,13 +209,13 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                             versionCreationDate,
                             DocumentEventTypes.DOCUMENT_PUBLISHED,
                             doDefaultSort);
-                    if (publishingLogs.size() > 0) {
-                        addLogEntry((publishingLogs.get(0)));
+                    if (!publishingLogs.isEmpty()) {
+                        addLogEntry(publishingLogs.get(0));
                     }
                     // add logs from the actual version
                     filterMap = new HashMap<String, FilterMapEntry>();
-                    addLogEntries((logsBean.getLogEntriesFor(
-                            runner.version.getId(), filterMap, doDefaultSort)));
+                    addLogEntries(logsBean.getLogEntriesFor(
+                            runner.version.getId(), filterMap, doDefaultSort));
 
                 } else {
                     addLogEntries(logsBean.getLogEntriesFor(document.getId(),
@@ -442,5 +441,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                         version.getRef()).getId();
             }
         }
-    };
+    }
+
 }

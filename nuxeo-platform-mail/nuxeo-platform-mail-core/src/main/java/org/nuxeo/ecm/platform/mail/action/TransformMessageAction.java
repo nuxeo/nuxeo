@@ -64,7 +64,6 @@ public class TransformMessageAction implements MessageAction {
         schemas.put("dublincore", dcSchema);
         filesSchema.put("files", files);
         schemas.put("files", filesSchema);
-
     }
 
     public boolean execute(ExecutionContext context) throws Exception {
@@ -148,15 +147,14 @@ public class TransformMessageAction implements MessageAction {
     }
 
     private void processSavedTextMessageBody() throws MessagingException, IOException {
-        if (messageBodyParts.get("text").size() > 0) {
+        if (messageBodyParts.get("text").isEmpty()) {
+            log.debug("entering case 2: no plain text found -> html is the body of the message.");
+            addPartsToTextMessage(messageBodyParts.get("html"));
+        } else {
             log.debug("entering case 1: text is saved as message body and html as attachemens.");
             addPartsToTextMessage(messageBodyParts.get("text"));
             addPartsAsAttachements(messageBodyParts.get("html"));
-            return;
         }
-
-        log.debug("entering case 2: no plain text found -> html is the body of the message.");
-        addPartsToTextMessage(messageBodyParts.get("html"));
     }
 
     private void addPartsToTextMessage(List<Part> someMessageParts) throws MessagingException, IOException {

@@ -55,4 +55,5 @@ public class IOAuditResources implements IOResources {
     public Map<DocumentRef, List<LogEntry>> getLogsMap() {
         return Collections.unmodifiableMap(docLogs);
     }
+
 }

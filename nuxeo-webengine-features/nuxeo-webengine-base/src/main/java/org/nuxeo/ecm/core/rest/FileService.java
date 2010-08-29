@@ -147,13 +147,13 @@ public class FileService extends DefaultAdapter {
             if (va != null) {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningActions.KEY_FOR_INC_OPTION, va);
             } else {
                 ScopedMap ctxData = doc.getContextData();
                 ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
+                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.FALSE);
             }
             // ------------------------
             CoreSession session = ctx.getCoreSession();

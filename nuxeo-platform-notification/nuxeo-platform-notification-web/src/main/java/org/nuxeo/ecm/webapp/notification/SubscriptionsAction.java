@@ -51,7 +51,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Handles the subscriptions page.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 @Name("subscriptionAction")
 @Scope(ScopeType.PAGE)
@@ -82,8 +81,6 @@ public class SubscriptionsAction extends InputController implements
 
     /**
      * Gets all the notifications the user may subscribe to.
-     *
-     * @throws ClientException
      */
     @Factory("notificationList")
     public void getNotificationsList() throws ClientException {
@@ -111,9 +108,6 @@ public class SubscriptionsAction extends InputController implements
 
     /**
      * Gets all the notifications the user may subscribe to.
-     *
-     * @throws ClientException
-     * @throws ClassNotFoundException
      */
     @Factory("inheritedNotifications")
     public void loadInheritedNotifications() throws ClientException, ClassNotFoundException {
@@ -131,8 +125,6 @@ public class SubscriptionsAction extends InputController implements
     }
     /**
      * Registers the user's choices.
-     *
-     * @throws ClientException
      */
     public void updateSubscriptions() throws ClientException {
 
@@ -161,8 +153,7 @@ public class SubscriptionsAction extends InputController implements
     }
 
     /**
-     * @return Returns the previously selected notifications.
-     * @throws ClientException
+     * @return the previously selected notifications.
      */
     public List<String> getSelectedNotifications() throws ClientException {
         return getSubscriptionsForCurrentUser();
@@ -170,9 +161,6 @@ public class SubscriptionsAction extends InputController implements
 
     /**
      * Returns the notifications that the user already subscribed for.
-     *
-     * @return
-     * @throws ClientException
      */
     private List<String> getSubscriptionsForCurrentUser()
             throws ClientException {
@@ -190,31 +178,19 @@ public class SubscriptionsAction extends InputController implements
         return subscriptions;
     }
 
-    /**
-     * @return Returns the currentSubscription.
-     */
     public SelectableSubscription getCurrentSubscription() {
         return currentSubscription;
     }
 
-    /**
-     * @param currentSubscription The currentSubscription to set.
-     */
     public void setCurrentSubscription(
             SelectableSubscription currentSubscription) {
         this.currentSubscription = currentSubscription;
     }
 
-    /**
-     * @return Returns the notificationList.
-     */
     public List<SelectableSubscription> getNotificationList() {
         return notificationList;
     }
 
-    /**
-     * @param notificationList The notificationList to set.
-     */
     public void setNotificationList(
             List<SelectableSubscription> notificationList) {
         this.notificationList = notificationList;

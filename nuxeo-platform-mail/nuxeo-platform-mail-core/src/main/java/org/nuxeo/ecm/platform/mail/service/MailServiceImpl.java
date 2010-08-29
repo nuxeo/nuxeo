@@ -134,8 +134,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         Properties props = getProperties(name, context);
         Session session = Session.getDefaultInstance(props);
         Store store = session.getStore();
-        store.connect(props.getProperty("user").toString(), props.getProperty(
-                "password").toString());
+        store.connect(props.getProperty("user"), props.getProperty("password"));
         return store;
     }
 
@@ -153,8 +152,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         Properties props = getProperties(name, context);
         Session session = Session.getDefaultInstance(props);
         Transport transport = session.getTransport();
-        transport.connect(props.getProperty("user").toString(),
-                props.getProperty("password").toString());
+        transport.connect(props.getProperty("user"), props.getProperty("password"));
         return transport;
     }
 

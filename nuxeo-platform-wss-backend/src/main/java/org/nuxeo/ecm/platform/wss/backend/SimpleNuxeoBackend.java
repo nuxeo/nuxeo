@@ -261,7 +261,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
          catch (Exception e) {
              throw new WSSException("Error while doing move", e);
         }
-        if (movedDoc!=null) {
+        if (movedDoc != null) {
             return WSSPlugableBackendManager.instance().createItem(movedDoc, corePathPrefix, urlRoot);
         } else {
             throw new WSSException("No resulting doc found !!!");
@@ -276,7 +276,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         } catch (Exception e) {
             throw new WSSException("Error while resolving document path", e);
         }
-        if (docToRemove==null) {
+        if (docToRemove == null) {
             throw new WSSException("Document path not found");
         }
         try {
@@ -288,14 +288,14 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
     protected DocumentModel createNode(String parentPath, String name, boolean folderish) throws WSSException {
 
-        DocumentModel parent = null;
+        DocumentModel parent;
         try {
             parent = resolveLocation(parentPath);
         } catch (Exception e) {
             throw new WSSException("Error while resolving parent path", e);
 
         }
-        if (parent==null) {
+        if (parent == null) {
             throw new WSSException("Error while resolving parent path");
         }
         if (!parent.isFolder()) {
@@ -394,7 +394,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                 if (!userNames.contains(item.getAuthor())) {
                     userNames.add(item.getAuthor());
                 }
-                String[] contributors = (String[])(((NuxeoListItem)item).getDoc().getPropertyValue("dc:contributors"));
+                String[] contributors = (String[]) (((NuxeoListItem) item).getDoc().getPropertyValue("dc:contributors"));
                 if (contributors!=null) {
                     for (String contributor : contributors) {
                         if (!userNames.contains(contributor)) {
@@ -462,8 +462,6 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         return tasks;
     }
 
-
-
     protected List<Link> getDocumentLinks(DocumentModel doc, List<String> userNames, WSSRequest request) throws Exception  {
 
         List<Link> links = new ArrayList<Link>();
@@ -481,7 +479,6 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         links.addAll(computeLinks(outStatements, userNames, false, request));
 
         return links;
-
     }
 
     protected List<Link> computeLinks(List<Statement> statements, List<String> userNames, boolean incomming, WSSRequest request ) throws Exception  {
@@ -532,18 +529,20 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                 comment = ((Literal) node).getValue();
             }
             Date creationDate = null;
-            Date modificationDate = null;
-            String author = null;
 
             Node dateNode = stmt.getProperty(RelationConstants.CREATION_DATE);
             if (dateNode != null && dateNode.isLiteral()) {
                 creationDate = RelationDate.getDate((Literal) dateNode);
             }
             dateNode = stmt.getProperty(RelationConstants.MODIFICATION_DATE);
+
+            Date modificationDate = null;
             if (dateNode != null && dateNode.isLiteral()) {
                 modificationDate = RelationDate.getDate((Literal) dateNode);
             }
             node = stmt.getProperty(RelationConstants.AUTHOR);
+
+            String author;
             if (node != null && node.isLiteral()) {
                 author = ((Literal) node).getValue();
             } else {
@@ -557,9 +556,9 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             String predicateURL = stmt.getPredicate().getUri();
             String predicate = new Path(predicateURL).lastSegment();
             String labelKey = "label.relation.predicate." + predicate;
-            String prediacteLabel = TranslationHelper.getLabel(labelKey, request);
+            String predicateLabel = TranslationHelper.getLabel(labelKey, request);
 
-            comment = prediacteLabel + "\n" + targetDocTitle + "\n" + comment;
+            comment = predicateLabel + "\n" + targetDocTitle + "\n" + comment;
 
             String id = "";
             if (incomming) {

@@ -25,18 +25,18 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderFactory;
 
 public class PictureBlobHolderFactory implements BlobHolderFactory {
 
-    public PictureBlobHolderFactory(){
-    }
-
     public BlobHolder getBlobHolder(DocumentModel doc) {
         String docType = doc.getType();
+        BlobHolder blobHolder;
 
         if (docType.equals("Picture")) {
-            return new PictureBlobHolder(doc, "");
+            blobHolder = new PictureBlobHolder(doc, "");
         } else if (docType.equals("PictureBook")) {
-            return new PictureBookBlobHolder(doc, "");
+            blobHolder = new PictureBookBlobHolder(doc, "");
+        } else {
+            blobHolder = null;
         }
-        return null;
+        return blobHolder;
     }
 
 }

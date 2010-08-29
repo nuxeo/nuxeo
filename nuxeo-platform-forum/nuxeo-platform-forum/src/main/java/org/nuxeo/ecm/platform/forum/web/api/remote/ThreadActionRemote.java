@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
  * Thread action remote interface.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface ThreadActionRemote extends ThreadAction {
 

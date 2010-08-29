@@ -35,19 +35,13 @@ public interface AnnotationsService {
     Graph getAnnotationGraph() throws AnnotationException;
 
     /**
-     * Find Annotation ids according to URI and filter.
-     *
-     * @param uri
-     * @param filters
-     * @return
+     * Finds Annotation ids according to URI and filter.
      */
     List<Annotation> queryAnnotations(URI uri, Map<String, String> filters,
             NuxeoPrincipal user) throws AnnotationException;
 
     /**
      * Returns an Annotation according to its Id.
-     *
-     * @return
      */
     Annotation getAnnotation(String annotationId, NuxeoPrincipal user,
             String baseUrl) throws AnnotationException;
@@ -55,19 +49,19 @@ public interface AnnotationsService {
     /**
      * Adds an annotation to the target URL.
      *
-     * @return the Annotation ID
+     * @return the Annotation
      */
     Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user,
             String baseUrl) throws AnnotationException;
 
     /**
-     * Update an annotation
+     * Updates an annotation.
      */
     Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user,
             String baseUrl) throws AnnotationException;
 
     /**
-     * Deletes an annotation according to its id.
+     * Deletes an annotation.
      */
     void deleteAnnotation(Annotation annotation, NuxeoPrincipal user)
             throws AnnotationException;

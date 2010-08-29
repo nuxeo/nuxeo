@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -71,9 +69,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -269,7 +265,7 @@ public class CoreOperationsTest {
         assertEquals("MyDoc", out.getPropertyValue("dc:title"));
         try {
             doc = session.getDocument(new PathRef("/src/note"));
-            Assert.fail("Document /src/note is not supposed to exists");
+            fail("Document /src/note is not supposed to exists");
         } catch (Exception e) {
             // test ok
         }

@@ -44,7 +44,7 @@ public interface JbpmSecurityPolicy {
      * @param action
      * @param dm the attached document, <code>null</code> if no document is
      *            attache to the process.
-     * @return if the permission is granted, <code>null</code> if unknow.
+     * @return if the permission is granted, <code>null</code> if unknown.
      */
     Boolean checkPermission(ProcessInstance processInstance, Action action,
             DocumentModel dm, NuxeoPrincipal user);

@@ -33,16 +33,14 @@ public class TaskVariableFilter implements JbpmListFilter {
 
     private static final long serialVersionUID = 1L;
 
-    Map<String, Serializable> variables;
+    final Map<String, Serializable> variables;
 
     public TaskVariableFilter(String variableName, String variableValue) {
-        super();
-        this.variables = new HashMap<String, Serializable>();
+        variables = new HashMap<String, Serializable>();
         variables.put(variableName, variableValue);
     }
 
     public TaskVariableFilter(Map<String, Serializable> variables) {
-        super();
         this.variables = new HashMap<String, Serializable>();
         if (variables != null) {
             this.variables.putAll(variables);

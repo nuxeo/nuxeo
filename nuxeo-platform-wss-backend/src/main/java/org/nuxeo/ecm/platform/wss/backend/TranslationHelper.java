@@ -26,7 +26,7 @@ public class TranslationHelper {
 
     public static String getLabel(String key, WSSRequest request) {
         String translated = I18NUtils.getMessageString("messages", key, null, request.getHttpRequest().getLocale());
-        if (translated==null) {
+        if (translated == null) {
             translated = I18NUtils.getMessageString("messages", key, null, Locale.ENGLISH);
         }
         return translated;

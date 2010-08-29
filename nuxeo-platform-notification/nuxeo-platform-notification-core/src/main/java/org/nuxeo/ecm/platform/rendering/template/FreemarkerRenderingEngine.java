@@ -42,9 +42,6 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
      * extends this class and overrides this but that brokes it right now.
      *
      * TODO: write a clear TODO
-     *
-     * @return
-     * @throws Exception
      */
     public Configuration createConfiguration() throws Exception {
         Configuration config = new Configuration();

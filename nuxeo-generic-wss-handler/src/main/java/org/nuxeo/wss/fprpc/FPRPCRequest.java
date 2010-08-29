@@ -50,7 +50,7 @@ public class FPRPCRequest extends WSSRequest {
 
     protected int requestMode = FPRPC_GET_REQUEST;
 
-    protected InputStream vermeerBinary = null;
+    protected InputStream vermeerBinary;
 
     public FPRPCRequest(HttpServletRequest httpRequest, String sitePath) throws MalformedFPRPCRequest {
         super(httpRequest, sitePath);
@@ -63,8 +63,8 @@ public class FPRPCRequest extends WSSRequest {
         if ("GET".equals(httpRequest.getMethod()) || "HEAD".equals(httpRequest.getMethod())) {
             requestMode = FPRPC_GET_REQUEST;
             parseGETRequest();
-        } else if ("POST".equals(httpRequest.getMethod())) {
 
+        } else if ("POST".equals(httpRequest.getMethod())) {
             String ct = httpRequest.getHeader(FPRPCConts.FP_CONTENT_TYPE_HEADER);
             if (FPRPCConts.FORM_ENCODED_CONTENT_TYPE.equals(ct)) {
                 requestMode = FPRPC_POST_REQUEST;
@@ -196,7 +196,6 @@ public class FPRPCRequest extends WSSRequest {
     }
 
     protected void parseCAMLRequest() throws MalformedFPRPCRequest {
-
         XMLReader reader;
         try {
             reader = CAMLHandler.getXMLReader();
@@ -226,11 +225,11 @@ public class FPRPCRequest extends WSSRequest {
     @Override
     public String getBaseUrl(String fpDir) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(super.getBaseUrl(fpDir));
 
         if (fpDir != null) {
-            String sp = this.getSitePath();
+            String sp = getSitePath();
             if (sp.startsWith("/")) {
                 sp = sp.substring(1);
             }
@@ -239,18 +238,14 @@ public class FPRPCRequest extends WSSRequest {
             }
             if ("catalogs".equals(fpDir)) {
                 if (!"".equals(sp)) {
-                    sb.append(sp);
-                    sb.append("/");
+                    sb.append(sp).append('/');
                 }
-                sb.append("_catalogs");
-                sb.append("/");
+                sb.append("_catalogs/");
             } else if ("layouts".equals(fpDir)) {
                 if (!"".equals(sp)) {
-                    sb.append(sp);
-                    sb.append("/");
+                    sb.append(sp).append('/');
                 }
-                sb.append("_layouts");
-                sb.append("/");
+                sb.append("_layouts/");
             }
         }
         return sb.toString();

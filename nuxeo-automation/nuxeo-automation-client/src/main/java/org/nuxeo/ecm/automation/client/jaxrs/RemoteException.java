@@ -24,9 +24,9 @@ public class RemoteException extends AutomationException {
 
     private static final long serialVersionUID = 1L;
 
-    protected int status;
-    protected String type;
-    protected String stackTrace;
+    protected final int status;
+    protected final String type;
+    protected final String stackTrace;
 
     public RemoteException(int status, String type, String message, String stackTrace) {
         super (message);
@@ -44,7 +44,7 @@ public class RemoteException extends AutomationException {
     }
 
     public String getRemoteStackTrace() {
-        return status + " - "+getMessage()+"\n"+stackTrace;
+        return status + " - " + getMessage() + "\n" + stackTrace;
     }
 
 }

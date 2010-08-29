@@ -57,7 +57,7 @@ public class RssAdapter extends DefaultAdapter {
     public static final int NO_COMMENTS = 15;
 
     /**
-     * Returns a feed with the last modified web pages.
+     * @return a feed with the last modified web pages.
      */
     @GET
     @Path("rssOnPage")

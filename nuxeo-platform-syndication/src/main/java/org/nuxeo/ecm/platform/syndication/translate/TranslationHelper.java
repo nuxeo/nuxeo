@@ -23,6 +23,9 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 
 public class TranslationHelper {
 
+    private TranslationHelper() {
+    }
+
     public static String getLabel(String key, String lang) {
         if (key == null || lang == null) {
             return key;
@@ -38,4 +41,5 @@ public class TranslationHelper {
         }
         return translated;
     }
+
 }

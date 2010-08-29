@@ -104,11 +104,11 @@ public class ImageJMetadataUtils implements MetadataUtils {
     @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
         BufferedInputStream bin = null;
-        if (in instanceof InputStream) {
+        if (in != null) {
             if (in instanceof BufferedInputStream) {
                 bin = (BufferedInputStream) in;
             } else {
-                in = bin = new BufferedInputStream((InputStream) in);
+                bin = new BufferedInputStream(in);
             }
             bin.mark(BUFFER_LIMIT);
         }

@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- * Service offering JPBM methods to create and end tasks independantly from a
+ * Service offering JPBM methods to create and end tasks independently from a
  * process.
  * <p>
  * {@link JbpmService} is called by this service to handle the task.
@@ -39,7 +39,7 @@ public interface JbpmTaskService extends Serializable {
     /**
      * Property used to pass task in the notified events properties
      */
-    public static String TASK_INSTANCE_EVENT_PROPERTIES_KEY = "taskInstance";
+    String TASK_INSTANCE_EVENT_PROPERTIES_KEY = "taskInstance";
 
     /**
      * Variable names added as markers on the created task

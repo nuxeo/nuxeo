@@ -28,6 +28,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.wss.spi.WSSBackendFactory;
 
+// FIXME: plugable -> pluggable
 public class WSSPlugableBackendManager extends DefaultComponent {
 
     protected static WSSBackendFactory backendFactory = new SearchBasedVirtualHostedBackendfactory();

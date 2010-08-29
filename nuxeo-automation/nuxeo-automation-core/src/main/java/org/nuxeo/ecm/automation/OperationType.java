@@ -39,9 +39,7 @@ public interface OperationType {
             throws Exception;
 
     /**
-     * Get the service that registered that type.
-     *
-     * @return
+     * Gets the service that registered that type.
      */
     AutomationService getService();
 

@@ -34,7 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * URlBuilder is builder of gadget url; Util for render of gadget into Shinding
  * opensocial server
- *
  */
 public class UrlBuilder {
 
@@ -74,7 +73,7 @@ public class UrlBuilder {
 
     private static final String PARENT_KEY = "parent";
 
-    private static final boolean SHINDIG_DEBUG = ("true".equals(Framework.getProperty("shindig.gadget.debug")));
+    private static final boolean SHINDIG_DEBUG = "true".equals(Framework.getProperty("shindig.gadget.debug"));
 
     private static int containerId = 0;
 
@@ -134,10 +133,6 @@ public class UrlBuilder {
     /**
      * Get Gadget Definition with GadgetService Gadget Definition is google xml
      * gadget
-     *
-     * @param name
-     * @return
-     * @throws Exception
      */
     public static String getGadgetDef(String name) throws Exception {
         return Framework.getService(GadgetService.class).getGadgetDefinition(
@@ -154,15 +149,15 @@ public class UrlBuilder {
      * Build a url format parameters with preferences of gadget Util for render
      * gadget into Shinding opensocial server
      *
-     * @param prefs
-     * @return String &up_key=value&up..
+     * @return a String like &up_key=value&up..
      */
     protected static String getUserPrefs(List<PreferencesBean> prefs) {
         String prefsParams = "";
         for (PreferencesBean bean : prefs) {
             String value = bean.getDefaultValue();
-            if (bean.getValue() != null)
+            if (bean.getValue() != null) {
                 value = bean.getValue();
+            }
             try {
                 prefsParams += "&" + PREF_PREFIX + bean.getName() + "="
                         + URLEncoder.encode(value, "UTF-8");

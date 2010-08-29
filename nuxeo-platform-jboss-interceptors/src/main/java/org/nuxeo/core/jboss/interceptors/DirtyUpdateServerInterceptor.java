@@ -21,7 +21,10 @@ import org.jboss.aop.advice.Interceptor;
 import org.jboss.aop.joinpoint.Invocation;
 import org.nuxeo.common.DirtyUpdateInvokeBridge;
 
-public class DirtyUpdateServerInterceptor implements Interceptor, DirtyUpdateConstants {
+import static org.nuxeo.core.jboss.interceptors.DirtyUpdateConstants.ATTRIBUTE;
+import static org.nuxeo.core.jboss.interceptors.DirtyUpdateConstants.TAG;
+
+public class DirtyUpdateServerInterceptor implements Interceptor {
 
     public String getName() {
         return getClass().getSimpleName();

@@ -39,7 +39,6 @@ import com.sun.syndication.io.SyndFeedOutput;
  * @author bchaffangeon
  *
  */
-
 public class AbstractSyndicationSerializer extends
         AbstractDocumentModelSerializer {
 
@@ -106,10 +105,6 @@ public class AbstractSyndicationSerializer extends
 
     /**
      * Build correct URL for backend XML feed.
-     *
-     * @param repository
-     * @param docId
-     * @return
      */
     public String getSyndicationURL(String repository, String docId) {
         String url = syndicationURL.replace("{docId}", docId);

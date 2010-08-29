@@ -30,7 +30,7 @@ public class MvelTemplate implements Expression {
 
     protected transient volatile CompiledTemplate compiled;
 
-    protected String expr;
+    protected final String expr;
 
     public MvelTemplate(String expr) {
         this.expr = expr;

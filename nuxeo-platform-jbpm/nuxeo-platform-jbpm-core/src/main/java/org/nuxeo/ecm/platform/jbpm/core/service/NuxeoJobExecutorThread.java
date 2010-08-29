@@ -39,14 +39,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author arussel
- *
  */
 public class NuxeoJobExecutorThread extends JobExecutorThread {
-    private static Log log = LogFactory.getLog(JobExecutorThread.class);
 
-    protected long maxLockTime;
+    private static final Log log = LogFactory.getLog(JobExecutorThread.class);
 
-    protected JbpmConfiguration jbpmConfiguration;
+    protected final long maxLockTime;
+
+    protected final JbpmConfiguration jbpmConfiguration;
 
     public NuxeoJobExecutorThread(String name, JobExecutor jobExecutor,
             JbpmConfiguration jbpmConfiguration, int idleInterval,
@@ -132,8 +132,8 @@ public class NuxeoJobExecutorThread extends JobExecutorThread {
     @SuppressWarnings("unchecked")
     @Override
     protected Collection acquireJobs() {
-        Collection acquiredJobs = null;
         TransactionHelper.startTransaction();
+        Collection acquiredJobs = null;
         try {
             acquiredJobs = super.acquireJobs();
         } catch (Throwable t) {
@@ -146,8 +146,8 @@ public class NuxeoJobExecutorThread extends JobExecutorThread {
 
     @Override
     protected Date getNextDueDate() {
-        Date date = null;
         TransactionHelper.startTransaction();
+        Date date = null;
         try {
             date = super.getNextDueDate();
         } catch (Throwable t) {

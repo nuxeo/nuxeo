@@ -30,10 +30,9 @@ import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * PostCommit async listener that pushes {@link EventBundle} into the Audit log
+ * PostCommit async listener that pushes {@link EventBundle} into the Audit log.
  *
  * @author tiry
- *
  */
 public class AuditEventLogger implements PostCommitEventListener {
 
@@ -48,17 +47,16 @@ public class AuditEventLogger implements PostCommitEventListener {
     }
 
     public void handleEvent(EventBundle events) throws ClientException {
-
         AuditLogger logger = getAuditLogger();
-        if (logger!=null) {
+        if (logger != null) {
             try {
                 logger.logEvents(events);
-            }
-            catch (AuditException e) {
+            } catch (AuditException e) {
                 log.error("Unable to persist event bundle into audit log", e);
             }
         } else {
             log.error("Can not reach AuditLogger");
         }
     }
+
 }

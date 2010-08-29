@@ -37,7 +37,7 @@ public class TaskListFilter implements JbpmListFilter {
 
     private static final long serialVersionUID = 1L;
 
-    List<String> taskNames;
+    final List<String> taskNames;
 
     public TaskListFilter(String... taskNames) {
         this.taskNames = new ArrayList<String>();

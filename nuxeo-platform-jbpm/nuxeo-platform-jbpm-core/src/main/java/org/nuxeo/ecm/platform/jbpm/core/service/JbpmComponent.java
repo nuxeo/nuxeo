@@ -52,7 +52,7 @@ public class JbpmComponent extends DefaultComponent implements
     private static final String START_JOB_EXECUTOR = "org.nuxeo.ecm.platform.jbpm.startJobExecutor";
 
     public enum ConfigurationName {
-        jboss, jetty, glassfish, tomcat, tomcatTransactionnal, tomcatNontransactionnal
+        jboss, jetty, glassfish, tomcat, tomcatTransactional, tomcatNontransactional
     }
 
     public static final ComponentName NAME = new ComponentName(
@@ -62,7 +62,7 @@ public class JbpmComponent extends DefaultComponent implements
         deployer, processDefinition, activeConfiguration, configurationPath, securityPolicy, typeFilter
     }
 
-    public final static String RUNTIME_CONFIGURATION = "runtime";
+    public static final String RUNTIME_CONFIGURATION = "runtime";
 
     private JbpmConfiguration jbpmConfiguration;
 
@@ -230,7 +230,7 @@ public class JbpmComponent extends DefaultComponent implements
     }
 
     public void frameworkEvent(FrameworkEvent event) {
-        // creating shema outside transaction if needed
+        // creating schema outside transaction if needed
         if (event.getType() == FrameworkEvent.STARTED) {
 
             ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();

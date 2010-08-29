@@ -1,5 +1,5 @@
-
 This package contains a wizard infrastructure for webengine.
+
 See sample7 in webengine samples for an example of creating a wizard
 
 The wizard is using the HTTP session to store its state and temporary data build by wizard pages.

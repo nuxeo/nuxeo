@@ -22,9 +22,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueExecutor;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 
 /**
- *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
 @XObject("queue")
 public class QueueDescriptor {

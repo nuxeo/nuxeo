@@ -158,7 +158,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     }
 
     public String getEtag() {
-        return (String) doc.getId();
+        return doc.getId();
     }
 
     public String getLastModificator() {
@@ -259,9 +259,9 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         return "file";
     }
 
-    public void setDescription(String desc) {
+    public void setDescription(String description) {
         try {
-            doc.setPropertyValue("dc:description", desc);
+            doc.setPropertyValue("dc:description", description);
         } catch (Exception e) {
             log.error("Error while setting description", e);
         }

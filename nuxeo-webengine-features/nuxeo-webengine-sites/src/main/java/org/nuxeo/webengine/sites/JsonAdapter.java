@@ -64,8 +64,8 @@ public class JsonAdapter extends DefaultAdapter {
         }
 
         if (rootDoc != null) {
-            DocumentModel d = (DocumentModel) ctx.getUserSession().get(ROOT_DOCUMENT);
-            if (d == null || !d.equals(rootDoc)) {
+            DocumentModel doc = (DocumentModel) ctx.getUserSession().get(ROOT_DOCUMENT);
+            if (doc == null || !doc.equals(rootDoc)) {
                 ctx.getUserSession().put(ROOT_DOCUMENT, rootDoc);
             }
             SiteDocumentTree tree = new SiteDocumentTree(ctx, rootDoc);

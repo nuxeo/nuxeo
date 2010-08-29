@@ -54,7 +54,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
             // use PictureBook Properties
             pictureTemplates = (ArrayList<Map<String, Object>>) parent.getProperty(
                     "picturebook", "picturetemplates");
-            if (pictureTemplates.size() == 0) {
+            if (pictureTemplates.isEmpty()) {
                 pictureTemplates = null;
             }
         }

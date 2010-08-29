@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("pipe")
 public class MessageActionPipeDescriptor {
 
-    private final static String START_ACTION = "StartAction";
+    private static final String START_ACTION = "StartAction";
 
     @XNode("@name")
     private String name;
@@ -52,7 +52,7 @@ public class MessageActionPipeDescriptor {
         return name;
     }
 
-    public Boolean getOverride() {
+    public boolean getOverride() {
         if (override == null) {
             return false;
         }

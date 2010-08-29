@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @Stateless
 @Remote(CommentManager.class)
@@ -143,10 +142,10 @@ public class CommentManagerBean implements CommentManager {
         }
     }
 
-    public List<DocumentModel> getDocumentsForComment(DocumentModel commentDoc)
+    public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException{
         try {
-            return commentManager.getDocumentsForComment(commentDoc);
+            return commentManager.getDocumentsForComment(comment);
         } catch (Throwable e) {
             throw ClientException.wrap(e);
         }
