@@ -91,6 +91,7 @@ public class MapperInvoker extends Thread {
         this.eventQueue = eventQueue;
         this.methodCalls = new LinkedBlockingQueue<MethodCall>(1);
         this.methodResults = new LinkedBlockingQueue<MethodResult>(1);
+        this.clientInfo = info;
         start();
         init();
     }
@@ -112,8 +113,6 @@ public class MapperInvoker extends Thread {
 
     // called in the main thread
     public Object call(String methodName, Object... args) throws Throwable {
-        clientInfo.lastRequestTime = Calendar.getInstance().getTimeInMillis();
-        clientInfo.requestCount += 1;
         methodCalls.put(new MethodCall(methodName, args));
         return methodResults.take().result;
     }
