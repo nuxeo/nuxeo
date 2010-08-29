@@ -46,7 +46,7 @@ public class TestQueueManager extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.platform.management");
+        deployBundle("org.nuxeo.ecm.core.management");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.lock.api");
         deployBundle("org.nuxeo.ecm.platform.lock.core");
