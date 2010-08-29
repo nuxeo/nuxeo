@@ -27,11 +27,10 @@ import java.net.URISyntaxException;
  * removed by an end of asynchronous operation call.
  *
  * @see QueueManager
- **/
+ */
+public final class QueueContent {
 
-final public class QueueContent {
-
-    final public static long DEFAULT_DELAY = 1000;
+    public static final long DEFAULT_DELAY = 1000;
 
     public QueueContent(URI owner, String destination, String name) {
         this.owner = owner;
@@ -52,19 +51,12 @@ final public class QueueContent {
 
     Serializable additionalInfo;
 
-    /**
-     * return the
-     *
-     * @return
-     */
     public URI getResourceURI() throws URISyntaxException {
         return new URI("queueContent:" + destination + ":" + name);
     }
 
     /**
-     * Gives the user who is performing the job
-     *
-     * @return
+     * Gives the user who is performing the job.
      */
     public URI getOwner() {
         return owner;
@@ -72,27 +64,20 @@ final public class QueueContent {
 
     /**
      * Gives the queue name on which the content should be handled
-     *
-     * @return
      */
-
     public String getDestination() {
         return destination;
     }
 
     /**
      * Uniquely names the content inside a queue.
-     *
-     * @return the name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Gives the delay for locking purpose
-     *
-     * @return
+     * Gives the delay for locking purpose.
      */
     public long getDelay() {
         return delay;
@@ -103,9 +88,7 @@ final public class QueueContent {
     }
 
     /**
-     * Gives information about the task being processed
-     *
-     * @return
+     * Gives information about the task being processed.
      */
     public String getComments() {
         return comments;
@@ -117,8 +100,6 @@ final public class QueueContent {
 
     /**
      * Additional info for any queue job having to re run the test.
-     *
-     * @return
      */
     public Serializable getAdditionalInfo() {
         return additionalInfo;

@@ -49,18 +49,14 @@ public class OperationParameters implements Serializable {
     }
 
     /**
-     * The operation ID
-     *
-     * @return
+     * The operation ID.
      */
     public String id() {
         return oid;
     }
 
     /**
-     * The map of runtime parameters
-     *
-     * @return
+     * The map of runtime parameters.
      */
     public final Map<String, Object> map() {
         return params;

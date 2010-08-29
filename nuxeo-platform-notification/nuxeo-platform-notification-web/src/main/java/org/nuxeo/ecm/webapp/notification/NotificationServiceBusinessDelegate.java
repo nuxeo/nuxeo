@@ -53,9 +53,6 @@ public class NotificationServiceBusinessDelegate implements Serializable {
     /**
      * Acquires a new {@link NotificationManager} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public NotificationManager getNotificationManager() throws ClientException {

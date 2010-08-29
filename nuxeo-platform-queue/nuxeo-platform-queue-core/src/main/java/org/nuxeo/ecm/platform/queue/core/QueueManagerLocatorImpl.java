@@ -34,25 +34,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class QueueManagerLocatorImpl implements QueueManagerLocator {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#locateQueue(org.
-     * nuxeo.ecm.platform.queue.api.QueueContent)
-     */
     public QueueManager locateQueue(QueueContent content)
             throws QueueNotFoundException {
         return locateQueue(content.getDestination());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#locateQueue(java
-     * .lang.String)
-     */
     public QueueManager locateQueue(String queueName)
             throws QueueNotFoundException {
         QueueFactory factory = Framework.getLocalService(QueueFactory.class);
@@ -60,13 +46,6 @@ public class QueueManagerLocatorImpl implements QueueManagerLocator {
         return new QueueManagerImpl(persister, queueName);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueueManagerLocator#getRegisteredQueues
-     * ()
-     */
     public List<String> getAvailableQueues() {
         // the locator may return more information than just the list of queue
         // name

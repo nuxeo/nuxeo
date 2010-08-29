@@ -131,8 +131,6 @@ public class OpenSocialDescriptor {
 
     /**
      * For now, this is always null because it isn't used.
-     *
-     * @return
      */
     public PortalConfig[] getPortalConfig() {
         return portal;

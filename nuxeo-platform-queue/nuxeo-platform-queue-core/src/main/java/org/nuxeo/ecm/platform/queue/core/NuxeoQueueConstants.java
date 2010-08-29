@@ -17,26 +17,28 @@
 
 package org.nuxeo.ecm.platform.queue.core;
 
-public interface NuxeoQueueConstants {
+public class NuxeoQueueConstants {
 
-    static final String QUEUE_ROOT_NAME = "queues";
+    public static final String QUEUE_ROOT_NAME = "queues";
 
-    static final String QUEUE_ROOT_TYPE = "QueueRoot";
+    public static final String QUEUE_ROOT_TYPE = "QueueRoot";
 
-    static final String QUEUE_TYPE = "Queue";
+    public static final String QUEUE_TYPE = "Queue";
 
-    static final String QUEUE_ITEM_TYPE = "QueueItem";
+    public static final String QUEUE_ITEM_TYPE = "QueueItem";
 
-    static final String QUEUEITEM_OWNER = "owner";
+    public static final String QUEUEITEM_OWNER = "owner";
 
-    static final String QUEUEITEM_SERVERID = "serverId";
+    public static final String QUEUEITEM_SERVERID = "serverId";
 
-    static final String QUEUEITEM_SCHEMA = "queueitem";
+    public static final String QUEUEITEM_SCHEMA = "queueitem";
 
-    static final String QUEUEITEM_EXECUTE_TIME = "executeTime";
+    public static final String QUEUEITEM_EXECUTE_TIME = "executeTime";
 
-    static final String QUEUEITEM_ADDITIONAL_INFO = "additionalInfo";
+    public static final String QUEUEITEM_ADDITIONAL_INFO = "additionalInfo";
 
-    static final String QUEUEITEM_EXECUTION_COUNT_PROPERTY = "queueitem:executionCount";
+    public static final String QUEUEITEM_EXECUTION_COUNT_PROPERTY = "queueitem:executionCount";
 
+    private NuxeoQueueConstants() {
+    }
 }

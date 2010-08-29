@@ -37,42 +37,32 @@ public @interface Operation {
     /**
      * The operation ID. If not specified the absolute name of the annotated
      * class will be used.
-     *
-     * @return
      */
     String id() default "";
 
     /**
      * Optional attribute - useful to generate operation documentation. Provide
      * a category to be used by the UI to classify the operations.
-     *
-     * @return
      */
     String category() default "Others";
 
     /**
      * Optional attribute - useful to generate operation documentation. Provide
      * a label for the operation to be used in UI. (should not contain HTML
-     * code)
-     *
-     * @return
+     * code).
      */
     String label() default "";
 
     /**
      * Optional attribute - useful to generate operation documentation. Provide
      * the name of the context required by this operation. Example: event, ui,
-     * wf etc
-     *
-     * @return
+     * wf, etc.
      */
     String requires() default "";
 
     /**
      * Optional attribute - useful to generate operation documentation. Provide
      * a description of the operation. (may contain HTML code)
-     *
-     * @return
      */
     String description() default "";
 
@@ -80,8 +70,7 @@ public @interface Operation {
      * Optional attribute - indicate from which nuxeo version the operation is
      * available. The default value is the null string "" which means no
      * specific version is required.
-     *
-     * @return
      */
     String since() default "";
+
 }

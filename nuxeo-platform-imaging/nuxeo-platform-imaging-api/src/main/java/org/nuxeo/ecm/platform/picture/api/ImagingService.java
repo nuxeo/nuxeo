@@ -132,7 +132,6 @@ public interface ImagingService {
      *
      * @param configurationName the name of the configuration
      * @param defaultValue the value of the configuration
-     * @return
      */
     String getConfigurationValue(String configurationName, String defaultValue);
 

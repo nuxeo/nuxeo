@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/queueitem/"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:qis="http://www.nuxeo.org/ecm/schemas/queueitem/">
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:qis="http://www.nuxeo.org/ecm/schemas/queueitem/">
+
   <xs:element name="owner" type="xs:string" />
   <xs:element name="serverId" type="xs:string" />
   <xs:element name="executeTime" type="xs:date" />

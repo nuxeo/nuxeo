@@ -193,7 +193,7 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
     }
 
     public static Map<String, String> getTranslationsForWorkflow(String lang) {
-        HashMap<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<String, String>();
 
         String validation = "workflowDirectiveValidation";
         result.put(validation, TranslationHelper.getLabel(validation, lang));

@@ -19,10 +19,6 @@ package org.nuxeo.ecm.platform.queue.api;
 
 import java.util.List;
 
-/*
- *
- */
-
 // TODO: Auto-generated Javadoc
 /**
  * Provide access to atomic objects and services.
@@ -50,7 +46,7 @@ public interface QueueManagerLocator {
     QueueManager locateQueue(String queueName) throws QueueNotFoundException;
 
     /**
-     * Provide the list of registered queues
+     * Provides the list of registered queues.
      *
      * @return
      */

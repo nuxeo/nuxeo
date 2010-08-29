@@ -20,11 +20,11 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Map;
 
+// FIXME: what does "orphaned" mean?
 /**
  * Infos about an handled content. Orphaned
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
- *
  */
 public interface QueueItem {
 
@@ -36,9 +36,7 @@ public interface QueueItem {
     QueueContent getHandledContent();
 
     /**
-     * Identify the server handling the content
-     *
-     * @return
+     * Identifies the server handling the content.
      */
     URI getHandlingServerID();
 

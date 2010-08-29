@@ -83,12 +83,6 @@ public class SecureTokenBuilder {
 
     /**
      * XXX LeroyMerlin's old version.
-     *
-     * @param viewer
-     * @param owner
-     * @param gadgetUrl
-     * @return
-     * @throws Exception
      */
     private static String XXXgetSecureToken(String viewer, String owner,
             String gadgetUrl, String key, String container, String domain)

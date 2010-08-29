@@ -22,6 +22,7 @@ import java.util.Collections;
 import org.apache.shindig.social.core.model.NameImpl;
 import org.apache.shindig.social.core.model.OrganizationImpl;
 import org.apache.shindig.social.core.model.PersonImpl;
+import org.apache.shindig.social.opensocial.model.Name;
 import org.apache.shindig.social.opensocial.model.Organization;
 import org.apache.shindig.social.opensocial.model.Person;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -30,11 +31,11 @@ public class DefaultPrincipalConverter implements PrincipalConverter {
 
     public Person convert(NuxeoPrincipal principal) {
 
-        PersonImpl person = new PersonImpl();
+        Person person = new PersonImpl();
 
         person.setId(principal.getName());
 
-        NameImpl name = new NameImpl();
+        Name name = new NameImpl();
         name.setFamilyName(principal.getLastName());
         name.setGivenName(principal.getFirstName());
         person.setName(name);

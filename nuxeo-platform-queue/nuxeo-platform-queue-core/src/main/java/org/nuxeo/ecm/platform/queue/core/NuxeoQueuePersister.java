@@ -42,12 +42,12 @@ import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.*;
+
 /**
- *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
- *
  */
-public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants {
+public class NuxeoQueuePersister implements QueuePersister {
 
     public static final Log log = LogFactory.getLog(NuxeoQueuePersister.class);
 
@@ -69,7 +69,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
         QueueContent content;
 
-        public ForgetRunner(String repository, QueueContent content) {
+        ForgetRunner(String repository, QueueContent content) {
             super(repository);
             this.content = content;
         }
@@ -90,13 +90,6 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicPersister#hasContent(org.nuxeo
-     * .ecm.platform.queue.api.AtomicContent)
-     */
     public boolean hasContent(QueueContent content) throws QueueException {
         try {
             String defaultRepositoryName = Framework.getLocalService(
@@ -119,7 +112,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
         QueueContent content;
 
-        public HasContentRunner(String repository, QueueContent content) {
+        HasContentRunner(String repository, QueueContent content) {
             super(repository);
             this.content = content;
         }
@@ -131,18 +124,13 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.queue.api.AtomicPersister#listKnownItems()
-     */
     public List<QueueItem> listKnownItems(String queueName) {
         try {
             ListKnownItem runner = new ListKnownItem(Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepository().getName(),
                     queueName);
             runner.runUnrestricted();
-            ArrayList<QueueItem> queueItemList = new ArrayList<QueueItem>(
+            List<QueueItem> queueItemList = new ArrayList<QueueItem>(
                     runner.doclist.size());
             for (DocumentModel doc : runner.doclist) {
                 queueItemList.add(doc.getAdapter(QueueItem.class));
@@ -162,7 +150,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
         DocumentModelList doclist;
 
-        public ListKnownItem(String repository, String queueName) {
+        ListKnownItem(String repository, String queueName) {
             super(repository);
             this.queueName = queueName;
         }
@@ -174,13 +162,6 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicPersister#saveContent(org.nuxeo
-     * .ecm.platform.queue.api.AtomicContent)
-     */
     public QueueItem saveContent(QueueContent content) throws QueueException {
 
         try {
@@ -198,7 +179,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
     class SaveContentRunner extends UnrestrictedSessionRunner {
         QueueContent content;
 
-        public SaveContentRunner(String repository, QueueContent content) {
+        SaveContentRunner(String repository, QueueContent content) {
             super(repository);
             this.content = content;
         }
@@ -249,13 +230,6 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.QueuePersister#setExecuteTime(org.nuxeo
-     * .ecm.platform.queue.api.QueueContent, java.util.Date)
-     */
     public void setExecuteTime(QueueContent content, Date date) {
         SetExecutionInfoRunner runner = new SetExecutionInfoRunner(
                 Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName(),
@@ -273,7 +247,7 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
         Date executeTime;
 
-        public SetExecutionInfoRunner(String repository, QueueContent content,
+        SetExecutionInfoRunner(String repository, QueueContent content,
                 Date executeTime) {
             super(repository);
             this.content = content;
@@ -304,13 +278,6 @@ public class NuxeoQueuePersister implements QueuePersister, NuxeoQueueConstants 
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicPersister#updateItem(org.nuxeo
-     * .ecm.platform.queue.api.AtomicItem)
-     */
     public void updateItem(QueueItem item) {
         throw new UnsupportedOperationException("not yet implemented");
     }

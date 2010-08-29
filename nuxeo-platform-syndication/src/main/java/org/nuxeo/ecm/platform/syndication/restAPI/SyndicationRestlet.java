@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +49,6 @@ public class SyndicationRestlet extends BaseStatelessNuxeoRestlet {
 
         initializeSyndicationFormat(request);
 
-        DocumentModelList currentDocumentChildren = null;
         ResultSummary summary = new ResultSummary();
         try {
             super.initRepositoryAndTargetDocument(response, repo, docid);
@@ -61,12 +61,12 @@ public class SyndicationRestlet extends BaseStatelessNuxeoRestlet {
                     "dublincore", "description"));
             summary.setTitle((String) currentDocument.getProperty(
                     "dublincore", "title"));
-            java.util.Date modDate = ((Calendar) currentDocument.getProperty(
+            Date modDate = ((Calendar) currentDocument.getProperty(
                     "dublincore", "modified")).getTime();
             summary.setModificationDate(modDate);
             summary.setLink(getRestletFullUrl(request));
 
-            currentDocumentChildren = new DocumentModelListImpl();
+            DocumentModelList currentDocumentChildren = new DocumentModelListImpl();
             // currentDocumentChildren.add(currentDocument);
             currentDocumentChildren.addAll(
                     getChildrenDocument(session.getChildren(currentDocument.getRef())));
@@ -77,16 +77,16 @@ public class SyndicationRestlet extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    private DocumentModelList getChildrenDocument(DocumentModelList childs)
+    private DocumentModelList getChildrenDocument(DocumentModelList children)
             throws ClientException {
-        DocumentModelList allChilds = new DocumentModelListImpl();
-        for (DocumentModel child : childs) {
+        DocumentModelList allChildren = new DocumentModelListImpl();
+        for (DocumentModel child : children) {
             if (child.getRef() != null) {
-                allChilds.add(session.getDocument(child.getRef()));
+                allChildren.add(session.getDocument(child.getRef()));
             }
         }
 
-        return allChilds;
+        return allChildren;
     }
 
     private void initializeSyndicationFormat(Request request) {

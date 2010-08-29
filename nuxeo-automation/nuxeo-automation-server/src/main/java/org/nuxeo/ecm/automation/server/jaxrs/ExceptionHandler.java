@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ExceptionHandler {
 
@@ -65,10 +64,7 @@ public class ExceptionHandler {
     }
 
     /**
-     * Try to find the best matching HTTP status for the given exception
-     *
-     * @param cause
-     * @return
+     * Tries to find the best matching HTTP status for the given exception.
      */
     public static int getStatus(Throwable cause) {
         // use a max depth of 8 to avoid infinite loops for broken exceptions

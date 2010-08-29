@@ -41,15 +41,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class QueueHandlerImpl implements QueueHandler {
+
     public static final Log log = LogFactory.getLog(QueueHandlerImpl.class);
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleEndOfProcessing(
-     * org.nuxeo.ecm.platform.queue.api.AtomicContent)
-     */
     public void handleEndOfProcessing(QueueContent content) {
 
         try {
@@ -61,13 +55,6 @@ public class QueueHandlerImpl implements QueueHandler {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleNewContent(org.nuxeo
-     * .ecm.platform.queue.api.AtomicContent)
-     */
     public void handleNewContent(QueueContent content) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -77,13 +64,6 @@ public class QueueHandlerImpl implements QueueHandler {
         return administrativeStatus.isActive();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.queue.api.AtomicHandler#handleNewContentIfUnknown
-     * (org.nuxeo.ecm.platform.queue.api.AtomicContent)
-     */
     public void handleNewContentIfUnknown(QueueContent content)
             throws QueueException {
 
@@ -146,7 +126,6 @@ public class QueueHandlerImpl implements QueueHandler {
 
         persister.setExecuteTime(content, new Date());
         executor.execute(content, this);
-
     }
 
 }

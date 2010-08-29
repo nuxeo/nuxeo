@@ -80,36 +80,29 @@ public class ContainerManagerImpl implements ContainerManager {
         } catch (Exception e) {
             throw new ClientException("Space not found");
         }
-
     }
 
     protected static String getLocale(Map<String, String> params) {
-        if (params.containsKey("locale"))
+        if (params.containsKey("locale")) {
             return params.get("locale");
+        }
         return "ALL";
     }
 
-    /**
-     *
-     * @param key
-     * @param containerParams
-     * @param required
-     * @param defaultValue
-     * @return
-     */
     private String getParamValue(String key,
             Map<String, String> containerParams, boolean required,
             String defaultValue) {
         String value = containerParams.get(key);
         String retour = null;
         if (value == null) {
-            if (required)
-                throw new RuntimeException("Container param for key '" + key
-                        + "' is required");
-            else
+            if (required) {
+                throw new RuntimeException("Container param for key '" + key + "' is required");
+            } else {
                 retour = defaultValue;
-        } else
+            }
+        } else {
             retour = value;
+        }
         return retour;
     }
 
@@ -187,7 +180,7 @@ public class ContainerManagerImpl implements ContainerManager {
 
     protected CoreSession getCoreSession(Map<String, String> gwtParams)
             throws Exception {
-        return CoreSessionHelper.getCoreSession(gwtParams.get(ContainerManagerImpl.REPO_NAME));
+        return CoreSessionHelper.getCoreSession(gwtParams.get(REPO_NAME));
     }
 
     public Container saveLayout(Map<String, String> containerParams,
@@ -222,8 +215,9 @@ public class ContainerManagerImpl implements ContainerManager {
                 }
                 Collections.sort(gadgets);
                 String layout = space.getLayout();
-                if (layout == null || layout.equals(""))
+                if (layout == null || layout.equals("")) {
                     layout = DEFAULT_LAYOUT;
+                }
 
                 return new Container(gadgets, getStructure(space), layout, space.getId());
             }

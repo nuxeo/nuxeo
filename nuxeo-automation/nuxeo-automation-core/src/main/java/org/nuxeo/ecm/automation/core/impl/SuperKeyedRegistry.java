@@ -88,9 +88,6 @@ public abstract class SuperKeyedRegistry<K, V> {
      * Override this in order to disable caching some specific keys. For
      * example when using java classes as keys you may want to avoid caching
      * proxy classes. The default is to return true. (cache is enabled)
-     *
-     * @param key
-     * @return
      */
     protected boolean isCachingEnabled(K key) {
         return true;

@@ -46,7 +46,6 @@ public interface Session {
      *
      * @param id the ID of the operation to be executed.
      * @return the operation request
-     * @throws Exception
      */
     OperationRequest newRequest(String id) throws Exception;
 
@@ -58,7 +57,6 @@ public interface Session {
      * @param ctx the context map to be used when executing the operation on the
      *            server.
      * @return the operation request
-     * @throws Exception
      */
     OperationRequest newRequest(String id, Map<String, String> ctx)
             throws Exception;
@@ -72,7 +70,6 @@ public interface Session {
      *
      * @param path the file path
      * @return a blob representation of the file
-     * @throws Exception
      */
     Blob getFile(String path) throws Exception;
 
@@ -80,9 +77,8 @@ public interface Session {
      * Get a collection of files from the server given the path identifying the
      * collection.
      *
-     * @param path
+     * @param path the file path
      * @return a collection of files represented as blobs.
-     * @throws Exception
      */
     Blobs getFiles(String path) throws Exception;
 
@@ -100,10 +96,6 @@ public interface Session {
      * <p>
      * Optional operation. Environments that cannot support this method (like
      * GWT) must throw {@link UnsupportedOperationException}
-     *
-     * @param <T>
-     * @param type
-     * @return
      *
      * @see AutomationClient#getAdapter(Object, Class)
      */

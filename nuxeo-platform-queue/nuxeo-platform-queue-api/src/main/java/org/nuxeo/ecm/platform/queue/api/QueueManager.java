@@ -22,13 +22,12 @@ import java.util.Map;
 /**
  * Handle contents that needs long processing such as OCRing a document, images
  * manipulation, and eventually sequencing.
- *
+ * <p>
  * Handle only content of same type. Delegate the content saving to a dedicated
  * persister .
  *
  * @author Stephane Lacoin <slacoin@nuxeo.com> (aka matic)
  * @see QueuePersister
- *
  */
 public interface QueueManager {
 

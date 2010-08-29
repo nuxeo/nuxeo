@@ -65,9 +65,7 @@ public class SpacesModuleRoot extends ModuleRoot {
     }
 
     /**
-     * Default view ( index.ftl ) - Lists all available universes
-     *
-     * @return
+     * Default view ( index.ftl ) - Lists all available universes.
      */
     @GET
     public Object doGet() {
@@ -75,8 +73,8 @@ public class SpacesModuleRoot extends ModuleRoot {
     }
 
     /**
-     * Load a particuliar universe from its name with spaces API. Redirect to
-     * sub-ressources UniversDocumentObject indirectly
+     * Load a particular universe from its name with spaces API. Redirect to
+     * sub-resources UniversDocumentObject indirectly
      */
     @Path("{universeName}")
     public Object doGetUnivers(@PathParam("universeName") String universeName) {

@@ -49,13 +49,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
 
     private static final Log log = LogFactory.getLog(ContainerServiceImpl.class);
 
-    /**
-     * Retrieve a specific container
-     *
-     * @param gwtParams
-     * @return Container
-     * @throws ContainerServiceException
-     */
     public Container getContainer(Map<String, String> gwtParams)
             throws ContainerServiceException {
         try {
@@ -68,16 +61,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         }
     }
 
-    /**
-     * Save preferences of gadget with form parameter
-     *
-     * @param gadget
-     * @param form
-     *            : new preferences
-     * @param gwtParams
-     * @return GadgetBean
-     * @throws ContainerServiceException
-     */
     public GadgetBean saveGadgetPreferences(GadgetBean gadget, String form,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
@@ -90,8 +73,7 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
             List<PreferencesBean> userPrefs = gadget.getUserPrefs();
             for (PreferencesBean bean : userPrefs) {
                 if (!updatePrefs.containsKey(bean.getName())) {
-                    if (bean.getDataType()
-                            .equals("BOOL")) {
+                    if (bean.getDataType().equals("BOOL")) {
                         updatePrefs.put(bean.getName(), "false");
                     }
                 }
@@ -105,13 +87,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         }
     }
 
-    /**
-     * Save collection of gadgets
-     *
-     * @param beans
-     * @param gwtParams
-     * @throws ContainerServiceException
-     */
     public Boolean saveGadgetsCollection(Collection<GadgetBean> beans,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
@@ -131,14 +106,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         return true;
     }
 
-    /**
-     * Remove gadget
-     *
-     * @param gadget
-     * @param gwtParams
-     * @return GadgetBean removed
-     * @throws ContainerServiceException
-     */
     public GadgetBean removeGadget(GadgetBean gadget,
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
@@ -152,13 +119,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         return gadget;
     }
 
-    /**
-     * Get collection of gadget name sorted by category
-     *
-     * @param gwtParams
-     * @return key is category - value is list of gadget name
-     * @throws ContainerServiceException
-     */
     public Map<String, ArrayList<String>> getGadgetList(
             Map<String, String> gwtParams) throws ContainerServiceException {
         try {
@@ -171,14 +131,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         }
     }
 
-    /**
-     * Add gadget
-     *
-     * @param gadgetName
-     * @param gwtParams
-     * @return GadgetBean added
-     * @throws ContainerServiceException
-     */
     public GadgetBean addGadget(String gadgetName, Map<String, String> gwtParams)
             throws ContainerServiceException {
         try {
@@ -194,7 +146,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     /**
      * Utility methods
      */
-
     public static String decode(String string) {
         try {
             string = new URI('?' + string).getQuery();
@@ -205,10 +156,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
     }
 
     /**
-     * Get a map of preferences
+     * Gets a map of preferences.
      *
-     * @param form
-     *            : html form result (&name=result&...)
+     * @param form html form result (&name=result&...)
      * @return Map of parameters key : name, value : result
      */
     private Map<String, String> getParameters(String form) {
@@ -217,8 +167,9 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         while (params.hasMoreTokens()) {
             StringTokenizer st = new StringTokenizer(params.nextToken(), "=");
             String key = "", value = "";
-            if (st.hasMoreTokens())
+            if (st.hasMoreTokens()) {
                 key = decode(st.nextToken());
+            }
             while (st.hasMoreTokens()) {
                 value += decode(st.nextToken());
             }
@@ -231,14 +182,6 @@ public class ContainerServiceImpl extends RemoteServiceServlet implements
         return map;
     }
 
-    /**
-     * Save layout of container
-     *
-     * @param gwtParams
-     * @param layoutName
-     * @return
-     * @throws ContainerServiceException
-     */
     public Container saveLayout(Map<String, String> gwtParams, String layout)
             throws ContainerServiceException {
         try {

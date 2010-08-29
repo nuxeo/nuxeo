@@ -47,11 +47,11 @@ class CompiledChainImpl implements CompiledChain {
 
     protected CompiledChainImpl next;
 
-    public CompiledChainImpl(OperationTypeImpl op, Map<String, Object> args) {
+    CompiledChainImpl(OperationTypeImpl op, Map<String, Object> args) {
         this(null, op, args);
     }
 
-    public CompiledChainImpl(CompiledChainImpl parent, OperationTypeImpl op,
+    CompiledChainImpl(CompiledChainImpl parent, OperationTypeImpl op,
             Map<String, Object> args) {
         if (parent != null) {
             parent.next = this;
@@ -71,9 +71,6 @@ class CompiledChainImpl implements CompiledChain {
     /**
      * Compute the best matching path to perform the chain of operations. The
      * path is computed using a backtracking algorithm.
-     *
-     * @param in
-     * @return
      */
     public boolean initializePath(Class<?> in) {
         InvokableMethod[] methods = op.getMethodsMatchingInput(in);

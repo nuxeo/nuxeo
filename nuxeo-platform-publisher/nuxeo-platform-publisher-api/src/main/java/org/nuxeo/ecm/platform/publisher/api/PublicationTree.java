@@ -66,6 +66,7 @@ public interface PublicationTree extends PublicationNode {
      * Sets the current document on which the tree will be based, if needed.
      * <p>
      * Can be useful for some implementations that need to know on which document the user is.
+     *
      * @param currentDocument the current document
      */
     void setCurrentDocument(DocumentModel currentDocument) throws ClientException;
@@ -82,7 +83,6 @@ public interface PublicationTree extends PublicationNode {
      * @param publishedDocument the current published document that will be
      *            approved
      * @param comment
-     * @throws PublishingException
      */
     void validatorPublishDocument(PublishedDocument publishedDocument, String comment)
             throws ClientException;
@@ -93,34 +93,31 @@ public interface PublicationTree extends PublicationNode {
      * @param publishedDocument the currently published document that will be
      *            rejected
      * @param comment
-     * @throws PublishingException
      */
     void validatorRejectPublication(PublishedDocument publishedDocument,
             String comment) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
-     * @param publicationNode
+     * Returns {@code true} if the current user can publish to the specified publicationNode,
+     * {@code false} otherwise.
+     *
      * @return {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
-     * @throws ClientException
      */
     boolean canPublishTo(PublicationNode publicationNode) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
-     * @param publishedDocument
+     * Returns {@code true} if the current user can unpublish the given publishedDocument,
+     * {@code false} otherwise.
+     *
      * @return {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
-     * @throws ClientException
      */
     boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException;
 
     boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
 
     /**
-     * Returns {@code true} if the current user can mnage the publishing of the given publisheddocument, ie. approve or reject the document.
-     * @param publishedDocument
-     * @return
-     * @throws ClientException
+     * Returns {@code true} if the current user can manage the publishing of the given publishedDocument,
+     * ie approve or reject the document.
      */
     boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
 
@@ -129,17 +126,12 @@ public interface PublicationTree extends PublicationNode {
     /**
      * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree,
      * {@code false} otherwise.
-     * @param documentModel
-     * @return
-     * @throws ClientException
      */
     boolean isPublicationNode(DocumentModel documentModel) throws ClientException;
 
     /**
      * Returns a PublicationNode for the current tree built on the given {@code documentModel}.
      *
-     * @param documentModel
-     * @return
      * @throws ClientException if the given documentModel cannot be a PublicationNode
      */
     PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException;

@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * Save contents on a persistent back-end. Three implementation are available by
  * default. The first one, will implement the persister in memory for testing
  * only. The second one, will be will be based on Nuxeo and the last one on file

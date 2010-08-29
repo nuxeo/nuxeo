@@ -50,18 +50,18 @@ public class UniversWebObject extends DefaultObject {
     /**
      * Current universe
      */
-    private Univers univers = null;
+    private Univers univers;
 
     /**
      * all spaces in the current universe
      */
-    private List<Space> spaces = null;
+    private List<Space> spaces;
 
     private static final Log log = LogFactory.getLog(UniversWebObject.class);
 
     public List<Space> getSpaces() throws Exception {
-        if (this.spaces == null) {
-            this.spaces = Framework.getService(SpaceManager.class).getSpacesForUnivers(
+        if (spaces == null) {
+            spaces = Framework.getService(SpaceManager.class).getSpacesForUnivers(
                     univers, getSession());
         }
         return spaces;
@@ -69,10 +69,9 @@ public class UniversWebObject extends DefaultObject {
 
     @GET
     public Response doGet() {
-        List<Space> spaces;
         try {
-            spaces = getSpaces();
-            if (spaces.size() > 0) {
+            List<Space> spaces = getSpaces();
+            if (!spaces.isEmpty()) {
                 return redirect(getPath() + "/" + spaces.get(0).getName());
             } else {
                 throw new WebResourceNotFoundException(
@@ -91,25 +90,22 @@ public class UniversWebObject extends DefaultObject {
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
-        this.univers = (Univers) args[0];
+        univers = (Univers) args[0];
 
     }
 
     /**
-     * Read a space with spaces API
-     *
-     * @param spacename
-     * @return
+     * Reads a space with spaces API.
      */
     @Path("{spacename}")
     public Resource doGetSpace(@PathParam("spacename") String spacename) {
-        getContext().getRequest().setAttribute("currentUnivers", this.univers);
+        getContext().getRequest().setAttribute("currentUnivers", univers);
         try {
 
             CoreSession coreSession = getSession();
             SpaceManager spaceManager = Framework.getService(SpaceManager.class);
 
-            Space space = spaceManager.getSpace(spacename, this.univers,
+            Space space = spaceManager.getSpace(spacename, univers,
                     coreSession);
             if (space == null) {
                 throw new WebResourceNotFoundException("No space " + spacename

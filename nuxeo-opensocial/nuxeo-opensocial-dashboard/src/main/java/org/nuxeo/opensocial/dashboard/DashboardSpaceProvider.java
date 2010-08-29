@@ -86,9 +86,6 @@ public class DashboardSpaceProvider extends SingleDocSpaceProvider {
   /**
    * For compat purpose, we put the space in a univers. But it is not really
    * needed
-   *
-   * @param session
-   * @return
    */
   protected static DocumentModel getOrCreateParentUnivers(CoreSession session)
       throws ClientException {

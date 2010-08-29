@@ -259,8 +259,7 @@ public abstract class Wizard extends DefaultObject {
     }
 
     /**
-     * Get the content of the current wizard page
-     * @return
+     * Get the content of the current wizard page.
      */
     @GET
     public Object doGet() {

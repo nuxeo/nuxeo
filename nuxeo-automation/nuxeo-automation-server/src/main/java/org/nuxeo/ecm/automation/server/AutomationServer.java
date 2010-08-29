@@ -29,48 +29,42 @@ import javax.servlet.http.HttpServletRequest;
 public interface AutomationServer {
 
     /**
-     * Get a binding given an operation.
+     * Gets a binding given an operation.
      *
      * @param name the operation name.
-     * @return
      */
     RestBinding getOperationBinding(String name);
 
     /**
-     * Get a binding given a chain name
+     * Gets a binding given a chain name.
      *
-     * @param name
-     * @return
+     * @param name the chain name
      */
     RestBinding getChainBinding(String name);
 
     /**
-     * Get an array of registered bindings.
-     *
-     * @return
+     * Gets an array of registered bindings.
      */
     RestBinding[] getBindings();
 
     /**
-     * Register a new operation binding
+     * Registers a new operation binding.
      *
-     * @param binding
+     * @param binding the new binding to register
      */
     void addBinding(RestBinding binding);
 
     /**
-     * Remove a binding for the given operation name
+     * Removes a binding for the given operation name.
      *
-     * @param binding
-     * @return the removed binding if any otherwise null
+     * @param binding the binding to remove
+     * @return the removed binding if any, otherwise null
      */
     RestBinding removeBinding(RestBinding binding);
 
     /**
-     * Check if the given operation name is allowed in a REST call.
-     *
-     * @param name
-     * @return
+     * Checks if the given operation name is allowed in a REST call.
      */
     boolean accept(String name, boolean isChain, HttpServletRequest req);
+
 }
