@@ -14,18 +14,23 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.statuses;
+package org.nuxeo.ecm.platform.management;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface Probe {
+public class PlatformManagementComponent extends DefaultComponent {
 
-    void init(Object service);
+    protected final ProbeScheduler scheduler = new ProbeScheduler();
 
-    ProbeStatus runProbe(CoreSession session) throws ClientException;
-
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(ProbeScheduler.class)) {
+            return adapter.cast(scheduler);
+        }
+        return super.getAdapter(adapter);
+    }
 }
