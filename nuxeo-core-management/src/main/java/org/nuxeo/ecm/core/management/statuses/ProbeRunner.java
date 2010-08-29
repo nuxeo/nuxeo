@@ -17,33 +17,201 @@
 package org.nuxeo.ecm.core.management.statuses;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-public interface ProbeRunner {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ManagementRuntimeException;
 
-    /**
-     * Runs all probes
+public class ProbeRunner implements ProbeRunnerMBean {
+
+    protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
+        Set<String> names = new HashSet<String>();
+        for (ProbeInfo runner : runners) {
+            names.add(runner.shortcutName);
+        }
+        return names;
+    }
+
+    public Collection<ProbeInfo> getProbeInfos() {
+        return Collections.unmodifiableCollection(infosByTypes.values());
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbeNames()
      */
-    boolean run() ;
+    public Collection<String> getProbeNames() {
+        return infosByShortcuts.keySet();
+    }
 
-    /**
-     * Runs a probe.
-     * @return true if probe succeeds, false if not
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesCount()
      */
-    boolean runProbe(ProbeInfo probe);
+    public int getProbesCount() {
+        return infosByTypes.size();
+    }
 
-    Collection<ProbeInfo> getScheduledProbes();
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInError()
+     */
+    public Collection<String> getProbesInError() {
+        return doExtractProbesName(failed);
+    }
 
-    Collection<ProbeInfo> getSuccessProbes();
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInErrorCount()
+     */
+    public int getProbesInErrorCount() {
+        return failed.size();
+    }
 
-    Collection<ProbeInfo> getFailureProbes();
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInSuccess()
+     */
+    public Collection<String> getProbesInSuccess() {
+        return doExtractProbesName(succeed);
+    }
 
-    Set<String> getProbeNames() ;
+    public Collection<ProbeInfo> getProbesInfoInSuccess() {
+        return Collections.unmodifiableSet(succeed);
+    }
 
-    ProbeInfo getProbeInfo(String name);
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInSuccessCount()
+     */
+    public int getProbesInSuccessCount() {
+        return succeed.size();
+    }
 
-    Set<String> getProbesInError();
+    public ProbeInfo getProbeInfo(Class<? extends Probe> probeClass) {
+        ProbeInfo info = infosByTypes.get(probeClass);
+        if (info == null) {
+            throw new IllegalArgumentException("no probe registered for "
+                    + probeClass);
+        }
+        return info;
+    }
 
-    Set<String> getProbesInSuccess() ;
+
+    public Collection<ProbeInfo> getInSuccessProbeInfos() {
+        return Collections.unmodifiableCollection(succeed);
+    }
+
+
+    public Collection<ProbeInfo> getInFailureProbeInfos() {
+            return Collections.unmodifiableCollection(failed);
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#run()
+     */
+    public boolean run() {
+        doRun();
+        return getProbesInErrorCount() <= 0;
+    }
+
+    public boolean runProbe(ProbeInfo probe) {
+        doRunProbe(probe);
+        return getProbesInSuccess().contains(probe.shortcutName);
+    }
+
+    public ProbeInfo getProbeInfo(String name) {
+        for (ProbeInfo info : infosByTypes.values()) {
+            if (name.equals(info.shortcutName)) {
+                return info;
+            }
+        }
+        return null;
+    }
+
+    protected final static Log log = LogFactory.getLog(ProbeRunner.class);
+
+    protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
+
+    protected final Map<String, ProbeInfo> infosByShortcuts =  new HashMap<String, ProbeInfo>();
+
+    protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
+
+    protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
+
+    public void registerProbe(ProbeDescriptor descriptor) {
+        Class<? extends Probe> probeClass = descriptor.getProbeClass();
+        Probe probe;
+        try {
+            probe = probeClass.newInstance();
+        } catch (Exception e) {
+            throw new ManagementRuntimeException(
+                    "Cannot create management probe for " + descriptor);
+        }
+        Class<?> serviceClass = descriptor.getServiceClass();
+        if (serviceClass != null) {
+            Object service = Framework.getLocalService(serviceClass);
+            probe.init(service);
+        }
+        ProbeInfo info = new ProbeInfo(descriptor, probe);
+        infosByTypes.put(probeClass, info);
+        infosByShortcuts.put(descriptor.getShortcut(), info);
+    }
+
+
+    public void unregisterProbe(ProbeDescriptor descriptor) {
+        Class<? extends Probe> probeClass = descriptor.getProbeClass();
+        infosByTypes.remove(probeClass);
+        infosByShortcuts.remove(descriptor.getShortcut());
+    }
+
+    protected void doRunWithSafeClassLoader() {
+        for (ProbeInfo context : infosByTypes.values()) {
+            try {
+                context.run();
+                failed.remove(context);
+                succeed.add(context);
+            } catch (Exception e) {
+                succeed.remove(context);
+                failed.add(context);
+            }
+        }
+    }
+
+    protected void doRun() {
+        for (ProbeInfo context : infosByTypes.values()) {
+            try {
+                context.run();
+                if (context.isInError()) {
+                    succeed.remove(context);
+                    failed.add(context);
+                } else {
+                    failed.remove(context);
+                    succeed.add(context);
+            }
+            } catch (Throwable e) {
+              log.error("Error caught while executing " + context.getShortcutName(), e);
+            }
+        }
+    }
+
+    protected void doRunProbe(ProbeInfo probe) {
+        if (!probe.isEnabled) {
+            return;
+        }
+        try {
+            probe.run();
+            if (probe.isInError()) {
+                succeed.remove(probe);
+                failed.add(probe);
+            } else {
+                failed.remove(probe);
+                succeed.add(probe);
+            }
+        } catch (Throwable e) {
+            succeed.remove(probe);
+            failed.add(probe);
+        }
+    }
 
 }

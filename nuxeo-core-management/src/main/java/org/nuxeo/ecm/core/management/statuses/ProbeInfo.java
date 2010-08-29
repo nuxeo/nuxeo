@@ -18,20 +18,14 @@ package org.nuxeo.ecm.core.management.statuses;
 
 import java.util.Date;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
-
 public class ProbeInfo implements ProbeMBean {
 
-    @SuppressWarnings("unused")
-    private final StatusesManagementComponent scheduler;
-
-    protected ProbeInfo(StatusesManagementComponent usecaseSchedulerService, Probe probe) {
-        scheduler = usecaseSchedulerService;
+    protected ProbeInfo(ProbeDescriptor descriptor, Probe probe) {
+        this.descriptor = descriptor;
         this.probe = probe;
     }
+
+    protected ProbeDescriptor descriptor;
 
     protected boolean isEnabled = true;
 
@@ -41,6 +35,8 @@ public class ProbeInfo implements ProbeMBean {
 
     protected final Probe probe;
 
+    protected ProbeStatus lastStatus = new ProbeStatus("not yet runned", false);
+
     protected long runnedCount = 0L;
 
     protected Date lastRunnedDate;
@@ -49,16 +45,15 @@ public class ProbeInfo implements ProbeMBean {
 
     protected long successCount = 0L;
 
-    protected Date lastSucceedDate;
+    protected Date lastSucceedDate = new Date(0);
 
-    protected ProbeStatus lastSuccesStatus;
+    protected ProbeStatus lastSuccesStatus = ProbeStatus.newSuccess("not yet succeed");
 
     protected long failureCount = 0L;
 
-    protected Date lastFailureDate;
+    protected Date lastFailureDate = new Date(0);
 
-    protected ProbeStatus lastFailureStatus;
-
+    protected ProbeStatus lastFailureStatus = ProbeStatus.newFailure("not yet failed");
 
     public long getFailedCount() {
         return failureCount;
@@ -115,81 +110,44 @@ public class ProbeInfo implements ProbeMBean {
     }
 
     public ProbeStatus getStatus() {
-        if (isInError()) {
-            return lastFailureStatus;
-        }
-        return lastSuccesStatus;
+        return lastStatus;
     }
 
-    public String getShortcutName(){
+    public String getShortcutName() {
         return shortcutName;
 
-    }
-
-    public void setProbeStatus(ProbeStatus probeStatus) {
-        this.lastSuccesStatus = probeStatus;
     }
 
     protected static Long doGetDuration(Date fromDate, Date toDate) {
         return toDate.getTime() - fromDate.getTime();
     }
 
-    protected class RepositoryRunner extends UnrestrictedSessionRunner {
-
-        protected RepositoryRunner() {
-            super(Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName());
+    public synchronized void run()  {
+        if (!isEnabled) {
+            return;
         }
-
-        public void runWithSafeClassLoader() throws ClientException {
-            Thread currentThread = Thread.currentThread();
-            ClassLoader lastLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(RepositoryRunner.class.getClassLoader());
-            try {
-            runUnrestricted();
-            } finally {
-                currentThread.setContextClassLoader(lastLoader);
-            }
-        }
-
-        @Override
-        public synchronized void run() throws ClientException {
-            if (!isEnabled) {
-                return;
-            }
-            Date startingDate = new Date();
-            try {
-                ProbeStatus status = probe.runProbe(session);
-                if (status.isSuccess()) {
-                    lastSucceedDate = startingDate;
-                    lastSuccesStatus = status;
-                    successCount += 1;
-                } else {
-                    lastFailureStatus = status;
-                    failureCount += 1;
-                    lastFailureDate = startingDate;
-                }
-            } catch (Throwable e) {
-                failureCount += 1;
-                lastFailureDate = new Date();
-                lastFailureStatus = ProbeStatus.newError(e);
-           } finally {
-                runnedCount += 1;
-                lastRunnedDate = startingDate;
-                lastDuration = doGetDuration(startingDate, new Date());
-            }
-        }
-    }
-
-
-    public void run() {
         Thread currentThread = Thread.currentThread();
         ClassLoader lastLoader = currentThread.getContextClassLoader();
         currentThread.setContextClassLoader(ProbeInfo.class.getClassLoader());
+        lastRunnedDate = new Date();
+        runnedCount += 1;
         try {
-            RepositoryRunner runner = new RepositoryRunner();
-            runner.runWithSafeClassLoader();
-        } catch (ClientException e) {
+            lastStatus = probe.run();
+            if (lastStatus.isSuccess()) {
+                lastSucceedDate = lastRunnedDate;
+                lastSuccesStatus = lastStatus;
+                successCount += 1;
+            } else {
+                lastFailureStatus = lastStatus;
+                failureCount += 1;
+                lastFailureDate = lastRunnedDate;
+            }
+        } catch (Throwable e) {
+            failureCount += 1;
+            lastFailureDate = new Date();
+            lastFailureStatus = ProbeStatus.newError(e);
         } finally {
+            lastDuration = doGetDuration(lastRunnedDate, new Date());
             currentThread.setContextClassLoader(lastLoader);
         }
     }

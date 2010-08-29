@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.statuses;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -30,7 +28,7 @@ public class AdministrativeStatusProbe implements Probe {
      public void init(Object service) {
      }
 
-    public ProbeStatus runProbe(CoreSession session) throws ClientException {
+    public ProbeStatus run()  {
         AdministrativeStatus adm = Framework.getLocalService(AdministrativeStatus.class);
         String info = format(adm);
         if (!adm.isActive()) {

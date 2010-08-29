@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.core.management.statuses;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -26,6 +25,6 @@ public interface Probe {
 
     void init(Object service);
 
-    ProbeStatus runProbe(CoreSession session) throws ClientException;
+    ProbeStatus run() throws ClientException;
 
 }

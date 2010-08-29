@@ -14,7 +14,9 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.core.management.administrativestatus;
+package org.nuxeo.ecm.core.management.statuses;
+
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -23,7 +25,7 @@ import org.nuxeo.ecm.core.management.statuses.AdministrativeStatus;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestAdministrativeStatus extends SQLRepositoryTestCase {
+public class TestStatuses extends SQLRepositoryTestCase {
 
     protected static boolean serverActivatedEventTriggered = false;
 
@@ -55,16 +57,31 @@ public class TestAdministrativeStatus extends SQLRepositoryTestCase {
     }
 
     public void testServerAdministrativeStatus() throws Exception {
-        assertEquals(AdministrativeStatus.ACTIVE,
+        assertEquals("wrong default status, not active", AdministrativeStatus.ACTIVE,
                 getAdministrativeStatus().getValue());
         getAdministrativeStatus().setPassive();
-        assertEquals(AdministrativeStatus.PASSIVE,
+        assertEquals("cannot passivate", AdministrativeStatus.PASSIVE,
                 getAdministrativeStatus().getValue());
-        assertTrue(serverPassivatedEventTriggered);
+        assertTrue("passivate event not received", serverPassivatedEventTriggered);
         getAdministrativeStatus().setActive();
-        assertEquals(AdministrativeStatus.ACTIVE,
+        assertEquals("cannot activate", AdministrativeStatus.ACTIVE,
                 getAdministrativeStatus().getValue());
-        assertTrue(serverActivatedEventTriggered);
+        assertTrue("activate event not received", serverActivatedEventTriggered);
+    }
+
+    public void testProbe() {
+        ProbeRunner runner = Framework.getLocalService(ProbeRunner.class);
+        ProbeInfo info = runner.getProbeInfo(AdministrativeStatusProbe.class);
+        assertNotNull("admin status probe not registred", info);
+        Collection<String> names = runner.getProbeNames();
+        assertTrue("admin status shortcut not listed", names.contains("administrativeStatus"));
+        assertNotNull("admin status probe not published", info.qualifiedName);
+        assertEquals(0, info.runnedCount);
+        assertTrue(info.lastStatus.info.equals("not yet runned"));
+        assertTrue(info.lastFailureStatus.info.equals("not yet failed"));
+        assertTrue(info.lastSuccesStatus.info.equals("not yet succeed"));
+        runner.run();
+        assertEquals(1, info.runnedCount);
     }
 
     private AdministrativeStatus getAdministrativeStatus()

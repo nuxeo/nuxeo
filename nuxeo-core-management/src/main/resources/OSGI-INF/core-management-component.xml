@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.management.statuses">
+<component name="org.nuxeo.ecm.core.management">
 
   <implementation
-    class="org.nuxeo.ecm.core.management.statuses.StatusesManagementComponent" />
+    class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
 
   <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
   
@@ -12,11 +12,14 @@
     <provide interface="org.nuxeo.ecm.core.management.statuses.AdministrativeStatus"/>
   </service>
 
-  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
-
   <extension-point name="probes">
     <object class="org.nuxeo.ecm.core.management.statuses.ProbeDescriptor" />
   </extension-point>
+  
+  <extension target="org.nuxeo.runtime.management.ResourcePublisher" point="factories">
+     <factory name="managementStatusesFactory"
+                    class="org.nuxeo.ecm.core.management.statuses.StatusesManagementFactory" />
+  </extension>
   
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="status" src="schemas/status.xsd" />
@@ -30,7 +33,7 @@
   </extension>
 
   <extension
-    target="org.nuxeo.ecm.core.management.statuses"
+    target="org.nuxeo.ecm.core.management"
     point="probes">
     <probe name="administrativeStatus"
       class="org.nuxeo.ecm.core.management.statuses.AdministrativeStatusProbe"

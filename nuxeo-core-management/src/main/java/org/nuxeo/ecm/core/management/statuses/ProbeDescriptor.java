@@ -37,7 +37,7 @@ public class ProbeDescriptor {
     @XNode("@class")
     private Class<? extends Probe> probeClass;
 
-    public String getShortcutName() {
+    public String getShortcut() {
         return shortcutName;
     }
 

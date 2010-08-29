@@ -51,7 +51,7 @@ public class AdministrativeStatus {
 
 	protected String serverInstanceName;
 
-	protected void activate() {
+	public void activate() {
 		 serverInstanceName = Framework.getProperties().getProperty(
 				ADMINISTRATIVE_INSTANCE_ID);
 		if (StringUtils.isEmpty(serverInstanceName)) {
@@ -71,7 +71,7 @@ public class AdministrativeStatus {
 		}
 	}
 
-	protected void deactivate() {
+	public void deactivate() {
 		serverInstanceName = null;
 		value = null;
 	}
