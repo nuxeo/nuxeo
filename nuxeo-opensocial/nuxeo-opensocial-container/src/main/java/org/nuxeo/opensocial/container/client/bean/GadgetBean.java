@@ -62,7 +62,7 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     private boolean configurable;
 
     /**
-     * Default construcor (Specification of Gwt)
+     * Default constructor (Specification of Gwt)
      */
     public GadgetBean() {
     }
@@ -98,10 +98,6 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
 
     public void setGadgetViews(Map<String, GadgetView> gadgetViews) {
         this.gadgetViews = gadgetViews;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public GadgetPosition getPosition() {
@@ -177,14 +173,14 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     }
 
     public void setPref(String key, String value) {
-        for (PreferencesBean pref : this.userPrefs) {
+        for (PreferencesBean pref : userPrefs) {
             if (key.equals(pref.getName())) {
                 pref.setValue(value);
                 return;
             }
         }
 
-        for (PreferencesBean pref : this.defaultPrefs) {
+        for (PreferencesBean pref : defaultPrefs) {
             if (key.equals(pref.getName())) {
                 pref.setValue(value);
                 return;
@@ -194,11 +190,10 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     }
 
     public int compareTo(GadgetBean o) {
-        Integer pos1 = o.getGadgetPosition().getPosition();
-        Integer pos2 = this.getGadgetPosition().getPosition();
+        Integer pos1 = o.position.getPosition();
+        Integer pos2 = this.position.getPosition();
 
         return pos2 - pos1;
-
     }
 
     public String getHtmlContent() {

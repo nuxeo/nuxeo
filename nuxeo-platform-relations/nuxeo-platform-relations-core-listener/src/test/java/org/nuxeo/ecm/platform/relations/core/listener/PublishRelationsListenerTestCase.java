@@ -113,12 +113,12 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         Resource otherDocResource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
-        List<Statement> originalStatments = new ArrayList<Statement>();
-        originalStatments.add(new StatementImpl(documentResource, conformsTo,
+        List<Statement> originalStatements = new ArrayList<Statement>();
+        originalStatements.add(new StatementImpl(documentResource, conformsTo,
                 new LiteralImpl("some conformance")));
-        originalStatments.add(new StatementImpl(otherDocResource, conformsTo,
+        originalStatements.add(new StatementImpl(otherDocResource, conformsTo,
                 documentResource));
-        relationManager.add(RelationConstants.GRAPH_NAME, originalStatments);
+        relationManager.add(RelationConstants.GRAPH_NAME, originalStatements);
     }
 
     public void testCopyRelationsFromWork() throws Exception {
@@ -214,7 +214,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
                 RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
         addSomeRelations(docToDeleteResource);
 
-        //now check that the realations were added
+        //now check that the relations were added
 
         List<Statement> statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
         assertEquals(1, statementsOnDeleted.size());
@@ -226,12 +226,12 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         Resource publishedResource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, publishedProxy, null);
 
-        // now delete the document and check that the realtions on the original
+        // now delete the document and check that the relations on the original
         // doc are deleted
         session.removeDocument(docToDelete.getRef());
         session.save();
 
-        // check that relations are still there on the publihed doc after the
+        // check that relations are still there on the published doc after the
         // doc was deleted
         List<Statement> statementsOnPublishedResource = getRelations(publishedResource, null);
         assertNotNull(statementsOnPublishedResource);

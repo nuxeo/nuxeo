@@ -57,7 +57,7 @@ public class XPathUtil {
             xpath.insert(0, "/" + name.toLowerCase() + "[" + counter + "]");
             current = current.getParentNode();
         }
-        Log.debug("XPathUtil] xpath: " + xpath.toString());
+        Log.debug("XPathUtil] xpath: " + xpath);
         return xpath.toString();
     }
 

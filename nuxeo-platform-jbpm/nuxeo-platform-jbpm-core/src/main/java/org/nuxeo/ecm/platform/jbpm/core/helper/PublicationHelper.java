@@ -30,7 +30,7 @@ public interface PublicationHelper extends Serializable {
     String decide(ExecutionContext executionContext) throws Exception;
 
     void publishDocument(CoreSession session, DocumentModel docToPublish,
-            DocumentModel secionToPublish) throws ClientException;
+            DocumentModel sectionToPublish) throws ClientException;
 
     void assign(Assignable assignable, ExecutionContext executionContext)
             throws Exception;

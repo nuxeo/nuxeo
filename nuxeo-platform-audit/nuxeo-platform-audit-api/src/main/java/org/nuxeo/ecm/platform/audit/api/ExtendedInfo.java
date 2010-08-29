@@ -37,7 +37,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Extended audit info entities, used to persist contributed extended informations
+ * Extended audit info entities, used to persist contributed extended information.
  *
  * @author Stephane Lacoin (Nuxeo EP software engineer)
  */

@@ -31,11 +31,9 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Web object implementation corresponding to the administraive status of the server
+ * Web object implementation corresponding to the administrative status of the server.
  *
  * @author mcedica
- *
  */
 @WebObject(type = ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE , administrator=Access.GRANT)
 @Produces("text/html; charset=UTF-8")
@@ -46,7 +44,7 @@ public class AdministrativeStatusObject extends DefaultObject {
     @Override
     public void initialize(Object... args) {
         super.initialize(args);
-        administrativeStatus = Framework.getLocalService(org.nuxeo.ecm.platform.management.statuses.AdministrativeStatus.class);
+        administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
     }
 
     @GET

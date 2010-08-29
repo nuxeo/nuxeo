@@ -31,7 +31,7 @@ import com.google.gwt.dom.client.Node;
  */
 public class Utils {
 
-    public native static Document setDocument(Document document) /*-{
+    public static native Document setDocument(Document document) /*-{
         $temp = $doc;
         $doc = document;
         return $temp
@@ -46,12 +46,12 @@ public class Utils {
         return result;
     }
 
-    public native static String getBaseHref() /*-{
+    public static native String getBaseHref() /*-{
         return top['baseHref'];
     }-*/;
 
 
-    public native static Range getCurrentRange(Document document) /*-{
+    public static native Range getCurrentRange(Document document) /*-{
         if( document &&
             document.defaultView &&
             document.defaultView.getSelection() &&
@@ -87,7 +87,7 @@ public class Utils {
         //Window.alert("Before removeWS: " + text);
         Element prevSibling = (Element)node.getPreviousSibling();
 
-        String processedText = text;;
+        String processedText = text;
         if (prevSibling == null || !(new CSSClassManager(prevSibling).isClassPresent(AnnotationConstant.IGNORED_ELEMENT))) {
             processedText = processedText.replaceAll("^\\s+", "");
         }

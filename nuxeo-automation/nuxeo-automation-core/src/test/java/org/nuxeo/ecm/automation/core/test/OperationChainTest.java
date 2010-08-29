@@ -465,7 +465,7 @@ public class OperationChainTest {
 
     /**
      * This is testing adapters when injecting parameters.
-     * Operation 4 is taking a DocmentModel parameter. We will inject a DocumentRef
+     * Operation 4 is taking a DocumentModel parameter. We will inject a DocumentRef
      * to test DocRef to DocModel adapter.
      *
      * @throws Exception

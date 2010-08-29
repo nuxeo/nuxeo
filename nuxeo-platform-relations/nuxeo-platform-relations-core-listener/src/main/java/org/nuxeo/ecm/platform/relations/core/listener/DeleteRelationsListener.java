@@ -75,7 +75,6 @@ public class DeleteRelationsListener implements EventListener {
                     RelationConstants.GRAPH_NAME, patternOutcoming);
             relationManager.remove(RelationConstants.GRAPH_NAME, statementList);
         }
-
     }
 
     public RelationManager getRelationManager() throws ClientException {

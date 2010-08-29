@@ -53,7 +53,7 @@ import org.restlet.resource.OutputRepresentation;
  */
 public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
-    // cache duration in secondes
+    // cache duration in seconds
     protected static int MAX_CACHE_LIFE = 60 * 10;
 
     protected static Map<String, PictureTilesCachedEntry> cachedAdapters = new ConcurrentHashMap<String, PictureTilesCachedEntry>();
