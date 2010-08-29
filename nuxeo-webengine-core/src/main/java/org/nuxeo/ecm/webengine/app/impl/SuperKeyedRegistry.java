@@ -22,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * A registry which is inheriting values from super keys. 
+ * A registry which inherits values from super keys.
+ * <p>
  * The super key relation is defined by the derived classes by overriding {@link #getSuperKey(Object)}  
  * method.
  * The registry is thread safe and is optimized for lookups. 
@@ -39,7 +40,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class SuperKeyedRegistry<K, V> {
 
-    private final static Object NULL = new Object();
+    private static final Object NULL = new Object();
     
     protected K root;
     

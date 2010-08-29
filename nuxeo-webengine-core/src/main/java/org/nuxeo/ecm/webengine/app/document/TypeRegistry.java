@@ -21,10 +21,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.app.impl.SuperKeyedRegistry;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TypeRegistry<V> extends SuperKeyedRegistry<DocumentType, V> {
 

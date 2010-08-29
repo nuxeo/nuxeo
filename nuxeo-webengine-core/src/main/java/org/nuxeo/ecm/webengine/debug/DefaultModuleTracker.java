@@ -44,7 +44,6 @@ public class DefaultModuleTracker extends ModuleTracker {
             //module.getEngine().registerRootBinding();
             // to speed up things we also invalidate skin cache and then return
             flushSkinCache(module);
-            return;
         }
     }
 

@@ -58,6 +58,8 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.webengine.WebEngine.SKIN_PATH_PREFIX_KEY;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -235,7 +237,7 @@ public abstract class AbstractWebContext implements WebContext {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, locale);
-            if (args != null && args.size() > 0) {
+            if (args != null && !args.isEmpty()) {
                 // format the string using given args
                 msg = MessageFormat.format(msg, args.toArray());
             }
@@ -328,9 +330,9 @@ public abstract class AbstractWebContext implements WebContext {
     public String getCookie(String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            for (Cookie cooky : cookies) {
-                if (name.equals(cooky.getName())) {
-                    return cooky.getValue();
+            for (Cookie cookie : cookies) {
+                if (name.equals(cookie.getName())) {
+                    return cookie.getValue();
                 }
             }
         }
@@ -351,7 +353,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     public String getBasePath() {
         if (basePath == null) {
-            String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
+            String webenginePath = request.getHeader(NUXEO_WEBENGINE_BASE_PATH);
             if (",".equals(webenginePath)) {
                 // when the parameter is empty, request.getHeader return ',' on
                 // apache server.
@@ -662,7 +664,7 @@ public abstract class AbstractWebContext implements WebContext {
         bindings.put("basePath", getBasePath());
         bindings.put("skinPath", getSkinPathPrefix());
         bindings.put("contextPath", VirtualHostHelper.getContextPathProperty());
-        bindings.put("Root", getRoot());
+        bindings.put("Root", root);
         if (obj != null) {
             bindings.put("This", obj);
             DocumentModel doc = obj.getAdapter(DocumentModel.class);
@@ -684,10 +686,10 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     private String getSkinPathPrefix() {
-        if (Framework.getProperty(WebEngine.SKIN_PATH_PREFIX_KEY) != null) {
+        if (Framework.getProperty(SKIN_PATH_PREFIX_KEY) != null) {
             return module.getSkinPathPrefix();
         }
-        String webenginePath = request.getHeader(WebContext.NUXEO_WEBENGINE_BASE_PATH);
+        String webenginePath = request.getHeader(NUXEO_WEBENGINE_BASE_PATH);
         if (webenginePath == null) {
             return module.getSkinPathPrefix();
         } else {

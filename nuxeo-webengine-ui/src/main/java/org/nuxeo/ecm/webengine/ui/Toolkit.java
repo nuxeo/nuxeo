@@ -23,6 +23,7 @@ package org.nuxeo.ecm.webengine.ui;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// FIXME: not used and empty. Remove?
 public class Toolkit {
 
 

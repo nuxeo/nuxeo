@@ -49,6 +49,7 @@ public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
         try {
             return session.getChildren(obj.getRef());
         } catch (ClientException e) {
+            // FIXME: proper logging
             e.printStackTrace();
         }
         return null;

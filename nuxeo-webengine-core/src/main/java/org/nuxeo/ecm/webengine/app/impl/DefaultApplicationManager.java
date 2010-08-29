@@ -52,31 +52,24 @@ import org.osgi.framework.Bundle;
  */
 public class DefaultApplicationManager implements ApplicationManager {
 
-    private static final Log log = LogFactory.getLog(DefaultApplicationManager.class);
-    
-    /**
-     * Pattern to read manifest value parameters
-     */
+    /** Pattern to read manifest value parameters */
     public static final Pattern PARAMS_PATTERN
         = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
-    
+    private static final Log log = LogFactory.getLog(DefaultApplicationManager.class);
+
     protected WebEngine engine;
     
     /**
-     * collected user applications keyed by application ID. Deploymnent order is preserved.
+     * Collected user applications keyed by application ID. Deployment order is preserved.
      * The application ID (i.e. bundle symbolic name is used as the key in the map)
      */
     protected LinkedHashMap<String, BundledApplication> apps;
     
-    /**
-     * A reloadable module registry which is lazy built when first requested
-     */
+    /** A reloadable module registry which is lazy built when first requested. */
     protected volatile ModuleRegistry registry;
 
-    /**
-     * A lock used to synchronize mutable operations on the registry.
-     */
+    /** A lock used to synchronize mutable operations on the registry. */
     private final Object lock = new Object();
     
     
@@ -85,7 +78,6 @@ public class DefaultApplicationManager implements ApplicationManager {
         this.apps = new LinkedHashMap<String, BundledApplication>();
         this.registry = new ModuleRegistry(engine);
     }
-            
 
     public void addApplication(Bundle bundle, Application app) {
         BundledApplication bapp = new BundledApplication(bundle, app);

@@ -27,13 +27,12 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 import com.sun.jersey.spi.container.servlet.WebComponent;
 
-
 /**
  * A resource that can be extended with sub resources contributed via an {@link ResourceContribution}. 
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
+// FIXME: not used. Remove?
 public abstract class ExtensibleResource implements Resource {
 
     protected WebContext ctx;
@@ -64,6 +63,4 @@ public abstract class ExtensibleResource implements Resource {
         throw new WebResourceNotFoundException("No resource found at "+key+" in context "+this);
     }
 
-    
-    
 }

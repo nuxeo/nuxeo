@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
  */
 public class DefaultContext extends AbstractWebContext {
 
-    // TODO these two members must be removed - they are redundant and buggy  
+    // FIXME: these two members must be removed - they are redundant and buggy
     protected UriInfo info;
     protected HttpHeaders headers;
     
@@ -38,13 +38,13 @@ public class DefaultContext extends AbstractWebContext {
     
     @Deprecated
     public HttpHeaders getHttpHeaders() {
-        //throw new UnsupportedOperationException("Deprecated. Use @Cotext HttpHeaders to inject this object");
+        //throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
         return headers;
     }
 
     @Deprecated
     public UriInfo getUriInfo() {
-        //throw new UnsupportedOperationException("Deprecated. Use @Cotext UriInfo to inject this object");
+        //throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");
         return info;
     }
 

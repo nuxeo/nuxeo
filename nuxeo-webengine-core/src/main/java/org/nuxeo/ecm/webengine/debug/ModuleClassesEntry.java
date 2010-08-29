@@ -35,9 +35,7 @@ public class ModuleClassesEntry extends DirectoryEntry {
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
                 String name = f.getName();
-                if ("skin".equals(name) || "i18n".equals(name) || name.indexOf('-') != -1) {
-                    continue;
-                } else {
+                if (!"skin".equals(name) && !"i18n".equals(name) && name.indexOf('-') == -1) {
                     entries.add(new TreeEntry(f));
                 }
             }

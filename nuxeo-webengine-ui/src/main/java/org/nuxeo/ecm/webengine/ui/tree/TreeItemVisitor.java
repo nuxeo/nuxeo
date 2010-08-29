@@ -26,9 +26,9 @@ package org.nuxeo.ecm.webengine.ui.tree;
 public interface TreeItemVisitor {
 
     /**
-     * Visit a tree item
-     * @param item the item to visit
+     * Visit a tree item.
      *
+     * @param item the item to visit
      */
     Object visit(TreeItem item);
 

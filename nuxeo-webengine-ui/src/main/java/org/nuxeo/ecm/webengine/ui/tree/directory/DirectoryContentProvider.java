@@ -71,6 +71,7 @@ public class DirectoryContentProvider implements ContentProvider {
                 return list.toArray(new DocumentModel[list.size()]);
             }
         } catch (ClientException e) {
+            // FIXME: proper logging
             e.printStackTrace();
         }
         return null;

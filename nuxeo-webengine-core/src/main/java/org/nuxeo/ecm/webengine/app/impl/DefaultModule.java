@@ -283,7 +283,6 @@ public class DefaultModule implements Module {
         throw new UnsupportedOperationException("deprecated");        
     }
     
-    
     @Deprecated
     public ResourceType getType(String typeName) {
         throw new UnsupportedOperationException("deprecated");

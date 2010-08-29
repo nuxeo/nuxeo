@@ -52,10 +52,9 @@ public class WebLoader {
         return engine;
     }
 
-
     /**
-     * Add a class or resource container to the reloading class loader.
-     * The container is either a jar or a directory
+     * Adds a class or resource container to the reloading class loader.
+     * The container is either a jar or a directory.
      */
     public void addClassPathElement(File container) {
         try {
@@ -68,16 +67,13 @@ public class WebLoader {
         }
     }
 
-
     public URL getResource(String name) {
         return classLoader.getResource(name);
     }
 
-
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         return classLoader.loadClass(name);
     }
-
 
     public ReloadingClassLoader getClassLoader() {
         return classLoader;

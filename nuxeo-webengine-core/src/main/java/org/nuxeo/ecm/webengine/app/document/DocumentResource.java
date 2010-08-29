@@ -23,10 +23,11 @@ import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
- * A resource wrapping a Nuxeo document
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * A resource wrapping a Nuxeo document.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// FIXME: not used. Remove?
 public abstract class DocumentResource extends ExtensibleResource {
 
     protected DocumentModel doc;

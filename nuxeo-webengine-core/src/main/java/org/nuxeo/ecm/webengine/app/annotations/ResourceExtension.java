@@ -42,7 +42,8 @@ public @interface ResourceExtension {
     Class<? extends ExtensibleResource> target();
     
     /**
-     * The path segment where this resource should be installed. 
+     * The path segment where this resource should be installed.
+     *
      * @return the key
      */
     String key();

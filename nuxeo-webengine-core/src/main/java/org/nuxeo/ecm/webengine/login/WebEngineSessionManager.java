@@ -49,7 +49,7 @@ public class WebEngineSessionManager extends DefaultSessionManager {
     @Override
     public void onAuthenticatedSessionCreated(ServletRequest request,
             HttpSession httpSession,
-            CachableUserIdentificationInfo cachebleUserInfo) {
+            CachableUserIdentificationInfo cachableUserInfo) {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
@@ -61,13 +61,13 @@ public class WebEngineSessionManager extends DefaultSessionManager {
         UserSession userSession;
         if (httpSession == null) {
             // create WE custom UserSession
-            userSession = new StatelessUserSession(cachebleUserInfo.getPrincipal(),
-                    cachebleUserInfo.getUserInfo().getPassword());
+            userSession = new StatelessUserSession(cachableUserInfo.getPrincipal(),
+                    cachableUserInfo.getUserInfo().getPassword());
             log.debug("Creating Stateless UserSession");
         } else {
             // create WE custom UserSession
-            userSession = new StatefulUserSession(cachebleUserInfo.getPrincipal(),
-                    cachebleUserInfo.getUserInfo().getPassword());
+            userSession = new StatefulUserSession(cachableUserInfo.getPrincipal(),
+                    cachableUserInfo.getUserInfo().getPassword());
             log.debug("Creating Stateful UserSession");
         }
 

@@ -223,7 +223,7 @@ public abstract class AbstractResourceType implements ResourceType {
                     .append('/').append(fileName).toString();
         }
         return new StringBuilder().append('/')
-            .append(fileName).toString();
+                .append(fileName).toString();
     }
 
 }

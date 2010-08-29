@@ -63,7 +63,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         if (path.endsWith("/")) {
             path = path.substring(0, path.length()-1); 
         }
-        // resteasy is not returning correct paths - that should be relative as is JAX-RS specs - on resteasy paths begin with a /)
+        // resteasy doesn't return correct paths - that should be relative as is JAX-RS specs
+        // on resteasy paths begin with a /
         StringBuilder buf = new StringBuilder(64).append(ctx.getBasePath());        
         if (!path.startsWith("/")) {
             buf.append('/');
@@ -71,8 +72,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
-                    "Failed to initialize object: " + path + ". Object is not accessible in the current context",
-                    getPath());
+                    "Failed to initialize object: " + path + ". Object is not accessible in the current context", path);
         }
         initialize(args);
         return this;
