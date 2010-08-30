@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
@@ -30,7 +36,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
+import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
@@ -61,15 +67,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.*;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
 @LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
@@ -154,8 +158,7 @@ public class RestTest {
         assertNotNull(folder);
         assertEquals("/myfolder", folder.getPath());
         assertEquals("My Folder2", folder.getTitle());
-        assertEquals("test", folder.getProperties().getString(
-                "dc:description"));
+        assertEquals("test", folder.getProperties().getString("dc:description"));
 
         // remove folder
         session.newRequest(DeleteDocument.ID).setInput(folder).execute();
@@ -250,7 +253,7 @@ public class RestTest {
 
     /**
      * test blob input / output
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -291,8 +294,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
 
         // now test the GetBlob operation on the same blob
@@ -301,8 +303,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
     }
 
@@ -361,8 +362,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename1, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc1</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc1</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
 
         // the same for the second file
@@ -376,8 +376,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename2, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc2</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc2</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
 
         // now test the GetDocumentBlobs operation on the note document
@@ -390,16 +389,14 @@ public class RestTest {
         blob = (FileBlob) blobs.get(0);
         assertEquals(filename1, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc1</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc1</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
 
         // test the second one
         blob = (FileBlob) blobs.get(1);
         assertEquals(filename2, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc2</doc>",
-                FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc2</doc>", FileUtils.read(blob.getStream()));
         blob.getFile().delete();
     }
 

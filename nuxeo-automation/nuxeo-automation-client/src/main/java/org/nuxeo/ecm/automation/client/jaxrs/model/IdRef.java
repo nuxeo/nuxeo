@@ -14,27 +14,20 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.impl;
-
-import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-public class DocumentServiceFactory implements AdapterFactory<DocumentService> {
+public class IdRef extends DocRef {
 
-    public Class<?> getAcceptType() {
-        return Session.class;
+    public IdRef(String path) {
+        super(path);
     }
 
-    public Class<DocumentService> getAdapterType() {
-        return DocumentService.class;
-    }
-
-    public DocumentService getAdapter(Object toAdapt) {
-        return new DocumentService((Session)toAdapt);
+    public String value() {
+        return ref;
     }
 
 }
