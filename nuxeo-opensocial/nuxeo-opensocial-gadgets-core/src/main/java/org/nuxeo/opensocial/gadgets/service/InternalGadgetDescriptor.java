@@ -91,7 +91,7 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     public final String getMountPoint() {
         if ("".equals(mountPoint)) {
-            return getName();
+            return name;
         }
         return mountPoint;
     }
@@ -123,7 +123,7 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     public final String getEntryPoint() {
         if ("".equals(entryPoint)) {
-            return getName() + ".xml";
+            return name + ".xml";
         } else {
             return entryPoint;
         }
@@ -131,7 +131,7 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     public String getDirectory() {
         if (StringUtils.isBlank(directory)) {
-            return getName();
+            return name;
         } else {
             return directory;
         }
@@ -139,10 +139,10 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     public String getIconUrl() {
         StringBuilder sb = new StringBuilder(
-                Framework.getProperty(InternalGadgetDescriptor.GADGETS_PATH));
+                Framework.getProperty(GADGETS_PATH));
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
-        sb.append(getIcon());
+        sb.append(icon);
         return sb.toString();
     }
 
@@ -158,12 +158,10 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     public InputStream getResourceAsStream(String resourcePath)
             throws IOException {
-        URL gadgetURL;
 
-        ComponentInstance component = Framework.getRuntime().getComponentInstance(
-                getComponentName());
-        gadgetURL = component.getRuntimeContext().getBundle().getEntry(
-                "gadget/" + getDirectory() + "/" + resourcePath);
+        ComponentInstance component = Framework.getRuntime().getComponentInstance(componentName);
+        Bundle bundle = component.getRuntimeContext().getBundle();
+        URL gadgetURL = bundle.getEntry("gadget/" + getDirectory() + "/" + resourcePath);
         if (gadgetURL != null) {
             return gadgetURL.openStream();
         } else {

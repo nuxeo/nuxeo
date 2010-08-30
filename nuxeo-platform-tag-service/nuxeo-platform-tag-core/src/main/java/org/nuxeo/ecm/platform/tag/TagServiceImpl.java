@@ -124,7 +124,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         private final String username;
 
-        public UnrestrictedAddTagging(CoreSession session, String docId,
+        protected UnrestrictedAddTagging(CoreSession session, String docId,
                 String label, String username) throws ClientException {
             super(session);
             this.docId = docId;
@@ -211,7 +211,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         private final String username;
 
-        public UnrestrictedRemoveTagging(CoreSession session, String docId,
+        protected UnrestrictedRemoveTagging(CoreSession session, String docId,
                 String label, String username) throws ClientException {
             super(session);
             this.docId = docId;
@@ -292,7 +292,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final List<Tag> tags;
 
-        public UnrestrictedGetDocumentTags(CoreSession session, String docId,
+        protected UnrestrictedGetDocumentTags(CoreSession session, String docId,
                 String username) throws ClientException {
             super(session);
             this.docId = docId;
@@ -339,7 +339,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final List<String> docIds;
 
-        public UnrestrictedGetTagDocumentIds(CoreSession session, String label,
+        protected UnrestrictedGetTagDocumentIds(CoreSession session, String label,
                 String username) throws ClientException {
             super(session);
             this.label = cleanLabel(label, false);
@@ -387,7 +387,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final Boolean normalize;
 
-        public UnrestrictedGetDocumentCloud(CoreSession session, String docId,
+        protected UnrestrictedGetDocumentCloud(CoreSession session, String docId,
                 String username, Boolean normalize) throws ClientException {
             super(session);
             this.docId = docId;
@@ -504,7 +504,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final List<Tag> tags;
 
-        public UnrestrictedGetTagSuggestions(CoreSession session, String label,
+        protected UnrestrictedGetTagSuggestions(CoreSession session, String label,
                 String username) throws ClientException {
             super(session);
             label = cleanLabel(label, true);

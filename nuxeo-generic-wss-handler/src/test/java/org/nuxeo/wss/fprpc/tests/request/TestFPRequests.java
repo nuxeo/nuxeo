@@ -41,8 +41,6 @@ public class TestFPRequests extends TestCase {
         filter.init(null);
     }
 
-
-
     public void testPut() throws Exception {
         DummyMemoryTree.resetInstance();
         FakeRequest request = FakeRequestBuilder.buildFromResource("VermeerEncodedPost.dump");
@@ -57,21 +55,17 @@ public class TestFPRequests extends TestCase {
         assertNotNull(is);
 
         byte[] buffer = new byte[255];
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i ;
         while ((i = is.read(buffer))>0) {
             sb.append(new String(buffer,0,i));
         }
-
         assertEquals("AAABBBCCCDDD", sb.toString().replace("\n", ""));
 
         String result= response.getOutput();
 
-        // System.out.println(result);
-
         String[] lines = result.split("\n");
         assertEquals("<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'", lines[3]);
     }
-
 
 }

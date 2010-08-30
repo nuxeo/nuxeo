@@ -36,8 +36,8 @@ import org.nuxeo.runtime.api.Framework;
 public class HtmlPreviewConverter implements ExternalConverter {
 
     protected static ConversionService cs;
-    protected static Boolean canUsePDF2Html = null;
-    protected static Boolean canUseOOo2Html = null;
+    protected static Boolean canUsePDF2Html;
+    protected static Boolean canUseOOo2Html;
 
     protected static ConversionService getConversionService() {
         if (cs == null) {
@@ -47,11 +47,10 @@ public class HtmlPreviewConverter implements ExternalConverter {
     }
 
     protected static boolean getCanUsePDF2Html() {
-        if (canUsePDF2Html==null) {
+        if (canUsePDF2Html == null) {
             try {
                 canUsePDF2Html = getConversionService().isConverterAvailable("pdf2html").isAvailable();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -59,11 +58,10 @@ public class HtmlPreviewConverter implements ExternalConverter {
     }
 
     protected static boolean getCanUseOOo2Html() {
-        if (canUseOOo2Html==null) {
+        if (canUseOOo2Html == null) {
             try {
                 canUseOOo2Html = getConversionService().isConverterAvailable("office2html").isAvailable();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -131,7 +129,6 @@ public class HtmlPreviewConverter implements ExternalConverter {
     }
 
     public ConverterCheckResult isConverterAvailable() {
-
         ConverterCheckResult result = new ConverterCheckResult();
         result.setAvailable(getCanUseOOo2Html() || getCanUsePDF2Html());
         return result;

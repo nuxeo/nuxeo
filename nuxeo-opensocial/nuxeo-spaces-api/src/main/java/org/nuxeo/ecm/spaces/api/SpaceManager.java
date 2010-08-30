@@ -34,9 +34,8 @@ import org.nuxeo.ecm.spaces.api.exceptions.UniversNotFoundException;
 public interface SpaceManager {
 
     /**
-     * List of all accesible universes
+     * List of all accessible universes
      *
-     * @param sessionId sesssion id
      * @return the list of all accessible universes
      * @throws SpaceException a bug has happened
      */
@@ -46,7 +45,7 @@ public interface SpaceManager {
      * Retrieve a specific universe from its name
      *
      * @param name identifier of a univers
-     * @param sessionId sesssion id
+     * @param session a core session
      * @return a specific universe
      * @throws UniversNotFoundException when no universe with such a name can be
      *             found
@@ -68,9 +67,9 @@ public interface SpaceManager {
     List<SpaceProvider> getSpacesProvider(Univers univers);
 
     /**
-     * List of all accesible spaces for a given univers
+     * List of all accessible spaces for a given univers
      *
-     * @param univers the univers in which you are looking for spaces
+     * @param universe the universe in which you are looking for spaces
      * @return all accessible univers
      * @throws UniversNotFoundException when no univers was found with the given
      *             universe id
@@ -84,7 +83,7 @@ public interface SpaceManager {
      *
      * @param name name of the searched space
      * @param univers parent container
-     * @return the space if found , else a spaceexception is thrown
+     * @return the space if found , else a SpaceException is thrown
      * @throws SpaceNotFoundException when the space was not found
      */
     Space getSpace(String name, Univers univers, CoreSession session)

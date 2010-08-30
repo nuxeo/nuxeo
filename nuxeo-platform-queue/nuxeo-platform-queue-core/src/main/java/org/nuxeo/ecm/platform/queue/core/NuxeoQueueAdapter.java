@@ -106,7 +106,7 @@ public class NuxeoQueueAdapter implements QueueItem {
             String serializedAdditionalInfo = (String) doc.getProperty(
                     QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_ADDITIONAL_INFO);
 
-            // deserilizing additional info from a string
+            // deserializing additional info from a string
             if (serializedAdditionalInfo != null) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(
@@ -167,7 +167,7 @@ public class NuxeoQueueAdapter implements QueueItem {
             heartbeatserverinfo = heartbeat.getInfo(serverURI);
         } catch (ServerNotFoundException e) {
             log.warn(
-                    "Server refered by the queue item couldn't be located, is this server running nuxeo heartbeat service ?",
+                    "Server referred by the queue item couldn't be located, is this server running nuxeo heartbeat service ?",
                     e);
             return true;
         }

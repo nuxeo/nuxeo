@@ -58,11 +58,11 @@ public class TestDummySpiTree extends TestCase {
 
         item = instance.getItem("/DocLib0");
         assertNotNull(item);
-        assertEquals("This is Dummy Document Libray 0", item.getDescription());
+        assertEquals("This is Dummy Document Library 0", item.getDescription());
 
         item = instance.getItem("DocLib0");
         assertNotNull(item);
-        assertEquals("This is Dummy Document Libray 0", item.getDescription());
+        assertEquals("This is Dummy Document Library 0", item.getDescription());
 
         item = instance.getItem("/DocLib0/Workspace-1-1");
         assertNotNull(item);

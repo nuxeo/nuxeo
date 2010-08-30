@@ -26,12 +26,13 @@ import com.google.gwt.user.client.Command;
  *
  */
 public abstract class AbstractAnnotationCommand implements Command {
+
     protected AnnotationController controller;
     protected int annotationIndex;
     protected AnnotationPopupMenu popupMenu;
     protected String title;
 
-    public AbstractAnnotationCommand(String title, AnnotationController controller, int annotationIndex) {
+    protected AbstractAnnotationCommand(String title, AnnotationController controller, int annotationIndex) {
         this.title = title;
         this.controller = controller;
         this.annotationIndex = annotationIndex;

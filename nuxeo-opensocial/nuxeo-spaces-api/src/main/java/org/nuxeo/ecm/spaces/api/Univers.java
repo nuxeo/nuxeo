@@ -33,7 +33,7 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 public interface Univers {
 
     /**
-     * UID
+     * UID.
      *
      * @return a unique identifier for a given instance of Univers
      *         implementation
@@ -41,31 +41,28 @@ public interface Univers {
     String getId();
 
     /**
-     * Universe name
+     * Universe name.
      *
      * @return the name of this universe
      */
     String getName();
 
     /**
-     * Universe title
+     * Universe title.
      *
      * @return the title of this universe
      */
     String getTitle();
 
     /**
-     * Universe description
+     * Universe description.
      *
      * @return the description of this universe
      */
     String getDescription();
 
     /**
-     * for comparison
-     *
-     * @param space
-     * @return
+     * For comparison.
      */
     boolean isEqualTo(Univers univers);
 

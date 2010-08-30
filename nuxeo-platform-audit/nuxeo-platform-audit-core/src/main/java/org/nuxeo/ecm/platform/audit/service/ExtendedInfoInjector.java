@@ -32,7 +32,7 @@ public class ExtendedInfoInjector  {
         this.evaluator = evaluator;
     }
 
-    public void injectExtendedInfo(Map<String, ExtendedInfo> infos,
+    public void injectExtendedInfo(Map<String, ExtendedInfo> info,
             ExtendedInfoDescriptor descriptor,
             ExtendedInfoContext context) {
         Serializable value = evaluator.evaluateExpression(
@@ -41,7 +41,7 @@ public class ExtendedInfoInjector  {
             return;
         }
         String key = descriptor.getKey();
-        infos.put(key, ExtendedInfo.createExtendedInfo(value));
+        info.put(key, ExtendedInfo.createExtendedInfo(value));
     }
 
 }

@@ -118,7 +118,7 @@ public class NotificationService extends DefaultComponent implements
 
     @Override
     public void registerExtension(Extension extension) throws Exception {
-        log.info("Registering notification extention");
+        log.info("Registering notification extension");
         String xp = extension.getExtensionPoint();
         if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();

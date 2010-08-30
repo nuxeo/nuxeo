@@ -17,15 +17,28 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.*;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentLocationMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentModelMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublicationNodeMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishedDocumentMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -77,8 +90,9 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
     public String marshallParameters(List<Object> params)
             throws PublishingMarshalingException {
 
-        if (params == null)
+        if (params == null) {
             return "null";
+        }
         String env = buildParameterEnvelope(params.size());
         int idx = 1;
         for (Object param : params) {
@@ -119,8 +133,9 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
                     params.add(unMarshalSingleObject(xmlParam, session));
                 } else {
                     String value = param.getText();
-                    if ("null".equals(value))
+                    if ("null".equals(value)) {
                         value = null;
+                    }
                     params.add(value);
                 }
             }

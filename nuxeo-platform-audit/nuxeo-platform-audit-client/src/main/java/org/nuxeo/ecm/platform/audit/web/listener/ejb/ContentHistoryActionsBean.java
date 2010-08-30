@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.audit.web.listener.ejb;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,9 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -372,7 +369,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
-    private FilterMapEntry computeQueryForLogsOnDocUntillDate(Date date) {
+    private FilterMapEntry computeQueryForLogsOnDocUntilDate(Date date) {
         FilterMapEntry filterByDate = new FilterMapEntry();
         filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_DATE);
         filterByDate.setOperator("<=");
@@ -403,7 +400,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             String docId, Date date, boolean doDefaultSort) {
         filterMap = new HashMap<String, FilterMapEntry>();
         filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE,
-                computeQueryForLogsOnDocUntillDate(date));
+                computeQueryForLogsOnDocUntilDate(date));
         return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
     }
 

@@ -74,7 +74,7 @@ public interface PictureBookManager {
     String getTitle();
 
     /**
-     * Gets the views. The views are Map that contains different informations
+     * Gets the views. The views are Map that contains different information
      * about each type of picture you might want. It has the 3 default following
      * views: Original View, Medium View, used for the slideShow Thumbnail View,
      * used For the PictureBook.
@@ -84,7 +84,7 @@ public interface PictureBookManager {
     ArrayList<Map<String, Object>> getViews();
 
     /**
-     * Sets the views. The views are Map that contains different informations
+     * Sets the views. The views are Map that contains different information
      * about each type of picture you might want. It has the 3 default following
      * views: Original View, Medium View, used for the slideShow Thumbnail View,
      * used For the PictureBook
@@ -162,9 +162,6 @@ public interface PictureBookManager {
     /**
      * Creates and saves a Picture Book DocumentModel using views, timeinterval,
      * description and title.
-     *
-     * @return a String
-     * @throws Exception
      */
     String createPictureBook() throws Exception;
 

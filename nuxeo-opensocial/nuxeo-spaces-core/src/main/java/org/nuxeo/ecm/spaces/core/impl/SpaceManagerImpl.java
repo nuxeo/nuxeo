@@ -157,10 +157,10 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                     // This can be absolutely normal
                     continue;
                 } catch (InstantiationException e) {
-                    LOGGER.warn("Unable instanciate provider : "
+                    LOGGER.warn("Unable instantiate provider : "
                             + descriptor.getName(), e);
                 } catch (IllegalAccessException e) {
-                    LOGGER.warn("Unable to instanciate provider : "
+                    LOGGER.warn("Unable to instantiate provider : "
                             + descriptor.getName(), e);
                 }
             }
@@ -211,7 +211,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                     result.add(desc.getProvider());
                 }
             } catch (Exception e) {
-                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+                LOGGER.warn("Unable to instantiate " + desc.getName(), e);
             }
         }
         return result;
@@ -223,7 +223,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
             try {
                 result.add(desc.getProvider());
             } catch (Exception e) {
-                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+                LOGGER.warn("Unable to instantiate " + desc.getName(), e);
             }
         }
         return result;
@@ -236,7 +236,7 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                     return desc.getName();
                 }
             } catch (Exception e) {
-                LOGGER.warn("Unable to instanciate " + desc.getName(), e);
+                LOGGER.warn("Unable to instantiate " + desc.getName(), e);
             }
         }
         return null;

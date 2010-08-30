@@ -54,13 +54,13 @@ public class TaskListImpl implements TaskList {
                 newList.addAll(currentList);
             }
 
-            Map<String, Object> persone = new HashMap<String, Object>();
-            persone.put("taskUsers", task.getActors());
-            persone.put("directive", task.getDirective());
-            persone.put("comment", task.getComment());
-            persone.put("dueDate", task.getDueDate());
+            Map<String, Object> person = new HashMap<String, Object>();
+            person.put("taskUsers", task.getActors());
+            person.put("directive", task.getDirective());
+            person.put("comment", task.getComment());
+            person.put("dueDate", task.getDueDate());
 
-            newList.add(persone);
+            newList.add(person);
 
             doc.setPropertyValue("ntl:tasks", newList);
 
@@ -97,22 +97,20 @@ public class TaskListImpl implements TaskList {
     }
 
     public DocumentModel getDocument() {
-        return this.doc;
+        return doc;
     }
 
     public String getName() {
         try {
-            return this.doc.getTitle();
+            return doc.getTitle();
         } catch (ClientException e) {
             log.error(e);
         }
-
         return null;
-
     }
 
     public String getUUID() {
-        return this.doc.getId();
+        return doc.getId();
     }
 
 }

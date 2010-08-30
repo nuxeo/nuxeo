@@ -32,30 +32,26 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Factory method for the DocumentModelAdapter for PictureTiles Contains the
- * logic to choose the correct implementation according to DocumentModel
+ * logic to choose the correct implementation according to DocumentModel.
  *
  * @author tiry
- *
  */
 public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
 
     private static final Log log = LogFactory.getLog(PictureTilesAdapterFactory.class);
 
     public Object getAdapter(DocumentModel doc, Class itf) {
-        PictureTilingService tilingService;
         String blobProperty = null;
         try {
-            tilingService = Framework.getService(PictureTilingService.class);
+            PictureTilingService tilingService = Framework.getService(PictureTilingService.class);
             blobProperty = tilingService.getBlobProperty(doc.getType());
         } catch (Exception e) {
             log.error("Unable to load PictureTilingService", e);
         }
 
-        PictureTilesAdapter ptAdapter;
         try {
-            ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
+            PictureTilesAdapter ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
 
             if (ptAdapter != null) {
                 return ptAdapter;
@@ -97,7 +93,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc)
             throws ClientException {
         if (doc.hasSchema("picture")) {
-            // fallback on old Origninal view xpath
+            // fallback on old Original view xpath
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             String blobProperty = adapter.getViewXPath("Original") + "content";
             return getPictureTilesAdapter(doc, blobProperty);

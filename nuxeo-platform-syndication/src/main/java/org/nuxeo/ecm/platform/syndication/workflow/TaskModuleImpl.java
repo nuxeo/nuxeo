@@ -43,7 +43,7 @@ public class TaskModuleImpl extends ModuleImpl implements TaskModule {
     private String comment;
 
     public TaskModuleImpl() {
-        super(TaskModule.class, TaskModule.URI);
+        super(TaskModule.class, URI);
     }
 
     public String getDirective() {

@@ -841,7 +841,7 @@ public class JenaGraph implements Graph {
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
             graph.removeAll();
-            // XXX AT: remove reification quadlets explicitely
+            // XXX AT: remove reification quadlets explicitly
             RSIterator it = graph.listReifiedStatements();
             List<ReifiedStatement> rss = new ArrayList<ReifiedStatement>();
             while (it.hasNext()) {

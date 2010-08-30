@@ -45,12 +45,10 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
- * Runtime component that expose the PictureTilingService interface Also exposes
- * the configuration Extension Point
+ * Runtime component that expose the PictureTilingService interface.
+ * Also exposes the configuration Extension Point
  *
  * @author tiry
- *
  */
 public class PictureTilingComponent extends DefaultComponent implements
         PictureTilingService {
@@ -99,16 +97,15 @@ public class PictureTilingComponent extends DefaultComponent implements
         } else {
             log.debug("GC Thread is already started");
         }
-
     }
 
     public static void endGC() {
         if (GCTask.GCEnabled) {
             GCTask.GCEnabled = false;
-            log.debug("Stoping GC Thread");
+            log.debug("Stopping GC Thread");
             gcThread.interrupt();
         } else {
-            log.debug("GC Thread is already stoped");
+            log.debug("GC Thread is already stopped");
         }
     }
 
@@ -121,9 +118,10 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     protected String getWorkingDirPath() {
-        if (workingDirPath != null)
+        if (workingDirPath != null) {
             return workingDirPath;
-
+        }
+        // FIXME: condition always true. What was intended?
         if (workingDirPath == null || "".equals(workingDirPath)) {
             workingDirPath = getEnvValue("WorkingDirPath",
                     System.getProperty("java.io.tmpdir") + "/nuxeo-tiling-cache");
@@ -157,11 +155,12 @@ public class PictureTilingComponent extends DefaultComponent implements
 
         pathForBlob = pathForBlob + digest + "/";
 
-        log.debug("WorkingDirPath for ressource=" + pathForBlob);
+        log.debug("WorkingDirPath for resource=" + pathForBlob);
 
         File wdir = new File(pathForBlob);
-        if (!wdir.exists())
+        if (!wdir.exists()) {
             wdir.mkdir();
+        }
 
         return pathForBlob;
     }
@@ -208,7 +207,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         log.debug("enter getTiles");
         String cacheKey = resource.getHash();
 
-        if (getDefaultTiler().needsSync()) {
+        if (defaultTiler.needsSync()) {
             // some tiler implementation may generate several tiles at once
             // in order to be efficient this requires synchronization
             while (inprocessTiles.contains(cacheKey)) {
@@ -217,7 +216,7 @@ public class PictureTilingComponent extends DefaultComponent implements
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     throw new ClientException(
-                            "Error while waiting for another tile procesing on the same resource",
+                            "Error while waiting for another tile processing on the same resource",
                             e);
                 }
             }
@@ -235,9 +234,8 @@ public class PictureTilingComponent extends DefaultComponent implements
             int yCenter, boolean fullGeneration) throws ClientException {
 
         String cacheKey = resource.getHash();
-        String inputFilePath = null;
-        String outDirPath = null;
-        PictureTilingCacheInfo cacheInfo = null;
+        String inputFilePath;
+        PictureTilingCacheInfo cacheInfo;
 
         if (cache.containsKey(cacheKey)) {
             cacheInfo = cache.get(cacheKey);
@@ -245,13 +243,13 @@ public class PictureTilingComponent extends DefaultComponent implements
             PictureTiles pt = cacheInfo.getCachedPictureTiles(tileWidth,
                     tileHeight, maxTiles);
 
-            if ((pt != null) && (pt.isTileComputed(xCenter, yCenter)))
+            if ((pt != null) && (pt.isTileComputed(xCenter, yCenter))) {
                 return pt;
+            }
 
             inputFilePath = cacheInfo.getOriginalPicturePath();
         } else {
-            String wdirPath = null;
-            wdirPath = getWorkingDirPathForRessource(resource);
+            String wdirPath = getWorkingDirPathForRessource(resource);
             inputFilePath = wdirPath;
             Blob blob = resource.getBlob();
             if (blob.getFilename() != null) {
@@ -274,7 +272,7 @@ public class PictureTilingComponent extends DefaultComponent implements
                         transferBlob(blob, inputFile);
                     }
                 } catch (Exception e) {
-                    log.error("Unable to transfert blob", e);
+                    log.error("Unable to transfer blob", e);
                     throw new ClientException(
                             "Unable to transfer blob to temp file", e);
                 }
@@ -303,7 +301,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         }
 
         // compute output dir
-        outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight, maxTiles);
+        String outDirPath = cacheInfo.getTilingDir(tileWidth, tileHeight, maxTiles);
 
         // try to see if a shrinked image can be used
         ImageInfo bestImageInfo = cacheInfo.getBestSourceImage(tileWidth,
@@ -404,17 +402,19 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     public static String getEnvValue(String paramName) {
-        if (getEnv() == null)
+        if (envParameters == null) {
             return null;
-        return getEnv().get(paramName);
+        }
+        return envParameters.get(paramName);
     }
 
     public static String getEnvValue(String paramName, String defaultValue) {
         String value = getEnvValue(paramName);
-        if (value == null)
+        if (value == null) {
             return defaultValue;
-        else
+        } else {
             return value;
+        }
     }
 
     public static void setEnvValue(String paramName, String paramValue) {

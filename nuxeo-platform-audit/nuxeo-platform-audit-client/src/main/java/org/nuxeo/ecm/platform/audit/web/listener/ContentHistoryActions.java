@@ -41,23 +41,17 @@ public interface ContentHistoryActions extends Serializable {
 
     /**
      * Computes all log entries for current document.
-     *
-     * @throws AuditException
      */
     List<? extends LogEntry> computeLogEntries() throws AuditException;
 
     /**
      * Computes all log entries for given document.
-     *
-     * @throws AuditException
      */
     List<? extends LogEntry> computeLogEntries(DocumentModel document)
             throws AuditException;
 
     /**
      * Computes latest logs only.
-     *
-     * @throws AuditException
      */
     List<? extends LogEntry> computeLatestLogEntries() throws AuditException;
 

@@ -61,7 +61,7 @@ public class PublishRelationsListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(PublishRelationsListener.class);
 
-    protected RelationManager rmanager = null;
+    protected RelationManager rmanager;
 
     // Override to change the list of graphs to copy relations when a document
     // is published, set to null to copy relations from all graphs

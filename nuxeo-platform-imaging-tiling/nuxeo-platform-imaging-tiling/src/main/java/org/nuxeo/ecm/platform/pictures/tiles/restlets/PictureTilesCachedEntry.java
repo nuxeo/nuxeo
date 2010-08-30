@@ -24,10 +24,9 @@ import java.util.Calendar;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 
 /**
- * Wrapps a cache entry for the Restlets
+ * Wraps a cache entry for the Restlets.
  *
  * @author tiry
- *
  */
 public class PictureTilesCachedEntry {
 

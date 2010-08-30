@@ -25,6 +25,9 @@ import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.model.TilingModel;
 
 import com.google.gwt.user.client.Element;
 
+import static org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER;
+import static org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER;
+
 /**
  * @author Alexandre Russel
  *
@@ -39,8 +42,8 @@ public class TilingController {
         sourceTilingInfo = new TilingInfo(tilingInfo);
         model = tilingModel;
 
-        setfilterPath(TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER);
-        setPointerAdapter(TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER);
+        setfilterPath(ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER);
+        setPointerAdapter(ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER);
     }
 
     public static TilingInfo getSourcetilingInfo() {

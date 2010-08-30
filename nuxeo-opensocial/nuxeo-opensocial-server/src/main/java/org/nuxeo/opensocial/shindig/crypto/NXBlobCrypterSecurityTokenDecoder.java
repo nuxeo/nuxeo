@@ -66,18 +66,18 @@ public class NXBlobCrypterSecurityTokenDecoder extends
                     log.warn("We expected to be able to use a BasicOAuthStore "
                             + "to configure OAuth services!");
                 } else {
-                    for (OAuthServiceDescriptor descrptor : os.getOAuthServices()) {
+                    for (OAuthServiceDescriptor descriptor : os.getOAuthServices()) {
                         BasicOAuthStore oauthStore = (BasicOAuthStore) store;
                         BasicOAuthStoreConsumerIndex index = new BasicOAuthStoreConsumerIndex();
-                        index.setGadgetUri(descrptor.getGadgetUrl());
-                        index.setServiceName(descrptor.getServiceName());
+                        index.setGadgetUri(descriptor.getGadgetUrl());
+                        index.setServiceName(descriptor.getServiceName());
                         String oauthKey = IOUtils.toString(new FileReader(
                                 os.getOAuthPrivateKeyFile()));
-                        if (!StringUtils.isEmpty(descrptor.getConsumerSecret())) {
-                            oauthKey = descrptor.getConsumerSecret();
+                        if (!StringUtils.isEmpty(descriptor.getConsumerSecret())) {
+                            oauthKey = descriptor.getConsumerSecret();
                         }
                         BasicOAuthStoreConsumerKeyAndSecret keyAndSecret = new BasicOAuthStoreConsumerKeyAndSecret(
-                                descrptor.getConsumerKey(), oauthKey,
+                                descriptor.getConsumerKey(), oauthKey,
                                 KeyType.RSA_PRIVATE,
                                 os.getOAuthPrivateKeyName(),
                                 os.getOAuthCallbackUrl());

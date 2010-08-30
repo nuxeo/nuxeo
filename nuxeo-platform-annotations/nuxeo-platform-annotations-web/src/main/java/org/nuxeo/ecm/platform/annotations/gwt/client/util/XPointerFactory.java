@@ -19,17 +19,19 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.util;
 
-
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class XPointerFactory {
+
     private static final String IMAGE_RANGE = "image-range";
 
     private static final String STRING_RANGE = "string-range";
 
     private static final String NULL_RANGE = "null-range";
+
+    private XPointerFactory() {
+    }
 
     public static XPointer getXPointer(String xpointer) {
         if (xpointer.contains(STRING_RANGE)) {

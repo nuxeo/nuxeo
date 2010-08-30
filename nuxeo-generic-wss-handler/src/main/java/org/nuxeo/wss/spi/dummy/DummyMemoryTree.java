@@ -82,7 +82,7 @@ public class DummyMemoryTree {
         List<WSSListItem> items = new ArrayList<WSSListItem>();
         if (depth == 0) {
             for (int i = 0; i < 5; i++) {
-                items.add(new DummyWSSListItem("DocLib" + i, "This is Dummy Document Libray " + i, null));
+                items.add(new DummyWSSListItem("DocLib" + i, "This is Dummy Document Library " + i, null));
             }
         } else {
             if (depth <= DEPTH) {

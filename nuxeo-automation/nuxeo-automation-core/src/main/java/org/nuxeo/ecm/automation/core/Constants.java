@@ -65,7 +65,7 @@ public class Constants {
     // /
     // DocumentModelList
 
-    public static final String T_SCRIPT = "script"; // inline mvel injectable
+    public static final String T_SCRIPT = "script"; // inline MVEL injectable
 
     // script as Script
 

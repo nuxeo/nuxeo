@@ -276,7 +276,7 @@ public class LogEntryProvider {
 
     @SuppressWarnings("unchecked")
     public int removeEntries(String eventId, String pathPattern) {
-        // TODO extended infos cascade delete does not work using HQL, so we
+        // TODO extended info cascade delete does not work using HQL, so we
         // have to delete each
         // entry by hand.
         Query query = em.createNamedQuery("LogEntry.findByEventIdAndPath");

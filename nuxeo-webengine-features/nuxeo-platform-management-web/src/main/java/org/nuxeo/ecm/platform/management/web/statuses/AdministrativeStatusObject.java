@@ -31,11 +31,9 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Web object implementation corresponding to the administraive status of the server
+ * Web object implementation corresponding to the administrative status of the server.
  *
  * @author mcedica
- *
  */
 @WebObject(type = ADMINISTRATIVE_STATUS_WEB_OBJECT_TYPE , administrator=Access.GRANT)
 @Produces("text/html; charset=UTF-8")

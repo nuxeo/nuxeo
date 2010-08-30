@@ -115,7 +115,7 @@ public class AbstractSyndicationSerializer extends
 
     public String serialize(List<DashBoardItem> workItems,
             String columnsDefinition, Map<String, String> options, Response res, HttpServletRequest req) {
-        // To be overrided
+        // To be overridden
         return null;
     }
 

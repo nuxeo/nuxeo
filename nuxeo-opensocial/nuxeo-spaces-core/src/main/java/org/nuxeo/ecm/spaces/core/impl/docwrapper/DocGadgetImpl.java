@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -71,11 +72,10 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public URL getDefinitionUrl() throws ClientException {
-        GadgetService service;
         URL url = null;
         try {
-            service = Framework.getService(GadgetService.class);
-            url = service.getGadgetDefinition(this.getName());
+            GadgetService service = Framework.getService(GadgetService.class);
+            url = service.getGadgetDefinition(getName());
         } catch (Exception e) {
             LOGGER.warn("Unable to get URL from gadgetService", e);
         }
@@ -133,15 +133,15 @@ public class DocGadgetImpl extends AbstractGadget {
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getPreferences() throws ClientException {
-        ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) doc.getPropertyValue(GADGET_PREFERENCES);
-        if (list == null)
+        List<Map<String, String>> list = (List<Map<String, String>>) doc.getPropertyValue(GADGET_PREFERENCES);
+        if (list == null) {
             return null;
-        HashMap ret = new HashMap<String, String>();
+        }
+        Map<String, String> ret = new HashMap<String, String>();
         for (Map<String, String> map : list) {
             ret.put(map.get("name"), map.get("value"));
         }
         return ret;
-
     }
 
     public String getTitle() throws ClientException {
@@ -159,7 +159,6 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public void setCategory(String category) throws ClientException {
         doc.setPropertyValue(GADGET_CATEGORY, category);
-
     }
 
     public void setCollapsed(boolean collapsed) throws ClientException {
@@ -172,23 +171,19 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public void setDescription(String description) throws ClientException {
-        doc.setPropertyValue("dc:desctription", description);
-
+        doc.setPropertyValue("dc:description", description);
     }
 
     public void setName(String name) throws ClientException {
         doc.setPropertyValue(GADGET_NAME, name);
-
     }
 
     public void setPlaceId(String placeId) throws ClientException {
         doc.setPropertyValue(GADGET_PLACEID, placeId);
-
     }
 
     public void setPosition(int position) throws ClientException {
         doc.setPropertyValue(GADGET_POSITION, position);
-
     }
 
     public void setPreferences(Map<String, String> prefs)
@@ -205,7 +200,6 @@ public class DocGadgetImpl extends AbstractGadget {
 
     public void setTitle(String title) throws ClientException {
         doc.setPropertyValue("dc:title", title);
-
     }
 
     public int getHeight() throws ClientException {
@@ -218,13 +212,13 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public void copyFrom(Gadget gadget) throws ClientException {
-        this.setTitle(gadget.getTitle());
-        this.setCategory(gadget.getCategory());
-        this.setPlaceId(gadget.getPlaceId());
-        this.setPosition(gadget.getPosition());
-        this.setHeight(gadget.getHeight());
-        this.setCollapsed(gadget.isCollapsed());
-        this.setPreferences(gadget.getPreferences());
+        setTitle(gadget.getTitle());
+        setCategory(gadget.getCategory());
+        setPlaceId(gadget.getPlaceId());
+        setPosition(gadget.getPosition());
+        setHeight(gadget.getHeight());
+        setCollapsed(gadget.isCollapsed());
+        setPreferences(gadget.getPreferences());
     }
 
     public String getViewer() throws ClientException {

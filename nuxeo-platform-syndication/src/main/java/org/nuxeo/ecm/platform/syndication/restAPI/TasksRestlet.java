@@ -150,7 +150,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 } else {
                     log.warn(String.format(
                             "User '%s' has a task of type '%s' on an "
-                                    + "unexisting or unvisible document",
+                                    + "unexisting or invisible document",
                             user.getName(), task.getName()));
                 }
             }
@@ -204,7 +204,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
                 } else {
                     log.warn(String.format(
                             "User '%s' has a process id of '%ld' on an "
-                                    + "unexisting or unvisible document",
+                                    + "unexisting or invisible document",
                             user.getName(), process.getId()));
                 }
             }
