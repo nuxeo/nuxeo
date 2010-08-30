@@ -1,4 +1,5 @@
 Export-Package: org.nuxeo.ecm.platform.management.adapters,
+ org.nuxeo.ecm.platform.management.auth,
  org.nuxeo.ecm.platform.management.statuses
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

@@ -128,7 +128,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     @SuppressWarnings({"unchecked"})
-    private NuxeoPrincipal getPrincipal() throws LoginException {
+    protected NuxeoPrincipal getPrincipal() throws LoginException {
         UserIdentificationInfo userIdent = null;
 
         // **** init the callbacks
@@ -309,7 +309,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
-    private NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdent)
+    protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdent)
             throws Exception {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
@@ -356,7 +356,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
-    private NuxeoPrincipal validateUsernamePassword(String username, String password)
+    protected NuxeoPrincipal validateUsernamePassword(String username, String password)
             throws Exception {
         if (!manager.checkUsernamePassword(username, password)) {
             return null;

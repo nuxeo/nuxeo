@@ -34,3 +34,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.login
 Eclipse-RegisterBuddy: org.nuxeo.runtime
 Nuxeo-Require: org.nuxeo.ecm.platform.api,
  org.nuxeo.ecm.platform.usermanager.api
+Eclipse-BuddyPolicy: registered
