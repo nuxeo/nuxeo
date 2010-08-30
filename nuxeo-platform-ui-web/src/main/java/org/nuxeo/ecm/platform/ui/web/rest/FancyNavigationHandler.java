@@ -84,6 +84,7 @@ public class FancyNavigationHandler extends NavigationHandler {
                 eContext.redirect(url);
             } catch (IOException e) {
                 // do nothing...
+                log.error(e, e);
             }
         }
     }

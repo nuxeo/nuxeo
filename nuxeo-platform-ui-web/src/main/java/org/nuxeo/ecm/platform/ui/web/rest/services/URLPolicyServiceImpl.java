@@ -115,7 +115,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             return false;
         }
 
-        // look for appropriate pattern and see if it needs filter preprocessing
+        // look for appropriate pattern and see if it needs filter
+        // preprocessing
         URLPatternDescriptor desc = getURLPatternDescriptor(httpRequest);
         if (desc != null) {
             return desc.getNeedFilterPreprocessing();
@@ -294,10 +295,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 httpRequest);
         // pattern applies => document view will not be null
         if (docView != null) {
-            // try to set it from custom mapping
-            ValueExpression ve = ef.createValueExpression(context,
-                    pattern.getDocumentViewBinding(), Object.class);
-            ve.setValue(context, docView);
+            String documentViewBinding = pattern.getDocumentViewBinding();
+            if (documentViewBinding != null && !"".equals(documentViewBinding)) {
+                // try to set it from custom mapping
+                ValueExpression ve = ef.createValueExpression(context,
+                        pattern.getDocumentViewBinding(), Object.class);
+                ve.setValue(context, docView);
+            }
         }
 
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
@@ -326,29 +330,47 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     public void appendParametersToRequest(FacesContext facesContext) {
+        appendParametersToRequest(facesContext, null);
+    }
+
+    public void appendParametersToRequest(FacesContext facesContext,
+            String pattern) {
         // try to get doc view from custom mapping
         DocumentView docView = null;
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
         ELContext context = facesContext.getELContext();
         HttpServletRequest httpRequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
-        // get existing document view from default pattern, else create it
-        URLPatternDescriptor defaultPattern = getDefaultPatternDescriptor();
-        if (defaultPattern != null) {
-            ValueExpression ve = ef.createValueExpression(context,
-                    defaultPattern.getDocumentViewBinding(), Object.class);
-            Object docViewValue = ve.getValue(context);
-            if (docViewValue == null) {
-                ve = ef.createValueExpression(context,
-                        defaultPattern.getNewDocumentViewBinding(),
-                        Object.class);
+        // get existing document view from given pattern, else create it
+        URLPatternDescriptor patternDesc;
+        if (pattern != null && !"".equals(pattern)) {
+            patternDesc = getURLPatternDescriptor(pattern);
+        } else {
+            patternDesc = getDefaultPatternDescriptor();
+        }
+        if (patternDesc != null) {
+            // resolved doc view values thanks to bindings
+            Object docViewValue = null;
+            String documentViewBinding = patternDesc.getDocumentViewBinding();
+            if (documentViewBinding != null && !"".equals(documentViewBinding)) {
+                ValueExpression ve = ef.createValueExpression(context,
+                        documentViewBinding, Object.class);
                 docViewValue = ve.getValue(context);
+                if (docViewValue == null) {
+                    documentViewBinding = patternDesc.getNewDocumentViewBinding();
+                    if (documentViewBinding != null
+                            && !"".equals(documentViewBinding)) {
+                        ve = ef.createValueExpression(context,
+                                documentViewBinding, Object.class);
+                        docViewValue = ve.getValue(context);
+                    }
+                }
             }
             if (docViewValue instanceof DocumentView) {
                 docView = (DocumentView) docViewValue;
                 // set pattern name in case it was just created
-                docView.setPatternName(defaultPattern.getName());
-                ValueBindingDescriptor[] bindings = defaultPattern.getValueBindings();
+                docView.setPatternName(patternDesc.getName());
+                ValueBindingDescriptor[] bindings = patternDesc.getValueBindings();
                 if (bindings != null) {
                     for (ValueBindingDescriptor binding : bindings) {
                         String paramName = binding.getName();
@@ -356,8 +378,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         try {
                             Object value;
                             if (ComponentTagUtils.isValueReference(expr)) {
-                                ve = ef.createValueExpression(context, expr,
-                                        Object.class);
+                                ValueExpression ve = ef.createValueExpression(
+                                        context, expr, Object.class);
                                 value = ve.getValue(context);
                             } else {
                                 value = expr;
@@ -397,9 +419,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
         ELContext context = facesContext.getELContext();
         String actionBinding = pattern.getActionBinding();
-        MethodExpression action = ef.createMethodExpression(context,
-                actionBinding, String.class, new Class[] { DocumentView.class });
-        return (String) action.invoke(context, new Object[] { docView });
+        if (actionBinding != null && !"".equals(actionBinding)) {
+            MethodExpression action = ef.createMethodExpression(context,
+                    actionBinding, String.class,
+                    new Class[] { DocumentView.class });
+            return (String) action.invoke(context, new Object[] { docView });
+        }
+        return null;
     }
 
     // registries management
