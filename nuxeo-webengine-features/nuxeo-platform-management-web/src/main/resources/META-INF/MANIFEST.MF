@@ -1,13 +1,8 @@
-Manifest-Version: 1.0
-Bundle-Version: 0.0.0.SNAPSHOT
-Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo platform management web
-Bundle-SymbolicName: org.nuxeo.ecm.platform.management.web;singleton=true
 Bundle-Vendor: Nuxeo
-Provide-Package: org.nuxeo.ecm.platform.management.web
-Nuxeo-Require: org.nuxeo.ecm.platform.management,
- org.nuxeo.ecm.webengine.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.0.0.SNAPSHOT
+Manifest-Version: 1.0
+Bundle-Name: nuxeo platform management web
+Bundle-ManifestVersion: 1
 Import-Package: com.thoughtworks.xstream,
  javax.ws.rs,
  javax.ws.rs.core,
@@ -21,3 +16,8 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.ecm.webengine.model.impl,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
+Provide-Package: org.nuxeo.ecm.platform.management.web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.management.web;singleton=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Nuxeo-Require: org.nuxeo.ecm.platform.management,
+ org.nuxeo.ecm.webengine.core
