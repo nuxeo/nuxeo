@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -32,8 +33,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({"org.nuxeo.ecm.platform.htmlsanitizer",
-    "org.nuxeo.ecm.platform.htmlsanitizer.test:OSGI-INF/core-types-contrib.xml"})
+@Deploy({ "org.nuxeo.ecm.platform.htmlsanitizer",
+        "org.nuxeo.ecm.platform.htmlsanitizer.test:OSGI-INF/core-types-contrib.xml" })
 public class TestHtmlSanitizerServiceImpl {
 
     public static final String BAD_HTML = "<b>foo<script>bar</script></b>";
@@ -96,6 +97,14 @@ public class TestHtmlSanitizerServiceImpl {
         String webpage4 = (String) doc4.getPropertyValue("webp:content");
         Assert.assertFalse(WIKI_MARKUP.equals(webpage4));
         session.save();
+    }
+
+    @Test
+    public void sanitizeKeepLinkTargetBlank() throws Exception {
+        String html = "<a href=\"foo\" target=\"_blank\">link</a>";
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(html, res);
     }
 
 }

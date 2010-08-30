@@ -776,6 +776,11 @@
         </literal-list>
       </attribute>
       <attribute name="name" />
+      <attribute name="target">
+        <literal-list>
+          <literal value="_blank" />
+        </literal-list>
+      </attribute>
 
     </tag>
 
