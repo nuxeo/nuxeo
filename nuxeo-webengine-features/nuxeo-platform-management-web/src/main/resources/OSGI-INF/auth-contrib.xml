@@ -4,8 +4,8 @@
      <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="openUrl">
-       <openUrl name="RegisterUser_validate">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/site/mgt/UserService/*</grantPattern>
+       <openUrl name="detachedAuth">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/mgt/Auth/*</grantPattern>
        </openUrl>
 
      </extension>

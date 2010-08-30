@@ -26,7 +26,7 @@ public class Constants {
 
     public static final String MANAGEMENT_WEB_MODULE = "Management";
 
-    public static final String USER_MANAGER_OBJECT_TYPE = "userService";
+    public static final String AUTH_OBJECT_TYPE = "DetachedAuth";
 
     private Constants() {
     }

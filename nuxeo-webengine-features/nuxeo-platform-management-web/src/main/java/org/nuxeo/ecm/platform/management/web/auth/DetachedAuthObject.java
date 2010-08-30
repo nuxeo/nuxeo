@@ -17,7 +17,9 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.management.web.detached.service;
+package org.nuxeo.ecm.platform.management.web.auth;
+
+import java.security.Principal;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,7 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.management.auth.DetachedNuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -41,8 +45,8 @@ import com.thoughtworks.xstream.XStream;
  *
  * @author Mariana Cedica
  */
-@WebObject(type = "userService")
-public class UserService extends DefaultObject {
+@WebObject(type = "DetachedAuth")
+public class DetachedAuthObject extends DefaultObject {
 
     private static final Log log = LogFactory.getLog(UserManager.class);
 
@@ -61,13 +65,17 @@ public class UserService extends DefaultObject {
     @Path("userInfo")
     @Produces(MediaType.APPLICATION_XML)
     public String doPost() {
-  /*      try {
-            NuxeoPrincipal principal = userManager.getPrincipal(ctx.getPrincipal().getName());
-           // DetachedNuxeoPrincipal detachedPrincipal = userManager.getDetachedNuxeoPrincipal(principal);
+        try {
+            Principal authenticatedPrincipal = ctx.getPrincipal();
+            NuxeoPrincipal nxPrincipal = userManager.getPrincipal(authenticatedPrincipal.getName());
+            if (nxPrincipal == null) {
+                throw new WebException("No users available for " + authenticatedPrincipal.getName());
+            }
+            DetachedNuxeoPrincipal detachedPrincipal = DetachedNuxeoPrincipal.detach(nxPrincipal);
             return new XStream().toXML(detachedPrincipal);
         } catch (ClientException e) {
             log.error("Unable to serialize nuxeoPrincipal", e);
-        }*/
+        }
         return null;
     }
 
