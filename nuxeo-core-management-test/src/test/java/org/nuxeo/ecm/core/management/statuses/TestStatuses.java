@@ -51,7 +51,7 @@ public class TestStatuses extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.core.management.tests");
+        deployBundle("org.nuxeo.ecm.core.management.test");
         super.fireFrameworkStarted();
         openSession();
     }

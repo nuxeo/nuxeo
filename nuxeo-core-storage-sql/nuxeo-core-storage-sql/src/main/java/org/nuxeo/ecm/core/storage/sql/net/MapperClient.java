@@ -81,12 +81,21 @@ public class MapperClient implements InvocationHandler {
         RepositoryDescriptor desc = repository.getRepositoryDescriptor();
         url = getUrl(desc);
         httpAuthScope = getHttpAuthScope(desc);
-        httpPrincipalHeader = new Header("X-Nuxeo-Principal", credentials.getUserName());
+        httpPrincipalHeader = getHttpPrincipalHeader(credentials);
     }
+
 
     protected static AuthScope getHttpAuthScope(RepositoryDescriptor desc) {
         ServerDescriptor sd = desc.connect.get(0);
         return new AuthScope(sd.host, sd.port);
+    }
+
+    protected static Header getHttpPrincipalHeader(Credentials credentials) {
+        String username = "[unknown]";
+        if (credentials != null) {
+            username = credentials.getUserName();
+        }
+        return  new Header("X-Nuxeo-Principal", username);
     }
 
     protected static String getUrl(RepositoryDescriptor repositoryDescriptor) {
