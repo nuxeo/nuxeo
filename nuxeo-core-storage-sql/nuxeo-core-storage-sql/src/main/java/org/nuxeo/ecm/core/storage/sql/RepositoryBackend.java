@@ -51,7 +51,7 @@ public interface RepositoryBackend {
      *
      * @param model the model
      * @param pathResolver the path resolver
-     * @param credentials TODO
+     * @param credentials the core session credentials
      * @param create {@code true} if the database has to be created
      *            (initialization)
      */

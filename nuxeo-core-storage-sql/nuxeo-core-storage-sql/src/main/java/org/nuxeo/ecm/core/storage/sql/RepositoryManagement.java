@@ -56,6 +56,8 @@ public interface RepositoryManagement {
 
     /**
      * Which is the remote location ?
+     * TODO this info would be better served by a provisioning service.
+     * The remote location is dependent to the context of access.
      */
     String getServerURL();
 

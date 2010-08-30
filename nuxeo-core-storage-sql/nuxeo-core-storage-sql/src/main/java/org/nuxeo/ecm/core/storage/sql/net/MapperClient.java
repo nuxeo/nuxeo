@@ -72,23 +72,15 @@ public class MapperClient implements InvocationHandler {
 
     protected final HttpClient httpClient;
 
-    protected final AuthScope httpAuthScope;
-
-    protected final Header httpPrincipalHeader;
+    protected final Header httpPrincipalHeader; // TODO should be replaced by an identification context in mapper
 
     protected MapperClient(RepositoryImpl repository, Credentials credentials) {
         httpClient = repository.getHttpClient();
         RepositoryDescriptor desc = repository.getRepositoryDescriptor();
         url = getUrl(desc);
-        httpAuthScope = getHttpAuthScope(desc);
         httpPrincipalHeader = getHttpPrincipalHeader(credentials);
     }
 
-
-    protected static AuthScope getHttpAuthScope(RepositoryDescriptor desc) {
-        ServerDescriptor sd = desc.connect.get(0);
-        return new AuthScope(sd.host, sd.port);
-    }
 
     protected static Header getHttpPrincipalHeader(Credentials credentials) {
         String username = "[unknown]";
