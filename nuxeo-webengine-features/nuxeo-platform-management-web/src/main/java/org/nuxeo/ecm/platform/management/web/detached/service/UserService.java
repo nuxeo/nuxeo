@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.DetachedNuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -62,13 +61,13 @@ public class UserService extends DefaultObject {
     @Path("userInfo")
     @Produces(MediaType.APPLICATION_XML)
     public String doPost() {
-        try {
+  /*      try {
             NuxeoPrincipal principal = userManager.getPrincipal(ctx.getPrincipal().getName());
-            DetachedNuxeoPrincipal detachedPrincipal = userManager.getDetachedNuxeoPrincipal(principal);
+           // DetachedNuxeoPrincipal detachedPrincipal = userManager.getDetachedNuxeoPrincipal(principal);
             return new XStream().toXML(detachedPrincipal);
         } catch (ClientException e) {
             log.error("Unable to serialize nuxeoPrincipal", e);
-        }
+        }*/
         return null;
     }
 
