@@ -1,6 +1,5 @@
 Export-Package: org.nuxeo.ecm.platform.management.adapters,
- org.nuxeo.ecm.platform.management.statuses,
- org.nuxeo.ecm.platform.management.statuses.probes
+ org.nuxeo.ecm.platform.management.statuses
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
@@ -10,8 +9,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/management-adapters.xml,
- OSGI-INF/management-statuses.xml
+Nuxeo-Component: OSGI-INF/platform-management-component.xml,
+ OSGI-INF/platform-management-adapters.xml
 Import-Package: javax.annotation;version="1.0",
  javax.servlet.http,
  org.apache.commons.lang,
@@ -23,6 +22,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.api.security,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.management.statuses,
  org.nuxeo.ecm.core.model,
  org.nuxeo.ecm.core.repository,
  org.nuxeo.ecm.directory;api=split,
@@ -35,6 +35,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
 Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.runtime.management,
  org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.management,
  org.nuxeo.ecm.platform.web.common,
  org.nuxeo.ecm.platform.scheduler.core
 Require-Bundle: org.nuxeo.ecm.core;bundle-version="0.0.0"

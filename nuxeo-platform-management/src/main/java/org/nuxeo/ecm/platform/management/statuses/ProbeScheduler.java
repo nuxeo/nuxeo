@@ -16,17 +16,29 @@
  */
 package org.nuxeo.ecm.platform.management.statuses;
 
-import java.util.Collection;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface ProbeScheduler {
+public class ProbeScheduler {
 
-    void enable();
+    public void enable() {
+        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        admin.setListenerEnabledFlag("probeScheduleListener", true);
+    }
 
-    void disable();
+    public void disable() {
+        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        admin.setListenerEnabledFlag("probeScheduleListener", false);
+    }
 
-    Collection<ProbeInfo> getScheduledProbes();
+    public boolean isEnabled() {
+        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        EventListenerDescriptor descriptor = admin.getListenerList().getDescriptor("probeScheduleListener");
+        return descriptor.isEnabled();
+    }
 
 }

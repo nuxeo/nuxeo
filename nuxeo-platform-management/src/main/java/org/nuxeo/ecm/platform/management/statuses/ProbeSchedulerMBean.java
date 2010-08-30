@@ -16,24 +16,11 @@
  */
 package org.nuxeo.ecm.platform.management.statuses;
 
-import java.util.Set;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public interface ProbeSchedulerMBean {
-
-    Set<String> getProbeNames();
-
-    int getScheduledProbesCount();
-
-    Set<String> getProbesInError();
-
-    int getProbesInErrorCount();
-
-    Set<String> getProbesInSuccess();
-
-    int getProbesInSuccessCount();
 
     void enable();
 
