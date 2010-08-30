@@ -246,7 +246,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return false;
     }
 
-    private static class SystemID implements Principal, Serializable {
+    public static class SystemID implements Principal, Serializable {
 
         private static final long serialVersionUID = 2758247997191809993L;
 
@@ -254,11 +254,11 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
         protected final String sourceInstanceId = instanceId;
 
-        SystemID() {
+        public SystemID() {
             userName = null;
         }
 
-        SystemID(String origUser) {
+        public SystemID(String origUser) {
             userName = origUser == null ? SYSTEM_USERNAME : origUser;
         }
 
@@ -273,10 +273,27 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         @Override
         public boolean equals(Object other) {
             if (other instanceof Principal) {
-                return hashCode() == other.hashCode();
-            } else {
-                return false;
+                Principal oPal = (Principal) other;
+                String oName = oPal.getName();
+                if (userName == null && oName != null) {
+                    return false;
+                } else if (!userName.equals(oName)) {
+                    return false;
+                }
+                if (systemLoginManager.isRemoteSystemLoginRestricted()
+                        && (other instanceof LoginComponent.SystemID)) {
+                    // compare sourceInstanceId
+                    String oSysId = ((LoginComponent.SystemID) other).sourceInstanceId;
+                    if (sourceInstanceId == null) {
+                        return oSysId == null;
+                    } else {
+                        return sourceInstanceId.equals(oSysId);
+                    }
+                } else {
+                    return true;
+                }
             }
+            return false;
         }
 
         @Override
