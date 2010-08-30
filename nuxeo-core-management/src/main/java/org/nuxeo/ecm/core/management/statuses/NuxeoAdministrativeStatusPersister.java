@@ -39,6 +39,8 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
+    public static final String ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE = "AdministrativeStatusContainer";
+    
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT = "administrative-status";
 
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT_TYPE = "AdministrativeStatus";
@@ -132,7 +134,7 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 		if (!session.exists(admRootDocRef)) {
 			DocumentModel doc = session.createDocumentModel("/",
 					ADMINISTRATIVE_INFO_CONTAINER,
-					"Folder");
+					ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
 			doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
 			doc = session.createDocument(doc);
 			session.save();
