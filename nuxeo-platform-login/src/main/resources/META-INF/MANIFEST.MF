@@ -31,7 +31,6 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.api.login,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login
-Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.nuxeo.runtime
 Nuxeo-Require: org.nuxeo.ecm.platform.api,
  org.nuxeo.ecm.platform.usermanager.api

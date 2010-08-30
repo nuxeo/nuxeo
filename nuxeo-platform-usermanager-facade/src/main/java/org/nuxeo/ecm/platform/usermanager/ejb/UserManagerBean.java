@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.DetachedNuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -537,7 +536,4 @@ public class UserManagerBean implements UserManager {
         return getUserManager().getAdministratorsGroups();
     }
 
-    public DetachedNuxeoPrincipal getDetachedNuxeoPrincipal(NuxeoPrincipal principal) {
-        return getUserManager().getDetachedNuxeoPrincipal(principal);
-    }
 }
