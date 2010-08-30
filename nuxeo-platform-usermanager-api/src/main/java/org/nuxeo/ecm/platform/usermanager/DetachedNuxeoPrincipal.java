@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.management.auth;
+package org.nuxeo.ecm.platform.usermanager;
 
 import java.util.List;
 
