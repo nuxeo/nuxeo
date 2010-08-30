@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -30,11 +33,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * Save the input document
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = LockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Lock",
-        description = "Lock the input document in the name of the given 'owner'. The lock owner is an username and identifies the user that owns the lock on the document. If the owner is not specified, the current user will be used as the owner. Returns back the locked document.")
+@Operation(id = LockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Lock", description = "Lock the input document in the name of the given 'owner'. The lock owner is an username and identifies the user that owns the lock on the document. If the owner is not specified, the current user will be used as the owner. Returns back the locked document.")
 public class LockDocument {
 
     public static final String ID = "Document.Lock";
@@ -45,12 +47,20 @@ public class LockDocument {
     @Param(name = "owner", required = false)
     protected String owner;
 
+    protected String getDocumentLockKey(String owner) {
+        StringBuilder result = new StringBuilder();
+        result.append(owner).append(':').append(
+                DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
+        return result.toString();
+    }
+
     @OperationMethod
     public DocumentRef run(DocumentRef doc) throws Exception {
         if (owner == null) {
             owner = session.getPrincipal().getName();
         }
-        session.setLock(doc, owner);
+
+        session.setLock(doc, getDocumentLockKey(owner));
         return doc;
     }
 
@@ -59,7 +69,7 @@ public class LockDocument {
         if (owner == null) {
             owner = session.getPrincipal().getName();
         }
-        doc.setLock(owner);
+        session.setLock(doc.getRef(), getDocumentLockKey(owner));
         return doc;
     }
 
