@@ -16,7 +16,8 @@
  *
  * $Id$
  *
- */package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
+ */
+package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation for the PictureTilesAdapter. This implementation
- * simply uses a xPath to get the target blob
+ * simply uses a xPath to get the target blob.
  *
  * @author tiry
- *
  */
 public class PictureTilesAdapterImpl implements PictureTilesAdapter {
 
@@ -54,14 +54,14 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
     }
 
     public PictureTilesAdapterImpl(DocumentModel doc) {
-        this.xPath = null;
-        this.doc = doc;
+        this(doc, null);
     }
 
     protected ImageResource getResource() {
         DocumentImageResource res = new DocumentImageResource(doc, xPath);
-        if (fileName != null)
+        if (fileName != null) {
             res.setFileName(fileName);
+        }
         return res;
     }
 

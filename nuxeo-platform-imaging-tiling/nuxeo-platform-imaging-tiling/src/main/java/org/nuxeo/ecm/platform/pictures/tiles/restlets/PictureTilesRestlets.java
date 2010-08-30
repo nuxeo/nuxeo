@@ -181,8 +181,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
     protected void handleSendImage(Response res, PictureTiles tiles, Integer x,
             Integer y) {
 
-        Blob image = null;
-
+        Blob image;
         try {
             image = tiles.getTile(x, y);
         } catch (Exception e) {
@@ -209,12 +208,11 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
             });
         } catch (IOException e) {
             handleError(res, e);
-            return;
         }
     }
 
     protected void handleNoTiles(Response res, Exception e) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");
         if (e == null) {

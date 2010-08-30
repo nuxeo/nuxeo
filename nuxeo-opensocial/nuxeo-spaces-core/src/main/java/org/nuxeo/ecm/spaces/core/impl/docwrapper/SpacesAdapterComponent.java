@@ -80,7 +80,7 @@ public class SpacesAdapterComponent extends DefaultComponent implements
             try {
                 factory = factoryKlass.newInstance();
             } catch (Exception e) {
-                log.error("Unable to instanciate factory : "
+                log.error("Unable to instantiate factory : "
                         + factoryKlass.getCanonicalName(), e);
                 return null;
             }
@@ -103,9 +103,7 @@ public class SpacesAdapterComponent extends DefaultComponent implements
                 log.error("Unable to get SchemaManager", e);
                 return null;
             }
-
         }
-
     }
 
 }

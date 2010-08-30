@@ -24,12 +24,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 
 /**
- *
- * Interface for the DocumentModelAdpater that gives access to the PictureTiles
- * of the underlying image
+ * Interface for the DocumentModelAdapter that gives access to the PictureTiles
+ * of the underlying image.
  *
  * @author tiry
- *
  */
 public interface PictureTilesAdapter {
 
