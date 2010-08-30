@@ -30,7 +30,7 @@
 
   <presets>
     <preset name="red" category="color">#f00</preset>
-    <preset name="yellow" category="color">#ff0</preset>
+    <preset name="yellow" category="color" label="background color" description="Color of the background on the main screen">#ff0</preset>
     <preset name="nice background" category="background">#fff url(/skin/app/nice-bg.png) top left repeat-y</preset>
   </presets>
   

@@ -122,6 +122,8 @@ public class ThemeSerializer {
                 final org.w3c.dom.Element presetNode = doc.createElement("preset");
                 presetNode.setAttribute("name", preset.getName());
                 presetNode.setAttribute("category", preset.getCategory());
+                presetNode.setAttribute("label", preset.getLabel());
+                presetNode.setAttribute("description", preset.getDescription());
                 presetNode.appendChild(doc.createTextNode(preset.getValue()));
                 presetsNode.appendChild(presetNode);
             }
