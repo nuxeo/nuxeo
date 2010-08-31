@@ -14,42 +14,27 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.jaxrs.adapters;
+
+import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
+import org.nuxeo.ecm.automation.client.jaxrs.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class DocRef implements OperationInput {
+public class DocumentServiceFactory implements AdapterFactory<DocumentService> {
 
-    protected final String ref;
-
-    public static DocRef newRef(String ref) {
-        if (ref.startsWith("/")) {
-            return new PathRef(ref);
-        } else {
-            return new IdRef(ref);
-        }
+    public Class<?> getAcceptType() {
+        return Session.class;
     }
 
-    public DocRef(String ref) {
-        this.ref = ref;
+    public Class<DocumentService> getAdapterType() {
+        return DocumentService.class;
     }
 
-    public String getInputType() {
-        return "document";
-    }
-
-    public String getInputRef() {
-        return "doc:" + ref;
-    }
-
-    public boolean isBinary() {
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return ref;
+    public DocumentService getAdapter(Object toAdapt) {
+        return new DocumentService((Session)toAdapt);
     }
 
 }

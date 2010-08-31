@@ -21,24 +21,22 @@ import java.util.Date;
 /**
  * A immutable document. You cannot modify documents. Documents are as they are
  * returned by the server. To modify documents use operations.
- *
+ * 
  * You need to create your own wrapper if you need to access the document
  * properties in a multi-level way. This is a flat representation of the
  * document.
- *
+ * 
  * Possible property value types:
  * <ul>
  * <li>String
  * <li>Number
  * <li>Date
  * <ul>
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-public class Document implements OperationInput {
-
-    protected final String id;
+public class Document extends DocRef {
 
     protected final String path;
 
@@ -58,7 +56,7 @@ public class Document implements OperationInput {
      */
     public Document(String id, String type, String path, String state,
             String lock, PropertyMap properties) {
-        this.id = id;
+        super(id);
         this.path = path;
         this.type = type;
         this.state = state;
@@ -66,12 +64,12 @@ public class Document implements OperationInput {
         this.properties = properties == null ? new PropertyMap() : properties;
     }
 
-    public String getInputType() {
-        return "document";
+    public String getId() {
+        return ref;
     }
 
-    public String getId() {
-        return id;
+    public String getInputType() {
+        return "document";
     }
 
     public String getPath() {
@@ -148,18 +146,6 @@ public class Document implements OperationInput {
 
     public void set(String key, Double defValue) {
         properties.set(key, defValue);
-    }
-
-    public boolean isBinary() {
-        return false;
-    }
-
-    public String getInputRef() {
-        return "doc:" + id;
-    }
-
-    public String toString() {
-        return id;
     }
 
 }

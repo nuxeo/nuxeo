@@ -21,7 +21,7 @@ import java.io.File;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.DocumentService;
+import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class TestBlob {
 
@@ -40,10 +40,12 @@ public class TestBlob {
                     "http://192.168.1.200:8080/nuxeo/site/automation");
             long start = System.currentTimeMillis();
             // SessionImpl session = (SessionImpl)client.getSession(null);
-            Session session = client.getSession("Administrator", "Administrator");
+            Session session = client.getSession("Administrator",
+                    "Administrator");
             // FileBlob fb = new FileBlob(new
             // File("/Users/bstefanescu/operations.jpg"));
-            FileBlob fb = new FileBlob(new File("/Users/fermigier/Pictures/bart.jpg"));
+            FileBlob fb = new FileBlob(new File(
+                    "/Users/fermigier/Pictures/bart.jpg"));
             fb.setMimeType("image/jpeg");
 
             // TODO avoid getting the output from server

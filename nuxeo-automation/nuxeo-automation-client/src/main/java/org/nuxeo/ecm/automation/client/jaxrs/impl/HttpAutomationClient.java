@@ -18,12 +18,13 @@ package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class HttpAutomationClient extends AsyncAutomationClient {
 
