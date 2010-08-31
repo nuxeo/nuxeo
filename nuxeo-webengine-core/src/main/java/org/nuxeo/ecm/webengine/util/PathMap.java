@@ -28,11 +28,12 @@ import java.util.Map;
 import org.nuxeo.common.utils.Path;
 
 /**
- *A map to store bindings between paths and random objects. Lookup by path prefixes are supported.
+ * A map to store bindings between paths and random objects. Lookup by path prefixes are supported.
  * This map is not synchronized.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// TODO: not used. Remove?
 public class PathMap<T> {
 
     protected final Entry<T> root;

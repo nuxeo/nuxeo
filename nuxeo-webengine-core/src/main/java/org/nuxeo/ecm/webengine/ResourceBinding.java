@@ -54,7 +54,6 @@ public class ResourceBinding {
 
 
     public ResourceBinding() {
-
     }
 
     public ResourceBinding(String path, Class<?> clazz, boolean singleton) {

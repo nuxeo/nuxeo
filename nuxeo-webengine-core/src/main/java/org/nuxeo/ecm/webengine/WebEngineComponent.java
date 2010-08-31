@@ -201,7 +201,6 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     protected boolean checkHasNuxeoService(String bundleId) {
-
         ComponentManager cpManager = Framework.getRuntime()
                 .getComponentManager();
         RegistrationInfo regInfo = cpManager

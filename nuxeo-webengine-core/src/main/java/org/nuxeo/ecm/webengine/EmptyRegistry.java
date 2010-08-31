@@ -21,68 +21,41 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 
 /**
- * Empoty impl for deprecated {@link ResourceRegistry}. This will be removed in future
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Empty impl for deprecated {@link ResourceRegistry}. This will be removed in future.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated
  */
+@Deprecated
 public class EmptyRegistry implements ResourceRegistry {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#addBinding(org.nuxeo.ecm.webengine.ResourceBinding)
-     */
     public void addBinding(ResourceBinding binding) {
         // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#addMessageBodyReader(javax.ws.rs.ext.MessageBodyReader)
-     */
     public void addMessageBodyReader(MessageBodyReader<?> reader) {
         // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#addMessageBodyWriter(javax.ws.rs.ext.MessageBodyWriter)
-     */
     public void addMessageBodyWriter(MessageBodyWriter<?> writer) {
         // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#clear()
-     */
     public void clear() {
         // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#getBindings()
-     */
     public ResourceBinding[] getBindings() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#reload()
-     */
     public void reload() {
         // TODO Auto-generated method stub
-        
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.ResourceRegistry#removeBinding(org.nuxeo.ecm.webengine.ResourceBinding)
-     */
     public void removeBinding(ResourceBinding binding) {
         // TODO Auto-generated method stub
-        
     }
-
-    
     
 }

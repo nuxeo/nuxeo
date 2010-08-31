@@ -63,8 +63,7 @@ public class WebException extends WebApplicationException {
         byPassAppResponse = true;
     }
 
-    /** use WebExeption.wrap() and not the constructor */
-
+    /** Use WebException.wrap() and not the constructor. */
     protected WebException(Throwable cause, Response.Status status) {
         super(cause, status);
         this.status = status.getStatusCode();
@@ -110,7 +109,7 @@ public class WebException extends WebApplicationException {
     }
     
     /**
-     * For compatibiliy only.
+     * For compatibility only.
      */
     @Deprecated
     public int getReturnCode() {
@@ -135,7 +134,7 @@ public class WebException extends WebApplicationException {
                 }
             }
         }
-        return Response.status(getStatusCode()).entity(toString(this)).build();
+        return Response.status(status).entity(toString(this)).build();
     }
 
     public String getStackTraceString() {

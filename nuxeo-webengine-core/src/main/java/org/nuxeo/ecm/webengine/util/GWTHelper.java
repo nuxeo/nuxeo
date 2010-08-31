@@ -33,6 +33,7 @@ import org.nuxeo.ecm.webengine.WebException;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// TODO: Not used. Remove?
 public class GWTHelper {
 
     // Utility class.

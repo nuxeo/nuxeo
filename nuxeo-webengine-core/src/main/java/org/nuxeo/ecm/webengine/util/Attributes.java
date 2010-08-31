@@ -25,6 +25,7 @@ import java.util.Arrays;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: Not used. Remove?
 public class Attributes implements Cloneable {
 
     public static final Attributes EMPTY_ATTRS = new Attributes(0);
@@ -33,7 +34,6 @@ public class Attributes implements Cloneable {
 
     protected String[] ar;
     protected int size;
-
 
     public Attributes(String[] ar) {
         this.ar = ar;
@@ -44,7 +44,7 @@ public class Attributes implements Cloneable {
     }
 
     public Attributes() {
-        this (4);
+        this(4);
     }
 
     public int size() {
