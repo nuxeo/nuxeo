@@ -21,8 +21,7 @@ package org.nuxeo.ecm.platform.management.web.auth;
 
 import java.security.Principal;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -45,12 +44,12 @@ import com.thoughtworks.xstream.XStream;
  *
  * @author Mariana Cedica
  */
-@WebObject(type = "DetachedAuth")
-public class DetachedAuthObject extends DefaultObject {
+@WebObject(type = "DetachedPrincipal")
+public class DetachedPrincipalObject extends DefaultObject {
 
     private static final Log log = LogFactory.getLog(UserManager.class);
 
-    UserManager userManager;
+    protected UserManager userManager;
 
     @Override
     protected void initialize(Object... args) {
@@ -61,22 +60,21 @@ public class DetachedAuthObject extends DefaultObject {
         }
     }
 
-    @POST
-    @Path("userInfo")
+    @GET
     @Produces(MediaType.APPLICATION_XML)
-    public String doPost() {
-        try {
+    public String doGet() {
             Principal authenticatedPrincipal = ctx.getPrincipal();
-            NuxeoPrincipal nxPrincipal = userManager.getPrincipal(authenticatedPrincipal.getName());
+            NuxeoPrincipal nxPrincipal;
+            try {
+                nxPrincipal = userManager.getPrincipal(authenticatedPrincipal.getName());
+            } catch (ClientException e) {
+                throw  WebException.wrap("Errors occured while retrieving principal for " + authenticatedPrincipal.getName(), e);
+            }
             if (nxPrincipal == null) {
                 throw new WebException("No users available for " + authenticatedPrincipal.getName());
             }
             DetachedNuxeoPrincipal detachedPrincipal = DetachedNuxeoPrincipal.detach(nxPrincipal);
             return new XStream().toXML(detachedPrincipal);
-        } catch (ClientException e) {
-            log.error("Unable to serialize nuxeoPrincipal", e);
-        }
-        return null;
     }
 
 }

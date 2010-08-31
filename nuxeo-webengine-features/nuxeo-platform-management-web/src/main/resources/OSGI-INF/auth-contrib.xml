@@ -5,7 +5,7 @@
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="openUrl">
        <openUrl name="detachedAuth">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/site/mgt/Auth/*</grantPattern>
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/mgt/DetachedPrincipal*</grantPattern>
        </openUrl>
 
      </extension>

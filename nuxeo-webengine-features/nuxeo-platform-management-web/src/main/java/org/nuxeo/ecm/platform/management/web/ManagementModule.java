@@ -20,7 +20,7 @@ import static org.nuxeo.ecm.platform.management.web.statuses.Constants.ADMINISTR
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.MANAGEMENT_WEB_MODULE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBES_WEB_OBJECT_TYPE;
 import static org.nuxeo.ecm.platform.management.web.statuses.Constants.PROBE_WEB_OBJECT_TYPE;
-import static org.nuxeo.ecm.platform.management.web.statuses.Constants.AUTH_OBJECT_TYPE;
+import static org.nuxeo.ecm.platform.management.web.statuses.Constants.DETACHED_PRINCIPAL_OBJECT_TYPE;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -75,11 +75,10 @@ public class ManagementModule extends DefaultObject {
                 return newObject(getAdministrativeStatusObjectTypeName(), path);
             }
 
-            if(getDetachedAuthObjectTypeName().equals(path)) {
-                return newObject(getDetachedAuthObjectTypeName());
+            if(getDetachedPrincipalObjectTypeName().equals(path)) {
+                return newObject(getDetachedPrincipalObjectTypeName());
             }
             return newObject(getProbeObjectTypeName(), probeRunner, path);
-
 
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -98,8 +97,8 @@ public class ManagementModule extends DefaultObject {
         return PROBES_WEB_OBJECT_TYPE;
     }
 
-    public String getDetachedAuthObjectTypeName(){
-        return AUTH_OBJECT_TYPE;
+    public String getDetachedPrincipalObjectTypeName(){
+        return DETACHED_PRINCIPAL_OBJECT_TYPE;
     }
 
 }

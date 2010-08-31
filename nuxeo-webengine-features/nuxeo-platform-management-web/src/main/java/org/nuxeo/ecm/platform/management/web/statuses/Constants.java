@@ -26,7 +26,7 @@ public class Constants {
 
     public static final String MANAGEMENT_WEB_MODULE = "Management";
 
-    public static final String AUTH_OBJECT_TYPE = "DetachedAuth";
+    public static final String DETACHED_PRINCIPAL_OBJECT_TYPE = "DetachedPrincipal";
 
     private Constants() {
     }
