@@ -824,7 +824,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         }
 
-        log.error("No auth plugin can be found to do the Login Prompt");
+        log.warn("No auth plugin can be found to do the Login Prompt");
         return false;
     }
 
