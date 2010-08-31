@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Digital Signature Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.signature;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle:  org.nuxeo.ecm.core,
+ org.nuxeo.runtime,
+ org.nuxeo.ecm.core.api
+Nuxeo-Component: 
+ OSGI-INF/schema-contrib.xml,
+ OSGI-INF/directories-contrib.xml
+ 
