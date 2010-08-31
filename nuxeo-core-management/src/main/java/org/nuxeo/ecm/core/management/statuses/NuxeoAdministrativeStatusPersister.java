@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Used to control the server administrative status: the status of the server
  * can be passive or active.
- * 
+ *
  * @author Mariana Cedica
  */
 public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusPersister {
@@ -40,27 +40,27 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE = "AdministrativeStatusContainer";
-    
+
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT = "administrative-status";
 
     public static final String ADMINISTRATIVE_STATUS_DOCUMENT_TYPE = "AdministrativeStatus";
 
     public static final String ADMINISTRATIVE_STATUS_PROPERTY = "status:administrative_status";
 
-	private static final Log log = LogFactory.getLog(NuxeoAdministrativeStatusPersister.class);
+    private static final Log log = LogFactory.getLog(NuxeoAdministrativeStatusPersister.class);
 
-	protected String repositoryName;
-	
-	public String setValue(String serverInstanceName, String newState) {
-		Setter setter = new Setter(getRepositoryName(), serverInstanceName, newState);
-		try {
-			setter.runUnrestricted();
-		} catch (ClientException e) {
-			throw new ClientRuntimeException(e);
-		}
-		return setter.lastState;
-	}
-	
+    protected String repositoryName;
+
+    public String setValue(String serverInstanceName, String newState) {
+        Setter setter = new Setter(getRepositoryName(), serverInstanceName, newState);
+        try {
+            setter.runUnrestricted();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        return setter.lastState;
+    }
+
 
     public String getValue(String serverInstanceName) {
         try {
@@ -82,134 +82,129 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
         return (String) fetcher.getAdministrativeStatusPropertyValue();
     }
 
-	protected DocumentModel getOrCreateStatusDocument(String serverInstanceName) throws ClientException {
-		Fetcher fetcher = new Fetcher(
-		        getRepositoryName(), serverInstanceName);
-		try {
-			fetcher.runUnrestricted();
-		} catch (ClientException e) {
-			log.error("Unable to fetch the administrative status document", e);
-			throw new ClientException(e);
-		}
-		return fetcher.getDocument();
-	}
+    protected DocumentModel getOrCreateStatusDocument(String serverInstanceName) throws ClientException {
+        Fetcher fetcher = new Fetcher(
+                getRepositoryName(), serverInstanceName);
+        try {
+            fetcher.runUnrestricted();
+        } catch (ClientException e) {
+            log.error("Unable to fetch the administrative status document", e);
+            throw new ClientException(e);
+        }
+        return fetcher.getDocument();
+    }
 
 
-	private class Setter extends
-			UnrestrictedSessionRunner {
+    private class Setter extends
+            UnrestrictedSessionRunner {
 
-		protected String serverInstanceName;
-		protected String newState;
-		protected String lastState;
+        protected String serverInstanceName;
+        protected String newState;
+        protected String lastState;
 
-		public Setter(String repoName,
-				String serverInstanceName, String state) {
-			super(repoName);
-			this.newState = state;
-			this.serverInstanceName = serverInstanceName;
-		}
+        public Setter(String repoName,
+                String serverInstanceName, String state) {
+            super(repoName);
+            this.newState = state;
+            this.serverInstanceName = serverInstanceName;
+        }
 
-		@Override
-		public void run() throws ClientException {
-			DocumentModel doc = doGetOrCreateDoc(session, serverInstanceName);
-			lastState = (String) doc
-					.getPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY);
-			boolean isDirty = lastState == null
-					|| !lastState.equals(newState);
+        @Override
+        public void run() throws ClientException {
+            DocumentModel doc = doGetOrCreateDoc(session, serverInstanceName);
+            lastState = (String) doc
+                    .getPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY);
+            boolean isDirty = lastState == null
+                    || !lastState.equals(newState);
 
-			if (!isDirty) {
-				return;
-			}
-			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, newState);
-			session.saveDocument(doc);
-			session.save();
-		}
+            if (!isDirty) {
+                return;
+            }
+            doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, newState);
+            session.saveDocument(doc);
+            session.save();
+        }
 
-	}
+    }
 
-	protected static DocumentModel doGetOrCreateContainer(CoreSession session)
-			throws ClientException {
-		DocumentRef admRootDocRef = new PathRef("/"
-				+ ADMINISTRATIVE_INFO_CONTAINER);
-		if (!session.exists(admRootDocRef)) {
-			DocumentModel doc = session.createDocumentModel("/",
-					ADMINISTRATIVE_INFO_CONTAINER,
-					ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
-			doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
-			doc = session.createDocument(doc);
-			session.save();
-		}
+    protected static DocumentModel doGetOrCreateContainer(CoreSession session)
+            throws ClientException {
+        DocumentRef admRootDocRef = new PathRef("/"
+                + ADMINISTRATIVE_INFO_CONTAINER);
+        if (!session.exists(admRootDocRef)) {
+            DocumentModel doc = session.createDocumentModel("/",
+                    ADMINISTRATIVE_INFO_CONTAINER,
+                    ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
+            doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
+            doc = session.createDocument(doc);
+            session.save();
+        }
 
-		return session.getDocument(admRootDocRef);
-	}
+        return session.getDocument(admRootDocRef);
+    }
 
-	protected DocumentModel doGetOrCreateDoc(CoreSession session, String serverInstanceName)
-			throws ClientException {
-		DocumentModel administrativeContainer = doGetOrCreateContainer(session);
+    protected DocumentModel doGetOrCreateDoc(CoreSession session, String serverInstanceName)
+            throws ClientException {
+        DocumentModel administrativeContainer = doGetOrCreateContainer(session);
 
-		DocumentRef statusDocRef = new PathRef(
-				administrativeContainer.getPathAsString() + "/"
-						+ administrativeStatusDocName(serverInstanceName));
+        DocumentRef statusDocRef = new PathRef(
+                administrativeContainer.getPathAsString() + "/"
+                        + administrativeStatusDocName(serverInstanceName));
 
-		if (!session.exists(statusDocRef)) {
-			DocumentModel doc = session.createDocumentModel(
-					administrativeContainer.getPathAsString(),
-					administrativeStatusDocName(serverInstanceName),
-					ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+        if (!session.exists(statusDocRef)) {
+            DocumentModel doc = session.createDocumentModel(
+                    administrativeContainer.getPathAsString(),
+                    administrativeStatusDocName(serverInstanceName),
+                    ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 
-			// set status active by default
-			doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, AdministrativeStatus.ACTIVE);
-			doc.setPropertyValue("dc:title", ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
-			doc = session.createDocument(doc);
-			session.save();
+            // set status active by default
+            doc.setPropertyValue(ADMINISTRATIVE_STATUS_PROPERTY, AdministrativeStatus.ACTIVE);
+            doc.setPropertyValue("dc:title", ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+            doc = session.createDocument(doc);
+            session.save();
+        }
 
-		}
+        return session.getDocument(statusDocRef);
+    }
 
-		return session.getDocument(statusDocRef);
+    private class Fetcher extends UnrestrictedSessionRunner {
 
-	}
+        protected final String serverInstanceName;
 
-	private class Fetcher extends UnrestrictedSessionRunner {
+        private DocumentModel doc;
 
-		protected final String serverInstanceName;
-		
-		private DocumentModel doc;
-		
-		private String administrativeStatusPropertyValue;
+        private String administrativeStatusPropertyValue;
 
-		public Fetcher(String repoName, String serverInstanceName) {
-			super(repoName);
-			this.serverInstanceName = serverInstanceName;
-		}
+        public Fetcher(String repoName, String serverInstanceName) {
+            super(repoName);
+            this.serverInstanceName = serverInstanceName;
+        }
 
-		@Override
-		public void run() throws ClientException {
-			doc = doGetOrCreateDoc(session,serverInstanceName);
-			administrativeStatusPropertyValue = (String)doc.getPropertyValue(
-	                ADMINISTRATIVE_STATUS_PROPERTY);
-		}
+        @Override
+        public void run() throws ClientException {
+            doc = doGetOrCreateDoc(session,serverInstanceName);
+            administrativeStatusPropertyValue = (String)doc.getPropertyValue(
+                    ADMINISTRATIVE_STATUS_PROPERTY);
+        }
 
-		public DocumentModel getDocument() {
-			return doc;
-		}
-		
-		public String getAdministrativeStatusPropertyValue(){
-		    return administrativeStatusPropertyValue;
-		}
+        public DocumentModel getDocument() {
+            return doc;
+        }
 
-	}
+        public String getAdministrativeStatusPropertyValue(){
+            return administrativeStatusPropertyValue;
+        }
 
-	protected String administrativeStatusDocName(String serverInstanceName) throws ClientException {
-		return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + serverInstanceName;
-	}
+    }
 
+    protected String administrativeStatusDocName(String serverInstanceName) {
+        return ADMINISTRATIVE_STATUS_DOCUMENT + "-" + serverInstanceName;
+    }
 
+    protected static EventProducer getEventProducer() throws Exception {
+        return Framework.getService(EventProducer.class);
+    }
 
-
-	protected static EventProducer getEventProducer() throws Exception {
-		return Framework.getService(EventProducer.class);
-	}
-	
     protected String getRepositoryName() {
         if (repositoryName == null) {
             repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();

@@ -145,8 +145,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             }
         }
 
-        public TransactionManager getTransactionManager(Properties props)
-                throws HibernateException {
+        public TransactionManager getTransactionManager(Properties props) {
             try {
                 return TransactionHelper.lookupTransactionManager();
             } catch (NamingException e) {

@@ -153,7 +153,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         }
     }
 
-    public void testAfterCompletion() throws Exception {
+    public void testAfterCompletion() {
         EventService eventService = Framework.getLocalService(EventService.class);
         HelperEventTransactionListener listener = new HelperEventTransactionListener();
         eventService.addTransactionListener(listener);

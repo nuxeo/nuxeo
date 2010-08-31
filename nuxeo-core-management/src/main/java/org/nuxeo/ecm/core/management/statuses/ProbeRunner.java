@@ -42,37 +42,22 @@ public class ProbeRunner implements ProbeRunnerMBean {
         return Collections.unmodifiableCollection(infosByTypes.values());
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbeNames()
-     */
     public Collection<String> getProbeNames() {
         return infosByShortcuts.keySet();
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesCount()
-     */
     public int getProbesCount() {
         return infosByTypes.size();
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInError()
-     */
     public Collection<String> getProbesInError() {
         return doExtractProbesName(failed);
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInErrorCount()
-     */
     public int getProbesInErrorCount() {
         return failed.size();
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInSuccess()
-     */
     public Collection<String> getProbesInSuccess() {
         return doExtractProbesName(succeed);
     }
@@ -81,9 +66,6 @@ public class ProbeRunner implements ProbeRunnerMBean {
         return Collections.unmodifiableSet(succeed);
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#getProbesInSuccessCount()
-     */
     public int getProbesInSuccessCount() {
         return succeed.size();
     }
@@ -107,9 +89,6 @@ public class ProbeRunner implements ProbeRunnerMBean {
             return Collections.unmodifiableCollection(failed);
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.management.statuses.ProbeRunnerMBean#run()
-     */
     public boolean run() {
         doRun();
         return getProbesInErrorCount() <= 0;

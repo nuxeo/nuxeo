@@ -53,7 +53,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    protected void sleepForFulltext() throws Exception {
+    protected void sleepForFulltext() {
         super.sleepForFulltext();
         DatabaseHelper.DATABASE.sleepForFulltext();
     }

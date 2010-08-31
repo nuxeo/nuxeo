@@ -32,27 +32,27 @@ import org.osgi.framework.FrameworkListener;
  */
 public class CoreManagementComponent extends DefaultComponent  {
 
-	public static final ComponentName NAME = new ComponentName(
-			CoreManagementComponent.class.getCanonicalName());
+    public static final ComponentName NAME = new ComponentName(
+            CoreManagementComponent.class.getCanonicalName());
 
-	public CoreManagementComponent() {
-		super(); // enables breaking
-	}
+    public CoreManagementComponent() {
+        super(); // enables breaking
+    }
 
-	protected AdministrativeStatus adminStatus = new AdministrativeStatus();
+    protected AdministrativeStatus adminStatus = new AdministrativeStatus();
 
-	protected ProbeRunner probeRunner = new ProbeRunner();
+    protected ProbeRunner probeRunner = new ProbeRunner();
 
-	@Override
-	public <T> T getAdapter(Class<T> adapter) {
-		if (adapter.isAssignableFrom(AdministrativeStatus.class)) {
-			return adapter.cast(adminStatus);
-		}
-		if (adapter.isAssignableFrom(ProbeRunner.class)) {
-		    return adapter.cast(probeRunner);
-		}
-		return super.getAdapter(adapter);
-	}
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(AdministrativeStatus.class)) {
+            return adapter.cast(adminStatus);
+        }
+        if (adapter.isAssignableFrom(ProbeRunner.class)) {
+            return adapter.cast(probeRunner);
+        }
+        return super.getAdapter(adapter);
+    }
 
 
     @Override

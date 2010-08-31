@@ -30,8 +30,7 @@ public class CoreUTConstants {
 
     public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
 
-    // Commented-out: breaks surefire
-    //private CoreTestConstants() {
-    //}
+    private CoreUTConstants() {
+    }
 
 }

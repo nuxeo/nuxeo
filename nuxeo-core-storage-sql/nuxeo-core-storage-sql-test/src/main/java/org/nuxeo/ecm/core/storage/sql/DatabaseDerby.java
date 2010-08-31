@@ -63,7 +63,7 @@ public class DatabaseDerby extends DatabaseHelper {
     }
 
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Exception ex = null;
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");

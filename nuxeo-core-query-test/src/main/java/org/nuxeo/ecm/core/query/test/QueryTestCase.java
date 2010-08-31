@@ -938,7 +938,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(3, dml.totalSize());
     }
 
-    private void assertIdSet(DocumentModelList dml, String... ids) {
+    private static void assertIdSet(DocumentModelList dml, String... ids) {
         Collection<String> expected = new HashSet<String>(Arrays.asList(ids));
         Collection<String> actual = new HashSet<String>();
         for (DocumentModel d : dml) {
@@ -1222,7 +1222,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
      * Subclassed for MS SQL Server which is itself asynchronous when indexing
      * fulltext.
      */
-    protected void sleepForFulltext() throws Exception {
+    protected void sleepForFulltext() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 

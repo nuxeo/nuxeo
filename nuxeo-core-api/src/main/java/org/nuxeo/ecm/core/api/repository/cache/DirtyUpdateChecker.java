@@ -32,6 +32,9 @@ import org.nuxeo.ecm.core.api.operation.ModificationSet;
 
 public class DirtyUpdateChecker {
 
+    private DirtyUpdateChecker() {
+    }
+
     public static void check(DocumentModel doc) {
         ThreadContext ctx = DirtyUpdateInvokeBridge.getThreadContext();
         if (ctx == null) {

@@ -42,7 +42,7 @@ public class Launcher implements Runnable {
         }
     }
 
-    protected static File getLibDir() throws Exception {
+    protected static File getLibDir() {
         String path = "";
         File file = null;
         URL url = Launcher.class.getClassLoader().getResource("target/classes/lib/osgi-core-4.1.jar");
@@ -112,7 +112,7 @@ public class Launcher implements Runnable {
         try {
             String main = System.getProperty("nuxeo.runner");
             if (main == null) {
-                throw new Error("No runnable specified");
+                throw new RuntimeException("No runnable specified");
             }
             Class<?> mc = app.getLoader().loadClass(main);
             Method m = mc.getMethod("run");

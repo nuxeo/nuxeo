@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.client.NuxeoClient;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class HelloServer {
 
@@ -31,7 +30,7 @@ public class HelloServer {
         RepositoryInstance repo = null;
         try {
             client.tryConnect("localhost", 62474);
-            repo =client.openRepository();
+            repo = client.openRepository();
             final DocumentModel rootDocument = repo.getRootDocument();
             System.out.println("Hello Server! Here is the repository root: "+rootDocument);
         } finally {

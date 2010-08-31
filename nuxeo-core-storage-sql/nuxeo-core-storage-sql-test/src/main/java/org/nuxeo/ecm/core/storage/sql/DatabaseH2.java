@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() throws SQLException {
         String url = System.getProperty(URL_PROPERTY);
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);

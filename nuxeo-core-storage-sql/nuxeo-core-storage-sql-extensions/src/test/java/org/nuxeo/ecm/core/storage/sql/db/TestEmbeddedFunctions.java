@@ -61,7 +61,7 @@ public class TestEmbeddedFunctions extends TestCase {
                 EmbeddedFunctions.parseFullText(text));
     }
 
-    public void testParseFullText() throws Exception {
+    public void testParseFullText() {
         checkParseFullText("brown dog fail fox jump lazy over quick",
                 "The quick brown fox jumps over the lazy dog -- and fails!");
         checkParseFullText("aime cafe jure pas",

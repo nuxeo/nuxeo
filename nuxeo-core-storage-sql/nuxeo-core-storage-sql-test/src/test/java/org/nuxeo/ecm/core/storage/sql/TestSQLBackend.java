@@ -929,14 +929,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
                         ic = 0; // try again
                     }
                 } while (ic == 0 || ip == ic);
-                try {
-                    String oldpid = c.getParentId().toString();
-                    session.move(c, p, c.getName());
-                    removeEdge(graph, oldpid, cid);
-                    addEdge(graph, pid, cid);
-                } catch (StorageException e) {
-                    throw e;
-                }
+                String oldpid = c.getParentId().toString();
+                session.move(c, p, c.getName());
+                removeEdge(graph, oldpid, cid);
+                addEdge(graph, pid, cid);
             }
         }
         session.save();

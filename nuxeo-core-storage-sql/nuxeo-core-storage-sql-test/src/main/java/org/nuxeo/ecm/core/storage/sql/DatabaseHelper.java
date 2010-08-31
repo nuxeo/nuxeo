@@ -124,7 +124,7 @@ public abstract class DatabaseHelper {
 
     public abstract void setUp() throws Exception;
 
-    public void tearDown() throws Exception {
+    public void tearDown() throws SQLException {
     }
 
     public abstract String getDeploymentContrib();
@@ -132,7 +132,7 @@ public abstract class DatabaseHelper {
     public abstract RepositoryDescriptor getRepositoryDescriptor();
 
     /**
-     * For databases that do asynchronous fullext indexing, sleep a bit.
+     * For databases that do asynchronous fulltext indexing, sleep a bit.
      */
     public void sleepForFulltext() {
     }

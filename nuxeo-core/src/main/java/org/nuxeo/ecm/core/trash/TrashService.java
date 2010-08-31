@@ -111,7 +111,7 @@ public interface TrashService {
      * Purges (completely deletes) documents .
      *
      * @param session the session
-     * @param docs the documents to purge
+     * @param docRefs the documents to purge
      */
     void purgeDocuments(CoreSession session, List<DocumentRef> docRefs)
             throws ClientException;
