@@ -126,11 +126,26 @@ public class CreateTask {
         List<String> prefixedActorIds = new ArrayList<String>();
         Object actors = ctx.get(keyForActors);
         if (actors != null) {
+            boolean throwError = false;
             try {
-                prefixedActorIds.addAll((List) actors);
+                if (actors instanceof List) {
+                    prefixedActorIds.addAll((List) actors);
+                } else if (actors instanceof String[]) {
+                    for (String actor : (String[]) actors) {
+                        prefixedActorIds.add(actor);
+                    }
+                } else if (actors instanceof String) {
+                    prefixedActorIds.add((String) actors);
+                } else {
+                    throwError = true;
+                }
             } catch (ClassCastException e) {
+                throwError = true;
+            }
+            if (throwError) {
                 throw new OperationException(String.format(
-                        "Invalid key to retrieve a list of prefixed actor "
+                        "Invalid key to retrieve a list, array or single "
+                                + "string of prefixed actor "
                                 + "ids '%s', value is not correct: %s",
                         keyForActors, actors));
             }
