@@ -87,6 +87,7 @@ public class CoreManagementComponent extends DefaultComponent  {
                         try{
                             Thread.currentThread().setContextClassLoader(nuxeoCL);
                             adminStatus.activate();
+                            probeRunner.run();
                         }
                         finally{
                             Thread.currentThread().setContextClassLoader(jbossCL);

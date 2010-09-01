@@ -35,7 +35,7 @@ public class ProbeInfo implements ProbeMBean {
 
     protected final Probe probe;
 
-    protected ProbeStatus lastStatus = new ProbeStatus("not yet runned", false);
+    protected ProbeStatus lastStatus = new ProbeStatus("[unavailable]", false);
 
     protected long runnedCount = 0L;
 
@@ -47,13 +47,13 @@ public class ProbeInfo implements ProbeMBean {
 
     protected Date lastSucceedDate = new Date(0);
 
-    protected ProbeStatus lastSuccesStatus = ProbeStatus.newSuccess("not yet succeed");
+    protected ProbeStatus lastSuccesStatus = ProbeStatus.newSuccess("[unavailable]");
 
     protected long failureCount = 0L;
 
     protected Date lastFailureDate = new Date(0);
 
-    protected ProbeStatus lastFailureStatus = ProbeStatus.newFailure("not yet failed");
+    protected ProbeStatus lastFailureStatus = ProbeStatus.newFailure("[unavailable]");
 
     public long getFailedCount() {
         return failureCount;
