@@ -72,7 +72,8 @@ public abstract class AbstractDocumentModelWriter extends
 
     protected int unsavedDocuments = 0;
 
-    private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
+    private final Map<DocumentLocation, DocumentLocation> translationMap
+            = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
      *

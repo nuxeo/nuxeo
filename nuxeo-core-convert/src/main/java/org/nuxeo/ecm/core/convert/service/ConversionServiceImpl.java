@@ -55,14 +55,14 @@ public class ConversionServiceImpl extends DefaultComponent implements
     public static final String CONVERTER_EP = "converter";
     public static final String CONFIG_EP = "configuration";
 
-    protected static final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<String, ConverterDescriptor>();
+    protected static final Map<String, ConverterDescriptor> converterDescriptors
+            = new HashMap<String, ConverterDescriptor>();
 
     protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
     /**
-     * Component implementation *
+     * Component implementation.
      */
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)

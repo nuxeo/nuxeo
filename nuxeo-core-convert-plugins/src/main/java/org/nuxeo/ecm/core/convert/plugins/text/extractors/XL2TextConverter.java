@@ -62,7 +62,7 @@ public class XL2TextConverter implements Converter {
                     Iterator<?> cells = row.cellIterator();
                     while (cells.hasNext()) {
                         HSSFCell cell = (HSSFCell) cells.next();
-                        appendTextFromCell(cell,sb);
+                        appendTextFromCell(cell, sb);
                     }
                     sb.append(ROW_SEP);
                 }
@@ -82,7 +82,7 @@ public class XL2TextConverter implements Converter {
     }
 
     protected void appendTextFromCell(HSSFCell cell, StringBuffer sb) {
-        String cellValue=null;
+        String cellValue = null;
         switch (cell.getCellType()) {
         case HSSFCell.CELL_TYPE_NUMERIC:
             cellValue = Double.toString(cell.getNumericCellValue()).trim();

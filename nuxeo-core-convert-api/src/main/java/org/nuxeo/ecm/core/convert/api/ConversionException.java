@@ -29,7 +29,7 @@ public class ConversionException extends ClientException {
     private static final long serialVersionUID = 1L;
 
     public ConversionException(String message, Exception e) {
-        super(message,e);
+        super(message, e);
     }
 
     public ConversionException(String message) {

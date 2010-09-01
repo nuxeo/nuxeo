@@ -64,7 +64,7 @@ public class XLX2TextConverter implements Converter {
                     Iterator<Cell> cells = row.cellIterator();
                     while (cells.hasNext()) {
                         XSSFCell cell = (XSSFCell) cells.next();
-                        appendTextFromCell(cell,sb);
+                        appendTextFromCell(cell, sb);
                     }
                     sb.append(ROW_SEP);
                 }

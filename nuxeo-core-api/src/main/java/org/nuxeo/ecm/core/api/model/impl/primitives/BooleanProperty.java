@@ -48,17 +48,17 @@ public class BooleanProperty extends ScalarProperty {
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass() == String.class) {
-            String string = (String)value;
+            String string = (String) value;
             if (string.length() == 0) {
                 return null;
             }
             return Boolean.valueOf(value.toString());
         }
         if (value instanceof Number) {
-            return ((Number)value).intValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
+            return ((Number) value).intValue() == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
         throw new PropertyConversionException(value.getClass(), Boolean.class);
     }

@@ -47,10 +47,10 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
         try {
             String username = principal.getName();
             String lock = doc.getLock();
-            if (lock != null &&
-                    !lock.startsWith(username + ':') &&
-                    resolvedPermissions != null &&
-                    Arrays.asList(resolvedPermissions).contains(
+            if (lock != null
+                    && !lock.startsWith(username + ':')
+                    && resolvedPermissions != null
+                    && Arrays.asList(resolvedPermissions).contains(
                             SecurityConstants.WRITE)) {
                 // locked by another user => deny
                 access = Access.DENY;

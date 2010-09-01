@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 
 /**
- * Useful to make suites using different configurations
+ * Useful to make suites using different configurations.
  * Usage:
  * <pre>
  * @RepositoryConfigs({

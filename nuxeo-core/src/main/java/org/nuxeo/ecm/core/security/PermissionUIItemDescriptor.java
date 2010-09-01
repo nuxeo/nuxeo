@@ -163,7 +163,7 @@ public class PermissionUIItemDescriptor implements Serializable{
 
     @Override
     public String toString() {
-        if (denyPermission!=null) {
+        if (denyPermission != null) {
             return String.format("PermissionUIItemDescriptor[%s (deny %s)]", permission, denyPermission);
         } else {
             return String.format("PermissionUIItemDescriptor[%s]", permission);

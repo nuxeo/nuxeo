@@ -52,7 +52,7 @@ public interface VersioningDocument {
 
     /**
      * Key used in options map to send the UUID of the version being restored to
-     * the listeners
+     * the listeners.
      */
     String RESTORED_VERSION_UUID_KEY = "RESTORED_VERSION_UUID";
 

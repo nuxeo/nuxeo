@@ -368,7 +368,7 @@ public class ACPImpl implements ACP {
     @Override
     public Object clone() {
         ACPImpl copy = new ACPImpl();
-        for (ACL acl: acls) {
+        for (ACL acl : acls) {
             copy.acls.add((ACL) acl.clone());
         }
         copy.owners.addAll((Collection<String>) owners.clone());

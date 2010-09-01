@@ -21,10 +21,9 @@ package org.nuxeo.ecm.core.api.blobholder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Interface for the contributed factory classes
+ * Interface for the contributed factory classes.
  *
  * @author tiry
- *
  */
 public interface BlobHolderFactory {
 

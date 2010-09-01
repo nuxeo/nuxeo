@@ -47,7 +47,7 @@ public class CacheKeyGenerator {
             throw new IllegalStateException("Can not fetch Hash from BlobHolder", e);
         }
 
-        if (parameters!=null) {
+        if (parameters != null) {
             for (String key : parameters.keySet()) {
                 sb.append(":").append(key);
                 sb.append(":").append(String.valueOf(parameters.get(key)));

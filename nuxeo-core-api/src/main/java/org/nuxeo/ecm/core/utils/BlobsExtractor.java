@@ -49,7 +49,8 @@ public class BlobsExtractor {
 
     protected static final Log log = LogFactory.getLog(BlobsExtractor.class);
 
-    protected final Map<String, Map<String, List<String>>> blobFieldPaths = new HashMap<String, Map<String, List<String>>>();
+    protected final Map<String, Map<String, List<String>>> blobFieldPaths
+            = new HashMap<String, Map<String, List<String>>>();
 
     protected List<String> docTypeCached = new ArrayList<String>();
 

@@ -49,9 +49,11 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
 
     public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
 
-    protected static final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
+    protected static final Map<String, BlobHolderFactory> factories
+            = new HashMap<String, BlobHolderFactory>();
 
-    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<String, ExternalBlobAdapter>();
+    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters
+            = new HashMap<String, ExternalBlobAdapter>();
 
     @Override
     public void registerContribution(Object contribution,

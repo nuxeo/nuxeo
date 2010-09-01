@@ -245,8 +245,9 @@ public abstract class AbstractProperty implements Property {
     }
 
     /**
-     * This method is public because of DataModelImpl which use it TODO after
-     * removing DataModelImpl make it protected
+     * This method is public because of DataModelImpl which use it.
+     * <p>
+     * TODO after removing DataModelImpl make it protected.
      */
     public void setIsModified() {
         if ((flags & IS_MODIFIED) == 0) { // if not already modified

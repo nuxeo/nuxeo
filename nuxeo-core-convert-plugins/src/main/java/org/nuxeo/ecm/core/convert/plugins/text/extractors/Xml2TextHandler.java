@@ -53,7 +53,7 @@ public class Xml2TextHandler extends DefaultHandler {
         parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
         reader.setFeature("http://xml.org/sax/features/validation", false);
-        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false);
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
     }
 
     public SAXParser getParser() {

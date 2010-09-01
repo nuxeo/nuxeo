@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * IODocumentManager basic implementation
+ * IODocumentManager basic implementation.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -57,7 +57,6 @@ public class IODocumentManagerImpl implements IODocumentManager {
     private static final long serialVersionUID = -3131999198524020179L;
 
     private static final Log log = LogFactory.getLog(IODocumentManagerImpl.class);
-
 
     private static CoreSession getCoreSession(String repo)
             throws ClientException {

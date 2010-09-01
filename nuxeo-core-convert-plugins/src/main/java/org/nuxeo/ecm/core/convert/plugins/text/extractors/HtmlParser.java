@@ -57,7 +57,7 @@ public class HtmlParser extends AbstractSAXParser {
         init(tagFilter);
     }
 
-    public void init(String tagFilter){
+    public void init(String tagFilter) {
         try {
             // make sure we do not download the DTD URI
             setFeature("http://xml.org/sax/features/validation", false);

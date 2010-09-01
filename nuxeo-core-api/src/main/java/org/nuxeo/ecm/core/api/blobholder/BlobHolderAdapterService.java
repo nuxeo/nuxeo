@@ -50,14 +50,14 @@ public interface BlobHolderAdapterService {
     Blob getExternalBlobForUri(String uri) throws PropertyException;
 
     /**
-     * Returns the external blob adapter registered for given prefix
+     * Returns the external blob adapter registered for given prefix.
      *
      * @see ExternalBlobAdapter
      */
     ExternalBlobAdapter getExternalBlobAdapterForPrefix(String prefix);
 
     /**
-     * Returns the external blob adapter parsed from given uri
+     * Returns the external blob adapter parsed from given URI.
      *
      * @see ExternalBlobAdapter
      */

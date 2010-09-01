@@ -92,14 +92,14 @@ public class GlobalConfigDescriptor implements Serializable {
 
     public String getCachingDirectory() {
         if (cachingDirectory == null) {
-            File cacheFile=new File(System.getProperty("java.io.tmpdir"),CACHING_DIRECTORY);
+            File cacheFile = new File(System.getProperty("java.io.tmpdir"), CACHING_DIRECTORY);
             if (cacheFile.exists() && !cacheFile.canWrite()) {
                 log.debug("change directory to avoid FileNotFoundException (permission denied)");
                 try {
-                    cacheFile=File.createTempFile(CACHING_DIRECTORY, null, cacheFile.getParentFile());
+                    cacheFile = File.createTempFile(CACHING_DIRECTORY, null, cacheFile.getParentFile());
                     cacheFile.delete();
                 } catch (IOException e) {
-                    log.error("Could not create caching directory",e);
+                    log.error("Could not create caching directory", e);
                 }
             }
             cacheFile.mkdirs();

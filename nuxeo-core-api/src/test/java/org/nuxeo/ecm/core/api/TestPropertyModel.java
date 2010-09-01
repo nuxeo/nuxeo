@@ -447,7 +447,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
     /**
      * Compatibility test - this should be removed when ListDiff will be no more
-     * used in nuxeo
+     * used in nuxeo.
      */
     public void testListDiffCompatibility() throws Exception {
         Book book = new Book();
@@ -487,7 +487,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
     /**
      * Compatibility test - this should be removed when ListDiff will be no more
-     * used in nuxeo
+     * used in nuxeo.
      */
     public void testListDiffCompatibilityForScalarList() throws Exception {
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");

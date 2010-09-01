@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * Document properties are instances of document schema fields.
  * <p>
  * You can say that a {@link Field} object is like a Java class and a Property
- * object like ia class instance. Thus, schemas defines fields (or
+ * object like a class instance. Thus, schemas defines fields (or
  * elements) which have a name and a type, and each field of a document can be
  * instantiated (if the schema permits) as a Property object.
  * <p>
@@ -177,28 +177,28 @@ import org.nuxeo.ecm.core.schema.types.Type;
 public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
     /**
-     * No dirty flags set
+     * No dirty flags set.
      */
     int NONE = 0;
 
     /**
-     * Flag used to mark a property as new. Property was added to a list
+     * Flag used to mark a property as new. Property was added to a list.
      */
     int IS_NEW = 1;
 
     /**
-     * Flag used to mark a property as dirty. Property value was modified
+     * Flag used to mark a property as dirty. Property value was modified.
      */
     int IS_MODIFIED = 2;
 
     /**
-     * Flag used to mark a property as dirty. Property was removed
+     * Flag used to mark a property as dirty. Property was removed.
      */
     int IS_REMOVED = 4;
 
     /**
-     * Flag used to mark a property as dirty. property was moved to another
-     * index
+     * Flag used to mark a property as dirty. Property was moved to another
+     * index.
      */
     int IS_MOVED = 8;
 
@@ -208,19 +208,19 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     int IS_PHANTOM = 16;
 
     /**
-     * A mask for the first 4 flags: NEW, REMOVED, MODIFIED, MOVED
+     * A mask for the first 4 flags: NEW, REMOVED, MODIFIED, MOVED.
      */
     int IS_DIRTY = IS_NEW | IS_REMOVED | IS_MOVED | IS_MODIFIED;
 
     /**
-     * A mask for public flags
+     * A mask for public flags.
      */
     int DIRTY_MASK = IS_PHANTOM | IS_DIRTY;
 
     /**
      * Tests if this property is new (just created but not yet stored).
      * <p>
-     * A property is new when added to a collection. This is trhe typical state
+     * A property is new when added to a collection. This is the typical state
      * for a new property added to a list
      *
      * @return true if this property is new, false otherwise
@@ -236,7 +236,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean isRemoved();
 
     /**
-     * Tests if a property value was modified
+     * Tests if a property value was modified.
      *
      * @return if the property was removed, false otherwise
      */
@@ -244,7 +244,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
     /**
      * Tests if a property value was moved to another index in the parent list
-     * if any
+     * if any.
      *
      * @return if the property was removed, false otherwise
      */
@@ -252,7 +252,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
     /**
      * Tests if the property is a phantom. This means it doesn't exists yet in
-     * the storage and it is not a new property. This is a paceholder for a
+     * the storage and it is not a new property. This is a placeholder for a
      * property that is defined by the schema but was not yet set.
      *
      * @return true if a phantom false otherwise
@@ -262,14 +262,14 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Tests whether a property is dirty.
      * <p>
-     * This tests whether or not a dirty flag is set on the property
+     * This tests whether or not a dirty flag is set on the property.
      *
      * @return true if the property changed
      */
     boolean isDirty();
 
     /**
-     * Get the dirty flags that are set on this property
+     * Get the dirty flags that are set on this property.
      *
      * @return the dirty flags mask
      */
@@ -279,40 +279,40 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Notify the property that its changes was stored so it can safely remove
      * dirty flags.
      * <p>
-     * Dirty flags are removed accordlying to the type of the modifications.
+     * Dirty flags are removed according to the type of the modifications.
      * This way if the property was REMOVED it becomes a PHANTOM otherwise all
      * dirty flags are cleared.
      * <p>
      * This method should be used by storage implementors to notify the property
      * it should reset its dirty flags. Note that clearing dirty flags is not
-     * probagated to the parent property or to children. You need to clear dirty
-     * flags explicitely for each property.
+     * propagated to the parent property or to children. You need to clear dirty
+     * flags explicitly for each property.
      */
     void clearDirtyFlags();
 
     /**
-     * Whether the property is read only
+     * Whether the property is read only.
      *
      * @return true if read only false otherwise
      */
     boolean isReadOnly();
 
     /**
-     * Check whether this propertty is validating values when set
+     * Checks whether this property is validating values when set.
      *
      * @return true if validating false otherwise
      */
     boolean isValidating();
 
     /**
-     * Set the read only flag
+     * Sets the read only flag.
      *
      * @param value true to set this property read only false otherwise
      */
     void setReadOnly(boolean value);
 
     /**
-     * Set the validating flag
+     * Sets the validating flag.
      *
      * @param value true to put validating on false otherwise
      */
@@ -616,7 +616,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
     /**
      * Same as {@link Property#resolvePath(Path)} but with a string path as
-     * argument. This is the same as calling </code>resolvePath(new Path(path))</code>
+     * argument. This is the same as calling <code>resolvePath(new Path(path))</code>.
      *
      * @param path the string path to resolve.
      * @return the resolved property

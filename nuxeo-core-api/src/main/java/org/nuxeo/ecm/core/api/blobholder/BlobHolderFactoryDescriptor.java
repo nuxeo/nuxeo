@@ -24,18 +24,13 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
- * XMap descriptor for contributed factories
+ * XMap descriptor for contributed factories.
  *
  * @author tiry
- *
  */
 @XObject("blobHolderFactory")
 public class BlobHolderFactoryDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")

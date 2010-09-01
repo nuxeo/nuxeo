@@ -61,7 +61,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     protected CoreSession session;
 
     /**
-     * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}
+     * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
      */
     protected RepositorySettings() {
         importAnnotations(Defaults.of(RepositoryConfig.class));
