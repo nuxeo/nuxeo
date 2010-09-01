@@ -34,8 +34,8 @@ public class VersionInfo implements Serializable {
 
     protected boolean available;
 
-    public VersionInfo(String label, boolean avalaible) {
-        available = avalaible;
+    public VersionInfo(String label, boolean available) {
+        this.available = available;
         versionLabel = label;
     }
 

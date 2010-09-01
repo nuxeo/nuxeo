@@ -344,8 +344,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc,
             DocumentModel newDoc) {
-        if (ctxDoc == null && newDoc != null || ctxDoc != null
-                && newDoc == null) {
+        if (ctxDoc == null && newDoc != null
+                || ctxDoc != null && newDoc == null) {
             return true;
         }
         if (ctxDoc == null && newDoc == null) {
@@ -601,7 +601,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         return schemaManager;
     }
 
-    private Boolean hasSuperType(String targetDocType, String superType)
+    private boolean hasSuperType(String targetDocType, String superType)
             throws ClientException {
         if (targetDocType == null) {
             return false;

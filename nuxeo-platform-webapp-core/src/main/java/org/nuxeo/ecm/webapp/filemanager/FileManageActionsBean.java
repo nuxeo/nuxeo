@@ -538,7 +538,6 @@ public class FileManageActionsBean extends InputController implements
             }
         } catch (Exception e) {
             log.error(e, e);
-            return;
         }
     }
 
@@ -605,8 +604,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String validate() throws ClientException {
-        InputStream stream = null;
         if (fileUploadHolder != null && fileUploadHolder.getTempFile() != null) {
+            InputStream stream = null;
             try {
                 stream = new FileInputStream(fileUploadHolder.getTempFile());
                 return addFile(stream, getFileName());

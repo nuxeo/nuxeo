@@ -37,10 +37,6 @@ public interface EmailSenderActions extends StatefulBaseLifeCycle {
     @PermitAll
     void destroy();
 
-    void saveState();
-
-    void readState();
-
     void initialize();
 
     void send();

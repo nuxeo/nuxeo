@@ -71,6 +71,7 @@ public class MassSecurityModifierActions implements Serializable {
         this.blockRightInheritance = blockRightInheritance;
     }
 
+    // Really used?
     public String applySecurity(String listName) throws ClientException {
         // get the list
         List<DocumentModel> docs2Modify = documentsListsManager.getWorkingList(listName);

@@ -29,6 +29,8 @@ import javax.faces.context.FacesContext;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
+@Deprecated
+// TODO: remove (not used)
 public final class FacesContextMessageHelper {
 
     // Utility class

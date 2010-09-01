@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>server : let the server decide
  * => use the mime-type registry define what types are liveEditable
  * <li>both : use client and server intersection
- * => in order to be liveEdititable a type must be advertised by the client and set to liveEditable in the mimetypeRegistry
+ * => in order to be liveEditable a type must be advertised by the client and set to liveEditable in the mimetypeRegistry
  * </ul>
  *
  * Client advertising is done in the Accept header:

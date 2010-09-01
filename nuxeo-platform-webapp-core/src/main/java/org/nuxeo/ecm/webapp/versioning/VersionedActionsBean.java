@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.versioning;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -102,10 +102,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         sessionContext.set("newVersion", newVersion);
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED,
-            EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION,
-            EventNames.DOCUMENT_PUBLISHED }, create = false, inject = false)
+    @Observer(value = {DOCUMENT_SELECTION_CHANGED, DOCUMENT_CHANGED,
+            DOCUMENT_SUBMITED_FOR_PUBLICATION, DOCUMENT_PUBLISHED}, create = false, inject = false)
     @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
@@ -175,8 +173,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     /**
      * Tells if the current selected document is checked out or not.
-     *
-     * @return
      */
     public String getCheckedOut() throws ClientException {
         if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
@@ -203,8 +199,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     /**
      * Checks the selected document in, with the selected version.
-     *
-     * @return
      */
     public String checkIn() throws ClientException {
         documentManager.checkIn(

@@ -43,6 +43,9 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.base.InputController;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
+import static org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY;
+
 /**
  * Logs the user in/out.
  *
@@ -81,19 +84,17 @@ public class LogoutAction extends InputController implements Serializable {
             response = (HttpServletResponse) resp;
         }
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal = null;
         if (principal instanceof NuxeoPrincipal) {
-            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             if (nuxeoPrincipal.isAnonymous()) {
-                parameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
+                parameters.put(FORCE_ANONYMOUS_LOGIN, "true");
             }
         }
         if (response != null && request != null
                 && !context.getResponseComplete()) {
             String baseURL = BaseURL.getBaseURL(request)
                     + NXAuthConstants.LOGOUT_PAGE;
-            request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
+            request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, parameters);
             response.sendRedirect(baseURL);
             context.responseComplete();

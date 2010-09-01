@@ -48,7 +48,7 @@ public interface DocumentVersioning {
      * Returns the available versioning options for the document parameter and
      * state.
      *
-     * @param document - the document for which the versioning options will be
+     * @param document the document for which the versioning options will be
      *            returned
      * @return a collection of option names.
      */
@@ -72,9 +72,6 @@ public interface DocumentVersioning {
     /**
      * Creates a Map with versioning options (as keys) and labels (as map entry
      * values).
-     *
-     * @param documentModel
-     * @return
      */
     Map<String, String> getVersioningOptionsMap(
             final DocumentModel documentModel);
@@ -95,9 +92,6 @@ public interface DocumentVersioning {
     /**
      * Web action method to set version incrementation option to the current
      * documentModel.
-     *
-     * @param optionId
-     * @throws ClientException
      */
     void setVersioningOptionInstanceId(String optionId) throws ClientException;
 
@@ -111,10 +105,6 @@ public interface DocumentVersioning {
      * Versioning incrementation options - select radio component validator
      * method. Check if an option has been selected. This is mandatory since the
      * component is being displayed.
-     *
-     * @param context
-     * @param component
-     * @param value
      */
     void validateOptionSelection(FacesContext context, UIComponent component,
             Object value);
@@ -122,8 +112,6 @@ public interface DocumentVersioning {
     /**
      * Web action method that specifies to create or not a document snapshot
      * before update (and possible version incrementation).
-     *
-     * @param createSnapshot
      */
     void setCreateSnapshot(boolean createSnapshot);
 

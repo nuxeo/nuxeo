@@ -34,9 +34,7 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
-
 public interface DocumentActions extends StatefulBaseLifeCycle,
         SelectDataModelListener {
 

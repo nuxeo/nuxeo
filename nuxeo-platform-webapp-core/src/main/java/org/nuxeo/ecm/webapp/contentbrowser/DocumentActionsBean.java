@@ -334,6 +334,7 @@ public class DocumentActionsBean extends InputController implements
      * @deprecated should update changeableDocument and use updateDocument
      */
     @Deprecated
+    // TODO: remove (not used)
     public String updateCurrentDocument() throws ClientException {
         try {
             currentDocument = documentManager.saveDocument(currentDocument);

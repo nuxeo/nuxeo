@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.webapp.edit.lock;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -114,8 +116,7 @@ public class LockActionsBean implements LockActions {
                     String docLock = documentManager.getLock(document.getRef());
                     canLock = docLock == null
                             && (userName.isAdministrator() || documentManager.hasPermission(
-                                    document.getRef(),
-                                    SecurityConstants.WRITE_PROPERTIES))
+                                    document.getRef(), WRITE_PROPERTIES))
                             && !document.isVersion();
                 } catch (Exception e) {
                     log.debug("evaluation of document lock "
@@ -133,7 +134,6 @@ public class LockActionsBean implements LockActions {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanLockDoc(currentDocument);
     }
-
 
     protected void resetEventContext() {
         Context evtCtx = Contexts.getEventContext();
@@ -156,12 +156,10 @@ public class LockActionsBean implements LockActions {
                         canUnlock = false;
                     } else {
                         canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(
-                                document.getRef(),
-                                SecurityConstants.EVERYTHING)) ? true
+                                document.getRef(), EVERYTHING)) ? true
                                 : (userName.getName().equals(
                                         lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                                document.getRef(),
-                                        SecurityConstants.WRITE_PROPERTIES)))
+                                                document.getRef(), WRITE_PROPERTIES)))
                                 && !document.isVersion();
                     }
                 } catch (Exception e) {
@@ -190,7 +188,7 @@ public class LockActionsBean implements LockActions {
         resetEventContext();
         String message = "document.lock.failed";
         DocumentRef ref = document.getRef();
-        if (documentManager.hasPermission(ref, SecurityConstants.WRITE_PROPERTIES)
+        if (documentManager.hasPermission(ref, WRITE_PROPERTIES)
                 && documentManager.getLock(ref) == null) {
             documentManager.setLock(ref, getDocumentLockKey());
             documentManager.save();
@@ -239,11 +237,11 @@ public class LockActionsBean implements LockActions {
             NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
             if (userName.isAdministrator()
                     || documentManager.hasPermission(document.getRef(),
-                            SecurityConstants.EVERYTHING)
+                            EVERYTHING)
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 
                 if (!documentManager.hasPermission(document.getRef(),
-                        SecurityConstants.WRITE_PROPERTIES)) {
+                        WRITE_PROPERTIES)) {
 
                     try {
                         // Here administrator should always be able to unlock so
@@ -336,14 +334,13 @@ public class LockActionsBean implements LockActions {
                 String docLock = documentManager.getLock(currentDocument.getRef());
                 if (docLock == null) {
                     isLiveEditable = (userName.isAdministrator() || documentManager.hasPermission(
-                            currentDocument.getRef(), SecurityConstants.WRITE_PROPERTIES))
+                            currentDocument.getRef(), WRITE_PROPERTIES))
                             && !currentDocument.isVersion();
                 } else {
                     isLiveEditable = (userName.isAdministrator() ? true
                             : (userName.getName().equals(
                                     getLockDetails(currentDocument).get(LOCKER)) && documentManager.hasPermission(
-                                    currentDocument.getRef(),
-                                    SecurityConstants.WRITE_PROPERTIES)))
+                                    currentDocument.getRef(), WRITE_PROPERTIES)))
                             && !currentDocument.isVersion();
                 }
             } catch (Exception e) {

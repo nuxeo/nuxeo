@@ -38,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
+// TODO: remove (not used)
+@Deprecated
 @Name("ecDomain")
 @Scope(CONVERSATION)
 public class ECDomainBusinessDelegate implements Serializable {

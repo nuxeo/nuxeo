@@ -232,7 +232,7 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getCurrentURLAfterDelete() {
-        if (isDocumentDeleted(currentContainer) == false) {
+        if (!isDocumentDeleted(currentContainer)) {
             currentParent = currentContainer;
         }
         return DocumentModelFunctions.documentUrl(null, currentParent, null,
@@ -271,11 +271,7 @@ public class PopupHelper implements Serializable {
             throws ClientException {
         if (documentModel.hasSchema("file")) {
             Blob blob = (Blob) documentModel.getProperty("file", "content");
-            if (blob != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return blob != null;
         } else {
             return false;
         }

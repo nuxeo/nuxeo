@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webapp.documenttemplates;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -224,7 +226,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         this.targetType = targetType;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false, inject = false)
+    @Observer(value = { DOCUMENT_CHILDREN_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void documentChildrenChanged(DocumentModel targetDoc) {
         // refresh if a child was added to template root
@@ -234,7 +236,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         }
     }
 
-    @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void domainChanged(DocumentModel targetDoc) {
         if (templates != null) {

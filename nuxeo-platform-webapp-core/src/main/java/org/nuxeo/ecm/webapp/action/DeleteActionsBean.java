@@ -72,6 +72,13 @@ import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.webapp.contentbrowser.DocumentActions.CHILDREN_DOCUMENT_LIST;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED;
+
 @Name("deleteActions")
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
@@ -146,7 +153,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDelete() {
-        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
         try {
             return getTrashService().canDelete(docs, currentUser, false);
         } catch (ClientException e) {
@@ -156,7 +163,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() {
-        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION);
         try {
             return getTrashService().canDelete(docs, currentUser, true);
         } catch (ClientException e) {
@@ -166,7 +173,7 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docs = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         try {
             return getTrashService().canPurgeOrUndelete(docs, currentUser);
         } catch (ClientException e) {
@@ -185,8 +192,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
-            return deleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION));
+        if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
+            return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
         } else {
             log.debug("No documents selection in context to process delete on...");
             return null;
@@ -194,8 +201,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
-            return deleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
+        if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SECTION_SELECTION)) {
+            return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION));
         } else {
             log.debug("No documents selection in context to process delete on...");
             return null;
@@ -211,8 +218,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String purgeSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
-            return purgeSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
+        if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
+            return purgeSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
         } else {
             log.debug("No documents selection in context to process delete on...");
             return null;
@@ -225,8 +232,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String undeleteSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
-            return undeleteSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
+        if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
+            return undeleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
         } else {
             log.debug("No documents selection in context to process delete on...");
             return null;
@@ -288,8 +295,7 @@ public class DeleteActionsBean extends InputController implements
         for (DocumentRef parentRef : parentRefs) {
             DocumentModel parent = documentManager.getDocument(parentRef);
             if (parent != null) {
-                Events.instance().raiseEvent(
-                        EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
+                Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED, parent);
             }
         }
 
@@ -316,10 +322,8 @@ public class DeleteActionsBean extends InputController implements
     public SelectDataModel getDeletedChildrenSelectModel()
             throws ClientException {
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
-        SelectDataModel model = new SelectDataModelImpl(
-                DocumentActions.CHILDREN_DOCUMENT_LIST, documents,
-                selectedDocuments);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
+        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST, documents, selectedDocuments);
         model.addSelectModelListener(this);
         // XXX AT: see if cache is useful
         // cacheUpdateNotifier.addCacheListener(model);
@@ -353,17 +357,17 @@ public class DeleteActionsBean extends InputController implements
         DocumentModel data = (DocumentModel) event.getRowData();
         if (selection) {
             documentsListsManager.addToWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION,
+                    CURRENT_DOCUMENT_TRASH_SELECTION,
                     data);
         } else {
             documentsListsManager.removeFromWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION,
+                    CURRENT_DOCUMENT_TRASH_SELECTION,
                     data);
         }
     }
 
     public List<Action> getActionsForTrashSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION
+        return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_TRASH_SELECTION
                 + "_LIST");
     }
 
@@ -492,7 +496,7 @@ public class DeleteActionsBean extends InputController implements
 
     }
 
-    @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED })
+    @Observer(value = { FOLDERISHDOCUMENT_SELECTION_CHANGED })
     @BypassInterceptors
     public void resetProviderCache() {
         ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");

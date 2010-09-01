@@ -150,7 +150,6 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     public String clearVocabulary() throws ClientException {
-
         Session vocabulary = null;
         String message = null;
         try {

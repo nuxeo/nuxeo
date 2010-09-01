@@ -78,7 +78,7 @@ public class SecurityData implements Serializable {
 
     protected String documentType = "";
 
-    protected boolean needSave=false;
+    protected boolean needSave = false;
 
     public void setNeedSave(boolean needSave) {
         this.needSave = needSave;
@@ -191,8 +191,7 @@ public class SecurityData implements Serializable {
             if (null != currentDocGrant.get(principalName)) {
                 // we already have the user - add the right to him
                 boolean shouldAddPermission = true;
-                for (String permission : currentDocGrant
-                        .get(principalName)) {
+                for (String permission : currentDocGrant.get(principalName)) {
                     // only add the right to list if the right is not already
                     // there
                     if (permission.equals(permissionName)) {
@@ -234,7 +233,6 @@ public class SecurityData implements Serializable {
                 permissions.add(permissionName);
                 currentDocDeny.put(principalName, permissions);
             }
-
         }
 
         rebuildUserLists();
@@ -254,7 +252,7 @@ public class SecurityData implements Serializable {
             return false;
         }
 
-        needSave=true;
+        needSave = true;
         boolean removed = false;
         if (grant) {
             if (null != currentDocGrant.get(principalName)) {
@@ -299,7 +297,7 @@ public class SecurityData implements Serializable {
         }
         currentDocGrant.remove(principalName);
         currentDocDeny.remove(principalName);
-        needSave=true;
+        needSave = true;
         rebuildUserLists();
     }
 

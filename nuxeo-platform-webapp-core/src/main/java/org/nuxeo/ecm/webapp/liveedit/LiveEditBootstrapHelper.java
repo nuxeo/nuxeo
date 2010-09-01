@@ -553,7 +553,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
 
             if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)){
-                Boolean isEditableOnClient = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
+                boolean isEditableOnClient = liveEditClientConfig.isMimeTypeLiveEditable(mimetype);
                 isEditable = isEditable && isEditableOnClient;
             }
             cachedEditableStates.put(mimetype, isEditable);

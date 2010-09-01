@@ -38,10 +38,9 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullException
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Plays with conversations, trying to rollback transation.
+ * Plays with conversations, trying to rollback transaction.
  *
  * @author arussel
- *
  */
 public class SeamExceptionHandlingListener extends
         NullExceptionHandlingListener {
@@ -104,7 +103,6 @@ public class SeamExceptionHandlingListener extends
             ConversationPropagation.instance().setConversationId(conversationId);
             Manager.instance().restoreConversation();
         }
-
     }
 
     /**

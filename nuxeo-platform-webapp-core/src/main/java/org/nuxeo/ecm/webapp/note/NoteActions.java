@@ -39,6 +39,19 @@ import java.util.regex.Pattern;
 @Name("noteActions")
 public class NoteActions implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
+    protected static final Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)?");
+
+    protected static final String PATTERN_TO_REPLACE = "((<img.*?)%s(/files:files/.*?/>))";
+
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
+
+    @In(create = true, required = false)
+    protected transient NavigationContext navigationContext;
+
+
     private static class LiveDocumentRefFinder extends
             UnrestrictedSessionRunner {
 
@@ -71,18 +84,6 @@ public class NoteActions implements Serializable {
         }
 
     }
-
-    private static final long serialVersionUID = 1L;
-
-    protected static final Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)?");
-
-    protected static final String PATTERN_TO_REPLACE = "((<img.*?)%s(/files:files/.*?/>))";
-
-    @In(create = true, required = false)
-    protected transient CoreSession documentManager;
-
-    @In(create = true, required = false)
-    protected transient NavigationContext navigationContext;
 
     /**
      * Translate the image links referencing attached files to use the docId of

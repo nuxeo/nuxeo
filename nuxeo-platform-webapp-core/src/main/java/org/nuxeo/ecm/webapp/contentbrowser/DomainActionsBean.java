@@ -20,6 +20,10 @@
 package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.LOCATION_SELECTION_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.NEW_DOCUMENT_CREATED;
 
 import java.io.Serializable;
 import java.util.List;
@@ -107,8 +111,8 @@ public class DomainActionsBean extends InputController implements DomainActions,
         return domains;
     }
 
-    @Observer( value= { EventNames.LOCATION_SELECTION_CHANGED,
-            EventNames.NEW_DOCUMENT_CREATED, EventNames.DOCUMENT_CHANGED }, create=false, inject=false)
+    @Observer( value= { LOCATION_SELECTION_CHANGED, NEW_DOCUMENT_CREATED, DOCUMENT_CHANGED },
+            create=false, inject=false)
     @BypassInterceptors
     public void invalidateDomainList() {
         domains = null;
@@ -116,8 +120,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
 
     public Boolean getCanAddDomains() throws ClientException {
         return documentManager.hasPermission(
-                documentManager.getRootDocument().getRef(),
-                SecurityConstants.ADD_CHILDREN);
+                documentManager.getRootDocument().getRef(), ADD_CHILDREN);
     }
 
     public SelectDataModel getDomainsSelectModel() throws ClientException {

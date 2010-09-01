@@ -138,11 +138,11 @@ public class SiteActionsBean {
             try {
                 DocumentModelList sites = querySitesByUrlAndDocType(
                         documentManager, name, siteType);
-                if (sites.size() > 0) {
+                if (!sites.isEmpty()) {
                     FacesMessage message = new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
-                            ComponentUtils.translate(context,
-                            "label.site.notunique.title"), null);
+                            ComponentUtils.translate(context, "label.site.notunique.title"),
+                            null);
                     // also add global message
                     context.addMessage(null, message);
                     throw new ValidatorException(message);
