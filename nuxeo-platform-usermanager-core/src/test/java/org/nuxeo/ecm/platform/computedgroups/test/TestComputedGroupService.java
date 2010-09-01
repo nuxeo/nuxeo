@@ -140,31 +140,31 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
         um.updateUser(userModel);
 
         NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) um.getPrincipal("User1");
-        assertEquals(1,principal.getVirtualGroups().size());
+        assertEquals(1, principal.getVirtualGroups().size());
         assertTrue(principal.getVirtualGroups().contains("Grp1"));
-        assertEquals(2,principal.getAllGroups().size());
+        assertEquals(2, principal.getAllGroups().size());
         assertTrue(principal.getAllGroups().contains("Grp1"));
         assertTrue(principal.getAllGroups().contains("StaticGroup"));
 
         principal = (NuxeoPrincipalImpl) um.getPrincipal("User2");
-        assertEquals(1,principal.getVirtualGroups().size());
+        assertEquals(1, principal.getVirtualGroups().size());
         assertTrue(principal.getVirtualGroups().contains("Grp2"));
-        assertEquals(1,principal.getAllGroups().size());
+        assertEquals(1, principal.getAllGroups().size());
         assertTrue(principal.getAllGroups().contains("Grp2"));
 
         principal = (NuxeoPrincipalImpl) um.getPrincipal("User12");
-        assertEquals(2,principal.getVirtualGroups().size());
+        assertEquals(2, principal.getVirtualGroups().size());
         assertTrue(principal.getVirtualGroups().contains("Grp1"));
         assertTrue(principal.getVirtualGroups().contains("Grp2"));
-        assertEquals(2,principal.getAllGroups().size());
+        assertEquals(2, principal.getAllGroups().size());
 
         NuxeoGroup group = um.getGroup("Grp1");
-        assertEquals(2,group.getMemberUsers().size());
+        assertEquals(2, group.getMemberUsers().size());
         assertTrue(group.getMemberUsers().contains("User1"));
         assertTrue(group.getMemberUsers().contains("User12"));
 
         group = um.getGroup("Grp2");
-        assertEquals(2,group.getMemberUsers().size());
+        assertEquals(2, group.getMemberUsers().size());
     }
 
     public void testCompanyComputer() throws Exception {

@@ -21,11 +21,10 @@ package org.nuxeo.ecm.platform.computedgroups;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 
 /**
- *
  * Marker interface for computed group
- * (avoids changing {@link NuxeoGroup} interface)
+ * (avoids changing {@link NuxeoGroup} interface).
  *
  * @author Thierry Delprat
- *
  */
-public interface ComputedGroup extends NuxeoGroup {}
+public interface ComputedGroup extends NuxeoGroup {
+}

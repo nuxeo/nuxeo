@@ -157,7 +157,7 @@ public interface UserManager extends Serializable {
     DocumentModelList searchUsers(String pattern) throws ClientException;
 
     /**
-     * Returns users matching given criteria
+     * Returns users matching given criteria.
      *
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
@@ -182,7 +182,7 @@ public interface UserManager extends Serializable {
     List<String> getGroupIds() throws ClientException;
 
     /**
-     * Returns groups matching given criteria
+     * Returns groups matching given criteria.
      *
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
@@ -311,7 +311,7 @@ public interface UserManager extends Serializable {
     String getUserDirectoryName() throws ClientException;
 
     /**
-     * Returns the user directory schema name
+     * Returns the user directory schema name.
      *
      * @since 5.2M4
      * @throws ClientException
@@ -319,7 +319,7 @@ public interface UserManager extends Serializable {
     String getUserSchemaName() throws ClientException;
 
     /**
-     * Returns the user directory id field
+     * Returns the user directory id field.
      *
      * @since 5.2M4
      * @throws ClientException
@@ -352,7 +352,7 @@ public interface UserManager extends Serializable {
     String getGroupDirectoryName() throws ClientException;
 
     /**
-     * Returns the group directory schema name
+     * Returns the group directory schema name.
      *
      * @since 5.2M4
      * @throws ClientException
@@ -360,7 +360,7 @@ public interface UserManager extends Serializable {
     String getGroupSchemaName() throws ClientException;
 
     /**
-     * Returns the group directory id field
+     * Returns the group directory id field.
      *
      * @since 5.2M4
      * @throws ClientException
@@ -400,7 +400,7 @@ public interface UserManager extends Serializable {
     String getAnonymousUserId() throws ClientException;
 
     /**
-     * Sets the given configuration on the service
+     * Sets the given configuration on the service.
      *
      * @param descriptor the descriptor as parsed from xml, merged from the
      *            previous one if it exists.
@@ -409,7 +409,7 @@ public interface UserManager extends Serializable {
             throws ClientException;
 
     /**
-     * Returns the list of administrators groups
+     * Returns the list of administrators groups.
      *
      * @since 5.3 GA
      */

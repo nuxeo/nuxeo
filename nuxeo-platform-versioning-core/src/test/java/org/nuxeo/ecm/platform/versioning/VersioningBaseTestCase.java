@@ -32,7 +32,8 @@ import org.nuxeo.ecm.platform.versioning.service.VersioningService;
  */
 public abstract class VersioningBaseTestCase extends SQLRepositoryTestCase {
 
-    protected static final String VERSIONING_SCHEMA_NAME = DocumentModelUtils.getSchemaName(PropertiesDef.DOC_PROP_MAJOR_VERSION);
+    protected static final String VERSIONING_SCHEMA_NAME
+            = DocumentModelUtils.getSchemaName(PropertiesDef.DOC_PROP_MAJOR_VERSION);
 
     protected VersioningService versioningService;
 

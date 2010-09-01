@@ -31,11 +31,9 @@ public interface NuxeoAuthenticationPluginLogoutExtension {
      * This interface must be implemented by auth plugin when the target auth system
      * needs a specific logout procedure.
      *
-     * @param httpRequest
-     * @param httpResponse
      * @return true if caller must stop execution (ie: logout generated a redirect),
      *      false otherwise
      */
-    Boolean handleLogout(HttpServletRequest httpRequest,HttpServletResponse httpResponse);
+    Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 
 }

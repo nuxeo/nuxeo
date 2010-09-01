@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 /**
- * Sample {@link GroupComputer} implementation that uses company field
+ * Sample {@link GroupComputer} implementation that uses company field.
  *
  * @author Thierry Delprat
  */

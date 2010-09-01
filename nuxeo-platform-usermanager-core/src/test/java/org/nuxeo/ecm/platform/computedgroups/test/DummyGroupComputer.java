@@ -48,14 +48,12 @@ public class DummyGroupComputer extends AbstractGroupComputer {
     }
 
     public List<String> getGroupMembers(String groupName) throws Exception {
-
         List<String> names = new ArrayList<String>();
 
         if ("Grp1".equals(groupName)) {
             names.add("User1");
             names.add("User12");
-        }
-        else if ("Grp2".equals(groupName)) {
+        } else if ("Grp2".equals(groupName)) {
             names.add("User2");
             names.add("User12");
         }

@@ -139,12 +139,7 @@ public class DocVersioningEventListener implements EventListener {
 
     /**
      * Method called when the document is in creation state to set the first
-     * version Number
-     *
-     * @param doc
-     * @param versioningService
-     * @param majorPropName
-     * @param minorPropName
+     * version Number.
      */
     protected void setInitialVersionNumber(DocumentModel doc,
             VersioningService versioningService, String majorPropName,

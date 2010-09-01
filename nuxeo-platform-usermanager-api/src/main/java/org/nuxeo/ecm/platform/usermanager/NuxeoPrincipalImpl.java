@@ -125,7 +125,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     /**
      * Constructor that sets principal to not anonymous, not administrator, and
-     * updates all the principal groups
+     * updates all the principal groups.
      */
     public NuxeoPrincipalImpl(String name) throws ClientException {
         this(name, false, false);
@@ -133,7 +133,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     /**
      * Constructor that sets principal to not administrator, and updates all the
-     * principal groups
+     * principal groups.
      */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous)
             throws ClientException {
@@ -141,7 +141,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Constructor that updates all the principal groups
+     * Constructor that updates all the principal groups.
      */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
             boolean isAdministrator) throws ClientException {
@@ -329,7 +329,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Sets model and recomputes all groups
+     * Sets model and recomputes all groups.
      */
     public void setModel(DocumentModel model, boolean updateAllGroups)
             throws ClientException {
@@ -420,7 +420,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Sets virtual groups and recomputes all groups
+     * Sets virtual groups and recomputes all groups.
      */
     public void setVirtualGroups(List<String> virtualGroups)
             throws ClientException {

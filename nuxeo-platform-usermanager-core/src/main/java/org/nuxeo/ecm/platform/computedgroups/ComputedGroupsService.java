@@ -27,81 +27,53 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
- * Interface for computed group service
+ * Interface for computed group service.
  *
  * @author tiry
- *
  */
 public interface ComputedGroupsService {
 
     boolean activateComputedGroups();
 
     /**
-     * Return list of ids for users computed groups
-     *
-     * @param nuxeoPrincipal
-     * @return
+     * Returns list of ids for users computed groups.
      */
     List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal);
 
     /**
-     * Resolves a computed group by it's name
-     *
-     * @param groupName
-     * @return
+     * Resolves a computed group by it's name.
      */
     NuxeoGroup getComputedGroup(String groupName);
 
     /**
-     *
-     * Defines if a computed group can override a physical group
-     *
-     * @return
+     * Defines if a computed group can override a physical group.
      */
     boolean allowGroupOverride();
 
     /**
-     * Return list of all computed groups (if this is available)
-     *
-     * @return
+     * Returns list of all computed groups (if this is available).
      */
     List<String> computeGroupIds();
 
     /**
-     *
-     * Retrieves member users for a given computed group
-     *
-     * @param groupName
-     * @return
+     * Retrieves member users for a given computed group.
      */
     List<String> getComputedGroupMembers(String groupName);
 
     /**
-     *
-     * Retrieve parent group for a given computed group
-     *
-     * @param groupName
-     * @return
+     * Retrieves parent group for a given computed group.
      */
     List<String> getComputedGroupParent(String groupName);
 
     /**
-     *
-     * Retrive sub groups for a given computed group
-     *
-     * @param groupName
-     * @return
+     * Retrieves sub groups for a given computed group.
      */
     List<String> getComputedGroupSubGroups(String groupName);
 
     /**
-     *
-     * search for a computed group
-     *
-     * @param filter
-     * @param fulltext
-     * @return
+     * Searches for a computed group.
      */
     List<String> searchComputedGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext);
+
 }

@@ -65,8 +65,11 @@ public class RequestControllerService extends DefaultComponent implements
         }
     }
 
-    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync, boolean cached, boolean isPrivate, String cacheTime) {
-        FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync, cached, isPrivate, cacheTime);
+    public void registerFilterConfig(String name, String pattern,
+            boolean grant, boolean tx, boolean sync, boolean cached,
+            boolean isPrivate, String cacheTime) {
+        FilterConfigDescriptor desc = new FilterConfigDescriptor(
+                name, pattern, grant, tx, sync, cached, isPrivate, cacheTime);
         registerFilterConfig(desc);
     }
 
@@ -74,8 +77,7 @@ public class RequestControllerService extends DefaultComponent implements
         if (desc.isGrantRule()) {
             grantPatterns.put(desc.getName(), desc);
             log.debug("Registred grant filter config");
-        }
-        else {
+        } else {
             denyPatterns.put(desc.getName(), desc);
             log.debug("Registred deny filter config");
         }
@@ -91,22 +93,20 @@ public class RequestControllerService extends DefaultComponent implements
 
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        RequestFilterConfig config=null;
+        RequestFilterConfig config = null;
 
         try {
             cacheLock.readLock().lock();
             config = configCache.get(uri);
-        }
-        finally {
+        } finally {
             cacheLock.readLock().unlock();
         }
-        if (config==null) {
+        if (config == null) {
             config = computeConfigForRequest(uri);
             try {
                 cacheLock.writeLock().lock();
                 configCache.put(uri, config);
-            }
-            finally {
+            } finally {
                 cacheLock.writeLock().unlock();
             }
         }
@@ -118,7 +118,7 @@ public class RequestControllerService extends DefaultComponent implements
         for (FilterConfigDescriptor desc : denyPatterns.values()) {
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
-            if(m.matches()){
+            if (m.matches()) {
                 return new RequestFilterConfigImpl(false, false, false, false,
                         "");
             }
@@ -128,7 +128,7 @@ public class RequestControllerService extends DefaultComponent implements
         for (FilterConfigDescriptor desc : grantPatterns.values()) {
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
-            if(m.matches()) {
+            if (m.matches()) {
                 return new RequestFilterConfigImpl(desc.useSync(),
                         desc.useTx(), desc.isCached(), desc.isPrivate(),
                         desc.getCacheTime());

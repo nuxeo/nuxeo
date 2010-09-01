@@ -101,7 +101,8 @@ public class UserManagerDescriptor implements Serializable {
         }
     }
 
-    @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/substringMatchSearchField",
+            componentType = String.class, type = String[].class)
     public void setSubstringMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.SUBSTRING);
@@ -112,7 +113,8 @@ public class UserManagerDescriptor implements Serializable {
      * @deprecated use setSubstringMatchUserSearchFields instead
      */
     @Deprecated
-    @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/searchField",
+            componentType = String.class, type = String[].class)
     public void setUserSearchFields(String[] fields) {
         setSubstringMatchUserSearchFields(fields);
     }
@@ -127,7 +129,8 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/anonymousUser")
     public VirtualUserDescriptor anonymousUser;
 
-    @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
+    @XNodeMap(value = "users/virtualUser", key = "@id",
+            type = HashMap.class, componentType = VirtualUserDescriptor.class)
     public Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")

@@ -43,7 +43,7 @@ public interface LockCoordinator {
             throws AlreadyLockedException, InterruptedException;
 
     /**
-     * Save addition information to the resource
+     * Saves addition information to the resource.
      *
      * @param self
      * @param resource

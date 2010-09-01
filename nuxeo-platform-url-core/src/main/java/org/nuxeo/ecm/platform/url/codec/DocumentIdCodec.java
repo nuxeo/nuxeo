@@ -86,7 +86,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
     }
 
     /**
-     * Extracts document location from a Zope-like URL ie :
+     * Extracts document location from a Zope-like URL ie:
      * server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {

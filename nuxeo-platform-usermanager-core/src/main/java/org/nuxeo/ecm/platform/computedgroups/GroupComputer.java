@@ -26,78 +26,49 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
- * Interface that must be implemented by all contributed {@link GroupComputer}
+ * Interface that must be implemented by all contributed {@link GroupComputer}s.
  *
  * @author Thierry Delprat
- *
  */
 public interface GroupComputer {
 
     /**
-     *
-     * Return the group names for a give User
-     *
-     * @param nuxeoPrincipal
-     * @return
-     * @throws Exception
+     * Returns the group names for a give User.
      */
     List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
             throws Exception;
 
     /**
-     * return all group ids. If you class can not efficiently compute this list,
+     * Return all group ids. If you class can not efficiently compute this list,
      * you can return an empty list. In this case you need to implement the
-     * searchGroups method
-     *
-     * @return
-     * @throws Exception
+     * searchGroups method.
      */
     List<String> getAllGroupIds() throws Exception;
 
     /**
-     *
-     * Return the members for a give group
-     *
-     * @param groupName
-     * @return
-     * @throws Exception
+     * Returns the members for a give group.
      */
     List<String> getGroupMembers(String groupName) throws Exception;
 
     /**
-     * return parent groups
-     *
-     * @param groupName
-     * @return
-     * @throws Exception
+     * Return parent groups.
      */
     List<String> getParentsGroupNames(String groupName) throws Exception;
 
     /**
-     * Return children groups
-     *
-     * @param groupName
-     * @return
-     * @throws Exception
+     * Returns children groups.
      */
     List<String> getSubGroupsNames(String groupName) throws Exception;
 
     /**
-     * Search for a group. (This method is used in particular from UI to
-     * search/select a group)
-     *
-     * @param filter
-     * @param fulltext
-     * @return
-     * @throws Exception
+     * Searches for a group. (This method is used in particular from UI to
+     * search/select a group).
      */
     List<String> searchGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext) throws Exception;
 
     /**
      * Returns true if the given group exists.
-     *
-     * @throws Exception
      */
     boolean hasGroup(String name) throws Exception;
 

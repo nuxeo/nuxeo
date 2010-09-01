@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author tiry
  */
-public class LRUCachingMap<K,V> extends LinkedHashMap<K,V> {
+public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,7 +40,7 @@ public class LRUCachingMap<K,V> extends LinkedHashMap<K,V> {
     }
 
     @Override
-    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         return size() > maxCachedItems;
     }
 

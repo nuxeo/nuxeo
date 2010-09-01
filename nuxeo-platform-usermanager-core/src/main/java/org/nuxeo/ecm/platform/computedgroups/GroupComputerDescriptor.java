@@ -27,11 +27,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
-*
-* @author Thierry Delprat
-*
-*/
-
+ * @author Thierry Delprat
+ */
 @XObject("groupComputer")
 public class GroupComputerDescriptor implements Serializable {
 
@@ -48,20 +45,21 @@ public class GroupComputerDescriptor implements Serializable {
     protected String name;
 
     public String getName() {
-        if (name!=null) {
+        if (name != null) {
             return name;
         }
         return computerClass.getSimpleName();
     }
 
-    public GroupComputer getComputer() throws ClientException{
-        if (groupComputer==null) {
-            if (computerClass!=null) {
+    public GroupComputer getComputer() throws ClientException {
+        if (groupComputer == null) {
+            if (computerClass != null) {
                 try {
-                    groupComputer= computerClass.newInstance();
+                    groupComputer = computerClass.newInstance();
                 } catch (Exception e) {
                     log.error("Enable to instanciate GroupComputer", e);
-                    throw new ClientException("Enable to instanciate GroupComputer", e);
+                    throw new ClientException(
+                            "Enable to instanciate GroupComputer", e);
                 }
             } else {
                 groupComputer = null;

@@ -25,12 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
- *
  * Base class for {@link GroupComputer} implementation that uses User attribute
- * to compute groups
+ * to compute groups.
  *
  * @author Thierry Delprat
- *
  */
 public abstract class AbstractAttributeBasedGroupComputer extends
         AbstractGroupComputer {
@@ -88,6 +86,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         return null;
     }
 
+    @Override
     public List<String> searchGroups(Map<String, Serializable> filter,
             HashSet<String> fulltext) throws Exception {
 

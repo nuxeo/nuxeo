@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
+ * Describes a detached NuxeoPrincipal.
  *
- * Describes a detached NuxeoPrincipal
  * @author Mariana Cedica
  */
 public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
@@ -51,8 +51,10 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         this.principalId = principalId;
     }
 
-    public DetachedNuxeoPrincipal(String principalId, String name, String firstName, String lastName, String password, String company, List<String> groups, List<String> allGroups,
-            List<String> roles, boolean isAdministrator, boolean isAnonymous) {
+    public DetachedNuxeoPrincipal(String principalId, String name,
+            String firstName, String lastName, String password, String company,
+            List<String> groups, List<String> allGroups, List<String> roles,
+            boolean isAdministrator, boolean isAnonymous) {
         this.password = principalId;
         this.name = name;
         this.firstName = firstName;

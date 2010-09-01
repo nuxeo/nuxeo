@@ -62,13 +62,17 @@ public class VersioningService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(VersioningService.class);
 
-    private final Map<String, EditBasedRuleDescriptor> editRuleDescriptors = new LinkedHashMap<String, EditBasedRuleDescriptor>();
+    private final Map<String, EditBasedRuleDescriptor> editRuleDescriptors
+            = new LinkedHashMap<String, EditBasedRuleDescriptor>();
 
-    private final Map<String, AutoBasedRuleDescriptor> autoRuleDescriptors = new LinkedHashMap<String, AutoBasedRuleDescriptor>();
+    private final Map<String, AutoBasedRuleDescriptor> autoRuleDescriptors
+            = new LinkedHashMap<String, AutoBasedRuleDescriptor>();
 
-    private final Map<String, VersioningPropertiesDescriptor> propertiesDescriptors = new HashMap<String, VersioningPropertiesDescriptor>();
+    private final Map<String, VersioningPropertiesDescriptor> propertiesDescriptors
+            = new HashMap<String, VersioningPropertiesDescriptor>();
 
-    private final Map<String, CreateSnapshotDescriptor> snapshotDescriptors = new HashMap<String, CreateSnapshotDescriptor>();
+    private final Map<String, CreateSnapshotDescriptor> snapshotDescriptors
+            = new HashMap<String, CreateSnapshotDescriptor>();
 
     private String minorVersionProperty;
 
