@@ -75,9 +75,9 @@ public class DateType extends PrimitiveType {
     @Override
     public String encode(Object object) {
         if (object instanceof Date) {
-            return DateParser.formatW3CDateTime((Date)object);
+            return DateParser.formatW3CDateTime((Date) object);
         } else if (object instanceof Calendar) {
-            return DateParser.formatW3CDateTime(((Calendar)object).getTime());
+            return DateParser.formatW3CDateTime(((Calendar) object).getTime());
         } else {
            return null;
         }

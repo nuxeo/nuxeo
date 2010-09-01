@@ -163,7 +163,7 @@ public class MockDocument implements Document {
         return null;
     }
 
-    public List<String>getVersionsIds() throws DocumentException {
+    public List<String> getVersionsIds() throws DocumentException {
         return null;
     }
 

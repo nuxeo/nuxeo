@@ -102,7 +102,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                 TransactionHelper.setTransactionRollbackOnly();
             }
             if (t instanceof InvocationTargetException) {
-                Throwable tt = ((InvocationTargetException)t).getTargetException();
+                Throwable tt = ((InvocationTargetException) t).getTargetException();
                 if (tt != null) {
                     throw tt;
                 }

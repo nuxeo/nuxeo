@@ -94,13 +94,12 @@ public interface ListType extends Type {
     TypeRef<ListType> getRef();
 
     /**
-     * Whether the isnatnces of this list are arrays
-     * @return
+     * Whether the instances of this list are arrays.
      */
     boolean isArray();
 
     /**
-     * This method is provided for compatiblilty. Existing code is mapping scalar lists to arrays
+     * This method is provided for compatibility. Existing code is mapping scalar lists to arrays
      * but this should be changed in order to map only explicit scalar list (those declared using xs:list)
      * to arrays and not all list that have scalar items.
      *

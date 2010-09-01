@@ -194,7 +194,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Called by the application server when it's looking for an appropriate
      * connection to server from a pool.
      */
-    @SuppressWarnings("unchecked")
     public ManagedConnection matchManagedConnections(Set set, Subject subject,
             ConnectionRequestInfo cri) throws ResourceException {
         for (Object candidate : set) {

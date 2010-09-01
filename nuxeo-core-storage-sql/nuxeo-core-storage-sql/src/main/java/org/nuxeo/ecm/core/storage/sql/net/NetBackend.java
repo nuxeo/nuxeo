@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.net;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.Credentials;

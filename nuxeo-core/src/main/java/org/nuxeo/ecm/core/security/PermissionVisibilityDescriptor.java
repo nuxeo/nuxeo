@@ -102,8 +102,7 @@ public class PermissionVisibilityDescriptor {
     }
 
 
-    public List<UserVisiblePermission> getSortedUIPermissionDescriptor()
-    {
+    public List<UserVisiblePermission> getSortedUIPermissionDescriptor() {
         Collections.sort(items, new PermissionUIItemComparator());
         List<UserVisiblePermission> result = new ArrayList<UserVisiblePermission>();
         for (PermissionUIItemDescriptor pid : items) {

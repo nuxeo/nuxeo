@@ -58,7 +58,7 @@ public class MethodAccessor implements MemberAccessor {
     public void set(Object instance, Object value) throws AccessException {
         if (isReadOnly()) {
             throw new ReadOnlyAccessException("Attempted to write on a read only field: "
-                    +ObjectAccessorHelper.getPropertyName(getter.getName()));
+                    + ObjectAccessorHelper.getPropertyName(getter.getName()));
         }
         try {
             setter.invoke(instance, value);

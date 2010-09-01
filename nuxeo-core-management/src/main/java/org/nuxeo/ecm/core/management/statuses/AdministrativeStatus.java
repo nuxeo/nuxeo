@@ -53,7 +53,8 @@ public class AdministrativeStatus {
     protected void notifyEvent(String name) {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
         eventProperties.put("category", ADMINISTRATIVE_EVENT_CATEGORY);
-        EventContext ctx = new InlineEventContext(new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME),eventProperties);
+        EventContext ctx = new InlineEventContext(
+                new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME), eventProperties);
         Event event = ctx.newEvent(name);
         try {
             Framework.getService(EventProducer.class).fireEvent(event);
@@ -83,7 +84,7 @@ public class AdministrativeStatus {
         value = persister.getValue(serverInstanceName);
         if (value.equals(ACTIVE)) {
             notifyEvent(ACTIVATED_EVENT);
-        } if (value.equals(PASSIVATED_EVENT)) {
+        } else if (value.equals(PASSIVATED_EVENT)) {
              notifyEvent(PASSIVATED_EVENT);
         }
     }

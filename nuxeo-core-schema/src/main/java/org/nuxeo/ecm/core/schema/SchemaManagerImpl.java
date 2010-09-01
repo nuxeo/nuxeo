@@ -438,7 +438,7 @@ public class SchemaManagerImpl implements SchemaManager {
     public URL resolveSchemaLocation(String location) {
         if (location.startsWith("schema://")) {
             try {
-                return new File(schemaDir, location).toURL();
+                return new File(schemaDir, location).toURI().toURL();
             } catch (MalformedURLException e) {
                 log.error("failed to resolve schema location: " + location, e);
             }

@@ -21,7 +21,6 @@ import java.util.Collection;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.management.statuses.AdministrativeStatus;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 

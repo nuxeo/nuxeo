@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.net.URI;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
@@ -72,7 +71,7 @@ public interface RepositoryManagement {
     void deactivateServer();
 
     /**
-     * Get infos about current VCS server clients
+     * Get info about current VCS server clients
      */
     Collection<MapperClientInfo> getClientInfos();
 

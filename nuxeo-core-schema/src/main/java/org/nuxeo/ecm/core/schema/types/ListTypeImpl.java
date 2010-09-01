@@ -149,7 +149,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean validate(Object object) throws TypeException {
         if (object == null && isNotNull()) {
             return false;
@@ -169,7 +169,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
         return true; // TODO
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected boolean validateCollection(Collection col) {
         return true; // TODO
     }

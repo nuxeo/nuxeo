@@ -25,7 +25,7 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
 public class StatusesManagementFactory extends AbstractResourceFactory {
 
     protected void doQualifyNames(ProbeInfo info) {
-        info.shortcutName =info.descriptor.getShortcut();
+        info.shortcutName = info.descriptor.getShortcut();
         info.qualifiedName = info.descriptor.getQualifiedName();
         if (info.qualifiedName == null) {
             info.qualifiedName = ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)+",status=probes,probe="+info.shortcutName;

@@ -253,7 +253,8 @@ public class RepositoryImpl implements Repository {
 
     public String getServerURL() {
         String host = Framework.getProperty("org.nuxeo.runtime.server.host", "localhost:");
-        return String.format("http://%s:%d/%s",host, repositoryDescriptor.listen.port, repositoryDescriptor.listen.path);
+        return String.format("http://%s:%d/%s",
+                host, repositoryDescriptor.listen.port, repositoryDescriptor.listen.path);
     }
 
     public void activateServer() {

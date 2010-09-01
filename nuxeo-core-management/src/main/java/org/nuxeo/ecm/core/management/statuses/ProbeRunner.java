@@ -79,11 +79,9 @@ public class ProbeRunner implements ProbeRunnerMBean {
         return info;
     }
 
-
     public Collection<ProbeInfo> getInSuccessProbeInfos() {
         return Collections.unmodifiableCollection(succeed);
     }
-
 
     public Collection<ProbeInfo> getInFailureProbeInfos() {
             return Collections.unmodifiableCollection(failed);
@@ -108,7 +106,7 @@ public class ProbeRunner implements ProbeRunnerMBean {
         return null;
     }
 
-    protected final static Log log = LogFactory.getLog(ProbeRunner.class);
+    protected static final Log log = LogFactory.getLog(ProbeRunner.class);
 
     protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
 

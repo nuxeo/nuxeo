@@ -182,8 +182,8 @@ public class NuxeoAdministrativeStatusPersister implements AdministrativeStatusP
 
         @Override
         public void run() throws ClientException {
-            doc = doGetOrCreateDoc(session,serverInstanceName);
-            administrativeStatusPropertyValue = (String)doc.getPropertyValue(
+            doc = doGetOrCreateDoc(session, serverInstanceName);
+            administrativeStatusPropertyValue = (String) doc.getPropertyValue(
                     ADMINISTRATIVE_STATUS_PROPERTY);
         }
 

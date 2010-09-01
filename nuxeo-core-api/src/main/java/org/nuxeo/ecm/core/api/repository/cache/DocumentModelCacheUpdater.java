@@ -60,7 +60,7 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
         if (!listeners.isEmpty()) {
             if (!updatedDocs.isEmpty()) {
                 DocumentModel[] docs = updatedDocs.toArray(new DocumentModel[updatedDocs.size()]);
-                for (DocumentModelCacheListener listener:listeners) {
+                for (DocumentModelCacheListener listener : listeners) {
                     try {
                     listener.documentsChanged(docs, urgent);
                     } catch (Throwable error) {
@@ -128,8 +128,7 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
                     }
                     handleUpdateModification(cache, updatedDocs, doc);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 StringBuilder sb = new StringBuilder("In event " + event.getId() + ", error handling ");
                 if (modif.isCreate()) {
                     sb.append("create ");

@@ -194,8 +194,8 @@ public class RepositoryDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
-    
+
     @XNode("usersSeparator@key")
-    public String usersSeparatorKey ;
+    public String usersSeparatorKey;
 
 }

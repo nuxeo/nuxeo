@@ -233,7 +233,8 @@ public class TestTypes extends NXRuntimeTestCase {
     }
 
     public void testCompositeType() {
-        CompositeTypeImpl type = new CompositeTypeImpl((CompositeType)null, SchemaNames.BUILTIN,  "composite type", null);
+        CompositeTypeImpl type = new CompositeTypeImpl(
+                (CompositeType) null, SchemaNames.BUILTIN,  "composite type", null);
 
         assertTrue(type.isCompositeType());
         assertEquals("composite type", type.getName());

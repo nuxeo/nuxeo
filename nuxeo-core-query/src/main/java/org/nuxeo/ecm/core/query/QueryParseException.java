@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.CoreRuntimeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class QueryParseException extends CoreRuntimeException {
 

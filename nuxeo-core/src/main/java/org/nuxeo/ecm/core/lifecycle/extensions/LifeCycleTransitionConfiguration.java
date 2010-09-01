@@ -59,7 +59,7 @@ public class LifeCycleTransitionConfiguration {
         Collection<LifeCycleTransition> transitions = new ArrayList<LifeCycleTransition>();
 
         NodeList transitionsElements = element.getElementsByTagName(TAG_TRANSITIONS);
-        Element transitionsElement=null;
+        Element transitionsElement = null;
         if (transitionsElements.getLength() > 0) {
             // NXP-1472 : don't get the first element, but the first one attached to <lifecycle>
             for (int i = 0; i < transitionsElements.getLength(); i++) {

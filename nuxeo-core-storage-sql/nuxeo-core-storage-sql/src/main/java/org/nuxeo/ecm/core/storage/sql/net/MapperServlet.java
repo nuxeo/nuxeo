@@ -227,7 +227,7 @@ public class MapperServlet extends HttpServlet {
             return Collections.emptyList();
         }
         List<MapperClientInfo> infos = new ArrayList<MapperClientInfo>(invokers.size());
-        for (MapperInvoker invoker:invokers.values()) {
+        for (MapperInvoker invoker : invokers.values()) {
             infos.add(invoker.clientInfo);
         }
         return infos;

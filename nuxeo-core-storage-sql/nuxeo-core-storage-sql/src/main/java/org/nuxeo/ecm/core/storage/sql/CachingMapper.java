@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;

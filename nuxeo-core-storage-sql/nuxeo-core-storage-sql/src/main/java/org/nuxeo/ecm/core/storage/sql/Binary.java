@@ -58,7 +58,7 @@ public class Binary implements Serializable {
     }
 
     /**
-     * Gets a string representation of the hex digest of the binary
+     * Gets a string representation of the hex digest of the binary.
      *
      * @return the digest, characters are in the range {@code [0-9a-f]}
      */
