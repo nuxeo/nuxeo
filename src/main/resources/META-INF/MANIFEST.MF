@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Layout Demo
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.demo;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/layout-demo-framework.xml,
+ OSGI-INF/layout-demo-contrib.xml,
+ OSGI-INF/layout-demo-auth-contrib.xml,
+ OSGI-INF/layout-demo-url-contrib.xml,
+ OSGI-INF/layout-demo-core-types-contrib.xml,
+ OSGI-INF/layout-demo-theme-contrib.xml,
+ OSGI-INF/demo/layout-demo-string-widget.xml,
+ OSGI-INF/demo/layout-demo-textarea-widget.xml
+ 

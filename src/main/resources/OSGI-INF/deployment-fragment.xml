@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>layoutDemoIntroduction</from-outcome>
+      <to-view-id>/layoutDemo/introduction.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- pages mapping -->
+    <navigation-case>
+      <from-outcome>stringWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/stringWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>textareaWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/textareaWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <!-- unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  make some extension sources available for demo -->
+    <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
+      <include>OSGI-INF/demo/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+

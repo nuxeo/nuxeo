@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+
+  <ui:define name="page title">
+    <h:outputText value="Layout demo" />
+  </ui:define>
+  
+  <ui:define name="body">
+
+    <link rel="stylesheet" type="text/css" href="${baseURL}layoutDemo/style/layoutDemo.css" />
+    <script type="text/javascript" src="#{baseURL}layoutDemo/scripts/layoutDemo.js"></script>
+    <link href="#{baseURL}layoutDemo/style/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="#{baseURL}layoutDemo/scripts/prettify.js"></script>
+  
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td colspan="2">
+            <ui:insert name="header">
+              <ui:include src="header.xhtml" />
+            </ui:insert>
+          </td>
+        </tr>
+        <tr>
+          <td width="20%" valign="top">
+            <ui:insert name="menu">
+              <ui:include src="menu.xhtml" />
+            </ui:insert>
+          </td>
+          <td>
+            <ui:insert name="content" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <ui:insert name="footer" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </ui:define>
+
+</nxthemes:composition>

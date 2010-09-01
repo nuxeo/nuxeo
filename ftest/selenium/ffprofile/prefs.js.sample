@@ -1,0 +1,26 @@
+// Disable security restrictions on upload
+// The url is set at runtime by the run.sh script
+user_pref("signed.applets.codebase_principal_support", true);
+user_pref("capability.principal.codebase.p0.granted", "UniversalFileRead");
+user_pref("capability.principal.codebase.p0.id", "http://localhost:8080");
+user_pref("capability.principal.codebase.p0.subjectName", "");
+
+// Set english as default language
+user_pref("general.useragent.locale", "en");
+user_pref("intl.accept_languages", "en");
+
+// Speed up firefox by pipelining requests on a single connection
+user_pref("network.http.keep-alive", true);
+user_pref("network.http.pipelining", true);
+user_pref("network.http.proxy.pipelining", true);
+user_pref("network.http.pipelining.maxrequests", 8);
+
+// Try to use less memory
+user_pref("browser.sessionhistory.max_entries", 10);
+user_pref("browser.sessionhistory.max_total_viewers", 4);
+user_pref("browser.sessionstore.max_tabs_undo", 4);
+user_pref("browser.sessionstore.interval", 1800000);
+
+// flag UserAgent as Selenium tester : this is used in Nuxeo
+user_pref("general.useragent.extra.nuxeo", "Nuxeo-Selenium-Tester");
+

@@ -1,0 +1,27 @@
+<ui:composition template="global_page_template.xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="page title">
+    <h:outputText value="Layout demo - #{currentWidgetType.label}"/>
+  </ui:define>
+
+  <ui:define name="content">
+  
+    <h:form id="layout_demo_form" enctype="multipart/form-data">
+    
+      <nxl:layout value="#{layoutDemoDocument}" mode="edit"
+        name="#{currentWidgetType.demoLayouts[0].name}" />
+    
+      <h:commandButton value="submit" styleClass="button" />
+    
+    </h:form>
+
+    <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
+      <ui:param name="sourcePath" value="#{currentWidgetType.demoLayouts[0].sourcePath}" />
+    </ui:include>
+
+  </ui:define>
+
+</ui:composition>

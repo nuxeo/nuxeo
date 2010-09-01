@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.framework">
+
+  <documentation>
+    Framework for demo, registering widget types to test and give documentation
+    about.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoService" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager" />
+  </service>
+
+  <extension-point name="widgettypes">
+    <object
+      class="org.nuxeo.ecm.platform.forms.layout.demo.descriptors.DemoWidgetTypeDescriptor" />
+  </extension-point>
+
+
+</component>

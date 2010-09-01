@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layoutDemo.framework"
+    point="widgettypes">
+
+    <widgetType name="string">
+      <label>String widget</label>
+      <viewId>stringWidget</viewId>
+      <category>builtin</category>
+      <layouts>
+        <layout name="stringWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-string-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <label>Textarea widget</label>
+      <viewId>textareaWidget</viewId>
+      <category>builtin</category>
+      <layouts>
+        <layout name="textareaWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
+      </layouts>
+    </widgetType>
+
+  </extension>
+
+</component>

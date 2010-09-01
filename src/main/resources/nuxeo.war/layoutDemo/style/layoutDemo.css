@@ -1,0 +1,70 @@
+/**
+  Layout demo specific CSS
+**/
+
+// FOLDABLE BOX
+
+.foldableBox {
+  border:1px solid #4e9ae1;
+  margin-bottom:20px;
+}
+
+.foldableBox h3 {
+  border-bottom: 1px solid #4e9ae1;
+  color: #ffffff;
+  background: #4e9ae1;
+  padding:3px 3px 3px 18px;
+  font-size:11px;
+}
+
+.foldableBox h3.folded {
+  background: #4e9ae1 url(${org.nuxeo.ecm.contextPath}/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
+}
+
+.foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
+  color: #ffffff;
+}
+
+.foldableBox h3.unfolded {
+  background: #4e9ae1 url(${org.nuxeo.ecm.contextPath}/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
+}
+
+.foldableBox h3 a {
+  color: #ffffff;
+  display: block;
+}
+
+.foldableBox .boxBody {
+  padding: 10px;
+}
+
+// MENU
+
+ul.layoutDemoMenu {
+  margin:0;
+  padding:0px 0px 0 0;
+  list-style:none;
+}
+
+ul.layoutDemoMenu li {
+  margin-left:5px;
+  margin:0;
+  padding:0;
+}
+
+ul.layoutDemoMenu a, ul.layoutDemoMenu a:hover, ul.layoutDemoMenu a:visited {
+  text-decoration:none;
+  font-weight:normal;
+  display:block;
+  padding:3px 7px;
+  border:1px solid #c0dcf5;
+}
+
+ul.layoutDemoMenu li.selected a, ul.layoutDemoMenu li.selected a:hover, ul.layoutDemoMenu li.selected a:visited {
+  text-decoration:none;
+  font-weight:normal;
+  display:block;
+  padding:3px 7px;
+  border:1px solid #c0dcf5;
+  background:#c0dcf5;
+}
