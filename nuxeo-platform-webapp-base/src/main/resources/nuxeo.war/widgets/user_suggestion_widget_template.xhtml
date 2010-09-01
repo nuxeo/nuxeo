@@ -40,19 +40,23 @@
     <c:set var="searchType" value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
     <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
     <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
+    <c:set var="hideSearchTypeText" value="#{nxu:test(!empty widget.properties.hideSearchTypeText, widget.properties.hideSearchTypeText, false)}" />
+    <c:set var="displayHorizontally" value="#{nxu:test(!empty widget.properties.displayHorizontally, widget.properties.displayHorizontally, true)}" />
 
-    <h:outputText value="#{messages['label.security.searchUsers']}"
-      rendered="#{searchType =='USER_TYPE'}"
-      class="rightsAddLabel" />
-    <h:outputText value="#{messages['label.security.searchGroups']}"
-      rendered="#{searchType =='GROUP_TYPE'}"
-      class="rightsAddLabel" />
-    <h:outputText value="#{messages['label.security.search']}"
-      rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
-      class="rightsAddLabel" />
+    <c:if test="#{!hideSearchTypeText}">
+      <h:outputText value="#{messages['label.security.searchUsers']}"
+        rendered="#{searchType =='USER_TYPE'}"
+        class="rightsAddLabel" />
+      <h:outputText value="#{messages['label.security.searchGroups']}"
+        rendered="#{searchType =='GROUP_TYPE'}"
+        class="rightsAddLabel" />
+      <h:outputText value="#{messages['label.security.search']}"
+        rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
+        class="rightsAddLabel" />
+    </c:if>
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
-      <h:panelGrid id="#{widget.id}_panel" columns="2">
+      <h:panelGrid id="#{widget.id}_panel" columns="${nxu:test(displayHorizontally, 2, 1)}">
 
         <h:panelGroup id="#{widget.id}_panelGroup">
           <span id="#{widget.id}_suggestDiv">
