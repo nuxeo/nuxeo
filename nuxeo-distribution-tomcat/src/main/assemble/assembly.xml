@@ -211,6 +211,7 @@
         <exclude name="**/bin/*.sh" />
         <exclude name="**/bin/*.tar.gz" />
         <exclude name="**/conf/logging.properties" />
+        <exclude name="**/conf/server.xml" />
         <exclude name="**/logs" />
       </patternset>
     </unzip>

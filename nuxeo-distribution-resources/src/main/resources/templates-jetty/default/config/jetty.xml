@@ -56,11 +56,11 @@
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
             <Set name="host"><SystemProperty name="jetty.host" /></Set>
-            <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
+            <Set name="port"><SystemProperty name="jetty.port" default="${nuxeo.server.http.port}"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
             <Set name="statsOn">false</Set>
-            <Set name="confidentialPort">8443</Set>
+            <Set name="confidentialPort">${nuxeo.server.https.port}</Set>
 	    <Set name="lowResourcesConnections">5000</Set>
 	    <Set name="lowResourcesMaxIdleTime">5000</Set>
           </New>
