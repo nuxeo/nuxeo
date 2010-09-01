@@ -55,11 +55,11 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 public class DialectH2 extends Dialect {
 
     protected static final String DEFAULT_USERS_SEPARATOR = ",";
-    
+
     private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
     protected final String usersSeparator;
-    
+
     public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
@@ -402,12 +402,12 @@ public class DialectH2 extends Dialect {
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
-    
+
     public String getUsersSeparator() {
         if (usersSeparator == null) {
             return DEFAULT_USERS_SEPARATOR;
         }
         return usersSeparator;
     }
-    
+
 }

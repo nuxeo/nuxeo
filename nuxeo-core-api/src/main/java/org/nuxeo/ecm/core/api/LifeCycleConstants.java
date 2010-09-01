@@ -45,6 +45,6 @@ public interface LifeCycleConstants {
      * Event for a document undeleted by the user. Triggers an async listener
      * that undeletes its children too.
      */
-    public static final String DOCUMENT_UNDELETED = "documentUndeleted";
+    static final String DOCUMENT_UNDELETED = "documentUndeleted";
 
 }

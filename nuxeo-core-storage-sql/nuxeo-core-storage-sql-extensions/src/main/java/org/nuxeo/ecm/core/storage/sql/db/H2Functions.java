@@ -43,7 +43,7 @@ import org.h2.tools.SimpleResultSet;
 public class H2Functions extends EmbeddedFunctions {
 
     private static final Log log = LogFactory.getLog(H2Functions.class);
-    
+
     // for debug
     private static boolean isLogEnabled() {
         return false;
