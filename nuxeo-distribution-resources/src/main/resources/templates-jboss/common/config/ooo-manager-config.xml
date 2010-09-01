@@ -12,7 +12,6 @@
       <!-- Default configuration uses the two following ports: -->
       <portNumbers>
         <portNumber>2003</portNumber>
-        <portNumber>2004</portNumber>
       </portNumbers>
 
       <!-- Define the different pipe names to use with Pipe connection. -->
