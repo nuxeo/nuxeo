@@ -56,7 +56,7 @@ public class SeamJsfSessionManager extends DefaultSessionManager {
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            if (facesContext!=null) {
+            if (facesContext != null) {
                 ExternalContext externalContext = facesContext.getExternalContext();
                 // Make long-running conversation temporary
                 Manager.instance().endConversation(true);

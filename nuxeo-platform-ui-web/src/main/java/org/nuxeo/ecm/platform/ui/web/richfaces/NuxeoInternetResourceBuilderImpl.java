@@ -203,7 +203,7 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
         for (String key : getJSResourcesToInclude()) {
             InternetResource res = super.getResource(key);
             InputStream is = res.getResourceAsStream(null);
-            if (is!=null) {
+            if (is != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 String line = null;
                 StringBuilder sb = new StringBuilder();
@@ -213,8 +213,7 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
                 is.close();
                 buf.append(sb.toString());
                 buf.append("\n");
-            }
-            else {
+            } else {
                 log.error("Unable to read InputStream for resource " + key);
             }
         }

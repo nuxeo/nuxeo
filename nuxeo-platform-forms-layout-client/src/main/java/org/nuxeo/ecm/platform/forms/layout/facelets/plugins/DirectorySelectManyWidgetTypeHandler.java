@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
-import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxComponent;
 

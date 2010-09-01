@@ -68,7 +68,7 @@ public class SortActionsBean implements SortActions, Serializable {
     }
 
     protected boolean getDefaultSortOrder(String column) {
-        if (defaultSortAscending!=null) {
+        if (defaultSortAscending != null) {
             return defaultSortAscending;
         }
         return true;
@@ -85,7 +85,7 @@ public class SortActionsBean implements SortActions, Serializable {
 
         if (invalidateSeamVariables != null) {
             String[] variables = invalidateSeamVariables.split(",");
-            for (String variable: variables) {
+            for (String variable : variables) {
                 Contexts.removeFromAllContexts(variable);
             }
         }

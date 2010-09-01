@@ -238,7 +238,7 @@ public class ChainSelectStatus extends UIOutput {
             String concatenatedLabel = StringUtils.join(displayedLabels,
                     separator);
             if (concatenatedLabel.compareTo("") == 0 && displayedLabels.length != 0){
-                concatenatedLabel = translate(context,"label.directories.error");
+                concatenatedLabel = translate(context, "label.directories.error");
             }
             writer.write(concatenatedLabel);
             writer.endElement("div");

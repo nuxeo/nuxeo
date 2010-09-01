@@ -82,7 +82,7 @@ public abstract class InputController {
     @In(create = true)
     protected TypesTool typesTool;
 
-    @In(create = true,required = false)
+    @In(create = true, required = false)
     protected Principal currentUser;
 
     /**

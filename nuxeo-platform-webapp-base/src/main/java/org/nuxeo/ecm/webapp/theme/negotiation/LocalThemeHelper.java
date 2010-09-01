@@ -45,7 +45,7 @@ public class LocalThemeHelper {
     }
 
     public static LocalThemeConfig getLocalThemeConfig(DocumentModel doc) {
-        PlacefulService placefulService = getPlacefulServiceBean();//LocalThemeHelper.getPlacefulServiceBean()
+        PlacefulService placefulService = getPlacefulServiceBean(); //LocalThemeHelper.getPlacefulServiceBean()
         if (placefulService == null) {
             return null;
         }

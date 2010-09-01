@@ -24,11 +24,10 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Restlet to trigger the reloading
- * (can not be done directly from a Seam bean without messing up JSF scopes)
+ * Restlet to trigger the reloading.
+ * (can not be done directly from a Seam bean without messing up JSF scopes).
  *
  * @author tiry
- *
  */
 public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
 
@@ -39,18 +38,17 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
 
         if (!SeamHotReloadHelper.isHotReloadEnabled()) {
             sb.append("This operation is not permited");
-        }
-        else {
+        } else {
 
             long t0 = System.currentTimeMillis();
             Set<String> reloadedComponents = SeamHotReloadHelper.reloadSeamComponents(getHttpRequest(req));
             long t1 = System.currentTimeMillis();
 
-            if (reloadedComponents!=null) {
+            if (reloadedComponents != null) {
                 sb.append("Reloaded ");
                 sb.append(reloadedComponents.size());
                 sb.append(" Seam components in ");
-                sb.append(t1-t0);
+                sb.append(t1 - t0);
                 sb.append("ms");
                 sb.append("\n");
 
@@ -59,10 +57,10 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
                     sb.append(cn);
                     sb.append("\n");
                 }
-            }
-            else {
+            } else {
                 Set<String> reloadableComponents = SeamHotReloadHelper.getHotDeployableComponents(getHttpRequest(req));
-                if (reloadableComponents==null || reloadableComponents.size()==0) {
+                if (reloadableComponents == null
+                        || reloadableComponents.size() == 0) {
                     sb.append("Nothing to reload");
                 } else {
                     sb.append(reloadableComponents.size());

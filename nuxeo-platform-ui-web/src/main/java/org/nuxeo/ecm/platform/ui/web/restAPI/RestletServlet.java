@@ -58,7 +58,7 @@ public class RestletServlet extends HttpServlet {
     public synchronized void init() throws ServletException {
         super.init();
 
-        if (converter!=null) {
+        if (converter != null) {
             log.error("RestletServlet initialized several times");
             return;
         }

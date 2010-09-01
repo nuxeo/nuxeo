@@ -71,7 +71,6 @@ public class UserDisplayConverter implements Converter {
      * <li>lastNameField: field storing the user last name</li>
      * </ul>
      */
-    @SuppressWarnings("unchecked")
     public String getAsString(FacesContext context, UIComponent component,
             Object value) {
         if (value instanceof String && !StringUtils.isEmpty((String) value)) {

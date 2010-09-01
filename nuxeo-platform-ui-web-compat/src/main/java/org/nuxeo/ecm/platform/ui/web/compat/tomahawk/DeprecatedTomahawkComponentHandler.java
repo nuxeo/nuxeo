@@ -34,11 +34,9 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Handler for deprecated tomahawk components.
- *
  * <p>
  * Behaves like a {@link HtmlComponentHandler} but issues a deprecation warning
  * log when used.
- * </p>
  *
  * @author Anahide Tchertchian
  */

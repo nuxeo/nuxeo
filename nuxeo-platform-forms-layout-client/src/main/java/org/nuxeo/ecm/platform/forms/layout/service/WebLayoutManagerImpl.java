@@ -260,7 +260,6 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      *
      * @param context the facelet context.
      * @param expression the string expression.
-     * @return
      */
     private static Object evaluateExpression(FaceletContext context,
             String expression) {

@@ -44,7 +44,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
     private static final long serialVersionUID = -4518256101431979971L;
 
     @Override
-    protected void doHandleStatelessRequest (Request req, Response res) {
+    protected void doHandleStatelessRequest(Request req, Response res) {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
 

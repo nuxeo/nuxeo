@@ -69,7 +69,7 @@ public class BaseNuxeoRestlet extends Restlet {
         handleError(result, res, e.getMessage(), e.getClass().getCanonicalName());
     }
 
-    protected static void handleError(DOMDocument result,Response res, Exception e) {
+    protected static void handleError(DOMDocument result, Response res, Exception e) {
         handleError(result, res, e.getMessage(), e.getClass().getCanonicalName());
     }
 
@@ -86,7 +86,7 @@ public class BaseNuxeoRestlet extends Restlet {
             error.setAttribute("class", classMessage);
         }
         result.setRootElement((org.dom4j.Element) error);
-        
+
         Representation rep = new StringRepresentation(result.asXML(),
                 MediaType.APPLICATION_XML);
         rep.setCharacterSet(CharacterSet.UTF_8);

@@ -124,7 +124,7 @@ public final class Functions {
         return StringUtils.join(collection.iterator(), separator);
     }
 
-    public static String htmlEscape (String data) {
+    public static String htmlEscape(String data) {
         return  StringEscapeUtils.escapeHtml(data);
     }
 

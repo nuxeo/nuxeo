@@ -249,7 +249,7 @@ public class DocumentsListsPersistenceManager {
                     dirSession.deleteEntry(entry.getId());
                 } catch (Exception e) {
                     releasePersistenceService();
-                    log.error("Unable to remove non existing document model entry : ",e);
+                    log.error("Unable to remove non existing document model entry : ", e);
                 }
             }
         }

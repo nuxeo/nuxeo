@@ -210,7 +210,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
         } catch (SecurityException e) {
             return new EmptyResultsProvider();
         } catch (NoSuchMethodException e) {
-            log.warn(farm.getClass().getName() +" will have to " +
+            log.warn(farm.getClass().getName() + " will have to " +
                     "implement getEmptyResultsProvider() for Nuxeo 5.2");
             return new EmptyResultsProvider();
         }
@@ -228,10 +228,10 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
         resultsProvidersCache.remove(name);
     }
 
-    @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create=false,inject=false)
+    @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED },
+            create=false, inject=false)
     @BypassInterceptors
-    public void invalidateChildrenProvider()
-    {
+    public void invalidateChildrenProvider() {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
     }
 

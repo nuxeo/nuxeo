@@ -476,7 +476,7 @@ public class UserManagerActionsBean implements UserManagerActions {
 
     protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
         Map<String, Serializable> serializableMap = null;
-        if (map !=null) {
+        if (map != null) {
             serializableMap = new HashMap<String, Serializable>();
             for (String key : map.keySet()) {
                 serializableMap.put(key, (Serializable) map.get(key));

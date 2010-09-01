@@ -66,11 +66,10 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             exportAsTree = false;
             String format = req.getResourceRef().getQueryAsForm().getFirstValue(
                     "format");
-            if (format!=null) {
-                format=format.toLowerCase();
-            }
-            else {
-                format="xml";
+            if (format != null) {
+                format = format.toLowerCase();
+            } else {
+                format = "xml";
             }
             exportAsZip = "zip".equals(format);
         }

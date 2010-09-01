@@ -204,7 +204,6 @@ public class DirectoryTreeNode {
     /**
      * Returns true if current node is a parent from selected value(s).
      */
-    @SuppressWarnings("unchecked")
     public boolean isOpened() throws ClientException {
         if (config.isMultiselect()) {
             return isOpen();
