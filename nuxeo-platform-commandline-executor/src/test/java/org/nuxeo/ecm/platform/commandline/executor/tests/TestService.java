@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 
 /**
- * Test service and EPs
+ * Test service and EPs.
  *
  * @author tiry
  */
@@ -50,19 +50,22 @@ public class TestService extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
+                "OSGI-INF/commandline-aspell-test-contribs.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
         assertTrue(cmds.contains("aspell"));
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-imagemagic-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
+                "OSGI-INF/commandline-imagemagic-test-contrib.xml");
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(2, cmds.size());
         assertTrue(cmds.contains("identify"));
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-imagemagic-test-contrib2.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
+                "OSGI-INF/commandline-imagemagic-test-contrib2.xml");
         cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
@@ -109,14 +112,11 @@ public class TestService extends NXRuntimeTestCase {
 
         try {
             cles.execCommand("IDon'tExist", null);
-        }
-        catch (CommandNotAvailable e) {
+            fail("No Exception has been raised");
+        } catch (CommandNotAvailable e) {
             String msg = e.getErrorMessage();
             assertNotNull(msg);
-            return;
         }
-
-        fail("No Exception has been raised");
     }
 
 }

@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * Tests commands parsing
+ * Tests commands parsing.
  *
  * @author tiry
  * @author Vincent Dutat
@@ -42,7 +42,6 @@ public class TestCommands extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-
     }
 
     public void testCmdParamatersParsing() throws Exception {

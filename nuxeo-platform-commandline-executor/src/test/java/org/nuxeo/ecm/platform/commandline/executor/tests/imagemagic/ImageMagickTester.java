@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * Test indetify imagemagick commandline
+ * Test identify imagemagick commandline.
  */
 public class ImageMagickTester extends NXRuntimeTestCase {
 
@@ -42,7 +42,6 @@ public class ImageMagickTester extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.ecm.platform.commandline.executor",
                 "OSGI-INF/commandline-imagemagic-test-contrib.xml");
-
     }
 
     public void testIdentifyExec() throws Exception {

@@ -26,9 +26,9 @@ import java.util.List;
 /**
  * Wraps result of the command-line execution:
  * <ul>
- * <li>output buffer
- * <li>return code
- * <li>java Exception
+ * <li>output buffer,
+ * <li>return code,
+ * <li>java Exception.
  * </ul>
  *
  * @author tiry

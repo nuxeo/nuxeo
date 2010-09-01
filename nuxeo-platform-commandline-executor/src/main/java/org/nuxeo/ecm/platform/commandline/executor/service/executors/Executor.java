@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
- * Interface for class that provide a way to execute a {@link CommandLineDescriptor}
+ * Interface for class that provide a way to execute a {@link CommandLineDescriptor}.
  *
  * @author tiry
  */

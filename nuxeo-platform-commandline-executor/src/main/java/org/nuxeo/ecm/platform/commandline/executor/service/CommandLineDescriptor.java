@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap descriptor for a CommandLine
+ * XMap descriptor for a CommandLine.
  *
  * @author tiry
  */
@@ -34,7 +34,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class CommandLineDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
 
     @XNode("@name")
     protected String name;

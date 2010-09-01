@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- * Test Aspell command line
+ * Test Aspell command line.
  */
 public class AspellTester extends NXRuntimeTestCase {
 
@@ -48,7 +48,6 @@ public class AspellTester extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.ecm.platform.commandline.executor",
                 "OSGI-INF/commandline-aspell-test-contribs.xml");
-
     }
 
     public void testAspellExec() throws Exception {
@@ -93,7 +92,6 @@ public class AspellTester extends NXRuntimeTestCase {
         assertFalse(result.isSuccessful());
         assertNotSame(0, result.getReturnCode());
         // System.out.println(result.getOutput());
-
     }
 
     protected boolean checkOutput(List<String> lines) {
