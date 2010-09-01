@@ -75,12 +75,10 @@ public class TestStatuses extends SQLRepositoryTestCase {
         Collection<String> names = runner.getProbeNames();
         assertTrue("admin status shortcut not listed", names.contains("administrativeStatus"));
         assertNotNull("admin status probe not published", info.qualifiedName);
-        assertEquals(0, info.runnedCount);
-        assertTrue(info.lastStatus.info.equals("not yet runned"));
-        assertTrue(info.lastFailureStatus.info.equals("not yet failed"));
-        assertTrue(info.lastSuccesStatus.info.equals("not yet succeed"));
-        runner.run();
-        assertEquals(1, info.runnedCount);
+        assertEquals(1, info.getRunnedCount());
+        assertFalse("not a success", info.isInError());
+        assertFalse("wrong success value", info.getStatus().getInfo().equals("[unavailable]"));
+        assertEquals("wrong default value","[unavailable]", info.getLastFailureStatus().getInfo());
     }
 
     private AdministrativeStatus getAdministrativeStatus()
