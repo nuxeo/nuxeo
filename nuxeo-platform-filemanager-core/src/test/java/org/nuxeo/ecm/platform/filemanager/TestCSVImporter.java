@@ -39,7 +39,7 @@ public class TestCSVImporter extends RepositoryOSGITestCase {
     protected DocumentModel destWS;
     protected DocumentModel wsRoot;
 
-    private File getArchiveFile() {
+    private static File getArchiveFile() {
         return new File(FileUtils.getResourcePathFromContext("test-data/testCSVArchive.zip"));
     }
 

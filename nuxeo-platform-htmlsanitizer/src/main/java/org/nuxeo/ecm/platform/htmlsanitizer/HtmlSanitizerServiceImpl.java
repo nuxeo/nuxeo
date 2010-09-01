@@ -198,7 +198,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
             for (FieldDescriptor field : sanitizer.fields) {
                 String fieldName = field.getContentField();
                 String filterField = field.getFilterField();
-                if (filterField!=null) {
+                if (filterField != null) {
                     Property filterProp;
                     try {
                         filterProp = doc.getProperty(filterField);

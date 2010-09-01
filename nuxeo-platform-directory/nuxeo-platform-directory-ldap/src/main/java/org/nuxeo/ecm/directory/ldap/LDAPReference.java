@@ -879,8 +879,8 @@ public class LDAPReference extends AbstractReference {
      *
      * @param attributes Attributes of the referencer element
      * @param directoryDn Dn of the Directory
-     * @param linkDnValue Dn specified in the parent
-     * @param filterValue Filter expression specified in the parent
+     * @param linkDn Dn specified in the parent
+     * @param filter Filter expression specified in the parent
      * @param scope scope for the search
      * @return The list of the referenced elements.
      * @throws DirectoryException

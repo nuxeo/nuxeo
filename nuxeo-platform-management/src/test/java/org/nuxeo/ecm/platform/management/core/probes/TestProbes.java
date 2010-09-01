@@ -42,21 +42,24 @@ public class TestProbes extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
-
-    public void testScheduling() throws MalformedObjectNameException, NullPointerException {
+    public void testScheduling() throws MalformedObjectNameException {
         ProbeScheduler scheduler = Framework.getLocalService(ProbeScheduler.class);
         assertFalse(scheduler.isEnabled());
+
         scheduler.enable();
         assertTrue(scheduler.isEnabled());
+
         scheduler.disable();
         assertFalse(scheduler.isEnabled());
+
         ResourcePublisher publisher = Framework.getLocalService(ResourcePublisher.class);
         assertTrue(publisher.getResourcesName().contains(new ObjectName("org.nuxeo:name=probeScheduler,type=service")));
     }
 
     public void testPopulateRepository() throws Exception {
        ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
-       assertNotNull(info);;
+       assertNotNull(info);
+
        info.run();
        assertFalse(info.isInError());
    }

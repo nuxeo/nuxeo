@@ -109,6 +109,7 @@ public class CSVZipImporter extends AbstractFileImporter {
         Reader reader = new InputStreamReader(indexStream);
         CSVReader csvReader = new CSVReader(reader);
 
+        @SuppressWarnings("unchecked")
         List<String[]> lines = csvReader.readAll();
 
         String[] header = lines.get(0);

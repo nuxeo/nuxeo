@@ -95,9 +95,7 @@ public class JODBasedConverter implements ExternalConverter {
     /**
      * Returns the DocumentFormat for the given mimetype.
      *
-     * @param mimetype
      * @return DocumentFormat for the given mimetype
-     * @throws Exception
      */
     private static DocumentFormat getSourceFormat(String mimetype) {
         return formatRegistry.getFormatByMediaType(mimetype);

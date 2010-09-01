@@ -34,9 +34,9 @@ public class FieldDescriptor {
     private String filterValue;
 
     public String getContentField() {
-        if (contentField!=null) {
+        if (contentField != null) {
             String result = contentField.trim();
-            result=result.replace("\n", "");
+            result = result.replace("\n", "");
             return result;
         }
         return contentField;
@@ -52,7 +52,7 @@ public class FieldDescriptor {
 
     @Override
     public String toString() {
-        if (filterField!=null) {
+        if (filterField != null) {
             return contentField + "if " + filterField + "=" + filterValue;
         } else {
             return contentField;

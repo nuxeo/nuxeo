@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Check IO archive import via Unit Tests
+ * Check IO archive import via Unit Tests.
  *
  * @author tiry
  */

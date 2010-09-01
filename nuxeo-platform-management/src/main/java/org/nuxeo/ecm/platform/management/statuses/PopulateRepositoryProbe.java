@@ -62,14 +62,14 @@ public class PopulateRepositoryProbe implements Probe {
             session.removeDocument(model.getRef());
             session.save();
 
-            info ="Created document " + model.getPathAsString() +" and  removed it ";
+            info = "Created document " + model.getPathAsString() + " and  removed it ";
         }
 
     }
 
     public ProbeStatus run() {
         RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-        Runner runner = new Runner(mgr.getDefaultRepository().getName());;
+        Runner runner = new Runner(mgr.getDefaultRepository().getName());
         try {
             runner.runUnrestricted();
         } catch (ClientException e) {

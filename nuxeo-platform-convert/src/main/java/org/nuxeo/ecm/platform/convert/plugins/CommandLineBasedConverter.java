@@ -127,7 +127,9 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     }
 
-    protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters, Map<String, String> parameters) throws ConversionException {
+    protected CmdReturn execOnBlob(String commandName,
+            Map<String, Blob> blobParameters, Map<String, String> parameters)
+            throws ConversionException {
         CmdParameters params = new CmdParameters();
         List<String> filesToDelete = new ArrayList<String>();
 

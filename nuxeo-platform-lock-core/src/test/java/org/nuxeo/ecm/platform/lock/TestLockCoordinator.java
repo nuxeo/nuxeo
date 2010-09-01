@@ -143,7 +143,7 @@ public class TestLockCoordinator extends NXRuntimeTestCase {
         Thread thread;
 
         /**
-         * Start the thread with this runner
+         * Start the thread with this runner.
          */
         public void start() {
             thread = new Thread(this);

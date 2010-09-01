@@ -40,7 +40,7 @@ public class DefaultSessionManager implements NuxeoAuthenticationSessionManager 
     }
 
     public void onAuthenticatedSessionCreated(ServletRequest request,
-            HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+            HttpSession session, CachableUserIdentificationInfo cachableUserInfo) {
         // NOP
     }
 

@@ -31,12 +31,13 @@ public final class DocumentUTUtils {
     // This is an utility class, but making ctor private somehow confuses
     // Maven Surefire.
 
+    private DocumentUTUtils() {
+    }
+
     /**
      * Extracts the text from a PDF file.
      *
-     * @param pdfFile
      * @return the document content as plain text
-     * @throws IOException
      */
     public static String readPdfText(File pdfFile) throws IOException {
         PDFTextStripper textStripper = new PDFTextStripper();

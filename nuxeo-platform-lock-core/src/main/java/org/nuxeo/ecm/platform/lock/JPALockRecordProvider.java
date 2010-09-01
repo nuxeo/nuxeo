@@ -61,8 +61,9 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     /**
      * Lazy initialisation for solving datasource not being published at
-     * activation time TODO can be replaces with a framework listener on started
-     * event
+     * activation time.
+     * <p>
+     * TODO can be replaces with a framework listener on started event.
      *
      * @return
      */
@@ -72,7 +73,8 @@ public class JPALockRecordProvider implements LockRecordProvider,
         props.setProperty(HibernateConfiguration.TXTYPE_PROPERTY_NAME,
                 HibernateConfiguration.RESOURCE_LOCAL);
         try {
-            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+            PersistenceProviderFactory persistenceProviderFactory
+                    = Framework.getLocalService(PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("nxlocks");
             try {
                 persistenceProvider.closePersistenceUnit();
@@ -112,11 +114,6 @@ public class JPALockRecordProvider implements LockRecordProvider,
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.lock.LockRecordProvider#delete(java.net.URI)
-     */
     public void delete(URI resource) {
         EntityManager em = open(true);
         try {
@@ -131,12 +128,6 @@ public class JPALockRecordProvider implements LockRecordProvider,
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.lock.LockRecordProvider#getRecord(java.net.URI)
-     */
     public LockRecord getRecord(URI resourceUri) {
         EntityManager em = open(false);
         try {
@@ -148,13 +139,6 @@ public class JPALockRecordProvider implements LockRecordProvider,
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.lock.LockRecordProvider#updateRecord(java.net.URI,
-     * java.net.URI, java.lang.String, long)
-     */
     public LockRecord updateRecord(URI self, URI resource, String comments,
             long timeout) {
         EntityManager em = open(true);
@@ -175,13 +159,6 @@ public class JPALockRecordProvider implements LockRecordProvider,
         return record;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.lock.LockRecordProvider#createRecord(java.net.URI,
-     * java.net.URI, java.lang.String, long)
-     */
     public LockRecord createRecord(URI self, URI resource, String comment,
             long timeout) {
         LockRecord record;

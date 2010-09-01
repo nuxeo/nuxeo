@@ -114,7 +114,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertEquals(3, factory.getRootAcl().size());
     }
 
-    public void testServiceFactoryForNotifications() throws Exception {
+    public void testServiceFactoryForNotifications() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
         Map<String, FactoryBindingDescriptor> factoryBindings = serviceImpl.getFactoryBindings();
@@ -126,24 +126,30 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         assertNotNull(notif);
         assertTrue(!notif.isEmpty());
         assertEquals(2, notif.size());
+
         NotificationDescriptor notif1 = notif.get(0);
         assertEquals("Modification", notif1.getEvent());
+
         List<String> users = notif1.getUsers();
         assertNotNull(users);
         assertTrue(!users.isEmpty());
         assertEquals(2, users.size());
         assertEquals("jdoe", users.get(0));
         assertEquals("bree", users.get(1));
+
         List<String> groups = notif1.getGroups();
         assertNotNull(groups);
         assertTrue(!groups.isEmpty());
         assertEquals(1, groups.size());
         assertEquals("members", groups.get(0));
+
         NotificationDescriptor notif2 = notif.get(1);
         assertEquals("Creation", notif2.getEvent());
+
         users = notif2.getUsers();
         assertNotNull(users);
         assertTrue(users.isEmpty());
+
         groups = notif2.getGroups();
         assertNotNull(groups);
         assertTrue(!groups.isEmpty());
@@ -154,6 +160,7 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
     public void testServiceFactoryInstancesContribs() {
         ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
         assertNotNull(serviceImpl);
+
         Map<String, ContentFactory> factoryInstances = serviceImpl.getFactoryInstancesByType();
         assertEquals(3, factoryInstances.size());
         assertTrue(factoryInstances.containsKey("Root"));
