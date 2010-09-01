@@ -20,7 +20,6 @@ package org.nuxeo.runtime.test.runner;
 import java.io.File;
 import java.net.URL;
 
-import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 

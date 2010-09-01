@@ -63,7 +63,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
     }
 
     public void resetOutput(String path) throws IOException {
-        file= new File(path);
+        file = new File(path);
         resetOutput();
     }
 
@@ -73,7 +73,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
         }
         closeOutput();
         outputStream = new XStream().createObjectOutputStream(new FileWriter(file));
-        for (String name:SimonManager.simonNames()) {
+        for (String name : SimonManager.simonNames()) {
             SimonManager.getSimon(name).reset();
         }
     }

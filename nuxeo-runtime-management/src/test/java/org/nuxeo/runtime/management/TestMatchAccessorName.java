@@ -32,7 +32,7 @@ public class TestMatchAccessorName extends TestCase {
     public void testMatchGet() {
         Matcher matcher = fixAttributePattern.matcher("getSomething");
         assertTrue(matcher.matches());
-        assertEquals("Something",matcher.group(2));
+        assertEquals("Something", matcher.group(2));
     }
 
 }

@@ -119,7 +119,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
 
         protected void doRegisterResources() {
-            for (ResourceFactory factory:registry.values()) {
+            for (ResourceFactory factory : registry.values()) {
                 factory.registerResources();
             }
         }
@@ -380,7 +380,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
         bundleContext.addFrameworkListener(new FrameworkListener() {
             public void frameworkEvent(FrameworkEvent event) {
-                if(event.getType() != FrameworkEvent.STARTED) {
+                if (event.getType() != FrameworkEvent.STARTED) {
                     return;
                 }
                 factoriesRegistry.doRegisterResources();
@@ -411,7 +411,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     protected void bindForTest(MBeanServer server, ObjectName name, Object instance, Class<?> clazz) throws Exception {
-        resourcesRegistry.doBind(server,name,instance,clazz);
+        resourcesRegistry.doBind(server, name, instance, clazz);
     }
 
 }

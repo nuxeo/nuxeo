@@ -26,7 +26,6 @@ import org.nuxeo.runtime.model.ComponentName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class ObjectNameFactory {
 
@@ -40,14 +39,15 @@ public class ObjectNameFactory {
         int lastDotIndex = instanceName.lastIndexOf('.');
         if (lastDotIndex > 0) {
             String packageName = instanceName.substring(0, lastDotIndex);
-            instanceName = instanceName.substring(lastDotIndex+1);
-            return formatQualifiedName(domainName,typeName,packageName,instanceName);
+            instanceName = instanceName.substring(lastDotIndex + 1);
+            return formatQualifiedName(domainName, typeName, packageName, instanceName);
         }
         return String.format("%s:name=%s,type=%s", domainName, instanceName,
                 typeName);
     }
 
-    public static String formatQualifiedName(String domainName,String typeName, String packageName, String instanceName) {
+    public static String formatQualifiedName(String domainName,
+            String typeName, String packageName, String instanceName) {
         return String.format("%s:package=%s,name=%s,type=%s", domainName, packageName, instanceName,
                 typeName);
     }

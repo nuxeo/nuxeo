@@ -88,7 +88,8 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
         Map<String, Set<String>> returnedMap = new HashMap<String, Set<String>>();
-        Map<ComponentName, Set<ComponentName>> pendingRegistrations = doGetRuntime().getComponentManager().getPendingRegistrations();
+        Map<ComponentName, Set<ComponentName>> pendingRegistrations
+                = doGetRuntime().getComponentManager().getPendingRegistrations();
         if (pendingRegistrations.size() != 0) {
             TransformedMap.decorate(returnedMap,
                     ComponentNameTransformer.INSTANCE,
