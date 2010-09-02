@@ -10,11 +10,34 @@
   <ui:define name="content">
   
     <h:form id="layout_demo_form" enctype="multipart/form-data">
-    
-      <nxl:layout value="#{layoutDemoDocument}" mode="edit"
-        name="#{currentWidgetType.demoLayouts[0].name}" />
-    
-      <h:commandButton value="submit" styleClass="button" />
+
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <th>
+              Edit mode
+            </th>
+            <th>
+              View mode
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td width="50%" valign="top">
+              <nxl:layout value="#{layoutDemoDocument}" mode="edit"
+                name="#{currentWidgetType.demoLayouts[0].name}" />
+              <p class="buttonsGadget">
+                <h:commandButton value="submit" styleClass="button" />
+              </p>
+            </td>
+            <td width="50%" valign="top">
+              <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                name="#{currentWidgetType.demoLayouts[0].name}" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     
     </h:form>
 

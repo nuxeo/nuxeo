@@ -81,9 +81,14 @@ public class LayoutDemoActions implements Serializable {
         return demoDocument;
     }
 
-    @Factory(value = "builtinWidgetTypes", scope = SESSION)
-    public List<DemoWidgetType> getBuiltinWidgetTypes() {
-        return layoutDemoManager.getWidgetTypes("builtin");
+    @Factory(value = "standardWidgetTypes", scope = SESSION)
+    public List<DemoWidgetType> getStandardWidgetTypes() {
+        return layoutDemoManager.getWidgetTypes("standard");
+    }
+
+    @Factory(value = "complexWidgetTypes", scope = SESSION)
+    public List<DemoWidgetType> getComplexWidgetTypes() {
+        return layoutDemoManager.getWidgetTypes("complex");
     }
 
     public String initContextFromRestRequest(DocumentView docView)

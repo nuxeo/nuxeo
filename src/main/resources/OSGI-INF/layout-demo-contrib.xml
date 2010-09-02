@@ -7,7 +7,7 @@
     <widgetType name="string">
       <label>String widget</label>
       <viewId>stringWidget</viewId>
-      <category>builtin</category>
+      <category>standard</category>
       <layouts>
         <layout name="stringWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-string-widget.xml" />
@@ -17,10 +17,110 @@
     <widgetType name="textarea">
       <label>Textarea widget</label>
       <viewId>textareaWidget</viewId>
-      <category>builtin</category>
+      <category>standard</category>
       <layouts>
         <layout name="textareaWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="int">
+      <label>Int widget</label>
+      <viewId>intWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="intWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="secret">
+      <label>Secret widget</label>
+      <viewId>secretWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="secretWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-secret-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <label>Datetime widget</label>
+      <viewId>datetimeWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="datetimeWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="file">
+      <label>File widget</label>
+      <viewId>fileWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="fileWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <label>Htmltext widget</label>
+      <viewId>htmltextWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="htmltextWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <label>SelectOneDirectory widget</label>
+      <viewId>selectOneDirectoryWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="selectOneDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <label>SelectManyDirectory widget</label>
+      <viewId>selectManyDirectoryWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="selectManyDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <label>Checkbox widget</label>
+      <viewId>checkboxWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="checkboxWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="list">
+      <label>List widget</label>
+      <viewId>listWidget</viewId>
+      <category>complex</category>
+      <layouts>
+        <layout name="listWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="template">
+      <label>Template widget</label>
+      <viewId>templateWidget</viewId>
+      <category>complex</category>
+      <layouts>
+        <layout name="templateWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
       </layouts>
     </widgetType>
 

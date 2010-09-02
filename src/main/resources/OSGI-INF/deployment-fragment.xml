@@ -26,6 +26,60 @@
       <to-view-id>/layoutDemo/widgets/textareaWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>intWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/intWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>secretWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/secretWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>datetimeWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/datetimeWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>templateWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/templateWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>fileWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/fileWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>htmltextWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/htmltextWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectOneDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/widgets/selectOneDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/widgets/selectManyDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/listWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>checkboxWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/checkboxWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 

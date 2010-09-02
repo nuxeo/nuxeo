@@ -5,17 +5,17 @@
 
   <div class="foldableBox">
 
-    <nxu:set var="builtinWidgetsSelected" value="#{currentWidgetType.category == 'builtin'}">
-      <h3 class="#{nxu:test(builtinWidgetsSelected, 'unfolded', 'folded')}">
+    <nxu:set var="standardWidgetsSelected" value="#{currentWidgetType.category == 'standard'}">
+      <h3 class="#{nxu:test(standardWidgetsSelected, 'unfolded', 'folded')}">
         <a href="#nogo" onclick="return toggleBox(this)">
-          <h:outputText value="Builtin widgets" />
+          <h:outputText value="Standard widgets" />
         </a>
       </h3>
   
       <div class="boxBody"
-        style="#{nxu:test(builtinWidgetsSelected, '', 'overflow: visible; display: none;')}">
+        style="#{nxu:test(standardWidgetsSelected, '', 'overflow: visible; display: none;')}">
   
-        <nxu:set var="widgetTypes" value="#{builtinWidgetTypes}">
+        <nxu:set var="widgetTypes" value="#{standardWidgetTypes}">
           <ul class="layoutDemoMenu">
             <c:forEach var="widgetType" items="#{widgetTypes}">
               <li class="#{nxu:test(currentWidgetType.name == widgetType.name, 'selected', '')}">
@@ -32,17 +32,25 @@
 
   <div class="foldableBox">
 
-    <nxu:set var="customWidgetsSelected" value="#{currentWidgetType.category == 'custom'}">
-      <h3 class="#{nxu:test(customWidgetsSelected, 'unfolded', 'folded')}">
+    <nxu:set var="complexWidgetsSelected" value="#{currentWidgetType.category == 'complex'}">
+      <h3 class="#{nxu:test(complexWidgetsSelected, 'unfolded', 'folded')}">
         <a href="#nogo" onclick="return toggleBox(this)">
-          <h:outputText value="Custom widgets" />
+          <h:outputText value="Complex widgets" />
         </a>
       </h3>
   
       <div class="boxBody"
-        style="#{nxu:test(customWidgetsSelected, '', 'overflow: visible; display: none;')}">
+        style="#{nxu:test(complexWidgetsSelected, '', 'overflow: visible; display: none;')}">
   
-        TODO
+        <nxu:set var="widgetTypes" value="#{complexWidgetTypes}">
+          <ul class="layoutDemoMenu">
+            <c:forEach var="widgetType" items="#{widgetTypes}">
+              <li class="#{nxu:test(currentWidgetType.name == widgetType.name, 'selected', '')}">
+                <a href="#{baseURL}#{widgetType.url}">#{widgetType.label}</a>
+              </li>
+            </c:forEach>
+          </ul>
+        </nxu:set>
   
       </div>
     </nxu:set>

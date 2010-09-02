@@ -1,21 +1,30 @@
-========================
-Nuxeo Platform Error web
-========================
+==========================
+Nuxeo Platform Layout Demo
+==========================
 
-Addon performing errors on the web side for automated testing of the
-exception handling system.
+Addon presenting layouts and widgets in a show-case like web site.
 
-Allows to tests JSF/Seam/Webengine errors, as well as rollbacks when issuing
-an error after document creation. Also allows to test redirection mechanism
-when anonymous plugin is used and security exceptions are thrown.
+The application is visible at http://localhost:8080/nuxeolayoutDemo 
 
-Selenium tests make sure that the right exception page is shown. Error logs
-should be checked too, in case the exception handling triggers additional
-errors that should not be there.
+Selenium tests also ensure that all standard widget types are working ok.
 
 
 Install
--------
+=======
 
 Setup properties in a file called "build.properties" according to you needs
 and run "ant deploy" to deploy on a jboss with nuxeo installed.
+
+
+Development
+===========
+
+Add a new wiget type
+--------------------
+
+To add a new widget type to the application, you need to:
+- add a xhtml template in nuxeo.war/layoutDemo/widgets
+- declare this template with a view id in OSGI-INF/deployment-fragment.xml
+- provide the widget sample xml configuration in OSGI-INF/demo
+- configure the widget type in OSGI-INF/layout-demo-contrib.xml and 
+  reference it in the MANIFEST

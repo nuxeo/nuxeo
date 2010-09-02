@@ -12,5 +12,15 @@ Nuxeo-Component: OSGI-INF/layout-demo-framework.xml,
  OSGI-INF/layout-demo-core-types-contrib.xml,
  OSGI-INF/layout-demo-theme-contrib.xml,
  OSGI-INF/demo/layout-demo-string-widget.xml,
- OSGI-INF/demo/layout-demo-textarea-widget.xml
+ OSGI-INF/demo/layout-demo-textarea-widget.xml,
+ OSGI-INF/demo/layout-demo-int-widget.xml,
+ OSGI-INF/demo/layout-demo-secret-widget.xml,
+ OSGI-INF/demo/layout-demo-datetime-widget.xml,
+ OSGI-INF/demo/layout-demo-template-widget.xml,
+ OSGI-INF/demo/layout-demo-file-widget.xml,
+ OSGI-INF/demo/layout-demo-htmltext-widget.xml,
+ OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml,
+ OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml,
+ OSGI-INF/demo/layout-demo-list-widget.xml,
+ OSGI-INF/demo/layout-demo-checkbox-widget.xml
  

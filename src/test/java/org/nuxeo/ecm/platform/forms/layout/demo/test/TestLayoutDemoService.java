@@ -66,7 +66,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("stringWidget", stringWidget.getViewId());
         assertEquals(LayoutDemoManager.APPLICATION_PATH + "stringWidget",
                 stringWidget.getUrl());
-        assertEquals("builtin", stringWidget.getCategory());
+        assertEquals("standard", stringWidget.getCategory());
         List<DemoLayout> demoLayouts = stringWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
         assertEquals(1, demoLayouts.size());
@@ -81,7 +81,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("textareaWidget", textareaWidget.getViewId());
         assertEquals(LayoutDemoManager.APPLICATION_PATH + "textareaWidget",
                 textareaWidget.getUrl());
-        assertEquals("builtin", textareaWidget.getCategory());
+        assertEquals("standard", textareaWidget.getCategory());
         demoLayouts = textareaWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
         assertEquals(1, demoLayouts.size());
@@ -100,7 +100,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     }
 
     public void testGetWidgetTypesByCategory() throws Exception {
-        List<DemoWidgetType> widgets = service.getWidgetTypes("builtin");
+        List<DemoWidgetType> widgets = service.getWidgetTypes("standard");
         assertNotNull(widgets);
         assertTrue(widgets.size() >= 2);
         DemoWidgetType stringWidget = widgets.get(0);
