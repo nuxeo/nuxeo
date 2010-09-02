@@ -361,7 +361,7 @@ generate_configuration() {
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
-      org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
+      org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator > "$LOG" 2>&1
   fi
 }
 
