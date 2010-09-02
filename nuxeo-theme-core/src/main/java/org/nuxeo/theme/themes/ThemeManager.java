@@ -125,7 +125,6 @@ public final class ThemeManager implements Registrable {
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
     private static final int DEFAULT_THEME_INDENT = 2;
-    
 
     private static final Pattern styleResourceNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
@@ -611,7 +610,7 @@ public final class ThemeManager implements Registrable {
             makeFormatInherit(style, inheritedStyle);
         }
     }
-    
+
     public static void loadRemoteStyle(Style style) {
         if (!style.isNamed()) {
             return;
@@ -1408,7 +1407,7 @@ public final class ThemeManager implements Registrable {
         }
         return resourceBanks;
     }
-    
+
     // Theme descriptors
     public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();

@@ -283,7 +283,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
     public void testCompressSource() throws ThemeException, IOException {
         String expected = Utils.readResourceAsString("test1-expected.css");
         String actual = CSSUtils.compressSource(Utils.readResourceAsString("test1.css"));
-        assertEquals(expected, actual);  
+        assertEquals(expected, actual);
     }
 
 }

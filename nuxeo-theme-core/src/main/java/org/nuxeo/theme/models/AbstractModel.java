@@ -44,7 +44,7 @@ public abstract class AbstractModel implements Model {
         }
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
             throw new ModelException("Model type: " + model.getModelTypeName()
-                    + " not allowed in: " + this.getModelTypeName());
+                    + " not allowed in: " + getModelTypeName());
         }
         items.add(model);
         return model;
@@ -53,7 +53,7 @@ public abstract class AbstractModel implements Model {
     public Model insertItem(int index, Model model) throws ModelException {
         if (!getModelType().getAllowedTypes().contains(model.getModelTypeName())) {
             throw new ModelException("Model type: " + model.getModelTypeName()
-                    + " not allowed in: " + this.getModelTypeName());
+                    + " not allowed in: " + getModelTypeName());
         }
         items.add(index, model);
         return model;

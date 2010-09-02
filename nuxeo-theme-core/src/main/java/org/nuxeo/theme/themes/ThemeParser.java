@@ -436,7 +436,7 @@ public class ThemeParser {
                         style.setCustomized(true);
                     }
                 }
-                
+
                 // Use style properties from the theme
                 for (Node selectorNode : selectorNodes) {
                     NamedNodeMap attrs = selectorNode.getAttributes();

@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.html;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;

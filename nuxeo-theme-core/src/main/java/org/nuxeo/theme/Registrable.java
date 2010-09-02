@@ -16,7 +16,7 @@ package org.nuxeo.theme;
 
 /**
  * Objects registered in the ThemeService must implement this interface.
- * 
+ *
  * @author Jean-Marc Orliaguet
  */
 public interface Registrable {

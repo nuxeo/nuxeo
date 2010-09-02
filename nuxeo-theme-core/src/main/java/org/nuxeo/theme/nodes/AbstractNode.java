@@ -28,7 +28,7 @@ public abstract class AbstractNode implements Node {
     }
 
     public void setParent(Node parent) throws NodeException {
-        if (this.equals(parent)) {
+        if (equals(parent)) {
             throw new NodeException(String.format(
                     "A node cannot be made a parent of itself: %s.", this));
         }
@@ -50,11 +50,11 @@ public abstract class AbstractNode implements Node {
     }
 
     public Node addChild(Node node) throws NodeException {
-        if (this.equals(node)) {
+        if (equals(node)) {
             throw new NodeException(String.format(
                     "A node cannot be made a child of itself: %s.", this));
         }
-        if (this.isChildOf(node)) {
+        if (isChildOf(node)) {
             throw new NodeException(String.format(
                     "Cycle detected while trying to add child %s to %s.", node,
                     this));
@@ -79,17 +79,17 @@ public abstract class AbstractNode implements Node {
 
     public void setChildren(List<Node> children) throws NodeException {
         for (Node child : children) {
-            if (this.equals(child)) {
+            if (equals(child)) {
                 throw new NodeException(String.format(
                         "Node %s cannot be made a child of itself", child));
             }
-            if (this.isChildOf(child)) {
+            if (isChildOf(child)) {
                 throw new NodeException(String.format(
                         "Cycle detected while trying to set children of %s.",
                         this));
             }
         }
-        this.childrenNodes = children;
+        childrenNodes = children;
     }
 
     public abstract NodeTypeFamily getNodeTypeFamily();

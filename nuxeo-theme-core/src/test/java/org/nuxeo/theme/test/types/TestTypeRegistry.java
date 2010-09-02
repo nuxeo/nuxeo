@@ -39,7 +39,8 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
-        preset1 = new PresetType("preset1", "value", "group", "category", "", "");
+        preset1 = new PresetType("preset1", "value", "group", "category", "",
+                "");
         preset2 = new PresetType("preset2", "value", "", "category", "", "");
     }
 

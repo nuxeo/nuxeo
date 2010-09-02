@@ -102,7 +102,7 @@ public class ResourceBank implements Type {
             return skins;
         }
         for (Object object : JSONArray.fromObject(list)) {
-            Map<String, String> skin = (Map<String, String>) JSONObject.fromObject(object);
+            Map<String, String> skin = JSONObject.fromObject(object);
             skins.add(skin);
         }
         return skins;

@@ -87,7 +87,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
     @Override
     public void activate(ComponentContext ctx) {
-        this.context = ctx.getRuntimeContext();
+        context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
         ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
                 this);

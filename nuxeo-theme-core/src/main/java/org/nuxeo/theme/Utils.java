@@ -92,15 +92,18 @@ public final class Utils {
                 "\\s+", " ").trim();
     }
 
-    public static byte[] readResourceAsBytes(final String path) throws IOException {
+    public static byte[] readResourceAsBytes(final String path)
+            throws IOException {
         return readResource(path).toByteArray();
     }
 
-    public static String readResourceAsString(final String path) throws IOException {
+    public static String readResourceAsString(final String path)
+            throws IOException {
         return readResource(path).toString();
     }
 
-    private static ByteArrayOutputStream readResource(final String path) throws IOException {
+    private static ByteArrayOutputStream readResource(final String path)
+            throws IOException {
         InputStream is = null;
         ByteArrayOutputStream os = null;
         try {

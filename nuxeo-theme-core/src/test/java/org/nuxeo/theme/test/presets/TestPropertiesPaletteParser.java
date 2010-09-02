@@ -19,6 +19,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PropertiesPaletteParser;
 
 public class TestPropertiesPaletteParser extends TestCase {
@@ -26,7 +27,7 @@ public class TestPropertiesPaletteParser extends TestCase {
     public void testParser() {
         URL url = getClass().getClassLoader().getResource(
                 "properties-palette.properties");
-        Map<String, String> entries = PropertiesPaletteParser.parse(url);
+        Map<String, String> entries = PaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
 
         assertEquals("Plum", keys[0]);

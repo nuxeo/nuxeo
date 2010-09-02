@@ -23,7 +23,6 @@ import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.styles.StyleFormat;
-
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetType;

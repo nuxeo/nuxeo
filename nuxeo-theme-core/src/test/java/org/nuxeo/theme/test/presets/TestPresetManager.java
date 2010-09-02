@@ -67,8 +67,10 @@ public class TestPresetManager extends NXRuntimeTestCase {
     }
 
     public void testGetPresetByName() {
-        PresetType preset1 = new PresetType("orange", "#fc0", "colors", "color", "", "");
-        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color", "", "");
+        PresetType preset1 = new PresetType("orange", "#fc0", "colors",
+                "color", "", "");
+        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color",
+                "", "");
         typeRegistry.register(preset1);
         typeRegistry.register(preset2);
         assertSame(preset1, PresetManager.getPresetByName("orange (colors)"));
@@ -77,8 +79,10 @@ public class TestPresetManager extends NXRuntimeTestCase {
 
     public void testGetAllPresets() {
         assert PresetManager.getAllPresets().isEmpty();
-        PresetType preset1 = new PresetType("orange", "#fc0", "colors", "color", "", "");
-        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color", "", "");
+        PresetType preset1 = new PresetType("orange", "#fc0", "colors",
+                "color", "", "");
+        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color",
+                "", "");
         typeRegistry.register(preset1);
         typeRegistry.register(preset2);
         List<Type> allPresets = PresetManager.getAllPresets();
@@ -88,8 +92,10 @@ public class TestPresetManager extends NXRuntimeTestCase {
     }
 
     public void testResolvePresets() {
-        PresetType preset1 = new PresetType("orange", "#fc0", "colors", "color", "", "");
-        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color", "", "");
+        PresetType preset1 = new PresetType("orange", "#fc0", "colors",
+                "color", "", "");
+        PresetType preset2 = new PresetType("green", "#0f0", "colors", "color",
+                "", "");
         typeRegistry.register(preset1);
         typeRegistry.register(preset2);
         assertEquals("#000 #fc0 #0f0 #fff", PresetManager.resolvePresets(null,

@@ -32,9 +32,9 @@ public class DefaultFormat implements Format {
     private String name;
 
     private boolean remote = false;
-    
+
     private boolean customized = false;
-    
+
     public Integer getUid() {
         return uid;
     }
@@ -124,7 +124,7 @@ public class DefaultFormat implements Format {
     public void setRemote(boolean remote) {
         this.remote = remote;
     }
-    
+
     public boolean isCustomized() {
         return customized;
     }
@@ -132,6 +132,5 @@ public class DefaultFormat implements Format {
     public void setCustomized(boolean customized) {
         this.customized = customized;
     }
-    
-    
+
 }
