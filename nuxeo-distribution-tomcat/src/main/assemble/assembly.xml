@@ -23,11 +23,6 @@
     <echo>Building Tomcat standard distribution...</echo>
     <antcall target="prepare-tomcat" />
 
-    <unzip dest="${outdir}/${tomcat}/templates">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
-                            classifier="templates-tomcat" />
-    </unzip>
-
     <!-- Extract Nuxeo webapp -->
     <unzip dest="${outdir}/${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jetty:${nuxeo.dm.version}:zip"
@@ -46,13 +41,27 @@
     </unzip>
     <nx:rename from="${outdir}/${tomcat}/nuxeo-dm-${nuxeo.dm.version}-jetty"
                to="${outdir}/${tomcat}/nxserver" />
+    <!-- move templates to proper location for tomcat -->
+    <mkdir dir="${outdir}/${tomcat}/templates/default" />
+    <nx:rename from="${outdir}/${tomcat}/nxserver/templates/default"
+               to="${outdir}/${tomcat}/templates/default/nxserver" />
+    <!-- delete unneeded jetty stuff -->
+    <delete dir="${outdir}/${tomcat}/nxserver/templates" />
+    <delete file="${outdir}/${tomcat}/nxserver/config/login-anonymous-config.xml" />
     <delete>
-      <fileset dir="${outdir}/${tomcat}/nxserver/config"
-               includes="webbindings-config.xml" />
-      <fileset dir="${outdir}/${tomcat}/nxserver/config" includes="jetty.xml" />
-      <fileset dir="${outdir}/${tomcat}/nxserver/config"
-               includes="default-web.xml" />
+      <fileset dir="${outdir}/${tomcat}/templates/default/nxserver/config">
+        <include name="jetty.xml" />
+        <include name="default-web.xml" />
+        <include name="webbindings-config.xml" />
+      </fileset>
     </delete>
+    <delete file="${outdir}/${tomcat}/templates/default/nxserver/OSGI-INF/templates/web.xml" />
+    <!-- extract tomcat-specific templates -->
+    <unzip dest="${outdir}/${tomcat}/templates">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="templates-tomcat" />
+    </unzip>
+
     <copy todir="${outdir}/${tomcat}" overwrite="true" failonerror="true">
       <fileset dir="src/main/resources" />
     </copy>
