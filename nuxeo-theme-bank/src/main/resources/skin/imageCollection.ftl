@@ -6,8 +6,8 @@
 
   <@block name="content">
 
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt; 
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image')">image</a> &gt; 
+    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image')">image</a> &gt;
         <span>${collection}</span></h1>
     <div class="album">
       <#list images as image>

@@ -8,7 +8,7 @@
 
   <link type="text/css" rel="stylesheet" href="${basePath}/theme-banks/skin/styles/ui.css" />
   <@block name="stylesheets" />
-  <@block name="header_scripts" />  
+  <@block name="header_scripts" />
 </head>
 
 <body>

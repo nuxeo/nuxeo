@@ -100,9 +100,9 @@ public final class Manager {
         /*
          * Register the 'nxtheme' URL protocol handler programmatically to get
          * around m2/surefire classloading bug.
-         *
+         * 
          * ref. http://jira.codehaus.org/browse/SUREFIRE-104
-         *
+         * 
          * TODO: remove with Maven surefire 2.4
          */
 

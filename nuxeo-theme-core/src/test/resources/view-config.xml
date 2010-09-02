@@ -4,11 +4,11 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="template-engines">
-    
+
     <template-engine name="jsf-facelets" title="JSF/Facelets" />
-    
+
   </extension>
-  
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 

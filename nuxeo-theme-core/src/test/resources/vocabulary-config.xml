@@ -7,12 +7,12 @@
     <vocabulary name="test vocabulary as class">
       <class>org.nuxeo.theme.test.DummyVocabulary</class>
     </vocabulary>
-    
+
     <vocabulary name="test vocabulary as csv resource">
       <path>test-vocabulary.csv</path>
     </vocabulary>
-    
-    
+
+
   </extension>
-  
+
 </component>

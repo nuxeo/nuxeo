@@ -10,10 +10,10 @@
     <div class="album">
         <#list Root.getBankNames() as bank>
          <a href="${Root.getPath()}/${bank}">
-         <div class="imageSingle">   
+         <div class="imageSingle">
            <div class="image"><img src="${Root.getPath()}/${bank}/logo" /></div>
            <div class="footer">${bank}</div>
-        </div></a>     
+        </div></a>
         </#list>
     </div>
 
