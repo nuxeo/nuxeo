@@ -76,6 +76,8 @@ public class NuxeoExceptionFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        System.err.println("ExceptionFilter 1: "
+                + request.getParameter("userServicesForm:simpleSearchKeywordsInput"));
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
