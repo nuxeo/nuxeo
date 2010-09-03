@@ -438,28 +438,52 @@ public class UIInputFile extends UIInput implements NamingContainer {
             try {
                 InputFileInfo local = getFileInfoLocalValue();
                 InputFileChoice choice = local.getConvertedChoice();
-                // set blob
-                if (InputFileChoice.upload == choice
-                        || InputFileChoice.delete == choice
-                        || InputFileChoice.tempKeep == choice) {
-                    ve.setValue(context.getELContext(),
-                            local.getConvertedBlob());
-                    setValue(null);
-                    setLocalValueSet(false);
-                } else if (InputFileChoice.keep == choice) {
-                    // reste local value
-                    setValue(null);
-                    setLocalValueSet(false);
-                }
                 // set file name
                 if ((InputFileChoice.keep == choice && getEditFilename())
                         || InputFileChoice.upload == choice
                         || InputFileChoice.delete == choice
                         || InputFileChoice.tempKeep == choice) {
-                    ValueExpression vef = getValueExpression("filename");
-                    if (vef != null) {
-                        vef.setValue(context.getELContext(),
-                                local.getConvertedFilename());
+                }
+                // set blob and filename
+                if (InputFileChoice.upload == choice
+                        || InputFileChoice.delete == choice
+                        || InputFileChoice.tempKeep == choice) {
+                    if (InputFileChoice.delete == choice) {
+                        // set filename first to avoid error in case it maps
+                        // the blob filename
+                        ValueExpression vef = getValueExpression("filename");
+                        if (vef != null) {
+                            vef.setValue(context.getELContext(),
+                                    local.getConvertedFilename());
+                        }
+                        ve.setValue(context.getELContext(),
+                                local.getConvertedBlob());
+                        setValue(null);
+                        setLocalValueSet(false);
+                    } else {
+                        // set blob first to avoid error in case the filename
+                        // maps the blob filename
+                        ve.setValue(context.getELContext(),
+                                local.getConvertedBlob());
+                        setValue(null);
+                        setLocalValueSet(false);
+                        ValueExpression vef = getValueExpression("filename");
+                        if (vef != null) {
+                            vef.setValue(context.getELContext(),
+                                    local.getConvertedFilename());
+                        }
+                    }
+                } else if (InputFileChoice.keep == choice) {
+                    // reset local value
+                    setValue(null);
+                    setLocalValueSet(false);
+                    if (getEditFilename()) {
+                        // set filename
+                        ValueExpression vef = getValueExpression("filename");
+                        if (vef != null) {
+                            vef.setValue(context.getELContext(),
+                                    local.getConvertedFilename());
+                        }
                     }
                 }
                 return;
