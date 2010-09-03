@@ -7,9 +7,13 @@
   <xs:include schemaLocation="core-types.xsd" />
 
   <xs:element name="stringField" type="xs:string" />
+
   <xs:element name="dateField" type="xs:date" />
+
   <xs:element name="intField" type="xs:int" />
+
   <xs:element name="booleanField" type="xs:boolean" />
+
   <xs:element name="fileField" type="nxs:content" />
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
@@ -17,26 +21,24 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
-  <xs:element name="dateArrayField" type="nxs:dateArrayType" />
-  <xs:simpleType name="dateArrayType">
-    <xs:list itemType="xs:date" />
-  </xs:simpleType>
-
-  <xs:element name="intArrayField" type="nxs:intArrayType" />
-  <xs:simpleType name="intArrayType">
-    <xs:list itemType="xs:int" />
-  </xs:simpleType>
+  <xs:element name="stringList" type="nxs:stringListType" />
+  <xs:complexType name="stringListType">
+    <xs:sequence>
+      <xs:element name="item" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:element name="complexField" type="nxs:complexType" />
   <xs:complexType name="complexType">
     <xs:sequence>
-      <xs:element name="stringComplexFieldItem" type="xs:string" minOccurs="0"
+      <xs:element name="stringComplexItem" type="xs:string" minOccurs="0"
         maxOccurs="unbounded" />
-      <xs:element name="dateComplexFieldItem" type="xs:date" minOccurs="0"
+      <xs:element name="dateComplexItem" type="xs:date" minOccurs="0"
         maxOccurs="unbounded" />
-      <xs:element name="intComplexFieldItem" type="xs:int" minOccurs="0"
+      <xs:element name="intComplexItem" type="xs:int" minOccurs="0"
         maxOccurs="unbounded" />
-      <xs:element name="booleanComplexFieldItem" type="xs:int" minOccurs="0"
+      <xs:element name="booleanComplexItem" type="xs:boolean" minOccurs="0"
         maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
@@ -57,5 +59,23 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="listOfListsItemType">
+    <xs:sequence>
+      <xs:element name="stringItem" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="stringArrayItem" type="nxs:stringArrayType"
+        minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="stringListItem" type="nxs:stringListType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="listOfLists" type="nxs:listOfListsType" />
+  <xs:complexType name="listOfListsType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:listOfListsItemType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
 
 </xs:schema>

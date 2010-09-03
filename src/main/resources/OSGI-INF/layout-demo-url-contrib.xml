@@ -24,8 +24,12 @@
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>layoutDemo</codecName>
-      <actionBinding>#{layoutDemoActions.initContextFromRestRequest}</actionBinding>
-
+      <actionBinding>
+        #{layoutDemoActions.initContextFromRestRequest}
+      </actionBinding>
+      <bindings>
+        <binding name="tabId">#{layoutDemoActions.currentTabId}</binding>
+      </bindings>
     </urlPattern>
 
   </extension>

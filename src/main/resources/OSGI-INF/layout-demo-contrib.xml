@@ -107,20 +107,41 @@
     <widgetType name="list">
       <label>List widget</label>
       <viewId>listWidget</viewId>
-      <category>complex</category>
+      <category>standard</category>
       <layouts>
+        <layout name="listArrayWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-array-widget.xml" />
         <layout name="listWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+        <layout name="complexListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
+        <layout name="fileListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
+        <layout name="listOfListsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="complex">
+      <label>Complex widget</label>
+      <viewId>complexWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="complexWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
       </layouts>
     </widgetType>
 
     <widgetType name="template">
       <label>Template widget</label>
       <viewId>templateWidget</viewId>
-      <category>complex</category>
+      <category>custom</category>
       <layouts>
-        <layout name="templateWidgetLayout"
+        <!-- TODO -->
+        <!-- 
+          <layout name="templateWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
+        -->
       </layouts>
     </widgetType>
 

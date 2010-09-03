@@ -22,6 +22,7 @@
         <translated>false</translated>
         <fields>
           <field>lds:fileField</field>
+          <field>lds:fileField/filename</field>
         </fields>
         <properties widgetMode="edit">
           <property name="required">true</property>

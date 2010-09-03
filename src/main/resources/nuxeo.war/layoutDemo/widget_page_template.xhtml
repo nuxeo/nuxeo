@@ -1,7 +1,9 @@
 <ui:composition template="global_page_template.xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
     <h:outputText value="Layout demo - #{currentWidgetType.label}"/>
@@ -9,41 +11,34 @@
 
   <ui:define name="content">
   
-    <h:form id="layout_demo_form" enctype="multipart/form-data">
+    <h3>#{currentWidgetType.label}</h3>
 
-      <table class="dataOutput">
-        <thead>
-          <tr>
-            <th>
-              Edit mode
-            </th>
-            <th>
-              View mode
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td width="50%" valign="top">
-              <nxl:layout value="#{layoutDemoDocument}" mode="edit"
-                name="#{currentWidgetType.demoLayouts[0].name}" />
-              <p class="buttonsGadget">
-                <h:commandButton value="submit" styleClass="button" />
-              </p>
-            </td>
-            <td width="50%" valign="top">
-              <nxl:layout value="#{layoutDemoDocument}" mode="view"
-                name="#{currentWidgetType.demoLayouts[0].name}" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="tabsBar">
+
+      <ul>
+        <li class="#{nxu:test(empty layoutDemoCurrentTabId, 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}">Overview</a>
+        </li>
+        <li class="#{nxu:test(layoutDemoCurrentTabId == 'reference', 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}?tabId=reference">Reference</a>
+        </li>
+      </ul>
+    </div>
+    <div style="clear:both"></div>
+    <div class="tabsContent">
+
+      <c:if test="#{empty layoutDemoCurrentTabId}">
+        <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}" varStatus="demoLayoutStatus">
+          
+          <ui:include src="/layoutDemo/widget_demo_template.xhtml" />
     
-    </h:form>
-
-    <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
-      <ui:param name="sourcePath" value="#{currentWidgetType.demoLayouts[0].sourcePath}" />
-    </ui:include>
+        </c:forEach>
+      </c:if>
+      <c:if test="#{layoutDemoCurrentTabId == 'reference'}">
+        REFERENCE: TODO
+      </c:if>
+      
+    </div>
 
   </ui:define>
 

@@ -13,18 +13,18 @@ Install
 =======
 
 Setup properties in a file called "build.properties" according to you needs
-and run "ant deploy" to deploy on a jboss with nuxeo installed.
+and run "ant deploy" to deploy on a JBoss with nuxeo installed.
 
 
 Development
 ===========
 
-Add a new wiget type
---------------------
+Add a new widget type
+---------------------
 
 To add a new widget type to the application, you need to:
 - add a xhtml template in nuxeo.war/layoutDemo/widgets
 - declare this template with a view id in OSGI-INF/deployment-fragment.xml
-- provide the widget sample xml configuration in OSGI-INF/demo
-- configure the widget type in OSGI-INF/layout-demo-contrib.xml and 
+- provide the widget sample xml configuration in OSGI-INF/demo and
   reference it in the MANIFEST
+- configure the widget type in OSGI-INF/layout-demo-contrib.xml 

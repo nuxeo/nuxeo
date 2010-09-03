@@ -42,11 +42,6 @@
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>templateWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/templateWidget.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
       <from-outcome>fileWidget</from-outcome>
       <to-view-id>/layoutDemo/widgets/fileWidget.xhtml</to-view-id>
       <redirect />
@@ -80,6 +75,16 @@
       <to-view-id>/layoutDemo/widgets/checkboxWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>templateWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/templateWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>complexWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/complexWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 
@@ -91,6 +96,7 @@
     <!--  make some extension sources available for demo -->
     <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
       <include>OSGI-INF/demo/**</include>
+      <include>schemas/**</include>
     </unzip>
   </install>
 

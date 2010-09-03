@@ -1,0 +1,52 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<a4j:log />
+<c:if test="false">
+Displays a widget demo in edit and view modes, with sources.
+
+Needed parameters:
+- layoutDemoDocument
+- demoLayout  
+</c:if>
+
+  <table class="dataOutput">
+    <thead>
+      <tr>
+        <th>
+          Edit mode
+        </th>
+        <th>
+          View mode
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td width="50%" valign="top">
+          <h:form id="layout_demo_widget_edit_form_#{demoLayout.name}" enctype="multipart/form-data">
+            <nxl:layout value="#{layoutDemoDocument}" mode="edit"
+              name="#{demoLayout.name}" />
+            <p class="buttonsGadget">
+              <h:commandButton value="submit" styleClass="button" />
+            </p>
+          </h:form>
+        </td>
+        <td width="50%" valign="top">
+          <h:form id="layout_demo_widget_view_form_#{demoLayout.name}">
+            <nxl:layout value="#{layoutDemoDocument}" mode="view"
+              name="#{demoLayout.name}" />
+          </h:form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
+    <ui:param name="sourcePath" value="#{demoLayout.sourcePath}" />
+  </ui:include>
+
+</div>

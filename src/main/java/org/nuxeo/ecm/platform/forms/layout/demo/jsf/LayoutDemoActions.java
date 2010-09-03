@@ -59,6 +59,8 @@ public class LayoutDemoActions implements Serializable {
 
     protected DemoWidgetType currentWidgetType;
 
+    protected String currentTabId;
+
     @Factory(value = "layoutDemoDocument", scope = EVENT)
     public DocumentModel getDemoDocument() throws ClientException {
         if (demoDocument == null) {
@@ -86,9 +88,9 @@ public class LayoutDemoActions implements Serializable {
         return layoutDemoManager.getWidgetTypes("standard");
     }
 
-    @Factory(value = "complexWidgetTypes", scope = SESSION)
-    public List<DemoWidgetType> getComplexWidgetTypes() {
-        return layoutDemoManager.getWidgetTypes("complex");
+    @Factory(value = "customWidgetTypes", scope = SESSION)
+    public List<DemoWidgetType> getCustomWidgetTypes() {
+        return layoutDemoManager.getWidgetTypes("custom");
     }
 
     public String initContextFromRestRequest(DocumentView docView)
@@ -119,6 +121,15 @@ public class LayoutDemoActions implements Serializable {
     @Factory(value = "currentWidgetType", scope = EVENT)
     public DemoWidgetType getCurrentWidgetType() {
         return currentWidgetType;
+    }
+
+    @Factory(value = "layoutDemoCurrentTabId", scope = EVENT)
+    public String getCurrentTabId() {
+        return currentTabId;
+    }
+
+    public void setCurrentTabId(String currentTabId) {
+        this.currentTabId = currentTabId;
     }
 
 }
