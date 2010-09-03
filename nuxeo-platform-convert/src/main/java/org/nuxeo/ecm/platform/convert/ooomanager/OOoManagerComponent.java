@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.convert.ooomanager;
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +29,6 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -174,27 +171,7 @@ public class OOoManagerComponent extends DefaultComponent implements
             started = true;
             log.debug("Starting ooo manager.");
         } catch (Exception e) {
-            Throwable t = unwrapException(e);
-            log.warn("OpenOffice was not found, JOD Converter "
-                    + "won't be available: " + t.getMessage());
-        }
-    }
-
-    public Throwable unwrapException(Throwable t) {
-        Throwable cause = null;
-
-        if (t instanceof ServletException) {
-            cause = ((ServletException) t).getRootCause();
-        } else if (t instanceof ClientException) {
-            cause = t.getCause();
-        } else if (t instanceof Exception) {
-            cause = t.getCause();
-        }
-
-        if (cause == null) {
-            return t;
-        } else {
-            return unwrapException(cause);
+            log.warn("OpenOffice was not found, JOD Converter won't be available.");
         }
     }
 
