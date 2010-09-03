@@ -268,6 +268,9 @@ elif [ "$tomcat" = "true" ]; then
   # Paths and specific options
   TMP_DIR=${TMP_DIR:-tmp}
   CATALINA_TEMP=${CATALINA_TEMP:-$TMP_DIR}
+  if [[ "$CATALINA_TEMP" != /* ]]; then
+    CATALINA_TEMP="$NUXEO_HOME/$CATALINA_TEMP"
+  fi
   DATA_DIR=${DATA_DIR:-nxserver/data}
   NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
   NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
