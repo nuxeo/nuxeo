@@ -1443,6 +1443,74 @@
       <selector path="td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink">
         <white-space>normal</white-space>
       </selector>
+      <!-- Faceted Search -->
+      <selector path=".facetedSearchActionBar">
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <padding>2px</padding>
+      </selector>
+      <selector path=".facetedSearchActionBar a">
+        <float>left</float>
+        <padding-top>3px</padding-top>
+      </selector>
+      <selector path=".facetedSearchActionBar input.button">
+        <padding>0 3px</padding>
+        <margin>0 0 0 5px</margin>
+        <float>right</float>
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path="#facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv">
+        <padding>0 0 5px</padding>
+        <margin>0</margin>
+        <border-bottom>1px solid #efefef</border-bottom>
+      </selector>
+      <selector path="#facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p">
+        <color>#323232</color>
+        <font>bold 11px "Lucida Grande", Helvetica, sans-serif</font>
+        <background-color>#ecf6ff</background-color>
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <border-top>1px solid #fff</border-top>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .labelColumn">
+        <font-weight>normal</font-weight>
+        <width>70px</width>
+      </selector>
+      <selector path=".facetedSearchBlock .wideLabel">
+        <width>70px</width>
+        <display>inline-block</display>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput">
+        <width>100%</width>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput td">
+        <padding>3px 4px 5px 0</padding>
+      </selector>
+      <selector path=".facetedSearchBlock input, .facetedSearchBlock select">
+        <width>100%</width>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInputTextDate">
+        <width>80px</width>
+        <margin>0 5px 3px 0</margin>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent">
+        <border-bottom>1px solid #dcdcdc</border-bottom>
+      </selector>
+      <selector path=".facetedSearchBlock h5">
+        <color>#323232</color>
+        <font>bold 11px "Lucida Grande", Helvetica, sans-serif</font>
+        <background-color>#f1f2f3</background-color>
+        <border-bottom>1px solid #cacaca</border-bottom>
+        <border-top>1px solid #fff</border-top>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent h6">
+        <color>#323232</color>
+        <font>normal 10px "Lucida Grande", Helvetica, sans-serif</font>
+        <margin>0 0 5px</margin>
+        <border-bottom>1px solid #cacaca</border-bottom>
+      </selector>
+      <selector path=".facetedSearchBlock">
+      </selector>
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
