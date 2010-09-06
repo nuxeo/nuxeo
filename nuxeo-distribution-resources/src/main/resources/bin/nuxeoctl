@@ -308,7 +308,7 @@ if [ "$cygwin" = "true" ]; then
   NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
   NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
   LOG4J_CONF=`cygpath --absolute --windows "$LOG4J_CONF"`
-  
+
   [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
   [ "$tomcat" = "true" ] && CATALINA_TEMP==`cygpath --absolute --windows "$CATALINA_TEMP"`
   [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
@@ -478,7 +478,7 @@ start() {
         fi
         if [ $countStatus -eq 3 ]; then
           break
-        fi          
+        fi
       done < "$LOG"
       echo $line
       exit 0
