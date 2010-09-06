@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+   <groupId>org.nuxeo.cm</groupId>
+   <artifactId>nuxeo-case-management-parent</artifactId>
+   <version>1.2-SNAPSHOT</version>
+  </parent>
+  
+
+   <groupId>org.nuxeo.cm</groupId>
+   <artifactId>nuxeo-platform-document-routing</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <name>Nuxeo Platform Document Routing Addon</name>
+   <packaging>pom</packaging>
+   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
+
+ <modules>
+   <module>nuxeo-platform-document-routing-api</module>
+   <module>nuxeo-platform-document-routing-core</module>
+   <module>nuxeo-platform-document-routing-web</module>
+  </modules>
+
+ 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-platform-document-routing-api</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-platform-document-routing-core</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+       <groupId>org.nuxeo.cm</groupId>
+        <artifactId>nuxeo-platform-document-routing-web</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.nuxeo.cm</groupId>
+	<artifactId>nuxeo-case-management-distribution</artifactId>
+	<classifier>server</classifier>
+        <version>${nuxeo.cm.version}</version>
+	<type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium.server</groupId>
+        <artifactId>selenium-server</artifactId>
+        <version>1.0.3</version>
+        <classifier>standalone</classifier>
+      </dependency>
+   </dependencies>  
+</dependencyManagement>
+    
+
+<developers>
+    <developer>
+      <name>Atlantis</name>
+      <email>atlantis@lists.nuxeo.com</email>
+    </developer>
+ </developers>
+ 
+<repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>
