@@ -75,12 +75,12 @@ public class QueueObject extends DefaultObject {
             throw WebException.wrap("Couldn't get the queue", e);
         }
         items = queuemgr.listHandledItems();
-        for (QueueItem queueitem : items) {
-            if (queueitem.getHandledContent().getName().equals(name)) {
+        for (QueueItem item : items) {
+            if (item.getHandledContent().getName().equals(name)) {
 
                 QueueHandler handler = Framework.getLocalService(QueueHandler.class);
                 try {
-                    handler.handleNewContentIfUnknown(queueitem.getHandledContent());
+                    handler.handleNewContentIfUnknown(item.getHandledContent());
                 } catch (QueueException e) {
                     log.error("An error occured while handling content", e);
                     throw WebException.wrap(e);
@@ -104,10 +104,10 @@ public class QueueObject extends DefaultObject {
             throw WebException.wrap("Couldn't get the queue", e);
         }
         items = queuemgr.listHandledItems();
-        for (QueueItem queueitem : items) {
-            if (queueitem.getHandledContent().getName().equals(name)) {
+        for (QueueItem item : items) {
+            if (item.getHandledContent().getName().equals(name)) {
                 QueueHandler handler = Framework.getLocalService(QueueHandler.class);
-                    handler.handleEndOfProcessing(queueitem.getHandledContent());
+                    handler.handleEndOfProcessing(item.getHandledContent());
                 return redirect(getPath());
             }
         }

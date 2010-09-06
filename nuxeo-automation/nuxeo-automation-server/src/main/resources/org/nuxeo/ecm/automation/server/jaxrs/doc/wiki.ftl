@@ -4,6 +4,9 @@
 <#list categories?keys as cat>
 h1. ${cat}
   <#list categories["${cat}"] as operation>
+
+{multi-excerpt:name=${operation.id}}
+
 h2. ${operation.label}
 
 {html}${operation.description}{html}
@@ -24,6 +27,8 @@ h5. Signature
 
 *Inputs:* ${This.getInputsAsString(operation)}
 *Outputs:* ${This.getOutputsAsString(operation)}
+
+{multi-excerpt}
 
   </#list>
 </#list>
