@@ -46,16 +46,23 @@ public class EventJob implements Job {
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
 
-        // Setup a user session
         LoginContext lContext = null;
-        try {
-            lContext = Framework.login(username, dataMap.getString("password"));
-        } catch (LoginException e) {
-            log.error(e);
-            return;
-        }
 
+        // switch to the Nuxeo classloader so that the event listeners
+        // work as usual
+        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader nuxeoCL = EventJob.class.getClassLoader();
         try {
+            Thread.currentThread().setContextClassLoader(nuxeoCL);
+
+            // Setup a user session
+            try {
+                lContext = doLogin(username, dataMap.getString("password"));
+            } catch (LoginException e) {
+                log.error(e);
+                return;
+            }
+
             UserPrincipal principal = new UserPrincipal(username);
             EventContext ctx = new EventContextImpl(null, principal);
             ctx.setProperty("category", eventCategory);
@@ -69,16 +76,7 @@ public class EventJob implements Job {
                 log.info("Sending scheduled event id=" + eventId
                         + ", category=" + eventCategory);
 
-                // switch to the Nuxeo classloader so that the event listeners
-                // work as usual
-                ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-                ClassLoader nuxeoCL = EventJob.class.getClassLoader();
-                try {
-                    Thread.currentThread().setContextClassLoader(nuxeoCL);
-                    evtService.fireEvent(event);
-                } finally {
-                    Thread.currentThread().setContextClassLoader(jbossCL);
-                }
+                evtService.fireEvent(event);
             } else {
                 log.error("Cannot find EventService");
             }
@@ -86,6 +84,8 @@ public class EventJob implements Job {
         } catch (Exception e) {
             log.error(e, e);
         } finally {
+            Thread.currentThread().setContextClassLoader(jbossCL);
+
             if (lContext != null) {
                 try {
                     lContext.logout();
@@ -93,6 +93,15 @@ public class EventJob implements Job {
                     log.error(e, e);
                 }
             }
+        }
+    }
+
+    protected LoginContext doLogin(String username, String password)
+            throws LoginException {
+        if (username == null) {
+            return Framework.login();
+        } else {
+            return Framework.login(username, password);
         }
     }
 
