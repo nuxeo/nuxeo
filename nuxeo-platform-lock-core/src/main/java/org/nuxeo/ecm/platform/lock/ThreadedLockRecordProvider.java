@@ -16,6 +16,7 @@
 package org.nuxeo.ecm.platform.lock;
 
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +56,24 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
 
             public LockRecord call() throws Exception {
                 return delegate.createRecord(self, resource, comment, timeout);
+            }
+        });
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new Error("unexpected error from provider", e);
+        }
+    }
+
+    @Override
+    public List<LockRecord> getRecords() throws InterruptedException {
+        Future<List<LockRecord>> future = service.submit(new Callable<List<LockRecord>>() {
+            public List<LockRecord> call() throws Exception {
+                return delegate.getRecords();
             }
         });
         try {
@@ -121,5 +140,8 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
             throw new Error("unexpected error from provider", e);
         }
     }
+
+
+
 
 }

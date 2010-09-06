@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.lock;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public interface LockComponentDelegate {
+interface LockComponentDelegate {
 
     void activate(LockComponent component);
 

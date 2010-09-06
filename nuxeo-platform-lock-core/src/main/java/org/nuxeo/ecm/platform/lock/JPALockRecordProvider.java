@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.lock;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -174,6 +175,17 @@ public class JPALockRecordProvider implements LockRecordProvider,
             throw e;
         }
         return record;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<LockRecord> getRecords() {
+        EntityManager em = open(false);
+        try {
+            Query query = em.createNamedQuery("Lock.findAll");
+            return query.getResultList();
+        } finally {
+            close(em);
+        }
     }
 
 }

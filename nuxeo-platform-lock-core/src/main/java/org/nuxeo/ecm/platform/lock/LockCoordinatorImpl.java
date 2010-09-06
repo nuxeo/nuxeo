@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.lock.api.AlreadyLockedException;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
-import org.nuxeo.ecm.platform.lock.api.LockInfo;
 import org.nuxeo.ecm.platform.lock.api.NoSuchLockException;
 import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
 
@@ -38,8 +37,7 @@ import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class LockCoordinatorImpl implements LockCoordinator,
-        LockComponentDelegate {
+public class LockCoordinatorImpl implements LockCoordinator, LockComponentDelegate {
 
     public static final Log log = LogFactory.getLog(LockCoordinatorImpl.class);
 
@@ -130,14 +128,6 @@ public class LockCoordinatorImpl implements LockCoordinator,
         long now = new Date().getTime();
         long remaining = record.expireTime.getTime() - now;
         return remaining;
-    }
-
-    public LockInfo getInfo(final URI resource) throws NoSuchLockException,
-            InterruptedException {
-
-        LockRecord record = provider.getRecord(resource);
-        return new LockInfoImpl(record);
-
     }
 
     public void saveInfo(URI self, URI resource, Serializable info)

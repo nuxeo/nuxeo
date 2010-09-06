@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.lock;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 
@@ -27,32 +28,48 @@ import org.nuxeo.ecm.platform.lock.api.LockInfo;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class LockInfoImpl implements LockInfo {
+public class LockInfoImpl implements LockInfo, Serializable{
 
-    LockRecord record;
 
-    public LockInfoImpl(LockRecord record) {
-        this.record = record;
+    private static final long serialVersionUID = 1L;
+
+    protected LockInfoImpl(LockRecord record) {
+        this.resource = record.resource;
+        this.expireTime = record.expireTime;
+        this.lockTime = record.lockTime;
+        this.owner = record.owner;
+        this.isExpired = false;
     }
+
+
+    protected final URI resource;
 
     public URI getResource() {
-        return record.resource;
+        return resource;
     }
 
-    public Date getExpireTime() {
-        return record.expireTime;
+    protected final Date expireTime;
+
+    public Date getExpiredTime() {
+        return expireTime;
     }
+
+    protected final Date lockTime;
 
     public Date getLockTime() {
-        return record.lockTime;
+        return lockTime;
     }
 
-    public URI getRunning() {
-        return record.owner;
+    protected final URI owner;
+
+    public URI getOwner() {
+        return owner;
     }
+
+    protected final boolean isExpired;
 
     public boolean isExpired() {
-        return false;
+        return isExpired;
     }
 
 }

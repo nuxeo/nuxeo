@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.lock;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * LockRecordProvider api for dealing with lock record.
@@ -25,14 +26,19 @@ import java.net.URI;
  */
 public interface LockRecordProvider {
 
-    void delete(URI resource) throws InterruptedException;
+    void delete(URI resource)
+           throws InterruptedException;
 
-    LockRecord getRecord(URI resourceUri) throws InterruptedException;
+    LockRecord getRecord(URI resourceUri)
+            throws InterruptedException;
 
-    LockRecord updateRecord(URI self, URI resource, String comments,
-            long timeout) throws InterruptedException;
+    LockRecord updateRecord(URI self, URI resource, String comments, long timeout)
+            throws InterruptedException;
 
     LockRecord createRecord(URI self, URI resource, String comment, long timeout)
+            throws InterruptedException;
+
+    List<LockRecord> getRecords()
             throws InterruptedException;
 
 }

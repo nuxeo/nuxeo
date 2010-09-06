@@ -38,6 +38,7 @@ import javax.persistence.Version;
 @Entity(name = "Lock")
 @Table(name = "NX_LOCK")
 @NamedQueries( {
+        @NamedQuery(name = "Lock.findAll", query = "from Lock lock"),
         @NamedQuery(name = "Lock.findByResource", query = "from Lock lock where lock.resource = :resource"),
         @NamedQuery(name = "Lock.findExpired", query = "from Lock lock where lock.expireTime < :time order by expireTime"),
         @NamedQuery(name = "Lock.deleteByResource", query = "delete Lock lock where lock.resource = :resource") })

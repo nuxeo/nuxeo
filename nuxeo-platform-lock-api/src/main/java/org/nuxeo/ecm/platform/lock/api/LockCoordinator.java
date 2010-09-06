@@ -63,14 +63,5 @@ public interface LockCoordinator {
     void unlock(URI self, URI resource) throws NoSuchLockException,
             NotOwnerException, InterruptedException;
 
-    /**
-     * Return live lock information only.
-     *
-     * @param resource
-     * @return
-     * @throws InterruptedException
-     */
-    LockInfo getInfo(URI resource) throws NoSuchLockException,
-            InterruptedException;
 
 }

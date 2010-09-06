@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.lock;
 
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
+import org.nuxeo.ecm.platform.lock.api.LockReader;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.BundleContext;
@@ -31,8 +32,10 @@ import org.osgi.framework.FrameworkListener;
 public class LockComponent extends DefaultComponent {
 
     protected LockCoordinatorImpl coordinator;
-
+;
     protected ThreadedLockRecordProvider provider;
+
+    protected LockReaderImpl reader;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -44,11 +47,14 @@ public class LockComponent extends DefaultComponent {
                 if (FrameworkEvent.STARTED != event.getType()) {
                     return;
                 }
+                event.getBundle().getBundleContext().removeFrameworkListener(this);
                 bundleContext.removeFrameworkListener(this);
-                coordinator = new LockCoordinatorImpl();
                 provider = new ThreadedLockRecordProvider();
-                coordinator.activate(LockComponent.this);
+                coordinator = new LockCoordinatorImpl();
+                reader = new LockReaderImpl();
                 provider.activate(LockComponent.this);
+                coordinator.activate(LockComponent.this);
+                reader.activate(LockComponent.this);
             }
         });
     }
@@ -70,6 +76,9 @@ public class LockComponent extends DefaultComponent {
     public <T> T getAdapter(Class<T> clazz) {
         if (LockCoordinator.class.isAssignableFrom(clazz)) {
             return clazz.cast(coordinator);
+        }
+        if (LockReader.class.isAssignableFrom(clazz)) {
+            return clazz.cast(reader);
         }
         return super.getAdapter(clazz);
     }

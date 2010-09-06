@@ -4,6 +4,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.lock.api.LockCoordinator" />
+    <provide interface="org.nuxeo.ecm.platform.lock.api.LockReader" />
   </service>
 
   <documentation>

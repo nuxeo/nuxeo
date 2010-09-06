@@ -29,10 +29,10 @@ public interface LockInfo {
 
     Date getLockTime();
 
-    Date getExpireTime();
+    Date getExpiredTime();
 
     boolean isExpired();
 
-    URI getRunning();
+    URI getOwner();
 
 }
