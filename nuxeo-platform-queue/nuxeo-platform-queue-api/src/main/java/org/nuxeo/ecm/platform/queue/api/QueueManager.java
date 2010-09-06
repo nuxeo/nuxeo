@@ -32,6 +32,11 @@ import java.util.Map;
 public interface QueueManager {
 
     /**
+     * Names the managed queue
+     */
+    String getName();
+
+    /**
      * List infos about content being handled.
      *
      * @return the list

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueExecutor;
 import org.nuxeo.ecm.platform.queue.api.QueueFactory;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
+import org.nuxeo.ecm.platform.queue.api.QueueNotFoundException;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.runtime.api.Framework;
 
@@ -112,9 +113,6 @@ public class QueueHandlerImpl implements QueueHandler {
                 log.warn("Resource is unexpectedly locked by another user", e);
                 return;
             } catch (InterruptedException e) {
-                log.error(
-                        "Unexpected error while trying to unlock the resource",
-                        e);
                 throw new Error(
                         "Unexpected error while trying to unlock the resource",
                         e);
@@ -123,9 +121,15 @@ public class QueueHandlerImpl implements QueueHandler {
         }
 
         QueueExecutor executor = factory.getExecutor(content);
-
         persister.setExecuteTime(content, new Date());
         executor.execute(content, this);
     }
 
+    public void handleRetry(QueueContent content) throws QueueNotFoundException {
+        QueueFactory factory = Framework.getLocalService(QueueFactory.class);
+        QueueExecutor executor = factory.getExecutor(content);
+        QueuePersister persister = factory.getPersister(content);
+        persister.setExecuteTime(content, new Date());
+        executor.execute(content, this);
+    }
 }

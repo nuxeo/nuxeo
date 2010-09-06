@@ -42,6 +42,10 @@ public class QueueManagerImpl implements QueueManager {
         this.queueName = queueName;
     }
 
+    public String getName() {
+        return queueName;
+    }
+
     public void forgetContent(QueueContent content) {
         persister.forgetContent(content);
     }

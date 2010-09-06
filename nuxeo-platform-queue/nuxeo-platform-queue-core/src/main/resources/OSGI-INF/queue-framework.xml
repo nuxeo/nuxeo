@@ -13,7 +13,8 @@
   
   <documentation>
     Lock service framework
-    @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
+    @author
+    <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
   </documentation>
 
   <implementation class="org.nuxeo.ecm.platform.queue.core.QueueComponent" />

@@ -45,4 +45,12 @@ public interface QueueHandler {
      */
     void handleEndOfProcessing(QueueContent content);
 
+    /**
+     * Handle retry content processing
+     *
+     * @param content
+     * @throws QueueException
+     */
+    void handleRetry(QueueContent content) throws QueueException;
+
 }

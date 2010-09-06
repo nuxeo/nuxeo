@@ -41,11 +41,11 @@ public interface QueueItem {
     URI getHandlingServerID();
 
     /**
-     * Gets the status.
+     * Gets the state.
      *
      * @return the status
      */
-    QueueItemState getStatus();
+    QueueItemState getState();
 
     /**
      * Checks if is orphaned.

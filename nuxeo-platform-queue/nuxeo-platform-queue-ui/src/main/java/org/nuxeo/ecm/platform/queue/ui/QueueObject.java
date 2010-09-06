@@ -45,7 +45,7 @@ public class QueueObject extends DefaultObject {
 
     public static final Log log = LogFactory.getLog(QueueObject.class);
 
-    List<QueueItem> queueItems;
+    protected List<QueueItem> items;
 
     @GET
     public Object doGet() {
@@ -60,13 +60,13 @@ public class QueueObject extends DefaultObject {
         return getView("index");
     }
 
-    public List<QueueItem> getQueueItems() {
-        return queueItems;
+    public List<QueueItem> getItems() {
+        return items;
     }
 
     @GET
     @Path("{queueItemName}/start")
-    public Object relaunch(@PathParam("queueItemName") String name) {
+    public Object startOfProcessing(@PathParam("queueItemName") String name) {
         QueueManagerLocator locator = Framework.getLocalService(QueueManagerLocator.class);
         QueueManager queuemgr;
         try {
@@ -85,6 +85,29 @@ public class QueueObject extends DefaultObject {
                     log.error("An error occured while handling content", e);
                     throw WebException.wrap(e);
                 }
+                return redirect(getPath());
+            }
+        }
+        throw new WebResourceNotFoundException("Couldn't find the queue "
+                + name);
+
+    }
+
+    @GET
+    @Path("{queueItemName}/end")
+    public Object endOfProcessing(@PathParam("queueItemName") String name) {
+        QueueManagerLocator locator = Framework.getLocalService(QueueManagerLocator.class);
+        QueueManager queuemgr;
+        try {
+            queuemgr = locator.locateQueue(getName());
+        } catch (QueueNotFoundException e) {
+            throw WebException.wrap("Couldn't get the queue", e);
+        }
+        queueItems = queuemgr.listHandledItems();
+        for (QueueItem queueitem : queueItems) {
+            if (queueitem.getHandledContent().getName().equals(name)) {
+                QueueHandler handler = Framework.getLocalService(QueueHandler.class);
+                    handler.handleEndOfProcessing(queueitem.getHandledContent());
                 return redirect(getPath());
             }
         }

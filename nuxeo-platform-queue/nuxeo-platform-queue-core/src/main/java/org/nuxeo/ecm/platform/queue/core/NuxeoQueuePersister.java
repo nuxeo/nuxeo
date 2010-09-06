@@ -262,9 +262,9 @@ public class NuxeoQueuePersister implements QueuePersister {
                     queueFolder.getPathAsString() + "/" + content.getName());
 
             DocumentModel model = session.getDocument(queueItemRef);
-            Integer executionCount = (Integer) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
+            Long executionCount = (Long) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
             if (executionCount == null) {
-                executionCount = 1;
+                executionCount = 1L;
             } else {
                 executionCount++;
             }

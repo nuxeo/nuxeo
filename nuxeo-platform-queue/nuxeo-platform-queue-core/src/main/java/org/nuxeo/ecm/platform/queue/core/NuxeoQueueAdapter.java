@@ -152,7 +152,7 @@ public class NuxeoQueueAdapter implements QueueItem {
         return lastHandledTime;
     }
 
-    public QueueItemState getStatus() {
+    public QueueItemState getState() {
         if (isOrphaned()) {
             return QueueItemState.Orphaned;
         }
