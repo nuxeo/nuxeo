@@ -26,7 +26,7 @@ div.blogRollBar {background-color:#ffd800;font-size:9px;height:19px;margin-botto
 /* HEADER */
 
 div.header {
-  background:url("/nuxeo/img/header_nuxeo.png") no-repeat scroll right bottom #000;
+  background:url(/nuxeo/layoutDemo/img/header_nuxeo.png) no-repeat scroll right bottom #000;
   border-bottom:1px solid #bbb;
   padding:0 0 5px;
 }
@@ -85,7 +85,7 @@ div.customButtons a:hover {
 }
 
 .foldableBox h3.folded {
-  background: #4e9ae1 url(${org.nuxeo.ecm.contextPath}/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
+  background: #4e9ae1 url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
 }
 
 .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
@@ -93,7 +93,7 @@ div.customButtons a:hover {
 }
 
 .foldableBox h3.unfolded {
-  background: #4e9ae1 url(${org.nuxeo.ecm.contextPath}/img/theme_galaxy/arrow_folded.gif) top left no-repeat;
+  background: #4e9ae1 url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat;
 }
 
 .foldableBox h3 a {
@@ -106,7 +106,26 @@ div.customButtons a:hover {
 }
 
 .tabsContent .foldableBox {
-  margin:10px 0 !important;  
+  margin:10px 0 !important;
+  border:1px solid #c7c7c7;  
+}
+
+.tabsContent .foldableBox  h3 {
+  border:none;
+  background-color:#f1f2f3,
+  color:#666;
+}
+
+.tabsContent .foldableBox h3.folded {
+  background: #f1f2f3 url(/nuxeo/layoutDemo/img/arrow_dark_folded.png) top left no-repeat;
+}
+
+.tabsContent .foldableBox h3 a:link, .tabsContent .foldableBox h3 a:visited, .tabsContent .foldableBox h3 a:hover, .tabsContent .foldableBox h3 a:visited:hover {
+  color: #666;
+}
+
+.tabsContent .foldableBox h3.unfolded {
+  background: #f1f2f3 url(/nuxeo/layoutDemo/img/arrow_dark_unfolded.png) top left no-repeat;
 }
 
 /* MENU */
