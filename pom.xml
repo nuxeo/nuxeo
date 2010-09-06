@@ -6,13 +6,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-   <groupId>org.nuxeo.cm</groupId>
-   <artifactId>nuxeo-case-management-parent</artifactId>
-   <version>1.2-SNAPSHOT</version>
+   <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.4.0-SNAPSHOT</version>
   </parent>
   
 
-   <groupId>org.nuxeo.cm</groupId>
+   <groupId>org.nuxeo.ecm.platform</groupId>
    <artifactId>nuxeo-platform-document-routing</artifactId>
    <version>1.0-SNAPSHOT</version>
    <name>Nuxeo Platform Document Routing Addon</name>
@@ -25,30 +25,33 @@
    <module>nuxeo-platform-document-routing-web</module>
   </modules>
 
+ <properties>
+   <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
+ </properties> 
  
-  <dependencyManagement>
+ <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.cm</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-api</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.cm</groupId>
+       <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-       <groupId>org.nuxeo.cm</groupId>
+       <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.cm</groupId>
-	<artifactId>nuxeo-case-management-distribution</artifactId>
-	<classifier>server</classifier>
-        <version>${nuxeo.cm.version}</version>
-	<type>zip</type>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-jboss</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <classifier>nuxeo-dm</classifier>
+        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium.server</groupId>

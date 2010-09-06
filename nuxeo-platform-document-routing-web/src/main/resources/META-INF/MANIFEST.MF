@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: CM Document Routing Web
-Bundle-SymbolicName: org.nuxeo.cm.document.routing.web;singleton=true
+Bundle-Name: Nuxeo ECM Routing Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.web;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo

@@ -7,9 +7,9 @@ HERE=$(cd $(dirname $0); pwd -P)
 
 # Start JBoss
 cd ../target
-unzip nuxeo-case-management-distribution-*.zip || exit 1
-mv nuxeo-cm-server* jboss || exit 1
-mv nuxeo-platform-document-routing* jboss/server/default/deploy/nuxeo.ear/plugins/ || exit 1
+unzip nuxeo-distribution-jboss-*.zip || exit 1
+mv nuxeo-dm-*-jboss jboss || exit 1
+mv nuxeo-platform-document-routing* jboss/server/default/deploy/nuxeo.ear/system/ || exit 1
 chmod +x jboss/bin/nuxeoctl || exit 1
 jboss/bin/nuxeoctl start || exit 1
 

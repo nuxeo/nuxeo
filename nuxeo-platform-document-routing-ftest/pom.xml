@@ -6,12 +6,12 @@
 <modelVersion>4.0.0</modelVersion>
 
 <parent>
- <groupId>org.nuxeo.cm</groupId>
+ <groupId>org.nuxeo.ecm.platform</groupId>
  <artifactId>nuxeo-platform-document-routing</artifactId>
  <version>1.0-SNAPSHOT</version>
 </parent>
 
-<groupId>org.nuxeo.cm</groupId>
+<groupId>org.nuxeo.ecm.platform</groupId>
 <artifactId>nuxeo-platform-document-routing-ftest</artifactId>
 <packaging>pom</packaging>
 <name>Nuxeo Platform Document Routing Addon Functionnal Tests</name>
@@ -32,28 +32,28 @@
               <destFileName>selenium-server.jar</destFileName>
             </artifactItem>
             <artifactItem>
-       	      <groupId>org.nuxeo.cm</groupId>
-	      <artifactId>nuxeo-case-management-distribution</artifactId>
-	      <classifier>server</classifier>
-              <version>${nuxeo.cm.version}</version>
-	      <type>zip</type>
+       	     <groupId>org.nuxeo.ecm.distribution</groupId>
+             <artifactId>nuxeo-distribution-jboss</artifactId>
+             <version>${nuxeo.distribution.version}</version>
+             <classifier>nuxeo-dm</classifier>
+              <type>zip</type>
               <overWrite>false</overWrite>
               <outputDirectory>target</outputDirectory>
             </artifactItem>
             <artifactItem>
-             <groupId>org.nuxeo.cm</groupId>
+             <groupId>org.nuxeo.ecm.platform</groupId>
              <artifactId>nuxeo-platform-document-routing-api</artifactId>
              <overWrite>true</overWrite>
              <outputDirectory>target</outputDirectory>
             </artifactItem>
             <artifactItem>
-              <groupId>org.nuxeo.cm</groupId>
+              <groupId>org.nuxeo.ecm.platform</groupId>
               <artifactId>nuxeo-platform-document-routing-core</artifactId>
               <overWrite>true</overWrite>
               <outputDirectory>target</outputDirectory>
             </artifactItem>
             <artifactItem>
-              <groupId>org.nuxeo.cm</groupId>
+              <groupId>org.nuxeo.ecm.platform</groupId>
               <artifactId>nuxeo-platform-document-routing-web</artifactId>
               <overWrite>true</overWrite>
               <outputDirectory>target</outputDirectory>

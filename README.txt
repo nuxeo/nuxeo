@@ -1,7 +1,7 @@
 Case Management Document Routing Addon
 ----------------------------------------
 
-This addon adds the "routing" functionality to the Case Management Framework.
+This addon adds the "routing" functionality to Nuxeo
 A "route" is a list of steps that a list of documents will execute. 
 Steps can be:
     * distribute the documents
@@ -15,5 +15,5 @@ Build with::
   $ mvn clean install 
 
 And deploy the three jars from the target subfolders into the nuxeo.ear/plugins or
-nxserver/bundles folder of your nuxeo-cm server (and restart).
+nxserver/bundles folder of your nuxeo server (and restart).
 
