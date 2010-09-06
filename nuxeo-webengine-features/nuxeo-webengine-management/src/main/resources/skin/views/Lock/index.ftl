@@ -9,7 +9,7 @@
 <@block name="header_scripts">
 </@block>
 
-<@block name="left">
+<@block name="content">
 
  <h2>Lock</h2>
 

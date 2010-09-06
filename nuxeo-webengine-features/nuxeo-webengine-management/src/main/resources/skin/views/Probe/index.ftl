@@ -9,7 +9,7 @@
 <@block name="header_scripts">
 </@block>
 
-<@block name="left">
+<@block name="content">
  
  <form method="POST" action="${This.path}" accept-charset="utf-8">
         <input type="submit" class="button" value="Run" />

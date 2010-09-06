@@ -1,15 +1,6 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
+<@block name="content">
 
 <dl><h2>Queues</h2>
 <#list This.queues as queue>

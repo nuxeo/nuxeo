@@ -1,15 +1,6 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
+<@block name="content">
 
 <dl class="list probes"><h2>Probes</2>
 <form method="POST" 

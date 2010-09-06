@@ -1,15 +1,7 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
-</@block>
 
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
+<@block name="content">
 
 <dl><h2>${This.manager.name} queue</h2>
 <#list This.items as item>
@@ -21,5 +13,6 @@
 </dl>
 
 </@block>
+
 
 </@extends>

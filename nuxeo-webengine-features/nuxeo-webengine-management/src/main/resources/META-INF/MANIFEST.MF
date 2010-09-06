@@ -1,7 +1,7 @@
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Manifest-Version: 1.0
-Bundle-Name: nuxeo webengine web
+Bundle-Name: nuxeo webengine server management
 Bundle-ManifestVersion: 1
 Import-Package: com.thoughtworks.xstream,
  javax.ws.rs,
@@ -19,7 +19,11 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.ecm.webengine.model.impl,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
-Provide-Package: org.nuxeo.ecm.webengine.management
+Provide-Package: org.nuxeo.ecm.webengine.management,
+ org.nuxeo.ecm.webengine.management.auth,
+ org.nuxeo.ecm.webengine.management.locks,
+ org.nuxeo.ecm.webengine.management.queues,
+ org.nuxeo.ecm.webengine.management.statuses
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.management;singleton=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Nuxeo-Components: OSGI-INF/auth-contrib.xml

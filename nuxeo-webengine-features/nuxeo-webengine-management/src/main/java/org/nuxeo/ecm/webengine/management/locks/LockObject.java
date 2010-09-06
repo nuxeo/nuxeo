@@ -21,13 +21,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.LockInfo;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -36,8 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "Lock")
 public class LockObject extends ManagementObject {
-
-    protected LockCoordinator coordinator;
 
     protected LockInfo info;
 
@@ -48,7 +44,6 @@ public class LockObject extends ManagementObject {
     @Override
     protected void initialize(Object... args) {
         assert args != null && args.length > 0;
-        coordinator = Framework.getLocalService(LockCoordinator.class);
         info = (LockInfo)args[0];
     }
 
@@ -63,18 +58,18 @@ public class LockObject extends ManagementObject {
 
     @DELETE
     public Object doDelete() {
-        try {
-            coordinator.unlock(info.getOwner(), info.getResource());
-        } catch (Exception e) {
-            throw WebException.wrap("Cannot unlock " + info.getResource(), e);
-        }
-        return LocksObject.newObject(this);
+        return doUnlock();
     }
 
     @POST
     @Path("@unlock")
-    public Object doPostDelete() {
-        return doDelete();
+    public Object doUnlock() {
+        try {
+            info.unlock();
+        } catch (Exception e) {
+            throw WebException.wrap("Cannot unlock " + info.getResource(), e);
+        }
+        return LocksObject.newObject(this);
     }
 
 }

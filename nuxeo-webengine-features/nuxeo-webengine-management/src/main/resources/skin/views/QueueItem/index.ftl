@@ -1,30 +1,22 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
+<#assign item=This.item content=This.item.handledContent>
+
+<@block name="content">
+<h2>Queue item</h2>
+<p class="item"><a href="${This.name}">${content.name}</a> queue item
+    <#if content.comments??> with comments "<span class="with comments">${content.comments}</span>"</#if>
+    <#if item.orphaned><span class="is orphaned">is orphaned</span></#if></p>
 </@block>
 
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
-
-<#assign item=This.item>
-
- <form method="POST" action="${This.path}/@cancel" accept-charset="utf-8">
-        <input type="submit" class="button" value="Cancel" />
-</form>
-
- <form method="POST" action="${This.path}/@retry" accept-charset="utf-8">
-        <input type="submit" class="button" value="Retry" />
-</form>
-
-<p class="item"><a href="${This.name}/${item.handledContent.name}">${item.handledContent.name}</a> queue item
-    with comments "<span class="with comment">${item.handledContent.comments}</span>"
-             <#if item.orphaned><span class="is orphaned">is orphaned</span></#if></p>
-
+<@block name="toolbox">
+<#if item.orphaned>
+<ul>
+ <h3>Toolbox</h3>
+ <li><a href="/@retry">Retry</a></li>
+ <li><a href="/@cancel">Cancel</a></li>
+</ul>
+</#if>
 </@block>
 
 </@extends>

@@ -430,11 +430,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-queue-ui</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-queue-core</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -894,6 +889,11 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
         <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-management</artifactId>
+        <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>

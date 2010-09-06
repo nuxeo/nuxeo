@@ -31,31 +31,30 @@
         <div style="clear:both;"></div>
       </@block>
     </td>
-  </tr>
+  </tr> 
   <tr valign="top" align="left">
     <td style="padding: 25px 50px;">
-      <@block name="middle">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr valign="top" align="left">
           <td class="middle-content-block">
-          <@block name="left">
-          </@block>
+          <@block name="content"/>
           </td>
           <td class="right-content-block">
-          <@block name="right">
-            <ul>
+
+          <@block name="toolbox"/>
+
+          <@block name="links">
+            <ul><h3>Management</h3>
                <li>Get your <a href="${This.context.modulePath}/principal">principal</a></li>
                <li>List resources <a href="${This.context.modulePath}/locks">locks</a></li>
                <li>List job <a href="${This.context.modulePath}/queues">queues</a></li>
                <li>List server <a href="${This.context.modulePath}/statuses">statuses</a></li>
-               <@block name="navigation">
-               </@block>
             </ul>
           </@block>
+
           </td>
         </tr>
       </table>
-      </@block>
     </td>
   </tr>
   <tr valign="middle" align="center">

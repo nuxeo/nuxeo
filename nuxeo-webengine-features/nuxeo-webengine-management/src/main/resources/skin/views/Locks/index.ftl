@@ -9,7 +9,7 @@
 <@block name="header_scripts">
 </@block>
 
-<@block name="left">
+<@block name="content">
 
 <dl><h2>Locks</h2>
 <#list This.infos as info>

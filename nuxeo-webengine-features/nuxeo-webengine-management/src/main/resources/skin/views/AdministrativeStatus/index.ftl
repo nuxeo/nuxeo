@@ -1,33 +1,20 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
+<@block name="content">
+
+   <p><h3>For server ${serverInstanceId} </h3>
+    the administrative status is <emph>${administrativeStatus}</emph></p>
+
 </@block>
 
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
-
-    
-    <h3>For server ${serverInstanceId} </h3>
-    the administrative status is <emph>${administrativeStatus}</emph>
-
-<p/>
+<@block name="toolbox">
+<ul><h3>Toolbox</h3>
 <#if administrativeStatus == 'passive'>
-<form method="POST" 
-  action="${This.path}/activate" accept-charset="utf-8">
-  	    <input type="submit" class="button" value="Activate" />
-</form>
+<li><a href="/@activate">Activate</a> this server</li>
 <#else>
-<form method="POST" 
-  action="${This.path}/passivate" accept-charset="utf-8">
-  	    <input type="submit" class="button" value="Passivate" />
-</form>  
+<li><a href="/@passivate">Passivate</a> this server</li>
 </#if>
-
+</ul>
 </@block>
 
 </@extends>
