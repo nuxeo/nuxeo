@@ -18,6 +18,5 @@
   <modules>
     <module>nuxeo-platform-queue-api</module>
     <module>nuxeo-platform-queue-core</module>
-    <module>nuxeo-platform-queue-ui</module>
   </modules>
 </project>

@@ -23,7 +23,7 @@
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-webengine-sites-api</module>
     <module>nuxeo-webengine-sites-core-contrib</module>
-    <module>nuxeo-platform-management-web</module>
+    <module>nuxeo-webengine-management</module>
   </modules>
   
   <profiles>
