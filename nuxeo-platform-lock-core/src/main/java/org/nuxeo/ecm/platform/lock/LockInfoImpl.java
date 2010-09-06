@@ -20,7 +20,11 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 
+import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.LockInfo;
+import org.nuxeo.ecm.platform.lock.api.NoSuchLockException;
+import org.nuxeo.ecm.platform.lock.api.NotOwnerException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of lock info. This embed a LockRecord and delegates
@@ -72,4 +76,8 @@ public class LockInfoImpl implements LockInfo, Serializable{
         return isExpired;
     }
 
+    public void unlock() throws NoSuchLockException, NotOwnerException {
+        LockCoordinator coordinator = Framework.getLocalService(LockCoordinator.class);
+        coordinator.unlock(owner, resource);
+    }
 }

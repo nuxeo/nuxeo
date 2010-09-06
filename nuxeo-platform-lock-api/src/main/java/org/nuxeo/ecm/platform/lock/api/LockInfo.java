@@ -35,4 +35,6 @@ public interface LockInfo {
 
     URI getOwner();
 
+    void unlock() throws NoSuchLockException, NotOwnerException;
+
 }

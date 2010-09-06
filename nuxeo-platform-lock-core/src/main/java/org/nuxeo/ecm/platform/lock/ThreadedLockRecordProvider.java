@@ -70,7 +70,7 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
     }
 
     @Override
-    public List<LockRecord> getRecords() throws InterruptedException {
+    public List<LockRecord> getRecords()  {
         Future<List<LockRecord>> future = service.submit(new Callable<List<LockRecord>>() {
             public List<LockRecord> call() throws Exception {
                 return delegate.getRecords();
@@ -84,10 +84,12 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
                 throw (RuntimeException) cause;
             }
             throw new Error("unexpected error from provider", e);
+        } catch (InterruptedException e) {
+            throw new Error("Interrupted while retrieving locks", e);
         }
     }
 
-    public void delete(final URI resource) throws InterruptedException {
+    public void delete(final URI resource) {
         Future<Object> future = service.submit(Executors.callable(new Runnable() {
             public void run() {
                 delegate.delete(resource);
@@ -101,11 +103,12 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
                 throw (RuntimeException) cause;
             }
             throw new Error("unexpected error from provider", e);
+        } catch (InterruptedException e) {
+            throw new Error("Interrupted while retrieving locks", e);
         }
     }
 
-    public LockRecord getRecord(final URI resourceUri)
-            throws InterruptedException {
+    public LockRecord getRecord(final URI resourceUri) {
         Future<LockRecord> future = service.submit(new Callable<LockRecord>() {
             public LockRecord call() throws Exception {
                 return delegate.getRecord(resourceUri);
@@ -119,6 +122,8 @@ public class ThreadedLockRecordProvider implements LockRecordProvider,
                 throw (RuntimeException) cause;
             }
             throw new Error("unexpected error from provider", e);
+        } catch (InterruptedException e) {
+            throw new Error("Interrupted while retrieving locks", e);
         }
     }
 

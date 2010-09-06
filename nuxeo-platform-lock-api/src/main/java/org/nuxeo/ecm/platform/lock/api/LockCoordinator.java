@@ -51,7 +51,7 @@ public interface LockCoordinator {
      * @throws InterruptedException
      */
     void saveInfo(URI self, URI resource, Serializable info)
-            throws NotOwnerException, InterruptedException;
+            throws NotOwnerException;
 
     /**
      * Unlock the resource. No further information will be available anymore
@@ -61,7 +61,7 @@ public interface LockCoordinator {
      * @throws InterruptedException
      */
     void unlock(URI self, URI resource) throws NoSuchLockException,
-            NotOwnerException, InterruptedException;
+            NotOwnerException;
 
 
 }

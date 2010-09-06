@@ -26,19 +26,14 @@ import java.util.List;
  */
 public interface LockRecordProvider {
 
-    void delete(URI resource)
-           throws InterruptedException;
+    void delete(URI resource);
 
-    LockRecord getRecord(URI resourceUri)
-            throws InterruptedException;
+    LockRecord getRecord(URI resourceUri);
 
-    LockRecord updateRecord(URI self, URI resource, String comments, long timeout)
-            throws InterruptedException;
+    LockRecord updateRecord(URI self, URI resource, String comments, long timeout) throws InterruptedException;
 
-    LockRecord createRecord(URI self, URI resource, String comment, long timeout)
-            throws InterruptedException;
+    LockRecord createRecord(URI self, URI resource, String comment, long timeout) throws InterruptedException;
 
-    List<LockRecord> getRecords()
-            throws InterruptedException;
+    List<LockRecord> getRecords();
 
 }

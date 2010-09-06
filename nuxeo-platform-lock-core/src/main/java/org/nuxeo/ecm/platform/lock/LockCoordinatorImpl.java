@@ -60,8 +60,7 @@ public class LockCoordinatorImpl implements LockCoordinator, LockComponentDelega
     }
 
     public void lock(final URI self, final URI resource, final String comment,
-            final long timeout) throws AlreadyLockedException,
-            InterruptedException {
+            final long timeout) throws AlreadyLockedException, InterruptedException{
         debug("Lock", self, resource, comment, timeout);
         doLock(self, resource, comment, timeout);
     }
@@ -131,7 +130,7 @@ public class LockCoordinatorImpl implements LockCoordinator, LockComponentDelega
     }
 
     public void saveInfo(URI self, URI resource, Serializable info)
-            throws NotOwnerException, InterruptedException {
+            throws NotOwnerException {
         LockRecord record = provider.getRecord(resource);
         if (!self.equals(record.owner)) {
             throw new NotOwnerException(resource);
@@ -140,7 +139,7 @@ public class LockCoordinatorImpl implements LockCoordinator, LockComponentDelega
     }
 
     public void unlock(URI self, URI resource) throws NoSuchLockException,
-            NotOwnerException, InterruptedException {
+            NotOwnerException {
 
         LockRecord record;
         // entity there ?
