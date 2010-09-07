@@ -218,8 +218,29 @@ namespace NuxeoProcess
 			
 			String PathValue = System.Environment.GetEnvironmentVariable("Path");
 			PathValue = PathValue + ";" + Path.Combine(NUXEO_HOME,"3rdparty");
-			System.Environment.SetEnvironmentVariable("Path",PathValue);
 			
+			// Move system directory and "." to the end of the path if present
+
+			String[] PathTokens = PathValue.Split(';');
+			String FixedPathValue = "";
+			String WinsysPathValue = "";
+
+			foreach (String Token in PathTokens) {
+				if ((Token.StartsWith(Environment.SystemDirectory, true, null))||
+				     (Token.CompareTo(".")==0)) {
+					if (WinsysPathValue.Length>0) WinsysPathValue = WinsysPathValue + ";";
+					WinsysPathValue = WinsysPathValue + Token;
+				} else {
+					if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + ";";
+					FixedPathValue = FixedPathValue + Token;
+				}
+			}
+
+			if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + ";";
+			FixedPathValue = FixedPathValue + WinsysPathValue;
+			
+			nxEnv.Add("PATH",FixedPathValue);
+
 			// Setup LOG_DIR
 			String LOG_DIR=null;
 			if (nxConfig.ContainsKey("nuxeo.log.dir")) {
@@ -452,6 +473,7 @@ namespace NuxeoProcess
 			
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
 				" -Dprogram.name=nuxeoctl -Djava.endorsed.dirs=\""+NUXEO_ENDORSED+"\""+
+				" -Djava.library.path=\""+nxEnv["PATH"]+";\""+
 				" -Djboss.server.log.dir=\""+nxEnv["LOG_DIR"]+"\""+NUXEO_TMP+
 				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+
 				" -Dnuxeo.data.dir=\""+nxEnv["DATA_DIR_JBOSS"]+"\""+
@@ -502,6 +524,7 @@ namespace NuxeoProcess
 				" org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator";
 
 			startArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_CLASSPATH+"\""+
+				" -Djava.library.path=\""+nxEnv["PATH"]+";\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
 				" -Dnuxeo.log.dir=\""+nxEnv["LOG_DIR"]+"\""+

@@ -216,6 +216,8 @@ namespace NuxeoProcess
 			confProcess.StartInfo.RedirectStandardOutput=true;
 			confProcess.EnableRaisingEvents=true;
 			confProcess.Start();
+			// Since this is non-blocking, wait for the configurator to exit
+			confProcess.WaitForExit(30000);
 			return true;
 		}
 
@@ -231,6 +233,8 @@ namespace NuxeoProcess
 			nxProcess.StartInfo.FileName=nxEnv["JAVA"];
 			nxProcess.StartInfo.Arguments=startArgs;
 			nxProcess.StartInfo.UseShellExecute=false;
+			nxProcess.StartInfo.WorkingDirectory=Path.Combine(nxEnv["NUXEO_HOME"],"bin");
+			nxProcess.StartInfo.EnvironmentVariables["PATH"]=nxEnv["PATH"];
 			nxProcess.StartInfo.CreateNoWindow=true;
 			nxProcess.StartInfo.RedirectStandardError=true;
 			nxProcess.StartInfo.RedirectStandardOutput=true;
