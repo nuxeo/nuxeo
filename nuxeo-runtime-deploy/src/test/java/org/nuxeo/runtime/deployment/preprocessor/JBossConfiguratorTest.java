@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -37,7 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JBossConfiguratorTest {
 
@@ -51,6 +50,8 @@ public class JBossConfiguratorTest {
 
     String propertyToGenerate;
 
+    String propertyToGenerate2;
+
     @Before
     public void setUp() throws Exception {
         File nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf");
@@ -61,16 +62,25 @@ public class JBossConfiguratorTest {
         nuxeoHome.mkdirs();
         System.setProperty(ConfigurationGenerator.NUXEO_HOME,
                 nuxeoHome.getPath());
-        System.setProperty(Environment.NUXEO_DATA_DIR,
-                new File(nuxeoHome,"data").getPath());
+        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome,
+                "data").getPath());
         propertyToGenerate = "<config-property name=\""
-            + "property\" type=\"java.lang.String\">URL=jdbc:h2:"+
-            System.getProperty(Environment.NUXEO_DATA_DIR)
-            + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+                + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
+                + System.getProperty(Environment.NUXEO_DATA_DIR)
+                + "/h2/testinclude;AUTO_SERVER=true</config-property>";
         System.setProperty(Environment.NUXEO_LOG_DIR,
-                new File(nuxeoHome,"log").getPath());
+                new File(nuxeoHome, "log").getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_HOME,
                 nuxeoHome.getPath());
+
+        // Windows path
+//        System.setProperty(Environment.NUXEO_DATA_DIR + "_2",
+//                "C:\\nuxeo-dm-5.4.0-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data");
+        propertyToGenerate2 = "<config-property name=\""
+                + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
+                + "C:\\nuxeo-dm-5.4.0-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data"
+                + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+
         FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
                 new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
@@ -87,13 +97,19 @@ public class JBossConfiguratorTest {
         configGenerator.browseTemplates();
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
-        assertEquals("default,testinclude", config.getProperty("nuxeo.templates"));
+        assertEquals("default,testinclude",
+                config.getProperty("nuxeo.templates"));
         assertEquals("true", config.getProperty("test.nuxeo.conf"));
         assertEquals("true", config.getProperty("test.nuxeo.defaults"));
-        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.1"));
-        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.2"));
-        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults"));
-        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults.template"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.defaults.template.1"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.defaults.template.2"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.conf.override.defaults"));
+        assertEquals(
+                "true",
+                config.getProperty("test.nuxeo.conf.override.defaults.template"));
         assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
         assertEquals("sa", config.getProperty("nuxeo.db.user"));
     }
@@ -109,6 +125,11 @@ public class JBossConfiguratorTest {
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
+        // Check windows path parsing
+        generatedFile = new File(configDir.getParentFile(),
+                "datasources/default-repository-ds_2.xml");
+        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
+        assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
     }
 
     @Test
@@ -116,13 +137,19 @@ public class JBossConfiguratorTest {
         configGenerator2.run();
         log.debug(configGenerator2.getIncludedTemplates());
         Properties config = configGenerator2.getUserConfig();
-        assertEquals("common,testinclude2", config.getProperty("nuxeo.templates"));
+        assertEquals("common,testinclude2",
+                config.getProperty("nuxeo.templates"));
         assertEquals("true", config.getProperty("test.nuxeo.conf"));
         assertEquals("true", config.getProperty("test.nuxeo.defaults"));
-        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.1"));
-        assertEquals("true", config.getProperty("test.nuxeo.defaults.template.2"));
-        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults"));
-        assertEquals("true", config.getProperty("test.nuxeo.conf.override.defaults.template"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.defaults.template.1"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.defaults.template.2"));
+        assertEquals("true",
+                config.getProperty("test.nuxeo.conf.override.defaults"));
+        assertEquals(
+                "true",
+                config.getProperty("test.nuxeo.conf.override.defaults.template"));
         assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
         assertEquals("sa", config.getProperty("nuxeo.db.user"));
         File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
