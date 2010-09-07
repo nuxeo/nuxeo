@@ -18,7 +18,6 @@ package org.nuxeo.ecm.webengine.management.statuses;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -82,8 +81,9 @@ public class ProbesObject extends ManagementObject {
         throw new WebResourceNotFoundException("No such probe " + name);
     }
 
-    @POST
-    public Object doPost() {
+    @GET
+    @Path("/@run")
+    public Object doRun() {
         runner.run();
         return redirect(getPath());
     }

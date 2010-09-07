@@ -2,11 +2,8 @@
 
 <@block name="content">
 
-<dl class="list probes"><h2>Probes</2>
-<form method="POST" 
-  action="${This.path}" accept-charset="utf-8">
-        <input type="submit" class="button" value="Run" />&nbsp;
-</form>  
+<dl class="list probes"><h2>Probes</h2>
+
 <#list This.infos as probe>
  <#assign status = probe.status/>
   <span class="probe ${probe.shortcutName}">
@@ -18,7 +15,12 @@
     </dd>
   </span>
 </#list> 
-
+</dl>
 </@block>
 
+<@block name="toolbox">
+<ul><h3>Toolbox</h3>
+  <li><a href="${This.path}/@run">Run</a></li>
+</ul>
+</@block>
 </@extends>
