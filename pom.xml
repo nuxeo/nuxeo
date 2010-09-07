@@ -34,17 +34,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-api</artifactId>
-        <version>${pom.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
-        <version>${pom.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
-        <version>${pom.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
    </dependencies>  
 </dependencyManagement>
