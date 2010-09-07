@@ -109,6 +109,8 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
                 "triggerStyleClass");
         if (triggerStyleClass != null) {
             writer.writeAttribute("class", triggerStyleClass, "styleClass");
+        } else {
+            writer.writeAttribute("class", "calendarTrigger", "styleClass");
         }
         writer.endElement("img");
 
