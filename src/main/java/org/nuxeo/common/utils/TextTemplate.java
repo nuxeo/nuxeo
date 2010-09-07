@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * TODO Please document me.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
@@ -42,6 +42,20 @@ public class TextTemplate {
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
 
     private final Properties vars;
+
+    private boolean trim = false;
+
+    public boolean isTrim() {
+        return trim;
+    }
+
+    /**
+     * Set to true in order to trim invisible characters (spaces) from values
+     * @param trim
+     */
+    public void setTrim(boolean trim) {
+        this.trim = trim;
+    }
 
     public TextTemplate() {
         vars = new Properties();
@@ -89,6 +103,9 @@ public class TextTemplate {
             String var = m.group(1);
             String value = getVariable(var);
             if (value != null) {
+                if (trim) {
+                    value = value.trim();
+                }
                 // Allow use of backslash and dollars characters
                 String valueL = Matcher.quoteReplacement(value);
                 m.appendReplacement(sb, valueL);
@@ -111,7 +128,7 @@ public class TextTemplate {
     /**
      * Recursive call {@link #process(InputStream, OutputStream)} on each file
      * from "in" directory to "out" directory
-     *
+     * 
      * @param in Directory to read files from
      * @param out Directory to write files to
      */
