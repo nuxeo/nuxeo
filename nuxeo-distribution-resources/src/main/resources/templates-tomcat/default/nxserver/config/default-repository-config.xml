@@ -29,7 +29,7 @@
           <!-- for PostgreSQL (Text Search Configuration): <fulltext analyzer="english"/> -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- NXP-5370 - use jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name} ? -->
+        <!-- NXP-5370 - use jdbc:h2:${nuxeo.data.dir}${file.separator}h2${file.separator}${nuxeo.db.name} ? -->
         <property name="URL">jdbc:h2:vcsh2repo</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
