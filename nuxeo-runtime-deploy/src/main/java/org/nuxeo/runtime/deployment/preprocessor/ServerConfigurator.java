@@ -66,6 +66,7 @@ public abstract class ServerConfigurator {
             }
         };
         final TextTemplate templateParser = new TextTemplate(config);
+        templateParser.setTrim(true);
 
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
