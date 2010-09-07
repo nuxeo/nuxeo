@@ -676,6 +676,11 @@
       <selector path=".listingLayoutSelector .langSelect">
         <margin>5px 0 10px</margin>
       </selector>
+      <selector path=".calendarTrigger">
+        <cursor>pointer</cursor>
+        <vertical-align>bottom</vertical-align>
+        <margin>0 0 5px</margin>
+      </selector>
       <!-- rich faces tree -->
       <selector path=".dr-tree-h-ic-div">
         <margin-left>8px</margin-left>
