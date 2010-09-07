@@ -179,9 +179,12 @@ public class ConfigurationGenerator {
             // Load default configuration
             defaultConfig = new Properties();
             defaultConfig.load(new FileInputStream(nuxeoDefaultConf));
+            userConfig = new Properties(defaultConfig);
+            
+            // Add useful system properties
+            userConfig.putAll(System.getProperties());
 
             // Load user configuration
-            userConfig = new Properties(defaultConfig);
             userConfig.load(new FileInputStream(nuxeoConf));
             forceGeneration = Boolean.parseBoolean(userConfig.getProperty(
                     PARAM_FORCE_GENERATION, "false"));

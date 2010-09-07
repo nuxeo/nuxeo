@@ -67,19 +67,19 @@ public class JBossConfiguratorTest {
         propertyToGenerate = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
                 + System.getProperty(Environment.NUXEO_DATA_DIR)
-                + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+                + File.separator + "h2" + File.separator
+                + "testinclude;AUTO_SERVER=true</config-property>";
         System.setProperty(Environment.NUXEO_LOG_DIR,
                 new File(nuxeoHome, "log").getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_HOME,
                 nuxeoHome.getPath());
 
         // Windows path
-//        System.setProperty(Environment.NUXEO_DATA_DIR + "_2",
-//                "C:\\nuxeo-dm-5.4.0-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data");
         propertyToGenerate2 = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
                 + "C:\\nuxeo-dm-5.4.0-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data"
-                + "/h2/testinclude;AUTO_SERVER=true</config-property>";
+                + File.separator + "h2" + File.separator
+                + "testinclude;AUTO_SERVER=true</config-property>";
 
         FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
                 new File(nuxeoHome, "templates"));
