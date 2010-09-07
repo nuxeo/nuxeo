@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -12,7 +13,9 @@
 
   <scm>
     <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/addons</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/addons
+    </developerConnection>
     <url>https://hg.nuxeo.org/addons</url>
   </scm>
 
@@ -24,6 +27,9 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-forms-layout-demo</module>
+    <module>nuxeo-platform-dynsearch</module>
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
       <module>nuxeo-correspondence-marianne</module>
@@ -33,7 +39,6 @@
       <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
       <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
       <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
-      <module>nuxeo-platform-error-web</module>
       <module>nuxeo-platform-exalead-connector</module>
       <module>nuxeo-platform-flex</module>
       <module>nuxeo-platform-indexing-gateway</module>
