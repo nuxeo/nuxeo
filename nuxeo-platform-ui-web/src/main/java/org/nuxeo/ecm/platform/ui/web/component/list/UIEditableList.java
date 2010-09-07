@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
-
 /**
  * Editable table component.
  * <p>
@@ -62,7 +61,6 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Trinidad UIXCollection component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 // XXX AT: see if needs to manage row keys as Trinidad does in case multiple
 // user edit the same list concurrently.
@@ -230,16 +228,43 @@ public class UIEditableList extends UIInput implements NamingContainer {
         } else if (current == null) {
             changed = true;
         } else if (cached instanceof Object[] && current instanceof Object[]) {
-            // arrays do not compare ok if reference is different, so match each
-            // element
+            // arrays do not compare ok if reference is different, so match
+            // each element
             Object[] cachedArray = (Object[]) cached;
             Object[] currentArray = (Object[]) current;
             if (cachedArray.length != currentArray.length) {
                 return true;
             } else {
-                Class<?> type = cachedArray.getClass().getComponentType();
                 for (int i = 0; i < cachedArray.length; i++) {
                     if (valueChanged(cachedArray[i], currentArray[i])) {
+                        return true;
+                    }
+                }
+            }
+        } else if (cached instanceof List && current instanceof List) {
+            // arrays do not compare ok if reference is different, so match
+            // each element
+            List cachedList = (List) cached;
+            List currentList = (List) current;
+            if (cachedList.size() != currentList.size()) {
+                return true;
+            } else {
+                for (int i = 0; i < cachedList.size(); i++) {
+                    if (valueChanged(cachedList.get(i), currentList.get(i))) {
+                        return true;
+                    }
+                }
+            }
+        } else if (cached instanceof Map && current instanceof Map) {
+            // arrays do not compare ok if reference is different, so match
+            // each element
+            Map cachedMap = (Map) cached;
+            Map currentMap = (Map) current;
+            if (cachedMap.size() != currentMap.size()) {
+                return true;
+            } else {
+                for (Object key : cachedMap.keySet()) {
+                    if (valueChanged(cachedMap.get(key), currentMap.get(key))) {
                         return true;
                     }
                 }
@@ -531,12 +556,12 @@ public class UIEditableList extends UIInput implements NamingContainer {
      * {@link #postRowDataChange} as appropriate.
      *
      * @see EditableModel#setRowKey
-     * @param rowKey The rowKey of the row that should be made current. Use null
-     *            to clear the current row.
+     * @param rowKey The rowKey of the row that should be made current. Use
+     *            null to clear the current row.
      */
     public void setRowKey(Integer rowKey) {
-        // XXX AT: do not save state before setting row key as current index may
-        // not point to the same object anymore (XXX: need to handle this
+        // XXX AT: do not save state before setting row key as current index
+        // may not point to the same object anymore (XXX: need to handle this
         // better, as events may change the data too, in which case we would
         // want the state to be saved).
         // preRowDataChange();
@@ -792,8 +817,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     /**
-     * Queues an event. If there is a currency set on this table, then the event
-     * will be wrapped so that when it is finally delivered, the correct
+     * Queues an event. If there is a currency set on this table, then the
+     * event will be wrapped so that when it is finally delivered, the correct
      * currency will be restored.
      *
      * @param event a FacesEvent
