@@ -11,7 +11,7 @@
     <max-pool-size>${nuxeo.vcs.max-pool-size}</max-pool-size>
     
     <config-property name="xaDataSource" type="java.lang.String">org.h2.jdbcx.JdbcDataSource</config-property>
-    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name};AUTO_SERVER=true;create=true</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${nuxeo.data.dir}${file.separator}h2${file.separator}${nuxeo.db.name};AUTO_SERVER=true;create=true</config-property>
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
 
