@@ -14,7 +14,7 @@
 
    <groupId>org.nuxeo.ecm.platform</groupId>
    <artifactId>nuxeo-platform-document-routing</artifactId>
-   <version>1.0-SNAPSHOT</version>
+   <version>5.4.0-SNAPSHOT</version>
    <name>Nuxeo Platform Document Routing Addon</name>
    <packaging>pom</packaging>
    <description>The parent module for Nuxeo Platform Document Routing Addon</description>
@@ -45,19 +45,6 @@
        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
         <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-jboss</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <classifier>nuxeo-dm</classifier>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.seleniumhq.selenium.server</groupId>
-        <artifactId>selenium-server</artifactId>
-        <version>1.0.3</version>
-        <classifier>standalone</classifier>
       </dependency>
    </dependencies>  
 </dependencyManagement>
