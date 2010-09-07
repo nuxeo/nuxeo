@@ -4,3 +4,6 @@ Bundle-Name: Nuxeo ECM Routing Web
 Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.web;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/document-routing-ecm-types-contrib.xml,
+ OSGI-INF/document-routing-layouts-contrib.xml,
+ OSGI-INF/document-routing-actions-contrib.xml

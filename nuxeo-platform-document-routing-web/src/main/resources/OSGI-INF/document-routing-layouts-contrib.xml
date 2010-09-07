@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<component name="ecp.nuxeo.com.forms.layouts.webapp">
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+   
+   <widget name="uid" type="text">
+   	 <labels>
+        <label mode="any">Uid</label>
+     </labels>
+     <translated>true</translated>
+      <fields>
+        <field>uid:uid</field>
+      </fields>
+     <widgetModes>
+        <mode value="create">hidden</mode>
+        <mode value="any">view</mode>
+     </widgetModes>
+   </widget>
+   
+   <widget name="initiator" type="text">
+   	 <labels>
+       <label mode="any">label.document.routing.initiator</label>
+     </labels>
+     <translated>true</translated>
+     <fields>
+       <field>docri:initiator</field>
+     </fields>
+   </widget>
+   
+  <widget name="tokens" type="list">
+   	 <labels>
+       <label mode="any">label.document.routing.tokens</label>
+     </labels>
+     <translated>true</translated>
+     <fields>
+       <field>docri:tokens</field>
+     </fields>
+     <widgetModes>
+       <mode value="create">hidden</mode>
+       <mode value="any">view</mode>
+     </widgetModes>
+    </widget>
+   
+   <widget name="participatingDocuments" type="list">
+   	 <labels>
+       <label mode="any">label.document.routing.participatingDocuments</label>
+     </labels>
+     <translated>true</translated>
+     <fields>
+       <field>docri:participatingDocuments</field>
+     </fields>
+     <widgetModes>
+       <mode value="create">hidden</mode>
+       <mode value="any">view</mode>
+     </widgetModes>
+   </widget>
+   
+   <widget name="type" type="selectOneDirectory">
+     <fields>
+        <field>stepf:execution</field>
+     </fields>
+     <labels>
+          <label mode="any">label.step.folder.execution.type</label>
+     </labels>
+     <translated>true</translated>
+     <properties widgetMode="any">
+       <property name="directoryName">execution_type</property>
+        <property name="localize">true</property>
+       </properties>
+     </widget>
+    
+    <widget name="operationIds" type="list">
+   	 <labels>
+      <label mode="any">label.step.operationIds</label>
+     </labels>
+     <translated>true</translated>
+     <fields>
+      <field>stepi:operationIds</field>
+     </fields>
+     <widgetModes>
+       <mode value="create">hidden</mode>
+       <mode value="any">view</mode>
+    </widgetModes>
+   </widget>
+    
+  </extension>    
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    
+    <layout name="document_routing">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+         <row>
+          <widget>uid</widget>
+        </row>
+        <row>
+          <widget>initiator</widget>
+        </row>
+         <row>
+          <widget>tokens</widget>
+        </row>
+         <row>
+          <widget>participatingDocuments</widget>
+        </row>
+      </rows>
+     </layout>
+     
+     <layout name="step_folder">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+         <row>
+          <widget>uid</widget>
+        </row>
+        <row>
+          <widget>type</widget>
+         </row>
+      </rows>
+     </layout>
+     
+     <layout name="step">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+         <row>
+          <widget>uid</widget>
+        </row>
+        <row>
+          <widget>operationIds</widget>
+        </row>
+      </rows>
+     </layout>
+
+  </extension>
+
+</component>

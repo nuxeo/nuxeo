@@ -1,0 +1,103 @@
+<component name="org.nuxeo.ecm.platform.routing.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.ecm.platform.types</require>
+  <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
+  <require>org.nuxeo.ecm.webengine.sites.ecm.types</require>
+  <require>org.nuxeo.webengine.blogs.ecm.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+   <type id="Workspace">
+    <subtypes>
+      <type>DocumentRouting</type>
+     </subtypes>
+   </type>
+ 
+   <type id="Folder">
+    <subtypes>
+     <type>DocumentRouting</type>
+     </subtypes>
+   </type>
+  
+   <type id="DocumentRouting" coreType="DocumentRouting">
+   	  <label>DocumentRouting</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+   	  <subtypes>
+        <type>StepFolder</type>
+      </subtypes>
+   	  <layouts mode="any">
+        <layout>heading</layout>
+        <layout>document_routing</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+        <layout>document_routing</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+   </type>
+     
+   <type id="StepFolder" coreType="StepFolder">
+      <label>StepFolder</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>StepFolder</type>
+        <type>Step</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>step_folder</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+        <layout>step_folder</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+   </type>
+     
+   <type id="Step" coreType="Step">
+      <label>Step</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>step</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+        <layout>step</layout>
+      </layouts>
+      <layouts mode="view" />
+   </type>
+
+ </extension>  
+ 
+ </component> 
+
+ 
