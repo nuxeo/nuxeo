@@ -700,7 +700,16 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
-        Label to display in the trigger button. Defaults to "...".
+        Image path to use for the trigger. Defaults to
+        "jscalendar/calendar.png".
+      </description>
+    </attribute>
+    <attribute>
+      <name>triggerLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Label to display on the trigger image. Defaults to "...".
       </description>
     </attribute>
     <attribute>
@@ -735,7 +744,7 @@
     </attribute>
     <example>
       <![CDATA[
-<nxu:inputCalendar
+<nxu:inputDateTime
   value="#{document.project.dueDate}"
   format="mm/dd/YY"
   required="false" />

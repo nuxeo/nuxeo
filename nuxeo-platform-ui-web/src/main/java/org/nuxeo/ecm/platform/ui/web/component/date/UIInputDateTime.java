@@ -48,15 +48,17 @@ public class UIInputDateTime extends UIInput {
 
     // attributes
 
-    private String format;
+    protected String format;
 
-    private Boolean showsTime;
+    protected Boolean showsTime;
 
-    private String locale;
+    protected String locale;
 
-    private String timeZone;
+    protected String timeZone;
 
-    private String triggerLabel;
+    protected String triggerLabel;
+
+    protected String triggerImg;
 
     protected String onchange;
 
@@ -193,6 +195,31 @@ public class UIInputDateTime extends UIInput {
 
     public void setTriggerLabel(String triggerLabel) {
         this.triggerLabel = triggerLabel;
+    }
+
+    public String getTriggerImg() {
+        if (triggerImg != null) {
+            return triggerImg;
+        }
+        ValueExpression ve = getValueExpression("triggerImg");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            return getDefaultTriggerImg();
+        }
+    }
+
+    public String getDefaultTriggerImg() {
+        return "jscalendar/calendar.png";
+    }
+
+    public void setTriggerImg(String triggerImg) {
+        this.triggerImg = triggerImg;
     }
 
     protected String getStringValue(String name, String defaultValue) {

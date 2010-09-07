@@ -96,17 +96,21 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.endElement("input");
 
         // trigger button
-        writer.startElement("button", dateTimeComp);
-        writer.writeAttribute("type", "reset", null);
+        writer.startElement("img", dateTimeComp);
         writer.writeAttribute("id", triggerButtonId, null);
         writer.writeAttribute("name", triggerButtonId, null);
+        String imgUrl = generateTriggerImageUrl(context,
+                dateTimeComp.getTriggerImg(),
+                dateTimeComp.getDefaultTriggerImg());
+        writer.writeAttribute("src", imgUrl, null);
+        writer.writeAttribute("alt", dateTimeComp.getTriggerLabel(), null);
+        writer.writeAttribute("title", dateTimeComp.getTriggerLabel(), null);
         String triggerStyleClass = (String) component.getAttributes().get(
                 "triggerStyleClass");
         if (triggerStyleClass != null) {
             writer.writeAttribute("class", triggerStyleClass, "styleClass");
         }
-        writer.writeText(dateTimeComp.getTriggerLabel(), null);
-        writer.endElement("button");
+        writer.endElement("img");
 
         // javascript calendar
         writer.startElement("script", dateTimeComp);
@@ -188,6 +192,17 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         res.append(StringUtils.join(strOptions.toArray(), ", "));
         res.append('}');
         return res.toString();
+    }
+
+    protected static String generateTriggerImageUrl(FacesContext context,
+            String triggerImg, String defaultImg) {
+        // avoid empty image
+        if (triggerImg == null || "".equals(triggerImg.trim())) {
+            return defaultImg;
+        }
+        triggerImg = context.getApplication().getViewHandler().getResourceURL(
+                context, triggerImg);
+        return (context.getExternalContext().encodeResourceURL(triggerImg));
     }
 
 }
