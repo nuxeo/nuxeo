@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
-import javax.faces.convert.DateTimeConverter;
+import javax.faces.convert.NumberConverter;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -45,7 +45,6 @@ import com.sun.facelets.tag.jsf.core.ConvertNumberHandler;
  * Int widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
@@ -64,7 +63,7 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, new TagAttributes(new TagAttribute[0]), leaf,
-                    DateTimeConverter.CONVERTER_ID);
+                    NumberConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertNumberHandler(convertConfig);
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,
                     convert, HtmlInputText.COMPONENT_TYPE, null);
@@ -77,7 +76,7 @@ public class IntWidgetTypeHandler extends AbstractWidgetTypeHandler {
             // default on text with int converter for other modes
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, new TagAttributes(new TagAttribute[0]), leaf,
-                    DateTimeConverter.CONVERTER_ID);
+                    NumberConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertNumberHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(
                     attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
