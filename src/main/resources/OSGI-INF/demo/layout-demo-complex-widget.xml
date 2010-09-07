@@ -33,6 +33,9 @@
             <fields>
               <field>stringComplexItem</field>
             </fields>
+            <labels>
+              <label mode="any">String item</label>
+            </labels>
             <properties widgetMode="edit">
               <property name="required">true</property>
             </properties>
@@ -41,6 +44,9 @@
             <fields>
               <field>dateComplexItem</field>
             </fields>
+            <labels>
+              <label mode="any">Date item</label>
+            </labels>
             <properties widgetMode="view">
               <property name="pattern">#{nxu:basicDateFormater()}</property>
             </properties>
@@ -54,11 +60,17 @@
             <fields>
               <field>intComplexItem</field>
             </fields>
+            <labels>
+              <label mode="any">Int item</label>
+            </labels>
           </widget>
           <widget name="booleanComplexItem" type="checkbox">
             <fields>
               <field>booleanComplexItem</field>
             </fields>
+            <labels>
+              <label mode="any">Boolean item</label>
+            </labels>
           </widget>
         </subWidgets>
       </widget>

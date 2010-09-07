@@ -4,7 +4,7 @@ Nuxeo Platform Layout Demo
 
 Addon presenting layouts and widgets in a show-case like web site.
 
-The application is visible at http://localhost:8080/nuxeolayoutDemo 
+The application is visible at http://localhost:8080/nuxeo/layoutDemo 
 
 Selenium tests also ensure that all standard widget types are working ok.
 

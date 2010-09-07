@@ -29,7 +29,7 @@
 
       <c:if test="#{empty layoutDemoCurrentTabId}">
         <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}" varStatus="demoLayoutStatus">
-          
+
           <ui:include src="/layoutDemo/widget_demo_template.xhtml" />
     
         </c:forEach>

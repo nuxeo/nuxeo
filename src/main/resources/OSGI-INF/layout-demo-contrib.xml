@@ -54,6 +54,7 @@
       </layouts>
     </widgetType>
 
+    <!-- TODO: need to handle file size restriction -->
     <widgetType name="file">
       <label>File widget</label>
       <viewId>fileWidget</viewId>
@@ -115,8 +116,11 @@
           src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
         <layout name="complexListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
-        <layout name="fileListWidgetLayout"
+        <!-- disabled: need to handle file size restriction -->
+        <!-- 
+          <layout name="fileListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
+        -->
         <layout name="listOfListsWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
       </layouts>

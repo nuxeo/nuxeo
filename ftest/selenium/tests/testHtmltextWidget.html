@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://localhost:8080/" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
 <title>testHtmltextWidget</title>
 </head>
 <body>
@@ -18,12 +18,82 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>/nuxeo/layoutDemo/htmltextWidget</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/htmltextWidget</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextNotPresent</td>
 	<td>ERROR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>htmltextWidgetLayout_view_form:nxl_htmltextWidgetLayout_1:nxw_htmltextWidget_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>htmltextWidgetLayout_edit_form:htmltextWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_message</td>
+	<td>Value is required</td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mce_editor_0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//body[@class=&quot;mceContentBody&quot;]</td>
+	<td>&lt;b&gt;Bold&lt;/b&gt; content</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>htmltextWidgetLayout_edit_form:htmltextWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>htmltextWidgetLayout_view_form:nxl_htmltextWidgetLayout_1:nxw_htmltextWidget_1</td>
+	<td>Bold content</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/htmltextWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>htmltextWidgetLayout_view_form:nxl_htmltextWidgetLayout_1:nxw_htmltextWidget_1</td>
 	<td></td>
 </tr>
 

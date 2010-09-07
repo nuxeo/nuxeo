@@ -17,7 +17,7 @@
       </rows>
       <widget name="complexListWidget" type="list">
         <labels>
-          <label mode="any">complexList widget</label>
+          <label mode="any">Complex List widget</label>
         </labels>
         <translated>false</translated>
         <fields>
@@ -29,7 +29,7 @@
         <subWidgets>
           <widget name="complexListItem" type="template">
             <labels>
-              <label mode="any"></label>
+              <label mode="any">Complex List item</label>
             </labels>
             <properties mode="any">
               <property name="template">

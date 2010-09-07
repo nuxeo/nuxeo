@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="http://localhost:8080/" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
 <title>testTextareaWidget</title>
 </head>
 <body>
@@ -18,12 +18,97 @@
 </tr>
 <tr>
 	<td>open</td>
-	<td>/nuxeo/layoutDemo/textareaWidget</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/textareaWidget</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextNotPresent</td>
 	<td>ERROR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>textareaWidgetLayout_view_form:nxl_textareaWidgetLayout_1:nxw_textareaWidget_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>textareaWidgetLayout_edit_form:textareaWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>textareaWidgetLayout_edit_form:nxl_textareaWidgetLayout:nxw_textareaWidget_message</td>
+	<td>Value is required</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>textareaWidgetLayout_edit_form:nxl_textareaWidgetLayout:nxw_textareaWidget</td>
+	<td>la lala<br />a la ligne</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>textareaWidgetLayout_edit_form:textareaWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>textareaWidgetLayout_view_form:nxl_textareaWidgetLayout_1:nxw_textareaWidget_1</td>
+	<td>la lala a la ligne</td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>textareaWidgetLayout_edit_form:nxl_textareaWidgetLayout:nxw_textareaWidget_message</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/textareaWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>textareaWidgetLayout_view_form:nxl_textareaWidgetLayout_1:nxw_textareaWidget_1</td>
 	<td></td>
 </tr>
 

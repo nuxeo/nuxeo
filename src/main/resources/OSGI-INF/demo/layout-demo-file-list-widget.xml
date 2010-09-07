@@ -32,7 +32,7 @@
           <property name="diff">true</property>
         </properties>
         <subWidgets>
-          <widget name="file" type="template">
+          <widget name="file" type="file">
             <labels>
               <label mode="any"></label>
             </labels>
