@@ -89,7 +89,9 @@ public class TextTemplate {
             String var = m.group(1);
             String value = getVariable(var);
             if (value != null) {
-                m.appendReplacement(sb, value);
+                // Allow use of backslash and dollars characters
+                String valueL = Matcher.quoteReplacement(value);
+                m.appendReplacement(sb, valueL);
             }
         }
         m.appendTail(sb);
