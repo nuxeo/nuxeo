@@ -103,40 +103,35 @@ public class Constants {
     public static final String WORKFLOW_CONTEXT = "Workflow";
 
     // Widget types
-    public static final String W_TEXT = "Text"; // the default Widget for
 
-    // String or any other unknown
-    // type
+    // the default Widget for String or any other unknown type
+    public static final String W_TEXT = "Text";
 
     public static final String W_MULTILINE_TEXT = "TextArea";
 
-    public static final String W_PROPERTIES = "Properties"; // to edit a
+    // to edit a properties table
+    public static final String W_PROPERTIES = "Properties";
 
-    // properties table
-
-    public static final String W_CHECK = "Check"; // the default widget for
-
-    // Boolean
+    // the default widget for Boolean
+    public static final String W_CHECK = "Check";
 
     public static final String W_RADIO = "Radio";
 
-    public static final String W_OPTION = "Option"; // a single selection
-
-    // listbox
+    // a single selection listbox
+    public static final String W_OPTION = "Option";
 
     public static final String W_LIST = "List";
 
     public static final String W_COMBO = "Combo";
 
-    public static final String W_DATE = "Date"; // Default widget for Date
+    // Default widget for Date
+    public static final String W_DATE = "Date";
 
-    public static final String W_DECIMAL = "Decimal"; // Default widget for
+    // Default widget for Long
+    public static final String W_DECIMAL = "Decimal";
 
-    // Long
-
-    public static final String W_NUMBER = "Number"; // Default widget for
-
-    // Double
+    // Default widget for Double
+    public static final String W_NUMBER = "Number";
 
     public static final String W_AUDIT_EVENT = "AuditEvent";
 
