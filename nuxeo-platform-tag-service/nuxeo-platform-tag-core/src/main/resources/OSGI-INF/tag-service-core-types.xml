@@ -12,9 +12,11 @@
     <doctype name="Tag" extends="Document">
       <schema name="tag"/>
       <schema name="dublincore"/>
+      <facet name="HiddenInNavigation"/>
     </doctype>
 
     <doctype name="Tagging" extends="Relation">
+      <facet name="HiddenInNavigation"/>
     </doctype>
 
   </extension>
