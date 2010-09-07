@@ -671,6 +671,10 @@
       <selector path=".listingLayoutSelector">
         <float>right</float>
         <margin>11px 0 10px</margin>
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".listingLayoutSelector .langSelect">
+        <margin>5px 0 10px</margin>
       </selector>
       <!-- rich faces tree -->
       <selector path=".dr-tree-h-ic-div">
@@ -1475,9 +1479,10 @@
         <font-weight>normal</font-weight>
         <width>70px</width>
       </selector>
-      <selector path=".facetedSearchBlock .wideLabel">
-        <width>70px</width>
+      <selector path=".facetedSearchBlock .tinyLabel">
+        <width>24px</width>
         <display>inline-block</display>
+        <text-align>right</text-align>
       </selector>
       <selector path=".facetedSearchBlock .dataInput">
         <width>100%</width>
@@ -1489,8 +1494,9 @@
         <width>100%</width>
       </selector>
       <selector path=".facetedSearchBlock .dataInputTextDate">
-        <width>80px</width>
-        <margin>0 5px 3px 0</margin>
+        <width>45px</width>
+        <font-size>9px</font-size>
+        <margin>0 5px 3px 3px</margin>
       </selector>
       <selector path=".facetedSearchBlock .widgetContent">
         <border-bottom>1px solid #dcdcdc</border-bottom>
@@ -1509,7 +1515,8 @@
         <margin>0 0 5px</margin>
         <border-bottom>1px solid #cacaca</border-bottom>
       </selector>
-      <selector path=".facetedSearchBlock">
+      <selector path="#saveFacetedSearchForm input">
+        <margin-left>3px</margin-left>
       </selector>
     </style>
     <style name="common style 2">
