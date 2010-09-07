@@ -722,7 +722,10 @@
       <name>triggerStyleClass</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>style class to set on the trigger button tag.</description>
+      <description>
+        style class to set on the trigger button tag, defaults to
+        'calendarTrigger'.
+      </description>
     </attribute>
     <attribute>
       <name>onchange</name>
