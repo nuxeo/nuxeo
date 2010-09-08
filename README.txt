@@ -10,6 +10,5 @@ Example using jboss:
 Copy this file:  itext-2.0.7.jar
 into the following directory: <jboss>/server/default/deploy/nuxeo.ear/lib
 
-
------
 Optimally this operation will be scripted for the deployment phase.
+----
