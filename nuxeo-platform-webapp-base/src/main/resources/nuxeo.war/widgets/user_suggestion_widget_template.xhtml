@@ -42,6 +42,7 @@
     <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
     <c:set var="hideSearchTypeText" value="#{nxu:test(!empty widget.properties.hideSearchTypeText, widget.properties.hideSearchTypeText, false)}" />
     <c:set var="displayHorizontally" value="#{nxu:test(!empty widget.properties.displayHorizontally, widget.properties.displayHorizontally, true)}" />
+    <c:set var="displayHelpLabel" value="#{nxu:test(!empty widget.properties.displayHelpLabel, widget.properties.displayHelpLabel, true)}" />
 
     <c:if test="#{!hideSearchTypeText}">
       <h:outputText value="#{messages['label.security.searchUsers']}"
@@ -105,9 +106,11 @@
               </f:subview>
             </h:column>
           </rich:suggestionbox>
-          <br />
-          <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
-          <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+          <c:if test="#{displayHelpLabel}">
+            <br />
+            <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
+            <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+          </c:if>
         </h:panelGroup>
 
         <h:panelGroup>
