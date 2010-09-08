@@ -1,5 +1,5 @@
 /**
-  This package provides Public Key Infrastructure services
+  Public Key Infrastructure services
 
   Following security entities are affected:
   <ul>

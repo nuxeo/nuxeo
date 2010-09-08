@@ -1,5 +1,5 @@
 /**
-  This package provides PDF signing services
+  PDF signing services
 
   @author Wojciech Sulejman
   @version 1.0
