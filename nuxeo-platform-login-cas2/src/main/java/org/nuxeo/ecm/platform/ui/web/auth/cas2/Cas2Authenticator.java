@@ -32,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -46,9 +47,10 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  * @author Olivier Adam
  * @author M.-A. Darche
  * @author Benjamin Jalon
+ * @author Thierry Martins
  */
 public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
-        NuxeoAuthenticationPluginLogoutExtension {
+        NuxeoAuthenticationPluginLogoutExtension, LoginResponseHandler {
 
     protected static final String CAS_SERVER_HEADER_KEY = "CasServer";
 
@@ -103,6 +105,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected boolean promptLogin = true;
 
     protected List<String> excludePromptURLs;
+    
+    protected String errorPage;
 
     public List<String> getUnAuthenticatedURLPrefix() {
         // CAS login screen is not part of Nuxeo5 Web App
@@ -242,6 +246,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
                 excludePromptURLs.add(parameters.get(key));
             }
         }
+        if (parameters.containsKey(CAS2Parameters.ERROR_PAGE)) {
+            errorPage = parameters.get(CAS2Parameters.ERROR_PAGE);
+        }
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
@@ -371,6 +378,26 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String username = ticketValidator.getUser();
         log.debug("checkCasTicket: validation returned username = " + username);
         return username;
+    }
+
+    @Override
+    public boolean onError(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            if (errorPage != null) {
+                response.sendRedirect(errorPage);
+            }
+        } catch (Exception e) {
+            log.error(e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onSuccess(HttpServletRequest arg0, HttpServletResponse arg1) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

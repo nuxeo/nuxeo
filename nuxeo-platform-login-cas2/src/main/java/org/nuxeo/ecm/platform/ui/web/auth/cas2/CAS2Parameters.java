@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
  * @author Thierry Delprat
  * @author Olivier Adam
  * @author M.-A. Darche
+ * @author Thierry Martins
  */
 public final class CAS2Parameters {
 
@@ -50,6 +51,8 @@ public final class CAS2Parameters {
     public static final String PROXY_VALIDATOR_CLASS = "proxyValidatorClass";
 
     public static final String PROMPT_LOGIN = "promptLogin";
+
+    public final static String ERROR_PAGE = "errorPage";
 
     // Constant utility class.
     protected CAS2Parameters() {
