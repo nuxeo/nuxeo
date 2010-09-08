@@ -4,19 +4,16 @@
 
   <require>org.nuxeo.ecm.platform.actions</require>
 
-  <!--<extension target="org.nuxeo.ecm.platform.actions.ActionService"
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
-
    
-   <action id="route" link="#{routingActions.route}"
+   <action id="executeRoute" link="#{routingActions.route}"  enabled="true"
       label="action.start.document.routing" icon="/icons/action_add.gif" order="110">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>canRoute</filter-id>
     </action>
   
-  
-  </extention>  
-  -->
+  </extension>  
 	  
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
