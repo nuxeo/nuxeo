@@ -282,12 +282,19 @@ public class CommentManagerImpl implements CommentManager {
         NuxeoPrincipal principal = null;
         try {
             UserManager userManager = Framework.getService(UserManager.class);
-            principal = userManager.getPrincipal(author);
+            if (userManager == null) {
+                log.error("Error notifying comment added: UserManager "
+                        + "service is not found");
+            } else {
+                principal = userManager.getPrincipal(author);
+            }
         } catch (Exception e) {
             log.error("Error building principal for notification", e);
         }
-        notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null,
-                createdComment, principal);
+        if (principal != null) {
+            notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null,
+                    createdComment, principal);
+        }
 
         return createdComment;
     }
