@@ -32,6 +32,7 @@
         </executions>
         <configuration>
           <suffix>.opt</suffix>
+          <jswarn>false</jswarn>
           <excludes>
             <exclude>target/**</exclude>
             <!-- don't bother with other file types -->
