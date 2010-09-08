@@ -16,12 +16,12 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="doctype">
 
-   <doctype name="DocumentRouting" extends="Folder">
-     <schema name="uid"/>
+   <doctype name="DocumentRoute" extends="StepFolder">
      <schema name="document_route_instance"/>
      <schema name="document_route_model"/>
      <subtypes>
        <type>StepFolder</type>
+       <type>Step</type>
      </subtypes>
     </doctype>
     

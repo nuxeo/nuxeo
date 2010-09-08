@@ -4,13 +4,33 @@
 
   <require>org.nuxeo.ecm.platform.actions</require>
 
+  <!--<extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+   
+   <action id="route" link="#{routingActions.route}"
+      label="action.start.document.routing" icon="/icons/action_add.gif" order="110">
+      <category>SUBVIEW_UPPER_LIST_HREF</category>
+      <filter-id>canRoute</filter-id>
+    </action>
+  
+  
+  </extention>  
+  -->
+	  
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
     <filter id="create" append="true">
       <rule grant="true">
-        <type>DocumentRouting</type>
+        <type>DocumentRoute</type>
         <type>StepFolder</type>
+      </rule>
+    </filter>
+    
+    <filter id="canRoute">
+      <rule grant="true">
+        <type>DocumentRoute</type>
       </rule>
     </filter>
 

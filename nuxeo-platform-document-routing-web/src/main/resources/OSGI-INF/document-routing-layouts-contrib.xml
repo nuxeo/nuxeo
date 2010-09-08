@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="ecp.nuxeo.com.forms.layouts.webapp">
+<component name="org.nuxeo.ecm.platform.routing.layouts.webapp">
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
 
@@ -28,6 +28,9 @@
      <fields>
        <field>docri:initiator</field>
      </fields>
+     <properties widgetMode="edit">
+      <property name="cssStyleClass">dataInputText</property>
+     </properties>
    </widget>
    
   <widget name="tokens" type="list">
@@ -44,7 +47,7 @@
      </widgetModes>
     </widget>
    
-   <widget name="participatingDocuments" type="list">
+   <widget name="participatingDocuments" type="template">
    	 <labels>
        <label mode="any">label.document.routing.participatingDocuments</label>
      </labels>
@@ -52,10 +55,14 @@
      <fields>
        <field>docri:participatingDocuments</field>
      </fields>
-     <widgetModes>
-       <mode value="create">hidden</mode>
-       <mode value="any">view</mode>
-     </widgetModes>
+     <properties mode="any">
+       <property name="template">
+          /document_routing_widgets/document_suggestion_widget_template.xhtml
+       </property>
+     </properties>
+     <properties widgetMode="edit">
+       <property name="cssStyleClass">dataInputText</property>
+     </properties>
    </widget>
    
    <widget name="type" type="selectOneDirectory">
@@ -99,6 +106,9 @@
          <row>
           <widget>uid</widget>
         </row>
+        <row>
+          <widget>type</widget>
+         </row>
         <row>
           <widget>initiator</widget>
         </row>

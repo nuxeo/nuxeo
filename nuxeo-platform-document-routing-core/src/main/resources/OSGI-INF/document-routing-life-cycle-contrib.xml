@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
-      <type name="DocumentRouting">default</type>
+      <type name="DocumentRoute">default</type>
       <type name="StepFolder">default</type>
       <type name="Step">default</type>
     </types>

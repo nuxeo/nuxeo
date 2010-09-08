@@ -10,18 +10,18 @@
 
    <type id="Workspace">
     <subtypes>
-      <type>DocumentRouting</type>
+      <type>DocumentRoute</type>
      </subtypes>
    </type>
  
    <type id="Folder">
     <subtypes>
-     <type>DocumentRouting</type>
+     <type>DocumentRoute</type>
      </subtypes>
    </type>
   
-   <type id="DocumentRouting" coreType="DocumentRouting">
-   	  <label>DocumentRouting</label>
+   <type id="DocumentRoute" coreType="DocumentRoute">
+   	  <label>DocumentRoute</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
