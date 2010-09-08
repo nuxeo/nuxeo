@@ -670,11 +670,16 @@
       </selector>
       <selector path=".listingLayoutSelector">
         <float>right</float>
-        <margin>11px 0 10px</margin>
+        <margin>11px 0 10px 7px</margin>
         <text-align>right</text-align>
       </selector>
+      <selector path=".listingLayoutSelector .contentViewPageSelectorDesc">
+        <float>left</float>
+        <padding>2px 3px 0 0</padding>
+      </selector>
       <selector path=".listingLayoutSelector .langSelect">
-        <margin>5px 0 10px</margin>
+        <float>left</float>
+        <margin>0px 0 10px</margin>
       </selector>
       <selector path=".calendarTrigger">
         <cursor>pointer</cursor>
@@ -1523,6 +1528,7 @@
       <selector path="#saveFacetedSearchForm input">
         <margin-left>3px</margin-left>
       </selector>
+
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
