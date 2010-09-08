@@ -81,9 +81,12 @@ Services backend: Derby
 2.2) postgresql
 
 Recommended configuration for production, based on PostgreSQL.
-Think to add PostgreSQL JDBC driver into lib/ directory.
+See http://doc.nuxeo.com/display/KB/Configuring+PostgreSQL
+
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
+
+Copy JDBC driver into $JBOSS/server/default/lib/.
 
 2.3) custom
 
