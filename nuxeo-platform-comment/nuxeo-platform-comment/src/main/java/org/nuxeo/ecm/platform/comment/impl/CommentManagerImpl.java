@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,7 +70,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class CommentManagerImpl implements CommentManager {
 
@@ -85,7 +83,7 @@ public class CommentManagerImpl implements CommentManager {
 
     final CommentConverter commentConverter;
 
-    public static final  String COMMENTS_DIRECTORY = "Comments";
+    public static final String COMMENTS_DIRECTORY = "Comments";
 
     public CommentManagerImpl(CommentServiceConfig config) {
         this.config = config;
@@ -123,7 +121,8 @@ public class CommentManagerImpl implements CommentManager {
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
-        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, docModel.getSessionId());
+        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                docModel.getSessionId());
         RelationManager relationManager;
         try {
             relationManager = getRelationManager();
@@ -142,8 +141,8 @@ public class CommentManagerImpl implements CommentManager {
         Statement pattern = new StatementImpl(null, null, docResource);
         List<Statement> statementList = relationManager.getStatements(
                 config.graphName, pattern);
-        // XXX AT: BBB for when repository name was not included in the resource
-        // uri
+        // XXX AT: BBB for when repository name was not included in the
+        // resource uri
         Resource oldDocResource = new QNameResourceImpl(
                 config.documentNamespace, docModel.getId());
         Statement oldPattern = new StatementImpl(null, null, oldDocResource);
@@ -189,7 +188,8 @@ public class CommentManagerImpl implements CommentManager {
             commentDM.setProperty("comment", "author", author);
             commentDM.setProperty("comment", "creationDate",
                     Calendar.getInstance());
-            commentDM = internalCreateComment(session, docModel, commentDM, null);
+            commentDM = internalCreateComment(session, docModel, commentDM,
+                    null);
             session.save();
 
             return commentDM;
@@ -233,7 +233,8 @@ public class CommentManagerImpl implements CommentManager {
         try {
             loginContext = Framework.login();
             session = openCoreSession(docModel.getRepositoryName());
-            DocumentModel doc = internalCreateComment(session, docModel, comment, null);
+            DocumentModel doc = internalCreateComment(session, docModel,
+                    comment, null);
             session.save();
             return doc;
         } catch (Exception e) {
@@ -250,7 +251,8 @@ public class CommentManagerImpl implements CommentManager {
         DocumentModel createdComment;
 
         try {
-            createdComment = createCommentDocModel(session, docModel, comment, path);
+            createdComment = createCommentDocModel(session, docModel, comment,
+                    path);
 
             RelationManager relationManager = getRelationManager();
             List<Statement> statementList = new ArrayList<Statement>();
@@ -316,8 +318,8 @@ public class CommentManagerImpl implements CommentManager {
             boolean found = false;
             String pathStr = parent.getPathAsString();
             if (name.equals(COMMENTS_DIRECTORY)) {
-                List<DocumentModel> children = mySession.getChildren(new PathRef(pathStr),
-                        "HiddenFolder");
+                List<DocumentModel> children = mySession.getChildren(
+                        new PathRef(pathStr), "HiddenFolder");
                 for (DocumentModel documentModel : children) {
                     if (documentModel.getTitle().equals(COMMENTS_DIRECTORY)) {
                         found = true;
@@ -359,11 +361,13 @@ public class CommentManagerImpl implements CommentManager {
         return commentDocModel;
     }
 
-    private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType,
-            DocumentModel parent, DocumentModel child, NuxeoPrincipal principal)
+    private static void notifyEvent(CoreSession session,
+            DocumentModel docModel, String eventType, DocumentModel parent,
+            DocumentModel child, NuxeoPrincipal principal)
             throws ClientException {
 
-        DocumentEventContext ctx = new DocumentEventContext(session, principal, docModel);
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                docModel);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         if (parent != null) {
             props.put(CommentConstants.PARENT_COMMENT, parent);
@@ -493,8 +497,8 @@ public class CommentManagerImpl implements CommentManager {
             NuxeoPrincipal author = getAuthor(comment);
             session.removeDocument(ref);
 
-            notifyEvent(session, docModel, CommentEvents.COMMENT_REMOVED, null, comment,
-                    author);
+            notifyEvent(session, docModel, CommentEvents.COMMENT_REMOVED, null,
+                    comment, author);
 
             session.save();
 
@@ -516,8 +520,8 @@ public class CommentManagerImpl implements CommentManager {
 
             String author = updateAuthor(docModel, child);
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
-            DocumentModel newComment = internalCreateComment(session, parentDocModel,
-                    child, null);
+            DocumentModel newComment = internalCreateComment(session,
+                    parentDocModel, child, null);
 
             UserManager userManager = Framework.getService(UserManager.class);
             NuxeoPrincipal principal = userManager.getPrincipal(author);
@@ -549,9 +553,6 @@ public class CommentManagerImpl implements CommentManager {
     public List<DocumentModel> getComments(DocumentModel docModel,
             DocumentModel parent) throws ClientException {
         try {
-            //loginContext = Framework.login();
-            //session = openCoreSession(docModel.getRepositoryName());
-            //DocumentModel parentDocModel = session.getDocument(parent.getRef());
             return getComments(parent);
         } catch (Exception e) {
             throw new ClientException(e);
@@ -561,7 +562,8 @@ public class CommentManagerImpl implements CommentManager {
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException {
         Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
-        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, comment.getSessionId());
+        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                comment.getSessionId());
         RelationManager relationManager;
         try {
             relationManager = getRelationManager();
@@ -580,11 +582,12 @@ public class CommentManagerImpl implements CommentManager {
 
         List<Statement> statementList = relationManager.getStatements(
                 config.graphName, pattern);
-        // XXX AT: BBB for when repository name was not included in the resource
-        // uri
+        // XXX AT: BBB for when repository name was not included in the
+        // resource uri
         Resource oldDocResource = new QNameResourceImpl(
                 config.commentNamespace, comment.getId());
-        Statement oldPattern = new StatementImpl(oldDocResource, predicate, null);
+        Statement oldPattern = new StatementImpl(oldDocResource, predicate,
+                null);
         statementList.addAll(relationManager.getStatements(config.graphName,
                 oldPattern));
 
@@ -608,6 +611,7 @@ public class CommentManagerImpl implements CommentManager {
         return docList;
 
     }
+
     public DocumentModel createLocatedComment(DocumentModel docModel,
             DocumentModel comment, String path) throws ClientException {
         LoginContext loginContext = null;
@@ -616,7 +620,8 @@ public class CommentManagerImpl implements CommentManager {
         try {
             loginContext = Framework.login();
             session = openCoreSession(docModel.getRepositoryName());
-            createdComment = internalCreateComment(session, docModel, comment, path);
+            createdComment = internalCreateComment(session, docModel, comment,
+                    path);
             session.save();
         } catch (Exception e) {
             throw new ClientException(e);
