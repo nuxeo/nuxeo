@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -15,12 +16,11 @@
   <build>
     <plugins>
       <plugin>
-
-          <!--   TODO: Replace this with the more generic javascript plugin that allows
+        <!--   TODO: Replace this with the more generic javascript plugin that allows
           the use of arbitrary compressor / compilers. The
           maven-javascript-plugin does not seem to work. -->
-<!--         <groupId>net.sf.hammerfest</groupId>-->
-<!--         <artifactId>maven-javascript-plugin</artifactId>-->
+        <!--<groupId>net.sf.hammerfest</groupId>-->
+        <!--<artifactId>maven-javascript-plugin</artifactId>-->
         <groupId>net.sf.alchim</groupId>
         <artifactId>yuicompressor-maven-plugin</artifactId>
         <executions>
@@ -34,7 +34,7 @@
           <suffix>.opt</suffix>
           <excludes>
             <exclude>target/**</exclude>
-<!--             don't bother with other file types.-->
+            <!-- don't bother with other file types -->
             <exclude>**/*.xml</exclude>
             <exclude>**/*.html</exclude>
             <exclude>**/*.gif</exclude>
@@ -72,12 +72,12 @@
   </build>
 
   <dependencies>
-        <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
     </dependency>
 
-        <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
