@@ -13,8 +13,7 @@ Needed parameters:
 </c:if>
 
 <div class="listingLayoutSelector">
-  <h:form id="contentViewLayoutSelectForm_#{contentViewListIndex}"
-    style="display:inline;">
+  <h:form id="contentViewLayoutSelectForm_#{contentViewListIndex}">
 
     <c:if test="#{contentView.getResultLayouts().size() > 1}">
       <ul class="layoutViewMode" style="display:inline;">
@@ -33,12 +32,13 @@ Needed parameters:
     </c:if>
 
   </h:form>
+</div>
 
+<div class="listingLayoutSelector">
   <c:if test="#{contentView.useGlobalPageSize}">
-    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}"
-      style="display:inline;">
+    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}">
 
-      <p><h:outputText value="#{messages['label.content.view.page.selector.description']}" /></p>
+      <p class="contentViewPageSelectorDesc"><h:outputText value="#{messages['label.content.view.page.selector.description']}" /></p>
       <h:selectOneMenu value="#{contentViewActions.currentGlobalPageSize}"
         id="contentViewPageSizeSelector"
         styleClass="langSelect"
@@ -57,7 +57,6 @@ Needed parameters:
 
     </h:form>
   </c:if>
-
 </div>
 
 </c:if>
