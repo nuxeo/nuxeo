@@ -332,11 +332,16 @@ namespace NuxeoCtl
 			}
 			DisplayCtlStateText("Nuxeo is configuring ...");
 			Process confProcess=nxControl.getConfProcess();
-			confProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
-			confProcess.BeginOutputReadLine();
-			confProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
-			confProcess.BeginErrorReadLine();
-			
+			try {
+				confProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
+				confProcess.BeginOutputReadLine();
+				confProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
+				confProcess.BeginErrorReadLine();
+				confProcess.WaitForExit(30000);
+			} catch (Exception e) {
+				Log(e.ToString(),"ERROR");
+			}
+						
 			if (!nxControl.Initialized || nxControl.Start() == false)
 			{
 				Log("Could not start the application","ERROR");

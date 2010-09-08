@@ -78,6 +78,7 @@ namespace NuxeoProcess
         private String stopArgs = null;
         public bool running = false;
         public bool Configured { get; private set; }
+        private bool EnvIsSetUp = false;
         private bool countActive = false;
 		private int countStatus = 0;
 		
@@ -167,9 +168,11 @@ namespace NuxeoProcess
 		
 		private void Process_Exited(object sender, EventArgs e) {
 			Log("Application has exited.","WARN");
+			confProcess=null;
 			nxProcess=null;
 			stopProcess=null;
 			nxEnv=new Dictionary<String,String>();
+			EnvIsSetUp=false;
 			running=false;
 		}
 		
@@ -216,8 +219,6 @@ namespace NuxeoProcess
 			confProcess.StartInfo.RedirectStandardOutput=true;
 			confProcess.EnableRaisingEvents=true;
 			confProcess.Start();
-			// Since this is non-blocking, wait for the configurator to exit
-			confProcess.WaitForExit(30000);
 			return true;
 		}
 

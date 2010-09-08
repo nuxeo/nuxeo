@@ -140,7 +140,10 @@ namespace NuxeoProcess
 		//
 		
 		private bool SetupEnv(Dictionary<String,String> nxConfig) {
-            nxEnv = new Dictionary<String, String>();
+			
+			if (EnvIsSetUp==true) return true;
+			
+			nxEnv = new Dictionary<String, String>();
 			nxEnv.Add("NUXEO_CONF",nxConfig["NUXEO_CONF"]);
 			
 			// Setup the JVM
@@ -338,6 +341,7 @@ namespace NuxeoProcess
 				Log(pair.Key+" -> "+pair.Value,"DEBUG");
 			}
 			
+			EnvIsSetUp=true;
 			return true;
 		}
 		
