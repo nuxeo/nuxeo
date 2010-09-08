@@ -1,0 +1,30 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<fieldset><legend><h:outputText value="${messages['label.sign.title']}" /></legend>
+
+  <h2>${messages['label.sign.prompt']} : #{currentDocument.dublincore.title}</h2>
+  <a4j:region>
+  <a4j:outputPanel id="signPanel">
+  <a4j:form id="sign_form" ajaxSingle="true" enctype="multipart/form-data">
+  <h:outputText value=""/>
+  <a4j:commandButton id="SignPDF" styleClass="button" value="#{messages['label.sign.submit']}" action="#{signActions.signCurrentDoc}"
+        onclick="" data="#{facesContext.maximumSeverity.ordinal ge 2}"
+        oncomplete="if (data) { hideWaiter() } else { processFinished() };"
+        reRender="signPanel" />
+  </a4j:form>
+  </a4j:outputPanel>
+  </a4j:region>
+
+ </fieldset>
+</div>

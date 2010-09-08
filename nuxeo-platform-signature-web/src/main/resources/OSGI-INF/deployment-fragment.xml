@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <install>
+    <delete path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+     <include>nuxeo.war/**</include>
+      <include>nuxeo.properties</include>
+      <include>l10n/**</include>
+    </unzip>
+    <!--  create a temporary directory -->
+    <!--  be sure no directory with that name exists -->
+    <copy from="${bundle.fileName}.tmp/nuxeo.war" to="/" />
+    <append from="${bundle.fileName}.tmp/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+  </install>
+</fragment>

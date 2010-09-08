@@ -9,12 +9,16 @@
   <version>1.0-SNAPSHOT</version>
  </parent>
 
- <artifactId>nuxeo-platform-signature-api</artifactId>
- <name>Nuxeo Platform Signature API</name>
- <description>Nuxeo Platform Digital Signature API</description>
+ <artifactId>nuxeo-platform-signature-core</artifactId>
+ <name>Nuxeo Platform Signature Core</name>
+ <description>Nuxeo Platform Digital Signature Core</description>
  <packaging>jar</packaging>
 
  <dependencies>
+  <dependency>
+   <groupId>org.nuxeo.ecm.platform</groupId>
+   <artifactId>nuxeo-platform-signature-api</artifactId>
+  </dependency>
   <dependency>
    <groupId>com.lowagie</groupId>
    <artifactId>itext</artifactId>

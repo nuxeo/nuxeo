@@ -18,10 +18,22 @@
 
   <modules>
     <module>nuxeo-platform-signature-api</module>
+    <module>nuxeo-platform-signature-core</module>
+    <module>nuxeo-platform-signature-web</module>
   </modules>
 
   <dependencyManagement>
    <dependencies>
+  <dependency>
+   <groupId>org.nuxeo.ecm.platform</groupId>
+   <artifactId>nuxeo-platform-signature-api</artifactId>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.nuxeo.ecm.platform</groupId>
+   <artifactId>nuxeo-platform-signature-core</artifactId>
+    <version>${project.version}</version>
+  </dependency>
   	<dependency>
         <groupId>org.bouncycastle</groupId>
 	<artifactId>bcprov-jdk16</artifactId>
@@ -32,7 +44,6 @@
 	<artifactId>itext</artifactId>
 	<version>2.0.7</version>
       </dependency>
-
       <dependency>                                                                                                
         <groupId>org.nuxeo.ecm.core</groupId>                                                                     
         <artifactId>nuxeo-core-api</artifactId>                                                                   
@@ -48,6 +59,16 @@
    <artifactId>nuxeo-platform-directory-api</artifactId>
   <version>${nuxeo.features.version}</version>                                                                  
   </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-versioning-api</artifactId>
+      <version>${nuxeo.features.version}</version>                                                                  
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-versioning-core</artifactId>
+      <version>${nuxeo.features.version}</version>                                                                  
+    </dependency>
     </dependencies>
   </dependencyManagement>
   <build>

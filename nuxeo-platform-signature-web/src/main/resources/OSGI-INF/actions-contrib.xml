@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="nuxeo.platform.signature.web.actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+		point="actions">
+
+		<action id="sign_view" link="/incl/tabs/sign_view.xhtml"
+			enabled="true" label="Signature" icon="/icons/file.gif" order="9">
+			<category>VIEW_ACTION_LIST</category>
+			<filter id="signature_filter">
+				<rule grant="true">
+					<type>File</type>
+				</rule>
+			</filter>
+		</action>
+</extension>
+</component>

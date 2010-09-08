@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.sign.SignatureService">
+
+ <documentation>
+    The signature service offers digital signing capabilities for pdf documents
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.sign.SignatureServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.sign.SignatureService" />
+  </service>
+
+  <extension-point name="reason">
+    <object class="org.nuxeo.ecm.platform.signature.core.sign.SignatureDescriptor" />
+  </extension-point>
+
+</component>
