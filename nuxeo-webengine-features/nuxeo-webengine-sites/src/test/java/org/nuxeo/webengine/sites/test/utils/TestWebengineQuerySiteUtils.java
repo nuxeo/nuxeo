@@ -78,8 +78,6 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.comment");
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployContrib(bundleFile, "OSGI-INF/comment-jena-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.comment",
-                "OSGI-INF/CommentService.xml");
         deployBundle("org.nuxeo.ecm.platform.webengine.sites.api");
         deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib", "OSGI-INF/core-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib", "OSGI-INF/permissions-contrib.xml");

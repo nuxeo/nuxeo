@@ -42,7 +42,6 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
-        deployContrib(bundleFile, "OSGI-INF/listener-contrib.xml");
         deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
 
         openSession();
@@ -62,8 +61,8 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
                 SiteConstants.WEBCONTAINER_NAME);
         String siteUrl = (String) workspace.getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
-        String documentTitle = (String) workspace.getTitle();
-        String documentName = (String) workspace.getName();
+        String documentTitle = workspace.getTitle();
+        String documentName = workspace.getName();
         assertFalse("No name in site?", StringUtils.isBlank(siteName));
         assertFalse("No url in site?", StringUtils.isBlank(siteUrl));
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
@@ -90,8 +89,8 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
                 SiteConstants.WEBCONTAINER_NAME);
         String siteUrl = (String) webSite.getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
-        String documentTitle = (String) webSite.getTitle();
-        String documentName = (String) webSite.getName();
+        String documentTitle = webSite.getTitle();
+        String documentName = webSite.getName();
         assertFalse("No name in site?", StringUtils.isBlank(siteName));
         assertFalse("No url in site?", StringUtils.isBlank(siteUrl));
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
