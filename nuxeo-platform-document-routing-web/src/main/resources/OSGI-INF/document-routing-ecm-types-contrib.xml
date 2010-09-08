@@ -30,15 +30,18 @@
       <default-view>view_documents</default-view>
    	  <subtypes>
         <type>StepFolder</type>
+        <type>Step</type>
       </subtypes>
    	  <layouts mode="any">
         <layout>heading</layout>
         <layout>document_routing</layout>
+        <layout>step_folder</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
         <layout>document_routing</layout>
+        <layout>step_folder</layout>
       </layouts>
       <contentViews category="content">
         <contentView>document_content</contentView>
