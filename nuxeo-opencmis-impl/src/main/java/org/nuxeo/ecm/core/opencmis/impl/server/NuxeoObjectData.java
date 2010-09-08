@@ -247,8 +247,8 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public ChangeEventInfo getChangeEventInfo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return null;
+        // throw new UnsupportedOperationException();
     }
 
     @Override

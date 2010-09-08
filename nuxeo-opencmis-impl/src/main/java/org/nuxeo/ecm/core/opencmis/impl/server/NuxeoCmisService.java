@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,7 +55,9 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.server.CmisService;
+import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
+import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -73,7 +76,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 /**
  * Nuxeo implementation of the CMIS Services.
  */
-public class NuxeoCmisService implements CmisService {
+public class NuxeoCmisService extends AbstractCmisService {
 
     public static final String REPOSITORY = "NuxeService.Repository";
 
@@ -131,7 +134,9 @@ public class NuxeoCmisService implements CmisService {
     public TypeDefinition getTypeDefinition(String repositoryId, String typeId,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        return repository.getTypeDefinition(typeId);
+        TypeDefinition type = repository.getTypeDefinition(typeId);
+        // clone
+        return Converter.convert(Converter.convert(type));
 
     }
 
@@ -140,8 +145,10 @@ public class NuxeoCmisService implements CmisService {
             String typeId, Boolean includePropertyDefinitions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        TypeDefinitionList children = repository.getTypeChildren(typeId,
+                includePropertyDefinitions, maxItems, skipCount);
+        // clone
+        return Converter.convert(Converter.convert(children));
     }
 
     @Override
@@ -221,10 +228,18 @@ public class NuxeoCmisService implements CmisService {
         String typeId;
         Map<String, PropertyData<?>> p;
         PropertyData<?> d;
+        TypeDefinition type = null;
         if (properties != null //
                 && (p = properties.getProperties()) != null //
                 && (d = p.get(PropertyIds.OBJECT_TYPE_ID)) != null) {
             typeId = (String) d.getFirstValue();
+            if (baseType == null) {
+                type = repository.getTypeDefinition(typeId);
+                if (type == null) {
+                    throw new IllegalArgumentException(typeId);
+                }
+                baseType = type.getBaseTypeId();
+            }
         } else {
             typeId = null;
         }
@@ -241,10 +256,12 @@ public class NuxeoCmisService implements CmisService {
             case CMIS_RELATIONSHIP:
                 throw new CmisRuntimeException("Cannot create relationship");
             default:
-                throw new CmisRuntimeException();
+                throw new CmisRuntimeException("No base type");
             }
         }
-        TypeDefinition type = repository.getTypeDefinition(typeId);
+        if (type == null) {
+            type = repository.getTypeDefinition(typeId);
+        }
         if (type == null || type.getBaseTypeId() != baseType) {
             throw new IllegalArgumentException(typeId);
         }
@@ -323,8 +340,9 @@ public class NuxeoCmisService implements CmisService {
             VersioningState versioningState, List<String> policies,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
+                folderId), null, contentStream);
+        return object.getId();
     }
 
     @Override
@@ -332,6 +350,7 @@ public class NuxeoCmisService implements CmisService {
             String folderId, ContentStream contentStream,
             VersioningState versioningState, List<String> policies,
             Acl addAces, Acl removeAces, ExtensionsData extension) {
+        // TODO versioningState, policies, addAces, removeAces
         checkRepositoryId(repositoryId);
         NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
                 folderId), BaseTypeId.CMIS_DOCUMENT, contentStream);
@@ -342,9 +361,11 @@ public class NuxeoCmisService implements CmisService {
     public String createFolder(String repositoryId, Properties properties,
             String folderId, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
+        // TODO policies, addAces, removeAces
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        NuxeoObjectData object = createObject(properties, new ObjectIdImpl(
+                folderId), BaseTypeId.CMIS_FOLDER, null);
+        return object.getId();
     }
 
     @Override
@@ -449,8 +470,7 @@ public class NuxeoCmisService implements CmisService {
     @Override
     public ObjectInfo getObjectInfo(String repositoryId, String objectId) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return super.getObjectInfo(repositoryId, objectId);
     }
 
     @Override
@@ -598,8 +618,32 @@ public class NuxeoCmisService implements CmisService {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includeRelativePathSegment, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+
+        DocumentModel doc;
+        DocumentModel parent;
+        try {
+            DocumentRef docRef = new IdRef(objectId);
+            if (!coreSession.exists(docRef)) {
+                throw new CmisObjectNotFoundException(objectId);
+            }
+            doc = coreSession.getDocument(docRef);
+            if (isFilteredOut(doc)) {
+                throw new CmisObjectNotFoundException(objectId);
+            }
+            parent = coreSession.getParentDocument(docRef);
+            if (parent == null || isFilteredOut(parent)) {
+                return Collections.emptyList();
+            }
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.getMessage(), e);
+        }
+
+        ObjectData od = getObject(repositoryId, objectId, filter,
+                includeAllowableActions, includeRelationships, renditionFilter,
+                Boolean.FALSE, Boolean.FALSE, null);
+        ObjectParentDataImpl opd = new ObjectParentDataImpl(od);
+        opd.setRelativePathSegment(doc.getName());
+        return Collections.<ObjectParentData> singletonList(opd);
     }
 
     @Override

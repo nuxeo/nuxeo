@@ -99,9 +99,6 @@ public class NuxeoSession implements Session {
         throw new UnsupportedOperationException();
     }
 
-    public void close() {
-    }
-
     @Override
     public void setDefaultContext(OperationContext defaultContext) {
         this.defaultContext = defaultContext;

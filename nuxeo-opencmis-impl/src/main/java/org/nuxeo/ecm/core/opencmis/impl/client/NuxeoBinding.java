@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.spi.AclService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
@@ -37,8 +38,11 @@ public class NuxeoBinding implements CmisBinding {
 
     private final NuxeoService service;
 
+    private final BindingsObjectFactory factory;
+
     public NuxeoBinding(NuxeoService service) {
         this.service = service;
+        factory = new BindingsObjectFactoryImpl();
     }
 
     @Override
@@ -93,7 +97,7 @@ public class NuxeoBinding implements CmisBinding {
 
     @Override
     public BindingsObjectFactory getObjectFactory() {
-        throw new UnsupportedOperationException();
+        return factory;
     }
 
     @Override

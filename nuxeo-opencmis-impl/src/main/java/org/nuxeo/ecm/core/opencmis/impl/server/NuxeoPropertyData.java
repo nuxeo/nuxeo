@@ -22,20 +22,32 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.PropertyBoolean;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyDateTime;
+import org.apache.chemistry.opencmis.commons.data.PropertyDecimal;
 import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.data.PropertyInteger;
+import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,12 +55,25 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * A live property of an object.
  */
-public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
+public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
     protected final String name;
 
@@ -80,89 +105,160 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     /**
      * Factory for a new Property.
      */
+    @SuppressWarnings("unchecked")
     protected static <U> PropertyData<U> construct(NuxeoObjectData data,
             PropertyDefinition<U> pd) {
         DocumentModel doc = data.doc;
         String name = pd.getId();
         if (PropertyIds.OBJECT_ID.equals(name)) {
-            return (PropertyData<U>) new FixedPropertyIdData(
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
                     (PropertyDefinition<String>) pd, doc.getId());
         } else if (PropertyIds.OBJECT_TYPE_ID.equals(name)) {
-            return (PropertyData<U>) new FixedPropertyIdData(
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
                     (PropertyDefinition<String>) pd,
                     NuxeoTypeHelper.mappedId(doc.getType()));
         } else if (PropertyIds.BASE_TYPE_ID.equals(name)) {
-            return (PropertyData<U>) new FixedPropertyIdData(
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
                     (PropertyDefinition<String>) pd,
                     doc.isFolder() ? BaseTypeId.CMIS_FOLDER.value()
                             : BaseTypeId.CMIS_DOCUMENT.value());
         } else if (PropertyIds.CREATED_BY.equals(name)) {
-            return new NuxeoPropertyData(pd, doc,
+            return (PropertyData<U>) new NuxeoPropertyStringData(
+                    (PropertyDefinition<String>) pd, doc,
                     NuxeoTypeHelper.NX_DC_CREATOR, true);
         } else if (PropertyIds.CREATION_DATE.equals(name)) {
-            return new NuxeoPropertyData(pd, doc,
+            return (PropertyData<U>) new NuxeoPropertyDateTimeData(
+                    (PropertyDefinition<GregorianCalendar>) pd, doc,
                     NuxeoTypeHelper.NX_DC_CREATED, true);
         } else if (PropertyIds.LAST_MODIFIED_BY.equals(name)) {
-            return (PropertyData<U>) new LastModifiedByPropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataLastModifiedBy(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.LAST_MODIFICATION_DATE.equals(name)) {
-            return new NuxeoPropertyData(pd, doc,
+            return (PropertyData<U>) new NuxeoPropertyDateTimeData(
+                    (PropertyDefinition<GregorianCalendar>) pd, doc,
                     NuxeoTypeHelper.NX_DC_MODIFIED, true);
         } else if (PropertyIds.CHANGE_TOKEN.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.NAME.equals(name)) {
-            return (PropertyData<U>) new NamePropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataName(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.IS_IMMUTABLE.equals(name)) {
-            return new FixedPropertyData(pd, Boolean.FALSE); // TODO check write
+            // TODO check write
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
         } else if (PropertyIds.IS_LATEST_VERSION.equals(name)) {
-            return new FixedPropertyData(pd, Boolean.TRUE);
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.TRUE);
         } else if (PropertyIds.IS_MAJOR_VERSION.equals(name)) {
-            return new FixedPropertyData(pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
         } else if (PropertyIds.IS_LATEST_MAJOR_VERSION.equals(name)) {
-            return new FixedPropertyData(pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
         } else if (PropertyIds.VERSION_LABEL.equals(name)) {
             // value = doc.getVersionLabel();
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.VERSION_SERIES_ID.equals(name)) {
-            return new FixedPropertyData(pd, doc.getId());
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, doc.getId());
         } else if (PropertyIds.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
-            return new FixedPropertyData(pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_BY.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.CHECKIN_COMMENT.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.CONTENT_STREAM_LENGTH.equals(name)) {
-            return (PropertyData<U>) new ContentStreamLengthPropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataContentStreamLength(
                     (PropertyDefinition<BigInteger>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_MIME_TYPE.equals(name)) {
-            return (PropertyData<U>) new ContentStreamMimeTypePropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataContentStreamMimeType(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_FILE_NAME.equals(name)) {
-            return (PropertyData<U>) new ContentStreamFileNamePropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataContentStreamFileName(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_ID.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.PARENT_ID.equals(name)) {
-            return (PropertyData<U>) new ParentIdPropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataParentId(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.PATH.equals(name)) {
-            return (PropertyData<U>) new PathPropertyData(
+            return (PropertyData<U>) new NuxeoPropertyDataPath(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed(
+                    (PropertyDefinition<String>) pd,
+                    Collections.<String> emptyList());
         } else if (PropertyIds.SOURCE_ID.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.TARGET_ID.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
-            return new FixedPropertyData(pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
+                    (PropertyDefinition<String>) pd, null);
         } else {
             boolean readOnly = pd.getUpdatability() != Updatability.READWRITE;
             // TODO WHEN_CHECKED_OUT, ON_CREATE
-            return new NuxeoPropertyData(pd, doc, name, readOnly);
+
+            Field field = doc.getDocumentType().getField(name);
+            if (field == null) {
+                throw new CmisInvalidArgumentException(name);
+            }
+            Type type = field.getType();
+
+            if (type.isListType()) {
+                Type listType = ((ListType) type).getFieldType();
+                if (listType.isSimpleType()) {
+                    // array
+                    type = listType;
+                } else {
+                    // complex type
+                    throw new CmisInvalidArgumentException("Complex property: "
+                            + name);
+                }
+            } else {
+                // primitive type
+            }
+
+            if (type instanceof SimpleTypeImpl) {
+                // simple type with constraints -- ignore constraints XXX
+                type = type.getSuperType();
+            }
+            if (type instanceof StringType) {
+                return (PropertyData<U>) new NuxeoPropertyStringData(
+                        (PropertyDefinition<String>) pd, doc, name, readOnly);
+            } else if (type instanceof BooleanType) {
+                return (PropertyData<U>) new NuxeoPropertyBooleanData(
+                        (PropertyDefinition<Boolean>) pd, doc, name, readOnly);
+            } else if (type instanceof LongType || type instanceof IntegerType) {
+                return (PropertyData<U>) new NuxeoPropertyIntegerData(
+                        (PropertyDefinition<BigInteger>) pd, doc, name,
+                        readOnly);
+            } else if (type instanceof DoubleType) {
+                return (PropertyData<U>) new NuxeoPropertyDecimalData(
+                        (PropertyDefinition<BigDecimal>) pd, doc, name,
+                        readOnly);
+            } else if (type instanceof DateType) {
+                return (PropertyData<U>) new NuxeoPropertyDateTimeData(
+                        (PropertyDefinition<GregorianCalendar>) pd, doc, name,
+                        readOnly);
+            } else if (type instanceof BinaryType) {
+                throw new CmisRuntimeException("Invalid type: "
+                        + type.getClass().getName());
+            } else {
+                throw new CmisRuntimeException("Invalid primitive type: "
+                        + type.getClass().getName());
+            }
         }
     }
 
@@ -209,19 +305,98 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    @Override
-    public T getFirstValue() {
+    /**
+     * Conversion from Nuxeo values to CMIS ones.
+     *
+     * @return either a primitive type or a List of them, or {@code null}
+     */
+    @SuppressWarnings("unchecked")
+    protected Object getValue() {
         try {
-            Serializable value = doc.getPropertyValue(name);
-            // conversion from Nuxeo types to CMIS ones
-            if (value instanceof Double) {
-                value = BigDecimal.valueOf(((Double) value).doubleValue());
-            } else if (value instanceof Integer) {
-                value = BigDecimal.valueOf(((Integer) value).intValue());
+            Property prop = doc.getProperty(name);
+            Serializable value = prop.getValue();
+            if (value == null) {
+                return null;
             }
-            return (T) value;
+            Type type = prop.getType();
+            if (type.isListType()) {
+                // array/list
+                List<Object> values;
+                if (value instanceof Object[]) {
+                    values = Arrays.asList((Object[]) value);
+                } else if (value instanceof List<?>) {
+                    values = (List<Object>) value;
+                } else {
+                    throw new CmisRuntimeException("Unknown value type: "
+                            + value.getClass().getName());
+                }
+                List<Object> list = new ArrayList<Object>(values);
+                for (int i = 0; i < list.size(); i++) {
+                    list.set(i, convertToCMIS(list.get(i)));
+                }
+                return list;
+            } else {
+                // primitive type
+                return convertToCMIS(value);
+            }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    // conversion from Nuxeo value types to CMIS ones
+    protected static Object convertToCMIS(Object value) {
+        if (value instanceof Double) {
+            return BigDecimal.valueOf(((Double) value).doubleValue());
+        } else if (value instanceof Integer) {
+            return BigInteger.valueOf(((Integer) value).intValue());
+        } else if (value instanceof Long) {
+            return BigInteger.valueOf(((Long) value).longValue());
+        } else {
+            return value;
+        }
+    }
+
+    // conversion from CMIS value types to Nuxeo ones
+    protected static Object convertToNuxeo(Object value) {
+        if (value instanceof BigDecimal) {
+            return Double.valueOf(((BigDecimal) value).doubleValue());
+        } else if (value instanceof BigInteger) {
+            return Long.valueOf(((BigInteger) value).longValue());
+        } else {
+            return value;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T getFirstValue() {
+        Object value = getValue();
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof List) {
+            List<?> list = (List<?>) value;
+            if (list.isEmpty()) {
+                return null;
+            }
+            return (T) list.get(0);
+        } else {
+            return (T) value;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<T> getValues() {
+        Object value = getValue();
+        if (value == null) {
+            return Collections.emptyList();
+        }
+        if (value instanceof List) {
+            return (List<T>) value;
+        } else {
+            return (List<T>) Collections.singletonList(value);
         }
     }
 
@@ -231,11 +406,22 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             if (readOnly) {
                 super.setValue(value);
             } else {
-                if (value instanceof BigDecimal) {
-                    value = Double.valueOf(((BigDecimal) value).doubleValue());
+                Object propValue;
+                if (value instanceof List<?>) {
+                    @SuppressWarnings("unchecked")
+                    List<Object> list = new ArrayList<Object>(
+                            (List<Object>) value);
+                    for (int i = 0; i < list.size(); i++) {
+                        list.set(i, convertToNuxeo(list.get(i)));
+                    }
+                    if (list.isEmpty()) {
+                        list = null;
+                    }
+                    propValue = list;
+                } else {
+                    propValue = convertToNuxeo(value);
                 }
-                // TODO many more checks (multi, etc.)
-                doc.setPropertyValue(name, (Serializable) value);
+                doc.setPropertyValue(name, (Serializable) propValue);
             }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -255,155 +441,63 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    // protected static void setContentStream(DocumentModel doc,
-    // ContentStream contentStream, boolean overwrite) throws IOException,
-    // CmisContentAlreadyExistsException, CmisRuntimeException {
-    // BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-    // if (blobHolder == null) {
-    // throw new CmisStreamNotSupportedException();
-    // }
-    // if (!overwrite) {
-    // Blob blob;
-    // try {
-    // blob = blobHolder.getBlob();
-    // } catch (ClientException e) {
-    // throw new CmisRuntimeException(e.toString(), e);
-    // }
-    // if (blob != null) {
-    // throw new CmisContentAlreadyExistsException();
-    // }
-    // }
-    // Blob blob = contentStream == null ? null : new InputStreamBlob(
-    // contentStream.getStream(), contentStream.getMimeType(), null,
-    // contentStream.getFileName(), null);
-    // try {
-    // blobHolder.setBlob(blob);
-    // } catch (ClientException e) {
-    // throw new CmisRuntimeException(e.toString(), e);
-    // }
-    // }
+    public static class NuxeoPropertyStringData extends
+            NuxeoPropertyData<String> implements PropertyString {
 
-    /**
-     * A fixed property.
-     */
-    protected static class FixedPropertyData<T> extends
-            NuxeoPropertyDataBase<T> {
-
-        protected final T value;
-
-        protected FixedPropertyData(PropertyDefinition<T> propertyDefinition,
-                T value) {
-            super(propertyDefinition, null);
-            this.value = value;
-        }
-
-        @Override
-        public T getFirstValue() {
-            return value;
+        public NuxeoPropertyStringData(
+                PropertyDefinition<String> propertyDefinition,
+                DocumentModel doc, String name, boolean readOnly) {
+            super(propertyDefinition, doc, name, readOnly);
         }
     }
 
-    /**
-     * A fixed ID property.
-     */
-    protected static class FixedPropertyIdData extends
-            FixedPropertyData<String> implements PropertyId {
+    public static class NuxeoPropertyBooleanData extends
+            NuxeoPropertyData<Boolean> implements PropertyBoolean {
 
-        protected final String value;
-
-        protected FixedPropertyIdData(
-                PropertyDefinition<String> propertyDefinition, String value) {
-            super(propertyDefinition, null);
-            this.value = value;
-        }
-
-        @Override
-        public String getFirstValue() {
-            return value;
+        public NuxeoPropertyBooleanData(
+                PropertyDefinition<Boolean> propertyDefinition,
+                DocumentModel doc, String name, boolean readOnly) {
+            super(propertyDefinition, doc, name, readOnly);
         }
     }
 
-    /**
-     * Property for cmis:path.
-     */
-    protected static class PathPropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyIntegerData extends
+            NuxeoPropertyData<BigInteger> implements PropertyInteger {
 
-        protected PathPropertyData(
-                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
-            super(propertyDefinition, doc);
-        }
-
-        @Override
-        public String getFirstValue() {
-            String path = doc.getPathAsString();
-            return path == null ? "" : path;
+        public NuxeoPropertyIntegerData(
+                PropertyDefinition<BigInteger> propertyDefinition,
+                DocumentModel doc, String name, boolean readOnly) {
+            super(propertyDefinition, doc, name, readOnly);
         }
     }
 
-    /**
-     * Property for cmis:parentId.
-     */
-    protected static class ParentIdPropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyDecimalData extends
+            NuxeoPropertyData<BigDecimal> implements PropertyDecimal {
 
-        protected ParentIdPropertyData(
-                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
-            super(propertyDefinition, doc);
-        }
-
-        @Override
-        public String getFirstValue() {
-            if (doc.getName() == null) {
-                return null;
-            } else {
-                DocumentRef parentRef = doc.getParentRef();
-                if (parentRef instanceof IdRef) {
-                    return ((IdRef) parentRef).value;
-                } else {
-                    try {
-                        return doc.getCoreSession().getDocument(parentRef).getId();
-                    } catch (ClientException e) {
-                        throw new CmisRuntimeException(e.toString(), e);
-                    }
-                }
-            }
+        public NuxeoPropertyDecimalData(
+                PropertyDefinition<BigDecimal> propertyDefinition,
+                DocumentModel doc, String name, boolean readOnly) {
+            super(propertyDefinition, doc, name, readOnly);
         }
     }
 
-    /**
-     * Property for cmis:lastModifiedBy.
-     */
-    protected static class LastModifiedByPropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyDateTimeData extends
+            NuxeoPropertyData<GregorianCalendar> implements PropertyDateTime {
 
-        protected LastModifiedByPropertyData(
-                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
-            super(propertyDefinition, doc);
-        }
-
-        @Override
-        public String getFirstValue() {
-            try {
-                String[] value = (String[]) doc.getPropertyValue("dc:contributors");
-                if (value == null || value.length == 0) {
-                    return null;
-                } else {
-                    return value[0];
-                }
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+        public NuxeoPropertyDateTimeData(
+                PropertyDefinition<GregorianCalendar> propertyDefinition,
+                DocumentModel doc, String name, boolean readOnly) {
+            super(propertyDefinition, doc, name, readOnly);
         }
     }
 
     /**
      * Property for cmis:contentStreamFileName.
      */
-    protected static class ContentStreamFileNamePropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyDataContentStreamFileName extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
 
-        protected ContentStreamFileNamePropertyData(
+        protected NuxeoPropertyDataContentStreamFileName(
                 PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
             super(propertyDefinition, doc);
         }
@@ -436,10 +530,10 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     /**
      * Property for cmis:contentStreamLength.
      */
-    protected static class ContentStreamLengthPropertyData extends
-            NuxeoPropertyDataBase<BigInteger> {
+    public static class NuxeoPropertyDataContentStreamLength extends
+            NuxeoPropertyDataBase<BigInteger> implements PropertyInteger {
 
-        protected ContentStreamLengthPropertyData(
+        protected NuxeoPropertyDataContentStreamLength(
                 PropertyDefinition<BigInteger> propertyDefinition,
                 DocumentModel doc) {
             super(propertyDefinition, doc);
@@ -455,10 +549,10 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     /**
      * Property for cmis:contentMimeTypeLength.
      */
-    protected static class ContentStreamMimeTypePropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyDataContentStreamMimeType extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
 
-        protected ContentStreamMimeTypePropertyData(
+        protected NuxeoPropertyDataContentStreamMimeType(
                 PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
             super(propertyDefinition, doc);
         }
@@ -471,12 +565,40 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     /**
+     * Property for cmis:lastModifiedBy.
+     */
+    public static class NuxeoPropertyDataLastModifiedBy extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataLastModifiedBy(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            try {
+                String[] value = (String[]) doc.getPropertyValue("dc:contributors");
+                if (value == null || value.length == 0) {
+                    return null;
+                } else {
+                    return value[0];
+                }
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
      * Property for cmis:name.
      */
-    protected static class NamePropertyData extends
-            NuxeoPropertyDataBase<String> {
+    public static class NuxeoPropertyDataName extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
 
-        protected NamePropertyData(
+        private static final Log log = LogFactory.getLog(NuxeoPropertyDataName.class);
+
+        protected NuxeoPropertyDataName(
                 PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
             super(propertyDefinition, doc);
         }
@@ -497,9 +619,62 @@ public class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             try {
                 doc.setPropertyValue(NuxeoTypeHelper.NX_DC_TITLE,
                         (String) value);
+            } catch (PropertyNotFoundException e) {
+                // trying to set the name of a type with no dublincore
+                // ignore
+                log.debug("Cannot set CMIS name on type: " + doc.getType());
             } catch (ClientException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }
         }
     }
+
+    /**
+     * Property for cmis:parentId.
+     */
+    public static class NuxeoPropertyDataParentId extends
+            NuxeoPropertyDataBase<String> implements PropertyId {
+
+        protected NuxeoPropertyDataParentId(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            if (doc.getName() == null) {
+                return null;
+            } else {
+                DocumentRef parentRef = doc.getParentRef();
+                if (parentRef instanceof IdRef) {
+                    return ((IdRef) parentRef).value;
+                } else {
+                    try {
+                        return doc.getCoreSession().getDocument(parentRef).getId();
+                    } catch (ClientException e) {
+                        throw new CmisRuntimeException(e.toString(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:path.
+     */
+    public static class NuxeoPropertyDataPath extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataPath(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            String path = doc.getPathAsString();
+            return path == null ? "" : path;
+        }
+    }
+
 }

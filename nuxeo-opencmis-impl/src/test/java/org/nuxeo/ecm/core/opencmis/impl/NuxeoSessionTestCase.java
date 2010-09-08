@@ -25,23 +25,25 @@ import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
-public class TestNuxeoSession extends SQLRepositoryTestCase {
+/**
+ * Tests that hit the high-level Session abstraction.
+ */
+public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     private static final String NUXEO_ROOT_TYPE = "Root";
 
-    protected String repositoryId = "test";
-
-    protected NuxeoSession session;
+    protected Session session;
 
     protected String rootFolderId;
 
@@ -50,27 +52,15 @@ public class TestNuxeoSession extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
         // deployed for fulltext indexing
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        // // MyDocType
-        // deployContrib("org.nuxeo.ecm.core.chemistry.tests.test",
-        // "OSGI-INF/types-contrib.xml");
 
-        // cmis
-        // Map<String, String> params = new HashMap<String, String>();
-        // params.put(SessionParameter.BINDING_TYPE,
-        // BindingType.CUSTOM.value());
-        // params.put(SessionParameter.BINDING_SPI_CLASS,
-        // NuxeoSpi.class.getName());
-        // params.put(SessionParameter.REPOSITORY_ID, repositoryId);
+        openSession(); // nuxeo
 
-        // SessionFactory factory = SessionFactoryImpl.newInstance();
-        // session = factory.createSession(params);
-        openSession();
-        NuxeoRepository repository = new NuxeoRepository(repositoryId);
-        session = new NuxeoSession(super.session, repository);
+        setUpCmisSession();
 
         setUpData();
     }
@@ -78,20 +68,34 @@ public class TestNuxeoSession extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         tearDownData();
+        tearDownCmisSession();
         super.tearDown();
     }
+
+    /** Sets up the client, fills "session". */
+    public abstract void setUpCmisSession() throws Exception;
+
+    /** Tears down the client. */
+    public abstract void tearDownCmisSession() throws Exception;
 
     protected void setUpData() {
         binding = session.getBinding();
         RepositoryInfo rid = binding.getRepositoryService().getRepositoryInfo(
-                repositoryId, null);
+                getRepositoryId(), null);
         assertNotNull(rid);
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
     }
 
     protected void tearDownData() {
-        session.close();
+    }
+
+    protected CoreSession getCoreSession() {
+        return super.session;
+    }
+
+    protected String getRepositoryId() {
+        return super.session.getRepositoryName();
     }
 
     @Test

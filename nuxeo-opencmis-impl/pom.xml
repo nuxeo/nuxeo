@@ -106,6 +106,14 @@
       <artifactId>chemistry-opencmis-client-impl</artifactId>
       <version>${opencmis.version}</version>
     </dependency>
+    <!-- OpenCMIS test -->
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-bindings</artifactId>
+      <version>${opencmis.version}</version>
+      <classifier>classes</classifier>
+      <scope>test</scope>
+    </dependency>
 
     <!-- scope provided -->
     <dependency>

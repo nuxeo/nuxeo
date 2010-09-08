@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityChanges;
@@ -42,7 +44,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.opencmis.impl.util.SimpleTypeManager;
+import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -51,7 +53,7 @@ public class NuxeoRepository {
 
     protected final String repositoryId;
 
-    protected SimpleTypeManager typeManager;
+    protected TypeManagerImpl typeManager;
 
     protected String rootFolderId;
 
@@ -113,7 +115,7 @@ public class NuxeoRepository {
         }
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
-        typeManager = new SimpleTypeManager();
+        typeManager = new TypeManagerImpl();
         addTypeRecursively("Folder", typesChildren, done, schemaManager);
         addTypeRecursively("Document", typesChildren, done, schemaManager);
     }
@@ -126,7 +128,7 @@ public class NuxeoRepository {
         }
         done.add(name);
         DocumentType dt = schemaManager.getDocumentType(name);
-        typeManager.addType(NuxeoTypeHelper.construct(dt));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt));
         // recurse in children
         List<String> children = typesChildren.get(name);
         if (children == null) {
@@ -154,9 +156,9 @@ public class NuxeoRepository {
 
     public RepositoryInfo getRepositoryInfo(CoreSession coreSession) {
         RepositoryInfoImpl info = new RepositoryInfoImpl();
-        info.setRepositoryId(repositoryId);
-        info.setRepositoryName("Nuxeo Repository"); // TODO
-        info.setRepositoryDescription("Nuxeo Repository"); // TODO
+        info.setId(repositoryId);
+        info.setName("Nuxeo Repository"); // TODO
+        info.setDescription("Nuxeo Repository"); // TODO
         info.setCmisVersionSupported("1.0");
         info.setPrincipalAnonymous("Guest"); // TODO
         info.setPrincipalAnyone(SecurityConstants.EVERYONE);
@@ -164,9 +166,9 @@ public class NuxeoRepository {
         info.setChangesIncomplete(Boolean.TRUE);
         info.setChangesOnType(null);
         info.setVendorName("Nuxeo");
-        info.setProductName("Nuxeo CMIS Connector");
+        info.setProductName("Nuxeo OpenCMIS Connector");
         info.setProductVersion("5.4.0-SNAPSHOT");
-        info.setRepositoryCapabilities(caps);
+        info.setCapabilities(caps);
         info.setAclCapabilities(aclCaps);
         //
         info.setRootFolder(getRootFolderId(coreSession));
@@ -174,9 +176,18 @@ public class NuxeoRepository {
         return info;
     }
 
+    // Structures are not copied when returned
     public TypeDefinition getTypeDefinition(String typeId) {
         initializeTypes();
-        return typeManager.getTypeDefinition(typeId);
+        return typeManager.getTypeById(typeId).getTypeDefinition();
     }
 
+    // Structures are not copied when returned
+    public TypeDefinitionList getTypeChildren(String typeId,
+            Boolean includePropertyDefinitions, BigInteger maxItems,
+            BigInteger skipCount) {
+        initializeTypes();
+        return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
+                maxItems, skipCount);
+    }
 }

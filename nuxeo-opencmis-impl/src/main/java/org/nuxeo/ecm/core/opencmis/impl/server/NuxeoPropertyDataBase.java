@@ -22,13 +22,19 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.chemistry.opencmis.commons.data.PropertyBoolean;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyId;
+import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Base abstract class for a live property of an object.
+ * <p>
+ * Concrete classes must also implement one of {@link PropertyId},
+ * {@link PropertyString}, ...
  *
  * @see NuxeoPropertyData
  */
@@ -69,6 +75,9 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     }
 
     @Override
+    public abstract T getFirstValue();
+
+    @Override
     public List<T> getValues() {
         return Collections.singletonList(getFirstValue());
     }
@@ -95,4 +104,99 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * A fixed property (whose value cannot be changed).
+     */
+    public static abstract class NuxeoPropertyDataFixed<T> extends
+            NuxeoPropertyDataBase<T> {
+
+        protected final T value;
+
+        protected NuxeoPropertyDataFixed(
+                PropertyDefinition<T> propertyDefinition, T value) {
+            super(propertyDefinition, null);
+            this.value = value;
+        }
+
+        @Override
+        public T getFirstValue() {
+            return value;
+        }
+    }
+
+    /**
+     * A fixed multi-valued property (whose value cannot be changed).
+     */
+    public static abstract class NuxeoPropertyMultiDataFixed<T> extends
+            NuxeoPropertyDataBase<T> {
+
+        protected final List<T> value;
+
+        protected NuxeoPropertyMultiDataFixed(
+                PropertyDefinition<T> propertyDefinition, List<T> value) {
+            super(propertyDefinition, null);
+            this.value = value;
+        }
+
+        @Override
+        public T getFirstValue() {
+            return value.size() == 0 ? null : value.get(0);
+        }
+
+        @Override
+        public List<T> getValues() {
+            return value;
+        }
+    }
+
+    /**
+     * A fixed ID property.
+     */
+    public static class NuxeoPropertyIdDataFixed extends
+            NuxeoPropertyDataFixed<String> implements PropertyId {
+
+        protected NuxeoPropertyIdDataFixed(
+                PropertyDefinition<String> propertyDefinition, String value) {
+            super(propertyDefinition, value);
+        }
+    }
+
+    /**
+     * A fixed multi-ID property.
+     */
+    public static class NuxeoPropertyIdMultiDataFixed extends
+            NuxeoPropertyMultiDataFixed<String> implements PropertyId {
+
+        protected NuxeoPropertyIdMultiDataFixed(
+                PropertyDefinition<String> propertyDefinition,
+                List<String> value) {
+            super(propertyDefinition, value);
+        }
+    }
+
+    /**
+     * A fixed String property.
+     */
+    public static class NuxeoPropertyStringDataFixed extends
+            NuxeoPropertyDataFixed<String> implements PropertyString {
+
+        protected NuxeoPropertyStringDataFixed(
+                PropertyDefinition<String> propertyDefinition, String value) {
+            super(propertyDefinition, value);
+        }
+
+    }
+
+    /**
+     * A fixed Boolean property.
+     */
+    public static class NuxeoPropertyBooleanDataFixed extends
+            NuxeoPropertyDataFixed<Boolean> implements PropertyBoolean {
+
+        protected NuxeoPropertyBooleanDataFixed(
+                PropertyDefinition<Boolean> propertyDefinition, Boolean value) {
+            super(propertyDefinition, value);
+        }
+
+    }
 }

@@ -187,7 +187,7 @@ public class NuxeoTypeHelper {
                 Updatability.READONLY, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.OBJECT_TYPE_ID, "Type ID", PropertyType.ID,
-                Cardinality.SINGLE, Updatability.READONLY, false, true, false));
+                Cardinality.SINGLE, Updatability.ONCREATE, false, true, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID,
                 "Base Type ID", PropertyType.ID, Cardinality.SINGLE,
                 Updatability.READONLY, false, true, false));
