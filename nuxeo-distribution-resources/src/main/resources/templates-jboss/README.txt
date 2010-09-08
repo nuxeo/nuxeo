@@ -81,9 +81,12 @@ Services backend: Derby
 2.2) postgresql
 
 Recommended configuration for production, based on PostgreSQL.
-Think to add PostgreSQL JDBC driver into server/default/lib/ directory.
+See http://doc.nuxeo.com/display/KB/Configuring+PostgreSQL
+
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
+
+Copy JDBC driver into $JBOSS/server/default/lib/.
 
 2.3) mysql
 
@@ -92,15 +95,41 @@ Services backend: MySQL
 
 2.4) oracle
 
+See http://doc.nuxeo.com/display/KB/Configuring+Oracle
+
 Repository backend: Oracle XA
 Services backend: Oracle
 
-2.5) stateful and stateless
+Copy JDBC driver http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc_10201.html
+to $JBOSS/server/default/lib/
+
+2.5) mssql
+
+See http://doc.nuxeo.com/display/KB/Configuring+SQL+Server
+
+Repository backend: Ms SQL Server XA
+Services backend: Ms SQL Server XA
+
+Copy JDBC driver http://repo2.maven.org/maven2/net/sourceforge/jtds/jtds/1.2.2/jtds-1.2.2.jar
+to $JBOSS/server/default/lib/
+
+2.6) stateful and stateless
 
 Configuration separating stateful and stateless services (see Nuxeo documentation 
 for details) using default values for database.
 
-2.6) custom
+2.7) cluster
+
+See http://doc.nuxeo.com/display/KB/Nuxeo+clustering+configuration
+
+This configuration activates the clustering mode: two Nuxeo JBoss servers with 
+identical configuration will share the same database and binaries' file system.
+
+By default, this template is configured to use PostgreSQL.
+Repository backend: PostgreSQL XA
+Services backend: PostgreSQL XA
+
+2.8) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.
