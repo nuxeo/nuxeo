@@ -40,7 +40,7 @@ mail.smtp.password=password
 # The address mail will be from
 mail.from=noreply@nuxeo.com
 
-# The protocol used to connecto to OpenOffice
+# The protocol used to connect to OpenOffice
 # Can be either SOCKET or PIPE, default is SOCKET
 jod.connection.protocol=SOCKET
 

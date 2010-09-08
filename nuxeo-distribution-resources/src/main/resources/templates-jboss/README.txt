@@ -118,7 +118,18 @@ to $JBOSS/server/default/lib/
 Configuration separating stateful and stateless services (see Nuxeo documentation 
 for details) using default values for database.
 
-2.7) custom
+2.7) cluster
+
+See http://doc.nuxeo.com/display/KB/Nuxeo+clustering+configuration
+
+This configuration activates the clustering mode: two Nuxeo JBoss servers with 
+identical configuration will share the same database and binaries' file system.
+
+By default, this template is configured to use PostgreSQL.
+Repository backend: PostgreSQL XA
+Services backend: PostgreSQL XA
+
+2.8) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.
