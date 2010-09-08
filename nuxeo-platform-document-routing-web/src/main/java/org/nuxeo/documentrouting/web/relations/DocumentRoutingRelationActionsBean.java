@@ -82,7 +82,7 @@ public class DocumentRoutingRelationActionsBean extends
 
             List<Object> queryParams = new ArrayList<Object>();
             queryParams.add(0, computePathWorkspaceRoot());
-            queryParams.add(1, input);
+            queryParams.add(1, String.format("%s%", input));
             QueryModel qm = new QueryModel(qmDescriptor);
             docs = qm.getDocuments(documentManager, queryParams.toArray());
         } catch (Exception e) {

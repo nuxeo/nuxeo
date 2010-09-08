@@ -10,7 +10,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType != 'Folderish'
         AND ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH ? 
-        AND dc:title STARTSWITH ?
+        AND dc:title LIKE ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
