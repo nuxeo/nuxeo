@@ -35,7 +35,9 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.SAXException;
 
@@ -159,6 +161,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     }
 
     protected String getAppURL(HttpServletRequest httpRequest) {
+        if (isValidStartupPage(httpRequest)) {
+            return httpRequest.getRequestURL().toString();
+        }
         if (appURL == null || appURL.equals("")) {
             appURL = NUXEO_SERVER_PATTERN_KEY;
         }
@@ -170,6 +175,26 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         }
     }
 
+    private boolean isValidStartupPage(HttpServletRequest httpRequest) {
+        if (httpRequest.getRequestURI() == null) {
+            return false;
+        }
+        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        if (service == null) {
+            return false;
+        }
+        String startPage = httpRequest.getRequestURI().replace(
+                VirtualHostHelper.getContextPath(httpRequest) + "/", "");
+        for (String prefix : service.getStartURLPatterns()) {
+            if (startPage.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+            
+    
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
