@@ -18,7 +18,8 @@ Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/management-contrib.xml,
   OSGI-INF/listener-contrib.xml,
   OSGI-INF/querymaker-service.xml,
-  OSGI-INF/querymaker-contrib.xml
+  OSGI-INF/querymaker-contrib.xml,
+  OSGI-INF/reload-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.resource,
  javax.resource.cci,
