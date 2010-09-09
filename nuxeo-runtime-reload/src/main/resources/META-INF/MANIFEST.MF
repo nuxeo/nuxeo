@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Runtime Reload
+Bundle-SymbolicName: org.nuxeo.runtime.reload;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: runtime
+Export-Package: org.nuxeo.runtime.reload,
+Bundle-ClassPath: .
+Require-Bundle: org.nuxeo.runtime
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/reload-service.xml
