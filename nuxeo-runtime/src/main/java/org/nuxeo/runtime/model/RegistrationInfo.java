@@ -29,28 +29,41 @@ import org.nuxeo.runtime.Version;
 /**
  * The component registration info.
  * <p>
- * A registration info object is keeping all the information needed to deploy
- * a component, like the component implementation, properties, dependencies and
+ * A registration info object is keeping all the information needed to deploy a
+ * component, like the component implementation, properties, dependencies and
  * also the defined extension points and contributed extensions.
  * <p>
  * When a component is activated the registration info is creating a component
  * instance using the current runtime context.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RegistrationInfo extends Serializable {
 
-    int UNREGISTERED    = 0;
-    int REGISTERED      = 1;
-    int RESOLVED        = 2;
-    int ACTIVATED       = 3;
-    int ACTIVATING      = 4;
-    int DEACTIVATING    = 5;
+    int UNREGISTERED = 0;
+
+    int REGISTERED = 1;
+
+    int RESOLVED = 2;
+
+    int ACTIVATED = 3;
+
+    int ACTIVATING = 4;
+
+    int DEACTIVATING = 5;
 
     /**
      * Gets the component version.
      */
     Version getVersion();
+
+    /**
+     * Get the owner bundle symbolic name of that component. If null the default
+     * owner is used.
+     * 
+     * @return
+     */
+    String getBundle();
 
     /**
      * Gets any comments on this component.
@@ -59,109 +72,110 @@ public interface RegistrationInfo extends Serializable {
 
     /**
      * Gets the runtime context that created this registration info.
-     *
+     * 
      * @return the runtime context
      */
     RuntimeContext getContext();
 
     /**
      * Gets the component properties.
-     *
+     * 
      * @return the component properties
      */
     Map<String, Property> getProperties();
 
     /**
      * Gets the list of the required components.
-     *
+     * 
      * @return the required components
      */
     Set<ComponentName> getRequiredComponents();
 
     /**
      * Gets the defined extension points.
-     *
+     * 
      * @return the defined extension points
      */
     ExtensionPoint[] getExtensionPoints();
 
     /**
      * Gets the extensions contributed by this component.
-     *
+     * 
      * @return the contributed extensions
      */
     Extension[] getExtensions();
 
     /**
      * Gets the name of the component.
-     *
+     * 
      * @return the component name
      */
     ComponentName getName();
 
     /**
-     * Gets the component instance or null if the component
-     * was not yet activated.
-     *
+     * Gets the component instance or null if the component was not yet
+     * activated.
+     * 
      * @return the component instance
      */
     ComponentInstance getComponent();
 
     /**
      * Gets the component state.
-     *
+     * 
      * @return the component state
      */
     int getState();
 
     /**
      * Gets the component manager.
-     *
+     * 
      * @return the component manager
      */
     ComponentManager getManager();
 
     /**
      * Checks whether this component is activated.
-     *
+     * 
      * @return true if the component is activated, false otherwise
      */
     boolean isActivated();
 
     /**
-     * Checks whether this component is resolved (i&dot;e&dot; all its dependencies are satisfied).
-     *
+     * Checks whether this component is resolved (i&dot;e&dot; all its
+     * dependencies are satisfied).
+     * 
      * @return true if the component is resolved, false otherwise
      */
     boolean isResolved();
 
     /**
      * Gets the list of provided services or null if no service is provided.
-     *
-     * @return an array containing the service class names or null if no service are provided
+     * 
+     * @return an array containing the service class names or null if no service
+     *         are provided
      */
     String[] getProvidedServiceNames();
 
-
     /**
-     * Whether or not this registration is persisted by the user (not part of a real bundle).
-     *
+     * Whether or not this registration is persisted by the user (not part of a
+     * real bundle).
+     * 
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();
 
-
     /**
-     * Give the class name for the component implementation if this is a java component
-     *
+     * Give the class name for the component implementation if this is a java
+     * component
+     * 
      * @return class name
      */
     String getImplementation();
 
-
     /**
      * Retrieve the URL of the XML file used to declare the component
-     *
+     * 
      * @return the XML file URL
      */
     URL getXmlFileUrl();

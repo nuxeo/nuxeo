@@ -47,7 +47,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -99,6 +99,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XNode("@version")
     Version version = Version.ZERO;
 
+    /**
+     * To be set when deploying configuration components that are not in a
+     * bundle (e.g. from config. dir).
+     * 
+     * Represent the bundle that will be assumed to be the owner of the
+     * component.
+     */
+    @XNode("@bundle")
+    String bundle;
+
     @XContent("documentation")
     String documentation;
 
@@ -120,9 +130,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Useful when dynamically registering components
-     *
-     * @param name
-     *            the component name
+     * 
+     * @param name the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
         this.name = name;
@@ -209,6 +218,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     public RuntimeContext getContext() {
         return context;
+    }
+
+    public String getBundle() {
+        return bundle;
     }
 
     public Version getVersion() {
@@ -419,7 +432,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (extensions == null) {
             return;
         }
-//        HashSet<String> targets = new HashSet<String>();
+        // HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
                 Framework.getRuntime().getWarnings().add(
@@ -427,16 +440,20 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                                 + getName());
                 continue;
             }
-          //TODO do nothing for now -> fix the faulty components and then activate these warnings
-//            String key = xt.target.getName()+"#"+xt.getExtensionPoint();
-//            if (targets.contains(key)) { // multiple extensions to same target point declared in same component
-//                String message = "Component "+getName()+" contains multiple extensions to "+key;
-//                Framework.getRuntime().getWarnings().add(message);
-//                //TODO: un-comment the following line if you want to treat this as a dev. error
-//                //Framework.handleDevError(new Error(message));
-//            } else {
-//                targets.add(key);
-//            }
+            // TODO do nothing for now -> fix the faulty components and then
+            // activate these warnings
+            // String key = xt.target.getName()+"#"+xt.getExtensionPoint();
+            // if (targets.contains(key)) { // multiple extensions to same
+            // target point declared in same component
+            // String message =
+            // "Component "+getName()+" contains multiple extensions to "+key;
+            // Framework.getRuntime().getWarnings().add(message);
+            // //TODO: un-comment the following line if you want to treat this
+            // as a dev. error
+            // //Framework.handleDevError(new Error(message));
+            // } else {
+            // targets.add(key);
+            // }
         }
     }
 
