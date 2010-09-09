@@ -1,0 +1,16 @@
+<component name="org.nuxeo.connect.client.ConnectClientComponent">
+    <implementation
+        class="org.nuxeo.connect.client.ConnectClientComponent" />
+
+    <service>
+        <provide
+            interface="org.nuxeo.connect.registration.ConnectRegistrationService" />
+        <provide
+            interface="org.nuxeo.connect.connector.ConnectConnector" />
+        <provide
+            interface="org.nuxeo.connect.downloads.ConnectDownloadManager" />
+        <provide
+            interface="org.nuxeo.connect.packages.PackageManager" />
+    </service>
+
+</component>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.connect.update.PackageUpdateService">
+
+    <require>org.nuxeo.connect.client.ConnectClientComponent</require>
+
+    <implementation
+        class="org.nuxeo.connect.update.PackageUpdateComponent" />
+
+    <service>
+        <provide
+            interface="org.nuxeo.connect.update.PackageUpdateService" />
+    </service>
+
+</component>

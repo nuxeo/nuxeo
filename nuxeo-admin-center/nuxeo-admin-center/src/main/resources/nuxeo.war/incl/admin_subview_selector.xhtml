@@ -1,0 +1,16 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  class="tabsBar">
+  <h:form>
+    <nxu:dataList layout="unorderedList" var="adminSubTab" value="#{adminViews.availableSubActions}"
+      itemStyleClass="#{nxu:test(adminViews.currentSubViewId == adminSubTab.id, 'selected', '')}">
+
+      <a4j:commandLink action="#{adminViews.setCurrentSubViewId(adminSubTab.id)}" immediate="true" reRender="admin_subtab">
+        <h:outputText value="#{messages[adminSubTab.label]}" />
+      </a4j:commandLink>
+
+    </nxu:dataList>
+  </h:form>
+</div>
