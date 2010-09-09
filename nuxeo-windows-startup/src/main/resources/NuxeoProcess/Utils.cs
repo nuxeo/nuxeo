@@ -220,7 +220,7 @@ namespace NuxeoProcess
 			// Add 3rdparty dir to PATH
 			
 			String PathValue = System.Environment.GetEnvironmentVariable("Path");
-			PathValue = PathValue + ";" + Path.Combine(NUXEO_HOME,"3rdparty");
+			PathValue = PathValue + Path.PathSeparator + Path.Combine(NUXEO_HOME,"3rdparty");
 			
 			// Move system directory and "." to the end of the path if present
 
@@ -231,15 +231,15 @@ namespace NuxeoProcess
 			foreach (String Token in PathTokens) {
 				if ((Token.StartsWith(Environment.SystemDirectory, true, null))||
 				     (Token.CompareTo(".")==0)) {
-					if (WinsysPathValue.Length>0) WinsysPathValue = WinsysPathValue + ";";
+					if (WinsysPathValue.Length>0) WinsysPathValue = WinsysPathValue + Path.PathSeparator;
 					WinsysPathValue = WinsysPathValue + Token;
 				} else {
-					if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + ";";
+					if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + Path.PathSeparator;
 					FixedPathValue = FixedPathValue + Token;
 				}
 			}
 
-			if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + ";";
+			if (FixedPathValue.Length>0) FixedPathValue = FixedPathValue + Path.PathSeparator;
 			FixedPathValue = FixedPathValue + WinsysPathValue;
 			
 			nxEnv.Add("PATH",FixedPathValue);
@@ -462,9 +462,9 @@ namespace NuxeoProcess
 
 			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"lib");
 			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-runtime-deploy*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar")[0].ToString());
 			
 			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"conf"),"jboss-log4j.xml");
 			confArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_BOOTJAR_PATH+"\""+
@@ -510,14 +510,14 @@ namespace NuxeoProcess
 				CATALINA_TEMP=nxEnv["TMP_DIR"];
 			}
 
-			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(nxEnv["NUXEO_HOME"],"bundles");
+			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"nxserver"),"bundles");
 			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-runtime-deploy*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
 			NUXEO_BOOTJAR_ROOTPATH=Path.Combine(nxEnv["NUXEO_HOME"],"lib");
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=";"+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar*")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j*.jar")[0].ToString());
+			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar*")[0].ToString());
 
-			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"config"),"log4j.xml");
+			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"nxserver"),"config"),"log4j.xml");
 			confArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_BOOTJAR_PATH+"\""+
 				" -Dnuxeo.home=\""+nxEnv["NUXEO_HOME"]+"\""+
 				" -Dnuxeo.conf=\""+nxEnv["NUXEO_CONF"]+"\""+
