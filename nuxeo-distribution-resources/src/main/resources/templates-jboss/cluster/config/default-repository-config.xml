@@ -5,7 +5,7 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
-        <clustering enabled="true" delay="300" />
+        <clustering enabled="true" delay="${repository.clustering.delay}" />
         <binaryStore path="${repository.binary.store}"/>
         <schema>
           <field type="largetext">note</field>
