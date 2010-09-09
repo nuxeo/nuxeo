@@ -86,9 +86,20 @@ See http://doc.nuxeo.com/display/KB/Configuring+PostgreSQL
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
 
-Copy JDBC driver into $JBOSS/server/default/lib/.
+Copy JDBC3 driver http://jdbc.postgresql.org/download.html#current
+into $TOMCAT/lib/
 
-2.3) custom
+2.3) mssql
+
+See http://doc.nuxeo.com/display/KB/Configuring+SQL+Server
+
+Repository backend: Ms SQL Server XA
+Services backend: Ms SQL Server XA
+
+Copy JDBC driver http://repo2.maven.org/maven2/net/sourceforge/jtds/jtds/1.2.2/jtds-1.2.2.jar
+into $TOMCAT/lib/
+
+2.4) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.

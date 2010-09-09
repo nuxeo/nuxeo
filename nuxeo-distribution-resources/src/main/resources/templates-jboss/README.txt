@@ -86,12 +86,16 @@ See http://doc.nuxeo.com/display/KB/Configuring+PostgreSQL
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
 
-Copy JDBC driver into $JBOSS/server/default/lib/.
+Copy JDBC3 driver http://jdbc.postgresql.org/download.html#current
+into $JBOSS/server/default/lib/.
 
 2.3) mysql
 
 Repository backend: MySQL XA
 Services backend: MySQL
+
+Copy JDBC driver http://www.mysql.com/downloads/connector/j/
+into $JBOSS/server/default/lib/.
 
 2.4) oracle
 
@@ -100,8 +104,8 @@ See http://doc.nuxeo.com/display/KB/Configuring+Oracle
 Repository backend: Oracle XA
 Services backend: Oracle
 
-Copy JDBC driver http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc_10201.html
-to $JBOSS/server/default/lib/
+Copy JDBC driver http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+into $JBOSS/server/default/lib/
 
 2.5) mssql
 
@@ -111,7 +115,7 @@ Repository backend: Ms SQL Server XA
 Services backend: Ms SQL Server XA
 
 Copy JDBC driver http://repo2.maven.org/maven2/net/sourceforge/jtds/jtds/1.2.2/jtds-1.2.2.jar
-to $JBOSS/server/default/lib/
+into $JBOSS/server/default/lib/
 
 2.6) stateful and stateless
 
