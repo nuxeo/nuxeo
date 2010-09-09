@@ -575,6 +575,21 @@
       <version>${nuxeo.features.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-admin-center</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-connect-update</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-connect-client-wrapper</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
 
     <!-- Language extension addon -->
     <dependency>
