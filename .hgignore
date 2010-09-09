@@ -1,0 +1,10 @@
+syntax:glob
+.classpath
+.metadata
+.project
+.settings
+bin
+build.properties
+target
+*~
+*.orig
