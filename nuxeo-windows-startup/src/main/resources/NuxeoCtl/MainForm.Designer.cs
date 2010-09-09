@@ -305,7 +305,11 @@ namespace NuxeoCtl
 		}
 
 		private void DisplayCtlStateText(String text) {
-			nxCtlState.Text = text;
+			if (nxCtlState.InvokeRequired) {
+				nxCtlState.Invoke(new EventHandler(delegate {nxCtlState.Text=text;}));
+			} else {
+				nxCtlState.Text = text;
+			}
 		}
 		
 		bool StartApplication() {
