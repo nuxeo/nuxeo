@@ -1,6 +1,6 @@
 # This script will check out the needed sources from mercurial.
 
-CV=1.7 # Core version
+CV=5.4 # Core version
 PV=5.4 # Platform version
 
 hg clone -r $CV http://hg.nuxeo.org/nuxeo/nuxeo-common
