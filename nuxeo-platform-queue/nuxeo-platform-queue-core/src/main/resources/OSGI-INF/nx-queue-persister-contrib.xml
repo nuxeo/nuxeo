@@ -21,12 +21,12 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="queueitem" src="schemas/queueitem.xsd" />
+    <schema name="queueitem" prefix="qitm"  src="schemas/queueitem.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
     point="adapters">
-    <adapter class="org.nuxeo.ecm.platform.queue.api.QueueItem"
+    <adapter class="org.nuxeo.ecm.platform.queue.api.QueueInfo"
       factory="org.nuxeo.ecm.platform.queue.core.NuxeoQueueAdapterFactory" />
   </extension>
   

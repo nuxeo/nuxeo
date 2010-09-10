@@ -10,13 +10,11 @@
 </@block>
 
 <@block name="toolbox">
-<#if item.orphaned>
 <ul>
  <h3>Toolbox</h3>
- <li><a href="/@retry">Retry</a></li>
- <li><a href="/@cancel">Cancel</a></li>
+ <li><a href="${This.path}/@retry">Retry</a></li>
+ <li><a href="${This.path}/@cancel">Cancel</a></li>
 </ul>
-</#if>
 </@block>
 
 </@extends>

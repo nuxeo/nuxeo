@@ -16,8 +16,11 @@
  */
 package org.nuxeo.ecm.platform.queue.api;
 
+import java.io.Serializable;
+import java.net.URI;
+
 /**
- * Route content to dedicated queues.
+ * Handle content into dedicated queues and handle
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
@@ -25,32 +28,27 @@ package org.nuxeo.ecm.platform.queue.api;
 public interface QueueHandler {
 
     /**
-     * Handle content.
+     * Inject and process new content in queue
      *
      * @param content the content
      */
-    void handleNewContent(QueueContent content);
+    <C extends Serializable> void newContent(URI owner, URI contentName,  C content);
 
     /**
-     * Handle content if unknown.
+     * Register and process content if unknown.
      *
-     * @param content the content
+     * @param ownerName the context owner
+     * @param resource the content name
      */
-    void handleNewContentIfUnknown(QueueContent content) throws QueueException;
+    <C extends Serializable> void newContentIfUnknown(URI ownerName, URI contentName,  C content);
 
     /**
-     * Handle end of processing (remove content from queue).
+     * Generate a name referencing an unique content
      *
-     * @param content the content
+     * @param queueName
+     * @param contentName
+     * @return
      */
-    void handleEndOfProcessing(QueueContent content);
-
-    /**
-     * Handle retry content processing
-     *
-     * @param content
-     * @throws QueueException
-     */
-    void handleRetry(QueueContent content) throws QueueException;
+    URI newName(String queueName, String contentName);
 
 }

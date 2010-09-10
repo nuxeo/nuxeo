@@ -19,11 +19,9 @@ package org.nuxeo.ecm.platform.queue.core;
 import java.net.URI;
 
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,13 +68,14 @@ public class TestQueueHandler extends SQLRepositoryTestCase {
         // join 1 and 2
         assertEquals(
                 "Should has executed only one task/job (1 succeed, 1 failed)",
-                1, FakeExecutor.executed);
+                1, FakeProcessor.executed);
 
         // Make sure that we don't have any job running
-        QueueManagerLocator queueManagerLocator = Framework.getLocalService(QueueManagerLocator.class);
-        QueueManager queueManager = queueManagerLocator.locateQueue("myQueueDestination");
+        QueueLocator ql = Framework.getLocalService(QueueLocator.class);
+        URI name = ql.newName("fake");
+        QueueManager<FakeContent> queueManager = ql.getManager(name);
         assertEquals("The number of handled item is", 0,
-                queueManager.listHandledItems().size());
+                queueManager.listHandledContent().size());
 
     }
 
@@ -87,18 +86,11 @@ public class TestQueueHandler extends SQLRepositoryTestCase {
             this.owner = owner;
         }
 
+        @Override
         public void run() {
-            QueueContent content = new QueueContent(owner,
-                    "myQueueDestination", "myContent");
-            content.setComments("locked by " + owner);
-            QueueHandler queuehandler = Framework.getLocalService(QueueHandler.class);
-
-            try {
-                queuehandler.handleNewContentIfUnknown(content);
-            } catch (QueueException e) {
-                throw new Error(e);
-            }
-
+            QueueHandler qh = Framework.getLocalService(QueueHandler.class);
+            URI name = qh.newName("fake", "test");
+            qh.newContentIfUnknown(owner, name , new FakeContent());
         }
 
         Thread thread;

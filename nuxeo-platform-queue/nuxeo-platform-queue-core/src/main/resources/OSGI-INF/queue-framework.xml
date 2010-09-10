@@ -4,8 +4,8 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.queue.api.QueueHandler" />
-    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueFactory" />
-    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueManagerLocator" />
+    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueRegistry" />
+    <provide interface="org.nuxeo.ecm.platform.queue.api.QueueLocator" />
   </service>
 
   <require>org.nuxeo.ecm.platform.lock</require>
@@ -19,15 +19,16 @@
 
   <implementation class="org.nuxeo.ecm.platform.queue.core.QueueComponent" />
 
-  <extension-point name="queue">
+  <extension-point name="queues">
     <documentation>
       @author Sun Seng David TAN
       for a queue, provide which kind of persister and
       which kind of executor to be used.
       <code>
         <extension target="org.nuxeo.ecm.platform.queue" point="queue">
-          <queue name="myQueueType" executor="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
-            persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+          <queue type="org.nuxeo.ecm.platform.queue.core.FakeContent" 
+                manager="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
+                persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
         </extension>
       </code>
     </documentation>

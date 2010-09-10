@@ -21,12 +21,12 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,16 +48,8 @@ public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
     }
 
     public void testNuxeoQueuePersister() throws Exception {
-        URI owner = new URI("nxprincipal:test");
-
-        NuxeoQueuePersister persister = new NuxeoQueuePersister();
-        QueueContent content = new QueueContent(owner, "myQueue", "myQueueItem");
-        content.setDelay(800);
-        content.setComments("test content");
-        MockAdditionalInfo info = new MockAdditionalInfo("test add info");
-        content.setAdditionalInfo(info);
-
-        persister.saveContent(content);
+        NuxeoQueuePersister<FakeContent> persister = new NuxeoQueuePersister<FakeContent>("fake", FakeContent.class);
+        persister.addContent(new URI("test"), new URI("test"), new FakeContent());
 
         // Testing the document is in the nuxeo repo
         TestRunner runner = new TestRunner(Framework.getLocalService(
@@ -65,13 +57,16 @@ public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
         runner.runUnrestricted();
 
         // testing retrieving content from the persister
-        List<QueueItem> items = persister.listKnownItems("myQueue");
+        List<QueueInfo<FakeContent>> items = persister.listKnownItems();
+        assertEquals("Single content in queue", items.size(), 1);
+        QueueInfo<FakeContent> info = items.get(0);
+
         // additional info
-        MockAdditionalInfo newInfo = (MockAdditionalInfo) items.get(0).getHandledContent().getAdditionalInfo();
-        assertEquals("Additional info is", "test add info", newInfo.info);
+        assertEquals("Fake content is", "fake", info.getContent().fake);
         // owner
-        assertEquals("Owner is", "nxprincipal:test",
-                items.get(0).getHandledContent().getOwner().toASCIIString());
+        assertEquals("Owner is", "test",info.getOwnerName().toASCIIString());
+        List<QueueInfo<FakeContent>> ownedItems = persister.listByOwner(new URI("test"));
+        assertEquals("owns", 1, ownedItems.size());
     }
 
     class TestRunner extends UnrestrictedSessionRunner {
@@ -82,11 +77,12 @@ public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
 
         @Override
         public void run() throws ClientException {
-            assertNotNull(session.getDocument(new PathRef("/queues/myQueue")));
-            DocumentModel document = session.getDocument(new PathRef(
-                    "/queues/myQueue/myQueueItem"));
-            assertNotNull(document);
-            assertNotNull("server id is not there", document.getProperty(
+            DocumentRef queueRef = new PathRef("/queues/fake");
+            DocumentModel queueDoc = session.getDocument(queueRef);
+            assertNotNull(queueDoc);
+            DocumentModel contentDoc = session.getChild(queueRef, "test");
+            assertNotNull(contentDoc);
+            assertNotNull("server id is not there", contentDoc.getProperty(
                     NuxeoQueueConstants.QUEUEITEM_SCHEMA,
                     NuxeoQueueConstants.QUEUEITEM_SERVERID));
         }

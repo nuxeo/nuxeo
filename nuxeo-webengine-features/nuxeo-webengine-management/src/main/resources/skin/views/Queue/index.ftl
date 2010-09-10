@@ -14,5 +14,11 @@
 
 </@block>
 
+<@block name="toolbox">
+<ul><h3>Toolbox</h3>
+<li><a href="${This.path}/@cancel">cancel</a></li>
+<li><a href="${This.path}/@retry">retry</a></li>
+</ul>
+</@block>
 
 </@extends>

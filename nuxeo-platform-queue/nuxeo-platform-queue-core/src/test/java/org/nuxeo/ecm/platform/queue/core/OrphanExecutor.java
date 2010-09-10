@@ -16,23 +16,25 @@
 
 package org.nuxeo.ecm.platform.queue.core;
 
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueExecutor;
-import org.nuxeo.ecm.platform.queue.api.QueueHandler;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
+import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
 
 /**
- * Executor for testing, when executed, increment its static variable "executed".
+ * handle end of processing only if the static boolean variable is accessible
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-class FakeExecutor implements QueueExecutor {
+class OrphanExecutor implements QueueProcessor<FakeContent> {
 
-    static int executed = 0;
+    public static boolean shouldHandleEndOfProcessing = false;
 
+    @Override
+    public void process(QueueInfo<FakeContent> info) {
+        // do nothing
 
-    public void execute(QueueContent content, QueueHandler handler) {
-        executed++;
-        handler.handleEndOfProcessing(content);
+        if (shouldHandleEndOfProcessing) {
+            info.cancel();
+        }
     }
 }

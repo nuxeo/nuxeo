@@ -16,11 +16,13 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
-import java.util.Collections;
+import java.net.URI;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
+import org.nuxeo.ecm.platform.queue.api.QueueManager;
+import org.nuxeo.ecm.platform.queue.api.QueueRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -54,16 +56,16 @@ public class TestQueueManagerLocator extends SQLRepositoryTestCase {
      * registered in the test-queue-contrib.xml)
      */
     public void testRegisteredQueues() {
-        QueueManagerLocator locator = Framework.getLocalService(QueueManagerLocator.class);
-        List<String> queues = locator.getAvailableQueues();
+        QueueRegistry registry = Framework.getLocalService(QueueRegistry.class);
+        List<URI> names = registry.getQueueNames();
 
-        assertNotNull(queues);
-        assertEquals("The number of registered queues is", 2, queues.size());
-        Collections.sort(queues);
-        assertEquals("The first queue name is", "myQueueDestination",
-                queues.get(0));
-        assertEquals("The second queue name is", "testOrphansQueue",
-                queues.get(1));
+        assertNotNull(names);
+        assertEquals("The number of registered types is", 2, names.size());
+
+        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
+        URI fakeName = locator.newName("fake");
+        QueueManager<FakeContent> mgr = locator.getManager(fakeName);
+        assertNotNull(mgr);
     }
 
 }

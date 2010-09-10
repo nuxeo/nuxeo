@@ -17,39 +17,38 @@
 
 package org.nuxeo.ecm.platform.queue.api;
 
+import java.io.Serializable;
+import java.net.URI;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * Provide access to atomic objects and services.
+ * Provide access to queue services.
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  */
-public interface QueueManagerLocator {
+public interface QueueLocator {
 
     /**
-     * Provide an access to the atomic queue that is in charge the provided
-     * content.
+     * Provide an access to a queue manager giving the handled context class
      *
-     * @param content the content
-     * @return queue
+     * @param type the context class handled
+     * @return the manager
      */
-    QueueManager locateQueue(QueueContent content)
-            throws QueueNotFoundException;
+    <C extends Serializable> QueueManager<C> getManager(URI name);
 
     /**
-     * Provide an access to the atomic queue.
+     * Provides the list of managers of any handled context class.
      *
-     * @param type the type
-     * @return queue
+     * @return the list of queue managers
      */
-    QueueManager locateQueue(String queueName) throws QueueNotFoundException;
+    List<QueueManager<?>> getManagers();
 
     /**
-     * Provides the list of registered queues.
+     * Generate a name referencing an unique queue
      *
+     * @param queueName
      * @return
      */
-    List<String> getAvailableQueues();
+    URI newName(String queueName);
 
 }

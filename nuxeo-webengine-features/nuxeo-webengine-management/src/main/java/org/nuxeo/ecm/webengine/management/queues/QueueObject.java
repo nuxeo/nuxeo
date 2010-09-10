@@ -22,12 +22,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.queue.api.QueueException;
+import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
@@ -35,6 +40,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  */
 @WebObject(type = "Queue")
 public class QueueObject extends ManagementObject {
+
+    protected static Log log = LogFactory.getLog(QueueObject.class);
 
     protected QueueManager manager;
     protected List<QueueItem> items;
@@ -55,6 +62,33 @@ public class QueueObject extends ManagementObject {
     @GET
     public Object doGet() {
         return getView("index");
+    }
+
+    @GET
+    @Path("/@cancel")
+    public Object doGetCancel() {
+        for(QueueItem item:items) {
+            try {
+                item.retry();
+            } catch (QueueException e) {
+                log.error("Cannot cancel content for " + item.getHandledContent().getName());
+            }
+        }
+        return redirect(getPath());
+    }
+
+
+    @GET
+    @Path("/@retry")
+    public Object doGetRetry() {
+        for(QueueItem item:items) {
+            try {
+                item.retry();
+            } catch (QueueException e) {
+                log.error("Cannot retry content for " + item.getHandledContent().getName());
+            }
+        }
+        return redirect(getPath());
     }
 
     public List<QueueItem> getItems() {

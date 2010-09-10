@@ -16,10 +16,11 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 
 /**
  * Adapting queue item document.
@@ -29,15 +30,10 @@ import org.nuxeo.ecm.platform.queue.api.QueueItem;
  */
 public class NuxeoQueueAdapterFactory implements DocumentAdapterFactory {
 
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(DocumentModel doc, Class itf) {
-        if (QueueItem.class.isAssignableFrom(itf)) {
-            try {
-                return new NuxeoQueueAdapter(doc);
-            } catch (ClientException e) {
-                throw new Error("Cannot adapt to queue item doc "
-                        + doc.getPathAsString());
-            }
+    @Override
+    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class itf) {
+        if (QueueInfo.class.isAssignableFrom(itf)) {
+            return new NuxeoQueueAdapter<Serializable>(doc);
         }
         return null;
     }

@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import java.lang.reflect.Constructor;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.queue.api.QueueExecutor;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
+import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
@@ -28,24 +30,25 @@ import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 public class QueueDescriptor {
 
     @XNode("@name")
-    String name;
+    public final String name = null;
 
-    @XNode("@executor")
-    Class<?> executorClass;
+    @XNode("@type")
+    public final Class<?> contentType = null;
+
+    @XNode("@processor")
+    public final Class<QueueProcessor<?>> processorClass = null;
 
     @XNode("@persister")
-    Class<?> persisterClass;
+    public final Class<QueuePersister<?>> persisterClass = null;
 
-    public String getName() {
-        return name;
+
+    public QueueProcessor<?> newProcessor() throws Exception {
+        return processorClass.newInstance();
     }
 
-    public QueueExecutor newExecutorInstance() throws Exception {
-        return (QueueExecutor) executorClass.newInstance();
-    }
-
-    public QueuePersister newPersisterInstance() throws Exception {
-        return (QueuePersister) persisterClass.newInstance();
+    public QueuePersister<?> newPersister() throws Exception {
+        Constructor<QueuePersister<?>> c = persisterClass.getDeclaredConstructor(String.class, Class.class);
+        return c.newInstance(name, contentType);
     }
 
 }

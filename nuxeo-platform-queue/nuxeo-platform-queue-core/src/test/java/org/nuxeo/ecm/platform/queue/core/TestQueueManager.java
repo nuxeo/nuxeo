@@ -24,12 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
 import org.nuxeo.ecm.platform.heartbeat.core.NuxeoServerHeartBeat;
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueException;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,19 +69,11 @@ public class TestQueueManager extends SQLRepositoryTestCase {
      *
      */
     public void testOrphansQueueItem() throws Exception {
-        URI owner = new URI("queueowner:owner1");
         ServerHeartBeat heartbeat = Framework.getLocalService(ServerHeartBeat.class);
-
-        QueueContent content = new QueueContent(owner, "testOrphansQueue",
-                "myContent");
-        content.setComments("locked by " + owner);
-        QueueHandler queuehandler = Framework.getLocalService(QueueHandler.class);
-
-        try {
-            queuehandler.handleNewContentIfUnknown(content);
-        } catch (QueueException e) {
-            throw new Error(e);
-        }
+        QueueHandler qh = Framework.getLocalService(QueueHandler.class);
+        URI owner = new URI("queueowner:owner1");
+        URI name = qh.newName("orphan", "myContent");
+        qh.newContentIfUnknown(owner, name,  new OrphanContent());
 
         heartbeat.stop();
 
@@ -94,22 +84,22 @@ public class TestQueueManager extends SQLRepositoryTestCase {
         log.info("Sleeping for " + delay);
         Thread.sleep(delay);
 
-        QueueManagerLocator queueManagerLocator = Framework.getLocalService(QueueManagerLocator.class);
-        QueueManager queueManager = queueManagerLocator.locateQueue(content);
-        List<QueueItem> orphans = queueManager.listOrphanedItems();
+        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
+        QueueManager<OrphanContent> queueManager = locator.getManager(name);
+        List<QueueInfo<OrphanContent>> orphans = queueManager.listOrphanedContent();
         assertNotNull(
                 "The queueManager should have a list of orphaned (even empty)",
                 orphans);
         assertEquals("An orphaned item should be listed", 1, orphans.size());
-        assertEquals("The orphan name is", "myContent",
-                orphans.get(0).getHandledContent().getName());
+        assertEquals("The orphan name is", "nxqueue:orphan#myContent",
+                orphans.get(0).getName().toASCIIString());
 
         heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);
-        orphans = queueManager.listOrphanedItems();
+        orphans = queueManager.listOrphanedContent();
 
         assertEquals("An orphaned item should be listed", 1, orphans.size());
-        assertEquals("The orphan name is", "myContent",
-                orphans.get(0).getHandledContent().getName());
+        assertEquals("The orphan name is", "nxqueue:orphan#myContent",
+                orphans.get(0).getName().toASCIIString());
     }
 
 }

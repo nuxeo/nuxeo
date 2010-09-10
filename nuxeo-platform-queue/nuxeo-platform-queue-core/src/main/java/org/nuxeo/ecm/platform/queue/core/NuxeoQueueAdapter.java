@@ -16,68 +16,75 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
+
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerInfo;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerNotFoundException;
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
-import org.nuxeo.ecm.platform.queue.api.QueueItemState;
+import org.nuxeo.ecm.platform.queue.api.QueueError;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
+import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-public class NuxeoQueueAdapter implements QueueItem {
+public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
 
     public static final Log log = LogFactory.getLog(NuxeoQueueAdapter.class);
 
-    DocumentModel doc;
+    protected DocumentModel doc;
 
-    QueueContent content;
+    final URI serverURI;
 
-    URI serverURI;
+    final URI name;
 
-    Date lastHandledTime;
+    final URI ownerName;
 
-    public NuxeoQueueAdapter(DocumentModel doc) throws ClientException {
+
+    public NuxeoQueueAdapter(DocumentModel doc) {
         this.doc = doc;
-        Calendar calendar = (Calendar) doc.getProperty(QUEUEITEM_SCHEMA,
-                NuxeoQueueConstants.QUEUEITEM_EXECUTE_TIME);
-        if (calendar != null) {
-            lastHandledTime = calendar.getTime();
-        }
         try {
-            serverURI = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA,
-                    QUEUEITEM_SERVERID));
-        } catch (URISyntaxException e) {
-            throw new Error("Cannot build server uri for "
-                    + doc.getPathAsString());
+            serverURI = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID));
+            ownerName = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_OWNER));
+            name = new URI((String)doc.getName());
+        } catch (Exception e) {
+            throw new QueueError("Cannot build server uri for " + doc.getPathAsString());
         }
     }
 
-    public Map<String, Serializable> getAdditionalnfos() {
-        throw new UnsupportedOperationException("Not implemented");
+    @Override
+    public Date getLastHandlingDate() {
+        Calendar calendar;
+        try {
+            calendar = (Calendar) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_EXECUTE_TIME);
+        } catch (ClientException e) {
+            throw new QueueError("Cannot get last handling date for " + doc.getPathAsString(), e);
+        }
+        if (calendar == null) {
+            return new Date(0);
+        }
+        return calendar.getTime();
     }
 
+    @Override
     public Date getFirstHandlingDate() {
         try {
             Calendar modified = (Calendar) doc.getPropertyValue("dc:created");
@@ -90,114 +97,106 @@ public class NuxeoQueueAdapter implements QueueItem {
         throw new Error("unexpected error while trying to get the c date");
     }
 
-    public QueueContent getHandledContent() {
-        if (content != null) {
-            return content;
-        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public C getContent() {
         try {
-            URI owner = new URI((String) doc.getProperty(
-                    QUEUEITEM_SCHEMA,
-                    NuxeoQueueConstants.QUEUEITEM_OWNER));
-            String[] segments = doc.getPath().segments();
-            String queueName = segments[segments.length - 2];
-            String queueItemName = doc.getName();
-            Serializable serializable = null;
-
-            String serializedAdditionalInfo = (String) doc.getProperty(
-                    QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_ADDITIONAL_INFO);
-
-            // deserializing additional info from a string
-            if (serializedAdditionalInfo != null) {
+            C context = null;
+            Blob data = (Blob) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_CONTENT);
+            if (data != null) {
+                ObjectInputStream ois = new ObjectInputStream(data.getStream());
                 try {
-                    ObjectInputStream in = new ObjectInputStream(
-                            new ByteArrayInputStream(
-                                    Base64.decode(serializedAdditionalInfo)));
-                    serializable = (Serializable) in.readObject();
-                    in.close();
-                } catch (Exception e) {
-                    throw new Error(
-                            "An error occured while trying to read the additional info",
-                            e);
+                    context = (C) ois.readObject();
+                } finally {
+                    ois.close();
                 }
             }
-
-            content = new QueueContent(owner, queueName, queueItemName);
-            content.setAdditionalInfo(serializable);
-        } catch (URISyntaxException e) {
-            throw new Error(
-                    "unexpected error while trying to get the content queue", e);
-        } catch (ClientException e) {
-            throw new Error(
-                    "unexpected error while trying to get the content queue", e);
+            return context;
+        } catch (Exception e) {
+            throw new QueueError("unexpected error while trying to get the content queue", e);
         }
-        return content;
     }
 
+    @Override
     public int getHandlingCount() {
         try {
             Integer handlingCount = (Integer) doc.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
-            if (handlingCount != null) {
-                return handlingCount.intValue();
-            } else {
+            if (handlingCount == null) {
                 return 0;
             }
-
+            return handlingCount.intValue();
         } catch (ClientException e) {
-            log.error("Unable to get handling count no", e);
+            throw new QueueError("Unable to get handling count no");
         }
-        throw new Error("nable to get handling count no");
     }
 
-    public Date getLastHandlingDate() {
-        return lastHandledTime;
-    }
-
-    public QueueItemState getState() {
+    @Override
+    public State getState() {
         if (isOrphaned()) {
-            return QueueItemState.Orphaned;
+            return State.Orphaned;
         }
-        return QueueItemState.Handled;
+        return State.Handled;
     }
 
+    @Override
     public boolean isOrphaned() {
-
-        ServerHeartBeat heartbeat = Framework.getLocalService(ServerHeartBeat.class);
-        ServerInfo heartbeatserverinfo;
+        ServerHeartBeat hb = Framework.getLocalService(ServerHeartBeat.class);
+        ServerInfo hbInfo;
         try {
-            heartbeatserverinfo = heartbeat.getInfo(serverURI);
+            hbInfo = hb.getInfo(serverURI);
         } catch (ServerNotFoundException e) {
-            log.warn(
-                    "Server referred by the queue item couldn't be located, is this server running nuxeo heartbeat service ?",
-                    e);
+            log.warn("Server referred by the queue item couldn't be located, is this server running nuxeo heartbeat service ?", e);
             return true;
         }
         final Date now = new Date();
         // is server not alive, isOrphaned (calendar use ?)
-        if (heartbeatserverinfo.getUpdateTime().getTime()
-                + heartbeat.getHeartBeatDelay() < now.getTime()) {
+        if (hbInfo.getUpdateTime().getTime() + hb.getHeartBeatDelay() < now.getTime()) {
             return true;
         }
         // is execute time before the restart of the server
-        return lastHandledTime.before(heartbeatserverinfo.getStartTime());
+        return getLastHandlingDate().before(hbInfo.getStartTime());
     }
 
-    public URI getHandlingServerID() {
+    @Override
+    public URI getServerName() {
         URI serverUri;
         try {
-            serverUri = new URI((String) doc.getProperty(
-                    QUEUEITEM_SCHEMA,
-                    QUEUEITEM_SERVERID));
-        } catch (URISyntaxException e) {
-            throw new Error(
-                    "unexpected error while trying to get the content queue (server id)",
-                    e);
-        } catch (ClientException e) {
-            throw new Error(
-                    "unexpected error while trying to get the content queue (server id)",
-                    e);
+            serverUri = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID));
+        } catch (Exception e) {
+            throw new QueueError("unexpected error while trying to get the content queue (server id)", e);
         }
 
         return serverUri;
+    }
+
+
+    @Override
+    public void retry() {
+        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
+        QueueManager<C> mgr = locator.getManager(name);
+        mgr.retry(name);
+    }
+
+    @Override
+    public void cancel() {
+        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
+        QueueManager<C> mgr = locator.getManager(name);
+        mgr.cancel(name);
+    }
+
+    @Override
+    public URI getOwnerName() {
+        return ownerName;
+    }
+
+    @Override
+    public URI getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return getName().toASCIIString();
     }
 
 }

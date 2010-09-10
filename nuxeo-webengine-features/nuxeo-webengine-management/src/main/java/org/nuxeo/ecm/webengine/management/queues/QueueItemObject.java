@@ -16,21 +16,17 @@
  */
 package org.nuxeo.ecm.webengine.management.queues;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.platform.queue.api.QueueContent;
 import org.nuxeo.ecm.platform.queue.api.QueueException;
-import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueItem;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
@@ -39,8 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type="QueueItem")
 public class QueueItemObject extends ManagementObject {
 
-
-    protected QueueHandler handler;
     protected QueueManager manager;
     protected QueueItem item;
     private QueueContent handledContent;
@@ -52,7 +46,6 @@ public class QueueItemObject extends ManagementObject {
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        handler = Framework.getLocalService(QueueHandler.class);
         manager = (QueueManager)args[0];
         item = (QueueItem)args[1];
         handledContent = item.getHandledContent();
@@ -67,26 +60,25 @@ public class QueueItemObject extends ManagementObject {
         return getView("index");
     }
 
-    @POST
+    @GET
     @Path("@cancel")
-    public Object doPostCancel() {
-        return doDelete();
-    }
-
-    @POST
-    @Path("@retry")
-    public Object doPostRetry() {
+    public Object doCancel() {
         try {
-            handler.handleRetry(handledContent);
+            item.retry();
         } catch (QueueException e) {
            throw WebException.wrap("Cannot handle " + handledContent.getName(), e);
         }
         return redirect(getPrevious().getPath());
     }
 
-    @DELETE
-    public Object doDelete() {
-        manager.forgetContent(handledContent);
+    @GET
+    @Path("@retry")
+    public Object doRetry() {
+        try {
+            item.retry();
+        } catch (QueueException e) {
+           throw WebException.wrap("Cannot handle " + handledContent.getName(), e);
+        }
         return redirect(getPrevious().getPath());
     }
 

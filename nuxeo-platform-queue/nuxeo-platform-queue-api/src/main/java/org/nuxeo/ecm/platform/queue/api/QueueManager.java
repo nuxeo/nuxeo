@@ -16,8 +16,8 @@
 package org.nuxeo.ecm.platform.queue.api;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Handle contents that needs long processing such as OCRing a document, images
@@ -29,50 +29,81 @@ import java.util.Map;
  * @author Stephane Lacoin <slacoin@nuxeo.com> (aka matic)
  * @see QueuePersister
  */
-public interface QueueManager {
+public interface QueueManager<C extends Serializable> {
 
     /**
-     * Names the managed queue
+     * Return the context type of handled contents
      */
-    String getName();
+    Class<C> getContentType();
+
 
     /**
      * List infos about content being handled.
      *
      * @return the list
      */
-    List<QueueItem> listHandledItems();
+    List<QueueInfo<C>> listHandledContent();
+
+    /**
+     * List infos owned by the provided owner
+     *
+     * @param owner
+     * @return the list
+     */
+    List<QueueInfo<C>> listOwnedContent(URI owner);
 
     /**
      * List infos about content waiting for recovery.
      *
      * @return the list
      */
-    List<QueueItem> listOrphanedItems();
+    List<QueueInfo<C>> listOrphanedContent();
+
 
     /**
-     * Check for the existence of an atomic content on persistence back-end.
+     * Check for the existence of a content on persistence back-end.
      *
      * @param content the content
      * @return true if content is already present on persistence back-end
      * @throws QueueException
      */
-    boolean knowsContent(QueueContent content) throws QueueException;
+    boolean knowsContent(URI name);
 
     /**
-     * Remove content from persistence back-end.
+     * Retry processing of an orphaned content by invoking it's processor
+     * @param contentName
+     */
+    void retry(URI contentName);
+
+    /**
+     * Cancel processing of an orphaned content by removing it from persistence back-end.
      *
      * @param content the content
      */
-    void forgetContent(QueueContent content);
+    void cancel(URI name);
 
     /**
-     * Update additional item informations on persistence back-end.
+     * Update additional informations on persistence back-end.
      *
      * @param content the content
-     * @param additionalInfos the additional infos
      */
-    void updateItem(QueueContent content,
-            Map<String, Serializable> additionalInfos);
+    void updateInfos(URI name, C content);
+
+    /**
+     * Remove all content from persistence back-end associated to this owner
+     *
+     * @param owner
+     * @return
+     */
+    int removeOwned(URI owner);
+
+    /**
+     * Generate a name referencing an unique content
+     *
+     * @param queueName
+     * @param contentName
+     * @return
+     */
+    URI newName(String contentName);
 
 }

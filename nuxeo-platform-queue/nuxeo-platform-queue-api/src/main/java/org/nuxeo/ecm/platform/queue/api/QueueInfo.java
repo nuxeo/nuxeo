@@ -18,34 +18,63 @@ package org.nuxeo.ecm.platform.queue.api;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
-import java.util.Map;
 
-// FIXME: what does "orphaned" mean?
 /**
- * Infos about an handled content. Orphaned
+ * Informations about an handled content. Content is orphaned when the server that was processing
+ * it has died. Such content should be manually re-initiated on another server or just removed from the queue.
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  */
-public interface QueueItem {
+public interface QueueInfo<C extends Serializable> {
 
     /**
-     * Gets the handled content.
+     * An content can be in the following state:
+     * <dl>
+     * <dt>Handled</dt>
+     * <dd>content is currently handled by system</dd>
+     * <dt>Orphaned</dt>
+     * <dd>content known by system but not handled</dd>
+     * </dl>
+     *
+     **/
+    public enum State {
+
+        Handled,
+        Orphaned
+
+    }
+
+    /**
+     * Names the info (queueName:...)
+     */
+    URI getName();
+
+    /**
+     * Names the content owner
+     *
+     * @return the owner name
+     */
+
+    URI getOwnerName();
+
+    /**
+     * Gives back the handled content
      *
      * @return the handled content
      */
-    QueueContent getHandledContent();
+    C getContent();
 
     /**
-     * Identifies the server handling the content.
+     * Names  the server handling the content.
      */
-    URI getHandlingServerID();
+    URI getServerName();
 
     /**
      * Gets the state.
      *
      * @return the status
      */
-    QueueItemState getState();
+    State getState();
 
     /**
      * Checks if is orphaned.
@@ -76,10 +105,13 @@ public interface QueueItem {
     int getHandlingCount();
 
     /**
-     * Gets the additionalnfos.
-     *
-     * @return the additionalnfos
+     * Retry handling of content
      */
-    Map<String, Serializable> getAdditionalnfos();
+    void retry();
+
+    /**
+     * Cancel handling content
+     */
+    void cancel();
 
 }

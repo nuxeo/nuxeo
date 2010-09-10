@@ -16,17 +16,30 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_CONTENT;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTE_TIME;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_OWNER;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ITEM_TYPE;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ROOT_NAME;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ROOT_TYPE;
+import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_TYPE;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,153 +47,148 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueException;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueError;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.*;
-
 /**
+ * Persist a queue inside a nuxeo repository as a folder and files
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class NuxeoQueuePersister implements QueuePersister {
+public class NuxeoQueuePersister<C extends Serializable> implements QueuePersister<C> {
 
     public static final Log log = LogFactory.getLog(NuxeoQueuePersister.class);
 
-    public void forgetContent(QueueContent content) {
-        try {
-            String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName();
-            ForgetRunner runner = new ForgetRunner(defaultRepositoryName,
-                    content);
-            runner.runUnrestricted();
-        } catch (ClientException e) {
-            throw new Error(
-                    "An unexpected problem occurred while trying to remove the content",
-                    e);
+    protected abstract class NuxeoQueueRunner extends UnrestrictedSessionRunner {
+
+        protected URI name;
+
+        public NuxeoQueueRunner() {
+            super(NuxeoRepositoryNameProvider.getRepositoryName());
         }
+
+        @Override
+        public void runUnrestricted()  {
+            try {
+                super.runUnrestricted();
+            } catch (ClientException e) {
+                throw new QueueError("Error while executing " + getClass().getCanonicalName(), e, name);
+            }
+        }
+
     }
 
-    class ForgetRunner extends UnrestrictedSessionRunner {
+    protected final String queueName;
 
-        QueueContent content;
+    protected final Class<C> contentType;
 
-        ForgetRunner(String repository, QueueContent content) {
-            super(repository);
-            this.content = content;
+    protected NuxeoQueuePersister(String queueName, Class<C> contentType) {
+        this.queueName = queueName;
+        this.contentType = contentType;
+    }
+
+    @Override
+    public QueueInfo<C> removeContent(URI contentName) {
+            RemoveRunner runner = new RemoveRunner(contentName);
+            runner.runUnrestricted();
+            return new NuxeoQueueAdapter<C>(runner.doc);
+    }
+
+    protected class RemoveRunner extends NuxeoQueueRunner {
+
+        protected DocumentModel doc;
+
+        RemoveRunner(URI contentName) {
+            this.name = contentName;
         }
 
         @Override
         public void run() throws ClientException {
-            PathRef pathRef = new PathRef("/" + QUEUE_ROOT_NAME + "/"
-                    + content.getDestination() + "/" + content.getName());
-            if (log.isTraceEnabled()) {
-                log.trace("Content:" + content.getName());
-                log.trace("Dest:" + content.getDestination());
-                log.trace("PathRef" + pathRef.toString());
-
-            }
-            session.removeDocument(pathRef);
+            PathRef ref= newPathRef(session, name);
+            doc = session.getDocument(ref);
+            ((DocumentModelImpl)doc).detach(true);
+            session.removeDocument(ref);
             session.save();
-
         }
     }
 
-    public boolean hasContent(QueueContent content) throws QueueException {
-        try {
-            String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName();
-            HasContentRunner runner = new HasContentRunner(
-                    defaultRepositoryName, content);
+
+    @Override
+    public boolean hasContent(URI name) {
+            HasContentRunner runner = new HasContentRunner(name);
             runner.runUnrestricted();
             return runner.hasContent;
-        } catch (ClientException e) {
-            throw new QueueException(
-                    "A problem occurred while trying to save the content", e,
-                    content);
-        }
-
     }
 
-    class HasContentRunner extends UnrestrictedSessionRunner {
+    protected class HasContentRunner extends NuxeoQueueRunner {
 
-        boolean hasContent = false;
+        protected boolean hasContent = false;
 
-        QueueContent content;
-
-        HasContentRunner(String repository, QueueContent content) {
-            super(repository);
-            this.content = content;
+        protected HasContentRunner(URI contentName) {
+            this.name =contentName;
         }
 
         @Override
         public void run() throws ClientException {
-            hasContent = session.exists(new PathRef("/" + QUEUE_ROOT_NAME + "/"
-                    + content.getDestination() + "/" + content.getName()));
+            PathRef ref = newPathRef(session,  name);
+            hasContent = session.exists(ref);
         }
     }
 
-    public List<QueueItem> listKnownItems(String queueName) {
-        try {
-            ListKnownItem runner = new ListKnownItem(Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName(),
-                    queueName);
-            runner.runUnrestricted();
-            List<QueueItem> queueItemList = new ArrayList<QueueItem>(
-                    runner.doclist.size());
-            for (DocumentModel doc : runner.doclist) {
-                queueItemList.add(doc.getAdapter(QueueItem.class));
-            }
-            return queueItemList;
-        } catch (ClientException e) {
-            throw new Error("Couldn't get the list queue item for the queue: "
-                    + queueName, e);
-        }
+    @Override
+    public List<QueueInfo<C>> listKnownItems() {
+        ListKnownContentRunner runner = new ListKnownContentRunner();
+        runner.runUnrestricted();
+        return adapt(runner.docs);
     }
 
-    class ListKnownItem extends UnrestrictedSessionRunner {
+    @SuppressWarnings("unchecked")
+    protected  List<QueueInfo<C>> adapt(List<DocumentModel> docs) {
+        List<QueueInfo<C>> queueItemList = new ArrayList<QueueInfo<C>>(docs.size());
+        for (DocumentModel doc : docs) {
+            queueItemList.add(doc.getAdapter(QueueInfo.class));
+        }
+        return queueItemList;
+    }
 
-        boolean hasContent = false;
+    protected class ListKnownContentRunner extends NuxeoQueueRunner {
 
-        String queueName;
+        protected DocumentModelList docs;
 
-        DocumentModelList doclist;
-
-        ListKnownItem(String repository, String queueName) {
-            super(repository);
-            this.queueName = queueName;
+        protected ListKnownContentRunner() {
+            ;
         }
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queueDoc = getOrCreateQueue(session, queueName);
-            doclist = session.getChildren(queueDoc.getRef());
+            DocumentModel queueDoc = getOrCreateQueue(session);
+            docs = session.getChildren(queueDoc.getRef());
         }
     }
 
-    public QueueItem saveContent(QueueContent content) throws QueueException {
-
-        try {
-            String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName();
-            new SaveContentRunner(defaultRepositoryName, content).runUnrestricted();
-        } catch (ClientException e) {
-            throw new QueueException(
-                    "A problem occured while trying to save the content", e,
-                    content);
-        }
-        return null;
+    @Override
+    public QueueInfo<C> addContent(URI ownerName, URI name,  C content)  {
+        SaveContentRunner runner = new SaveContentRunner(ownerName, name, content);
+        runner.runUnrestricted();
+        return new NuxeoQueueAdapter<C>(runner.doc);
     }
 
-    class SaveContentRunner extends UnrestrictedSessionRunner {
-        QueueContent content;
+    protected  class SaveContentRunner extends NuxeoQueueRunner {
 
-        SaveContentRunner(String repository, QueueContent content) {
-            super(repository);
+        protected DocumentModel doc;
+
+        protected final URI ownerName;
+
+        protected final C content;
+
+        protected SaveContentRunner(URI ownerName, URI name, C content) {
+            this.name = name;
+            this.ownerName = ownerName;
             this.content = content;
         }
 
@@ -188,80 +196,46 @@ public class NuxeoQueuePersister implements QueuePersister {
         public void run() throws ClientException {
 
             ServerHeartBeat heartbeat = Framework.getLocalService(ServerHeartBeat.class);
-            DocumentModel queueFolder = getOrCreateQueue(session,
-                    content.getDestination());
-            DocumentRef queueItemRef = new PathRef(
-                    queueFolder.getPathAsString() + "/" + content.getName());
-
-            if (session.exists(queueItemRef)) {
-                log.error("Already created queue item : "
-                        + content.getDestination() + " " + content.getName());
-                return;
+            PathRef ref = newPathRef(session, name);
+            if (session.exists(ref)) {
+                throw new QueueError("Already created queue item", name);
             }
 
-            DocumentModel doc = session.createDocumentModel(
-                    queueFolder.getPathAsString(), content.getName(),
-                    QUEUE_ITEM_TYPE);
+             DocumentModel parent = getOrCreateQueue(session);
+             doc = session.createDocumentModel(parent.getPathAsString(), name.toASCIIString(), QUEUE_ITEM_TYPE);
+
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_OWNER,
-                    content.getOwner().toASCIIString());
+                    ownerName.toASCIIString());
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID,
                     heartbeat.getMyURI().toASCIIString());
 
-            // serializing additional info to a string
-            Serializable additionalInfo = content.getAdditionalInfo();
-            String addinfo = null;
-            if (additionalInfo != null) {
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ObjectOutputStream out = new ObjectOutputStream(baos);
-                    out.writeObject(additionalInfo);
-                    out.flush();
-                    addinfo = Base64.encodeBytes(baos.toByteArray());
-                } catch (IOException e) {
-                    log.error("Couldn't write object to String", e);
-                }
-            }
+            injectContent(doc, content);
 
-            doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_ADDITIONAL_INFO,
-                    addinfo);
             doc = session.createDocument(doc);
             session.save();
 
         }
     }
 
-    public void setExecuteTime(QueueContent content, Date date) {
-        SetExecutionInfoRunner runner = new SetExecutionInfoRunner(
-                Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName(),
-                content, date);
-        try {
-            runner.runUnrestricted();
-        } catch (ClientException e) {
-            log.error("Couldn't set execution time to the content "
-                    + content.getDestination() + ":" + content.getName(), e);
-        }
+    @Override
+    public void setExecuteTime(URI contentName, Date date) {
+        SetExecutionInfoRunner runner = new SetExecutionInfoRunner(contentName, date);
+        runner.runUnrestricted();
     }
 
-    class SetExecutionInfoRunner extends UnrestrictedSessionRunner {
-        QueueContent content;
+    protected class SetExecutionInfoRunner extends NuxeoQueueRunner {
 
-        Date executeTime;
+        protected final Date executeTime;
 
-        SetExecutionInfoRunner(String repository, QueueContent content,
-                Date executeTime) {
-            super(repository);
-            this.content = content;
+        protected  SetExecutionInfoRunner(URI contentName, Date executeTime) {
+            this.name = contentName;
             this.executeTime = executeTime;
         }
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queueFolder = getOrCreateQueue(session,
-                    content.getDestination());
-            DocumentRef queueItemRef = new PathRef(
-                    queueFolder.getPathAsString() + "/" + content.getName());
-
-            DocumentModel model = session.getDocument(queueItemRef);
+            PathRef ref = newPathRef(session, name);
+            DocumentModel model = session.getDocument(ref);
             Long executionCount = (Long) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
             if (executionCount == null) {
                 executionCount = 1L;
@@ -278,19 +252,152 @@ public class NuxeoQueuePersister implements QueuePersister {
 
     }
 
-    public void updateItem(QueueItem item) {
-        throw new UnsupportedOperationException("not yet implemented");
+    protected  class UpdateAdditionalInfosRunner extends NuxeoQueueRunner {
+
+        protected final C content;
+
+        protected UpdateAdditionalInfosRunner(URI contentName, C content) {
+            this.name = contentName;
+            this.content = content;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            PathRef ref = newPathRef(session, name);
+            DocumentModel doc = session.getDocument(ref);
+            injectContent(doc, content);
+            doc = session.saveDocument(doc);
+            session.save();
+        }
+
     }
 
-    public DocumentModel getOrCreateQueue(CoreSession session, String queueName)
+
+    @Override
+    public void updateContent(URI contentName, C content) {
+        UpdateAdditionalInfosRunner runner = new UpdateAdditionalInfosRunner(contentName, content);
+        runner.runUnrestricted();
+    }
+
+    protected class ListByOwnerRunner extends NuxeoQueueRunner {
+
+        protected URI ownerName;
+
+        protected List<DocumentModel> docs;
+
+       protected  ListByOwnerRunner(URI ownerName) {
+            this.ownerName = ownerName;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel queue = getOrCreateQueue(session);
+            String query = String.format("SELECT * FROM QueueItem WHERE ecm:parentId = '%s' AND  qitm:owner = '%s'",
+                    queue.getId(),
+                    ownerName.toASCIIString());
+            docs = session.query(query);
+        }
+
+    }
+
+    @Override
+    public List<QueueInfo<C>> listByOwner(URI ownerName) {
+        ListByOwnerRunner runner = new ListByOwnerRunner(ownerName);
+        runner.runUnrestricted();
+        return adapt(runner.docs);
+    }
+
+    protected  class RemoveByOwnerRunner extends NuxeoQueueRunner {
+
+        protected int count;
+
+        protected final URI ownerName;
+
+       protected  RemoveByOwnerRunner(URI ownerName) {
+            this.ownerName = ownerName;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel queue = getOrCreateQueue(session);
+            String query = String.format("SELECT * FROM QueueItem WHERE ecm:parentId = '%s' AND  qitm:owner = '%s'",
+                    queue.getId(),
+                    ownerName.toASCIIString());
+            List<DocumentModel> docs = session.query(query);
+            for (DocumentModel doc:docs) {
+                session.removeDocument(doc.getRef());
+            }
+            count = docs.size();
+            session.save();
+        }
+
+    }
+
+
+    @Override
+    public int removeByOwner(URI ownerName) {
+        RemoveByOwnerRunner runner = new RemoveByOwnerRunner(ownerName);
+        runner.runUnrestricted();
+        return runner.count;
+    }
+
+
+
+    protected class GetInfoRunner extends NuxeoQueueRunner {
+
+        protected DocumentModel doc;
+
+       protected  GetInfoRunner(URI contentName) {
+            this.name = contentName;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel queue = getOrCreateQueue(session);
+            DocumentModel doc = session.getChild(queue.getRef(), name.toASCIIString());
+            if (doc == null) {
+                throw new QueueError("no such content", name);
+            }
+        }
+
+    }
+
+    @Override
+    public QueueInfo<C> getInfo(URI contentName) {
+        GetInfoRunner runner = new GetInfoRunner(contentName);;
+        runner.runUnrestricted();
+        return new NuxeoQueueAdapter<C>(runner.doc);
+    }
+
+    protected void injectContent(DocumentModel doc, Serializable content) throws ClientException {
+        Blob blob = null;
+        if (content != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(baos);
+                out.writeObject(content);
+                out.flush();
+                blob = new InputStreamBlob(new ByteArrayInputStream(baos.toByteArray()));
+            } catch (IOException e) {
+                log.error("Couldn't write object", e);
+            }
+        }
+        doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_CONTENT, blob);
+    }
+
+    protected PathRef newPathRef(CoreSession session, URI name) throws ClientException {
+        DocumentModel queueFolder = getOrCreateQueue(session);
+        return new PathRef(queueFolder.getPathAsString() + "/" + name.toASCIIString());
+    }
+
+    protected DocumentModel getOrCreateQueue(CoreSession session)
             throws ClientException {
         DocumentModel queueroot = getOrCreateRootQueueFolder(session);
-        DocumentRef queueref = new PathRef(queueroot.getPathAsString() + "/"
-                + queueName);
+        DocumentRef queueref = new PathRef(queueroot.getPathAsString() + "/" + queueName);
 
         if (!session.exists(queueref)) {
-            DocumentModel model = session.createDocumentModel(
-                    queueroot.getPathAsString(), queueName, QUEUE_TYPE);
+            DocumentModel model = session.createDocumentModel(queueroot.getPathAsString(),
+                    queueName, QUEUE_TYPE);
             model = session.createDocument(model);
             session.save();
         }
@@ -299,17 +406,21 @@ public class NuxeoQueuePersister implements QueuePersister {
 
     }
 
-    public DocumentModel getOrCreateRootQueueFolder(CoreSession session)
+    protected DocumentModel getOrCreateRootQueueFolder(CoreSession session)
             throws ClientException {
         DocumentRef queueRootDocRef = new PathRef("/" + QUEUE_ROOT_NAME);
         if (!session.exists(queueRootDocRef)) {
-            DocumentModel model = session.createDocumentModel("/",
-                    QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
+            DocumentModel model = session.createDocumentModel("/", QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
             model = session.createDocument(model);
             session.save();
         }
 
         return session.getDocument(queueRootDocRef);
     }
+
+
+
+
+
 
 }

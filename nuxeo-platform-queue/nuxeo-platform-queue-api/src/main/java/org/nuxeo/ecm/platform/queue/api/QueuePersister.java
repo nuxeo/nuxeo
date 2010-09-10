@@ -15,6 +15,8 @@
  */
 package org.nuxeo.ecm.platform.queue.api;
 
+import java.io.Serializable;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
@@ -28,53 +30,80 @@ import java.util.List;
  * @author Stephane Lacoin <slacoin@nuxeo.com> (aka matic)
  *
  */
-public interface QueuePersister {
+public interface QueuePersister<C extends Serializable> {
 
     /**
-     * Save content on persistent back-end.
+     * Create content on persistent back-end.
      *
-     * @param content the content
+     * @param name the content name
+     * @param owner the owner name
+     * @param content the handled content
      * @return the atomic item
      */
-    QueueItem saveContent(QueueContent content) throws QueueException;
+    @Transacted
+    QueueInfo<C> addContent(URI name, URI owner, C content);
+
+    /**
+     * Retrieves informations about an handled content in back-end
+     *
+     * @param type the content type
+     * @return name the content name
+     */
+    QueueInfo<C> getInfo(URI name);
 
     /**
      * Remove content from the persistent back-end.
      *
-     * @param item the item
-     * @throws QueueException
+     * @param name the content name
      */
-    void forgetContent(QueueContent content);
+    @Transacted
+    QueueInfo<C> removeContent(URI name);
 
     /**
-     * Update item attributes on persistent back-end.
+     * Update additional infos on persistent back-end.
      *
-     * @param item the item
+     * @param name the content name
      */
-    void updateItem(QueueItem item);
+    @Transacted
+    void updateContent(URI name, C content);
 
     /**
      * List known contents.
      *
-     * @param queueName
-     * @return
+     * @return the informations about known contents
      */
-    List<QueueItem> listKnownItems(String queueName);
+    List<QueueInfo<C>> listKnownItems();
 
     /**
      * Does the persister knows this content ?
      *
-     * @param content
+     * @param the content name
      * @return
      */
-    boolean hasContent(QueueContent content) throws QueueException;
+    boolean hasContent(URI name);
 
     /**
      * Should be manually be called by the handler when an executor is launched.
      *
-     * @param content
-     * @param date
+     * @param the content name
+     * @param the execution time
      */
-    void setExecuteTime(QueueContent content, Date date);
+    void setExecuteTime(URI name, Date date);
+
+    /**
+     * List contents that matches the content owner name
+     *
+     * @param queueContent
+     */
+    List<QueueInfo<C>> listByOwner(URI name);
+
+    /**
+     * Remove contents that matches the content owner name
+     *
+     * @param the owner name
+     * @return the number of contents removed
+     */
+    @Transacted
+    int removeByOwner(URI name);
 
 }

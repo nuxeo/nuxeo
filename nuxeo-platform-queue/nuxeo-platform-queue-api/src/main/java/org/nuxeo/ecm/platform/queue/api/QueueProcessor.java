@@ -17,23 +17,21 @@
 
 package org.nuxeo.ecm.platform.queue.api;
 
+import java.io.Serializable;
 
-// TODO: Auto-generated Javadoc
 /**
- * An atomic item can be in the following state:
- * <dl>
- * <dt>Handled</dt>
- * <dd>content is currently handled by system</dd>
- * <dt>Orphaned</dt>
- * <dd>content known by system but not handled</dd>
- * </dl>
- *
- * @author "Stephane Lacoin at Nuxeo (aka matic)"
+ * When a new content comes into the queue, the user is call-backed using this interface
+ * for processing the content. It's the user authority to notify the queue through the provided
+ * handler about the content processing termination.
  */
-public enum QueueItemState {
+public interface QueueProcessor<C extends Serializable> {
 
-    /** The Handled. */
-    Handled, /** The Orphaned. */
-    Orphaned
+    /**
+     * The user call-back entry point
+     *
+     * @param content
+     * @param handler
+     */
+    void process(QueueInfo<C> info);
 
 }
