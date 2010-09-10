@@ -18,20 +18,27 @@ package org.nuxeo.runtime.model.persistence;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
 public class ContributionPersistenceComponent extends DefaultComponent
-        implements ContributionPersistenceManager {
+        implements ContributionPersistenceManager, FrameworkListener {
 
-    public static final String P_STORAGE = "org.nxueo.runtime.model.persistence.ContributionStorage";
+    private static final Log log = LogFactory.getLog(ContributionPersistenceComponent.class);
+
+    public static final String STORAGE_XP = "storage";
 
     protected ContributionStorage storage;
 
@@ -46,13 +53,33 @@ public class ContributionPersistenceComponent extends DefaultComponent
         super.activate(context);
         this.ctx = context.getRuntimeContext();
         storage = new FileSystemStorage();
-        // TODO add extension point to be able to configure the storage.
+        ctx.getBundle().getBundleContext().addFrameworkListener(this);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
         ctx = null;
+        storage = null;
+    }
+
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        // This extension point is a singleton. It supports only one
+        // contribution!
+        // I am not using a runtime property to specify the implementation class
+        // because
+        // of possible problems caused by class loaders in real OSGI frameworks.
+        ContributionStorageDescriptor c = (ContributionStorageDescriptor) contribution;
+        storage = (ContributionStorage) c.clazz.newInstance();
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
         storage = null;
     }
 
@@ -133,4 +160,18 @@ public class ContributionPersistenceComponent extends DefaultComponent
         }
     }
 
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            if (storage == null) {
+                storage = new FileSystemStorage();
+                try {
+                    start();
+                } catch (Exception e) {
+                    log.error(
+                            "Failed to start contribution persistence service",
+                            e);
+                }
+            }
+        }
+    }
 }
