@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-class OrphanExecutor implements QueueProcessor<FakeContent> {
+class OrphanProcessor implements QueueProcessor<FakeContent> {
 
     public static boolean shouldHandleEndOfProcessing = false;
 

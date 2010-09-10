@@ -32,6 +32,13 @@ import java.util.List;
 public interface QueueManager<C extends Serializable> {
 
     /**
+     * Names the managed queue
+     *
+     * @return the name
+     */
+    URI getName();
+
+    /**
      * Return the context type of handled contents
      */
     Class<C> getContentType();

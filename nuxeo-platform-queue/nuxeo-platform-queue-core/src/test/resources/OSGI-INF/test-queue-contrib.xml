@@ -4,11 +4,11 @@
   <extension target="org.nuxeo.ecm.platform.queue" point="queues">
     <queue name="fake" 
                   type="org.nuxeo.ecm.platform.queue.core.FakeContent"
-                  processor="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
+                  processor="org.nuxeo.ecm.platform.queue.core.FakeProcessor"
                   persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
     <queue name="orphan"
                   type="org.nuxeo.ecm.platform.queue.core.OrphanContent" 
-                  processor="org.nuxeo.ecm.platform.queue.core.OrphanExecutor"
+                  processor="org.nuxeo.ecm.platform.queue.core.OrphanProcessor"
                   persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
   </extension>
 

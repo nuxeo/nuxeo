@@ -35,17 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-public class TestNuxeoQueuePersister extends SQLRepositoryTestCase {
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
-        deployBundle("org.nuxeo.ecm.platform.heartbeat");
-        deployBundle("org.nuxeo.ecm.platform.queue.api");
-        deployBundle("org.nuxeo.ecm.platform.queue");
-        super.fireFrameworkStarted();
-    }
+public class TestNuxeoQueuePersister extends QueueTestCase {
 
     public void testNuxeoQueuePersister() throws Exception {
         NuxeoQueuePersister<FakeContent> persister = new NuxeoQueuePersister<FakeContent>("fake", FakeContent.class);

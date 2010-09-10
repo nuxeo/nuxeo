@@ -16,14 +16,13 @@
  */
 package org.nuxeo.ecm.webengine.management.queues;
 
+import java.io.Serializable;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.nuxeo.ecm.platform.queue.api.QueueContent;
-import org.nuxeo.ecm.platform.queue.api.QueueException;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -33,26 +32,24 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  */
 @WebObject(type="QueueItem")
-public class QueueItemObject extends ManagementObject {
+public class QueueInfoObject<C extends Serializable> extends ManagementObject {
 
-    protected QueueManager manager;
-    protected QueueItem item;
-    private QueueContent handledContent;
+    protected QueueManager<C> manager;
+    protected QueueInfo<?> info;
 
-    public static QueueItemObject newObject(DefaultObject from, QueueManager manager, QueueItem item) {
-        return (QueueItemObject)from.newObject("QueueItem", manager, item);
+    public static <C extends Serializable> QueueInfoObject<C> newObject(DefaultObject from, QueueManager<C> manager, QueueInfo<C> info) {
+        return (QueueInfoObject<C>)from.newObject("QueueItem", manager, info);
     }
 
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        manager = (QueueManager)args[0];
-        item = (QueueItem)args[1];
-        handledContent = item.getHandledContent();
+        manager = (QueueManager<C>)args[0];
+        info = (QueueInfo<C>)args[1];
     }
 
-    public QueueItem getItem() {
-        return item;
+    public QueueInfo<?> getInfo() {
+        return info;
     }
 
     @GET
@@ -63,22 +60,14 @@ public class QueueItemObject extends ManagementObject {
     @GET
     @Path("@cancel")
     public Object doCancel() {
-        try {
-            item.retry();
-        } catch (QueueException e) {
-           throw WebException.wrap("Cannot handle " + handledContent.getName(), e);
-        }
+        info.cancel();
         return redirect(getPrevious().getPath());
     }
 
     @GET
     @Path("@retry")
     public Object doRetry() {
-        try {
-            item.retry();
-        } catch (QueueException e) {
-           throw WebException.wrap("Cannot handle " + handledContent.getName(), e);
-        }
+        info.retry();
         return redirect(getPrevious().getPath());
     }
 

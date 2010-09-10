@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.management.queues;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -24,40 +25,36 @@ import javax.ws.rs.PathParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.queue.api.QueueException;
-import org.nuxeo.ecm.platform.queue.api.QueueHandler;
-import org.nuxeo.ecm.platform.queue.api.QueueItem;
+import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
  *
  */
 @WebObject(type = "Queue")
-public class QueueObject extends ManagementObject {
+public class QueueObject<C extends Serializable> extends ManagementObject {
 
     protected static Log log = LogFactory.getLog(QueueObject.class);
 
-    protected QueueManager manager;
-    protected List<QueueItem> items;
+    protected QueueManager<C> manager;
 
-    public static QueueObject newObject(DefaultObject from, QueueManager manager) {
-        return (QueueObject)from.newObject("Queue", manager);
+    protected List<QueueInfo<C>> infos;
+
+    public static <C extends Serializable> QueueObject<C> newObject(DefaultObject from, QueueManager<C> manager) {
+        return (QueueObject<C>) from.newObject("Queue", manager);
     }
 
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        manager = (QueueManager)args[0];
-        items = manager.listHandledItems();
+        manager = (QueueManager<C>) args[0];
+        infos = manager.listHandledContent();
     }
-
-
 
     @GET
     public Object doGet() {
@@ -67,46 +64,37 @@ public class QueueObject extends ManagementObject {
     @GET
     @Path("/@cancel")
     public Object doGetCancel() {
-        for(QueueItem item:items) {
-            try {
-                item.retry();
-            } catch (QueueException e) {
-                log.error("Cannot cancel content for " + item.getHandledContent().getName());
-            }
+        for (QueueInfo<C> info : infos) {
+            info.cancel();
         }
         return redirect(getPath());
     }
-
 
     @GET
     @Path("/@retry")
     public Object doGetRetry() {
-        for(QueueItem item:items) {
-            try {
-                item.retry();
-            } catch (QueueException e) {
-                log.error("Cannot retry content for " + item.getHandledContent().getName());
-            }
+        for (QueueInfo<C> info : infos) {
+            info.retry();
         }
         return redirect(getPath());
     }
 
-    public List<QueueItem> getItems() {
-        return items;
+    public List<QueueInfo<C>> getInfos() {
+        return infos;
     }
 
-    public QueueManager getManager() {
+    public QueueManager<C> getManager() {
         return manager;
     }
 
-    @Path("{item}")
-    public Object doDispatch(@PathParam("item") String name) {
-        for (QueueItem queueitem : items) {
-            if (queueitem.getHandledContent().getName().equals(name)) {
-                return QueueItemObject.newObject(this, manager, queueitem);
+    @Path("{content}")
+    public Object doDispatch(@PathParam("content") String name) {
+        for (QueueInfo<C> info : infos) {
+            if (info.getName().getFragment().equals(name)) {
+                return QueueInfoObject.newObject(this, manager, info);
             }
         }
-        throw new WebResourceNotFoundException("Couldn't find the queue " + name);
+        throw new WebResourceNotFoundException("Couldn't find the content " + name);
     }
 
 }

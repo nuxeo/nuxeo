@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -50,6 +49,11 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
         this.persister = persister;
         this.processor = processor;
         this.namer = namer;
+    }
+
+    @Override
+    public URI getName() {
+        return queueName;
     }
 
     @Override

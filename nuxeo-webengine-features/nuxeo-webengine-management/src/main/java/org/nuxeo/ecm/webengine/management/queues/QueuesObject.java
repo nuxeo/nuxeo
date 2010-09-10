@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.management.queues;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.ecm.platform.queue.api.QueueManagerLocator;
-import org.nuxeo.ecm.platform.queue.api.QueueNotFoundException;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -41,28 +41,21 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "Queues", administrator=Access.GRANT)
 public class QueuesObject extends ManagementObject {
 
-    public static QueuesObject newObject(DefaultObject from) {
+    public static  QueuesObject newObject(DefaultObject from) {
         return (QueuesObject) from.newObject("Queues");
     }
 
-    protected QueueManagerLocator locator;
+    protected QueueLocator locator;
 
-    protected Map<String,QueueManager> queues ;
+    protected Map<String,QueueManager<?>> queues ;
 
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        locator = Framework.getLocalService(QueueManagerLocator.class);
-        List<String> names = locator.getAvailableQueues();
-        queues =new HashMap<String,QueueManager>();
-        for (String name:names) {
-            QueueManager queue;
-            try {
-                queue = locator.locateQueue(name);
-            } catch (QueueNotFoundException e) {
-               continue;
-            }
-            queues.put(name,queue);
+        locator = Framework.getLocalService(QueueLocator.class);
+        queues =new HashMap<String,QueueManager<?>>();
+        for (QueueManager<?> manager:locator.getManagers()) {
+            queues.put(manager.getName().getSchemeSpecificPart(), manager);
         }
     }
 
@@ -71,7 +64,7 @@ public class QueuesObject extends ManagementObject {
         return getView("index");
     }
 
-    public Collection<QueueManager> getQueues() {
+    public Collection<QueueManager<?>> getQueues() {
         return queues.values();
     }
 
