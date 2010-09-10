@@ -26,6 +26,9 @@ import org.apache.chemistry.opencmis.server.support.CmisServiceWrapper;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
+/**
+ * Factory for a wrapped {@link NuxeoCmisService}.
+ */
 public class NuxeoServiceFactory extends AbstractServiceFactory {
 
     public static final String PARAM_NUXEO_SESSION_ID = "NUXEO_SESSION_ID";
@@ -38,7 +41,7 @@ public class NuxeoServiceFactory extends AbstractServiceFactory {
 
     public static final BigInteger DEFAULT_DEPTH = BigInteger.valueOf(2);
 
-    private ThreadLocal<CmisServiceWrapper<CmisService>> threadLocalService = new ThreadLocal<CmisServiceWrapper<CmisService>>();
+    private ThreadLocal<CmisServiceWrapper<NuxeoCmisService>> threadLocalService = new ThreadLocal<CmisServiceWrapper<NuxeoCmisService>>();
 
     private CoreSession coreSession;
 
@@ -58,15 +61,18 @@ public class NuxeoServiceFactory extends AbstractServiceFactory {
 
     @Override
     public CmisService getService(CallContext context) {
-        CmisServiceWrapper<CmisService> service = threadLocalService.get();
+        CmisServiceWrapper<NuxeoCmisService> service = threadLocalService.get();
         if (service == null) {
-            service = new CmisServiceWrapper<CmisService>(new NuxeoCmisService(
-                    coreSession, nuxeoRepository), DEFAULT_TYPES_MAX_ITEMS,
-                    DEFAULT_TYPES_DEPTH, DEFAULT_MAX_ITEMS, DEFAULT_DEPTH);
+            NuxeoCmisService s = new NuxeoCmisService(coreSession,
+                    nuxeoRepository);
+            // wrap the service to provide default parameter checks
+            service = new CmisServiceWrapper<NuxeoCmisService>(s,
+                    DEFAULT_TYPES_MAX_ITEMS, DEFAULT_TYPES_DEPTH,
+                    DEFAULT_MAX_ITEMS, DEFAULT_DEPTH);
             threadLocalService.set(service);
         }
-
-        return service.getWrappedService();
+        service.getWrappedService().setCallContext(context);
+        return service;
     }
 
 }

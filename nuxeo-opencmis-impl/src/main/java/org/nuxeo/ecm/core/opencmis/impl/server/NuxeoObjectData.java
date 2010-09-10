@@ -50,7 +50,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
- * Nuxeo implementation of ObjectData.
+ * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
+ * {@link DocumentModel}.
  */
 public class NuxeoObjectData implements ObjectData {
 

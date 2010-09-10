@@ -41,10 +41,13 @@ import org.junit.Test;
  */
 public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
+    protected static String file5id;
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        Helper.makeNuxeoRepository(nuxeotc.getSession());
     }
 
     @Override

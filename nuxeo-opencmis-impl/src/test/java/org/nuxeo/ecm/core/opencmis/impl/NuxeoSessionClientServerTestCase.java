@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -41,7 +40,6 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.resource.Resource;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
 
 /**
@@ -78,8 +76,8 @@ public abstract class NuxeoSessionClientServerTestCase extends
         params.put(SessionParameter.CACHE_SIZE_OBJECTS, "100");
 
         params.put(SessionParameter.REPOSITORY_ID, getRepositoryId());
-        params.put(SessionParameter.USER, "test");
-        params.put(SessionParameter.PASSWORD, "test");
+        params.put(SessionParameter.USER, USERNAME);
+        params.put(SessionParameter.PASSWORD, PASSWORD);
 
         addParams(params);
 
@@ -135,7 +133,9 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
     /**
      * Servlet context listener that sets up the CMIS service factory in the
-     * servlet context as {@link CmisAtomPubServlet} expects it.
+     * servlet context as expected by {@link CmisAtomPubServlet} or
+     * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService}
+     * .
      *
      * @see CmisRepositoryContextListener
      */
@@ -159,7 +159,6 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
         @Override
         public void contextDestroyed(ServletContextEvent sce) {
-            // destroy services factory
             AbstractServiceFactory factory = (AbstractServiceFactory) sce.getServletContext().getAttribute(
                     CmisRepositoryContextListener.SERVICES_FACTORY);
             if (factory != null) {

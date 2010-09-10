@@ -43,14 +43,16 @@ import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
+import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 
 /**
- * Nuxeo Persistent Session, having a direct connection to a Nuxeo CoreSession.
+ * Nuxeo Persistent Session, having a direct connection to a Nuxeo
+ * {@link CoreSession}.
  */
 public class NuxeoSession implements Session {
 
@@ -64,20 +66,19 @@ public class NuxeoSession implements Session {
 
     private final ObjectFactory objectFactory;
 
-    private final CmisBinding binding;
+    private final NuxeoBinding binding;
 
     private OperationContext defaultContext = DEFAULT_CONTEXT;
 
-    private RepositoryInfo repositoryInfo;
-
-    public NuxeoSession(CoreSession coreSession, NuxeoRepository repository) {
+    public NuxeoSession(CoreSession coreSession, NuxeoRepository repository,
+            CallContext context) {
         this.coreSession = coreSession;
         repositoryId = repository.getId();
         objectFactory = new NuxeoObjectFactory(this);
 
         NuxeoCmisService service = new NuxeoCmisService(coreSession, repository);
-        NuxeoService nuxeoService = new NuxeoService(service);
-        binding = new NuxeoBinding(nuxeoService);
+        service.setCallContext(context);
+        binding = new NuxeoBinding(service);
     }
 
     protected CoreSession getCoreSession() {
@@ -205,30 +206,42 @@ public class NuxeoSession implements Session {
     @Override
     public CmisObject getObject(ObjectId objectId, OperationContext context) {
         if (objectId == null || objectId.getId() == null) {
-            throw new IllegalArgumentException("Missing object or ID");
+            throw new CmisInvalidArgumentException("Missing object or ID");
         }
         if (context == null) {
-            throw new IllegalArgumentException("Missing operation context");
+            throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData objectData = binding.getObjectService().getObject(
+        ObjectData data = binding.getObjectService().getObject(
                 getRepositoryId(), objectId.getId(), context.getFilterString(),
-                context.isIncludeAllowableActions(),
+                Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
                 context.getRenditionFilterString(),
-                context.isIncludePolicies(), context.isIncludeAcls(), null);
-        return objectFactory.convertObject(objectData, context);
+                Boolean.valueOf(context.isIncludePolicies()),
+                Boolean.valueOf(context.isIncludeAcls()), null);
+        return objectFactory.convertObject(data, context);
     }
 
     @Override
     public CmisObject getObjectByPath(String path) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getObjectByPath(path, getDefaultContext());
     }
 
     @Override
     public CmisObject getObjectByPath(String path, OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (path == null || !path.startsWith("/")) {
+            throw new CmisInvalidArgumentException("Invalid path: " + path);
+        }
+        if (context == null) {
+            throw new CmisInvalidArgumentException("Missing operation context");
+        }
+        ObjectData data = binding.getObjectService().getObjectByPath(
+                getRepositoryId(), path, context.getFilterString(),
+                Boolean.valueOf(context.isIncludeAllowableActions()),
+                context.getIncludeRelationships(),
+                context.getRenditionFilterString(),
+                Boolean.valueOf(context.isIncludePolicies()),
+                Boolean.valueOf(context.isIncludeAcls()), null);
+        return getObjectFactory().convertObject(data, context);
     }
 
     @Override
@@ -237,7 +250,7 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public CmisBinding getBinding() {
+    public NuxeoBinding getBinding() {
         return binding;
     }
 

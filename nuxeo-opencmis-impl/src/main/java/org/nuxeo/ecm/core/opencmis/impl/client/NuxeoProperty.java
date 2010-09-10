@@ -25,16 +25,18 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyDataBase;
 
 /**
- * Nuxeo Property, wrapping a NuxeoPropertyData.
+ * Live Nuxeo document property, wrapping a {@link NuxeoPropertyData}.
  */
 public class NuxeoProperty<T> implements Property<T> {
 
-    private final NuxeoPropertyData<T> prop;
+    private final NuxeoPropertyDataBase<T> prop;
 
+    @SuppressWarnings("unchecked")
     public NuxeoProperty(NuxeoObject object, ObjectType type, String id) {
-        prop = (NuxeoPropertyData<T>) object.data.getProperty(id);
+        prop = (NuxeoPropertyDataBase<T>) object.data.getProperty(id);
     }
 
     @Override

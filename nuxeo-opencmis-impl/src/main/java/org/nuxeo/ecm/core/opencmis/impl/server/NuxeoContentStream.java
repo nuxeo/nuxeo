@@ -25,6 +25,10 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.Blob;
 
+/**
+ * Nuxeo implementation of a CMIS {@link ContentStream}, backed by a
+ * {@link Blob}.
+ */
 public class NuxeoContentStream implements ContentStream {
 
     protected final Blob blob;

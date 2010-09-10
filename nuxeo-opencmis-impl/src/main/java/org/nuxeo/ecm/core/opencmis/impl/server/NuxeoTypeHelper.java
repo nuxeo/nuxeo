@@ -344,6 +344,9 @@ public class NuxeoTypeHelper {
         return doc.getAdapter(BlobHolder.class) != null;
     }
 
+    /**
+     * Turns a Nuxeo type into a CMIS type.
+     */
     protected static String mappedId(String id) {
         if (id.equals("Document")) {
             return BaseTypeId.CMIS_DOCUMENT.value();

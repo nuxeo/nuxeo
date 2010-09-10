@@ -28,6 +28,7 @@ import org.apache.chemistry.opencmis.commons.spi.PolicyService;
 import org.apache.chemistry.opencmis.commons.spi.RelationshipService;
 import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 
 /**
  * Local CMIS binding to the services.
@@ -36,11 +37,11 @@ public class NuxeoBinding implements CmisBinding {
 
     private static final long serialVersionUID = 1L;
 
-    private final NuxeoService service;
+    public final NuxeoCmisService service;
 
-    private final BindingsObjectFactory factory;
+    public final BindingsObjectFactory factory;
 
-    public NuxeoBinding(NuxeoService service) {
+    public NuxeoBinding(NuxeoCmisService service) {
         this.service = service;
         factory = new BindingsObjectFactoryImpl();
     }

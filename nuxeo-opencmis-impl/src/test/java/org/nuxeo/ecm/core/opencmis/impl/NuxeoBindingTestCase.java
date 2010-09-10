@@ -25,6 +25,7 @@ import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
@@ -41,8 +42,8 @@ public class NuxeoBindingTestCase {
             return REPOSITORY_NAME;
         }
 
-        public String getSessionId() {
-            return session.getSessionId();
+        public CoreSession getSession() {
+            return session;
         }
     }
 
@@ -59,7 +60,7 @@ public class NuxeoBindingTestCase {
         params.put(SessionParameter.LOCAL_FACTORY,
                 NuxeoServiceFactory.class.getName());
         params.put(NuxeoServiceFactory.PARAM_NUXEO_SESSION_ID,
-                nuxeotc.getSessionId());
+                nuxeotc.getSession().getSessionId());
 
         binding = CmisBindingFactory.newInstance().createCmisLocalBinding(
                 params);

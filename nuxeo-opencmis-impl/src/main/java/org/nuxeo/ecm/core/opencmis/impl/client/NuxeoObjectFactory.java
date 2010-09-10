@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.ObjectFactory;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -53,7 +52,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
- *
+ * Factory for {@link NuxeoObject} and its related classes.
  */
 public class NuxeoObjectFactory implements ObjectFactory {
 
@@ -64,7 +63,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
     }
 
     @Override
-    public CmisObject convertObject(ObjectData data, OperationContext context) {
+    public NuxeoObject convertObject(ObjectData data, OperationContext context) {
         if (data == null || data.getProperties() == null
                 || data.getProperties().getProperties() == null) {
             return null;
@@ -165,7 +164,6 @@ public class NuxeoObjectFactory implements ObjectFactory {
     @Override
     public ObjectType convertTypeDefinition(TypeDefinition typeDefinition) {
         if (typeDefinition instanceof DocumentTypeDefinition) {
-            // TODO cast shouldn't be needed
             return new DocumentTypeImpl(session,
                     (DocumentTypeDefinition) typeDefinition);
         } else if (typeDefinition instanceof FolderTypeDefinition) {
@@ -177,10 +175,9 @@ public class NuxeoObjectFactory implements ObjectFactory {
         } else if (typeDefinition instanceof PolicyTypeDefinition) {
             return new PolicyTypeImpl(session,
                     (PolicyTypeDefinition) typeDefinition);
-        } else {
-            throw new CmisRuntimeException("Unknown base type: "
-                    + typeDefinition.getClass().getName());
         }
+        throw new CmisRuntimeException("Unknown base class: "
+                + typeDefinition.getClass().getName());
     }
 
 }

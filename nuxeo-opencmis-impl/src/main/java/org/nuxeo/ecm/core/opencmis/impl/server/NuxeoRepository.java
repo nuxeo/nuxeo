@@ -49,6 +49,9 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Information about a Nuxeo repository.
+ */
 public class NuxeoRepository {
 
     protected final String repositoryId;

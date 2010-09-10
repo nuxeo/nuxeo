@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import org.apache.chemistry.opencmis.commons.server.CallContext;
+import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 
@@ -26,8 +28,14 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
 
     @Override
     public void setUpCmisSession() throws Exception {
+        boolean objectInfoRequired = true; // for tests
+        CallContextImpl context = new CallContextImpl(
+                CallContext.BINDING_LOCAL, getRepositoryId(),
+                objectInfoRequired);
+        context.put(CallContext.USERNAME, USERNAME);
+        context.put(CallContext.PASSWORD, PASSWORD);
         NuxeoRepository repository = new NuxeoRepository(getRepositoryId());
-        session = new NuxeoSession(getCoreSession(), repository);
+        session = new NuxeoSession(getCoreSession(), repository, context);
     }
 
     @Override
