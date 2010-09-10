@@ -26,26 +26,27 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.StreamRef;
 import org.osgi.framework.Bundle;
 
 /**
  * TODO: Work in progress.
- *
- * What works: loading resources
- * What doesn't work:
- * loading remote objects that refrences on other remote classes
- * (try to use ClassByteClassLoader from jboss-remoting)
- *
+ * 
+ * What works: loading resources What doesn't work: loading remote objects that
+ * refrences on other remote classes (try to use ClassByteClassLoader from
+ * jboss-remoting)
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class RemoteContext implements RuntimeContext {
 
-//    private static final Log log  = LogFactory.getLog(RemoteContext.class);
+    // private static final Log log = LogFactory.getLog(RemoteContext.class);
 
     private final RemoteClassLoader cl;
 
-    public RemoteContext(ServerDescriptor sd, ComponentName component, ClassLoader localClassLoader) {
+    public RemoteContext(ServerDescriptor sd, ComponentName component,
+            ClassLoader localClassLoader) {
         cl = new RemoteClassLoader(sd, component, localClassLoader);
     }
 
@@ -81,11 +82,23 @@ public class RemoteContext implements RuntimeContext {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    public RegistrationInfo deploy(StreamRef ref) throws Exception {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    public void undeploy(StreamRef ref) throws Exception {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
     public RegistrationInfo deploy(URL url) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
     public RegistrationInfo deploy(String location) throws Exception {
+        throw new UnsupportedOperationException("Not yet Implemented");
+    }
+
+    public boolean isDeployed(StreamRef ref) {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 

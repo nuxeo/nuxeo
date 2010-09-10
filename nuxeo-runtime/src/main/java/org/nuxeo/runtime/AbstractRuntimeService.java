@@ -43,16 +43,16 @@ import org.osgi.framework.Bundle;
 /**
  * Abstract implementation of the Runtime Service.
  * <p>
- * Implementors are encouraged to extend this class instead of directly implementing
- * the {@link RuntimeService} interface.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Implementors are encouraged to extend this class instead of directly
+ * implementing the {@link RuntimeService} interface.
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractRuntimeService implements RuntimeService {
 
     /**
-     * Property that controls whether or not to redirect JUL to JCL.
-     * By default is true (JUL will be redirected)
+     * Property that controls whether or not to redirect JUL to JCL. By default
+     * is true (JUL will be redirected)
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
@@ -62,9 +62,10 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected File workingDir;
 
-    protected final Properties properties = new Properties();
+    protected Properties properties = new Properties();
 
     protected ComponentManager manager;
+
     protected final RuntimeContext context;
 
     protected final List<RuntimeExtension> extensions = new ArrayList<RuntimeExtension>();
@@ -73,9 +74,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         this(context, null);
     }
 
-    // warnings during the deployment. Here are collected all errors occurred during the startup
+    // warnings during the deployment. Here are collected all errors occurred
+    // during the startup
     protected final List<String> warnings = new ArrayList<String>();
-
 
     protected AbstractRuntimeService(DefaultRuntimeContext context,
             Map<String, String> properties) {
@@ -101,8 +102,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     protected static URL getBuiltinFeatureURL() {
-        return Thread.currentThread().getContextClassLoader()
-                .getResource("org/nuxeo/runtime/nx-feature.xml");
+        return Thread.currentThread().getContextClassLoader().getResource(
+                "org/nuxeo/runtime/nx-feature.xml");
     }
 
     public synchronized void start() throws Exception {
@@ -110,9 +111,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
                 JavaUtilLoggingHelper.redirectToApacheCommons();
             }
-            log.info("Starting Nuxeo Runtime service " + getName() + "; version: "
-                    + getVersion());
-            //NXRuntime.setInstance(this);
+            log.info("Starting Nuxeo Runtime service " + getName()
+                    + "; version: " + getVersion());
+            // NXRuntime.setInstance(this);
             manager = createComponentManager();
             Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
@@ -126,7 +127,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public synchronized void stop() throws Exception {
         if (isStarted) {
-            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+            log.info("Stopping Nuxeo Runtime service " + getName()
+                    + "; version: " + getVersion());
             Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             stopExtensions();
@@ -135,7 +137,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_STOPPED, this));
             manager.shutdown();
-            //NXRuntime.setRuntime(null);
+            // NXRuntime.setRuntime(null);
             manager = null;
             JavaUtilLoggingHelper.reset();
         }
@@ -194,8 +196,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        return sb.append(getName()).append(" version ")
-                .append(getVersion().toString()).toString();
+        return sb.append(getName()).append(" version ").append(
+                getVersion().toString()).toString();
     }
 
     public Object getComponent(String name) {
@@ -265,10 +267,10 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         for (int i = p; i < buf.length; i++) {
             char c = buf[i];
             switch (c) {
-            case '$' :
+            case '$':
                 dollar = true;
                 break;
-            case '{' :
+            case '{':
                 if (dollar) {
                     dollar = false;
                     var = true;
@@ -276,19 +278,20 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                 break;
             case '}':
                 if (var) {
-                  var = false;
-                  String varName = varBuf.toString();
-                  String varValue = getProperty(varName); // get the variable value
-                  if (varValue != null) {
-                      result.append(varValue);
-                  } else { // let the variable as is
-                      result.append("${").append(varName).append('}');
-                  }
+                    var = false;
+                    String varName = varBuf.toString();
+                    String varValue = getProperty(varName); // get the variable
+                                                            // value
+                    if (varValue != null) {
+                        result.append(varValue);
+                    } else { // let the variable as is
+                        result.append("${").append(varName).append('}');
+                    }
                 }
                 break;
             default:
                 if (var) {
-                  varBuf.append(c);
+                    varBuf.append(c);
                 } else {
                     result.append(c);
                 }

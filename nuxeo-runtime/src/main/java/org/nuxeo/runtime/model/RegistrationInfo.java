@@ -113,6 +113,14 @@ public interface RegistrationInfo extends Serializable {
     ComponentName getName();
 
     /**
+     * Whether this component is disabled. For now this is used only for
+     * persistent components.
+     * 
+     * @return
+     */
+    boolean isDisabled();
+
+    /**
      * Gets the component instance or null if the component was not yet
      * activated.
      * 
@@ -164,6 +172,13 @@ public interface RegistrationInfo extends Serializable {
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();
+
+    /**
+     * Set the persistent flag on this registration
+     * 
+     * @param isPersistent
+     */
+    void setPersistent(boolean isPersistent);
 
     /**
      * Give the class name for the component implementation if this is a java

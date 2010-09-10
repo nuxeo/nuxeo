@@ -14,26 +14,24 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.reload;
+package org.nuxeo.runtime.model.persistence;
 
-import java.io.File;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public interface ReloadService {
+public interface ContributionStorage {
 
-    // void installBundle(File file) throws Exception;
-    //
-    // void uninstallBundle(File file) throws Exception;
+    Contribution addContribution(Contribution contribution) throws Exception;
 
-    void deployBundle(File file) throws Exception;
+    Contribution getContribution(String name) throws Exception;
 
-    void reloadRepository() throws Exception;
+    List<Contribution> getContributions() throws Exception;
 
-    void flushJassCache() throws Exception;
+    boolean removeContribution(Contribution name) throws Exception;
 
-    void reloadProperties() throws Exception;
+    Contribution updateContribution(Contribution contribution) throws Exception;
 
 }

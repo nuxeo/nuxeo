@@ -14,26 +14,40 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.reload;
+package org.nuxeo.runtime.model;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public interface ReloadService {
+public class URLStreamRef implements StreamRef {
 
-    // void installBundle(File file) throws Exception;
-    //
-    // void uninstallBundle(File file) throws Exception;
+    protected URL url;
 
-    void deployBundle(File file) throws Exception;
+    protected String name;
 
-    void reloadRepository() throws Exception;
+    public URLStreamRef(URL url) {
+        this(url, url.toString());
+    }
 
-    void flushJassCache() throws Exception;
+    public URLStreamRef(URL url, String name) {
+        this.url = url;
+        this.name = name;
+    }
 
-    void reloadProperties() throws Exception;
+    public String getId() {
+        return url.toString();
+    }
 
+    public InputStream getStream() throws IOException {
+        return url.openStream();
+    }
+
+    public URL asURL() {
+        return url;
+    }
 }

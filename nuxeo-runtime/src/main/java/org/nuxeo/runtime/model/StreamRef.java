@@ -14,26 +14,37 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.reload;
+package org.nuxeo.runtime.model;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
+ * A named stream used to be able to deploy new components without referring to
+ * them via URLs.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public interface ReloadService {
+public interface StreamRef {
 
-    // void installBundle(File file) throws Exception;
-    //
-    // void uninstallBundle(File file) throws Exception;
+    /**
+     * Get an unique identifier for this stream.
+     */
+    String getId();
 
-    void deployBundle(File file) throws Exception;
+    /**
+     * Get the stream content.
+     * 
+     * @return
+     */
+    InputStream getStream() throws IOException;
 
-    void reloadRepository() throws Exception;
-
-    void flushJassCache() throws Exception;
-
-    void reloadProperties() throws Exception;
-
+    /**
+     * Get an URL to that stream. May return null if no URL is available.
+     * 
+     * @return
+     */
+    URL asURL();
 }

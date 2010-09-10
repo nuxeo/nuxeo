@@ -31,10 +31,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +56,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- *
+ * 
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -207,8 +207,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
             URL url = bundle.getEntry(path);
-            log.debug("Loading component for: " + name
-                    + " path: " + path + " url: " + url);
+            log.debug("Loading component for: " + name + " path: " + path
+                    + " url: " + url);
             if (url != null) {
                 try {
                     ctx.deploy(url);
@@ -256,11 +256,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
 
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
-        if (configDir != null && configDir.contains(":/")) { // an url of a config file
+        if (configDir != null && configDir.contains(":/")) { // an url of a
+                                                             // config file
             log.debug("Configuration: " + configDir);
             URL url = new URL(configDir);
-            log.debug("Configuration:   loading properties url: "
-                    + configDir);
+            log.debug("Configuration:   loading properties url: " + configDir);
             loadProperties(url);
             return;
         }
@@ -271,10 +271,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         // TODO: in JBoss there is a deployer that will deploy nuxeo
         // configuration files ..
-        boolean isNotJBoss = env != null && !"JBoss".equals(env.getHostApplicationName());
+        boolean isNotJBoss = env != null
+                && !"JBoss".equals(env.getHostApplicationName());
 
         File dir = env.getConfig();
-        //File dir = new File(configDir);
+        // File dir = new File(configDir);
         String[] names = dir.list();
         if (names != null) {
             Arrays.sort(names, new Comparator<String>() {
@@ -301,22 +302,48 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 } else if (name.endsWith(".config") || name.endsWith(".ini")
                         || name.endsWith(".properties")) {
                     File file = new File(dir, name);
-                    log.debug("Configuration: loading properties: "
-                            + name);
+                    log.debug("Configuration: loading properties: " + name);
                     loadProperties(file);
                 } else {
                     log.debug("Configuration: ignoring: " + name);
                 }
             }
         } else if (dir.isFile()) { // a file - load it
-            log.debug("Configuration: loading properties: "
-                    + dir);
+            log.debug("Configuration: loading properties: " + dir);
             loadProperties(dir);
         } else {
             log.debug("Configuration: no configuration file found");
         }
 
         loadDefaultConfig();
+    }
+
+    public void reloadProperties() throws Exception {
+        File dir = Environment.getDefault().getConfig();
+        String[] names = dir.list();
+        if (names != null) {
+            Arrays.sort(names, new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    return o1.compareToIgnoreCase(o2);
+                }
+            });
+            Properties props = new Properties();
+            for (String name : names) {
+                if (name.endsWith(".config") || name.endsWith(".ini")
+                        || name.endsWith(".properties")) {
+                    FileInputStream in = new FileInputStream(
+                            new File(dir, name));
+                    try {
+                        props.load(in);
+                    } finally {
+                        in.close();
+                    }
+
+                }
+            }
+            // replace the current runtime properties
+            properties = props;
+        }
     }
 
     /**
@@ -444,8 +471,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public Bundle findHostBundle(Bundle bundle) {
         String hostId = (String) bundle.getHeaders().get(
                 Constants.FRAGMENT_HOST);
-        log.debug("Looking for host bundle: "
-                + bundle.getSymbolicName() + " host id: " + hostId);
+        log.debug("Looking for host bundle: " + bundle.getSymbolicName()
+                + " host id: " + hostId);
         if (hostId != null) {
             int p = hostId.indexOf(';');
             if (p > -1) { // remove version or other extra information if any
@@ -453,12 +480,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             }
             RuntimeContext ctx = contexts.get(hostId);
             if (ctx != null) {
-                log.debug("Context was found for host id: "
-                        + hostId);
+                log.debug("Context was found for host id: " + hostId);
                 return ctx.getBundle();
             } else {
-                log.warn("No context found for host id: "
-                        + hostId);
+                log.warn("No context found for host id: " + hostId);
 
             }
         }
@@ -473,8 +498,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         String name = bundle.getSymbolicName();
 
         if ("Eclipse".equals(vendor)) { // equinox framework
-            log.debug("getBundleFile (Eclipse): " + name + "->"
-                    + location);
+            log.debug("getBundleFile (Eclipse): " + name + "->" + location);
             // update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
             // initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
             if (location.endsWith("/")) {
@@ -490,8 +514,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = FileUtils.urlToFile(location);
             } catch (Exception e) {
-                log.error("getBundleFile: Unable to create "
-                        + " for bundle: " + name + " as URI: " + location);
+                log.error("getBundleFile: Unable to create " + " for bundle: "
+                        + name + " as URI: " + location);
                 return null;
             }
         } else { // may be a file path - this happens when using
@@ -499,14 +523,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             try {
                 file = new File(location);
             } catch (Exception e) {
-                log.error("getBundleFile: Unable to create "
-                        + " for bundle: " + name + " as file: " + location);
+                log.error("getBundleFile: Unable to create " + " for bundle: "
+                        + name + " as file: " + location);
                 return null;
             }
         }
         if (file != null && file.exists()) {
-            log.debug("getBundleFile: " + name
-                    + " bound to file: " + file);
+            log.debug("getBundleFile: " + name + " bound to file: " + file);
             return file;
         } else {
             log.debug("getBundleFile: " + name

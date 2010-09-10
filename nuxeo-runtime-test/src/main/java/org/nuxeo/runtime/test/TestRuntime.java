@@ -32,12 +32,13 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  * A runtime service used for JUnit tests.
  * <p>
  * The Test Runtime has only one virtual bundle
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestRuntime extends AbstractRuntimeService {
 
     public static final String NAME = "Test Runtime";
+
     public static final Version VERSION = Version.parseString("1.0.0");
 
     private static int counter = 0;
@@ -83,4 +84,7 @@ public class TestRuntime extends AbstractRuntimeService {
         }
     }
 
+    public void reloadProperties() throws Exception {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

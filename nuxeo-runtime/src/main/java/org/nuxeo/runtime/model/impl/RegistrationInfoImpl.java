@@ -68,6 +68,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XNode("@name")
     ComponentName name;
 
+    @XNode("@disabled")
+    boolean disabled;
+
     @XNode("configuration")
     ConfigurationDescriptor config;
 
@@ -141,6 +144,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         this.context = rc;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
     public Set<RegistrationInfoImpl> getDependsOnMe() {
         return dependsOnMe;
     }
@@ -151,6 +158,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     public final boolean isPersistent() {
         return isPersistent;
+    }
+
+    public void setPersistent(boolean isPersistent) {
+        this.isPersistent = isPersistent;
     }
 
     public final boolean isPending() {
@@ -356,10 +367,11 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.unregisterExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to unregister extension. Contributor: "
-                            + xt.getComponent() + " to "
-                            + xt.getTargetComponent() + "; xpoint: "
-                            + xt.getExtensionPoint(), e);
+                    log.error(
+                            "Failed to unregister extension. Contributor: "
+                                    + xt.getComponent() + " to "
+                                    + xt.getTargetComponent() + "; xpoint: "
+                                    + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }

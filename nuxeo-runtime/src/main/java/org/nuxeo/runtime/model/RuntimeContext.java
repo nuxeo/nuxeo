@@ -27,32 +27,33 @@ import org.osgi.framework.Bundle;
 /**
  * The runtime context.
  * <p>
- * Runtime contexts are used to create components.
- * They provides custom methods to load classes and find resources.
+ * Runtime contexts are used to create components. They provides custom methods
+ * to load classes and find resources.
  * <p>
- * Runtime contexts are generally attached to a bundle context
- * (or module deployment context)
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Runtime contexts are generally attached to a bundle context (or module
+ * deployment context)
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 public interface RuntimeContext {
 
     /**
      * Gets the current runtime service.
-     *
+     * 
      * @return the runtime service
      */
     RuntimeService getRuntime();
 
     /**
-     * Gets the container bundle or null if we are not running in an OSGi environment.
+     * Gets the container bundle or null if we are not running in an OSGi
+     * environment.
      */
     Bundle getBundle();
 
     /**
      * Loads the class given its name.
-     *
+     * 
      * @param className the class name
      * @return the class object
      * @throws ClassNotFoundException if no such class were found
@@ -62,7 +63,7 @@ public interface RuntimeContext {
 
     /**
      * Finds a resource having the given name.
-     *
+     * 
      * @param name the resource name
      * @return an URL to the resource having that name or null if not was found
      * @see ClassLoader#getResource(String)
@@ -73,7 +74,7 @@ public interface RuntimeContext {
      * Finds a local resource having the given name.
      * <p>
      * Only the current bundle should be searched for the resource.
-     *
+     * 
      * @param name the local resource name
      * @return an URL to the resource having that name or null if not was found
      * @see ClassLoader#getResource(String)
@@ -85,31 +86,60 @@ public interface RuntimeContext {
      * <p>
      * Do nothing if component is already deployed.
      * <p>
-     * Returns the registration info of the new deployed component or null if the component was not deployed.
-     *
+     * Returns the registration info of the new deployed component or null if
+     * the component was not deployed.
+     * 
      * @param url the url of the XML descriptor
-     * @return the component registration info or null if registration failed for some reason
+     * @return the component registration info or null if registration failed
+     *         for some reason
      * @throws Exception if any error occurs
      */
     RegistrationInfo deploy(URL url) throws Exception;
 
     /**
+     * Same as {@link #deploy(URL)} but using a {@link StreamRef} as argument.
+     * 
+     * @param ref
+     * @return
+     * @throws Exception
+     */
+    RegistrationInfo deploy(StreamRef ref) throws Exception;
+
+    /**
      * Undeploys a component XML descriptor given its URL.
      * <p>
      * Do nothing if no component was registered for the given URL.
-     *
+     * 
      * @param url the URL of the XML descriptor
      * @throws Exception if any error occurs
      */
     void undeploy(URL url) throws Exception;
 
     /**
+     * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream
+     * reference.
+     * 
+     * @param ref
+     * @throws Exception
+     */
+    void undeploy(StreamRef ref) throws Exception;
+
+    /**
      * Checks whether the component XML file at given URL was deployed.
-     *
+     * 
      * @param url the URL to check
      * @return true it deployed, false otherwise
      */
     boolean isDeployed(URL url);
+
+    /**
+     * Checks whether the component XML file given by the StreamRef argument was
+     * deployed.
+     * 
+     * @param ref
+     * @return
+     */
+    boolean isDeployed(StreamRef ref);
 
     /**
      * Deploys the component whose XML descriptor is at the given location.
@@ -120,10 +150,12 @@ public interface RuntimeContext {
      * containing the component - and will be loaded using
      * {@link RuntimeContext#getLocalResource(String)}.
      * <p>
-     * Returns the registration info of the new deployed component or null if the component was not deployed.
-     *
+     * Returns the registration info of the new deployed component or null if
+     * the component was not deployed.
+     * 
      * @param location the location
-     * @return the component registration info or null if registration failed for some reason
+     * @return the component registration info or null if registration failed
+     *         for some reason
      * @throws Exception
      */
     RegistrationInfo deploy(String location) throws Exception;
@@ -132,7 +164,7 @@ public interface RuntimeContext {
      * Undeploys the component at the given location if any was deployed.
      * <p>
      * If the component was not deployed do nothing.
-     *
+     * 
      * @param location the location of the component to undeploy
      * @throws Exception if any error occurs
      */
@@ -140,7 +172,7 @@ public interface RuntimeContext {
 
     /**
      * Checks if the component at the given location is deployed.
-     *
+     * 
      * @param location the component location to check
      * @return true if deployed, false otherwise
      */

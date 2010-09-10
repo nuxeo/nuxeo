@@ -33,20 +33,23 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.StreamRef;
+import org.nuxeo.runtime.model.URLStreamRef;
 import org.osgi.framework.Bundle;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 public class DefaultRuntimeContext implements RuntimeContext {
 
     private static final Log log = LogFactory.getLog(RuntimeContext.class);
 
     protected RuntimeService runtime;
-    protected final ComponentDescriptorReader reader;
-    protected final Map<String, ComponentName> deployedFiles;
 
+    protected final ComponentDescriptorReader reader;
+
+    protected final Map<String, ComponentName> deployedFiles;
 
     public DefaultRuntimeContext() {
         this(Framework.getRuntime());
@@ -79,19 +82,25 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return Thread.currentThread().getContextClassLoader().loadClass(className);
+        return Thread.currentThread().getContextClassLoader().loadClass(
+                className);
     }
 
     public RegistrationInfo deploy(URL url) throws Exception {
-        if (deployedFiles.containsKey(url.toString())) {
+        return deploy(new URLStreamRef(url));
+    }
+
+    public RegistrationInfo deploy(StreamRef ref) throws Exception {
+        String name = ref.getId();
+        if (deployedFiles.containsKey(name)) {
             return null;
         }
-        log.debug("Deploying bundle from url " + url);
-        RegistrationInfoImpl ri = createRegistrationInfo(url);
+        log.debug("Deploying component from url " + name);
+        RegistrationInfoImpl ri = createRegistrationInfo(ref);
         ri.context = this;
-        ri.xmlFileUrl=url;
+        ri.xmlFileUrl = ref.asURL();
         runtime.getComponentManager().register(ri);
-        deployedFiles.put(url.toString(), ri.getName());
+        deployedFiles.put(name, ri.getName());
         return ri;
     }
 
@@ -102,8 +111,19 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    public void undeploy(StreamRef ref) throws Exception {
+        ComponentName name = deployedFiles.remove(ref.getId());
+        if (name != null) {
+            runtime.getComponentManager().unregister(name);
+        }
+    }
+
     public boolean isDeployed(URL url) {
         return deployedFiles.containsKey(url.toString());
+    }
+
+    public boolean isDeployed(StreamRef ref) {
+        return deployedFiles.containsKey(ref.getId());
     }
 
     public RegistrationInfo deploy(String location) throws Exception {
@@ -148,8 +168,9 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
-    public RegistrationInfoImpl createRegistrationInfo(URL url) throws Exception {
-        InputStream in = url.openStream();
+    public RegistrationInfoImpl createRegistrationInfo(StreamRef ref)
+            throws Exception {
+        InputStream in = ref.getStream();
         try {
             return createRegistrationInfo(in);
         } finally {
@@ -159,7 +180,8 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
-    public RegistrationInfoImpl createRegistrationInfo(InputStream in) throws Exception {
+    public RegistrationInfoImpl createRegistrationInfo(InputStream in)
+            throws Exception {
         return reader.read(this, in);
     }
 

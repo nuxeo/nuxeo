@@ -101,6 +101,10 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         deployBundle(file, true);
     }
 
+    public void reloadProperties() throws Exception {
+        Framework.getRuntime().reloadProperties();
+    }
+
     /**
      * Rebuild the framework resource class loader and add to it the given file
      * paths.
