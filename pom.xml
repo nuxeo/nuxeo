@@ -16,7 +16,7 @@
 
   <properties>
     <nuxeo.dm.version>5.4.0-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.chemistry.version>1.7.0-SNAPSHOT</nuxeo.chemistry.version>
+    <nuxeo.chemistry.version>5.4.0-SNAPSHOT</nuxeo.chemistry.version>
     <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.windows.version>5.4.0-SNAPSHOT</nuxeo.windows.version>
   </properties>
