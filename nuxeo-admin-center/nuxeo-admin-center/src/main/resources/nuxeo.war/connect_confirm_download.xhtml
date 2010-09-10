@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:define name="body">
+
+  <div class="downloadConfirmation">
+     <h1>Download confirmation </h1>
+
+     <p>You clicked on a link to start the download of a Nuxeo Package : </p>
+
+   <table>
+    <tr>
+      <td class="labelColumn"> Package id </td>
+      <td> #{externalLinkManager.pkg.id} </td>
+    </tr>
+    <tr>
+      <td class="labelColumn"> Package title </td>
+      <td> #{externalLinkManager.pkg.title} </td>
+    </tr>
+    <tr>
+      <td class="labelColumn"> Package vendor </td>
+      <td> #{externalLinkManager.pkg.vendor} </td>
+    </tr>
+    <tr>
+      <td class="labelColumn"> Package description </td>
+      <td> #{externalLinkManager.pkg.description} </td>
+    </tr>
+  </table>
+
+  <div class="alignCenter">
+    <p>Do you want to continue ?</p>
+    <h:form>
+      <h:commandButton styleClass="button" value="Start download" action="#{externalLinkManager.confirm()}"/>
+      <h:commandButton styleClass="button" value="Cancel" action="#{adminViews.exit()}"/>
+    </h:form>
+  </div>
+
+</div>
+
+  </ui:define>
+
+</nxthemes:composition>
+

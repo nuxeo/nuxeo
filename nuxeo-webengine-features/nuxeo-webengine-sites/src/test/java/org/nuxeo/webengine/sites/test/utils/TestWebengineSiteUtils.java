@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -39,14 +38,9 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        BundleFile bundleFile = lookupBundle("org.nuxeo.ecm.platform.webengine.sites.tests");
-
-        deployBundle("org.nuxeo.ecm.platform.webengine.sites.tests");
         deployBundle("org.nuxeo.ecm.webengine.base");
-
         deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
-        deployContrib(bundleFile, "OSGI-INF/webengine-types-contrib.xml");
-        deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.webengine.sites.tests");
 
         openRepository();
     }
