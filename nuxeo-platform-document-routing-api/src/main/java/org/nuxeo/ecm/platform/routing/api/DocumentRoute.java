@@ -18,6 +18,18 @@ package org.nuxeo.ecm.platform.routing.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+
+/**
+ * A DocumentRoute model or instance.
+ *
+ * If a method is called that change the state of this object, the
+ * {@link #save(CoreSession)} method should be called to persist its state.
+ *
+ * @author arussel
+ *
+ */
 public interface DocumentRoute {
     boolean isInstance();
 
@@ -25,7 +37,12 @@ public interface DocumentRoute {
 
     boolean isEnded();
 
-    boolean start();
+    /**
+     * Start the DocumentRoute instance.
+     *
+     * @param session
+     */
+    void start(CoreSession session);
 
     List<DocumentRouteStep> getCurrentSteps();
 
@@ -34,4 +51,24 @@ public interface DocumentRoute {
     List<DocumentRouteStep> getDoneSteps();
 
     List<DocumentRouteStep> getTodoSteps();
+
+    /**
+     * Set the list of id of documents attached to this instance of RouteModel
+     * replacing the previous list if any.
+     *
+     * @param documents
+     */
+    void setAttachedDocuments(List<String> documentIds);
+
+    /**
+     * @return the document representing this DocumentRoute
+     */
+    DocumentModel getDocument();
+
+    /**
+     * save the document representing this DocumentRoute.
+     *
+     * @param session
+     */
+    void save(CoreSession session);
 }

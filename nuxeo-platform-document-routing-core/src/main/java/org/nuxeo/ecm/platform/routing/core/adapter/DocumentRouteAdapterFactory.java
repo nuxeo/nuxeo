@@ -14,26 +14,21 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.test;
+package org.nuxeo.ecm.platform.routing.core.adapter;
 
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteImpl;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRoutingServiceTestCase extends DocumentRoutingTestCase {
-    public void testCreateNewInstance() {
-        assertTrue(true);
+public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
+
+    @Override
+    public Object getAdapter(DocumentModel doc, Class itf) {
+        return new DocumentRouteImpl(doc);
     }
 
-    public void testGetAvailableDocumentRouteModel() throws ClientException {
-        DocumentRoute route = createDocumentRoute(session, ROUTE1);
-        assertNotNull(route);
-        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
-        assertEquals(1, routes.size());
-    }
 }

@@ -14,25 +14,36 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.api;
+package org.nuxeo.ecm.platform.routing.core.impl;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 
 /**
  * @author arussel
  *
  */
-public interface DocumentRoutingConstants {
+public class DocumentRouteStepImpl implements DocumentRouteStep {
 
-    // document constant
-    String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
+    protected DocumentModel doc;
 
-    String DOCUMENT_ROUTE_INSTANCES_ROOT_ID = "document-route-instances-root";
+    public DocumentRouteStepImpl(DocumentModel doc) {
+        this.doc = doc;
+    }
 
-    String DOCUMENT_ROUTE_DOCUMENT_TYPE = "DocumentRoute";
+    @Override
+    public boolean isDone() {
+        return false;
+    }
 
-    String STEP_DOCUMENT_TYPE = "Step";
+    @Override
+    public String getName() {
+        return null;
+    }
 
-    String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
-
-    public static final String TITLE_PROPERTY_NAME = "dc:title";
+    @Override
+    public String getDescription() {
+        return null;
+    }
 
 }

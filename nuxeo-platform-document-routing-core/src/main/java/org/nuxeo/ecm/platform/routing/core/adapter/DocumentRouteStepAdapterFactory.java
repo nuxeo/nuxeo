@@ -14,25 +14,20 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.api;
+package org.nuxeo.ecm.platform.routing.core.adapter;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
  * @author arussel
  *
  */
-public interface DocumentRoutingConstants {
+public class DocumentRouteStepAdapterFactory implements DocumentAdapterFactory {
 
-    // document constant
-    String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
-
-    String DOCUMENT_ROUTE_INSTANCES_ROOT_ID = "document-route-instances-root";
-
-    String DOCUMENT_ROUTE_DOCUMENT_TYPE = "DocumentRoute";
-
-    String STEP_DOCUMENT_TYPE = "Step";
-
-    String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
-
-    public static final String TITLE_PROPERTY_NAME = "dc:title";
+    @Override
+    public Object getAdapter(DocumentModel doc, Class itf) {
+        return null;
+    }
 
 }

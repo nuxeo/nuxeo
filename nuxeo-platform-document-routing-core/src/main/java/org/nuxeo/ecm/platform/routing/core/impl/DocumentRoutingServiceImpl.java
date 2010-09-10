@@ -16,12 +16,20 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -31,16 +39,71 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
 
+    private static final String AVAILABLE_ROUTES_QUERY = String.format(
+            "Select * from %s",
+            DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
+
+    protected DocumentRoutingPersistenceService getPersistenceService() {
+        try {
+            return Framework.getService(DocumentRoutingPersistenceService.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, boolean startInstance) {
-        return null;
+            List<DocumentModel> documents, CoreSession session,
+            boolean startInstance) {
+        DocumentModel routeInstanceDoc = getPersistenceService().createDocumentRouteInstanceFromDocumentRouteModel(
+                model.getDocument(), session);
+        DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
+        List<String> docIds = new ArrayList<String>();
+        for (DocumentModel doc : documents) {
+            docIds.add(doc.getId());
+        }
+        routeInstance.setAttachedDocuments(docIds);
+        routeInstance.save(session);
+        if(startInstance) {
+            routeInstance.start(session);
+        }
+        return routeInstance;
+    }
+
+    @Override
+    public DocumentRoute createNewInstance(DocumentRoute model,
+            DocumentModel document, CoreSession session, boolean startInstance) {
+        return createNewInstance(model, Collections.singletonList(document),
+                session, startInstance);
+    }
+
+    @Override
+    public DocumentRoute createNewInstance(DocumentRoute model,
+            List<DocumentModel> documents, CoreSession session) {
+        return createNewInstance(model, documents, session, true);
+    }
+
+    @Override
+    public DocumentRoute createNewInstance(DocumentRoute model,
+            DocumentModel document, CoreSession session) {
+        return createNewInstance(model, Collections.singletonList(document),
+                session, true);
     }
 
     @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(
             CoreSession session) {
-        return null;
+        DocumentModelList list = null;
+        try {
+            list = session.query(AVAILABLE_ROUTES_QUERY);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        for (DocumentModel model : list) {
+            routes.add(model.getAdapter(DocumentRoute.class));
+        }
+        return routes;
     }
 
 }

@@ -40,7 +40,29 @@ public interface DocumentRoutingService {
      * @return the created {@link DocumentRoute} instance.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, boolean startInstance);
+            List<DocumentModel> documents, CoreSession session,
+            boolean startInstance);
+
+    /**
+     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
+     *      only one document attached.
+     */
+    DocumentRoute createNewInstance(DocumentRoute model,
+            DocumentModel document, CoreSession session, boolean startInstance);
+
+    /**
+     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
+     *      startInstance <code>true</code>
+     */
+    DocumentRoute createNewInstance(DocumentRoute model,
+            List<DocumentModel> documents, CoreSession session);
+
+    /**
+     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
+     *      startInstance <code>true</code> and only one document attached.
+     */
+    DocumentRoute createNewInstance(DocumentRoute model,
+            DocumentModel document, CoreSession session);
 
     /**
      * Return the list of available {@link DocumentRoute} model for this

@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
   <modelVersion>4.0.0</modelVersion>
-
+  
   <parent>
-   <groupId>org.nuxeo.ecm.platform</groupId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
     <version>5.4.0-SNAPSHOT</version>
   </parent>
   
-
-   <groupId>org.nuxeo.ecm.platform</groupId>
-   <artifactId>nuxeo-platform-document-routing</artifactId>
-   <version>5.4.0-SNAPSHOT</version>
-   <name>Nuxeo Platform Document Routing Addon</name>
-   <packaging>pom</packaging>
-   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
-
- <modules>
-   <module>nuxeo-platform-document-routing-api</module>
-   <module>nuxeo-platform-document-routing-core</module>
-   <module>nuxeo-platform-document-routing-web</module>
+  
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-document-routing</artifactId>
+  <version>5.4.0-SNAPSHOT</version>
+  <name>Nuxeo Platform Document Routing Addon</name>
+  <packaging>pom</packaging>
+  <description>The parent module for Nuxeo Platform Document Routing Addon</description>
+  
+  <modules>
+    <module>nuxeo-platform-document-routing-api</module>
+    <module>nuxeo-platform-document-routing-core</module>
+    <module>nuxeo-platform-document-routing-web</module>
   </modules>
 
- <properties>
-   <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
- </properties> 
- 
- <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -37,39 +33,38 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
+	<groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
+	<groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-   </dependencies>  
-</dependencyManagement>
-    
+    </dependencies>  
+  </dependencyManagement>
 
-<developers>
+  <developers>
     <developer>
       <name>Atlantis</name>
       <email>atlantis@lists.nuxeo.com</email>
     </developer>
- </developers>
- 
-<repositories>
+  </developers>
+  
+  <repositories>
     <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/public</url>
       <snapshots>
-        <enabled>false</enabled>
+	<enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
       <id>public-snapshot</id>
       <url>http://maven.nuxeo.org/public-snapshot</url>
       <snapshots>
-        <enabled>true</enabled>
+	<enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>

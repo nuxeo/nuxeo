@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author arussel
  *
  */
-public class DocumentRoutingPersistenceServiceTestCase extends
+public class TestDocumentRoutingPersistenceService extends
         DocumentRoutingTestCase {
 
     public void testGetOrCreateRootOfDocumentRouteInstanceStructure() {

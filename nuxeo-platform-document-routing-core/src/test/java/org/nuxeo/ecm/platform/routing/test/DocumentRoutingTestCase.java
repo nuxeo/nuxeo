@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
@@ -68,13 +69,27 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public DocumentModel createDocumentRouteModel(CoreSession session,
             String name) throws ClientException {
-        DocumentModel route1 = session.createDocumentModel("/", name, "Folder");
-        route1.setPropertyValue("dc:title", "route1");
-        return session.createDocument(route1);
+        return createDocumentModel(session, name,
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
     }
 
-    public DocumentRoute createDocumentRoute(CoreSession session, String name) throws ClientException {
+    public DocumentModel createDocumentModel(CoreSession session, String name,
+            String type) throws ClientException {
+        DocumentModel route1 = session.createDocumentModel("/", name, type);
+        route1.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                ROUTE1);
+        return session.createDocument(route1);
+
+    }
+
+    public DocumentRoute createDocumentRoute(CoreSession session, String name)
+            throws ClientException {
         DocumentModel model = createDocumentRouteModel(session, name);
         return model.getAdapter(DocumentRoute.class);
+    }
+
+    protected DocumentModel createTestDocument(String name, CoreSession session)
+            throws ClientException {
+        return createDocumentModel(session, name, "Note");
     }
 }
