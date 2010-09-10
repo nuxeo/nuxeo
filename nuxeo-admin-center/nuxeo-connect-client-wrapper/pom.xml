@@ -12,7 +12,6 @@
   <artifactId>nuxeo-connect-client-wrapper</artifactId>
   <name>Nuxeo Connect Client Wrapper </name>
   <description>Simple wrapper to integrate Nuxeo Connect Client in Nuxeo</description>
-  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
@@ -75,7 +74,6 @@
     <dependency>
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
-      <version>1.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
