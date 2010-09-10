@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * TODO Please document me.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
@@ -128,7 +128,7 @@ public class TextTemplate {
     /**
      * Recursive call {@link #process(InputStream, OutputStream)} on each file
      * from "in" directory to "out" directory
-     * 
+     *
      * @param in Directory to read files from
      * @param out Directory to write files to
      */

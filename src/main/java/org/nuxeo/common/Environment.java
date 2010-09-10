@@ -45,35 +45,35 @@ public class Environment {
 
     /**
      * the home directory
-     * 
+     *
      * @deprecated never defined
      */
     public static final String HOME_DIR = "org.nuxeo.app.home";
 
     /**
      * the web root
-     * 
+     *
      * @deprecated never defined
      */
     public static final String WEB_DIR = "org.nuxeo.app.web";
 
     /**
      * the config directory
-     * 
+     *
      * @deprecated never defined
      */
     public static final String CONFIG_DIR = "org.nuxeo.app.config";
 
     /**
      * the data directory
-     * 
+     *
      * @deprecated never defined
      */
     public static final String DATA_DIR = "org.nuxeo.app.data";
 
     /**
      * the log directory
-     * 
+     *
      * @deprecated never defined
      */
     public static final String LOG_DIR = "org.nuxeo.app.log";

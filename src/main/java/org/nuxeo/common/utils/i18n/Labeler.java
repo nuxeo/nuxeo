@@ -22,6 +22,7 @@ package org.nuxeo.common.utils.i18n;
 import java.io.Serializable;
 
 public class Labeler implements Serializable {
+
     private static final long serialVersionUID = -4139432411098427880L;
 
     protected final String prefix;

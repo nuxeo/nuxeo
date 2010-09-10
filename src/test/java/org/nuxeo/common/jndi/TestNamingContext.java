@@ -174,11 +174,11 @@ public class TestNamingContext extends TestCase {
         Context sub = ejbCtx.createSubcontext("subXX");
         initialCtx.destroySubcontext("java:comp/env/ejb/subXX");
         /*
-         * At this point sub is destroyed. Any method invokation should fail.
+         * At this point sub is destroyed. Any method invocation should fail.
          * Try to bind some object, create subcontext and perform list.
          * Because the Context was empty, and non-empty Context can not be
          * destroyed, a lookup will fail and in general may not be tested.
-         * We will test it for completness. The same applies for unbind and destroyContext methods.
+         * We will test it for completeness. The same applies for unbind and destroyContext methods.
          */
         try {
             sub.bind("SomeName", "SomeObject");
