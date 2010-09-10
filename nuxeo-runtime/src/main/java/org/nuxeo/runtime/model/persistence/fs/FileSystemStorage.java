@@ -21,12 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.DOMSerializer;
@@ -42,11 +42,11 @@ import org.w3c.dom.Node;
  */
 public class FileSystemStorage implements ContributionStorage {
 
-    protected static Pattern DOC_PATTERN = Pattern.compile("<documentation>(.*)</documentation>");
-
-    protected static Pattern DISABLED_PATTERN = Pattern.compile("disabled\\s*=\\s*([^\\s>]+)");
+    public static Log log = LogFactory.getLog(FileSystemStorage.class);
 
     protected File root;
+
+    protected static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
     public FileSystemStorage() {
         root = new File(Environment.getDefault().getData(), "contribs");
@@ -75,28 +75,37 @@ public class FileSystemStorage implements ContributionStorage {
         return file.delete();
     }
 
-    public static String readDocumentation(String content) {
-        Matcher m = DOC_PATTERN.matcher(content);
-        if (m.find()) {
-            return m.group(1).trim();
+    public static void loadMetadata(ContributionFile contrib) {
+        try {
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            Document doc = docBuilder.parse(new ByteArrayInputStream(
+                    contrib.getContent().getBytes()));
+            Element root = doc.getDocumentElement();
+            contrib.disabled = Boolean.parseBoolean(root.getAttribute("disabled"));
+            Node node = root.getFirstChild();
+            while (node != null) {
+                if (node.getNodeType() == Node.ELEMENT_NODE
+                        && "documentation".equals(node.getNodeName())) {
+                    break;
+                }
+                node = node.getNextSibling();
+            }
+            if (node != null) {
+                node = node.getFirstChild();
+                StringBuilder buf = new StringBuilder();
+                while (node != null) {
+                    if (node.getNodeType() == Node.TEXT_NODE) {
+                        buf.append(node.getNodeValue());
+                    }
+                    node = node.getNextSibling();
+                }
+                contrib.setDescription(buf.toString().trim());
+            } else {
+                contrib.setDescription("");
+            }
+        } catch (Exception e) {
+            log.error("Failed to rread contribution metadata", e);
         }
-        return "";
-    }
-
-    public static boolean readDisabledFlag(String content) {
-        int i = content.indexOf("component");
-        int j = content.indexOf(">", i);
-        if (i == -1 || j == -1) {
-            throw new IllegalArgumentException("Invalid component content.");
-        }
-        content = content.substring(i, j);
-
-        Matcher m = DISABLED_PATTERN.matcher(content);
-        if (m.find()) {
-            String v = m.group(1).trim().toLowerCase();
-            return v.contains("true");
-        }
-        return false;
     }
 
     public Contribution addContribution(Contribution contribution)
@@ -141,7 +150,7 @@ public class FileSystemStorage implements ContributionStorage {
             throws Exception {
         File file = new File(root, contribution.getName() + ".xml");
         String content = safeRead(file);
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder docBuilder = factory.newDocumentBuilder();
         Document doc = docBuilder.parse(new ByteArrayInputStream(
                 content.getBytes()));
         Element root = doc.getDocumentElement();

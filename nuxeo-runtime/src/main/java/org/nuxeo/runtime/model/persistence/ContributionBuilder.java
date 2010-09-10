@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.xml.serialize.OutputFormat;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.XMap;
 import org.w3c.dom.Document;
@@ -87,7 +88,7 @@ public class ContributionBuilder extends AbstractContribution {
         StringBuilder buf = new StringBuilder(1024);
         buf.append(
                 "<extension target=\"" + target + "\" point=\"" + point
-                        + "\">\n").append(content).append("</extension>");
+                        + "\">\n").append(content).append("\n</extension>");
         extensions.add(buf.toString());
     }
 
@@ -113,7 +114,9 @@ public class ContributionBuilder extends AbstractContribution {
             xmap.register(contrib.getClass());
             xmap.toXML(contrib, root);
         }
-        extensions.add(DOMSerializer.toString(root));
+        OutputFormat of = new OutputFormat();
+        of.setOmitXMLDeclaration(true);
+        extensions.add(DOMSerializer.toString(root, of));
     }
 
     public String getContent() {

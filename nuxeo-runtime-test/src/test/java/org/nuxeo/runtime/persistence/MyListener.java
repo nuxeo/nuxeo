@@ -13,30 +13,35 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  * $Id$
  */
 
-package org.nuxeo.runtime;
+package org.nuxeo.runtime.persistence;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@XObject("printer")
-public class DummyContribution {
+public class MyListener implements EventListener {
 
-    @XNode("message")
-    public String message;
+    protected static int cnt = 0;
 
-    public DummyContribution() {
+    public MyListener() {
     }
 
-    public DummyContribution(String message) {
-        this.message = message;
+    public boolean aboutToHandleEvent(Event event) {
+        return true;
+    }
+
+    public void handleEvent(Event event) {
+        cnt++;
+    }
+
+    public static int getCounter() {
+        return cnt;
     }
 
 }

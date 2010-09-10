@@ -60,14 +60,16 @@ import org.osgi.framework.FrameworkEvent;
  * <p>
  * The runtime service itself is conveniently available as the
  * <code>runtime</code> instance variable in derived classes.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-//Make sure this class is kept in sync with with RuntimeHarness
-public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarness {
+// Make sure this class is kept in sync with with RuntimeHarness
+public class NXRuntimeTestCase extends MockObjectTestCase implements
+        RuntimeHarness {
 
     static {
-        // jul to jcl redirection may pose problems (infinite loops) in some environment
+        // jul to jcl redirection may pose problems (infinite loops) in some
+        // environment
         // where slf4j to jul, and jcl over slf4j is deployed
         System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "false");
     }
@@ -103,7 +105,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         super(name);
     }
 
-    public void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config) {
+    public void addWorkingDirectoryConfigurator(
+            WorkingDirectoryConfigurator config) {
         wdConfigs.add(config);
     }
 
@@ -145,7 +148,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
      * Fire the event {@code FrameworkEvent.STARTED}.
      */
     public void fireFrameworkStarted() throws Exception {
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                runtimeBundle, null));
     }
 
     @Override
@@ -173,16 +177,17 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
 
     private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
-        counter ++;
+        counter++;
         return Long.toHexString(stamp) + '-'
-        + System.identityHashCode(System.class) + '.' + counter;
+                + System.identityHashCode(System.class) + '.' + counter;
     }
 
     protected void initOsgiRuntime() throws Exception {
         try {
             if (!restart) {
                 Environment.setDefault(null);
-                workingDir = File.createTempFile("NXOSGITestFramework", generateId());
+                workingDir = File.createTempFile("NXOSGITestFramework",
+                        generateId());
                 workingDir.delete();
             }
         } catch (IOException e) {
@@ -192,7 +197,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         osgi = new OSGiAdapter(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi,
                 NXRuntimeTestCase.class.getClassLoader());
-        Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
+        Thread.currentThread().setContextClassLoader(
+                bundleLoader.getSharedClassLoader().getLoader());
 
         for (WorkingDirectoryConfigurator cfg : wdConfigs) {
             cfg.configure(this, workingDir);
@@ -215,6 +221,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         deployContrib(bundleFile, "OSGI-INF/ServiceManagement.xml");
         deployContrib(bundleFile, "OSGI-INF/EventService.xml");
         deployContrib(bundleFile, "OSGI-INF/DefaultJBossBindings.xml");
+        deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
 
     protected void initTestRuntime() throws Exception {
@@ -247,8 +254,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         if (urls.length == 1) {
             try {
                 URI uri = urls[0].toURI();
-                if (uri.getScheme().equals("file") &&
-                        uri.getPath().contains("surefirebooter")) {
+                if (uri.getScheme().equals("file")
+                        && uri.getPath().contains("surefirebooter")) {
                     JarFile jar = new JarFile(new File(uri));
                     try {
                         String cp = jar.getManifest().getMainAttributes().getValue(
@@ -257,8 +264,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
                             String[] cpe = cp.split(" ");
                             URL[] newUrls = new URL[cpe.length];
                             for (int i = 0; i < cpe.length; i++) {
-                                // Don't need to add 'file:' with maven surefire >= 2.4.2
-                                String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i];
+                                // Don't need to add 'file:' with maven surefire
+                                // >= 2.4.2
+                                String newUrl = cpe[i].startsWith("file:") ? cpe[i]
+                                        : "file:" + cpe[i];
                                 newUrls[i] = new URL(newUrl);
                             }
                             urls = newUrls;
@@ -273,7 +282,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         }
         StringBuilder sb = new StringBuilder();
         sb.append("URLs on the classpath: ");
-        for (URL url:urls) {
+        for (URL url : urls) {
             sb.append(url.toString());
             sb.append('\n');
         }
@@ -286,7 +295,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
      * Makes sure there is no previous runtime hanging around.
      * <p>
      * This happens for instance if a previous test had errors in its
-     * <code>setUp()</code>, because <code>tearDown()</code> has not been called.
+     * <code>setUp()</code>, because <code>tearDown()</code> has not been
+     * called.
      */
     protected void wipeRuntime() throws Exception {
         // Make sure there is no active runtime (this might happen if an
@@ -299,7 +309,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     }
 
     public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(resource);
+        return Thread.currentThread().getContextClassLoader().getResource(
+                resource);
     }
 
     /**
@@ -324,10 +335,11 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     /**
      * Deploys a contribution file by looking for it in the class loader.
      * <p>
-     * The first contribution file found by the class loader will be used.
-     * You have no guarantee in case of name collisions.
-     *
-     * @deprecated use the less ambiguous {@link #deployContrib(BundleFile,String)}
+     * The first contribution file found by the class loader will be used. You
+     * have no guarantee in case of name collisions.
+     * 
+     * @deprecated use the less ambiguous
+     *             {@link #deployContrib(BundleFile,String)}
      * @param contrib the relative path to the contribution file
      */
     @Deprecated
@@ -349,15 +361,13 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     /**
      * Deploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root.
-     * Example:
-     * <code>
+     * The path will be relative to the bundle root. Example: <code>
      * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      * <p>
      * For compatibility reasons the name of the bundle may be a jar name, but
      * this use is discouraged and deprecated.
-     *
+     * 
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
      */
@@ -368,36 +378,38 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     /**
      * Deploy an XML contribution from outside a bundle.
      * <p>
-     * This should be used by tests
-     * wiling to deploy test contribution as part of a real bundle.
+     * This should be used by tests wiling to deploy test contribution as part
+     * of a real bundle.
      * <p>
-     * The bundle owner is important since the contribution may depend on resources
-     * deployed in that bundle.
+     * The bundle owner is important since the contribution may depend on
+     * resources deployed in that bundle.
      * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
-     *
+     * 
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
-    public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
+    public RuntimeContext deployTestContrib(String bundle, String contrib)
+            throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
         if (b != null) {
             OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
             ctx.deploy(contrib);
             return ctx;
         } else {
-            throw new IllegalArgumentException("Bundle not deployed "+bundle);
+            throw new IllegalArgumentException("Bundle not deployed " + bundle);
         }
     }
 
-    public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
+    public RuntimeContext deployTestContrib(String bundle, URL contrib)
+            throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
         if (b != null) {
             OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
             ctx.deploy(contrib);
             return ctx;
         } else {
-            throw new IllegalArgumentException("Bundle not deployed "+bundle);
+            throw new IllegalArgumentException("Bundle not deployed " + bundle);
         }
     }
 
@@ -422,12 +434,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     /**
      * Undeploys a contribution from a given bundle.
      * <p>
-     * The path will be relative to the bundle root.
-     * Example:
-     * <code>
+     * The path will be relative to the bundle root. Example: <code>
      * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
-     *
+     * 
      * @param bundle the bundle
      * @param contrib the contribution
      */
@@ -465,18 +475,18 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
      * Resolves an URL for bundle deployment code.
      * <p>
      * TODO: Implementation could be finer...
-     *
+     * 
      * @return the resolved url
      */
     protected URL lookupBundleUrl(String bundle) {
-        for (URL url: urls) {
+        for (URL url : urls) {
             String[] pathElts = url.getPath().split("/");
             for (int i = 0; i < pathElts.length; i++) {
                 if (pathElts[i].startsWith(bundle)
                         && isVersionSuffix(pathElts[i].substring(bundle.length()))) {
                     // we want the main version of the bundle
                     boolean isTestVersion = false;
-                    for (int j = i+1; j < pathElts.length; j++) {
+                    for (int j = i + 1; j < pathElts.length; j++) {
                         // ok for Eclipse (/test) and Maven (/test-classes)
                         if (pathElts[j].startsWith("test")) {
                             isTestVersion = true;
@@ -496,10 +506,10 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
     /**
      * Deploys a whole OSGI bundle.
      * <p>
-     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
-     * and then falls back to the bundle url (e.g., <code>nuxeo-platform-search-api</code>)
-     * for backwards compatibility.
-     *
+     * The lookup is first done on symbolic name, as set in
+     * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
+     * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
+     * 
      * @param bundle the symbolic name
      */
     public void deployBundle(String bundle) throws Exception {
@@ -530,7 +540,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
         if (bundleFile != null) {
             return bundleFile;
         }
-        for (URL url: urls) {
+        for (URL url : urls) {
             URI uri = url.toURI();
             if (readUris.contains(uri)) {
                 continue;
@@ -549,7 +559,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
             }
             String symbolicName = readSymbolicName(bundleFile);
             if (symbolicName != null) {
-                log.info(String.format("Bundle '%s' has URL %s", symbolicName, url));
+                log.info(String.format("Bundle '%s' has URL %s", symbolicName,
+                        url));
                 bundles.put(symbolicName, bundleFile);
             }
             if (bundleName.equals(symbolicName)) {
@@ -557,7 +568,8 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements RuntimeHarn
             }
         }
         log.warn(String.format(
-                "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme", bundleName));
+                "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme",
+                bundleName));
         return oldLookupBundle(bundleName);
     }
 

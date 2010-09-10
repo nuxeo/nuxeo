@@ -53,17 +53,6 @@ public interface ContributionPersistenceManager {
     Contribution addContribution(Contribution contrib) throws Exception;
 
     /**
-     * Persist a new contribution and then install it. If contribution already
-     * exists nothing is done and null returned.
-     * 
-     * @param contrib
-     * @return
-     * @throws Exception
-     */
-    Contribution addAndInstallContribution(Contribution contrib)
-            throws Exception;
-
-    /**
      * Remove a persisted contribution given its name. The contribution will not
      * be uninstalled before being removed. You need to explicitly call
      * {@link #uninstallContribution(String)} to uninstall it.
@@ -74,18 +63,6 @@ public interface ContributionPersistenceManager {
      * @throws Exception
      */
     boolean removeContribution(Contribution contrib) throws Exception;
-
-    /**
-     * Remove a persisted contribution and uninstall it. If the contribution is
-     * not persisted it will be only uninstalled. If the contribution is not
-     * installed it will only be removed. If it is neither installed nor
-     * persisted, do nohting and return false.
-     * 
-     * @param name
-     * @throws Exception
-     */
-    boolean removeAndUninstallContribution(Contribution contrib)
-            throws Exception;
 
     /**
      * Install the contribution given its name. Return true if contribution
@@ -139,7 +116,7 @@ public interface ContributionPersistenceManager {
      * @return
      * @throws Exception
      */
-    boolean isPersisted(String name) throws Exception;
+    boolean isPersisted(Contribution contrib) throws Exception;
 
     /**
      * Start the service. This will install all persisted contributions that are
