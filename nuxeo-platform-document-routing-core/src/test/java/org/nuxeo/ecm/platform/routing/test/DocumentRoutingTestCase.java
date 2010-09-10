@@ -21,6 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
@@ -36,6 +37,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     protected DocumentRoutingEngineService engineService;
 
     protected DocumentRoutingService service;
+
+    static final String ROUTE1 = "route1";
 
     @Override
     public void setUp() throws Exception {
@@ -63,14 +66,15 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
-    public DocumentModel createDocumentRouteModel(CoreSession session)
-            throws ClientException {
-        // this function should create a DocumentRouteModel in a
-        // workspace and then publish it in a section, the return value
-        // should be a DocumentRoute
-        DocumentModel route1 = session.createDocumentModel("/",
-                "test-route-model", "Folder");
+    public DocumentModel createDocumentRouteModel(CoreSession session,
+            String name) throws ClientException {
+        DocumentModel route1 = session.createDocumentModel("/", name, "Folder");
         route1.setPropertyValue("dc:title", "route1");
         return session.createDocument(route1);
+    }
+
+    public DocumentRoute createDocumentRoute(CoreSession session, String name) throws ClientException {
+        DocumentModel model = createDocumentRouteModel(session, name);
+        return model.getAdapter(DocumentRoute.class);
     }
 }

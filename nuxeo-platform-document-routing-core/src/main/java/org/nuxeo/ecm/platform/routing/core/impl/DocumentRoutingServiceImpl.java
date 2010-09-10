@@ -38,7 +38,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<DocumentModel> getAvailableDocumentRouteModel(
+    public List<DocumentRoute> getAvailableDocumentRouteModel(
             CoreSession session) {
         return null;
     }

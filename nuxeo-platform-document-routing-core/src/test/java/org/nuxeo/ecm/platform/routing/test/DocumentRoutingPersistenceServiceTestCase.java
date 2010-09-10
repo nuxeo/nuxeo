@@ -43,7 +43,7 @@ public class DocumentRoutingPersistenceServiceTestCase extends
 
     public void testCreateDocumentRouteInstanceFromDocumentRouteModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session);
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         assertNotNull(instance);
@@ -53,7 +53,7 @@ public class DocumentRoutingPersistenceServiceTestCase extends
 
     public void testSaveDocumentRouteInstanceAsNewModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session);
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         DocumentModel newModel = persistenceService.saveDocumentRouteInstanceAsNewModel(instance,

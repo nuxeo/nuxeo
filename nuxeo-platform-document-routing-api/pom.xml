@@ -13,5 +13,10 @@
   <artifactId>nuxeo-platform-document-routing-api</artifactId>
   <name>Nuxeo Platform Document Routing Addon Api</name>
   <description>Nuxeo Platform Document Routing API</description>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

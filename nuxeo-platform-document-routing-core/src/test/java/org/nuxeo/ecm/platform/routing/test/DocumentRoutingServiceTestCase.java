@@ -16,10 +16,24 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+
 /**
  * @author arussel
  *
  */
 public class DocumentRoutingServiceTestCase extends DocumentRoutingTestCase {
+    public void testCreateNewInstance() {
+        assertTrue(true);
+    }
 
+    public void testGetAvailableDocumentRouteModel() throws ClientException {
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+    }
 }

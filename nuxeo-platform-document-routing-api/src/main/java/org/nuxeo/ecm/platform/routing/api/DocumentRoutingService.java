@@ -49,5 +49,5 @@ public interface DocumentRoutingService {
      * @param session The session used to query the {@link DocumentRoute}.
      * @return A list of available {@link DocumentRoute}
      */
-    List<DocumentModel> getAvailableDocumentRouteModel(CoreSession session);
+    List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session);
 }
