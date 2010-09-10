@@ -16,7 +16,12 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +38,7 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,9 +58,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     public static final String PASSWORD = "test";
 
+    // stream content with non-ASCII characters
+    public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
+
     protected Session session;
 
     protected String rootFolderId;
+
+    protected boolean isAtomPub;
 
     @Override
     public void setUp() throws Exception {
@@ -76,6 +87,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(rid);
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
+
+        isAtomPub = this instanceof TestNuxeoSessionAtomPub;
     }
 
     @Override
@@ -104,6 +117,21 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected String getRepositoryId() {
         return super.session.getRepositoryName();
+    }
+
+    public static String read(InputStream in, String charset)
+            throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buf = new byte[256];
+        try {
+            int n;
+            while ((n = in.read(buf)) != -1) {
+                os.write(buf, 0, n);
+            }
+        } finally {
+            in.close();
+        }
+        return os.toString(charset);
     }
 
     @Test
@@ -165,21 +193,41 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         ContentStream cs = file.getContentStream();
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
-        if (cs.getFileName() != null) {
+        if (!isAtomPub) {
             // TODO fix AtomPub case where the filename is null
             assertEquals("testfile.txt", cs.getFileName());
         }
-        if (cs.getLength() != -1) {
+        if (!isAtomPub) {
             // TODO fix AtomPub case where the length is unknown (streaming)
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
-        assertEquals(Helper.FILE1_CONTENT, FileUtils.read(cs.getStream()));
+        assertEquals(Helper.FILE1_CONTENT, read(cs.getStream(), "UTF-8"));
 
         // set stream
-        // cs = new SimpleContentStream("foo".getBytes(), "text/html",
-        // "foo.html");
-        // file.setContentStream(cs);
-        // file.save();
+        // TODO convenience constructors for ContentStreamImpl
+        byte[] streamBytes = STREAM_CONTENT.getBytes("UTF-8");
+        ByteArrayInputStream stream = new ByteArrayInputStream(streamBytes);
+        cs = new ContentStreamImpl("foo.txt",
+                BigInteger.valueOf(streamBytes.length),
+                "text/plain; charset=UTF-8", stream);
+        file.setContentStream(cs, true);
+
+        // refetch stream
+        file = (Document) session.getObject(file);
+        cs = file.getContentStream();
+        assertNotNull(cs);
+        // AtomPub lowercases charset -> TODO proper mime type comparison
+        assertEquals("text/plain; charset=UTF-8".toLowerCase(),
+                cs.getMimeType().toLowerCase());
+        if (!isAtomPub) {
+            // TODO fix AtomPub case where the filename is null
+            assertEquals("foo.txt", cs.getFileName());
+        }
+        if (!isAtomPub) {
+            // TODO fix AtomPub case where the length is unknown (streaming)
+            assertEquals(streamBytes.length, cs.getLength());
+        }
+        assertEquals(STREAM_CONTENT, read(cs.getStream(), "UTF-8"));
     }
 
 }

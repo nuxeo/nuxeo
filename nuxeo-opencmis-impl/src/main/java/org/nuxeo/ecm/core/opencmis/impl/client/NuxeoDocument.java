@@ -27,10 +27,12 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -206,8 +208,16 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     @Override
     public ObjectId setContentStream(ContentStream contentStream,
             boolean overwrite) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Holder<String> objectIdHolder = new Holder<String>(getId());
+        String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
+        Holder<String> changeTokenHolder = new Holder<String>(changeToken);
+
+        service.setContentStream(getRepositoryId(), objectIdHolder,
+                Boolean.valueOf(overwrite), changeTokenHolder, contentStream,
+                null);
+
+        String objectId = objectIdHolder.getValue();
+        return objectId == null ? null : session.createObjectId(objectId);
     }
 
     @Override

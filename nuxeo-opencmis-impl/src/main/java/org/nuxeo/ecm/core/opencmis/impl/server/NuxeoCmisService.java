@@ -54,6 +54,7 @@ import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -421,7 +422,7 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     @Override
     public void deleteContentStream(String repositoryId,
-            Holder<String> objectId, Holder<String> changeToken,
+            Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
@@ -509,7 +510,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     @Override
-    public void moveObject(String repositoryId, Holder<String> objectId,
+    public void moveObject(String repositoryId, Holder<String> objectIdHolder,
             String targetFolderId, String sourceFolderId,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
@@ -518,18 +519,35 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     @Override
-    public void setContentStream(String repositoryId, Holder<String> objectId,
-            Boolean overwriteFlag, Holder<String> changeToken,
-            ContentStream contentStream, ExtensionsData extension) {
+    public void setContentStream(String repositoryId,
+            Holder<String> objectIdHolder, Boolean overwriteFlag,
+            Holder<String> changeTokenHolder, ContentStream contentStream,
+            ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId;
+        if (objectIdHolder == null
+                || (objectId = objectIdHolder.getValue()) == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+
+        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        // TODO test doc checkout state
+        try {
+            NuxeoPropertyData.setContentStream(doc, contentStream,
+                    !Boolean.FALSE.equals(overwriteFlag));
+            coreSession.saveDocument(doc);
+            coreSession.save();
+        } catch (CmisBaseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
-    public void updateProperties(String repositoryId, Holder<String> objectId,
-            Holder<String> changeToken, Properties properties,
-            ExtensionsData extension) {
+    public void updateProperties(String repositoryId,
+            Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
+            Properties properties, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -562,7 +580,7 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     @Override
     public ObjectList getContentChanges(String repositoryId,
-            Holder<String> changeLogToken, Boolean includeProperties,
+            Holder<String> changeLogTokenHolder, Boolean includeProperties,
             String filter, Boolean includePolicyIds, Boolean includeAcl,
             BigInteger maxItems, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
@@ -783,7 +801,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     @Override
-    public void checkIn(String repositoryId, Holder<String> objectId,
+    public void checkIn(String repositoryId, Holder<String> objectIdHolder,
             Boolean major, Properties properties, ContentStream contentStream,
             String checkinComment, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
@@ -793,8 +811,8 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     @Override
-    public void checkOut(String repositoryId, Holder<String> objectId,
-            ExtensionsData extension, Holder<Boolean> contentCopied) {
+    public void checkOut(String repositoryId, Holder<String> objectIdHolder,
+            ExtensionsData extension, Holder<Boolean> contentCopiedHolder) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
