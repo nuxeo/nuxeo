@@ -742,8 +742,8 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>4.0.2.GA</version>
-      </dependency> 
-    
+      </dependency>
+
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-api</artifactId>
@@ -1897,6 +1897,17 @@
         <groupId>com.smartgwt</groupId>
         <artifactId>smartgwt</artifactId>
         <version>1.0-20081121</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.ericdaugherty.mail</groupId>
+        <artifactId>jes</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>dnsjava</groupId>
+        <artifactId>dnsjava</artifactId>
+        <version>2.0.6</version>
       </dependency>
 
     </dependencies>
