@@ -20,6 +20,7 @@
     <nuxeo.features.version>5.4.0-SNAPSHOT</nuxeo.features.version>
     <nuxeo.webengine.version>5.4.0-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.jsf.version>5.4.0-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.connect.client.version>1.0-SNAPSHOT</nuxeo.connect.client.version>
   </properties>
 
   <modules>
@@ -259,6 +260,8 @@
         <artifactId>nuxeo-platform-forum-workflow</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
+      <!-- Nuxeo platform imaging -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-api</artifactId>
@@ -304,6 +307,7 @@
         <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-jbpm-api</artifactId>
@@ -334,6 +338,7 @@
         <artifactId>nuxeo-platform-jbpm-automation</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
@@ -344,6 +349,7 @@
         <artifactId>nuxeo-platform-lang</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-core</artifactId>
@@ -364,6 +370,7 @@
         <artifactId>nuxeo-platform-mail-test</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mimetype-core</artifactId>
@@ -564,11 +571,6 @@
         <artifactId>nuxeo-platform-webapp-types</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!-- <dependency> -->
-      <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
-      <!-- <artifactId>nuxeo-platform-webapp-core</artifactId> -->
-      <!-- <version>${nuxeo.features.version}</version> -->
-      <!-- </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-url-core</artifactId>
@@ -694,6 +696,7 @@
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-userworkspace-api</artifactId>
@@ -794,16 +797,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-imaging-tiling</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-imaging-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-preview</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -823,7 +816,11 @@
         <artifactId>nuxeo-automation-server</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-client</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
       <!-- I/O feature -->
       <dependency>
@@ -945,6 +942,27 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-management</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.connect</groupId>
+        <artifactId>nuxeo-connect-client</artifactId>
+        <version>${nuxeo.connect.client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-admin-center</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-connect-client-wrapper</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-connect-update</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
 
