@@ -23,6 +23,7 @@
     <nuxeo.services.version>5.4.0-SNAPSHOT</nuxeo.services.version>
     <nuxeo.jsf.version>5.4.0-SNAPSHOT</nuxeo.jsf.version>
     <nuxeo.features.version>5.4.0-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.dm.version>5.4.0-SNAPSHOT</nuxeo.dm.version>
   </properties>
 
   <modules>
@@ -138,6 +139,16 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web-compat</artifactId>
         <version>${nuxeo.jsf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp</artifactId>
+        <version>${nuxeo.dm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-core</artifactId>
+        <version>${nuxeo.dm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
