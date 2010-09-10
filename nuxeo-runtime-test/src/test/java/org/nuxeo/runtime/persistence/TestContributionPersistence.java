@@ -16,6 +16,7 @@
  */
 package org.nuxeo.runtime.persistence;
 
+import org.nuxeo.runtime.DummyContribution;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.ContributionBuilder;
@@ -35,6 +36,8 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
+
         fireFrameworkStarted();
 
         mgr = Framework.getLocalService(ContributionPersistenceManager.class);
@@ -48,6 +51,8 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
 
         String xml = "<listener class=\"org.nuxeo.runtime.persistence.MyListener\"><topic>test</topic></listener>";
         cb.addXmlExtension("org.nuxeo.runtime.EventService", "listeners", xml);
+        cb.addExtension("BaseXPoint", "xp", new DummyContribution("dummy1"),
+                new DummyContribution("dummy2"));
 
         Contribution c1 = mgr.addContribution(cb);
         // check the created contribution
