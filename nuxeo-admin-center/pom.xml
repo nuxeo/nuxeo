@@ -23,7 +23,6 @@
     <module>nuxeo-admin-center</module>
   </modules>
 
-
   <dependencies>
   </dependencies>
 
@@ -76,30 +75,24 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.admin</groupId>
-        <artifactId>nuxeo-admin-centert</artifactId>
-        <version>${version}</version>
+        <artifactId>nuxeo-admin-center</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.admin</groupId>
         <artifactId>nuxeo-connect-client-wrapper</artifactId>
-        <version>${version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.admin</groupId>
         <artifactId>nuxeo-connect-update</artifactId>
-        <version>${version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-reload</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>org.nuxeo.common</groupId>
-        <artifactId>nuxeo-common</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>-->
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
