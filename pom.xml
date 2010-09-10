@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.7.0-SNAPSHOT</version>
+  <version>5.4.0-SNAPSHOT</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -20,9 +20,9 @@
   </description>
 
   <properties>
-    <nuxeo.runtime.version>1.7.0-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.common.version>1.7.0-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.core.version>1.7.0-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.runtime.version>5.4.0-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>5.4.0-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.core.version>5.4.0-SNAPSHOT</nuxeo.core.version>
     <nuxeo.platform.version>5.4.0-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
