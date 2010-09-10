@@ -89,7 +89,17 @@ Services backend: PostgreSQL XA
 Copy JDBC3 driver http://jdbc.postgresql.org/download.html#current
 into $TOMCAT/lib/
 
-2.3) mssql
+2.3) oracle
+
+See http://doc.nuxeo.com/display/KB/Configuring+Oracle
+
+Repository backend: Oracle XA
+Services backend: Oracle
+
+Copy JDBC driver http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+into $TOMCAT/lib/
+
+2.4) mssql
 
 See http://doc.nuxeo.com/display/KB/Configuring+SQL+Server
 
@@ -99,7 +109,7 @@ Services backend: Ms SQL Server XA
 Copy JDBC driver http://repo2.maven.org/maven2/net/sourceforge/jtds/jtds/1.2.2/jtds-1.2.2.jar
 into $TOMCAT/lib/
 
-2.4) cluster
+2.5) cluster
 
 See http://doc.nuxeo.com/display/KB/Nuxeo+clustering+configuration
 
@@ -110,7 +120,7 @@ By default, this template is configured to use PostgreSQL.
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
 
-2.5) custom
+2.6) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.

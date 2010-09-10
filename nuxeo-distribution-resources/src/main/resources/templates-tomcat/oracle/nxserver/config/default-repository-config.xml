@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository name="default">
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">webp:content</field>
+          <field type="largetext">webc:welcomeText</field>
+          <field type="largetext">comment:comment</field>
+          <field type="largetext">post</field>
+          <field type="largetext">mail:mail</field>
+        </schema>
+        <indexing>
+          <!-- for Oracle (Oracle Text indexing parameters): http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm 
+            <fulltext analyzer="LEXER MY_LEXER"/> -->
+        </indexing>
+        <xa-datasource>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource>
+        <property name="URL">jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}
+        </property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      </repository>
+    </repository>
+  </extension>
+</component>
