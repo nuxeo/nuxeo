@@ -27,7 +27,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -36,14 +35,14 @@ import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class DOMSerializer {
 
-    private static final DocumentBuilderFactory BUILDER_FACTORY
-            = DocumentBuilderFactory.newInstance();
+    private static final DocumentBuilderFactory BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 
-    // Default output format which is : no xml declaration, no document type, indent.
+    // Default output format which is : no xml declaration, no document type,
+    // indent.
     private static final OutputFormat DEFAULT_FORMAT = new OutputFormat();
 
     static {
@@ -68,7 +67,14 @@ public final class DOMSerializer {
         return toString(element, DEFAULT_FORMAT);
     }
 
-    public static String toString(Element element, OutputFormat format) throws IOException {
+    public static String toStringOmitXml(Element element) throws IOException {
+        OutputFormat of = new OutputFormat();
+        of.setOmitXMLDeclaration(true);
+        return toString(element, of);
+    }
+
+    public static String toString(Element element, OutputFormat format)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(element, format, baos);
         return baos.toString();
@@ -78,14 +84,14 @@ public final class DOMSerializer {
         return toString(fragment, DEFAULT_FORMAT);
     }
 
-    public static String toString(DocumentFragment fragment, OutputFormat format) throws IOException {
+    public static String toString(DocumentFragment fragment, OutputFormat format)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(fragment, format, baos);
         return baos.toString();
     }
 
-    public static String toString(Document doc)
-            throws IOException {
+    public static String toString(Document doc) throws IOException {
         return toString(doc, DEFAULT_FORMAT);
     }
 
@@ -96,20 +102,24 @@ public final class DOMSerializer {
         return baos.toString();
     }
 
-    public static void write(Element element, OutputStream out) throws IOException {
+    public static void write(Element element, OutputStream out)
+            throws IOException {
         write(element, DEFAULT_FORMAT, out);
     }
 
-    public static void write(Element element, OutputFormat format, OutputStream out) throws IOException {
+    public static void write(Element element, OutputFormat format,
+            OutputStream out) throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(element);
     }
 
-    public static void write(DocumentFragment fragment, OutputStream out) throws IOException {
+    public static void write(DocumentFragment fragment, OutputStream out)
+            throws IOException {
         write(fragment, DEFAULT_FORMAT, out);
     }
 
-    public static void write(DocumentFragment fragment, OutputFormat format, OutputStream out) throws IOException {
+    public static void write(DocumentFragment fragment, OutputFormat format,
+            OutputStream out) throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(fragment);
     }
@@ -118,7 +128,8 @@ public final class DOMSerializer {
         write(doc, DEFAULT_FORMAT, out);
     }
 
-    public static void write(Document doc, OutputFormat format, OutputStream out) throws IOException {
+    public static void write(Document doc, OutputFormat format, OutputStream out)
+            throws IOException {
         XMLSerializer serializer = new XMLSerializer(out, format);
         serializer.asDOMSerializer().serialize(doc);
     }
@@ -131,7 +142,7 @@ public final class DOMSerializer {
         Range range = ((DocumentRange) element.getOwnerDocument()).createRange();
         range.setStartBefore(node);
         range.setEndAfter(element.getLastChild());
-        return  range.cloneContents();
+        return range.cloneContents();
     }
 
 }
