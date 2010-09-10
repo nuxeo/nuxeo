@@ -87,7 +87,7 @@ public class ContributionBuilder extends AbstractContribution {
         StringBuilder buf = new StringBuilder(1024);
         buf.append(
                 "<extension target=\"" + target + "\" point=\"" + point
-                        + "\">\n").append(content).append("</extension>");
+                        + "\">\n").append(content).append("\n</extension>");
         extensions.add(buf.toString());
     }
 

@@ -95,25 +95,8 @@ public class ContributionPersistenceComponent extends DefaultComponent
         return storage.addContribution(contrib);
     }
 
-    public Contribution addAndInstallContribution(Contribution contrib)
-            throws Exception {
-        Contribution c = storage.addContribution(contrib);
-        if (c == null) {
-            return null;
-        }
-        installContribution(contrib);
-        return c;
-    }
-
     public boolean removeContribution(Contribution contrib) throws Exception {
         return storage.removeContribution(contrib);
-    }
-
-    public boolean removeAndUninstallContribution(Contribution contrib)
-            throws Exception {
-        uninstallContribution(contrib);
-        removeContribution(contrib);
-        return true;
     }
 
     public boolean isInstalled(Contribution contrib) throws Exception {
@@ -131,8 +114,9 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     public boolean uninstallContribution(Contribution contrib) throws Exception {
+        boolean ret = isInstalled(contrib);
         ctx.undeploy(contrib);
-        return true;
+        return ret;
     }
 
     public Contribution updateContribution(Contribution contribution)
@@ -140,8 +124,8 @@ public class ContributionPersistenceComponent extends DefaultComponent
         return storage.updateContribution(contribution);
     }
 
-    public boolean isPersisted(String name) throws Exception {
-        return storage.getContribution(name) != null;
+    public boolean isPersisted(Contribution contrib) throws Exception {
+        return storage.getContribution(contrib.getName()) != null;
     }
 
     public void start() throws Exception {

@@ -51,9 +51,7 @@ public class ContributionFile extends AbstractContribution {
 
     protected void load() {
         if (!loaded) {
-            String content = getContent();
-            description = FileSystemStorage.readDocumentation(content);
-            disabled = FileSystemStorage.readDisabledFlag(content);
+            FileSystemStorage.loadMetadata(this);
             loaded = true;
         }
     }
