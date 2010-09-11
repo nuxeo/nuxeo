@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueRegistry;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-public class DefaultQueueRegistry implements QueueRegistry, QueueLocator, QueueNamer {
+public class DefaultQueueRegistry implements QueueRegistry, QueueLocator {
 
 
     protected static class Entry<C extends Serializable> {
@@ -62,23 +62,12 @@ public class DefaultQueueRegistry implements QueueRegistry, QueueLocator, QueueN
         entries.put(queueName,  new Entry<C>(contentType, persister, processor));
     }
 
-    @Override
     public <C extends Serializable> QueuePersister<C> getPersister(URI name) {
         return TransactedInstanceHandler.newProxy(entry(name).persister, QueuePersister.class);
     }
 
-    @Override
     public <C extends Serializable> QueueProcessor<C> getProcessor(URI name) {
         return (QueueProcessor<C>) entry(name).processor;
-    }
-
-    @Override
-    public URI newName(String name) {
-        try {
-            return new URI("nxqueue",name,null);
-        } catch (URISyntaxException e) {
-            throw new QueueError("Cannot generate URI for " + name, e);
-        }
     }
 
     protected <C extends Serializable> Entry<C> entry(URI name) {
@@ -99,25 +88,16 @@ public class DefaultQueueRegistry implements QueueRegistry, QueueLocator, QueueN
     }
 
     @Override
-    public List<URI> getQueueNames() {
-        List<URI> names = new ArrayList<URI>(entries.size());
-        for (String key:entries.keySet()) {
-            names.add(newName(key));
-        }
-        return names;
-    }
-
-    @Override
     public <C extends Serializable> QueueManager<C> getManager(URI name) {
         Entry<C> entry = entry(name);
-        return new DefaultQueueManager<C>(name, this, entry.contentType, entry.persister, entry.processor);
+        return new DefaultQueueManager<C>(name,  entry.contentType, this, entry.persister, entry.processor);
     }
 
     @Override
     public List<QueueManager<?>> getManagers() {
         List<QueueManager<?>> managers = new ArrayList<QueueManager<?>>();
         for (String queueName:entries.keySet()) {
-            managers.add(getManager(newName(queueName)));
+            managers.add(getManager(newQueueName(queueName)));
         }
         return managers;
     }

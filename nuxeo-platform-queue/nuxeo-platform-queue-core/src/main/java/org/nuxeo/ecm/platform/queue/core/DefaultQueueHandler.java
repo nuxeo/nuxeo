@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
-import org.nuxeo.ecm.platform.queue.api.QueueRegistry;
+import org.nuxeo.ecm.platform.queue.api.Transacted;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -47,25 +47,25 @@ public class DefaultQueueHandler implements QueueHandler {
 
     protected int delay;
 
-    protected QueueNamer namer;
+    protected DefaultQueueRegistry registry;
 
     public void setDelay(int delay) {
         this.delay = delay;
     }
 
-    protected DefaultQueueHandler(int delay, QueueNamer namer) {
+    protected DefaultQueueHandler(int delay, DefaultQueueRegistry registry) {
         this.delay = delay;
-        this.namer = namer;
+        this.registry = registry;
     }
 
     @Override
+    @Transacted
     public <C extends Serializable> void newContent(URI owner, URI name, C content) {
             if (!isServerActive()) {
                 throw new QueueError("Server is not active");
             }
 
             // add content in queue
-            QueueRegistry registry = Framework.getLocalService(QueueRegistry.class);
             QueuePersister<C> persister = registry.getPersister(name);
             QueueInfo<C> info = persister.addContent(owner, name, content);
 
@@ -76,6 +76,7 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     @Override
+    @Transacted
     public <C extends Serializable> void newContentIfUnknown(URI ownerName, URI name, C content) {
             if (!isServerActive()) {
                 throw new QueueError("Server is not active");
@@ -92,7 +93,6 @@ public class DefaultQueueHandler implements QueueHandler {
             throw new QueueError("Couldn't lock the resource", e, name);
         }
 
-        QueueRegistry registry = Framework.getLocalService(QueueRegistry.class);
         QueuePersister<C> persister = registry.getPersister(name);
 
         QueueInfo<C> info;
@@ -125,6 +125,23 @@ public class DefaultQueueHandler implements QueueHandler {
 
     @Override
     public URI newName(String queueName, String contentName) {
-        return namer.newContentName(queueName, contentName);
+        return registry.newContentName(queueName, contentName);
     }
+
+    @Override
+    @Transacted
+    public <C extends Serializable> QueueInfo<C> cancel(URI name) {
+        QueuePersister<C> persister = registry.getPersister(name);
+        return persister.removeContent(name);
+    }
+
+    @Override
+    public <C extends Serializable> QueueInfo<C> retry(URI contentName) {
+        QueuePersister<C> persister = registry.getPersister(contentName);
+        QueueInfo<C> info = persister.getInfo(contentName);
+        QueueProcessor<C> processor = registry.getProcessor(contentName);
+        processor.process(info);
+        return info;
+    }
+
 }

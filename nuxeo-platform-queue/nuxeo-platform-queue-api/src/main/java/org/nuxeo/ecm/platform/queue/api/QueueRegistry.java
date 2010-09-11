@@ -16,8 +16,6 @@
 package org.nuxeo.ecm.platform.queue.api;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.util.List;
 
 /**
  * Register persisters and processors giving an handled context class
@@ -36,23 +34,5 @@ public interface QueueRegistry {
      * @param queueProcessor the processor
      */
     <C extends Serializable> void register(String queueName, Class<C> contentType, QueuePersister<C> persister, QueueProcessor<C> processor);
-
-    /**
-     * Returns the  persister associated to  a content type.
-     *
-     * @param content
-     * @return
-     */
-    <C extends Serializable> QueuePersister<C> getPersister(URI name);
-
-    /**
-     *  Returns the processor associated to a content type
-     */
-    <C extends Serializable> QueueProcessor<C> getProcessor(URI name);
-
-    /**
-     * List the registered queues.
-     */
-    List<URI> getQueueNames();
 
 }

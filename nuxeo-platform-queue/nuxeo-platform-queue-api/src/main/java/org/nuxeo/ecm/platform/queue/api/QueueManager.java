@@ -77,19 +77,6 @@ public interface QueueManager<C extends Serializable> {
     boolean knowsContent(URI name);
 
     /**
-     * Retry processing of an orphaned content by invoking it's processor
-     * @param contentName
-     */
-    void retry(URI contentName);
-
-    /**
-     * Cancel processing of an orphaned content by removing it from persistence back-end.
-     *
-     * @param content the content
-     */
-    void cancel(URI name);
-
-    /**
      * Update additional informations on persistence back-end.
      *
      * @param content the content

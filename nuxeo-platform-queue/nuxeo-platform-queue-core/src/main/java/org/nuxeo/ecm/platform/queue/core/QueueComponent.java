@@ -68,9 +68,6 @@ public class QueueComponent extends DefaultComponent {
         if (QueueLocator.class.isAssignableFrom(adapter)) {
             return adapter.cast(registry);
         }
-        if (QueueNamer.class.isAssignableFrom(adapter)) {
-            return adapter.cast(registry);
-        }
         return super.getAdapter(adapter);
     }
 

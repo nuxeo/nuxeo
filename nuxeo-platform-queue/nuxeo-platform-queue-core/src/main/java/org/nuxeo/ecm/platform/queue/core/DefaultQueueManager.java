@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
+import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
@@ -35,20 +35,20 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
 
     protected final URI queueName;
 
-    protected final Class<C> type;
+    protected final Class<C> contentType;
 
-    protected final QueueNamer namer;
+    protected final QueueLocator locator;
 
     protected final QueuePersister<C> persister;
 
     protected final QueueProcessor<C> processor;
 
-    public DefaultQueueManager(URI queueName, QueueNamer namer, Class<C> type, QueuePersister<C> persister, QueueProcessor<C> processor) {
+    public DefaultQueueManager(URI queueName, Class<C> contentType, QueueLocator locator, QueuePersister<C> persister, QueueProcessor<C> processor) {
         this.queueName = queueName;
-        this.type = type;
+        this.contentType = contentType;
+        this.locator = locator;
         this.persister = persister;
         this.processor = processor;
-        this.namer = namer;
     }
 
     @Override
@@ -58,28 +58,9 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
 
     @Override
     public Class<C> getContentType() {
-        return type;
+        return contentType;
     }
 
-    @Override
-    public void cancel(URI name) {
-        if (!TransactionHelper.isTransactionActive()) {
-            TransactionHelper.startTransaction();
-            try {
-                persister.removeContent(name);
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        } else {
-            persister.removeContent(name);
-        }
-    }
-
-    @Override
-    public void retry(URI contentName) {
-        QueueInfo<C> info = persister.getInfo(contentName);
-        processor.process(info);
-    }
 
     @Override
     public boolean knowsContent(URI name)  {
@@ -123,7 +104,7 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
 
     @Override
     public  URI newName(String contentName) {
-        return namer.newContentName(queueName, contentName);
+        return locator.newContentName(queueName, contentName);
     }
 
 }

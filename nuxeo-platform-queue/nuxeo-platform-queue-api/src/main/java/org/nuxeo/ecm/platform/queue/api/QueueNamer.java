@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.platform.queue.core;
+package org.nuxeo.ecm.platform.queue.api;
 
 import java.net.URI;
 
