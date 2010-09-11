@@ -7,7 +7,7 @@ This page gives you access to this server statuses. Follow the links provided in
 
 <@block name="toolbox">
 <ul><h3>Toolbox</h3>
-    <li>Check this server <a href="${This.path}/availability">availability</a></li>
+    <li>Check this server <a href="${This.path}/probes/availability">availability</a></li>
     <li>List <a href="${This.path}/probes">probe statuses</a></a></li>
     <li>Get this server <a href="${This.path}/admin">administrative status</a></li>
 </ul>
