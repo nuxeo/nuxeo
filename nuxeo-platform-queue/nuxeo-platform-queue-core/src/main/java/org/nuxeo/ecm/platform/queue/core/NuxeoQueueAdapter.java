@@ -20,7 +20,6 @@ import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EX
 import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
 import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
 
-import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.URI;
@@ -29,7 +28,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,9 +35,8 @@ import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerInfo;
 import org.nuxeo.ecm.platform.heartbeat.api.ServerNotFoundException;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
+import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
-import org.nuxeo.ecm.platform.queue.api.QueueLocator;
-import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -171,17 +168,15 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
 
 
     @Override
-    public void retry() {
-        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
-        QueueManager<C> mgr = locator.getManager(name);
-        mgr.retry(name);
+    public QueueInfo<C> retry() {
+        QueueHandler qh = Framework.getLocalService(QueueHandler.class);
+        return qh.retry(name);
     }
 
     @Override
-    public void cancel() {
-        QueueLocator locator = Framework.getLocalService(QueueLocator.class);
-        QueueManager<C> mgr = locator.getManager(name);
-        mgr.cancel(name);
+    public QueueInfo<C> cancel() {
+        QueueHandler qh = Framework.getLocalService(QueueHandler.class);
+        return qh.cancel(name);
     }
 
     @Override

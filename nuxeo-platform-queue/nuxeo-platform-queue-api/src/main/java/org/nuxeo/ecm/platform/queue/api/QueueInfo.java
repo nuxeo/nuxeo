@@ -107,11 +107,11 @@ public interface QueueInfo<C extends Serializable> {
     /**
      * Retry handling of content
      */
-    void retry();
+    QueueInfo<C> retry();
 
     /**
      * Cancel handling content
      */
-    void cancel();
+    QueueInfo<C> cancel();
 
 }

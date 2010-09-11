@@ -135,14 +135,13 @@ public class TestQueue extends QueueTestCase {
      * registered in the test-queue-contrib.xml)
      */
     public void testRegisteredQueues() {
-        QueueRegistry registry = Framework.getLocalService(QueueRegistry.class);
-        List<URI> names = registry.getQueueNames();
-
-        assertNotNull(names);
-        assertEquals("The number of registered types is", 2, names.size());
-
         QueueLocator locator = Framework.getLocalService(QueueLocator.class);
-        URI fakeName = locator.newName("fake");
+        List<QueueManager<?>> managers = locator.getManagers();
+
+        assertNotNull(managers);
+        assertEquals("The number of registered types is", 2, managers.size());
+
+        URI fakeName = locator.newQueueName("fake");
         QueueManager<FakeContent> mgr = locator.getManager(fakeName);
         assertNotNull(mgr);
     }
@@ -168,7 +167,7 @@ public class TestQueue extends QueueTestCase {
 
         // Make sure that we don't have any job running
         QueueLocator ql = Framework.getLocalService(QueueLocator.class);
-        URI name = ql.newName("fake");
+        URI name = ql.newQueueName("fake");
         QueueManager<FakeContent> queueManager = ql.getManager(name);
         assertEquals("The number of handled item is", 0,
                 queueManager.listHandledContent().size());

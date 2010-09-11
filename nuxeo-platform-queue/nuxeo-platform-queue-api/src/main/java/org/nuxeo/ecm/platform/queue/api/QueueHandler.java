@@ -51,4 +51,20 @@ public interface QueueHandler {
      */
     URI newName(String queueName, String contentName);
 
+    /**
+     * Cancel content processing
+     *
+     * @param queueName
+     * @param contentName
+     * @return
+     */
+    <C extends Serializable> QueueInfo<C> cancel(URI contentName);
+
+    /**
+     * Retry content processing
+     *
+     * @param contentName
+     * @return
+     */
+    <C extends Serializable> QueueInfo<C> retry(URI contentName);
 }
