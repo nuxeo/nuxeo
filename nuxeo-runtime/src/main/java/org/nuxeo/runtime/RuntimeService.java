@@ -44,77 +44,77 @@ import org.osgi.framework.Bundle;
  * facade class {@link org.nuxeo.runtime.api.Framework}.
  * <p>
  * See: {@link org.nuxeo.runtime.api.Framework}
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RuntimeService {
 
     /**
      * Starts the runtime.
-     * 
+     *
      * @throws Exception if any exception occurred during startup
      */
     void start() throws Exception;
 
     /**
      * Stops the runtime.
-     * 
+     *
      * @throws Exception if any exception occurred during shutdown
      */
     void stop() throws Exception;
 
     /**
      * Tests whether or not the runtime is started.
-     * 
+     *
      * @return true if the runtime is started, false otherwise
      */
     boolean isStarted();
 
     /**
      * Gets the home directory of the runtime.
-     * 
+     *
      * @return the home directory
      */
     File getHome();
 
     /**
      * Gets the name of this runtime service.
-     * 
+     *
      * @return the runtime service name
      */
     String getName();
 
     /**
      * Gets the description of this runtime service.
-     * 
+     *
      * @return the runtime service description
      */
     String getDescription();
 
     /**
      * Gets the version of this runtime service.
-     * 
+     *
      * @return the runtime service version
      */
     Version getVersion();
 
     /**
      * Gets runtime service properties.
-     * 
+     *
      * @return the runtime properties
      */
     Properties getProperties();
 
     /**
      * Reread all property files loaded at startup.
-     * 
+     *
      * @throws Exception
      */
     void reloadProperties() throws Exception;
 
     /**
      * Gets a runtime service property given its name.
-     * 
+     *
      * @param name the property name
      * @return the property value if any or null if none
      */
@@ -122,7 +122,7 @@ public interface RuntimeService {
 
     /**
      * Gets a property value using a default value if the property was not set.
-     * 
+     *
      * @param name the property name
      * @param defaultValue the default value to use when the property doesn't
      *            exists
@@ -134,7 +134,7 @@ public interface RuntimeService {
      * Replaces any substring in the form <code>${property.name}</code> with the
      * corresponding runtime property value if any, otherwise leaves the
      * substring unchanged.
-     * 
+     *
      * @param expression the expression to process
      * @return the expanded expression
      */
@@ -142,14 +142,14 @@ public interface RuntimeService {
 
     /**
      * Gets the component manager.
-     * 
+     *
      * @return the component manager
      */
     ComponentManager getComponentManager();
 
     /**
      * Gets a component given its name as a string.
-     * 
+     *
      * @param name the component name as a string
      * @return the component
      */
@@ -157,7 +157,7 @@ public interface RuntimeService {
 
     /**
      * Gets a component given its name.
-     * 
+     *
      * @param name the component name
      * @return the component, or null if no such component was registered
      */
@@ -165,7 +165,7 @@ public interface RuntimeService {
 
     /**
      * Gets a component implementation instance given its name as a string.
-     * 
+     *
      * @param name the component name as a string
      * @return the component
      */
@@ -173,7 +173,7 @@ public interface RuntimeService {
 
     /**
      * Gets a component implementation instance given its name.
-     * 
+     *
      * @param name the component name
      * @return the component or null if no such component was registered
      */
@@ -181,7 +181,7 @@ public interface RuntimeService {
 
     /**
      * Gets the context of the runtime bundle.
-     * 
+     *
      * @return the context object
      */
     RuntimeContext getContext();
@@ -192,7 +192,7 @@ public interface RuntimeService {
      * <p>
      * If the component is not yet activated, it will be prior to return the
      * service.
-     * 
+     *
      * @param <T> the service type
      * @param serviceClass the service class
      * @return the service object
@@ -201,7 +201,7 @@ public interface RuntimeService {
 
     /**
      * Gets a list of startup warnings. Can be modified to add new warnings.
-     * 
+     *
      * @return the warning list
      */
     List<String> getWarnings();
@@ -216,7 +216,7 @@ public interface RuntimeService {
      * <p>
      * This method works only for bundles that are installed as files on the
      * host file system.
-     * 
+     *
      * @return the bundle file, or null
      */
     File getBundleFile(Bundle bundle);

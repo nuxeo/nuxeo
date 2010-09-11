@@ -31,7 +31,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ContributionPersistenceComponent extends DefaultComponent
         implements ContributionPersistenceManager, FrameworkListener {

@@ -20,13 +20,13 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface ContributionPersistenceManager {
 
     /**
      * Get a list with all persisted contributions.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -34,7 +34,7 @@ public interface ContributionPersistenceManager {
 
     /**
      * Get a contribution given its name.
-     * 
+     *
      * @param name
      * @return
      * @throws Exception
@@ -45,7 +45,7 @@ public interface ContributionPersistenceManager {
      * Persist a new contribution. The contribution will not be installed. You
      * need to explicitly call {@link #installContribution(Contribution)} to
      * install the contribution.
-     * 
+     *
      * @param contrib
      * @return
      * @throws Exception
@@ -56,7 +56,7 @@ public interface ContributionPersistenceManager {
      * Remove a persisted contribution given its name. The contribution will not
      * be uninstalled before being removed. You need to explicitly call
      * {@link #uninstallContribution(String)} to uninstall it.
-     * 
+     *
      * @param name
      * @return true if the contribution was removed, false if the contribution
      *         was not found in persistence.
@@ -67,9 +67,9 @@ public interface ContributionPersistenceManager {
     /**
      * Install the contribution given its name. Return true if contribution
      * install succeeds, false if the contribution is already installed.
-     * 
+     *
      * To be able to install a contribution you need to persist it first.
-     * 
+     *
      * @param name
      * @return
      * @throws Exception
@@ -80,7 +80,7 @@ public interface ContributionPersistenceManager {
      * Uninstall a contribution given is name. If not already installed return
      * false otherwise return true. The contribution persisted state is not
      * modified by this operation.
-     * 
+     *
      * @param name
      * @return
      * @throws Exception
@@ -94,7 +94,7 @@ public interface ContributionPersistenceManager {
      * changing the description and the auto start status.
      * <p>
      * Return back the contribution object.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -102,7 +102,7 @@ public interface ContributionPersistenceManager {
 
     /**
      * Check whether a contribution is currently installed.
-     * 
+     *
      * @param contrib
      * @return
      * @throws Exception
@@ -111,7 +111,7 @@ public interface ContributionPersistenceManager {
 
     /**
      * Check whether a contribution is currently persisted.
-     * 
+     *
      * @param name
      * @return
      * @throws Exception
@@ -121,7 +121,7 @@ public interface ContributionPersistenceManager {
     /**
      * Start the service. This will install all persisted contributions that are
      * marked as auto-install. See {@link Contribution#isDisabled()}
-     * 
+     *
      * @see
      */
     void start() throws Exception;

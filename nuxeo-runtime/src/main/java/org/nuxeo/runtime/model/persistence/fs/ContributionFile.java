@@ -26,7 +26,7 @@ import org.nuxeo.runtime.model.persistence.AbstractContribution;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ContributionFile extends AbstractContribution {
 

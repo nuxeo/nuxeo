@@ -18,7 +18,7 @@ package org.nuxeo.runtime.model.persistence;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class AbstractContribution implements Contribution {
 

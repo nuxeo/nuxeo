@@ -180,7 +180,7 @@ public class ConfigurationGenerator {
             defaultConfig = new Properties();
             defaultConfig.load(new FileInputStream(nuxeoDefaultConf));
             userConfig = new Properties(defaultConfig);
-            
+
             // Add useful system properties
             userConfig.putAll(System.getProperties());
 

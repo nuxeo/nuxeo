@@ -31,13 +31,13 @@ import org.osgi.framework.Bundle;
 
 /**
  * TODO: Work in progress.
- * 
+ *
  * What works: loading resources What doesn't work: loading remote objects that
  * refrences on other remote classes (try to use ClassByteClassLoader from
  * jboss-remoting)
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class RemoteContext implements RuntimeContext {
 

@@ -35,7 +35,7 @@ import org.nuxeo.runtime.Version;
  * <p>
  * When a component is activated the registration info is creating a component
  * instance using the current runtime context.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RegistrationInfo extends Serializable {
@@ -60,7 +60,7 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Get the owner bundle symbolic name of that component. If null the default
      * owner is used.
-     * 
+     *
      * @return
      */
     String getBundle();
@@ -72,42 +72,42 @@ public interface RegistrationInfo extends Serializable {
 
     /**
      * Gets the runtime context that created this registration info.
-     * 
+     *
      * @return the runtime context
      */
     RuntimeContext getContext();
 
     /**
      * Gets the component properties.
-     * 
+     *
      * @return the component properties
      */
     Map<String, Property> getProperties();
 
     /**
      * Gets the list of the required components.
-     * 
+     *
      * @return the required components
      */
     Set<ComponentName> getRequiredComponents();
 
     /**
      * Gets the defined extension points.
-     * 
+     *
      * @return the defined extension points
      */
     ExtensionPoint[] getExtensionPoints();
 
     /**
      * Gets the extensions contributed by this component.
-     * 
+     *
      * @return the contributed extensions
      */
     Extension[] getExtensions();
 
     /**
      * Gets the name of the component.
-     * 
+     *
      * @return the component name
      */
     ComponentName getName();
@@ -115,7 +115,7 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Whether this component is disabled. For now this is used only for
      * persistent components.
-     * 
+     *
      * @return
      */
     boolean isDisabled();
@@ -123,28 +123,28 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Gets the component instance or null if the component was not yet
      * activated.
-     * 
+     *
      * @return the component instance
      */
     ComponentInstance getComponent();
 
     /**
      * Gets the component state.
-     * 
+     *
      * @return the component state
      */
     int getState();
 
     /**
      * Gets the component manager.
-     * 
+     *
      * @return the component manager
      */
     ComponentManager getManager();
 
     /**
      * Checks whether this component is activated.
-     * 
+     *
      * @return true if the component is activated, false otherwise
      */
     boolean isActivated();
@@ -152,14 +152,14 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Checks whether this component is resolved (i&dot;e&dot; all its
      * dependencies are satisfied).
-     * 
+     *
      * @return true if the component is resolved, false otherwise
      */
     boolean isResolved();
 
     /**
      * Gets the list of provided services or null if no service is provided.
-     * 
+     *
      * @return an array containing the service class names or null if no service
      *         are provided
      */
@@ -168,14 +168,14 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Whether or not this registration is persisted by the user (not part of a
      * real bundle).
-     * 
+     *
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();
 
     /**
      * Set the persistent flag on this registration
-     * 
+     *
      * @param isPersistent
      */
     void setPersistent(boolean isPersistent);
@@ -183,14 +183,14 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Give the class name for the component implementation if this is a java
      * component
-     * 
+     *
      * @return class name
      */
     String getImplementation();
 
     /**
      * Retrieve the URL of the XML file used to declare the component
-     * 
+     *
      * @return the XML file URL
      */
     URL getXmlFileUrl();

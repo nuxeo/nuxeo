@@ -23,9 +23,9 @@ import java.net.URL;
 /**
  * A named stream used to be able to deploy new components without referring to
  * them via URLs.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface StreamRef {
 
@@ -36,14 +36,14 @@ public interface StreamRef {
 
     /**
      * Get the stream content.
-     * 
+     *
      * @return
      */
     InputStream getStream() throws IOException;
 
     /**
      * Get an URL to that stream. May return null if no URL is available.
-     * 
+     *
      * @return
      */
     URL asURL();

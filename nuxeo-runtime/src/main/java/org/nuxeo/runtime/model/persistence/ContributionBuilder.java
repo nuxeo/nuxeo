@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ContributionBuilder extends AbstractContribution {
 

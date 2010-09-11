@@ -60,7 +60,7 @@ import org.osgi.framework.FrameworkEvent;
  * <p>
  * The runtime service itself is conveniently available as the
  * <code>runtime</code> instance variable in derived classes.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // Make sure this class is kept in sync with with RuntimeHarness
@@ -337,7 +337,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * <p>
      * The first contribution file found by the class loader will be used. You
      * have no guarantee in case of name collisions.
-     * 
+     *
      * @deprecated use the less ambiguous
      *             {@link #deployContrib(BundleFile,String)}
      * @param contrib the relative path to the contribution file
@@ -367,7 +367,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * <p>
      * For compatibility reasons the name of the bundle may be a jar name, but
      * this use is discouraged and deprecated.
-     * 
+     *
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
      */
@@ -385,7 +385,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * resources deployed in that bundle.
      * <p>
      * Note that the owner bundle MUST be an already deployed bundle.
-     * 
+     *
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
@@ -437,7 +437,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * The path will be relative to the bundle root. Example: <code>
      * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
-     * 
+     *
      * @param bundle the bundle
      * @param contrib the contribution
      */
@@ -475,7 +475,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * Resolves an URL for bundle deployment code.
      * <p>
      * TODO: Implementation could be finer...
-     * 
+     *
      * @return the resolved url
      */
     protected URL lookupBundleUrl(String bundle) {
@@ -509,7 +509,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * The lookup is first done on symbolic name, as set in
      * <code>MANIFEST.MF</code> and then falls back to the bundle url (e.g.,
      * <code>nuxeo-platform-search-api</code>) for backwards compatibility.
-     * 
+     *
      * @param bundle the symbolic name
      */
     public void deployBundle(String bundle) throws Exception {
