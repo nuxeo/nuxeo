@@ -33,6 +33,14 @@ public interface DocumentRoutingConstants {
 
     String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
 
-    public static final String TITLE_PROPERTY_NAME = "dc:title";
+    String TITLE_PROPERTY_NAME = "dc:title";
+
+    String DESCRIPTION_PROPERTY_NAME = "dc:description";
+
+    String EXECUTION_TYPE_PROPERTY_NAME = "stepf:execution";
+
+    enum ExecutionTypeValues {
+        serial, parallel
+    }
 
 }

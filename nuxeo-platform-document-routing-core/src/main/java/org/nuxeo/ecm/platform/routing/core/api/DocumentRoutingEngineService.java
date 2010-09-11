@@ -16,11 +16,18 @@
  */
 package org.nuxeo.ecm.platform.routing.core.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+
 /**
- * The DocumentRoutingEngineService is responsible for
+ * The DocumentRoutingEngineService is responsible for managing the lifecycle of
+ * the DocumentRoute.
+ *
  * @author arussel
  *
  */
 public interface DocumentRoutingEngineService {
+
+    void start(DocumentRoute routeInstance, CoreSession session);
 
 }

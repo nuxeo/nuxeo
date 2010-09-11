@@ -23,27 +23,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
  * @author arussel
  *
  */
-public class DocumentRouteStepImpl implements DocumentRouteStep {
-
-    protected DocumentModel doc;
-
+public class DocumentRouteStepImpl extends DocumentRouteElementImpl implements
+        DocumentRouteStep {
     public DocumentRouteStepImpl(DocumentModel doc) {
-        this.doc = doc;
+        super(doc);
     }
-
-    @Override
-    public boolean isDone() {
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
 }

@@ -6,7 +6,9 @@
     <adapter class="org.nuxeo.ecm.platform.routing.api.DocumentRoute"
       factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory" />
     <adapter class="org.nuxeo.ecm.platform.routing.api.DocumentRouteStep"
-      factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteStepAdapterFactory" />
+      factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory" />
+    <adapter class="org.nuxeo.ecm.platform.routing.api.DocumentRouteElement"
+      factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory" />
   </extension>
 
 </component>  

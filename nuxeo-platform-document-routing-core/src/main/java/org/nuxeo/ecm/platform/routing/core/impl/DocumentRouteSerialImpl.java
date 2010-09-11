@@ -16,20 +16,17 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRoutingEngineServiceImpl extends DefaultComponent
-        implements DocumentRoutingEngineService {
+public class DocumentRouteSerialImpl extends DocumentRouteSerialStepsContainer
+        implements DocumentRoute {
 
-    @Override
-    public void start(DocumentRoute routeInstance, CoreSession session) {
-        routeInstance.run(session);
+    public DocumentRouteSerialImpl(DocumentModel doc) {
+        super(doc);
     }
 }

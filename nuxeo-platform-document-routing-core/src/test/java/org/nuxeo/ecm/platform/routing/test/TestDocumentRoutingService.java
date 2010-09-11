@@ -37,8 +37,9 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1, session, false);
+                doc1, session);
         assertNotNull(routeInstance);
+        assertTrue(routeInstance.isDone());
     }
 
     public void testGetAvailableDocumentRouteModel() throws ClientException {

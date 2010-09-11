@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -51,6 +52,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
+    protected DocumentRoutingEngineService getEngineService() {
+        try {
+            return Framework.getService(DocumentRoutingEngineService.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<DocumentModel> documents, CoreSession session,
@@ -65,7 +74,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         routeInstance.setAttachedDocuments(docIds);
         routeInstance.save(session);
         if(startInstance) {
-            routeInstance.start(session);
+            getEngineService().start(routeInstance, session);
         }
         return routeInstance;
     }

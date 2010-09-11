@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
-public interface DocumentRouteStep {
-    boolean isDone();
+public interface DocumentRouteStep extends DocumentRouteElement {
 
-    String getName();
-
-    String getDescription();
 }

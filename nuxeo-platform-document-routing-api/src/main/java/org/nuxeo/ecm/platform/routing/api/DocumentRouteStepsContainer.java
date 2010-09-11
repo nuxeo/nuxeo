@@ -14,20 +14,13 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.core.adapter;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+package org.nuxeo.ecm.platform.routing.api;
 
 /**
+ *
  * @author arussel
  *
  */
-public class DocumentRouteStepAdapterFactory implements DocumentAdapterFactory {
-
-    @Override
-    public Object getAdapter(DocumentModel doc, Class itf) {
-        return null;
-    }
+public interface DocumentRouteStepsContainer extends DocumentRouteElement {
 
 }

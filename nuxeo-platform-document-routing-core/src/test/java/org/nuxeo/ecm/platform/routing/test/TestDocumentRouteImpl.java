@@ -14,22 +14,26 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.core.impl;
+package org.nuxeo.ecm.platform.routing.test;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRoutingEngineServiceImpl extends DefaultComponent
-        implements DocumentRoutingEngineService {
+public class TestDocumentRouteImpl extends DocumentRoutingTestCase {
+    protected DocumentRoute routeModel;
 
     @Override
-    public void start(DocumentRoute routeInstance, CoreSession session) {
-        routeInstance.run(session);
+    public void setUp() throws Exception {
+        super.setUp();
+        routeModel = createDocumentRouteModel(session, ROUTE1).getAdapter(
+                DocumentRoute.class);
+    }
+
+    public void testMethods() {
+        assertNotNull(routeModel);
+        assertEquals(ROUTE1, routeModel.getName());
     }
 }
