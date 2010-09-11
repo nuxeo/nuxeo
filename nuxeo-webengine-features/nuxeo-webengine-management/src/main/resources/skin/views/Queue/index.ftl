@@ -3,12 +3,12 @@
 
 <@block name="content">
 
-<dl><h2>${This.manager.name} queue</h2>
-<#list This.items as item>
+<dl><h2>${This.manager.name.schemeSpecificPart} queue</h2>
+<#list This.infos as info>
  <span class="listing">
-      <dt><a href="${This.name}/${item.handledContent.name}">${item.handledContent.name}</a></dt>
-       <dd>with comments "<span class="with comment">${item.handledContent.comments}</span>
-             <#if item.orphaned><span class="is orphaned">is orphaned</span></#if></dd>
+      <dt><a href="${This.name}/${info.name}">${info.name}</a></dt>
+       <dd>with comments "<span class="with comment">${info.handledContent.comments}</span>
+             <#if info.orphaned><span class="is orphaned">is orphaned</span></#if></dd>
 </#list>
 </dl>
 

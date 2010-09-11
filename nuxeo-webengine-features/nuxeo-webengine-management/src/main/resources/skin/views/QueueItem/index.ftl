@@ -1,12 +1,11 @@
 <@extends src="base.ftl">
 
-<#assign item=This.item content=This.item.handledContent>
+<#assign info=This.info >
 
 <@block name="content">
-<h2>Queue item</h2>
-<p class="item"><a href="${This.name}">${content.name}</a> queue item
-    <#if content.comments??> with comments "<span class="with comments">${content.comments}</span>"</#if>
-    <#if item.orphaned><span class="is orphaned">is orphaned</span></#if></p>
+<h2>Queue info</h2>
+<p class="info"><a href="${This.name.fragment}">${info.name.fragment}</a> is owned by ${This.ownerName}
+    <#if info.orphaned><span class="is orphaned"> and is orphaned</span></#if></p>
 </@block>
 
 <@block name="toolbox">
