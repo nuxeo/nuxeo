@@ -71,8 +71,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     }
 
     @Override
-    public boolean run(CoreSession session) {
-        return false;
+    public void run(CoreSession session) {
+        setDone(session);
     }
 
     @Override

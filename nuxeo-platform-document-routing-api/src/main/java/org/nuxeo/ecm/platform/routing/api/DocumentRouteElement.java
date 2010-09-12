@@ -46,7 +46,7 @@ public interface DocumentRouteElement {
      * @param session
      * @return true is the element is not done
      */
-    boolean run(CoreSession session);
+    void run(CoreSession session);
 
     DocumentModel getDocument();
 

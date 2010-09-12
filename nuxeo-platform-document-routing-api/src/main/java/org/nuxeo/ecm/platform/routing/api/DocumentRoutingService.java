@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.routing.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * The DocumentRoutingService allows to start new {@link DocumentRoute}
@@ -40,7 +39,7 @@ public interface DocumentRoutingService {
      * @return the created {@link DocumentRoute} instance.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, CoreSession session,
+            List<String> documentIds, CoreSession session,
             boolean startInstance);
 
     /**
@@ -48,21 +47,21 @@ public interface DocumentRoutingService {
      *      only one document attached.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            DocumentModel document, CoreSession session, boolean startInstance);
+            String documentId, CoreSession session, boolean startInstance);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      startInstance <code>true</code>
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, CoreSession session);
+            List<String> documentIds, CoreSession session);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      startInstance <code>true</code> and only one document attached.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            DocumentModel document, CoreSession session);
+            String documentId, CoreSession session);
 
     /**
      * Return the list of available {@link DocumentRoute} model for this

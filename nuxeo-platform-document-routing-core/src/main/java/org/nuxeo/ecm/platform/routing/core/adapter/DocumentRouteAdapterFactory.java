@@ -16,13 +16,12 @@
  */
 package org.nuxeo.ecm.platform.routing.core.adapter;
 
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.core.model.DocumentContainer;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteParallelImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteParallelStepsContainer;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteSerialImpl;

@@ -38,4 +38,5 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
      * @param documents
      */
     void setAttachedDocuments(List<String> documentIds);
+    List<String> getAttachedDocuments();
 }

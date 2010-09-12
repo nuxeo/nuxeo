@@ -34,37 +34,37 @@ public class DocumentRouteParallelStepsContainer extends
     }
 
     @Override
-    public boolean run(CoreSession session) {
+    public void run(CoreSession session) {
         List<DocumentRouteElement> children = getChildrenElement(session);
         if (children.isEmpty()) {
             setRunning(session);
             setDone(session);
-            return false;
+            return;
         }
         if (!isRunning()) {
             setRunning(session);
-            boolean thisElementIsWaitingState = false;
+            boolean someChildrenNotDone = false;
             for (DocumentRouteElement child : children) {
-                boolean isWaitingState = child.run(session);
-                if (isWaitingState) {
-                    thisElementIsWaitingState = true;
+                child.run(session);
+                if (!child.isDone()) {
+                    someChildrenNotDone = true;
                 }
             }
-            if (!thisElementIsWaitingState) {
+            if (!someChildrenNotDone) {
                 setDone(session);
             }
-            return thisElementIsWaitingState;
+            return;
         } else {
-            boolean waitStatePresentInChildren = false;
+            boolean someChildrenNotDone = false;
             for (DocumentRouteElement child : children) {
                 if (!child.isDone()) {
-                    waitStatePresentInChildren = true;
+                    someChildrenNotDone = true;
                 }
             }
-            if (!waitStatePresentInChildren) {
+            if (!someChildrenNotDone) {
                 setDone(session);
             }
-            return waitStatePresentInChildren;
+            return;
         }
 
     }

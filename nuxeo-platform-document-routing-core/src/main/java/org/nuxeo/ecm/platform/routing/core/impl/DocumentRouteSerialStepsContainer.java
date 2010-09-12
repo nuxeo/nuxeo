@@ -34,26 +34,26 @@ public class DocumentRouteSerialStepsContainer extends
     }
 
     @Override
-    public boolean run(CoreSession session) {
+    public void run(CoreSession session) {
         List<DocumentRouteElement> children = getChildrenElement(session);
         if (!isRunning()) {
             setRunning(session);
         }
         if (children.isEmpty()) {
             setDone(session);
-            return false;
+            return;
         }
         // run all the child unless there is a wait state
         for (DocumentRouteElement child : children) {
             if (!child.isDone()) {
-                boolean isWaitState = child.run(session);
-                if (isWaitState) {
-                    return true;
+                child.run(session);
+                if (!child.isDone()) {
+                    return;
                 }
             }
         }
         // all child ran, we're done
         setDone(session);
-        return false;
+        return;
     }
 }

@@ -39,6 +39,8 @@ public interface DocumentRoutingConstants {
 
     String EXECUTION_TYPE_PROPERTY_NAME = "stepf:execution";
 
+    String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
+
     enum ExecutionTypeValues {
         serial, parallel
     }

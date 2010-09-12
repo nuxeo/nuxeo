@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,19 +27,36 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStepsContainer;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRouteStepsContainerImpl extends
-        DocumentRouteElementImpl implements DocumentRouteStepsContainer {
+public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
+        implements DocumentRouteStepsContainer {
 
     public DocumentRouteStepsContainerImpl(DocumentModel doc) {
         super(doc);
     }
 
     public void setAttachedDocuments(List<String> documentIds) {
+        try {
+            document.setPropertyValue(
+                    DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                    (Serializable) documentIds);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getAttachedDocuments() {
+        try {
+            return (List<String>) document.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     protected List<DocumentRouteElement> getChildrenElement(CoreSession session) {

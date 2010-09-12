@@ -62,15 +62,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, CoreSession session,
+            List<String> docIds, CoreSession session,
             boolean startInstance) {
         DocumentModel routeInstanceDoc = getPersistenceService().createDocumentRouteInstanceFromDocumentRouteModel(
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
-        List<String> docIds = new ArrayList<String>();
-        for (DocumentModel doc : documents) {
-            docIds.add(doc.getId());
-        }
         routeInstance.setAttachedDocuments(docIds);
         routeInstance.save(session);
         if(startInstance) {
@@ -81,21 +77,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            DocumentModel document, CoreSession session, boolean startInstance) {
-        return createNewInstance(model, Collections.singletonList(document),
+            String documentId, CoreSession session, boolean startInstance) {
+        return createNewInstance(model, Collections.singletonList(documentId),
                 session, startInstance);
     }
 
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            List<DocumentModel> documents, CoreSession session) {
-        return createNewInstance(model, documents, session, true);
+            List<String> documentIds, CoreSession session) {
+        return createNewInstance(model, documentIds, session, true);
     }
 
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            DocumentModel document, CoreSession session) {
-        return createNewInstance(model, Collections.singletonList(document),
+            String documentId, CoreSession session) {
+        return createNewInstance(model, Collections.singletonList(documentId),
                 session, true);
     }
 
