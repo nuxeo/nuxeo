@@ -9,6 +9,10 @@
     @author Olivier Grisel (ogrisel@nuxeo.com)
   </documentation>
 
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+  </service>
+
   <implementation
       class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
@@ -254,4 +258,12 @@
         class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
   </extension-point>
 
+ <extension
+    target="org.nuxeo.ecm.platform.management.statuses"
+    point="probes">
+         <probe name="ldapDirectories"
+                  class="org.nuxeo.ecm.platform.management.statuses.probes.LDAPDirectoriesProbe"
+                  serviceClass="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
+  </extension>
+  
 </component>
