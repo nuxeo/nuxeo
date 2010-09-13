@@ -10,9 +10,9 @@ public interface ProbeManager extends ProbeRunnerMBean {
 
     Collection<ProbeInfo> getInFailureProbeInfos();
 
-    boolean runProbe(ProbeInfo probe);
+    ProbeInfo runProbe(ProbeInfo probe);
 
-    boolean runProbe(String name);
+    ProbeInfo runProbe(String name);
 
     ProbeInfo getProbeInfo(String name);
 

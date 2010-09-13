@@ -15,6 +15,7 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         AdministrativeStatusChangeListener.init();
+        RuntimeListener.init();
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.management");
@@ -52,9 +53,13 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         assertTrue(AdministrativeStatusChangeListener.isServerActivatedEventTriggered());
         assertFalse(AdministrativeStatusChangeListener.isServerPassivatedEventTriggered());
 
+        assertTrue(RuntimeListener.isServerActivatedEventTriggered());
+        assertFalse(RuntimeListener.isServerPassivatedEventTriggered());
+
         status = localManager.deactivateNuxeoInstance("Nuxeo Server is down for maintenance", "system");
         assertTrue(status.isPassive());
         assertTrue(AdministrativeStatusChangeListener.isServerPassivatedEventTriggered());
+        assertTrue(RuntimeListener.isServerPassivatedEventTriggered());
 
         status = localManager.getNuxeoInstanceStatus();
         assertTrue(status.isPassive());

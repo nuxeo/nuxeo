@@ -104,16 +104,16 @@ public class ProbeManagerImpl implements ProbeManager {
         return getProbesInErrorCount() <= 0;
     }
 
-    public boolean runProbe(ProbeInfo probe) {
+    public ProbeInfo runProbe(ProbeInfo probe) {
         doRunProbe(probe);
-        return getProbesInSuccess().contains(probe.getShortcutName());
+        return probe;
     }
 
-    public boolean runProbe(String name) {
+    public ProbeInfo runProbe(String name) {
         ProbeInfo probeInfo = getProbeInfo(name);
         if (probeInfo==null) {
             log.warn("Probe " + name + " can not be found");
-            return false;
+            return null;
         }
         return runProbe(probeInfo);
     }
@@ -159,30 +159,30 @@ public class ProbeManagerImpl implements ProbeManager {
             return;
         }
         try {
-            ProbeInfoImpl probeImpl = (ProbeInfoImpl) probe;
+            ProbeInfoImpl probeInfoImpl = (ProbeInfoImpl) probe;
             Thread currentThread = Thread.currentThread();
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(ProbeInfoImpl.class.getClassLoader());
-            probeImpl.lastRunnedDate = new Date();
-            probeImpl.runnedCount += 1;
+            probeInfoImpl.lastRunnedDate = new Date();
+            probeInfoImpl.runnedCount += 1;
             try {
                 Probe runnableProbe = probesByShortcuts.get(probe.getShortcutName());
-                probeImpl.lastStatus = runnableProbe.run();
-                if (probeImpl.lastStatus.isSuccess()) {
-                    probeImpl.lastSucceedDate = probeImpl.lastRunnedDate;
-                    probeImpl.lastSuccesStatus = probeImpl.lastStatus;
-                    probeImpl.successCount += 1;
+                probeInfoImpl.lastStatus = runnableProbe.run();
+                if (probeInfoImpl.lastStatus.isSuccess()) {
+                    probeInfoImpl.lastSucceedDate = probeInfoImpl.lastRunnedDate;
+                    probeInfoImpl.lastSuccesStatus = probeInfoImpl.lastStatus;
+                    probeInfoImpl.successCount += 1;
                 } else {
-                    probeImpl.lastFailureStatus = probeImpl.lastStatus;
-                    probeImpl.failureCount += 1;
-                    probeImpl.lastFailureDate = probeImpl.lastRunnedDate;
+                    probeInfoImpl.lastFailureStatus = probeInfoImpl.lastStatus;
+                    probeInfoImpl.failureCount += 1;
+                    probeInfoImpl.lastFailureDate = probeInfoImpl.lastRunnedDate;
                 }
             } catch (Throwable e) {
-                probeImpl.failureCount += 1;
-                probeImpl.lastFailureDate = new Date();
-                probeImpl.lastFailureStatus = ProbeStatus.newError(e);
+                probeInfoImpl.failureCount += 1;
+                probeInfoImpl.lastFailureDate = new Date();
+                probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);
             } finally {
-                probeImpl.lastDuration = doGetDuration(probeImpl.lastRunnedDate, new Date());
+                probeInfoImpl.lastDuration = doGetDuration(probeInfoImpl.lastRunnedDate, new Date());
                 currentThread.setContextClassLoader(lastLoader);
             }
 

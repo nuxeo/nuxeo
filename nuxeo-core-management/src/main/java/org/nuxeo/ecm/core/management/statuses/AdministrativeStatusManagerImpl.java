@@ -17,25 +17,21 @@
 
 package org.nuxeo.ecm.core.management.statuses;
 
-import java.io.Serializable;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.SimplePrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.InlineEventContext;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
-import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Implementation class for the {@link AdministrativeStatusManager} service.
+ * For each Nuxeo Instance in the cluster one instance of this class is created.
+ *
+ * @author tiry
+ *
+ */
 public class AdministrativeStatusManagerImpl implements AdministrativeStatusManager {
 
     protected final AdministrativeStatusPersister persister;
@@ -43,6 +39,8 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
     protected final GlobalAdministrativeStatusManager globalManager;
 
     protected final String serverInstanceName;
+
+    protected Notifier[] notifiers = {new CoreEventNotifier(), new RuntimeEventNotifier()};
 
     public AdministrativeStatusManagerImpl(GlobalAdministrativeStatusManager globalManager,AdministrativeStatusPersister persister) {
         this.globalManager=globalManager;
@@ -60,18 +58,9 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
        return serverInstanceName;
     }
 
-    protected void notifyEvent(String name, String instanceIdentifier, String serviceIdentifier) {
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        eventProperties.put("category", AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
-        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE, instanceIdentifier);
-        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE, serviceIdentifier);
-        EventContext ctx = new InlineEventContext(
-                new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME), eventProperties);
-        Event event = ctx.newEvent(name);
-        try {
-            Framework.getService(EventProducer.class).fireEvent(event);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
+    protected void notifyEvent(String eventName, String instanceIdentifier, String serviceIdentifier) {
+        for (Notifier notifier : notifiers) {
+            notifier.notifyEvent(eventName, instanceIdentifier, serviceIdentifier);
         }
     }
 

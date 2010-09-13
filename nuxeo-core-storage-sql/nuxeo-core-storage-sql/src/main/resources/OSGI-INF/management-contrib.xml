@@ -8,9 +8,9 @@
       class="org.nuxeo.ecm.core.storage.sql.management.RepositoryStatusFactory" />
 
   </extension>
-  
+
    <extension
-    target="org.nuxeo.ecm.core.management"
+    target="org.nuxeo.ecm.core.management.CoreManagementComponent"
     point="probes">
          <probe name="remoteSQLStorageSessions"
                   class="org.nuxeo.ecm.core.storage.sql.management.RemoteSessionsProbe"/>
