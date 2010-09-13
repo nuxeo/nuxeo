@@ -259,7 +259,7 @@
   </extension-point>
 
  <extension
-    target="org.nuxeo.ecm.platform.management.statuses"
+    target="org.nuxeo.ecm.core.management"
     point="probes">
          <probe name="ldapDirectories"
                   class="org.nuxeo.ecm.platform.management.statuses.probes.LDAPDirectoriesProbe"
