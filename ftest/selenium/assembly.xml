@@ -55,8 +55,7 @@
 
   <target name="run-selenium-tests" description="Run Selenium tests">
     <copy tofile="${integration.dir}/selenium-server.jar" overwrite="true">
-      <artifact:resolveFile
-        key="org.seleniumhq.selenium.server:selenium-server:2.0.a4"
+      <artifact:resolveFile key="org.seleniumhq.selenium:selenium-server:2.0a4"
         classifier="standalone" />
     </copy>
     <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh,*ctl" />
