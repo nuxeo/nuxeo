@@ -32,6 +32,10 @@ public interface AdministrativeStatusManager {
 
     public static final String ADMINISTRATIVE_EVENT_CATEGORY = "administrativeCategory";
 
+    public static final String ADMINISTRATIVE_EVENT_INSTANCE = "instanceIdentifier";
+
+    public static final String ADMINISTRATIVE_EVENT_SERVICE = "serviceIdentifier";
+
     public static final String ACTIVATED_EVENT = "serviceActivated";
 
     public static final String PASSIVATED_EVENT = "servicePassivated";

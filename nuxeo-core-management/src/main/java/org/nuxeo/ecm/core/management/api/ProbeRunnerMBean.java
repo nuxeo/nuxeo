@@ -21,18 +21,18 @@ import java.util.Collection;
 
 public interface ProbeRunnerMBean {
 
-    abstract Collection<String> getProbeNames();
+    Collection<String> getProbeNames();
 
-    abstract int getProbesCount();
+    int getProbesCount();
 
-    abstract Collection<String> getProbesInError();
+    Collection<String> getProbesInError();
 
-    abstract int getProbesInErrorCount();
+    int getProbesInErrorCount();
 
-    abstract Collection<String> getProbesInSuccess();
+    Collection<String> getProbesInSuccess();
 
-    abstract int getProbesInSuccessCount();
+    int getProbesInSuccessCount();
 
-    abstract boolean runAllProbes();
+    boolean runAllProbes();
 
 }

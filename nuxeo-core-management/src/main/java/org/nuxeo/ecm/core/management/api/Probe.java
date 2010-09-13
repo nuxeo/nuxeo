@@ -23,8 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface Probe {
 
-    void init(Object service);
-
     ProbeStatus run() throws ClientException;
 
 }

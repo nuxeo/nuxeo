@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.management.probes;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,22 +27,43 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 public class ProbeManagerImpl implements ProbeManager {
 
+    protected static final Log log = LogFactory.getLog(ProbeManagerImpl.class);
+
+    protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
+
+    protected final Map<String, ProbeInfo> infosByShortcuts =  new HashMap<String, ProbeInfo>();
+
+    protected final Map<String, Probe> probesByShortcuts =  new HashMap<String, Probe>();
+
+    protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
+
+    protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
+
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
         for (ProbeInfo runner : runners) {
-            names.add(runner.shortcutName);
+            names.add(runner.getShortcutName());
         }
         return names;
     }
 
-    public Collection<ProbeInfo> getProbeInfos() {
+    public Collection<ProbeInfo> getAllProbeInfos() {
         return Collections.unmodifiableCollection(infosByTypes.values());
+    }
+
+    public Collection<ProbeInfo> getInSuccessProbeInfos() {
+        return Collections.unmodifiableCollection(succeed);
+    }
+
+    public Collection<ProbeInfo> getInFailureProbeInfos() {
+        return Collections.unmodifiableCollection(failed);
     }
 
     public Collection<String> getProbeNames() {
@@ -64,10 +86,6 @@ public class ProbeManagerImpl implements ProbeManager {
         return doExtractProbesName(succeed);
     }
 
-    public Collection<ProbeInfo> getProbesInfoInSuccess() {
-        return Collections.unmodifiableSet(succeed);
-    }
-
     public int getProbesInSuccessCount() {
         return succeed.size();
     }
@@ -81,14 +99,6 @@ public class ProbeManagerImpl implements ProbeManager {
         return info;
     }
 
-    public Collection<ProbeInfo> getInSuccessProbeInfos() {
-        return Collections.unmodifiableCollection(succeed);
-    }
-
-    public Collection<ProbeInfo> getInFailureProbeInfos() {
-            return Collections.unmodifiableCollection(failed);
-    }
-
     public boolean runAllProbes() {
         doRun();
         return getProbesInErrorCount() <= 0;
@@ -96,27 +106,21 @@ public class ProbeManagerImpl implements ProbeManager {
 
     public boolean runProbe(ProbeInfo probe) {
         doRunProbe(probe);
-        return getProbesInSuccess().contains(probe.shortcutName);
+        return getProbesInSuccess().contains(probe.getShortcutName());
+    }
+
+    public boolean runProbe(String name) {
+        ProbeInfo probeInfo = getProbeInfo(name);
+        if (probeInfo==null) {
+            log.warn("Probe " + name + " can not be found");
+            return false;
+        }
+        return runProbe(probeInfo);
     }
 
     public ProbeInfo getProbeInfo(String name) {
-        for (ProbeInfo info : infosByTypes.values()) {
-            if (name.equals(info.shortcutName)) {
-                return info;
-            }
-        }
-        return null;
+        return infosByShortcuts.get(name);
     }
-
-    protected static final Log log = LogFactory.getLog(ProbeManagerImpl.class);
-
-    protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
-
-    protected final Map<String, ProbeInfo> infosByShortcuts =  new HashMap<String, ProbeInfo>();
-
-    protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
-
-    protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
 
     public void registerProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
@@ -127,16 +131,12 @@ public class ProbeManagerImpl implements ProbeManager {
             throw new ManagementRuntimeException(
                     "Cannot create management probe for " + descriptor);
         }
-        Class<?> serviceClass = descriptor.getServiceClass();
-        if (serviceClass != null) {
-            Object service = Framework.getLocalService(serviceClass);
-            probe.init(service);
-        }
-        ProbeInfo info = new ProbeInfo(descriptor, probe);
+
+        ProbeInfoImpl info = new ProbeInfoImpl(descriptor);
         infosByTypes.put(probeClass, info);
         infosByShortcuts.put(descriptor.getShortcut(), info);
+        probesByShortcuts.put(descriptor.getShortcut(), probe);
     }
-
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
@@ -144,42 +144,48 @@ public class ProbeManagerImpl implements ProbeManager {
         infosByShortcuts.remove(descriptor.getShortcut());
     }
 
-    protected void doRunWithSafeClassLoader() {
-        for (ProbeInfo context : infosByTypes.values()) {
-            try {
-                context.run();
-                failed.remove(context);
-                succeed.add(context);
-            } catch (Exception e) {
-                succeed.remove(context);
-                failed.add(context);
-            }
+    protected void doRun() {
+        for (ProbeInfo probe : infosByTypes.values()) {
+            doRunProbe(probe);
         }
     }
 
-    protected void doRun() {
-        for (ProbeInfo context : infosByTypes.values()) {
-            try {
-                context.run();
-                if (context.isInError()) {
-                    succeed.remove(context);
-                    failed.add(context);
-                } else {
-                    failed.remove(context);
-                    succeed.add(context);
-            }
-            } catch (Throwable e) {
-              log.error("Error caught while executing " + context.getShortcutName(), e);
-            }
-        }
+    protected static Long doGetDuration(Date fromDate, Date toDate) {
+        return toDate.getTime() - fromDate.getTime();
     }
 
     protected void doRunProbe(ProbeInfo probe) {
-        if (!probe.isEnabled) {
+        if (!probe.isEnabled()) {
             return;
         }
         try {
-            probe.run();
+            ProbeInfoImpl probeImpl = (ProbeInfoImpl) probe;
+            Thread currentThread = Thread.currentThread();
+            ClassLoader lastLoader = currentThread.getContextClassLoader();
+            currentThread.setContextClassLoader(ProbeInfoImpl.class.getClassLoader());
+            probeImpl.lastRunnedDate = new Date();
+            probeImpl.runnedCount += 1;
+            try {
+                Probe runnableProbe = probesByShortcuts.get(probe.getShortcutName());
+                probeImpl.lastStatus = runnableProbe.run();
+                if (probeImpl.lastStatus.isSuccess()) {
+                    probeImpl.lastSucceedDate = probeImpl.lastRunnedDate;
+                    probeImpl.lastSuccesStatus = probeImpl.lastStatus;
+                    probeImpl.successCount += 1;
+                } else {
+                    probeImpl.lastFailureStatus = probeImpl.lastStatus;
+                    probeImpl.failureCount += 1;
+                    probeImpl.lastFailureDate = probeImpl.lastRunnedDate;
+                }
+            } catch (Throwable e) {
+                probeImpl.failureCount += 1;
+                probeImpl.lastFailureDate = new Date();
+                probeImpl.lastFailureStatus = ProbeStatus.newError(e);
+            } finally {
+                probeImpl.lastDuration = doGetDuration(probeImpl.lastRunnedDate, new Date());
+                currentThread.setContextClassLoader(lastLoader);
+            }
+
             if (probe.isInError()) {
                 succeed.remove(probe);
                 failed.add(probe);

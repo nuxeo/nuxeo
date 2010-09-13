@@ -49,6 +49,4 @@ public interface ProbeMBean {
 
     ProbeStatus getLastFailureStatus();
 
-    void run();
-
 }

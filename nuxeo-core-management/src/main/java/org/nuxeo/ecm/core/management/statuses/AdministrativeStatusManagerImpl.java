@@ -60,10 +60,11 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
        return serverInstanceName;
     }
 
-    protected void notifyEvent(String name, String identifier) {
+    protected void notifyEvent(String name, String instanceIdentifier, String serviceIdentifier) {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
         eventProperties.put("category", AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
-        eventProperties.put("instanceIdentifier", identifier);
+        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE, instanceIdentifier);
+        eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE, serviceIdentifier);
         EventContext ctx = new InlineEventContext(
                 new SimplePrincipal(SecurityConstants.SYSTEM_USERNAME), eventProperties);
         Event event = ctx.newEvent(name);
@@ -107,9 +108,9 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
 
     protected void notifyOnStatus(AdministrativeStatus status) {
            if (status.isActive()) {
-               notifyEvent(AdministrativeStatusManager.ACTIVATED_EVENT, status.getInstanceIdentifier());
+               notifyEvent(AdministrativeStatusManager.ACTIVATED_EVENT, status.getInstanceIdentifier(), status.getServiceIdentifier());
            } else if (status.isPassive()) {
-                notifyEvent(AdministrativeStatusManager.PASSIVATED_EVENT, status.getInstanceIdentifier());
+                notifyEvent(AdministrativeStatusManager.PASSIVATED_EVENT, status.getInstanceIdentifier(), status.getServiceIdentifier());
            }
     }
 

@@ -4,10 +4,10 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="administrativeStatusListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.core.management.test.statuses.TestStatuses$Listener">
-        <event>serverActivated</event>
-        <event>serverPassivated</event>
+    <listener name="administrativeStatusChangeListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.management.test.statuses.AdministrativeStatusChangeListener">
+        <event>serviceActivated</event>
+        <event>servicePassivated</event>
     </listener>
 
   </extension>

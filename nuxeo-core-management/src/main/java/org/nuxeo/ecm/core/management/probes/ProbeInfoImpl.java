@@ -18,29 +18,19 @@ package org.nuxeo.ecm.core.management.probes;
 
 import java.util.Date;
 
-import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeMBean;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 
-public class ProbeInfo implements ProbeMBean {
+public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
 
-    protected ProbeInfo(ProbeDescriptor descriptor, Probe probe) {
-        this.descriptor = descriptor;
-        this.probe = probe;
-    }
-
-    //XXX
-    public ProbeDescriptor descriptor;
+    protected ProbeDescriptor descriptor;
 
     protected boolean isEnabled = true;
 
-    //XXX
-    public String shortcutName;
+    protected String shortcutName;
 
-    //XXX
-    public String qualifiedName;
-
-    protected final Probe probe;
+    protected String qualifiedName;
 
     protected ProbeStatus lastStatus = ProbeStatus.newBlankProbStatus();
 
@@ -62,50 +52,66 @@ public class ProbeInfo implements ProbeMBean {
 
     protected ProbeStatus lastFailureStatus = ProbeStatus.newBlankProbStatus();
 
+    protected ProbeInfoImpl(ProbeDescriptor descriptor) {
+        this.descriptor = descriptor;
+        this.shortcutName=descriptor.getShortcut();
+        this.qualifiedName=descriptor.getQualifiedName();
+    }
+
+    @Override
     public long getFailedCount() {
         return failureCount;
     }
 
+    @Override
     public long getLastDuration() {
         return lastDuration;
     }
 
+    @Override
     public ProbeStatus getLastFailureStatus() {
         return lastFailureStatus;
     }
 
+    @Override
     public Date getLastFailedDate() {
         return lastFailureDate;
     }
 
+    @Override
     public Date getLastRunnedDate() {
         return lastRunnedDate;
     }
 
+    @Override
     public Date getLastSucceedDate() {
         return lastSucceedDate;
     }
 
+    @Override
     public long getRunnedCount() {
         return runnedCount;
     }
 
+    @Override
     public long getSucceedCount() {
         return successCount;
     }
 
     public void disable() {
-        ProbeInfo.this.isEnabled = false;
+        isEnabled = false;
     }
 
     public void enable() {
-        ProbeInfo.this.isEnabled = true;
+        isEnabled = true;
     }
 
+    @Override
     public boolean isEnabled() {
-        return ProbeInfo.this.isEnabled;
+        return isEnabled;
     }
 
+    @Override
     public boolean isInError() {
         if (lastFailureDate == null) {
             return false;
@@ -116,47 +122,32 @@ public class ProbeInfo implements ProbeMBean {
         return true;
     }
 
+    @Override
     public ProbeStatus getStatus() {
         return lastStatus;
     }
 
+    @Override
     public String getShortcutName() {
         return shortcutName;
-
     }
 
-    protected static Long doGetDuration(Date fromDate, Date toDate) {
-        return toDate.getTime() - fromDate.getTime();
+    @Override
+    public ProbeDescriptor getDescriptor() {
+        return descriptor;
     }
 
-    public synchronized void run()  {
-        if (!isEnabled) {
-            return;
-        }
-        Thread currentThread = Thread.currentThread();
-        ClassLoader lastLoader = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(ProbeInfo.class.getClassLoader());
-        lastRunnedDate = new Date();
-        runnedCount += 1;
-        try {
-            lastStatus = probe.run();
-            if (lastStatus.isSuccess()) {
-                lastSucceedDate = lastRunnedDate;
-                lastSuccesStatus = lastStatus;
-                successCount += 1;
-            } else {
-                lastFailureStatus = lastStatus;
-                failureCount += 1;
-                lastFailureDate = lastRunnedDate;
-            }
-        } catch (Throwable e) {
-            failureCount += 1;
-            lastFailureDate = new Date();
-            lastFailureStatus = ProbeStatus.newError(e);
-        } finally {
-            lastDuration = doGetDuration(lastRunnedDate, new Date());
-            currentThread.setContextClassLoader(lastLoader);
-        }
+    @Override
+    public String getQualifiedName() {
+        return qualifiedName;
+    }
+
+    public void setQualifiedName(String qualifiedName) {
+        this.qualifiedName = qualifiedName;
+    }
+
+    public void setShortcutName(String shortcutName) {
+        this.shortcutName = shortcutName;
     }
 
 }
