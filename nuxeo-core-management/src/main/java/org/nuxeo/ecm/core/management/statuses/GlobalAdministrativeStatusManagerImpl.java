@@ -25,8 +25,7 @@ public class GlobalAdministrativeStatusManagerImpl implements GlobalAdministrati
 
     @Override
     public AdministrativeStatusManager getStatusManager(String instanceIdentifier) {
-
-        if (!managers.containsValue(instanceIdentifier)) {
+        if (!managers.containsKey(instanceIdentifier)) {
             managers.put(instanceIdentifier, new AdministrativeStatusManagerImpl(this, persister, instanceIdentifier));
         }
         return managers.get(instanceIdentifier);

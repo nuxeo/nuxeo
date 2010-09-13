@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.CoreManagementComponent">
+
+  <implementation
+    class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.management.api.ProbeManager" />
+    <provide interface="org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager"/>
+    <provide interface="org.nuxeo.ecm.core.management.api.AdministrativeStatusManager"/>
+  </service>
+
+  <extension-point name="probes">
+    <object class="org.nuxeo.ecm.core.management.probes.ProbeDescriptor" />
+  </extension-point>
+
+  <extension-point name="serviceDefinition">
+    <object class="org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor" />
+  </extension-point>
+
+</component>

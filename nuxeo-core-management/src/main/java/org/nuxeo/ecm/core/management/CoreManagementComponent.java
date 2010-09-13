@@ -18,8 +18,10 @@ package org.nuxeo.ecm.core.management;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
 import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
+import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -38,11 +40,16 @@ public class CoreManagementComponent extends DefaultComponent  {
     public static final ComponentName NAME = new ComponentName(
             CoreManagementComponent.class.getCanonicalName());
 
+    public static final String PROBES_EP = "probes";
+
+    public static final String SERVICE_DEF_EP = "serviceDefinition";
+
+
     public CoreManagementComponent() {
         super(); // enables breaking
     }
 
-    protected GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
+    protected GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
     protected ProbeManagerImpl probeRunner = new ProbeManagerImpl();
 
     protected AdministrativeStatusManagerImpl getLocalManager() {
@@ -57,8 +64,7 @@ public class CoreManagementComponent extends DefaultComponent  {
         if (adapter.isAssignableFrom(AdministrativeStatusManager.class)) {
             return adapter.cast(getLocalManager());
         }
-
-        if (adapter.isAssignableFrom(ProbeManagerImpl.class)) {
+        if (adapter.isAssignableFrom(ProbeManager.class)) {
             return adapter.cast(probeRunner);
         }
         return super.getAdapter(adapter);
@@ -69,8 +75,11 @@ public class CoreManagementComponent extends DefaultComponent  {
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals("probes")) {
+        if (extensionPoint.equals(PROBES_EP)) {
             probeRunner.registerProbe((ProbeDescriptor) contribution);
+        }
+        else if (extensionPoint.equals(SERVICE_DEF_EP)) {
+            globalManager.registerService((AdministrableServiceDescriptor) contribution);
         }
     }
 

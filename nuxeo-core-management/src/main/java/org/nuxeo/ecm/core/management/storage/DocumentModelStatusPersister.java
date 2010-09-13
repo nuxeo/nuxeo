@@ -176,13 +176,13 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
     @Override
     public AdministrativeStatus getStatus(String instanceId,
             String serviceIdentifier) {
-        StatusFetcher fetcher = new StatusFetcher(getRepositoryName(), instanceId, null);
+        StatusFetcher fetcher = new StatusFetcher(getRepositoryName(), instanceId, serviceIdentifier);
         try {
             fetcher.runUnrestricted();
             if (fetcher.statuses.size()==1) {
                 return fetcher.statuses.get(0);
             } else {
-                log.error("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
+                log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
                 return null;
             }
         }

@@ -6,19 +6,22 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
-@XObject("deactivableService")
+@XObject("administrableService")
 public class AdministrableServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XNode("@label")
-    private String label;
-
     @XNode("@id")
     private String id;
 
+    @XNode("@name")
+    private String name;
+
     @XNode("description")
     private String description;
+
+    @XNode("label")
+    private String label;
 
     @XNode("initialState")
     private String initialState = AdministrativeStatus.ACTIVE;
@@ -28,6 +31,9 @@ public class AdministrableServiceDescriptor implements Serializable {
     }
 
     public String getLabel() {
+        if (label==null) {
+            return "label."  + getName();
+        }
         return label;
     }
 
@@ -36,13 +42,16 @@ public class AdministrableServiceDescriptor implements Serializable {
     }
 
     public String getDescription() {
+        if (description==null) {
+            return getName() + ".description";
+        }
         return description;
     }
 
-    public String getUniqueId() {
-        return getId();
+    public String getName() {
+        if (name==null) {
+            return getId();
+        }
+        return name;
     }
-
-
-
 }
