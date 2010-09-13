@@ -60,6 +60,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
@@ -416,22 +417,33 @@ public class NuxeoCmisService extends AbstractCmisService {
             VersioningState versioningState, List<String> policies,
             Acl addAces, Acl removeAces, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (folderId == null) {
+            // no unfileable objects for now
+            throw new CmisInvalidArgumentException("Invalid null folder ID");
+        }
+        DocumentModel doc = getDocumentModel(new IdRef(sourceId));
+        DocumentModel folder = getDocumentModel(new IdRef(folderId));
+        try {
+            DocumentModel copyDoc = coreSession.copy(doc.getRef(),
+                    folder.getRef(), null);
+            NuxeoObjectData copy = new NuxeoObjectData(repository, copyDoc,
+                    null, null, null, null, null, null, null);
+            if (properties != null && properties.getPropertyList() != null
+                    && !properties.getPropertyList().isEmpty()) {
+                updateProperties(copy, null, copy.getType(), properties, false);
+                copy.doc = coreSession.saveDocument(copyDoc);
+            }
+            coreSession.save();
+            return copy.getId();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
     public void deleteContentStream(String repositoryId,
             Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             ExtensionsData extension) {
-        checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteObjectOrCancelCheckOut(String repositoryId,
-            String objectId, Boolean allVersions, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -631,7 +643,6 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean includePathSegment, BigInteger maxItems,
             BigInteger skipCount, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-
         if (folderId == null) {
             throw new CmisInvalidArgumentException("Null folderId");
         }
@@ -682,6 +693,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
         }
         result.setObjects(list);
+        // TODO orderBy
         // TODO maxItems, skipCount
         result.setHasMoreItems(Boolean.FALSE);
         result.setNumItems(BigInteger.valueOf(list.size()));
@@ -698,16 +710,61 @@ public class NuxeoCmisService extends AbstractCmisService {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePathSegment, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (folderId == null) {
+            throw new CmisInvalidArgumentException("Null folderId");
+        }
+        int levels = depth == null ? 2 : depth.intValue(); // default 2
+        if (levels == 0) {
+            throw new CmisInvalidArgumentException("Invalid depth: 0");
+        }
+        return getDescendantsInternal(repositoryId, folderId, filter,
+                includeAllowableActions, includeRelationships, renditionFilter,
+                includePathSegment, 0, levels, false,
+                context.isObjectInfoRequired() ? this : null);
+    }
+
+    protected List<ObjectInFolderContainer> getDescendantsInternal(
+            String repositoryId, String folderId, String filter,
+            Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includePathSegments, int level, int maxLevels,
+            boolean folderOnly, ObjectInfoHandler objectInfos) {
+        if (maxLevels != -1 && level >= maxLevels) {
+            return null;
+        }
+        ObjectInFolderList children = getChildrenInternal(repositoryId,
+                folderId, filter, null, includeAllowableActions,
+                includeRelationships, renditionFilter, includePathSegments, -1,
+                0, folderOnly, objectInfos);
+        if (children == null) {
+            return Collections.emptyList();
+        }
+        List<ObjectInFolderContainer> res = new ArrayList<ObjectInFolderContainer>(
+                children.getObjects().size());
+        for (ObjectInFolderData child : children.getObjects()) {
+            ObjectInFolderContainerImpl oifc = new ObjectInFolderContainerImpl();
+            oifc.setObject(child);
+            // recurse
+            List<ObjectInFolderContainer> subChildren = getDescendantsInternal(
+                    repositoryId, child.getObject().getId(), filter,
+                    includeAllowableActions, includeRelationships,
+                    renditionFilter, includePathSegments, level + 1, maxLevels,
+                    folderOnly, objectInfos);
+            if (subChildren != null) {
+                oifc.setChildren(subChildren);
+            }
+            res.add(oifc);
+        }
+        return res;
     }
 
     @Override
     public ObjectData getFolderParent(String repositoryId, String folderId,
             String filter, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        List<ObjectParentData> parents = getObjectParentsInternal(repositoryId,
+                folderId, filter, null, null, null, Boolean.TRUE, true);
+        return parents.isEmpty() ? null : parents.get(0).getObject();
     }
 
     @Override
@@ -727,7 +784,16 @@ public class NuxeoCmisService extends AbstractCmisService {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includeRelativePathSegment, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
+        return getObjectParentsInternal(repositoryId, objectId, filter,
+                includeAllowableActions, includeRelationships, renditionFilter,
+                includeRelativePathSegment, false);
+    }
 
+    protected List<ObjectParentData> getObjectParentsInternal(
+            String repositoryId, String objectId, String filter,
+            Boolean includeAllowableActions,
+            IncludeRelationships includeRelationships, String renditionFilter,
+            Boolean includeRelativePathSegment, boolean folderOnly) {
         String pathSegment;
         String parentId;
         try {
@@ -738,6 +804,10 @@ public class NuxeoCmisService extends AbstractCmisService {
             DocumentModel doc = coreSession.getDocument(docRef);
             if (isFilteredOut(doc)) {
                 throw new CmisObjectNotFoundException(objectId);
+            }
+            if (folderOnly && !doc.isFolder()) {
+                throw new CmisInvalidArgumentException("Not a folder: "
+                        + objectId);
             }
             pathSegment = doc.getName();
             DocumentModel parent = coreSession.getParentDocument(docRef);
@@ -753,7 +823,9 @@ public class NuxeoCmisService extends AbstractCmisService {
                 includeAllowableActions, includeRelationships, renditionFilter,
                 Boolean.FALSE, Boolean.FALSE, null);
         ObjectParentDataImpl opd = new ObjectParentDataImpl(od);
-        opd.setRelativePathSegment(pathSegment);
+        if (!Boolean.FALSE.equals(includeRelativePathSegment)) {
+            opd.setRelativePathSegment(pathSegment);
+        }
         return Collections.<ObjectParentData> singletonList(opd);
     }
 
@@ -851,8 +923,20 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public void deleteObject(String repositoryId, String objectId,
             Boolean allVersions, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        checkRepositoryId(repositoryId);
+        // check existence
+        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        try {
+            coreSession.removeDocument(doc.getRef());
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deleteObjectOrCancelCheckOut(String repositoryId,
+            String objectId, Boolean allVersions, ExtensionsData extension) {
+        deleteObject(repositoryId, objectId, allVersions, extension);
     }
 
 }

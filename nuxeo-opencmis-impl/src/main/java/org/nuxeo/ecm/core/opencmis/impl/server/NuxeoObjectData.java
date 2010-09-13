@@ -118,6 +118,10 @@ public class NuxeoObjectData implements ObjectData {
                 : BaseTypeId.CMIS_DOCUMENT;
     }
 
+    public TypeDefinition getType() {
+        return type;
+    }
+
     @Override
     public Properties getProperties() {
         return getProperties(propertyIds);

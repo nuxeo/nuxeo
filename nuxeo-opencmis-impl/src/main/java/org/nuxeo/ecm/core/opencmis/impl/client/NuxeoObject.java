@@ -43,6 +43,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFact
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData.NuxeoPropertyDataName;
 
 /**
  * Base abstract live local CMIS Object, wrapping a {@link NuxeoSession} and a
@@ -58,7 +59,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     private final ObjectType type;
 
-    static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
+    protected static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     public static NuxeoObject construct(NuxeoSession session,
             NuxeoObjectData data, ObjectType type) {
@@ -111,7 +112,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public String getName() {
-        return getPropertyValue(PropertyIds.NAME);
+        return NuxeoPropertyDataName.getValue(data.doc);
     }
 
     @Override
@@ -146,8 +147,8 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void delete(boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        service.deleteObject(getRepositoryId(), getId(),
+                Boolean.valueOf(allVersions), null);
     }
 
     @Override

@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,8 +56,9 @@ public class Helper {
     /**
      * Creates data in the repository using the Nuxeo API.
      */
-    public static void makeNuxeoRepository(CoreSession session)
+    public static Map<String, String> makeNuxeoRepository(CoreSession session)
             throws Exception {
+        Map<String, String> info = new HashMap<String, String>();
 
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
                 "Folder");
@@ -119,12 +122,14 @@ public class Helper {
         file5 = session.createDocument(file5);
         file5.followTransition(DELETE_TRANSITION);
         session.saveDocument(file5);
-        // file5id = file5.getId();
+        info.put("file5id", file5.getId());
 
         session.save();
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
+
+        return info;
     }
 
 }

@@ -47,6 +47,7 @@ import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
+import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
@@ -81,7 +82,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
             ContentStream contentStream, VersioningState versioningState,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
-        PropertiesImpl props;
+        Properties props;
         if (properties == null) {
             props = null;
         } else {
@@ -90,93 +91,11 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
             if (typeId == null) {
                 throw new IllegalArgumentException("Missing type");
             }
-            ObjectType newType = session.getTypeDefinition(typeId);
-            if (newType == null) {
+            ObjectType type = session.getTypeDefinition(typeId);
+            if (type == null) {
                 throw new IllegalArgumentException("Unknown type: " + typeId);
             }
-            Map<String, PropertyDefinition<?>> propertyDefinitions = newType.getPropertyDefinitions();
-
-            props = new PropertiesImpl();
-            for (Entry<String, ?> es : properties.entrySet()) {
-                String key = es.getKey();
-                Object value = es.getValue();
-
-                PropertyDefinition<?> pd = propertyDefinitions.get(key);
-                if (pd == null) {
-                    throw new IllegalArgumentException("Unknown property '"
-                            + key + "' for type: " + typeId);
-                }
-                boolean single = pd.getCardinality() == Cardinality.SINGLE;
-
-                List<?> values;
-                if (value == null) {
-                    values = null;
-                } else if (value instanceof List<?>) {
-                    if (single) {
-                        throw new IllegalArgumentException("Property '" + key
-                                + "' is not a multi value property!");
-                    }
-                    values = (List<?>) value;
-                } else {
-                    if (!single) {
-                        throw new IllegalArgumentException("Property '" + key
-                                + "' is not a single value property!");
-                    }
-                    values = Collections.singletonList(value);
-                }
-                Object firstValue = values == null ? null : values.get(0);
-
-                PropertyData<?> prop;
-                if (pd instanceof PropertyStringDefinition) {
-                    prop = objectFactory.createPropertyStringData(key,
-                            (List<String>) values);
-                } else if (pd instanceof PropertyIdDefinition) {
-                    prop = objectFactory.createPropertyIdData(key,
-                            (List<String>) values);
-                } else if (pd instanceof PropertyHtmlDefinition) {
-                    prop = objectFactory.createPropertyHtmlData(key,
-                            (List<String>) values);
-                } else if (pd instanceof PropertyUriDefinition) {
-                    prop = objectFactory.createPropertyUriData(key,
-                            (List<String>) values);
-                } else if (pd instanceof PropertyIntegerDefinition) {
-                    if (firstValue == null) {
-                        prop = objectFactory.createPropertyIntegerData(key,
-                                (List<BigInteger>) null);
-                    } else if (firstValue instanceof BigInteger) {
-                        prop = objectFactory.createPropertyIntegerData(key,
-                                (List<BigInteger>) values);
-                    } else if ((firstValue instanceof Byte)
-                            || (firstValue instanceof Short)
-                            || (firstValue instanceof Integer)
-                            || (firstValue instanceof Long)) {
-                        List<BigInteger> list = new ArrayList<BigInteger>(
-                                values.size());
-                        for (Object v : values) {
-                            list.add(BigInteger.valueOf(((Number) v).longValue()));
-                        }
-                        prop = objectFactory.createPropertyIntegerData(key,
-                                list);
-                    } else {
-                        throw new IllegalArgumentException("Property '" + key
-                                + "' is an Integer property");
-                    }
-                } else if (pd instanceof PropertyBooleanDefinition) {
-                    prop = objectFactory.createPropertyBooleanData(key,
-                            (List<Boolean>) values);
-                } else if (pd instanceof PropertyDecimalDefinition) {
-                    prop = objectFactory.createPropertyDecimalData(key,
-                            (List<BigDecimal>) values);
-                } else if (pd instanceof PropertyDateTimeDefinition) {
-                    prop = objectFactory.createPropertyDateTimeData(key,
-                            (List<GregorianCalendar>) values);
-                } else {
-                    throw new CmisRuntimeException("Unknown class: "
-                            + pd.getClass().getName());
-                }
-
-                props.addProperty(prop);
-            }
+            props = convertProperties(properties, type);
         }
         List<String> policyIds;
         if (policies == null) {
@@ -196,6 +115,92 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                 null);
         // must now refetch doc
         return (Document) session.getObject(new ObjectIdImpl(id), context);
+    }
+
+    /** Converts from an untyped map to a {@link Properties} object. */
+    protected Properties convertProperties(Map<String, ?> properties,
+            ObjectType type) {
+        Map<String, PropertyDefinition<?>> propDefs = type.getPropertyDefinitions();
+        PropertiesImpl props = new PropertiesImpl();
+        for (Entry<String, ?> es : properties.entrySet()) {
+            String key = es.getKey();
+            Object value = es.getValue();
+            PropertyDefinition<?> pd = propDefs.get(key);
+            if (pd == null) {
+                throw new IllegalArgumentException("Unknown property '" + key
+                        + "' for type: " + type.getId());
+            }
+            boolean single = pd.getCardinality() == Cardinality.SINGLE;
+
+            List<?> values;
+            if (value == null) {
+                values = null;
+            } else if (value instanceof List<?>) {
+                if (single) {
+                    throw new IllegalArgumentException("Property '" + key
+                            + "' is not a multi value property!");
+                }
+                values = (List<?>) value;
+            } else {
+                if (!single) {
+                    throw new IllegalArgumentException("Property '" + key
+                            + "' is not a single value property!");
+                }
+                values = Collections.singletonList(value);
+            }
+            Object firstValue = values == null ? null : values.get(0);
+
+            PropertyData<?> prop;
+            if (pd instanceof PropertyStringDefinition) {
+                prop = objectFactory.createPropertyStringData(key,
+                        (List<String>) values);
+            } else if (pd instanceof PropertyIdDefinition) {
+                prop = objectFactory.createPropertyIdData(key,
+                        (List<String>) values);
+            } else if (pd instanceof PropertyHtmlDefinition) {
+                prop = objectFactory.createPropertyHtmlData(key,
+                        (List<String>) values);
+            } else if (pd instanceof PropertyUriDefinition) {
+                prop = objectFactory.createPropertyUriData(key,
+                        (List<String>) values);
+            } else if (pd instanceof PropertyIntegerDefinition) {
+                if (firstValue == null) {
+                    prop = objectFactory.createPropertyIntegerData(key,
+                            (List<BigInteger>) null);
+                } else if (firstValue instanceof BigInteger) {
+                    prop = objectFactory.createPropertyIntegerData(key,
+                            (List<BigInteger>) values);
+                } else if ((firstValue instanceof Byte)
+                        || (firstValue instanceof Short)
+                        || (firstValue instanceof Integer)
+                        || (firstValue instanceof Long)) {
+                    List<BigInteger> list = new ArrayList<BigInteger>(
+                            values.size());
+                    for (Object v : values) {
+                        list.add(BigInteger.valueOf(((Number) v).longValue()));
+                    }
+                    prop = objectFactory.createPropertyIntegerData(key, list);
+                } else {
+                    throw new IllegalArgumentException("Property '" + key
+                            + "' is an Integer property");
+                }
+            } else if (pd instanceof PropertyBooleanDefinition) {
+                prop = objectFactory.createPropertyBooleanData(key,
+                        (List<Boolean>) values);
+            } else if (pd instanceof PropertyDecimalDefinition) {
+                prop = objectFactory.createPropertyDecimalData(key,
+                        (List<BigDecimal>) values);
+            } else if (pd instanceof PropertyDateTimeDefinition) {
+                prop = objectFactory.createPropertyDateTimeData(key,
+                        (List<GregorianCalendar>) values);
+            } else {
+                throw new CmisRuntimeException("Unknown class: "
+                        + pd.getClass().getName());
+            }
+
+            props.addProperty(prop);
+        }
+        return props;
     }
 
     @Override

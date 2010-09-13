@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,8 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -66,6 +66,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     protected String rootFolderId;
 
     protected boolean isAtomPub;
+
+    protected Map<String, String> repoDetails;
 
     @Override
     public void setUp() throws Exception {
@@ -105,7 +107,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public abstract void tearDownCmisSession() throws Exception;
 
     protected void setUpData() throws Exception {
-        Helper.makeNuxeoRepository(super.session);
+        repoDetails = Helper.makeNuxeoRepository(super.session);
     }
 
     protected void tearDownData() {
@@ -134,7 +136,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         return os.toString(charset);
     }
 
-    @Test
     public void testRoot() {
         Folder root = session.getRootFolder();
         assertNotNull(root);
@@ -152,7 +153,13 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertTrue(props.size() > 0);
     }
 
-    @Test
+    public void testDefaultProperties() throws Exception {
+        Folder root = session.getRootFolder();
+        CmisObject child = root.getChildren().iterator().next();
+        assertNotNull(child.getProperty("dc:coverage"));
+        assertNull(child.getPropertyValue("dc:coverage"));
+    }
+
     public void testCreateObject() {
         Folder root = session.getRootFolder();
         ContentStream contentStream = null;
@@ -171,6 +178,19 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("mynote", doc.getName());
         assertEquals("mynote", doc.getPropertyValue("dc:title"));
         assertEquals("bla bla", doc.getPropertyValue("note"));
+
+        // list children
+        ItemIterable<CmisObject> children = root.getChildren();
+        assertEquals(3, children.getTotalNumItems());
+        CmisObject note = null;
+        for (CmisObject child : children) {
+            if (child.getName().equals("mynote")) {
+                note = child;
+            }
+        }
+        assertNotNull("Missing child", note);
+        assertEquals("Note", note.getType().getId());
+        assertEquals("bla bla", note.getPropertyValue("note"));
     }
 
     public void testBasic() throws Exception {
@@ -228,6 +248,55 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             assertEquals(streamBytes.length, cs.getLength());
         }
         assertEquals(STREAM_CONTENT, read(cs.getStream(), "UTF-8"));
+    }
+
+    public void testDeletedInTrash() throws Exception {
+        String file5id = repoDetails.get("file5id");
+
+        try {
+            CmisObject ob = session.getObjectByPath("/testfolder1/testfile5");
+            assertNull("file 5 should be in trash", ob);
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            CmisObject ob = session.getObject(session.createObjectId(file5id));
+            assertNull("file 5 should be in trash", ob);
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        for (CmisObject child : folder.getChildren()) {
+            if (child.getName().equals("title5")) {
+                fail("file 5 should be in trash");
+            }
+        }
+
+        // TODO
+        // String query =
+        // "SELECT cmis:objectId FROM cmis:document WHERE dc:title = 'title5'";
+        // ItemIterable<QueryResult> col = session.query(query, false);
+        // assertEquals("file 5 should be in trash", 0, col.getTotalNumItems());
+
+        // test trashed child doesn't block folder delete
+        for (CmisObject child : folder.getChildren()) {
+            child.delete(true);
+        }
+        folder.delete(true);
+    }
+
+    // XXX TODO copy not implemented (and its signature must change)
+    public void TODOtestCopy() throws Exception {
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", doc.getPropertyValue("dc:title"));
+        Property<String> prop = session.getObjectFactory().createProperty(
+                doc.getType().getPropertyDefinitions().get("dc:title"),
+                "new title");
+        Document copy = doc.copy(Collections.<Property<?>> singletonList(prop),
+                null, null, null, null);
+        assertNotSame(doc.getId(), copy.getId());
+        assertEquals("new title", copy.getPropertyValue("dc:title"));
     }
 
 }

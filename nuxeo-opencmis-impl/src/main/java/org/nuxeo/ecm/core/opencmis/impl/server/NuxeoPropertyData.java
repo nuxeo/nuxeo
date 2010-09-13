@@ -599,8 +599,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             super(propertyDefinition, doc);
         }
 
-        @Override
-        public String getFirstValue() {
+        /**
+         * Gets the value for the cmis:name property.
+         */
+        public static String getValue(DocumentModel doc) {
             if (doc.getPath().isRoot()) {
                 return ""; // Nuxeo root
             }
@@ -611,6 +613,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 name = "";
             }
             return name;
+        }
+
+        @Override
+        public String getFirstValue() {
+            return getValue(doc);
         }
 
         @Override

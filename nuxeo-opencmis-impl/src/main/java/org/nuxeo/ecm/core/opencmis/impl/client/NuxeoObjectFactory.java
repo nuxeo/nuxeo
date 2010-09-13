@@ -28,6 +28,7 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Rendition;
+import org.apache.chemistry.opencmis.client.runtime.PersistentPropertyImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.DocumentTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.FolderTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.PolicyTypeImpl;
@@ -100,15 +101,13 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public <T> Property<T> createProperty(PropertyDefinition<?> type, T value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new PersistentPropertyImpl<T>(type, value);
     }
 
     @Override
     public <T> Property<T> createPropertyMultivalue(PropertyDefinition<?> type,
             List<T> values) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new PersistentPropertyImpl<T>(type, values);
     }
 
     @Override
