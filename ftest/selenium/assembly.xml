@@ -1,10 +1,12 @@
-<project name="nuxeo-assembly" default="integration-test" xmlns:nx="urn:nuxeo-build"
-  xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly" default="integration-test"
+  xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+    uri="urn:nuxeo-artifact" />
 
   <target name="init" unless="init.done">
-    <property name="integration.dir" value="${maven.project.build.directory}/integration" />
+    <property name="integration.dir"
+      value="${maven.project.build.directory}/integration" />
     <property name="selenium.dir" value="ftest/selenium" />
     <property name="jboss" value="${integration.dir}/nuxeo-ep-jboss" />
     <property name="init.done" value="true" />
@@ -24,7 +26,8 @@
         key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.version}:zip"
         classifier="nuxeo-ep" />
     </unzip>
-    <rename dest="${jboss}" src="${integration.dir}/nuxeo-ep-${nuxeo.version}-jboss"/>
+    <rename dest="${jboss}"
+      src="${integration.dir}/nuxeo-ep-${nuxeo.version}-jboss" />
     <chmod dir="${jboss}/bin" perm="u+x" includes="*.sh,*ctl" />
 
     <copy todir="${jboss}/server/default/lib">
@@ -53,7 +56,8 @@
   <target name="run-selenium-tests" description="Run Selenium tests">
     <copy tofile="${integration.dir}/selenium-server.jar" overwrite="false">
       <artifact:resolveFile
-        key="org.seleniumhq.selenium.server:selenium-server:1.0.3" classifier="standalone" />
+        key="org.seleniumhq.selenium.server:selenium-server:1.0.3"
+        classifier="standalone" />
     </copy>
     <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh,*ctl" />
 
