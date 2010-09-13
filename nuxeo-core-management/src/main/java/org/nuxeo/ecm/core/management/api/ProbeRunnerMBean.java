@@ -15,11 +15,24 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.api;
 
-public interface AdministrativeStatusPersister {
+import java.util.Collection;
 
-    String setValue(String serverInstanceName, String value);
-    String getValue(String serverInstanceName);
+public interface ProbeRunnerMBean {
+
+    abstract Collection<String> getProbeNames();
+
+    abstract int getProbesCount();
+
+    abstract Collection<String> getProbesInError();
+
+    abstract int getProbesInErrorCount();
+
+    abstract Collection<String> getProbesInSuccess();
+
+    abstract int getProbesInSuccessCount();
+
+    abstract boolean runAllProbes();
 
 }

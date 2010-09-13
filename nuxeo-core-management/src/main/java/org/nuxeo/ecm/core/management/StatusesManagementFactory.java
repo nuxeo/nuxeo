@@ -15,9 +15,12 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management;
 
-import org.nuxeo.ecm.core.management.CoreManagementComponent;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
+import org.nuxeo.ecm.core.management.probes.ProbeInfo;
+import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
+import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.AbstractResourceFactory;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -32,12 +35,11 @@ public class StatusesManagementFactory extends AbstractResourceFactory {
        }
     }
 
-
     public void registerResources() {
-        AdministrativeStatus adminStatus = Framework.getLocalService(AdministrativeStatus.class);
-        service.registerResource("adminStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)+",status=administrative", AdministrativeStatus.class, adminStatus);
-        ProbeRunner runner = Framework.getLocalService(ProbeRunner.class);
-        service.registerResource("probeStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)+",status=probes", ProbeRunner.class, runner);
+        AdministrativeStatusManagerImpl adminStatus = Framework.getLocalService(AdministrativeStatusManagerImpl.class);
+        service.registerResource("adminStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)+",status=administrative", AdministrativeStatusManagerImpl.class, adminStatus);
+        ProbeManager runner = Framework.getLocalService(ProbeManager.class);
+        service.registerResource("probeStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)+",status=probes", ProbeManagerImpl.class, runner);
         for (ProbeInfo info:runner.getProbeInfos()) {
             doQualifyNames(info);
             service.registerResource(info.shortcutName, info.qualifiedName, ProbeInfo.class, info);

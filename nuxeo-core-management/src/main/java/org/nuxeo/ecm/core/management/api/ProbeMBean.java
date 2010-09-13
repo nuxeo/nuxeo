@@ -14,17 +14,41 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import java.util.Date;
+
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
  */
-public interface Probe {
+public interface ProbeMBean {
 
-    void init(Object service);
+    boolean isEnabled();
 
-    ProbeStatus run() throws ClientException;
+    void enable();
+
+    void disable();
+
+    boolean isInError();
+
+    long getRunnedCount();
+
+    Date getLastRunnedDate();
+
+    long getLastDuration();
+
+    long getSucceedCount();
+
+    Date getLastSucceedDate();
+
+    long getFailedCount();
+
+    Date getLastFailedDate();
+
+    ProbeStatus getLastFailureStatus();
+
+    void run();
 
 }

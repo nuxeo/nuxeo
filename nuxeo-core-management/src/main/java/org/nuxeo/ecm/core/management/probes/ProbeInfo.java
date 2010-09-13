@@ -14,9 +14,13 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.probes;
 
 import java.util.Date;
+
+import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.ecm.core.management.api.ProbeMBean;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 
 public class ProbeInfo implements ProbeMBean {
 
@@ -25,17 +29,20 @@ public class ProbeInfo implements ProbeMBean {
         this.probe = probe;
     }
 
-    protected ProbeDescriptor descriptor;
+    //XXX
+    public ProbeDescriptor descriptor;
 
     protected boolean isEnabled = true;
 
-    protected String shortcutName;
+    //XXX
+    public String shortcutName;
 
-    protected String qualifiedName;
+    //XXX
+    public String qualifiedName;
 
     protected final Probe probe;
 
-    protected ProbeStatus lastStatus = new ProbeStatus("[unavailable]", false);
+    protected ProbeStatus lastStatus = ProbeStatus.newBlankProbStatus();
 
     protected long runnedCount = 0L;
 
@@ -47,13 +54,13 @@ public class ProbeInfo implements ProbeMBean {
 
     protected Date lastSucceedDate = new Date(0);
 
-    protected ProbeStatus lastSuccesStatus = ProbeStatus.newSuccess("[unavailable]");
+    protected ProbeStatus lastSuccesStatus = ProbeStatus.newBlankProbStatus();
 
     protected long failureCount = 0L;
 
     protected Date lastFailureDate = new Date(0);
 
-    protected ProbeStatus lastFailureStatus = ProbeStatus.newFailure("[unavailable]");
+    protected ProbeStatus lastFailureStatus = ProbeStatus.newBlankProbStatus();
 
     public long getFailedCount() {
         return failureCount;

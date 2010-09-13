@@ -14,7 +14,7 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.probes;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,10 +25,12 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 
-public class ProbeRunner implements ProbeRunnerMBean {
+public class ProbeManagerImpl implements ProbeManager {
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
@@ -87,7 +89,7 @@ public class ProbeRunner implements ProbeRunnerMBean {
             return Collections.unmodifiableCollection(failed);
     }
 
-    public boolean run() {
+    public boolean runAllProbes() {
         doRun();
         return getProbesInErrorCount() <= 0;
     }
@@ -106,7 +108,7 @@ public class ProbeRunner implements ProbeRunnerMBean {
         return null;
     }
 
-    protected static final Log log = LogFactory.getLog(ProbeRunner.class);
+    protected static final Log log = LogFactory.getLog(ProbeManagerImpl.class);
 
     protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
 
