@@ -16,9 +16,12 @@
  */
 package org.nuxeo.ecm.core.management;
 
-import org.nuxeo.ecm.core.management.statuses.AdministrativeStatus;
-import org.nuxeo.ecm.core.management.statuses.ProbeDescriptor;
-import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
+import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
+import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
+import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
+import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
+import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -39,16 +42,23 @@ public class CoreManagementComponent extends DefaultComponent  {
         super(); // enables breaking
     }
 
-    protected AdministrativeStatus adminStatus = new AdministrativeStatus();
+    protected GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
+    protected ProbeManagerImpl probeRunner = new ProbeManagerImpl();
 
-    protected ProbeRunner probeRunner = new ProbeRunner();
+    protected AdministrativeStatusManagerImpl getLocalManager() {
+        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
+    }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(AdministrativeStatus.class)) {
-            return adapter.cast(adminStatus);
+        if (adapter.isAssignableFrom(GlobalAdministrativeStatusManager.class)) {
+            return adapter.cast(globalManager);
         }
-        if (adapter.isAssignableFrom(ProbeRunner.class)) {
+        if (adapter.isAssignableFrom(AdministrativeStatusManager.class)) {
+            return adapter.cast(getLocalManager());
+        }
+
+        if (adapter.isAssignableFrom(ProbeManagerImpl.class)) {
             return adapter.cast(probeRunner);
         }
         return super.getAdapter(adapter);
@@ -86,8 +96,8 @@ public class CoreManagementComponent extends DefaultComponent  {
                         ClassLoader nuxeoCL = Framework.class.getClassLoader();
                         try{
                             Thread.currentThread().setContextClassLoader(nuxeoCL);
-                            adminStatus.activate();
-                            probeRunner.run();
+                            getLocalManager().onNuxeoServerStartup();
+                            probeRunner.runAllProbes();
                         }
                         finally{
                             Thread.currentThread().setContextClassLoader(jbossCL);
@@ -98,7 +108,7 @@ public class CoreManagementComponent extends DefaultComponent  {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        adminStatus.deactivate();
+        getLocalManager().onNuxeoServerShutdown();
     }
 
 }
