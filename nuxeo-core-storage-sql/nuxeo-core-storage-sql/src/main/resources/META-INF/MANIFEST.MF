@@ -74,6 +74,7 @@ Import-Package: javax.resource,
  org.nuxeo.runtime.management,
  org.nuxeo.runtime.management.metrics,
  org.nuxeo.runtime.model,
+ org.nuxeo.runtime.services.event,
  org.nuxeo.runtime.services.streaming
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
 Nuxeo-Require: org.nuxeo.runtime,
