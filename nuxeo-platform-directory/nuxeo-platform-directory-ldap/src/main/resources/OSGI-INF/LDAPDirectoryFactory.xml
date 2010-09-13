@@ -258,12 +258,4 @@
         class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor"/>
   </extension-point>
 
- <extension
-    target="org.nuxeo.ecm.core.management"
-    point="probes">
-         <probe name="ldapDirectories"
-                  class="org.nuxeo.ecm.platform.management.statuses.probes.LDAPDirectoriesProbe"
-                  serviceClass="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
-  </extension>
-  
 </component>
