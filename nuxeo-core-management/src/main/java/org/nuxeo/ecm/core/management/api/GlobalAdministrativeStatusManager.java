@@ -46,4 +46,12 @@ public interface GlobalAdministrativeStatusManager {
      * @return
      */
     List<AdministrableServiceDescriptor> listRegistredServices();
+
+
+    /**
+     * Get the XMAP descriptor for one service
+     * @param serviceIndentifier
+     * @return
+     */
+    AdministrableServiceDescriptor getServiceDescriptor(String serviceIndentifier);
 }

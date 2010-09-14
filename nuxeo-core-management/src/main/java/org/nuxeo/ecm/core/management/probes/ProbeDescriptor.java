@@ -35,6 +35,26 @@ public class ProbeDescriptor {
     @XNode("@class")
     private Class<? extends Probe> probeClass;
 
+    @XNode("label")
+    private String label;
+
+    @XNode("description")
+    private String description;
+
+    public String getLabel() {
+        if (label==null) {
+            return "label." + shortcutName;
+        }
+        return label;
+    }
+
+    public String getDescription() {
+        if (description==null) {
+            return "decription." + shortcutName;
+        }
+        return description;
+    }
+
     public String getShortcut() {
         return shortcutName;
     }

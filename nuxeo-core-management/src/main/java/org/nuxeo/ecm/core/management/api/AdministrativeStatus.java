@@ -46,6 +46,10 @@ public class AdministrativeStatus implements Serializable {
 
     protected String serviceIdentifier;
 
+    protected String label;
+
+    protected String description;
+
     public AdministrativeStatus(String state,String message,Calendar modificationDate, String userLogin, String instanceIdentifier, String serviceIdentifier) {
         this.state=state;
         this.message=message;
@@ -53,6 +57,11 @@ public class AdministrativeStatus implements Serializable {
         this.userLogin=userLogin;
         this.instanceIdentifier=instanceIdentifier;
         this.serviceIdentifier=serviceIdentifier;
+    }
+
+    public void setLabelAndDescription(String label, String description) {
+        this.label=label;
+        this.description=description;
     }
 
     public String getInstanceIdentifier() {
@@ -85,6 +94,14 @@ public class AdministrativeStatus implements Serializable {
 
     public boolean isPassive() {
         return state.equals(PASSIVE);
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 }

@@ -6,16 +6,19 @@
     point="serviceDefinition">
 
     <administrableService id="org.nuxeo.ecm.instance.availability" name="nuxeoInstance">
+      <label>Nuxeo Instance</label>
       <description>Indicates if the Nuxeo Instance is available or not.</description>
     </administrableService>
 
     <administrableService id="org.nuxeo.ecm.administrator.message" name="adminMessage">
-      <description>Displays an message from administrator on all pages</description>
+      <label>Administrator message</label>
+      <description>Displays a message from administrator on all pages</description>
       <initialState>passive</initialState>
     </administrableService>
 
     <administrableService id="org.nuxeo.ecm.smtp" name="smtpService">
-      <description>Indicates if the Nuxeo instance can send mails</description>
+      <label>SMTP services</label>
+      <description>Indicates if the Nuxeo instance can send e-mails</description>
     </administrableService>
 
   </extension>
@@ -25,7 +28,10 @@
     point="probes">
 
     <probe name="administrativeStatus"
-      class="org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe"/>
+      class="org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe">
+      <label>Local Instance availability</label>
+      <description>Test if local Nuxeo Instance is available</description>
+    </probe>
   </extension>
 
 </component>
