@@ -25,8 +25,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.management.statuses.Probe;
-import org.nuxeo.ecm.core.management.statuses.ProbeStatus;
+import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -44,7 +44,6 @@ public class PopulateRepositoryProbe implements Probe {
 
         @Override
         public void run() throws ClientException {
-            // TODO Auto-generated method stub
             DocumentModel rootDocument = session.getRootDocument();
             DocumentModel model = session.createDocumentModel(
                     rootDocument.getPathAsString(),
@@ -76,9 +75,6 @@ public class PopulateRepositoryProbe implements Probe {
             return ProbeStatus.newError(e);
         }
         return  ProbeStatus.newSuccess(runner.info);
-    }
-
-    public void init(Object service) {
     }
 
 }

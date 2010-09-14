@@ -19,8 +19,8 @@ package org.nuxeo.ecm.platform.management.core.probes;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.nuxeo.ecm.core.management.statuses.ProbeInfo;
-import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.api.ProbeInfo;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
 import org.nuxeo.runtime.api.Framework;
@@ -59,19 +59,22 @@ public class TestProbes extends SQLRepositoryTestCase {
     public void testPopulateRepository() throws Exception {
        ProbeInfo info = getProbeRunner().getProbeInfo("populateRepository");
        assertNotNull(info);
-
-       info.run();
+       info = getProbeRunner().runProbe(info);
        assertFalse(info.isInError());
+       String result = info.getStatus().getAsString();
+       System.out.print("populateRepository Probe result : " + result);
    }
 
     public void testQueryRepository() throws Exception {
         ProbeInfo info = getProbeRunner().getProbeInfo("queryRepository");
-        info.run();
+        assertNotNull(info);
+        info = getProbeRunner().runProbe(info);
         assertFalse(info.isInError());
+        System.out.print(info.getStatus().getAsString());
     }
 
-   ProbeRunner getProbeRunner() throws Exception {
-       return Framework.getService(ProbeRunner.class);
+   ProbeManager getProbeRunner() throws Exception {
+       return Framework.getService(ProbeManager.class);
    }
 
 }

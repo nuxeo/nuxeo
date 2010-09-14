@@ -19,13 +19,13 @@ package org.nuxeo.ecm.platform.management.statuses;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.api.Framework;
 
 public class ProbeScheduleListener implements EventListener {
 
     public void handleEvent(Event event)  {
-        Framework.getLocalService(ProbeRunner.class).run();
+        Framework.getLocalService(ProbeManager.class).runAllProbes();
     }
 
 }

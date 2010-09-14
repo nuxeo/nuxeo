@@ -21,11 +21,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.management.statuses.Probe;
-import org.nuxeo.ecm.core.management.statuses.ProbeStatus;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
 
-public class QueryRepositoryProbe implements Probe {
+public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.Probe {
 
     protected static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' LIMIT 10";
 
@@ -46,10 +45,6 @@ public class QueryRepositoryProbe implements Probe {
             }
         }
 
-    }
-
-    public void init(Object service) {
-        // TODO Auto-generated method stub
     }
 
     public ProbeStatus run() {
