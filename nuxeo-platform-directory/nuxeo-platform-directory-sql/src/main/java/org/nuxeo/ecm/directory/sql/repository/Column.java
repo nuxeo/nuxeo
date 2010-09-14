@@ -146,6 +146,10 @@ public class Column implements Serializable {
     }
 
     public String getSqlTypeString(Dialect dialect) {
+        if (dialect.getClass().getName().contains("SQLServer")
+                && Types.VARCHAR == sqlType && !"id".equals(name)) {
+            return new StringBuilder("nvarchar(").append(length).append(")").toString();
+        }
         return dialect.getTypeName(sqlType, length, precision, scale);
     }
 
@@ -166,6 +170,9 @@ public class Column implements Serializable {
         case Types.VARCHAR:
         case Types.CLOB:
             result = rs.getString(columnIndex);
+            break;
+        case Types.NVARCHAR:
+            result = rs.getNString(columnIndex);
             break;
         case Types.TIMESTAMP:
             result = rs.getTimestamp(columnIndex);
