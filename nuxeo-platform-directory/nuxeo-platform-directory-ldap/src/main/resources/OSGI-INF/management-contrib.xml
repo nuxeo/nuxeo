@@ -5,8 +5,10 @@
     target="org.nuxeo.ecm.core.management.CoreManagementComponent"
     point="probes">
          <probe name="ldapDirectories"
-                  class="org.nuxeo.ecm.directory.ldap.management.LDAPDirectoriesProbe"
-                  serviceClass="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
+                  class="org.nuxeo.ecm.directory.ldap.management.LDAPDirectoriesProbe">
+            <label>LDAP probe</label>
+            <description>Test access on each declared LDAP Directory</description>
+         </probe>
   </extension>
 
 </component>

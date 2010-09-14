@@ -34,10 +34,14 @@
   <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
 
   <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="probes">
-         <probe name="queryRepository"
-                      class="org.nuxeo.ecm.platform.management.statuses.QueryRepositoryProbe"/>
-          <probe name="populateRepository"
-                       class="org.nuxeo.ecm.platform.management.statuses.PopulateRepositoryProbe"/>
+         <probe name="queryRepository" class="org.nuxeo.ecm.platform.management.statuses.QueryRepositoryProbe">
+             <label>Repository Query</label>
+             <description>Execute a NXQL Query agains the Repository </description>
+         </probe>
+          <probe name="populateRepository" class="org.nuxeo.ecm.platform.management.statuses.PopulateRepositoryProbe">
+             <label>Repository Access</label>
+             <description>Create, Read and Delete document from repository</description>
+          </probe>
   </extension>
 
 </component>
