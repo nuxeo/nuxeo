@@ -42,7 +42,9 @@ public class LDAPDirectoriesProbe implements Probe {
 
             infos.put(dirName + "-bind", bindDN);
             infos.put(dirName + "-time", new Long(endTime-startTime).toString());
-
+        }
+        if (infos.size()==0) {
+            infos.put("info", "No configured LDAP directory");
         }
         if (!success) {
             return ProbeStatus.newFailure(infos);

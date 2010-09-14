@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.management.statuses;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -38,11 +37,8 @@ public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.P
 
         @Override
         public void run() throws ClientException {
-            String info = "Running " + queryString + ":";
             DocumentModelList list = session.query(queryString);
-            for (DocumentModel documentModel : list) {
-                info += " " + documentModel.getTitle();
-            }
+            info =" selected " + list.size() + " documents";
         }
 
     }
