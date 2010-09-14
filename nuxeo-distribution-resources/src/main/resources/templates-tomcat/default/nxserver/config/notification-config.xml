@@ -7,7 +7,7 @@
     <settings>
       <serverPrefix>${nuxeo.url}</serverPrefix>
       <eMailSubjectPrefix>${nuxeo.notification.eMailSubjectPrefix}</eMailSubjectPrefix>
-      <mailSessionJndiName>java:/Mail</mailSessionJndiName>
+      <mailSessionJndiName>java:comp/env/Mail</mailSessionJndiName>
     </settings>
   </extension>
 

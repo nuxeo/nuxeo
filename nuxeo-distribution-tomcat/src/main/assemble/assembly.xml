@@ -305,6 +305,7 @@
       <fileset dir="${outdir}/${tomcat}/nxserver/lib"
                includes="commons-lang-*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="freemarker-*" />
+      <fileset dir="${outdir}/${tomcat}/nxserver/lib" includes="mail-*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
                includes="nuxeo-core-storage-sql-extensions-*" />
       <fileset dir="${outdir}/${tomcat}/nxserver/bundles"
