@@ -40,7 +40,7 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class FrameworkLoader {
 
@@ -188,7 +188,7 @@ public class FrameworkLoader {
                 BundleImpl bundle = new BundleImpl(osgi, bf, loader);
                 osgi.install(bundle);
             } catch (Throwable t) { // silently ignore
-                log.warn("Failed to install bundle: " + f);
+                log.warn("Failed to install bundle: " + f, t);
                 // do nothing
             }
         }
