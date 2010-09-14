@@ -24,8 +24,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.core.management.statuses.ProbeInfo;
-import org.nuxeo.ecm.core.management.statuses.ProbeRunner;
+import org.nuxeo.ecm.core.management.api.ProbeInfo;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 @Produces("text/html; charset=UTF-8")
 public class ProbesObject extends ManagementObject {
 
-    protected ProbeRunner runner;
+    protected ProbeManager probeMgr;
     protected Collection<ProbeInfo> infos;
 
     public static ProbesObject newProbes(DefaultObject parent) {
@@ -47,8 +47,8 @@ public class ProbesObject extends ManagementObject {
     @Override
     protected void initialize(Object... args) {
         assert args != null && args.length == 2;
-        runner = Framework.getLocalService(ProbeRunner.class);
-        infos = runner.getProbeInfos();
+        probeMgr = Framework.getLocalService(ProbeManager.class);
+        infos = probeMgr.getAllProbeInfos();
     }
 
     @GET
@@ -64,8 +64,8 @@ public class ProbesObject extends ManagementObject {
     @Path("availability")
     @Produces("text/plain")
     public Object doGetAvailability() {
-        runner.run();
-        return getView("availability").arg("isAvailable", runner.getProbesInError().isEmpty());
+        probeMgr.runAllProbes();
+        return getView("availability").arg("isAvailable", probeMgr.getProbesInError().isEmpty());
     }
 
     @Path("{probe}")
@@ -83,7 +83,7 @@ public class ProbesObject extends ManagementObject {
     @GET
     @Path("/@run")
     public Object doRun() {
-        runner.run();
+        probeMgr.runAllProbes();
         return redirect(getPath());
     }
 }

@@ -19,9 +19,11 @@ package org.nuxeo.ecm.webengine.management.statuses;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
-import org.nuxeo.ecm.core.management.statuses.ProbeInfo;
+import org.nuxeo.ecm.core.management.api.ProbeInfo;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 
 @WebObject(type = "Probe")
@@ -46,7 +48,8 @@ public class ProbeObject extends DefaultObject {
 
     @POST
     public Object run() {
-        info.run();
+        ProbeManager probeMgr = Framework.getLocalService(ProbeManager.class);
+        probeMgr.runProbe(info);
         return redirect(getPath());
     }
 
