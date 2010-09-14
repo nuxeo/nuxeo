@@ -31,6 +31,7 @@
         <exclude name="nxserver.cmd" />
         <exclude name="nxserver.sh" />
         <exclude name="nxserverctl.sh" />
+        <exclude name="config/login-anonymous-config.xml" />
       </patternset>
     </unzip>
     <unzip dest="${jetty}">
