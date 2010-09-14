@@ -11,3 +11,13 @@ nuxeo.db.password=
 
 org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
+
+# Mail server protocol
+mail.store.protocol=pop3
+mail.transport.protocol=smtp
+# User who will receive mail
+mail.user=nobody
+# Mail server
+mail.pop3.host=pop3.nosuchhost.nosuchdomain.com
+# Enable debugging output from the javamail classes
+mail.debug=false
