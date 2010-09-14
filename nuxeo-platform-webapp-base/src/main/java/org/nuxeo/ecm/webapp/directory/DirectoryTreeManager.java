@@ -45,7 +45,7 @@ public interface DirectoryTreeManager extends Serializable {
 
     /**
      * Listener for node opening/closing events.
-     * <p>
+     * <p/>
      * Used to not interfere with node state when manually changing open nodes.
      */
     void changeExpandListener(NodeExpandedEvent event);
@@ -54,6 +54,23 @@ public interface DirectoryTreeManager extends Serializable {
      * Returns true if node should be opened according to last selection.
      */
     Boolean adviseNodeOpened(UITree tree);
+
+    /**
+     * Returns the internationalized label for a given path of the specified
+     * Directory tree. The Directory tree label is not included.
+     *
+     * @since 5.4
+     */
+    public String getLabelFor(String directoryTreeName, String fullPath);
+
+    /**
+     * Returns the internationalized label for a given path of the specified
+     * Directory tree, including or not the Directory tree label.
+     *
+     * @since 5.4
+     */
+    public String getLabelFor(String directoryTreeName, String fullPath,
+            boolean includeDirectoryTreeLabel);
 
     @Remove
     @Destroy

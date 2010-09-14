@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,11 +35,15 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * Manage trees defined by xvocabulary directories. Update the associated
@@ -62,6 +65,9 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
 
     protected transient Map<String, DirectoryTreeNode> treeModels;
 
@@ -146,22 +152,23 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     public void changeExpandListener(NodeExpandedEvent event) {
-        
-        // Toggle the expanded/collapse state for this node: 
+
+        // Toggle the expanded/collapse state for this node:
         // its only used for multi-select (see DirectoryTreeNode.isOpened())
-        // Note: we can't use the internal nodeState.isExpanded() method because this is broken as of writing
+        // Note: we can't use the internal nodeState.isExpanded() method because
+        // this is broken as of writing
         // https://jira.jboss.org/jira/browse/RF-7273
-        //  TreeState nodeState = (TreeState) requestMap.get("nodeState");    
-        //  TreeRowKey treeRowKey = nodeState.getSelectedNode();
-        //  boolean isExpanded = nodeState.isExpanded(treeRowKey);
-        
+        // TreeState nodeState = (TreeState) requestMap.get("nodeState");
+        // TreeRowKey treeRowKey = nodeState.getSelectedNode();
+        // boolean isExpanded = nodeState.isExpanded(treeRowKey);
+
         UIComponent component = event.getComponent();
         if (component instanceof UITree) {
             UITree treeComponent = (UITree) component;
             Object value = treeComponent.getRowData();
             if (value instanceof DirectoryTreeNode) {
                 DirectoryTreeNode treeNode = (DirectoryTreeNode) value;
-                if(treeNode.isOpen()) {
+                if (treeNode.isOpen()) {
                     treeNode.setOpen(false);
                 } else {
                     treeNode.setOpen(true);
@@ -200,6 +207,45 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             }
         }
         return null;
+    }
+
+    public String getLabelFor(String directoryTreeName, String fullPath) {
+        return getLabelFor(directoryTreeName, fullPath, false);
+    }
+
+    public String getLabelFor(String directoryTreeName, String fullPath,
+            boolean includeDirectoryTreeLabel) {
+        DirectoryTreeNode rootNode = get(directoryTreeName);
+        List<String> labels = new ArrayList<String>();
+        computeLabels(labels, rootNode, fullPath, includeDirectoryTreeLabel);
+        List<String> translatedLabels = translateLabels(labels);
+        return StringUtils.join(translatedLabels, "/");
+    }
+
+    protected void computeLabels(List<String> labels, DirectoryTreeNode node,
+            String fullPath, boolean includeDirectoryTreeLabel) {
+        // add label for the root path only if specified
+        if (!node.getPath().isEmpty()
+                || (node.getPath().isEmpty() && includeDirectoryTreeLabel)) {
+            labels.add(node.getDescription());
+        }
+        if (fullPath.equals(node.getPath())) {
+            return;
+        }
+        for (DirectoryTreeNode treeNode : node.getChildren()) {
+            if (fullPath.startsWith(treeNode.getPath())) {
+                computeLabels(labels, treeNode, fullPath,
+                        includeDirectoryTreeLabel);
+            }
+        }
+    }
+
+    protected List<String> translateLabels(List<String> labels) {
+        List<String> translatedLabels = new ArrayList<String>(labels.size());
+        for (String label : labels) {
+            translatedLabels.add(resourcesAccessor.getMessages().get(label));
+        }
+        return translatedLabels;
     }
 
     @Remove
