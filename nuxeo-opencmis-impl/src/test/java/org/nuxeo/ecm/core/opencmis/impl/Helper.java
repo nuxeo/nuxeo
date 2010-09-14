@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +40,24 @@ public class Helper {
     public static final String DELETE_TRANSITION = "delete";
 
     public static final String FILE1_CONTENT = "Noodles with rice";
+
+    /**
+     * Reads a stream into a string.
+     */
+    public static String read(InputStream in, String charset)
+            throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buf = new byte[256];
+        try {
+            int n;
+            while ((n = in.read(buf)) != -1) {
+                os.write(buf, 0, n);
+            }
+        } finally {
+            in.close();
+        }
+        return os.toString(charset);
+    }
 
     /**
      * Gets a Calendar object.

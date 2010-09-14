@@ -55,6 +55,7 @@ import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -441,8 +442,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
+                changeTokenHolder, null, extension);
     }
 
     @Override
@@ -473,7 +474,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                     + streamId);
         }
         DocumentModel doc = getDocumentModel(new IdRef(objectId));
-        return NuxeoPropertyData.getContentStream(doc);
+        ContentStream cs = NuxeoPropertyData.getContentStream(doc);
+        if (cs != null) {
+            return cs;
+        }
+        throw new CmisConstraintException("No content stream: " + objectId);
     }
 
     @Override

@@ -81,8 +81,15 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ObjectId deleteContentStream() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Holder<String> objectIdHolder = new Holder<String>(getId());
+        String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
+        Holder<String> changeTokenHolder = new Holder<String>(changeToken);
+
+        service.deleteContentStream(getRepositoryId(), objectIdHolder,
+                changeTokenHolder, null);
+
+        String objectId = objectIdHolder.getValue();
+        return objectId == null ? null : session.createObjectId(objectId);
     }
 
     @Override

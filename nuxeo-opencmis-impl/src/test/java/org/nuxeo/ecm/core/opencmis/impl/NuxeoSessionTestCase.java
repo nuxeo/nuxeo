@@ -17,9 +17,6 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -39,6 +36,8 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -121,21 +120,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         return super.session.getRepositoryName();
     }
 
-    public static String read(InputStream in, String charset)
-            throws IOException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] buf = new byte[256];
-        try {
-            int n;
-            while ((n = in.read(buf)) != -1) {
-                os.write(buf, 0, n);
-            }
-        } finally {
-            in.close();
-        }
-        return os.toString(charset);
-    }
-
     public void testRoot() {
         Folder root = session.getRootFolder();
         assertNotNull(root);
@@ -209,20 +193,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     public void testContentStream() throws Exception {
-        Folder root = session.getRootFolder();
-        ItemIterable<CmisObject> entries = root.getChildren();
-        assertEquals(2, entries.getTotalNumItems());
-
-        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
-        assertNotNull(folder);
-        Document file = null;
-        for (CmisObject child : folder.getChildren()) {
-            String name = child.getName();
-            if (name.equals("testfile1_Title")) {
-                file = (Document) child;
-            }
-        }
-        assertNotNull(file);
+        Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
         // get stream
         ContentStream cs = file.getContentStream();
@@ -236,7 +207,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             // TODO fix AtomPub case where the length is unknown (streaming)
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
-        assertEquals(Helper.FILE1_CONTENT, read(cs.getStream(), "UTF-8"));
+        assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
 
         // set stream
         // TODO convenience constructors for ContentStreamImpl
@@ -262,7 +233,20 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             // TODO fix AtomPub case where the length is unknown (streaming)
             assertEquals(streamBytes.length, cs.getLength());
         }
-        assertEquals(STREAM_CONTENT, read(cs.getStream(), "UTF-8"));
+        assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+
+        // delete
+        file.deleteContentStream();
+        file.refresh();
+        try {
+            cs = file.getContentStream();
+            fail("Should have no content stream");
+        } catch (CmisConstraintException e) {
+            // ok
+            // TODO check we get CmisConstraintException
+        } catch (CmisNotSupportedException e) {
+            // TODO AtomPub incorrectly throws this
+        }
     }
 
     public void testDeletedInTrash() throws Exception {
@@ -282,7 +266,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
 
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
-        for (CmisObject child : folder.getChildren()) {
+        ItemIterable<CmisObject> children = folder.getChildren();
+        assertEquals(3, children.getTotalNumItems());
+        for (CmisObject child : children) {
             if (child.getName().equals("title5")) {
                 fail("file 5 should be in trash");
             }
@@ -295,7 +281,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // assertEquals("file 5 should be in trash", 0, col.getTotalNumItems());
 
         // test trashed child doesn't block folder delete
-        for (CmisObject child : folder.getChildren()) {
+        for (CmisObject child : children) {
             child.delete(true);
         }
         folder.delete(true);

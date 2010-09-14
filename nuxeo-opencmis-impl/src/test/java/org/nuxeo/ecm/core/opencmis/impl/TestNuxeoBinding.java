@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,9 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
@@ -52,6 +55,9 @@ import org.junit.Test;
  * Tests that hit directly the server APIs.
  */
 public class TestNuxeoBinding extends NuxeoBindingTestCase {
+
+    // stream content with non-ASCII characters
+    public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
 
     protected ObjectService objService;
 
@@ -139,6 +145,53 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         ob = getDocument(ob.getId());
         assertEquals("new title", getString(ob, "dc:title"));
+    }
+
+    @Test
+    public void testContentStream() throws Exception {
+        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+
+        // get stream
+        ContentStream cs = objService.getContentStream(repositoryId,
+                ob.getId(), null, null, null, null);
+        assertNotNull(cs);
+        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("testfile.txt", cs.getFileName());
+        assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
+        assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+
+        // set stream
+        // TODO convenience constructors for ContentStreamImpl
+        byte[] streamBytes = STREAM_CONTENT.getBytes("UTF-8");
+        ByteArrayInputStream stream = new ByteArrayInputStream(streamBytes);
+        cs = new ContentStreamImpl("foo.txt",
+                BigInteger.valueOf(streamBytes.length),
+                "text/plain; charset=UTF-8", stream);
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
+                null, cs, null);
+        assertEquals(ob.getId(), objectIdHolder.getValue());
+
+        // refetch
+        cs = objService.getContentStream(repositoryId, ob.getId(), null, null,
+                null, null);
+        assertNotNull(cs);
+        assertEquals("text/plain; charset=UTF-8", cs.getMimeType());
+        assertEquals("foo.txt", cs.getFileName());
+        assertEquals(streamBytes.length, cs.getLength());
+        assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+
+        // delete
+        objService.deleteContentStream(repositoryId, objectIdHolder, null, null);
+
+        // refetch
+        try {
+            cs = objService.getContentStream(repositoryId, ob.getId(), null,
+                    null, null, null);
+            fail("Should have no content stream");
+        } catch (CmisConstraintException e) {
+            // ok
+        }
     }
 
     // flatten and order children
