@@ -18,6 +18,8 @@ public class GlobalAdministrativeStatusManagerImpl implements GlobalAdministrati
 
     protected List<AdministrableServiceDescriptor> descriptors = new ArrayList<AdministrableServiceDescriptor>();
 
+    protected Map<String, AdministrableServiceDescriptor> descriptorsByServiceId = new HashMap<String, AdministrableServiceDescriptor>();
+
     @Override
     public String getLocalNuxeoInstanceIdentifier() {
         return NuxeoInstanceIdentifierHelper.getServerInstanceName();
@@ -45,11 +47,16 @@ public class GlobalAdministrativeStatusManagerImpl implements GlobalAdministrati
 
     public void registerService(AdministrableServiceDescriptor desc) {
         descriptors.add(desc);
+        descriptorsByServiceId.put(desc.getId(), desc);
     }
 
     @Override
     public List<AdministrableServiceDescriptor> listRegistredServices() {
         return descriptors;
+    }
+
+    public AdministrableServiceDescriptor getServiceDescriptor(String serviceIndentifier) {
+        return descriptorsByServiceId.get(serviceIndentifier);
     }
 
 }

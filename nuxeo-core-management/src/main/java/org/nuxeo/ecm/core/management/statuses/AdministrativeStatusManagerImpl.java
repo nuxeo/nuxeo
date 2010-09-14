@@ -138,18 +138,32 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
         AdministrativeStatus status = new AdministrativeStatus(state, message, Calendar.getInstance(), login, serverInstanceName, serviceIdentifier);
         status= persister.saveStatus(status);
         notifyOnStatus(status);
-        return status;
+        return addLabelAndDescription(status);
     }
 
     @Override
     public List<AdministrativeStatus> getAllStatuses() {
-        return persister.getAllStatuses(serverInstanceName);
+        List<AdministrativeStatus> statuses = persister.getAllStatuses(serverInstanceName);
+        for (AdministrativeStatus status : statuses) {
+            addLabelAndDescription(status);
+        }
+        return statuses;
     }
 
+    protected AdministrativeStatus addLabelAndDescription(AdministrativeStatus status) {
+        String id = status.getServiceIdentifier();
+        AdministrableServiceDescriptor desc = globalManager.getServiceDescriptor(id);
+        if (desc!=null) {
+            status.setLabelAndDescription(desc.getLabel(), desc.getDescription());
+        }
+        return status;
+    }
 
     @Override
     public AdministrativeStatus getStatus(String serviceIdentifier) {
-        return persister.getStatus(serverInstanceName, serviceIdentifier);
+        AdministrativeStatus status =  persister.getStatus(serverInstanceName, serviceIdentifier);
+        addLabelAndDescription(status);
+        return status;
     }
 
 }
