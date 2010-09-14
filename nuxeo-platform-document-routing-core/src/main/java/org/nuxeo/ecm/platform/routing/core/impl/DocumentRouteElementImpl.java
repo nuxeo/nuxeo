@@ -72,6 +72,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void run(CoreSession session) {
+        setRunning(session);
         setDone(session);
     }
 

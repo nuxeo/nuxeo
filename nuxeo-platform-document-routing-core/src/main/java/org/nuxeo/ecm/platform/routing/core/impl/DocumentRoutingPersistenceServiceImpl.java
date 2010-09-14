@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +61,6 @@ public class DocumentRoutingPersistenceServiceImpl extends DefaultComponent
         DocumentModel result = null;
         try {
             result = session.copy(model.getRef(), parent.getRef(), null);
-            copyChildrenRecursively(model, result, session);
             session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -70,30 +68,16 @@ public class DocumentRoutingPersistenceServiceImpl extends DefaultComponent
         return result;
     }
 
-    protected void copyChildrenRecursively(DocumentModel sourceParent,
-            DocumentModel destParent, CoreSession session)
-            throws ClientException {
-        List<DocumentModel> children = session.getChildren(sourceParent.getRef());
-        for (DocumentModel child : children) {
-            DocumentModel createdChild = session.copy(child.getRef(),
-                    destParent.getRef(), null);
-            copyChildrenRecursively(child, createdChild, session);
-        }
-    }
-
     @Override
     public DocumentModel saveDocumentRouteInstanceAsNewModel(
             DocumentModel routeInstance, DocumentModel parentFolder,
             CoreSession session) {
-        DocumentModel result = null;
         try {
-            result = session.copy(routeInstance.getRef(),
-                    parentFolder.getRef(), null);
-            copyChildrenRecursively(routeInstance, parentFolder, session);
+            return session.copy(routeInstance.getRef(), parentFolder.getRef(),
+                    null);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-        return result;
     }
 
     @Override

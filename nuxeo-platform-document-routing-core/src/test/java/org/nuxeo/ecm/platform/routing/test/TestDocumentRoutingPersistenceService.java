@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.test;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
@@ -43,17 +44,18 @@ public class TestDocumentRoutingPersistenceService extends
 
     public void testCreateDocumentRouteInstanceFromDocumentRouteModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1);
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         assertNotNull(instance);
         assertTrue(instance.getPathAsString().startsWith(
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
+        assertEquals(2, session.getChildren(instance.getRef()).size());
     }
 
     public void testSaveDocumentRouteInstanceAsNewModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1);
+        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         DocumentModel newModel = persistenceService.saveDocumentRouteInstanceAsNewModel(instance,

@@ -33,13 +33,15 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
+    public static final String ROOT_PATH = "/";
+
     protected DocumentRoutingPersistenceService persistenceService;
 
     protected DocumentRoutingEngineService engineService;
 
     protected DocumentRoutingService service;
 
-    static final String ROUTE1 = "route1";
+    public static final String ROUTE1 = "route1";
 
     @Override
     public void setUp() throws Exception {
@@ -68,28 +70,34 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     }
 
     public DocumentModel createDocumentRouteModel(CoreSession session,
-            String name) throws ClientException {
-        return createDocumentModel(session, name,
-                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
+            String name, String path) throws ClientException {
+        DocumentModel route = createDocumentModel(session, name,
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, path);
+        createDocumentModel(session, "step1",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                route.getPathAsString());
+        createDocumentModel(session, "step2",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                route.getPathAsString());
+        return route;
     }
 
     public DocumentModel createDocumentModel(CoreSession session, String name,
-            String type) throws ClientException {
-        DocumentModel route1 = session.createDocumentModel("/", name, type);
+            String type, String path) throws ClientException {
+        DocumentModel route1 = session.createDocumentModel(path, name, type);
         route1.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
-                ROUTE1);
+                name);
         return session.createDocument(route1);
-
     }
 
     public DocumentRoute createDocumentRoute(CoreSession session, String name)
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, name);
+        DocumentModel model = createDocumentRouteModel(session, name, ROOT_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 
     protected DocumentModel createTestDocument(String name, CoreSession session)
             throws ClientException {
-        return createDocumentModel(session, name, "Note");
+        return createDocumentModel(session, name, "Note", ROOT_PATH);
     }
 }

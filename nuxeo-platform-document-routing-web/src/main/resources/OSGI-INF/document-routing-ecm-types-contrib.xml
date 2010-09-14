@@ -43,6 +43,9 @@
         <layout>document_routing</layout>
         <layout>step_folder</layout>
       </layouts>
+      <layouts mode="summary">
+        <layout>summary_document_route_layout</layout>
+      </layouts> 
       <contentViews category="content">
         <contentView>document_content</contentView>
       </contentViews>

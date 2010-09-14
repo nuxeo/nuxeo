@@ -28,7 +28,7 @@ public class TestDocumentRouteImpl extends DocumentRoutingTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        routeModel = createDocumentRouteModel(session, ROUTE1).getAdapter(
+        routeModel = createDocumentRouteModel(session, ROUTE1, ROOT_PATH).getAdapter(
                 DocumentRoute.class);
     }
 
