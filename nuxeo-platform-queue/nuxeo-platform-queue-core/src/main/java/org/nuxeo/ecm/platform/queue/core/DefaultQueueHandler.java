@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.management.statuses.AdministrativeStatus;
+import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.platform.lock.api.AlreadyLockedException;
 import org.nuxeo.ecm.platform.lock.api.LockCoordinator;
 import org.nuxeo.ecm.platform.lock.api.NoSuchLockException;
@@ -119,8 +119,8 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     protected boolean isServerActive()  {
-        AdministrativeStatus administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
-        return administrativeStatus.isActive();
+        AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
+        return manager.getNuxeoInstanceStatus().isActive();
     }
 
     @Override
