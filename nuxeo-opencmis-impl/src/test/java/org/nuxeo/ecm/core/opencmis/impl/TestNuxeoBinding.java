@@ -41,6 +41,7 @@ import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
@@ -299,6 +300,37 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData copy = getDocumentByPath("/testfile1");
         assertNotNull(copy);
         assertEquals(value, getString(copy, key));
+    }
+
+    @Test
+    public void testDeleteObject() throws Exception {
+        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+        objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE, null);
+        try {
+            ob = getDocumentByPath("/testfolder1/testfile1");
+            fail("Should not be able to get a deleted document");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+
+        ob = getDocumentByPath("/testfolder2");
+        try {
+            objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE,
+                    null);
+            fail("Should not be able to delete non-empty folder");
+        } catch (CmisConstraintException e) {
+            // ok to fail, still has children
+        }
+        ob = getDocumentByPath("/testfolder2");
+        assertNotNull(ob);
+
+        try {
+            objService.deleteObject(repositoryId, "nosuchid", Boolean.TRUE,
+                    null);
+            fail("Should not be able to delete nonexistent object");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
     }
 
 }

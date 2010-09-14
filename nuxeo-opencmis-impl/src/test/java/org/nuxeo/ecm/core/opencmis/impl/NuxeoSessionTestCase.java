@@ -280,8 +280,16 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // ItemIterable<QueryResult> col = session.query(query, false);
         // assertEquals("file 5 should be in trash", 0, col.getTotalNumItems());
 
+        // cannot delete folder, has children
+        try {
+            folder.delete(true);
+            fail("Should not be able to delete non-empty folder");
+        } catch (CmisConstraintException e) {
+            // ok
+        }
+
         // test trashed child doesn't block folder delete
-        for (CmisObject child : children) {
+        for (CmisObject child : folder.getChildren()) {
             child.delete(true);
         }
         folder.delete(true);

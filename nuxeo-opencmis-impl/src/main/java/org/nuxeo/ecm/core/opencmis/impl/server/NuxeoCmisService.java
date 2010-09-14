@@ -940,10 +940,20 @@ public class NuxeoCmisService extends AbstractCmisService {
     public void deleteObject(String repositoryId, String objectId,
             Boolean allVersions, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // check existence
-        DocumentModel doc = getDocumentModel(new IdRef(objectId));
         try {
+            DocumentRef docRef = new IdRef(objectId);
+            DocumentModel doc = getDocumentModel(docRef);
+            if (doc.isFolder()) {
+                // check that there are no children left
+                DocumentModelList docs = coreSession.getChildren(docRef, null,
+                        getDocumentFilter(), null);
+                if (docs.size() > 0) {
+                    throw new CmisConstraintException(
+                            "Cannot delete non-empty folder: " + objectId);
+                }
+            }
             coreSession.removeDocument(doc.getRef());
+            coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.getMessage(), e);
         }
