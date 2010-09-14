@@ -63,7 +63,7 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
             ownerName = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_OWNER));
             name = new URI((String)doc.getName());
         } catch (Exception e) {
-            throw new QueueError("Cannot build server uri for " + doc.getPathAsString());
+            throw new QueueError("Cannot build server uri for " + doc.getPathAsString(), e);
         }
     }
 

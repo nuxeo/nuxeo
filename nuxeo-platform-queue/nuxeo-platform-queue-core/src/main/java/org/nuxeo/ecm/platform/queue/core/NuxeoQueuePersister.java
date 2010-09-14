@@ -111,7 +111,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         public void run() throws ClientException {
             PathRef ref= newPathRef(session, name);
             doc = session.getDocument(ref);
-            ((DocumentModelImpl)doc).detach(true);
+            detachDocument(doc);
             session.removeDocument(ref);
             session.save();
         }
@@ -168,6 +168,9 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         public void run() throws ClientException {
             DocumentModel queueDoc = getOrCreateQueue(session);
             docs = session.getChildren(queueDoc.getRef());
+            for (DocumentModel doc:docs) {
+                detachDocument(doc);
+            }
         }
     }
 
@@ -212,8 +215,8 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
             injectContent(doc, content);
 
             doc = session.createDocument(doc);
+            detachDocument(doc);
             session.save();
-
         }
     }
 
@@ -296,6 +299,9 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
                     queue.getId(),
                     ownerName.toASCIIString());
             docs = session.query(query);
+            for (DocumentModel doc:docs) {
+                detachDocument(doc);
+            }
         }
 
     }
@@ -358,6 +364,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
             if (doc == null) {
                 throw new QueueError("no such content", name);
             }
+            detachDocument(doc);
         }
 
     }
@@ -420,7 +427,9 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
 
 
-
+    protected static void detachDocument(DocumentModel doc) throws ClientException {
+        ((DocumentModelImpl) doc).detach(true);
+    }
 
 
 }
