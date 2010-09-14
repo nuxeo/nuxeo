@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -38,12 +39,18 @@ import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData.NuxeoPropertyDataName;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyDataBase;
 
 /**
  * Base abstract live local CMIS Object, wrapping a {@link NuxeoSession} and a
@@ -153,14 +160,22 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public ObjectId updateProperties() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        CoreSession coreSession = session.getCoreSession();
+        try {
+            data.doc = coreSession.saveDocument(data.doc);
+            coreSession.save();
+            return session.createObjectId(data.doc.getId());
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
     public ObjectId updateProperties(Map<String, ?> properties) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        for (Entry<String, ?> en : properties.entrySet()) {
+            ((NuxeoPropertyDataBase<?>) data.getProperty(en.getKey())).setValue(en.getValue());
+        }
+        return updateProperties();
     }
 
     @SuppressWarnings("unchecked")
@@ -184,10 +199,16 @@ public abstract class NuxeoObject implements CmisObject {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> void setProperty(String id, T value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        NuxeoPropertyDataBase<T> prop = (NuxeoPropertyDataBase<T>) data.getProperty(id);
+        if (!prop.getPropertyDefinition().getCardinality().equals(
+                Cardinality.SINGLE)) {
+            throw new CmisInvalidArgumentException(
+                    "Not a single-valued property: " + id);
+        }
+        prop.setValue(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -196,10 +217,16 @@ public abstract class NuxeoObject implements CmisObject {
         return (List<T>) data.getProperty(id).getValues();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> void setPropertyMultivalue(String id, List<T> value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        NuxeoPropertyDataBase<T> prop = (NuxeoPropertyDataBase<T>) data.getProperty(id);
+        if (!prop.getPropertyDefinition().getCardinality().equals(
+                Cardinality.MULTI)) {
+            throw new CmisInvalidArgumentException(
+                    "Not a multi-valued property: " + id);
+        }
+        prop.setValue(value);
     }
 
     @Override
@@ -285,8 +312,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void refresh() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // nothing to do, this is a live object
     }
 
     @Override

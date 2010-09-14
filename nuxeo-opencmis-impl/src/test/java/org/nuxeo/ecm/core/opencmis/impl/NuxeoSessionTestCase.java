@@ -193,7 +193,22 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("bla bla", note.getPropertyValue("note"));
     }
 
-    public void testBasic() throws Exception {
+    public void testUpdate() throws Exception {
+        Document doc;
+
+        doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        doc.setProperty("dc:title", "new title");
+        doc.updateProperties();
+
+        doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        assertEquals("new title", doc.getPropertyValue("dc:title"));
+
+        doc.updateProperties(Collections.singletonMap("dc:title", "other title"));
+        doc.refresh(); // reload
+        assertEquals("other title", doc.getPropertyValue("dc:title"));
+    }
+
+    public void testContentStream() throws Exception {
         Folder root = session.getRootFolder();
         ItemIterable<CmisObject> entries = root.getChildren();
         assertEquals(2, entries.getTotalNumItems());

@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -36,13 +35,12 @@ import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
+import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.commons.lang.StringUtils;
@@ -81,12 +79,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Acl addACEs = null;
         Acl removeACEs = null;
         return objService.createDocument(repositoryId,
-                createDocumentProperties(name, typeId), folderId,
+                createBaseDocumentProperties(name, typeId), folderId,
                 contentStream, versioningState, policies, addACEs, removeACEs,
                 null);
     }
 
-    protected Properties createDocumentProperties(String name, String typeId) {
+    protected Properties createBaseDocumentProperties(String name, String typeId) {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyIdData(PropertyIds.NAME, name));
@@ -95,10 +93,26 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         return factory.createPropertiesData(props);
     }
 
+    protected Properties createProperties(String key, String value) {
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        PropertyString prop = factory.createPropertyStringData(key, value);
+        return factory.createPropertiesData(Collections.<PropertyData<?>> singletonList(prop));
+    }
+
     protected ObjectData getDocument(String id) {
-        return objService.getObject(repositoryId, id, "*", Boolean.FALSE,
+        return objService.getObject(repositoryId, id, null, Boolean.FALSE,
                 IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE,
                 null);
+    }
+
+    protected ObjectData getDocumentByPath(String path) {
+        return objService.getObjectByPath(repositoryId, path, null,
+                Boolean.FALSE, IncludeRelationships.NONE, null, Boolean.FALSE,
+                Boolean.FALSE, null);
+    }
+
+    protected static String getString(ObjectData data, String key) {
+        return (String) data.getProperties().getProperties().get(key).getFirstValue();
     }
 
     @Test
@@ -107,8 +121,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNotNull(id);
         ObjectData data = getDocument(id);
         assertEquals(id, data.getId());
-        Map<String, PropertyData<?>> properties = data.getProperties().getProperties();
-        assertEquals("doc1", properties.get("cmis:name").getFirstValue());
+        assertEquals("doc1", getString(data, PropertyIds.NAME));
+    }
+
+    @Test
+    public void testUpdateProperties() throws Exception {
+        ObjectData ob = objService.getObjectByPath(repositoryId,
+                "/testfolder1/testfile1", null, null, null, null, null, null,
+                null);
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        Properties props = createProperties("dc:title", "new title");
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null, props,
+                null);
+        assertEquals(ob.getId(), objectIdHolder.getValue());
+
+        ob = getDocument(ob.getId());
+        assertEquals("new title", getString(ob, "dc:title"));
     }
 
     // flatten and order children
@@ -120,8 +150,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         List<String> r = new LinkedList<String>();
         for (Iterator<ObjectInFolderContainer> it = tree.iterator(); it.hasNext();) {
             ObjectInFolderContainer child = it.next();
-            String name = (String) child.getObject().getObject().getProperties().getProperties().get(
-                    PropertyIds.NAME).getFirstValue();
+            String name = getString(child.getObject().getObject(),
+                    PropertyIds.NAME);
             String elem = name;
             List<String> sub = flatTree(child.getChildren());
             if (sub != null) {
@@ -139,7 +169,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
-    public void testDescendants() throws Exception {
+    public void testGetDescendants() throws Exception {
         List<ObjectInFolderContainer> tree;
 
         try {
@@ -182,8 +212,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + /* */"testfile3_Title[]], " //
                 + "testfolder2[testfolder3[testfile4_Title[]]]", flat(tree));
 
-        ObjectData ob = objService.getObjectByPath(repositoryId,
-                "/testfolder2", null, null, null, null, null, null, null);
+        ObjectData ob = getDocumentByPath("/testfolder2");
         String folder2Id = ob.getId();
 
         tree = navService.getDescendants(repositoryId, folder2Id,
@@ -204,31 +233,19 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
-    public void testCopy() throws Exception {
-        ObjectData ob = objService.getObjectByPath(repositoryId,
-                "/testfolder1/testfile1", null, null, null, null, null, null,
-                null);
-        PropertiesImpl props = new PropertiesImpl();
-        props.addProperty(new PropertyStringImpl("dc:title", "new title"));
-        try {
-            String id = objService.createDocumentFromSource(repositoryId,
-                    ob.getId(), props, rootFolderId, null, null, null, null,
-                    null);
-            assertNotNull(id);
-            assertNotSame(id, ob.getId());
-        } catch (CmisRuntimeException e) {
-            throw e;
-            // assertTrue(e.getMessage().contains(
-            // "AtomPub bindings do not support"));
-            // return;
-        }
+    public void testCreateDocumentFromSource() throws Exception {
+        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+        String key = "dc:title";
+        String value = "new title";
+        Properties props = createProperties(key, value);
+        String id = objService.createDocumentFromSource(repositoryId,
+                ob.getId(), props, rootFolderId, null, null, null, null, null);
+        assertNotNull(id);
+        assertNotSame(id, ob.getId());
         // fetch
-        ObjectData copy = objService.getObjectByPath(repositoryId,
-                "/testfile1", null, null, null, null, null, null, null);
+        ObjectData copy = getDocumentByPath("/testfile1");
         assertNotNull(copy);
-        assertEquals(
-                "new title",
-                copy.getProperties().getProperties().get("dc:title").getFirstValue());
+        assertEquals(value, getString(copy, key));
     }
 
 }

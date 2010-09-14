@@ -71,7 +71,7 @@ public class NuxeoObjectData implements ObjectData {
 
     private Boolean includeAcl;
 
-    private BindingsObjectFactory objectFactory;
+    private static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     private TypeDefinition type;
 
@@ -87,7 +87,6 @@ public class NuxeoObjectData implements ObjectData {
         this.renditionFilter = renditionFilter;
         this.includePolicyIds = includePolicyIds;
         this.includeAcl = includeAcl;
-        objectFactory = new BindingsObjectFactoryImpl();
         type = repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
     }
 
@@ -118,7 +117,7 @@ public class NuxeoObjectData implements ObjectData {
                 : BaseTypeId.CMIS_DOCUMENT;
     }
 
-    public TypeDefinition getType() {
+    public TypeDefinition getTypeDefinition() {
         return type;
     }
 

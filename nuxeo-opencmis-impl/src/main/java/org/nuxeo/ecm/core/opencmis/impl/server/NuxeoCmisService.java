@@ -220,7 +220,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         return !documentFilter.accept(doc);
     }
 
-    private DocumentModel createDocumentModel(ObjectId folder,
+    protected DocumentModel createDocumentModel(ObjectId folder,
             TypeDefinition type) {
         DocumentModel doc;
         try {
@@ -292,7 +292,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         DocumentModel doc = createDocumentModel(folder, type);
         NuxeoObjectData object = new NuxeoObjectData(repository, doc, null,
                 null, null, null, null, null, null);
-        updateProperties(object, null, type, properties, true);
+        updateProperties(object, null, properties, true);
         try {
             if (contentStream != null) {
                 try {
@@ -312,17 +312,13 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     protected void updateProperties(NuxeoObjectData object, String changeToken,
-            TypeDefinition type, Properties properties, boolean creation) {
+            Properties properties, boolean creation) {
         // TODO changeToken
-        // NuxeoObjectData entry = getObjectEntry(object);
-        // if (entry == null) {
-        // throw new CmisObjectNotFoundException(object.getId());
-        // }
         Map<String, PropertyData<?>> p;
         if (properties != null && (p = properties.getProperties()) != null) {
             for (Entry<String, PropertyData<?>> en : p.entrySet()) {
-                setObjectProperty(object, en.getKey(), en.getValue(), type,
-                        creation);
+                setObjectProperty(object, en.getKey(), en.getValue(),
+                        object.getTypeDefinition(), creation);
             }
         }
     }
@@ -430,7 +426,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                     null, null, null, null, null, null, null);
             if (properties != null && properties.getPropertyList() != null
                     && !properties.getPropertyList().isEmpty()) {
-                updateProperties(copy, null, copy.getType(), properties, false);
+                updateProperties(copy, null, properties, false);
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
             coreSession.save();
@@ -561,8 +557,23 @@ public class NuxeoCmisService extends AbstractCmisService {
             Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             Properties properties, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId;
+        if (objectIdHolder == null
+                || (objectId = objectIdHolder.getValue()) == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        NuxeoObjectData object = new NuxeoObjectData(repository, doc, null,
+                null, null, null, null, null, null);
+        String changeToken = changeTokenHolder == null ? null
+                : changeTokenHolder.getValue();
+        updateProperties(object, changeToken, properties, false);
+        try {
+            coreSession.saveDocument(doc);
+            coreSession.save();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
