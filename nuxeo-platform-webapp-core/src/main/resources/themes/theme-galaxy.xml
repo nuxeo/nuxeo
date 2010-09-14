@@ -1467,15 +1467,16 @@
         <padding-top>3px</padding-top>
       </selector>
       <selector path=".facetedSearchActionBar input.button">
-        <padding>0 3px</padding>
+        <padding>0 5px 0 7px</padding>
         <margin>0 0 0 5px</margin>
         <float>right</float>
         <font-weight>bold</font-weight>
+        <width>auto</width>
       </selector>
       <selector path="#facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv">
         <padding>0 0 5px</padding>
         <margin>0</margin>
-        <border-bottom>1px solid #efefef</border-bottom>
+        <border-bottom>1px solid #f1f1f1</border-bottom>
       </selector>
       <selector path="#facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p">
         <color>#323232</color>
@@ -1528,7 +1529,48 @@
       <selector path="#saveFacetedSearchForm input">
         <margin-left>3px</margin-left>
       </selector>
-
+      <selector path=".facetedSearchPopUp">
+        <background-color>white</background-color>
+        <position>absolute</position>
+        <top>15%</top>
+        <left>25%</left>
+        <width>400px</width>
+        <border>1px solid #b5bcc6</border>
+        <z-index>10000</z-index>
+        <display>none</display>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader">
+        <text-align>right</text-align>
+        <border-bottom>1px dotted #dedede</border-bottom>
+        <background-color>#f6f8ff</background-color>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader .closePopUp">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".facetedSearchPopUp .closePopUpHeader .popUpTitle">
+        <float>left</float>
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".facetedSearchPopUp .popUpContent">
+        <overflow>auto</overflow>
+        <height>390px</height>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td">
+        <padding>1px</padding>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent h6 .subLabel">
+        <float>left</float>
+      </selector>
+      <selector path=".facetedSearchBlock .widgetContent h6 .labelTool">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".facetedSearchBlock table.thin">
+        <margin>0 0 7px 0</margin>
+      </selector>
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
