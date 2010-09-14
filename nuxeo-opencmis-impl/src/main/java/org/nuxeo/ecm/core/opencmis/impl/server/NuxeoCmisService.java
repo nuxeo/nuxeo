@@ -61,6 +61,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
@@ -451,8 +452,27 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean allVersions, UnfileObject unfileObjects,
             Boolean continueOnFailure, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (unfileObjects == UnfileObject.UNFILE) {
+            throw new CmisConstraintException("Unfiling not supported");
+        }
+        if (repository.getRootFolderId(coreSession).equals(folderId)) {
+            throw new CmisInvalidArgumentException("Cannot delete root");
+        }
+        try {
+            IdRef docRef = new IdRef(folderId);
+            DocumentModel doc = getDocumentModel(docRef);
+            if (!doc.isFolder()) {
+                throw new CmisInvalidArgumentException("Not a folder: "
+                        + folderId);
+            }
+            coreSession.removeDocument(docRef);
+            coreSession.save();
+            // TODO returning null fails in opencmis 0.1.0 due to
+            // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
+            return new FailedToDeleteDataImpl();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override

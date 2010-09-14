@@ -45,6 +45,7 @@ import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
@@ -229,10 +230,16 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public List<String> deleteTree(boolean allversions, UnfileObject unfile,
+    public List<String> deleteTree(boolean allVersions, UnfileObject unfile,
             boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        FailedToDeleteData failed = service.deleteTree(getRepositoryId(),
+                getId(), Boolean.valueOf(allVersions), unfile,
+                Boolean.valueOf(continueOnFailure), null);
+        if (failed == null || failed.getIds() == null
+                || failed.getIds().isEmpty()) {
+            return null;
+        }
+        return failed.getIds();
     }
 
     @Override

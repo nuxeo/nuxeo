@@ -106,13 +106,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         return factory.createPropertiesData(Collections.<PropertyData<?>> singletonList(prop));
     }
 
-    protected ObjectData getDocument(String id) {
+    protected ObjectData getObject(String id) {
         return objService.getObject(repositoryId, id, null, Boolean.FALSE,
                 IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE,
                 null);
     }
 
-    protected ObjectData getDocumentByPath(String path) {
+    protected ObjectData getObjectByPath(String path) {
         return objService.getObjectByPath(repositoryId, path, null,
                 Boolean.FALSE, IncludeRelationships.NONE, null, Boolean.FALSE,
                 Boolean.FALSE, null);
@@ -126,7 +126,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testCreateDocument() {
         String id = createDocument("doc1", rootFolderId, "File");
         assertNotNull(id);
-        ObjectData data = getDocument(id);
+        ObjectData data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("doc1", getString(data, PropertyIds.NAME));
     }
@@ -144,13 +144,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
-        ob = getDocument(ob.getId());
+        ob = getObject(ob.getId());
         assertEquals("new title", getString(ob, "dc:title"));
     }
 
     @Test
     public void testContentStream() throws Exception {
-        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
 
         // get stream
         ContentStream cs = objService.getContentStream(repositoryId,
@@ -266,7 +266,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + /* */"testfile3_Title[]], " //
                 + "testfolder2[testfolder3[testfile4_Title[]]]", flat(tree));
 
-        ObjectData ob = getDocumentByPath("/testfolder2");
+        ObjectData ob = getObjectByPath("/testfolder2");
         String folder2Id = ob.getId();
 
         tree = navService.getDescendants(repositoryId, folder2Id,
@@ -288,7 +288,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testCreateDocumentFromSource() throws Exception {
-        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String key = "dc:title";
         String value = "new title";
         Properties props = createProperties(key, value);
@@ -297,23 +297,23 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNotNull(id);
         assertNotSame(id, ob.getId());
         // fetch
-        ObjectData copy = getDocumentByPath("/testfile1");
+        ObjectData copy = getObjectByPath("/testfile1");
         assertNotNull(copy);
         assertEquals(value, getString(copy, key));
     }
 
     @Test
     public void testDeleteObject() throws Exception {
-        ObjectData ob = getDocumentByPath("/testfolder1/testfile1");
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE, null);
         try {
-            ob = getDocumentByPath("/testfolder1/testfile1");
+            ob = getObjectByPath("/testfolder1/testfile1");
             fail("Should not be able to get a deleted document");
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
 
-        ob = getDocumentByPath("/testfolder2");
+        ob = getObjectByPath("/testfolder2");
         try {
             objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE,
                     null);
@@ -321,7 +321,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisConstraintException e) {
             // ok to fail, still has children
         }
-        ob = getDocumentByPath("/testfolder2");
+        ob = getObjectByPath("/testfolder2");
         assertNotNull(ob);
 
         try {
@@ -331,6 +331,25 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testDeleteTree() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1");
+        objService.deleteTree(repositoryId, ob.getId(), null, null, null, null);
+        try {
+            getObjectByPath("/testfolder1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            getObjectByPath("/testfolder1/testfile1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        assertNotNull(getObjectByPath("/testfolder2"));
     }
 
 }

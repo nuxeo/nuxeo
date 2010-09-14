@@ -40,6 +40,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -253,14 +254,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         String file5id = repoDetails.get("file5id");
 
         try {
-            CmisObject ob = session.getObjectByPath("/testfolder1/testfile5");
-            assertNull("file 5 should be in trash", ob);
+            session.getObjectByPath("/testfolder1/testfile5");
+            fail("file 5 should be in trash");
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
         try {
-            CmisObject ob = session.getObject(session.createObjectId(file5id));
-            assertNull("file 5 should be in trash", ob);
+            session.getObject(session.createObjectId(file5id));
+            fail("file 5 should be in trash");
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
@@ -293,6 +294,30 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             child.delete(true);
         }
         folder.delete(true);
+    }
+
+    @Test
+    public void testDeleteTree() throws Exception {
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        List<String> failed = folder.deleteTree(true, null, true);
+        assertTrue(failed == null || failed.isEmpty());
+        session.clear();
+
+        try {
+            session.getObjectByPath("/testfolder1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            session.getObjectByPath("/testfolder1/testfile1");
+            fail("Folder should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+
+        folder = (Folder) session.getObjectByPath("/testfolder2");
+        assertNotNull(folder);
     }
 
     // XXX TODO copy not implemented (and its signature must change)
