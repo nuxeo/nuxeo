@@ -14,9 +14,10 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.api;
 
 import java.util.Date;
+
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -47,7 +48,5 @@ public interface ProbeMBean {
     Date getLastFailedDate();
 
     ProbeStatus getLastFailureStatus();
-
-    void run();
 
 }

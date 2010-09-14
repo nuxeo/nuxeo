@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,19 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.core.management.statuses;
 
-import org.nuxeo.ecm.core.api.ClientException;
+package org.nuxeo.ecm.core.management.api;
 
-/**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- */
-public interface Probe {
+import java.util.Collection;
 
-    void init(Object service);
+public interface ProbeRunnerMBean {
 
-    ProbeStatus run() throws ClientException;
+    Collection<String> getProbeNames();
+
+    int getProbesCount();
+
+    Collection<String> getProbesInError();
+
+    int getProbesInErrorCount();
+
+    Collection<String> getProbesInSuccess();
+
+    int getProbesInSuccessCount();
+
+    boolean runAllProbes();
 
 }

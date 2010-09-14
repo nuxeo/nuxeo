@@ -14,10 +14,11 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.statuses;
+package org.nuxeo.ecm.core.management.probes;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.management.api.Probe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -30,9 +31,6 @@ public class ProbeDescriptor {
 
     @XNode("@qualifiedName")
     private String qualifiedName;
-
-    @XNode("@serviceClass")
-    private Class<?> serviceClass;
 
     @XNode("@class")
     private Class<? extends Probe> probeClass;
@@ -47,10 +45,6 @@ public class ProbeDescriptor {
 
     public Class<? extends Probe> getProbeClass() {
         return probeClass;
-    }
-
-    public Class<?> getServiceClass() {
-        return serviceClass;
     }
 
 }
