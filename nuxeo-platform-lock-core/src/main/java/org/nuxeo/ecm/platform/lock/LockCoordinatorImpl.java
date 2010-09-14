@@ -72,8 +72,8 @@ public class LockCoordinatorImpl implements LockCoordinator, LockComponentDelega
         try {
             debug("Create Record", self, resource, comment, timeout);
             provider.createRecord(self, resource, comment, timeout);
-        } catch (EntityExistsException exists) {
-            debug("Couldn't create, entity already exists, fetching resource",
+        } catch (RuntimeException exists) {
+            debug("Couldn't create, entity already exists ? fetching resource",
                     self, resource, comment, timeout);
 
             LockRecord record = doFetch(resource);

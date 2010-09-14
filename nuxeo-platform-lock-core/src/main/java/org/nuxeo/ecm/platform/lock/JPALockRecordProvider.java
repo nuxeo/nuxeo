@@ -162,19 +162,19 @@ public class JPALockRecordProvider implements LockRecordProvider,
 
     public LockRecord createRecord(URI self, URI resource, String comment,
             long timeout) {
-        LockRecord record;
         EntityManager em = open(true);
         try {
             Date now = new Date();
             Date expire = new Date(now.getTime() + timeout);
-            record = new LockRecord(self, resource, comment, now, expire);
+            LockRecord record = new LockRecord(self, resource, comment, now, expire);
             em.persist(record);
-            close(em);
+            return record;
         } catch (RuntimeException e) {
-            clear(em);
+            log.debug("Caught errors while creating record " + resource, e);
             throw e;
+        } finally {
+            close(em);
         }
-        return record;
     }
 
     @SuppressWarnings("unchecked")
