@@ -1,7 +1,7 @@
 Export-Package: org.nuxeo.ecm.core.management,
- org.nuxeo.ecm.core.management.statuses,
- org.nuxeo.ecm.core.management.probes,
  org.nuxeo.ecm.core.management.api,
+ org.nuxeo.ecm.core.management.probes,
+ org.nuxeo.ecm.core.management.statuses,
  org.nuxeo.ecm.core.management.storage
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -33,6 +33,7 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.management,
  org.nuxeo.runtime.model,
+ org.nuxeo.runtime.services.event,
  org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.ecm.core.management;singleton=true
 Nuxeo-Require: org.nuxeo.runtime.management,
