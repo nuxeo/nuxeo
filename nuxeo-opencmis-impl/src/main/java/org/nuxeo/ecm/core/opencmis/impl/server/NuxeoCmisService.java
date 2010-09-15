@@ -568,9 +568,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             if (sourceFolderId == null) {
                 sourceFolderId = parent.getId();
             } else {
-                // check it's the parent
+                // check it's the actual parent
                 if (!parent.getId().equals(sourceFolderId)) {
-                    throw new CmisConstraintException("Object " + objectId
+                    throw new CmisInvalidArgumentException("Object " + objectId
                             + " is not filed in " + sourceFolderId);
                 }
             }
@@ -694,8 +694,21 @@ public class NuxeoCmisService extends AbstractCmisService {
     public void removeObjectFromFolder(String repositoryId, String objectId,
             String folderId, ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (folderId != null) {
+            // check it's the actual parent
+            try {
+                DocumentModel folder = getDocumentModel(new IdRef(folderId));
+                DocumentModel parent = coreSession.getParentDocument(new IdRef(
+                        objectId));
+                if (!parent.getId().equals(folder.getId())) {
+                    throw new CmisInvalidArgumentException("Object " + objectId
+                            + " is not filed in  " + folderId);
+                }
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+        deleteObject(repositoryId, objectId, Boolean.FALSE, extension);
     }
 
     @Override

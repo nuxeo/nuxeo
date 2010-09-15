@@ -45,6 +45,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
+import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +65,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected NavigationService navService;
 
+    protected MultiFilingService filingService;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -71,6 +74,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         Helper.makeNuxeoRepository(nuxeotc.getSession());
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
+        filingService = binding.getMultiFilingService();
     }
 
     @Override
@@ -308,7 +312,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         objService.deleteObject(repositoryId, ob.getId(), Boolean.TRUE, null);
         try {
             ob = getObjectByPath("/testfolder1/testfile1");
-            fail("Should not be able to get a deleted document");
+            fail("Document should be deleted");
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
@@ -328,6 +332,33 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             objService.deleteObject(repositoryId, "nosuchid", Boolean.TRUE,
                     null);
             fail("Should not be able to delete nonexistent object");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
+    public void testRemoveObjectFromFolder1() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        filingService.removeObjectFromFolder(repositoryId, ob.getId(), null,
+                null);
+        try {
+            ob = getObjectByPath("/testfolder1/testfile1");
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
+    public void testRemoveObjectFromFolder2() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        ObjectData folder = getObjectByPath("/testfolder1");
+        filingService.removeObjectFromFolder(repositoryId, ob.getId(),
+                folder.getId(), null);
+        try {
+            ob = getObjectByPath("/testfolder1/testfile1");
+            fail("Document should be deleted");
         } catch (CmisObjectNotFoundException e) {
             // ok
         }

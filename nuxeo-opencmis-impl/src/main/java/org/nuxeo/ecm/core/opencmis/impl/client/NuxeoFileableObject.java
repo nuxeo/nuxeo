@@ -90,8 +90,8 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
 
     @Override
     public void removeFromFolder(ObjectId folderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        service.removeObjectFromFolder(getRepositoryId(), getId(),
+                folderId == null ? null : folderId.getId(), null);
     }
 
     @Override

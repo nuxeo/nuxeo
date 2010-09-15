@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -296,7 +298,19 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         folder.delete(true);
     }
 
-    @Test
+    public void testDelete() throws Exception {
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        doc.delete(true);
+
+        session.clear();
+        try {
+            session.getObjectByPath("/testfolder1/testfile1");
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
     public void testDeleteTree() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         List<String> failed = folder.deleteTree(true, null, true);
@@ -333,7 +347,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("new title", copy.getPropertyValue("dc:title"));
     }
 
-    @Test
     public void testMove() throws Exception {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         Document doc = (Document) session.getObjectByPath("/testfolder2/testfolder3/testfile4");
