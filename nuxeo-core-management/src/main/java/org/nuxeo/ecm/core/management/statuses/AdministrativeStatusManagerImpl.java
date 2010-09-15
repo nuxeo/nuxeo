@@ -151,6 +151,9 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
     }
 
     protected AdministrativeStatus addLabelAndDescription(AdministrativeStatus status) {
+        if (status==null) {
+            return null;
+        }
         String id = status.getServiceIdentifier();
         AdministrableServiceDescriptor desc = globalManager.getServiceDescriptor(id);
         if (desc!=null) {
