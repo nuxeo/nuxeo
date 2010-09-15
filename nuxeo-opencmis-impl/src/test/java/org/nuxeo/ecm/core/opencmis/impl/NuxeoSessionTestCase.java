@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -42,7 +40,6 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -128,7 +125,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(root);
         assertNotNull(root.getName());
         assertNotNull(root.getId());
-        assertNull(root.getFolderParent());
         assertNotNull(root.getType());
         assertEquals(NUXEO_ROOT_TYPE, root.getType().getId());
         assertEquals(rootFolderId, root.getPropertyValue("cmis:objectId"));
@@ -138,6 +134,13 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         List<Property<?>> props = root.getProperties();
         assertNotNull(props);
         assertTrue(props.size() > 0);
+        assertEquals("/", root.getPath());
+        assertEquals(Collections.singletonList("/"), root.getPaths());
+        assertNull(root.getFolderParent());
+        if (!isAtomPub) {
+            // TODO fix AtomPub bindings bug
+            assertEquals(Collections.emptyList(), root.getParents());
+        }
     }
 
     public void testDefaultProperties() throws Exception {
@@ -145,6 +148,30 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         CmisObject child = root.getChildren().iterator().next();
         assertNotNull(child.getProperty("dc:coverage"));
         assertNull(child.getPropertyValue("dc:coverage"));
+    }
+
+    public void testPath() throws Exception {
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        assertEquals("/testfolder1", folder.getPath());
+        assertEquals(Collections.singletonList("/testfolder1"),
+                folder.getPaths());
+
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        assertEquals(Collections.singletonList("/testfolder1/testfile1"),
+                doc.getPaths());
+    }
+
+    public void testParent() throws Exception {
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        assertEquals(rootFolderId, folder.getFolderParent().getId());
+        List<Folder> parents = folder.getParents();
+        assertEquals(1, parents.size());
+        assertEquals(rootFolderId, parents.get(0).getId());
+
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        parents = doc.getParents();
+        assertEquals(1, parents.size());
+        assertEquals(folder.getId(), parents.get(0).getId());
     }
 
     public void testCreateObject() {

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
@@ -88,6 +89,20 @@ public class NuxeoObjectData implements ObjectData {
         this.includePolicyIds = includePolicyIds;
         this.includeAcl = includeAcl;
         type = repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+    }
+
+    protected NuxeoObjectData(NuxeoRepository repository, DocumentModel doc) {
+        this(repository, doc, null, null, null, null, null, null, null);
+    }
+
+    public NuxeoObjectData(NuxeoRepository repository, DocumentModel doc,
+            OperationContext context) {
+        this(repository, doc, context.getFilterString(),
+                Boolean.valueOf(context.isIncludeAllowableActions()),
+                context.getIncludeRelationships(),
+                context.getRenditionFilterString(),
+                Boolean.valueOf(context.isIncludePolicies()),
+                Boolean.valueOf(context.isIncludeAcls()), null);
     }
 
     private static final String STAR = "*";

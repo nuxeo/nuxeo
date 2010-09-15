@@ -88,7 +88,7 @@ public abstract class NuxeoObject implements CmisObject {
     public NuxeoObject(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         this.session = session;
-        service = session.getBinding().service;
+        service = session.getService();
         this.data = data;
         this.type = type;
     }
@@ -312,7 +312,11 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void refresh() {
-        // nothing to do, this is a live object
+        try {
+            data.doc.refresh();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override

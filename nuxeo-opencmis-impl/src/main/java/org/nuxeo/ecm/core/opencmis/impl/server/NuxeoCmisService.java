@@ -112,6 +112,14 @@ public class NuxeoCmisService extends AbstractCmisService {
         documentFilter = new CompoundFilter(facetFilter, lcFilter);
     }
 
+    public NuxeoRepository getNuxeoRepository() {
+        return repository;
+    }
+
+    public CoreSession getCoreSession() {
+        return coreSession;
+    }
+
     /**
      * Sets the call context.
      */
@@ -189,7 +197,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             return doc;
         } catch (ClientException e) {
-            throw new CmisRuntimeException(e.getMessage(), e);
+            throw new CmisRuntimeException(e.toString(), e);
         }
     }
 
@@ -218,7 +226,7 @@ public class NuxeoCmisService extends AbstractCmisService {
      * Checks if the doc should be ignored because it is "invisible" (deleted,
      * hidden in navigation).
      */
-    protected boolean isFilteredOut(DocumentModel doc) {
+    public boolean isFilteredOut(DocumentModel doc) {
         return !documentFilter.accept(doc);
     }
 
@@ -901,7 +909,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             parentId = parent.getId();
         } catch (ClientException e) {
-            throw new CmisRuntimeException(e.getMessage(), e);
+            throw new CmisRuntimeException(e.toString(), e);
         }
 
         ObjectData od = getObject(repositoryId, parentId, filter,
@@ -1024,7 +1032,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             coreSession.removeDocument(doc.getRef());
             coreSession.save();
         } catch (ClientException e) {
-            throw new CmisRuntimeException(e.getMessage(), e);
+            throw new CmisRuntimeException(e.toString(), e);
         }
     }
 

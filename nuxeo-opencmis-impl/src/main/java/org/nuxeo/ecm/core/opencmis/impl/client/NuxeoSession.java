@@ -48,7 +48,9 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 
 /**
@@ -65,7 +67,9 @@ public class NuxeoSession implements Session {
 
     private final String repositoryId;
 
-    private final ObjectFactory objectFactory;
+    private final NuxeoObjectFactory objectFactory;
+
+    private final NuxeoCmisService service;
 
     private final NuxeoBinding binding;
 
@@ -77,9 +81,23 @@ public class NuxeoSession implements Session {
         repositoryId = repository.getId();
         objectFactory = new NuxeoObjectFactory(this);
 
-        NuxeoCmisService service = new NuxeoCmisService(coreSession, repository);
+        service = new NuxeoCmisService(coreSession, repository);
         service.setCallContext(context);
         binding = new NuxeoBinding(service);
+    }
+
+    @Override
+    public ObjectFactory getObjectFactory() {
+        return objectFactory;
+    }
+
+    @Override
+    public NuxeoBinding getBinding() {
+        return binding;
+    }
+
+    public NuxeoCmisService getService() {
+        return service;
     }
 
     protected CoreSession getCoreSession() {
@@ -207,6 +225,13 @@ public class NuxeoSession implements Session {
         return getObject(objectId, getDefaultContext());
     }
 
+    /** Gets a CMIS object given a Nuxeo {@link DocumentModel}. */
+    public CmisObject getObject(DocumentModel doc, OperationContext context) {
+        ObjectData data = new NuxeoObjectData(service.getNuxeoRepository(),
+                doc, context);
+        return objectFactory.convertObject(data, context);
+    }
+
     @Override
     public CmisObject getObject(ObjectId objectId, OperationContext context) {
         if (objectId == null || objectId.getId() == null) {
@@ -215,8 +240,8 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = binding.getObjectService().getObject(
-                getRepositoryId(), objectId.getId(), context.getFilterString(),
+        ObjectData data = service.getObject(getRepositoryId(),
+                objectId.getId(), context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
                 context.getRenditionFilterString(),
@@ -238,8 +263,8 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = binding.getObjectService().getObjectByPath(
-                getRepositoryId(), path, context.getFilterString(),
+        ObjectData data = service.getObjectByPath(getRepositoryId(), path,
+                context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
                 context.getRenditionFilterString(),
@@ -249,19 +274,8 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectFactory getObjectFactory() {
-        return objectFactory;
-    }
-
-    @Override
-    public NuxeoBinding getBinding() {
-        return binding;
-    }
-
-    @Override
     public RepositoryInfo getRepositoryInfo() {
-        return binding.getRepositoryService().getRepositoryInfo(repositoryId,
-                null);
+        return service.getRepositoryInfo(repositoryId, null);
     }
 
     @Override
@@ -289,7 +303,7 @@ public class NuxeoSession implements Session {
 
     @Override
     public ObjectType getTypeDefinition(String typeId) {
-        TypeDefinition typeDefinition = binding.getRepositoryService().getTypeDefinition(
+        TypeDefinition typeDefinition = service.getTypeDefinition(
                 getRepositoryId(), typeId, null);
         return objectFactory.convertTypeDefinition(typeDefinition);
     }

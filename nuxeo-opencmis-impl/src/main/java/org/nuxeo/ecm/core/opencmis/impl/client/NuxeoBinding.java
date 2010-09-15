@@ -17,17 +17,8 @@
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
-import org.apache.chemistry.opencmis.commons.spi.AclService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
-import org.apache.chemistry.opencmis.commons.spi.DiscoveryService;
-import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
-import org.apache.chemistry.opencmis.commons.spi.NavigationService;
-import org.apache.chemistry.opencmis.commons.spi.ObjectService;
-import org.apache.chemistry.opencmis.commons.spi.PolicyService;
-import org.apache.chemistry.opencmis.commons.spi.RelationshipService;
-import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
-import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 
 /**
@@ -52,47 +43,47 @@ public class NuxeoBinding implements CmisBinding {
     }
 
     @Override
-    public RepositoryService getRepositoryService() {
+    public NuxeoCmisService getRepositoryService() {
         return service;
     }
 
     @Override
-    public NavigationService getNavigationService() {
+    public NuxeoCmisService getNavigationService() {
         return service;
     }
 
     @Override
-    public ObjectService getObjectService() {
+    public NuxeoCmisService getObjectService() {
         return service;
     }
 
     @Override
-    public DiscoveryService getDiscoveryService() {
+    public NuxeoCmisService getDiscoveryService() {
         return service;
     }
 
     @Override
-    public RelationshipService getRelationshipService() {
+    public NuxeoCmisService getRelationshipService() {
         return service;
     }
 
     @Override
-    public VersioningService getVersioningService() {
+    public NuxeoCmisService getVersioningService() {
         return service;
     }
 
     @Override
-    public AclService getAclService() {
+    public NuxeoCmisService getAclService() {
         return service;
     }
 
     @Override
-    public MultiFilingService getMultiFilingService() {
+    public NuxeoCmisService getMultiFilingService() {
         return service;
     }
 
     @Override
-    public PolicyService getPolicyService() {
+    public NuxeoCmisService getPolicyService() {
         return service;
     }
 

@@ -46,8 +46,6 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
@@ -66,6 +64,9 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -267,7 +268,6 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public ItemIterable<CmisObject> getChildren(OperationContext context) {
-        final String objectId = getId();
         final ObjectFactory objectFactory = session.getObjectFactory();
         final OperationContext ctx = new OperationContextImpl(context);
 
@@ -275,28 +275,37 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                 ctx.getMaxItemsPerPage()) {
             @Override
             protected PageFetchResult<CmisObject> fetchPage(long skipCount) {
-                ObjectInFolderList children = service.getChildren(
-                        getRepositoryId(), objectId, ctx.getFilterString(),
-                        ctx.getOrderBy(),
-                        Boolean.valueOf(ctx.isIncludeAllowableActions()),
-                        ctx.getIncludeRelationships(),
-                        ctx.getRenditionFilterString(),
-                        Boolean.valueOf(ctx.isIncludePathSegments()),
-                        BigInteger.valueOf(maxNumItems),
-                        BigInteger.valueOf(skipCount), null);
-                // convert objects
                 List<CmisObject> page = new ArrayList<CmisObject>();
-                List<ObjectInFolderData> childObjects = children.getObjects();
-                if (childObjects != null) {
-                    for (ObjectInFolderData objectData : childObjects) {
-                        if (objectData.getObject() != null) {
-                            page.add(objectFactory.convertObject(
-                                    objectData.getObject(), ctx));
-                        }
+                DocumentModelList children;
+                try {
+                    children = service.getCoreSession().getChildren(
+                            data.doc.getRef());
+                } catch (ClientException e) {
+                    throw new CmisRuntimeException(e.toString(), e);
+                }
+                long totalItems = 0;
+                long skip = skipCount;
+                // TODO orderBy
+                for (DocumentModel child : children) {
+                    if (service.isFilteredOut(child)) {
+                        continue;
                     }
+                    totalItems++;
+                    if (skip > 0) {
+                        skip--;
+                        continue;
+                    }
+                    if (page.size() > maxNumItems) {
+                        continue;
+                    }
+                    NuxeoObjectData data = new NuxeoObjectData(
+                            service.getNuxeoRepository(), child, ctx);
+                    CmisObject ob = objectFactory.convertObject(data, ctx);
+                    page.add(ob);
                 }
                 return new PageFetchResult<CmisObject>(page,
-                        children.getNumItems(), children.hasMoreItems());
+                        BigInteger.valueOf(totalItems),
+                        Boolean.valueOf(totalItems > skipCount + page.size()));
             }
         };
         return new CollectionIterable<CmisObject>(pageFetcher);
@@ -342,13 +351,12 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public String getPath() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return data.doc.getPathAsString();
     }
 
     @Override
     public boolean isRootFolder() {
-        return session.getRepositoryInfo().getRootFolderId().equals(getId());
+        return data.doc.getPath().isRoot();
     }
 
     @Override

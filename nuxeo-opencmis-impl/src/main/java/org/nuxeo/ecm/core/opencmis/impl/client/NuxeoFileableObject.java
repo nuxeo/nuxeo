@@ -16,24 +16,21 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
-import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.data.PropertyData;
-import org.apache.chemistry.opencmis.commons.data.PropertyId;
 import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
-import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -49,43 +46,28 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
 
     @Override
     public List<Folder> getParents() {
-        String objectId = getId();
-        List<ObjectParentData> parentsData = service.getObjectParents(
-                getRepositoryId(), objectId, PropertyIds.OBJECT_ID,
-                Boolean.FALSE, IncludeRelationships.NONE, null, Boolean.FALSE,
-                null);
-        List<Folder> parents = new ArrayList<Folder>(parentsData.size());
-        for (ObjectParentData p : parentsData) {
-            if (p == null || p.getObject() == null
-                    || p.getObject().getProperties() == null) {
-                throw new CmisRuntimeException("Invalid object");
+        try {
+            CoreSession coreSession = data.doc.getCoreSession();
+            DocumentModel parent = coreSession.getParentDocument(new IdRef(
+                    getId()));
+            if (parent == null || service.isFilteredOut(parent)) {
+                return Collections.emptyList();
             }
-            PropertyData<?> idProp = p.getObject().getProperties().getProperties().get(
-                    PropertyIds.OBJECT_ID);
-            if (!(idProp instanceof PropertyId)) {
-                throw new CmisRuntimeException("Invalid type");
-            }
-            String id = (String) idProp.getFirstValue();
-            CmisObject parent = session.getObject(session.createObjectId(id));
-            if (!(parent instanceof Folder)) {
-                throw new CmisRuntimeException("Should be a Folder: "
-                        + parent.getClass().getName());
-            }
-            parents.add((Folder) parent);
+            Folder folder = (Folder) session.getObject(parent, session.getDefaultContext());
+            return Collections.singletonList(folder);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
         }
-        return parents;
     }
 
     @Override
     public List<String> getPaths() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.singletonList(data.doc.getPathAsString());
     }
 
     @Override
     public void addToFolder(ObjectId folderId, boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Multi-filing not supported");
     }
 
     @Override
