@@ -126,8 +126,8 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId,
-                UIEditableList.class);
+        UIEditableList list = ComponentUtils.getComponent(base,
+                suggestionSelectionListId, UIEditableList.class);
 
         if (list != null) {
             // add selected value to the list
@@ -154,10 +154,10 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId,
-                ValueHolder.class);
-        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId,
-                UIEditableList.class);
+        ValueHolder selector = ComponentUtils.getComponent(base,
+                suggestionInputSelectorId, ValueHolder.class);
+        UIEditableList list = ComponentUtils.getComponent(base,
+                suggestionSelectionListId, UIEditableList.class);
 
         if (selector != null && list != null) {
             // add selected value to the list
@@ -184,8 +184,8 @@ public class SuggestionActionsBean implements Serializable {
         UIComponent base = ComponentUtils.getBase(component);
         EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
-                ValueHolder.class);
+        ValueHolder output = ComponentUtils.getComponent(base,
+                suggestionSelectionOutputId, ValueHolder.class);
 
         if (hiddenSelector != null && output != null) {
             String selectedValue = getSelectedValue();
@@ -226,12 +226,12 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId,
-                ValueHolder.class);
+        ValueHolder selector = ComponentUtils.getComponent(base,
+                suggestionInputSelectorId, ValueHolder.class);
         EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
-                ValueHolder.class);
+        ValueHolder output = ComponentUtils.getComponent(base,
+                suggestionSelectionOutputId, ValueHolder.class);
 
         if (selector != null && hiddenSelector != null && output != null) {
             String selection = (String) selector.getValue();
@@ -268,8 +268,8 @@ public class SuggestionActionsBean implements Serializable {
         UIComponent base = component;
         EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
-                ValueHolder.class);
+        ValueHolder output = ComponentUtils.getComponent(base,
+                suggestionSelectionOutputId, ValueHolder.class);
 
         if (hiddenSelector != null && output != null) {
             output.setValue("");
