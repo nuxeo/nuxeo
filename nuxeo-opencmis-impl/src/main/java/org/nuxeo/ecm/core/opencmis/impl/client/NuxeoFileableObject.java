@@ -30,7 +30,10 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyId;
 import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.spi.Holder;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -42,12 +45,6 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     public NuxeoFileableObject(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);
-    }
-
-    @Override
-    public void addToFolder(ObjectId folderId, boolean allVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -86,8 +83,7 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     }
 
     @Override
-    public FileableCmisObject move(ObjectId sourceFolderId,
-            ObjectId targetFolderId) {
+    public void addToFolder(ObjectId folderId, boolean allVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -96,6 +92,20 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     public void removeFromFolder(ObjectId folderId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NuxeoFileableObject move(ObjectId sourceFolder, ObjectId targetFolder) {
+        Holder<String> objectIdHolder = new Holder<String>(getId());
+        if (sourceFolder == null) {
+            throw new CmisInvalidArgumentException("Missing source folder");
+        }
+        if (targetFolder == null) {
+            throw new CmisInvalidArgumentException("Missing target folder");
+        }
+        service.moveObject(getRepositoryId(), objectIdHolder,
+                targetFolder.getId(), sourceFolder.getId(), null);
+        return this;
     }
 
     @Override

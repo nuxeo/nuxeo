@@ -301,8 +301,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Folder folder = (Folder) session.getObjectByPath("/testfolder1");
         List<String> failed = folder.deleteTree(true, null, true);
         assertTrue(failed == null || failed.isEmpty());
-        session.clear();
 
+        session.clear();
         try {
             session.getObjectByPath("/testfolder1");
             fail("Folder should be deleted");
@@ -331,6 +331,27 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 null, null, null, null);
         assertNotSame(doc.getId(), copy.getId());
         assertEquals("new title", copy.getPropertyValue("dc:title"));
+    }
+
+    @Test
+    public void testMove() throws Exception {
+        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
+        Document doc = (Document) session.getObjectByPath("/testfolder2/testfolder3/testfile4");
+        String docId = doc.getId();
+
+        // TODO add move(target) convenience method
+        doc.move(doc.getParents().get(0), folder);
+
+        assertEquals(docId, doc.getId());
+        session.clear();
+        try {
+            session.getObjectByPath("/testfolder2/testfolder3/testfile4");
+            fail("Object should be moved away");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        Document doc2 = (Document) session.getObjectByPath("/testfolder1/testfile4");
+        assertEquals(docId, doc2.getId());
     }
 
 }

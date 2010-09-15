@@ -352,4 +352,22 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNotNull(getObjectByPath("/testfolder2"));
     }
 
+    @Test
+    public void testMoveObject() throws Exception {
+        ObjectData fold = getObjectByPath("/testfolder1");
+        ObjectData ob = getObjectByPath("/testfolder2/testfolder3/testfile4");
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.moveObject(repositoryId, objectIdHolder, fold.getId(), null,
+                null);
+        assertEquals(ob.getId(), objectIdHolder.getValue());
+        try {
+            getObjectByPath("/testfolder2/testfolder3/testfile4");
+            fail("Object should be moved away");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        ObjectData ob2 = getObjectByPath("/testfolder1/testfile4");
+        assertEquals(ob.getId(), ob2.getId());
+    }
+
 }

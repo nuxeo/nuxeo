@@ -547,8 +547,44 @@ public class NuxeoCmisService extends AbstractCmisService {
             String targetFolderId, String sourceFolderId,
             ExtensionsData extension) {
         checkRepositoryId(repositoryId);
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId;
+        if (objectIdHolder == null
+                || (objectId = objectIdHolder.getValue()) == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+        if (repository.getRootFolderId(coreSession).equals(objectId)) {
+            throw new CmisConstraintException("Cannot move root");
+        }
+        if (targetFolderId == null) {
+            throw new CmisInvalidArgumentException("Missing target folder ID");
+        }
+        try {
+            DocumentRef docRef = new IdRef(objectId);
+            getDocumentModel(docRef); // check exists and not deleted
+            DocumentModel parent = coreSession.getParentDocument(docRef);
+            if (isFilteredOut(parent)) {
+                throw new CmisObjectNotFoundException("No parent: " + objectId);
+            }
+            if (sourceFolderId == null) {
+                sourceFolderId = parent.getId();
+            } else {
+                // check it's the parent
+                if (!parent.getId().equals(sourceFolderId)) {
+                    throw new CmisConstraintException("Object " + objectId
+                            + " is not filed in " + sourceFolderId);
+                }
+            }
+            IdRef targetRef = new IdRef(targetFolderId);
+            DocumentModel target = getDocumentModel(targetRef);
+            if (!target.isFolder()) {
+                throw new CmisInvalidArgumentException(
+                        "Target is not a folder: " + targetFolderId);
+            }
+            coreSession.move(docRef, targetRef, null);
+            coreSession.save();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
