@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 
 import javax.faces.component.EditableValueHolder;
@@ -34,6 +32,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
+
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Suggestion actions helpers
@@ -113,34 +113,6 @@ public class SuggestionActionsBean implements Serializable {
         return ComponentUtils.getBase(anchor);
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> T getComponent(UIComponent base, String componentId,
-            Class<T> expectedComponentClass) {
-        if (componentId == null) {
-            log.error("Cannot retrieve component with a null id");
-            return null;
-        }
-        try {
-            UIComponent component = base.findComponent(componentId);
-            if (component == null) {
-                log.error("Could not find component with id: " + componentId);
-            } else {
-                try {
-                    return (T) component;
-                } catch (ClassCastException e) {
-                    log.error(String.format(
-                            "Invalid component with id %s: %s, expected a "
-                                    + "component with interface %s",
-                            componentId, component, expectedComponentClass));
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error when trying to retrieve component with id "
-                    + componentId, e);
-        }
-        return null;
-    }
-
     /**
      * Adds selection from selector as a list element
      * <p>
@@ -154,7 +126,7 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        UIEditableList list = getComponent(base, suggestionSelectionListId,
+        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId,
                 UIEditableList.class);
 
         if (list != null) {
@@ -182,9 +154,9 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = getComponent(base, suggestionInputSelectorId,
+        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
-        UIEditableList list = getComponent(base, suggestionSelectionListId,
+        UIEditableList list = ComponentUtils.getComponent(base, suggestionSelectionListId,
                 UIEditableList.class);
 
         if (selector != null && list != null) {
@@ -210,9 +182,9 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        EditableValueHolder hiddenSelector = getComponent(base,
+        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
                 ValueHolder.class);
 
         if (hiddenSelector != null && output != null) {
@@ -222,7 +194,7 @@ public class SuggestionActionsBean implements Serializable {
 
             // display delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = getComponent(base,
+                UIComponent deleteComponent = ComponentUtils.getComponent(base,
                         suggestionSelectionDeleteId, UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(true);
@@ -254,11 +226,11 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = ComponentUtils.getBase(component);
-        ValueHolder selector = getComponent(base, suggestionInputSelectorId,
+        ValueHolder selector = ComponentUtils.getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
-        EditableValueHolder hiddenSelector = getComponent(base,
+        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
                 ValueHolder.class);
 
         if (selector != null && hiddenSelector != null && output != null) {
@@ -268,7 +240,7 @@ public class SuggestionActionsBean implements Serializable {
 
             // display delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = getComponent(base,
+                UIComponent deleteComponent = ComponentUtils.getComponent(base,
                         suggestionSelectionDeleteId, UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(true);
@@ -294,9 +266,9 @@ public class SuggestionActionsBean implements Serializable {
             return;
         }
         UIComponent base = component;
-        EditableValueHolder hiddenSelector = getComponent(base,
+        EditableValueHolder hiddenSelector = ComponentUtils.getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+        ValueHolder output = ComponentUtils.getComponent(base, suggestionSelectionOutputId,
                 ValueHolder.class);
 
         if (hiddenSelector != null && output != null) {
@@ -305,7 +277,7 @@ public class SuggestionActionsBean implements Serializable {
 
             // hide delete component if needed
             if (suggestionSelectionDeleteId != null) {
-                UIComponent deleteComponent = getComponent(base,
+                UIComponent deleteComponent = ComponentUtils.getComponent(base,
                         suggestionSelectionDeleteId, UIComponent.class);
                 if (deleteComponent != null) {
                     deleteComponent.setRendered(false);

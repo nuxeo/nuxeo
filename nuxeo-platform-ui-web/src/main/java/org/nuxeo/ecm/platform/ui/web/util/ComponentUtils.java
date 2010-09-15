@@ -210,9 +210,10 @@ public final class ComponentUtils {
     }
 
     /*
-     * Internet Explorer file downloads over SSL do not work with certain HTTP cache control headers
-     * See http://support.microsoft.com/kb/323308/
-     * What is not mentioned in the above Knowledge Base is that "Pragma: no-cache" also breaks download in MSIE over SSL
+     * Internet Explorer file downloads over SSL do not work with certain HTTP
+     * cache control headers See http://support.microsoft.com/kb/323308/ What is
+     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
+     * breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -230,11 +231,11 @@ public final class ComponentUtils {
             log.debug("Setting \"Cache-Control: max-age=15, must-revalidate\"");
             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
         } else {
-            log.debug("Setting \"Cache-Control: private\" and \"Pragma: no-cache\"");            
+            log.debug("Setting \"Cache-Control: private\" and \"Pragma: no-cache\"");
             response.setHeader("Cache-Control", "private, must-revalidate");
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
-            
+
         }
     }
 
@@ -290,6 +291,43 @@ public final class ComponentUtils {
             base = base.getParent();
         }
         return base;
+    }
+
+    /**
+     * Returns the component specified by the {@code componentId} parameter
+     * from the {@code base} component.
+     * <p>
+     * Does not throw any exception if the component is not found,
+     * returns {@code null} instead.
+     *
+     * @since 5.4
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getComponent(UIComponent base, String componentId,
+            Class<T> expectedComponentClass) {
+        if (componentId == null) {
+            log.error("Cannot retrieve component with a null id");
+            return null;
+        }
+        try {
+            UIComponent component = base.findComponent(componentId);
+            if (component == null) {
+                log.error("Could not find component with id: " + componentId);
+            } else {
+                try {
+                    return (T) component;
+                } catch (ClassCastException e) {
+                    log.error(String.format(
+                            "Invalid component with id %s: %s, expected a "
+                                    + "component with interface %s",
+                            componentId, component, expectedComponentClass));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error when trying to retrieve component with id "
+                    + componentId, e);
+        }
+        return null;
     }
 
 }
