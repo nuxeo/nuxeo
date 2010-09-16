@@ -268,9 +268,11 @@ public class ConfigurationGenerator {
                 }
                 includedTemplates.add(chosenTemplate);
             } else {
-                log.warn("No template found neither with absolute ("
-                        + nextToken + ") or relative (" + chosenTemplate
-                        + ") path! Please check your includes.");
+                log.error(String.format(
+                        "Template '%s' not found with relative or absolute path (%s). "
+                                + "Check your %s parameter, and %s for included files.",
+                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME,
+                        PARAM_INCLUDED_TEMPLATES));
             }
         }
     }
