@@ -24,7 +24,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.management.auth.PrincipalObject;
 import org.nuxeo.ecm.webengine.management.locks.LocksObject;
 import org.nuxeo.ecm.webengine.management.queues.QueuesObject;
 import org.nuxeo.ecm.webengine.management.statuses.StatusesObject;
@@ -64,11 +63,6 @@ public class ManagementModule extends ModuleRoot {
     @Path("queues")
     public Object dispatchQueues() {
         return QueuesObject.newObject(this);
-    }
-
-    @Path("principal")
-    public Object dispatchPrincipal() {
-        return PrincipalObject.newObject(this);
     }
 
     @Override
