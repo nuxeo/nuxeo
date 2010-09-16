@@ -394,7 +394,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     protected PathRef newPathRef(CoreSession session, URI name) throws ClientException {
         DocumentModel queueFolder = getOrCreateQueue(session);
-        return new PathRef(queueFolder.getPathAsString() + "/" + name.getFragment());
+        return new PathRef(queueFolder.getPathAsString() + "/" + name.toASCIIString());
     }
 
     protected DocumentModel getOrCreateQueue(CoreSession session)
