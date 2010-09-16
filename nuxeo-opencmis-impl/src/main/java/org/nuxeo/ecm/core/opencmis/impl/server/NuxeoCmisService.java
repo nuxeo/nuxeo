@@ -152,8 +152,7 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     @Override
     public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.singletonList(repository.getRepositoryInfo(coreSession));
     }
 
     @Override

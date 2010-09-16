@@ -19,11 +19,13 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,13 +33,25 @@ import java.util.List;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.AclCapabilities;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
+import org.apache.chemistry.opencmis.commons.data.RepositoryCapabilities;
+import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityChanges;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityContentStreamUpdates;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityJoin;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityQuery;
+import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
@@ -48,10 +62,13 @@ import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
+import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.opencmis.tests.Helper;
 
 /**
  * Tests that hit directly the server APIs.
@@ -60,6 +77,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     // stream content with non-ASCII characters
     public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
+
+    protected RepositoryService repoService;
 
     protected ObjectService objService;
 
@@ -72,6 +91,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Helper.makeNuxeoRepository(nuxeotc.getSession());
+        repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
         filingService = binding.getMultiFilingService();
@@ -124,6 +144,53 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected static String getString(ObjectData data, String key) {
         return (String) data.getProperties().getProperties().get(key).getFirstValue();
+    }
+
+    @Test
+    public void testGetRepositoryInfos() {
+        List<RepositoryInfo> infos = repoService.getRepositoryInfos(null);
+        assertEquals(1, infos.size());
+        checkInfo(infos.get(0));
+    }
+
+    @Test
+    public void testGetRepositoryInfo() {
+        RepositoryInfo info = repoService.getRepositoryInfo(repositoryId, null);
+        checkInfo(info);
+    }
+
+    public void checkInfo(RepositoryInfo info) {
+        assertEquals(repositoryId, info.getId());
+        assertEquals("Nuxeo Repository " + repositoryId, info.getName());
+        assertEquals("Nuxeo Repository " + repositoryId, info.getDescription());
+        assertEquals("Nuxeo", info.getVendorName());
+        assertEquals("Nuxeo OpenCMIS Connector", info.getProductName());
+        assertEquals("5.4.0-SNAPSHOT", info.getProductVersion());
+        assertEquals(rootFolderId, info.getRootFolderId());
+        assertEquals("Guest", info.getPrincipalIdAnonymous());
+        assertNull(info.getLatestChangeLogToken());
+        assertEquals("1.0", info.getCmisVersionSupported());
+        // TODO assertEquals("...", info.getThinClientUri());
+        assertEquals(Boolean.TRUE, info.getChangesIncomplete());
+        assertEquals(
+                Arrays.asList(BaseTypeId.CMIS_DOCUMENT, BaseTypeId.CMIS_FOLDER),
+                info.getChangesOnType());
+        assertEquals(SecurityConstants.EVERYONE, info.getPrincipalIdAnyone());
+        RepositoryCapabilities caps = info.getCapabilities();
+        assertEquals(CapabilityAcl.NONE, caps.getAclCapability());
+        assertEquals(CapabilityChanges.PROPERTIES, caps.getChangesCapability());
+        assertEquals(CapabilityContentStreamUpdates.PWCONLY,
+                caps.getContentStreamUpdatesCapability());
+        assertEquals(CapabilityJoin.INNERANDOUTER, caps.getJoinCapability());
+        assertEquals(CapabilityQuery.BOTHCOMBINED, caps.getQueryCapability());
+        assertEquals(CapabilityRenditions.NONE, caps.getRenditionsCapability());
+        AclCapabilities aclCaps = info.getAclCapabilities();
+        assertEquals(AclPropagation.REPOSITORYDETERMINED,
+                aclCaps.getAclPropagation());
+        assertEquals(Collections.emptyMap(), aclCaps.getPermissionMapping());
+        assertEquals(Collections.emptyList(), aclCaps.getPermissions());
+        assertEquals(SupportedPermissions.BASIC,
+                aclCaps.getSupportedPermissions());
     }
 
     @Test

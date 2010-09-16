@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,12 +32,14 @@ import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityChanges;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityContentStreamUpdates;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityJoin;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityQuery;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
+import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
@@ -86,6 +89,7 @@ public class NuxeoRepository {
         aclCaps.setPermissionDefinitionData(new ArrayList<PermissionDefinition>(
                 0));
         aclCaps.setPermissionMappingData(new HashMap<String, PermissionMapping>());
+        aclCaps.setSupportedPermissions(SupportedPermissions.BASIC);
     }
 
     protected void initializeTypes() {
@@ -160,17 +164,18 @@ public class NuxeoRepository {
     public RepositoryInfo getRepositoryInfo(CoreSession coreSession) {
         RepositoryInfoImpl info = new RepositoryInfoImpl();
         info.setId(repositoryId);
-        info.setName("Nuxeo Repository"); // TODO
-        info.setDescription("Nuxeo Repository"); // TODO
+        info.setName("Nuxeo Repository " + repositoryId);
+        info.setDescription("Nuxeo Repository " + repositoryId);
         info.setCmisVersionSupported("1.0");
         info.setPrincipalAnonymous("Guest"); // TODO
         info.setPrincipalAnyone(SecurityConstants.EVERYONE);
         info.setThinClientUri(null); // TODO
         info.setChangesIncomplete(Boolean.TRUE);
-        info.setChangesOnType(null);
+        info.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
+                BaseTypeId.CMIS_FOLDER));
         info.setVendorName("Nuxeo");
         info.setProductName("Nuxeo OpenCMIS Connector");
-        info.setProductVersion("5.4.0-SNAPSHOT");
+        info.setProductVersion("5.4.0-SNAPSHOT"); // TODO
         info.setCapabilities(caps);
         info.setAclCapabilities(aclCaps);
         //

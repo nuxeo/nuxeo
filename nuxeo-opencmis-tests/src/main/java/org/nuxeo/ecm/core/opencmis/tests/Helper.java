@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.opencmis.impl;
+package org.nuxeo.ecm.core.opencmis.tests;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -75,7 +75,8 @@ public class Helper {
     }
 
     /**
-     * Creates data in the repository using the Nuxeo API.
+     * Creates data in the repository using the Nuxeo API. This is then used as
+     * a starting point by unit tests.
      */
     public static Map<String, String> makeNuxeoRepository(CoreSession session)
             throws Exception {

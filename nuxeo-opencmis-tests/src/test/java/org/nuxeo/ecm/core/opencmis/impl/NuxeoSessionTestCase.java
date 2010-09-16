@@ -42,6 +42,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
+import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**

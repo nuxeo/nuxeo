@@ -17,30 +17,23 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.SessionType;
-import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
-import org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener;
 import org.apache.chemistry.opencmis.server.impl.atompub.BasicAuthCallContextHandler;
-import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
 
 /**
  * Test case of the high-level session using a client-server connection.
@@ -48,12 +41,12 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
 public abstract class NuxeoSessionClientServerTestCase extends
         NuxeoSessionTestCase {
 
-    // from CmisAtomPubServlet
+    // from CmisAtomPubServlet TODO make it public
     public static final String PARAM_CALL_CONTEXT_HANDLER = "callContextHandler";
 
     public static final String HOST = "localhost";
 
-    public static final int PORT = 17480;
+    public static final int PORT = 17488;
 
     public Server server;
 
@@ -130,41 +123,5 @@ public abstract class NuxeoSessionClientServerTestCase extends
     protected abstract EventListener[] getEventListeners();
 
     protected abstract Servlet getServlet();
-
-    /**
-     * Servlet context listener that sets up the CMIS service factory in the
-     * servlet context as expected by {@link CmisAtomPubServlet} or
-     * {@link org.apache.chemistry.opencmis.server.impl.webservices.AbstractService}
-     * .
-     *
-     * @see CmisRepositoryContextListener
-     */
-    public static class NuxeoCmisContextListener implements
-            ServletContextListener {
-
-        public final String coreSessionId;
-
-        public NuxeoCmisContextListener(String coreSessionId) {
-            this.coreSessionId = coreSessionId;
-        }
-
-        @Override
-        public void contextInitialized(ServletContextEvent sce) {
-            AbstractServiceFactory factory = new NuxeoServiceFactory();
-            factory.init(Collections.singletonMap(
-                    NuxeoServiceFactory.PARAM_NUXEO_SESSION_ID, coreSessionId));
-            sce.getServletContext().setAttribute(
-                    CmisRepositoryContextListener.SERVICES_FACTORY, factory);
-        }
-
-        @Override
-        public void contextDestroyed(ServletContextEvent sce) {
-            AbstractServiceFactory factory = (AbstractServiceFactory) sce.getServletContext().getAttribute(
-                    CmisRepositoryContextListener.SERVICES_FACTORY);
-            if (factory != null) {
-                factory.destroy();
-            }
-        }
-    }
 
 }

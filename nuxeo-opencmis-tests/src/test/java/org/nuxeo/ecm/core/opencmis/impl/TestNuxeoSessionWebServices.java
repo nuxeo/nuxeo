@@ -34,6 +34,8 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.resource.Resource;
+import org.nuxeo.common.logging.JavaUtilLoggingHelper;
+import org.nuxeo.ecm.core.opencmis.tests.NuxeoCmisContextListener;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
@@ -53,6 +55,18 @@ public class TestNuxeoSessionWebServices extends
     public static final String BASE_RESOURCE = "/jetty-test";
 
     public static final String JAXWS_XML = "/sun-jaxws.xml";
+
+    @Override
+    public void setUp() throws Exception {
+        JavaUtilLoggingHelper.redirectToApacheCommons();
+        super.setUp();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        JavaUtilLoggingHelper.reset();
+    }
 
     @Override
     protected void addParams(Map<String, String> params) {
