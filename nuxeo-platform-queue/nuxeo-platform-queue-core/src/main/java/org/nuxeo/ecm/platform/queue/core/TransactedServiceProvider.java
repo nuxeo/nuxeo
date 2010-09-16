@@ -31,11 +31,11 @@ public class TransactedServiceProvider implements ServiceProvider {
    protected class Entry<T> {
 
        final Class<T> srvClass;
-       final boolean isTransacted;
+       final boolean isTransacted = false;
 
        protected Entry(Class<T> srvClass) {
            this.srvClass = srvClass;
-           this.isTransacted = srvClass.isInterface() && hasAnnotations(srvClass);
+           // this.isTransacted = srvClass.isInterface() && hasAnnotations(srvClass);
            if (isTransacted) {
                log.info("transacted  " + srvClass.getSimpleName());
            }

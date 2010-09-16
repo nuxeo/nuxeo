@@ -78,6 +78,7 @@ public class QueueComponent extends DefaultComponent {
         handler = new DefaultQueueHandler(1000, registry);
         provider = new TransactedServiceProvider(DefaultServiceProvider.getProvider());
         DefaultServiceProvider.setProvider(provider);
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new QueuesInitializer(registry));
     }
 
     @Override

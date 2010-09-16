@@ -25,6 +25,7 @@ import java.net.URI;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  */
+@Transacted
 public interface QueueHandler {
 
     /**

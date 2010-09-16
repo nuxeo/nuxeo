@@ -29,6 +29,7 @@ import java.util.List;
  * @author Stephane Lacoin <slacoin@nuxeo.com> (aka matic)
  * @see QueuePersister
  */
+@Transacted
 public interface QueueManager<C extends Serializable> {
 
     /**
@@ -99,5 +100,10 @@ public interface QueueManager<C extends Serializable> {
      * @return
      */
     URI newName(String contentName);
+
+    /**
+     * Initialize the queue
+     */
+    void initialize();
 
 }

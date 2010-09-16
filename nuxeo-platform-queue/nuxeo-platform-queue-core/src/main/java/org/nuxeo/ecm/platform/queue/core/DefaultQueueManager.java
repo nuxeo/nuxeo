@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
+import org.nuxeo.ecm.platform.queue.api.Transacted;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
@@ -105,6 +106,12 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
     @Override
     public  URI newName(String contentName) {
         return locator.newContentName(queueName, contentName);
+    }
+
+
+    @Override
+    public void initialize() {
+        persister.createIfNotExist();
     }
 
 }
