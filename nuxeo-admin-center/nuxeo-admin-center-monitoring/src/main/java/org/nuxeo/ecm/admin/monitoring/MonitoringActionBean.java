@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 @Name("monitoringAction")
-@Scope(ScopeType.EVENT)
+@Scope(ScopeType.PAGE)
 public class MonitoringActionBean implements Serializable {
 
     protected static final Log log = LogFactory.getLog(MonitoringActionBean.class);
@@ -60,19 +60,19 @@ public class MonitoringActionBean implements Serializable {
     protected NuxeoPrincipal currentNuxeoPrincipal;
 
     @RequestParameter("serviceIdentifier")
-    protected String newStatusIdentifier;
+    protected String statusIdentifierToEdit;
 
     @RequestParameter("probeName")
     protected String probeName;
 
     protected String newStatusMessage;
 
-    public String getNewStatusMessage() {
-        return newStatusMessage;
-    }
+    protected String newStatusValue;
 
-    public void setNewStatusMessage(String newStatusMessage) {
-        this.newStatusMessage = newStatusMessage;
+    protected AdministrativeStatus editableStatus;
+
+    public AdministrativeStatus getEditableStatus() {
+        return editableStatus;
     }
 
     protected AdministrativeStatusManager getStatusManager() {
@@ -96,17 +96,36 @@ public class MonitoringActionBean implements Serializable {
         return statuses;
     }
 
-    public void activateService() {
-        changeStatus(newStatusIdentifier, newStatusMessage, AdministrativeStatus.ACTIVE);
+    public void editStatus() {
+        editableStatus = getStatusManager().getStatus(statusIdentifierToEdit);
+        newStatusMessage = editableStatus.getMessage();
+        if (editableStatus.isActive()) {
+            newStatusValue = AdministrativeStatus.PASSIVE;
+        } else {
+            newStatusValue = AdministrativeStatus.ACTIVE;
+        }
     }
 
-    public void passivateService() {
-        changeStatus(newStatusIdentifier, newStatusMessage, AdministrativeStatus.PASSIVE);
+    public void saveStatus() {
+        if (editableStatus!=null) {
+            String serviceId = editableStatus.getServiceIdentifier();
+            changeStatus(serviceId, newStatusMessage, newStatusValue);
+            resetEdit();
+        }
+    }
+
+    public void cancelEdit() {
+        resetEdit();
+    }
+
+    public void resetEdit() {
+        editableStatus=null;
+        newStatusMessage=null;
+        newStatusValue=null;
     }
 
     public void changeStatus(String serviceId, String message, String state) {
         getStatusManager().setStatus(serviceId, state, message, currentNuxeoPrincipal.getName());
-        newStatusMessage=null;
     }
 
     public List<ProbeInfo> getProbeInfos() {
@@ -124,6 +143,22 @@ public class MonitoringActionBean implements Serializable {
     public void runAllProbes() {
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
         pm.runAllProbes();
+    }
+
+    public String getNewStatusMessage() {
+        return newStatusMessage;
+    }
+
+    public void setNewStatusMessage(String newStatusMessage) {
+        this.newStatusMessage = newStatusMessage;
+    }
+
+    public String getNewStatusValue() {
+        return newStatusValue;
+    }
+
+    public void setNewStatusValue(String newStatusValue) {
+        this.newStatusValue = newStatusValue;
     }
 
 }
