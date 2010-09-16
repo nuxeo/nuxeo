@@ -3,6 +3,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
 <%@ page import="java.util.Locale"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -26,9 +27,12 @@ if ("en".equals(language)) {
 } else {
     selectedLanguage = language;
 }
-%>
-<html>
 
+boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
+String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
+%>
+
+<html>
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
@@ -95,6 +99,16 @@ H2 {
   padding:20px 75px 5px 70px;
   width:250px;
   }
+
+.maintenanceModeMessage {
+  background:#fff;
+  opacity:0.8;
+  filter : alpha(opacity=80);
+  border: 1px solid #4E9AE1;
+  padding:20px 75px 5px 70px;
+  width:450px;
+  color:red;
+ }
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
@@ -256,6 +270,19 @@ nxthemes css is not used in login.jsp */
           %>
           <!-- ;jsessionid=<%=request.getSession().getId()%> -->
           <!-- ImageReady Slices (login_cutted.psd) -->
+
+           <% if (maintenanceMode) { %>
+          <div class="maintenanceModeMessage">
+            <div class="warnMessage">
+              <fmt:message bundle="${messages}" key="label.maintenancemode.active" /><br/>
+              <fmt:message bundle="${messages}" key="label.maintenancemode.adminLoginOnly" />
+            </div><br/>
+            <div class="infoMessage">
+              <fmt:message bundle="${messages}" key="label.maintenancemode.message" /> : <br/>
+              <%=maintenanceMessage%>
+            </div><br/>
+            </div> <br/>
+          <%} %>
           <div class="login">
             <table>
              <tr>
@@ -302,7 +329,7 @@ nxthemes css is not used in login.jsp */
                     </option>
                     <option value="it" <%="it".equals(selectedLanguage)?"selected":""%>>
                       Italiano
-                    </option>                  
+                    </option>
                     <option value="es" <%="es".equals(selectedLanguage)?"selected":""%>>
                       Espa&ntilde;ol
                     </option>

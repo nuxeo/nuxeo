@@ -7,6 +7,13 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
 <ui:insert name="user">
+
+  <c:if test="#{adminMessageActivated}">
+    <div style="background-color: white; text-align: center; padding: 5px; border-style: solid; border-color: rgb(170, 187, 255); background-image: url('icons/info.gif'); background-repeat: no-repeat;background-position:2% center;">
+         <h:outputText value="#{adminMessage}"/>
+    </div>
+  </c:if>
+
   <h:form id="userServicesForm">
 
     <div class="searchService">
@@ -21,7 +28,7 @@
         <h:commandButton action="search_results_simple"
           value="#{messages['command.search']}" styleClass="button"
           id="simpleSearchSubmitButton" />
-    
+
         <span class="advancedSearchLink">
           <h:commandLink action="search_form"
             value="#{messages['command.advancedSearch']}"
@@ -29,7 +36,7 @@
             id="advancedSearchButton" />
         </span>
       </c:if>
-    
+
       <nxu:set var="actions"
         value="#{webActions.getActionsList('SEARCH_LINKS')}"
         cache="true">
@@ -53,7 +60,7 @@
     <div class="userActions">
 
       <h:outputText value="#{messages['label.loggedAsUser']}" />
-  
+
       <nxu:set var="actions"
         value="#{webActions.getActionsList('USER_SERVICES')}"
         cache="true">
@@ -70,7 +77,7 @@
           </nxh:commandLink>
         </nxu:dataList>
       </nxu:set>
-  
+
       <nxu:set var="actions"
         value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
         cache="true">
@@ -81,22 +88,22 @@
                       rowCountVar="rowCount"
                       id="userServicesBottomActionsTable">
           <h:outputText value=" | " rendered="#{row!=rowCount}"/>
-  
+
           <nxh:commandLink action="#{action.getLink()}"
             rendered="#{fn:startsWith(action.link,'#')}"
             id="userServicesBottomActionCommandLink">
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
-  
+
           <h:outputLink value="#{baseURL}#{action.link}"
             rendered="#{!(fn:startsWith(action.link,'#'))}"
             id="userServicesBottomActionLink">
             <h:outputText value="#{messages[action.label]}" />
           </h:outputLink>
-  
+
         </nxu:dataList>
       </nxu:set>
-  
+
     </div>
 
   </h:form>
