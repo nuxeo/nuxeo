@@ -18,7 +18,8 @@
   <description>Nuxeo Core: OpenCMIS Bindings</description>
 
   <properties>
-    <opencmis.version>0.1.0-incubating</opencmis.version>
+    <chemistry.opencmis.version>0.1.0-incubating</chemistry.opencmis.version>
+    <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>
   </properties>
 
   <dependencies>
@@ -29,6 +30,26 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+      <version>${nuxeo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+      <version>${nuxeo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-bindings</artifactId>
+      <version>${chemistry.opencmis.version}</version>
+      <classifier>classes</classifier>
     </dependency>
   </dependencies>
 

@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+	<!--
+		Licensed under the Apache License, Version 2.0 (the "License"); you
+		may not use this file except in compliance with the License. You may
+		obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+
+<definitions xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/"
+	xmlns:cmism="http://docs.oasis-open.org/ns/cmis/messaging/200908/"
+	xmlns:cmisw="http://docs.oasis-open.org/ns/cmis/ws/200908/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://docs.oasis-open.org/ns/cmis/ws/200908/"
+	xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" name="CMISWebServices">
+	<types>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://docs.oasis-open.org/ns/cmis/ws/200908/">
+			<xsd:import schemaLocation="CMIS-Core.xsd"
+				namespace="http://docs.oasis-open.org/ns/cmis/core/200908/" />
+			<xsd:import schemaLocation="CMIS-Messaging.xsd"
+				namespace="http://docs.oasis-open.org/ns/cmis/messaging/200908/" />
+		</xsd:schema>
+	</types>
+
+	<message name="cmisException">
+		<part name="fault" element="cmism:cmisFault" />
+	</message>
+
+	<message name="getACLRequest">
+		<part name="parameters" element="cmism:getACL" />
+	</message>
+	<message name="getACLResponse">
+		<part name="parameters" element="cmism:getACLResponse" />
+	</message>
+
+	<message name="applyACLRequest">
+		<part name="parameters" element="cmism:applyACL" />
+	</message>
+	<message name="applyACLResponse">
+		<part name="parameters" element="cmism:applyACLResponse" />
+	</message>
+
+	<message name="queryRequest">
+		<part name="parameters" element="cmism:query" />
+	</message>
+	<message name="queryResponse">
+		<part name="parameters" element="cmism:queryResponse" />
+	</message>
+	<message name="getContentChangesRequest">
+		<part name="parameters" element="cmism:getContentChanges" />
+	</message>
+	<message name="getContentChangesResponse">
+		<part name="parameters" element="cmism:getContentChangesResponse" />
+	</message>
+
+	<message name="addObjectToFolderRequest">
+		<part name="parameters" element="cmism:addObjectToFolder" />
+	</message>
+	<message name="addObjectToFolderResponse">
+		<part name="parameters" element="cmism:addObjectToFolderResponse" />
+	</message>
+	<message name="removeObjectFromFolderRequest">
+		<part name="parameters" element="cmism:removeObjectFromFolder" />
+	</message>
+	<message name="removeObjectFromFolderResponse">
+		<part name="parameters" element="cmism:removeObjectFromFolderResponse" />
+	</message>
+
+	<message name="getDescendantsRequest">
+		<part name="parameters" element="cmism:getDescendants" />
+	</message>
+	<message name="getDescendantsResponse">
+		<part name="parameters" element="cmism:getDescendantsResponse" />
+	</message>
+	<message name="getChildrenRequest">
+		<part name="parameters" element="cmism:getChildren" />
+	</message>
+	<message name="getChildrenResponse">
+		<part name="parameters" element="cmism:getChildrenResponse" />
+	</message>
+	<message name="getFolderParentRequest">
+		<part name="parameters" element="cmism:getFolderParent" />
+	</message>
+	<message name="getFolderParentResponse">
+		<part name="parameters" element="cmism:getFolderParentResponse" />
+	</message>
+	<message name="getObjectParentsRequest">
+		<part name="parameters" element="cmism:getObjectParents" />
+	</message>
+	<message name="getObjectParentsResponse">
+		<part name="parameters" element="cmism:getObjectParentsResponse" />
+	</message>
+	<message name="getRenditionsRequest">
+		<part name="parameters" element="cmism:getRenditions" />
+	</message>
+	<message name="getRenditionsResponse">
+		<part name="parameters" element="cmism:getRenditionsResponse" />
+	</message>
+	<message name="getCheckedOutDocsRequest">
+		<part name="parameters" element="cmism:getCheckedOutDocs" />
+	</message>
+	<message name="getCheckedOutDocsResponse">
+		<part name="parameters" element="cmism:getCheckedOutDocsResponse" />
+	</message>
+
+	<message name="createDocumentRequest">
+		<part name="parameters" element="cmism:createDocument" />
+	</message>
+	<message name="createDocumentResponse">
+		<part name="parameters" element="cmism:createDocumentResponse" />
+	</message>
+	<message name="createDocumentFromSourceRequest">
+		<part name="parameters" element="cmism:createDocumentFromSource" />
+	</message>
+	<message name="createDocumentFromSourceResponse">
+		<part name="parameters" element="cmism:createDocumentFromSourceResponse" />
+	</message>
+	<message name="createFolderRequest">
+		<part name="parameters" element="cmism:createFolder" />
+	</message>
+	<message name="createFolderResponse">
+		<part name="parameters" element="cmism:createFolderResponse" />
+	</message>
+	<message name="createRelationshipRequest">
+		<part name="parameters" element="cmism:createRelationship" />
+	</message>
+	<message name="createRelationshipResponse">
+		<part name="parameters" element="cmism:createRelationshipResponse" />
+	</message>
+	<message name="createPolicyRequest">
+		<part name="parameters" element="cmism:createPolicy" />
+	</message>
+	<message name="createPolicyResponse">
+		<part name="parameters" element="cmism:createPolicyResponse" />
+	</message>
+	<message name="getAllowableActionsRequest">
+		<part name="parameters" element="cmism:getAllowableActions" />
+	</message>
+	<message name="getAllowableActionsResponse">
+		<part name="parameters" element="cmism:getAllowableActionsResponse" />
+	</message>
+	<message name="getObjectRequest">
+		<part name="parameters" element="cmism:getObject" />
+	</message>
+	<message name="getObjectResponse">
+		<part name="parameters" element="cmism:getObjectResponse" />
+	</message>
+	<message name="getPropertiesRequest">
+		<part name="parameters" element="cmism:getProperties" />
+	</message>
+	<message name="getPropertiesResponse">
+		<part name="parameters" element="cmism:getPropertiesResponse" />
+	</message>
+
+	<message name="getObjectByPathRequest">
+		<part name="parameters" element="cmism:getObjectByPath" />
+	</message>
+	<message name="getObjectByPathResponse">
+		<part name="parameters" element="cmism:getObjectByPathResponse" />
+	</message>
+
+	<message name="getContentStreamRequest">
+		<part name="parameters" element="cmism:getContentStream" />
+	</message>
+	<message name="getContentStreamResponse">
+		<part name="parameters" element="cmism:getContentStreamResponse" />
+	</message>
+	<message name="updatePropertiesRequest">
+		<part name="parameters" element="cmism:updateProperties" />
+	</message>
+	<message name="updatePropertiesResponse">
+		<part name="parameters" element="cmism:updatePropertiesResponse" />
+	</message>
+	<message name="moveObjectRequest">
+		<part name="parameters" element="cmism:moveObject" />
+	</message>
+	<message name="moveObjectResponse">
+		<part name="parameters" element="cmism:moveObjectResponse" />
+	</message>
+	<message name="deleteObjectRequest">
+		<part name="parameters" element="cmism:deleteObject" />
+	</message>
+	<message name="deleteObjectResponse">
+		<part name="parameters" element="cmism:deleteObjectResponse" />
+	</message>
+	<message name="deleteTreeRequest">
+		<part name="parameters" element="cmism:deleteTree" />
+	</message>
+	<message name="deleteTreeResponse">
+		<part name="parameters" element="cmism:deleteTreeResponse" />
+	</message>
+	<message name="setContentStreamRequest">
+		<part name="parameters" element="cmism:setContentStream" />
+	</message>
+	<message name="setContentStreamResponse">
+		<part name="parameters" element="cmism:setContentStreamResponse" />
+	</message>
+	<message name="deleteContentStreamRequest">
+		<part name="parameters" element="cmism:deleteContentStream" />
+	</message>
+	<message name="deleteContentStreamResponse">
+		<part name="parameters" element="cmism:deleteContentStreamResponse" />
+	</message>
+
+	<message name="applyPolicyRequest">
+		<part name="parameters" element="cmism:applyPolicy" />
+	</message>
+	<message name="applyPolicyResponse">
+		<part name="parameters" element="cmism:applyPolicyResponse" />
+	</message>
+	<message name="removePolicyRequest">
+		<part name="parameters" element="cmism:removePolicy" />
+	</message>
+	<message name="removePolicyResponse">
+		<part name="parameters" element="cmism:removePolicyResponse" />
+	</message>
+	<message name="getAppliedPoliciesRequest">
+		<part name="parameters" element="cmism:getAppliedPolicies" />
+	</message>
+	<message name="getAppliedPoliciesResponse">
+		<part name="parameters" element="cmism:getAppliedPoliciesResponse" />
+	</message>
+
+	<message name="getObjectRelationshipsRequest">
+		<part name="parameters" element="cmism:getObjectRelationships" />
+	</message>
+	<message name="getObjectRelationshipsResponse">
+		<part name="parameters" element="cmism:getObjectRelationshipsResponse" />
+	</message>
+
+	<message name="getRepositoriesRequest">
+		<part name="parameters" element="cmism:getRepositories" />
+	</message>
+	<message name="getRepositoriesResponse">
+		<part name="parameters" element="cmism:getRepositoriesResponse" />
+	</message>
+	<message name="getRepositoryInfoRequest">
+		<part name="parameters" element="cmism:getRepositoryInfo" />
+	</message>
+	<message name="getRepositoryInfoResponse">
+		<part name="parameters" element="cmism:getRepositoryInfoResponse" />
+	</message>
+	<message name="getTypeChildrenRequest">
+		<part name="parameters" element="cmism:getTypeChildren" />
+	</message>
+	<message name="getTypeChildrenResponse">
+		<part name="parameters" element="cmism:getTypeChildrenResponse" />
+	</message>
+	<message name="getTypeDescendantsRequest">
+		<part name="parameters" element="cmism:getTypeDescendants" />
+	</message>
+	<message name="getTypeDescendantsResponse">
+		<part name="parameters" element="cmism:getTypeDescendantsResponse" />
+	</message>
+	<message name="getTypeDefinitionRequest">
+		<part name="parameters" element="cmism:getTypeDefinition" />
+	</message>
+	<message name="getTypeDefinitionResponse">
+		<part name="parameters" element="cmism:getTypeDefinitionResponse" />
+	</message>
+
+	<message name="checkOutRequest">
+		<part name="parameters" element="cmism:checkOut" />
+	</message>
+	<message name="checkOutResponse">
+		<part name="parameters" element="cmism:checkOutResponse" />
+	</message>
+	<message name="cancelCheckOutRequest">
+		<part name="parameters" element="cmism:cancelCheckOut" />
+	</message>
+	<message name="cancelCheckOutResponse">
+		<part name="parameters" element="cmism:cancelCheckOutResponse" />
+	</message>
+	<message name="checkInRequest">
+		<part name="parameters" element="cmism:checkIn" />
+	</message>
+	<message name="checkInResponse">
+		<part name="parameters" element="cmism:checkInResponse" />
+	</message>
+	<message name="getObjectOfLatestVersionRequest">
+		<part name="parameters" element="cmism:getObjectOfLatestVersion" />
+	</message>
+	<message name="getObjectOfLatestVersionResponse">
+		<part name="parameters" element="cmism:getObjectOfLatestVersionResponse" />
+	</message>	
+	<message name="getPropertiesOfLatestVersionRequest">
+		<part name="parameters" element="cmism:getPropertiesOfLatestVersion" />
+	</message>
+	<message name="getPropertiesOfLatestVersionResponse">
+		<part name="parameters" element="cmism:getPropertiesOfLatestVersionResponse" />
+	</message>
+	<message name="getAllVersionsRequest">
+		<part name="parameters" element="cmism:getAllVersions" />
+	</message>
+	<message name="getAllVersionsResponse">
+		<part name="parameters" element="cmism:getAllVersionsResponse" />
+	</message>
+
+	<message name="getFolderTreeRequest">
+		<part name="parameters" element="cmism:getFolderTree" />
+	</message>
+	<message name="getFolderTreeResponse">
+		<part name="parameters" element="cmism:getFolderTreeResponse" />
+	</message>
+
+	<portType name="DiscoveryServicePort">
+		<operation name="query">
+			<input message="cmisw:queryRequest" />
+			<output message="cmisw:queryResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getContentChanges">
+			<input message="cmisw:getContentChangesRequest" />
+			<output message="cmisw:getContentChangesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+
+	<portType name="MultiFilingServicePort">
+		<operation name="addObjectToFolder">
+			<input message="cmisw:addObjectToFolderRequest" />
+			<output message="cmisw:addObjectToFolderResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="removeObjectFromFolder">
+			<input message="cmisw:removeObjectFromFolderRequest" />
+			<output message="cmisw:removeObjectFromFolderResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="NavigationServicePort">
+		<operation name="getDescendants">
+			<input message="cmisw:getDescendantsRequest" />
+			<output message="cmisw:getDescendantsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getChildren">
+			<input message="cmisw:getChildrenRequest" />
+			<output message="cmisw:getChildrenResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getFolderParent">
+			<input message="cmisw:getFolderParentRequest" />
+			<output message="cmisw:getFolderParentResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getFolderTree">
+			<input message="cmisw:getFolderTreeRequest" />
+			<output message="cmisw:getFolderTreeResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getObjectParents">
+			<input message="cmisw:getObjectParentsRequest" />
+			<output message="cmisw:getObjectParentsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getCheckedOutDocs">
+			<input message="cmisw:getCheckedOutDocsRequest" />
+			<output message="cmisw:getCheckedOutDocsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="ObjectServicePort">
+		<operation name="createDocument">
+			<input message="cmisw:createDocumentRequest" />
+			<output message="cmisw:createDocumentResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="createDocumentFromSource">
+			<input message="cmisw:createDocumentFromSourceRequest" />
+			<output message="cmisw:createDocumentFromSourceResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="createFolder">
+			<input message="cmisw:createFolderRequest" />
+			<output message="cmisw:createFolderResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="createRelationship">
+			<input message="cmisw:createRelationshipRequest" />
+			<output message="cmisw:createRelationshipResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="createPolicy">
+			<input message="cmisw:createPolicyRequest" />
+			<output message="cmisw:createPolicyResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getAllowableActions">
+			<input message="cmisw:getAllowableActionsRequest" />
+			<output message="cmisw:getAllowableActionsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getObject">
+			<input message="cmisw:getObjectRequest" />
+			<output message="cmisw:getObjectResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getProperties">
+			<input message="cmisw:getPropertiesRequest" />
+			<output message="cmisw:getPropertiesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getRenditions">
+			<input message="cmisw:getRenditionsRequest" />
+			<output message="cmisw:getRenditionsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getObjectByPath">
+			<input message="cmisw:getObjectByPathRequest" />
+			<output message="cmisw:getObjectByPathResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getContentStream">
+			<input message="cmisw:getContentStreamRequest" />
+			<output message="cmisw:getContentStreamResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="updateProperties">
+			<input message="cmisw:updatePropertiesRequest" />
+			<output message="cmisw:updatePropertiesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="moveObject">
+			<input message="cmisw:moveObjectRequest" />
+			<output message="cmisw:moveObjectResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="deleteObject">
+			<input message="cmisw:deleteObjectRequest" />
+			<output message="cmisw:deleteObjectResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="deleteTree">
+			<input message="cmisw:deleteTreeRequest" />
+			<output message="cmisw:deleteTreeResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="setContentStream">
+			<input message="cmisw:setContentStreamRequest" />
+			<output message="cmisw:setContentStreamResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="deleteContentStream">
+			<input message="cmisw:deleteContentStreamRequest" />
+			<output message="cmisw:deleteContentStreamResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="PolicyServicePort">
+		<operation name="applyPolicy">
+			<input message="cmisw:applyPolicyRequest" />
+			<output message="cmisw:applyPolicyResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="removePolicy">
+			<input message="cmisw:removePolicyRequest" />
+			<output message="cmisw:removePolicyResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getAppliedPolicies">
+			<input message="cmisw:getAppliedPoliciesRequest" />
+			<output message="cmisw:getAppliedPoliciesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+
+	<portType name="RelationshipServicePort">
+		<operation name="getObjectRelationships">
+			<input message="cmisw:getObjectRelationshipsRequest" />
+			<output message="cmisw:getObjectRelationshipsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="RepositoryServicePort">
+		<operation name="getRepositories">
+			<input message="cmisw:getRepositoriesRequest" />
+			<output message="cmisw:getRepositoriesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getRepositoryInfo">
+			<input message="cmisw:getRepositoryInfoRequest" />
+			<output message="cmisw:getRepositoryInfoResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getTypeChildren">
+			<input message="cmisw:getTypeChildrenRequest" />
+			<output message="cmisw:getTypeChildrenResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getTypeDescendants">
+			<input message="cmisw:getTypeDescendantsRequest" />
+			<output message="cmisw:getTypeDescendantsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getTypeDefinition">
+			<input message="cmisw:getTypeDefinitionRequest" />
+			<output message="cmisw:getTypeDefinitionResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="VersioningServicePort">
+		<operation name="checkOut">
+			<input message="cmisw:checkOutRequest" />
+			<output message="cmisw:checkOutResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="cancelCheckOut">
+			<input message="cmisw:cancelCheckOutRequest" />
+			<output message="cmisw:cancelCheckOutResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="checkIn">
+			<input message="cmisw:checkInRequest" />
+			<output message="cmisw:checkInResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getObjectOfLatestVersion">
+			<input message="cmisw:getObjectOfLatestVersionRequest" />
+			<output message="cmisw:getObjectOfLatestVersionResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getPropertiesOfLatestVersion">
+			<input message="cmisw:getPropertiesOfLatestVersionRequest" />
+			<output message="cmisw:getPropertiesOfLatestVersionResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="getAllVersions">
+			<input message="cmisw:getAllVersionsRequest" />
+			<output message="cmisw:getAllVersionsResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+	<portType name="ACLServicePort">
+		<operation name="getACL">
+			<input message="cmisw:getACLRequest" />
+			<output message="cmisw:getACLResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="applyACL">
+			<input message="cmisw:applyACLRequest" />
+			<output message="cmisw:applyACLResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	</portType>
+
+
+	<binding name="DiscoveryServicePortBinding" type="cmisw:DiscoveryServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="query">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getContentChanges">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="MultiFilingServicePortBinding" type="cmisw:MultiFilingServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="addObjectToFolder">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="removeObjectFromFolder">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="NavigationServicePortBinding" type="cmisw:NavigationServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="getDescendants">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getChildren">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getFolderParent">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getFolderTree">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getObjectParents">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getCheckedOutDocs">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="ObjectServicePortBinding" type="cmisw:ObjectServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="createDocument">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createDocumentFromSource">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createFolder">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createRelationship">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createPolicy">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getAllowableActions">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getObject">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getProperties">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getRenditions">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getObjectByPath">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getContentStream">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="updateProperties">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="moveObject">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="deleteObject">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="deleteTree">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="setContentStream">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="deleteContentStream">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="PolicyServicePortBinding" type="cmisw:PolicyServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="applyPolicy">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="removePolicy">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getAppliedPolicies">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="RelationshipServicePortBinding" type="cmisw:RelationshipServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="getObjectRelationships">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="RepositoryServicePortBinding" type="cmisw:RepositoryServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="getRepositories">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getRepositoryInfo">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getTypeChildren">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getTypeDescendants">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getTypeDefinition">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="VersioningServicePortBinding" type="cmisw:VersioningServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="checkOut">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="cancelCheckOut">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="checkIn">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getObjectOfLatestVersion">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getPropertiesOfLatestVersion">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="getAllVersions">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+	<binding name="ACLServicePortBinding" type="cmisw:ACLServicePort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="getACL">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="applyACL">
+			<soap:operation soapAction="" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+
+
+	<service name="DiscoveryService">
+		<port name="DiscoveryServicePort" binding="cmisw:DiscoveryServicePortBinding">
+			<soap:address
+				location="http://cmis/services/DiscoveryService.DiscoveryServicePort" />
+		</port>
+	</service>
+	<service name="MultiFilingService">
+		<port name="MultiFilingServicePort" binding="cmisw:MultiFilingServicePortBinding">
+			<soap:address
+				location="http://cmis/services/MultiFilingService.MultiFilingServicePort" />
+		</port>
+	</service>
+	<service name="NavigationService">
+		<port name="NavigationServicePort" binding="cmisw:NavigationServicePortBinding">
+			<soap:address
+				location="http://cmis/services/NavigationService.NavigationServicePort" />
+		</port>
+	</service>
+	<service name="ObjectService">
+		<port name="ObjectServicePort" binding="cmisw:ObjectServicePortBinding">
+			<soap:address location="http://cmis/services/ObjectService.ObjectServicePort" />
+		</port>
+	</service>
+	<service name="PolicyService">
+		<port name="PolicyServicePort" binding="cmisw:PolicyServicePortBinding">
+			<soap:address location="http://cmis/services/PolicyService.PolicyServicePort" />
+		</port>
+	</service>
+	<service name="RelationshipService">
+		<port name="RelationshipServicePort" binding="cmisw:RelationshipServicePortBinding">
+			<soap:address
+				location="http://cmis/services/RelationshipService.RelationshipServicePort" />
+		</port>
+	</service>
+	<service name="RepositoryService">
+		<port name="RepositoryServicePort" binding="cmisw:RepositoryServicePortBinding">
+			<soap:address
+				location="http://cmis/services/RepositoryService.RepositoryServicePort" />
+		</port>
+	</service>
+	<service name="VersioningService">
+		<port name="VersioningServicePort" binding="cmisw:VersioningServicePortBinding">
+			<soap:address
+				location="http://cmis/services/VersioningService.VersioningServicePort" />
+		</port>
+	</service>
+	<service name="ACLService">
+		<port name="ACLServicePort" binding="cmisw:ACLServicePortBinding">
+			<soap:address location="http://cmis/services/ACLService.ACLServicePort" />
+		</port>
+	</service>
+
+</definitions>

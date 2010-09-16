@@ -8,3 +8,5 @@ Export-Package: org.nuxeo.ecm.core.opencmis.bindings
 Eclipse-LazyStart: true
 Eclipse-ExtensibleAPI: true
 Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport
+Nuxeo-Component: OSGI-INF/jaxrs-contrib.xml,
+ OSGI-INF/jaxws-contrib.xml
