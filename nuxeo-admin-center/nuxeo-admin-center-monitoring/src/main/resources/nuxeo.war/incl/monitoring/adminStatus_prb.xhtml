@@ -1,0 +1,71 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+<h2><h:outputText value="#{messages['adminsubtab.monitoring.adminStatus']}" /></h2>
+
+<a4j:outputPanel id="admStatusPanel" ajaxRendered="true">
+
+ <h:panelGroup rendered="#{isMultiServerInstallation}">
+  <h:outputText value="#{messages['label.monitoring.multiserver']}" /><br/>
+  <h:outputText value="#{messages['label.monitoring.instanceList']}" /><br/>
+  <nxu:repeat var="serverName" value="#{monitoringAction.listNuxeoInstances()}">
+   <h:outputText value="#{serverName}" /> <br/>
+  </nxu:repeat>
+ </h:panelGroup>
+
+ <h:panelGroup rendered="#{!isMultiServerInstallation}">
+  <h:outputText value="#{messages['label.monitoring.monoserver']}" /><br/>
+ </h:panelGroup>
+
+<h:form>
+ <table>
+ <thead>
+ <tr>
+   <th><h:outputText value="#{messages['label.monitoring.status.label']}" /></th>
+   <th><h:outputText value="#{messages['label.monitoring.status.state']}" /></th>
+   <th><h:outputText value="#{messages['label.monitoring.status.message']}" /></th>
+   <th><h:outputText value="#{messages['label.monitoring.status.description']}" /></th>
+   <th><h:outputText value="#{messages['label.monitoring.status.action']}" /></th>
+ </tr>
+ </thead>
+ <tbody>
+ <nxu:repeat var="status" value="#{monitoringAction.getAdministrativeStatuses()}">
+ <tr>
+  <td> <h:outputText value="#{status.label}" /></td>
+  <td> <h:graphicImage url="/img/state_active.png"
+    alt="#{status.state}"  title="#{status.state}" rendered="#{status.isActive()}"/>
+       <h:graphicImage url="/img/state_inactive.png"
+    alt="#{status.state}" title="#{status.state}" rendered="#{!status.isActive()}"/>
+  </td>
+  <td> <h:outputText value="#{status.message}" /></td>
+  <td> <h:outputText value="#{status.description}" /></td>
+  <td>
+     <h:panelGroup rendered="#{status.isActive()}">
+        <h:inputText value="#{monitoringAction.newStatusMessage}"></h:inputText>
+        <a4j:commandButton  value="#{messages['action.monitoring.passivate']}" action="#{monitoringAction.passivateService()}" reRender="admStatusPanel">
+            <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
+        </a4j:commandButton>
+     </h:panelGroup>
+     <h:panelGroup rendered="#{status.isPassive()}">
+        <h:inputText value="#{monitoringAction.newStatusMessage}"></h:inputText>
+        <a4j:commandButton  action="#{monitoringAction.activateService()}" reRender="admStatusPanel" value="#{messages['action.monitoring.activate']}" >
+            <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
+        </a4j:commandButton>
+     </h:panelGroup>
+  </td>
+ </tr>
+ </nxu:repeat>
+ </tbody>
+ </table>
+</h:form>
+
+<a4j:log level="ALL" popup="true" width="400" height="200"/>
+
+</a4j:outputPanel>
+
+</div>
