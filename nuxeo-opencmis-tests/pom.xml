@@ -18,8 +18,9 @@
   <description>Nuxeo Core: OpenCMIS Tests</description>
 
   <properties>
-    <chemistry.opencmis.version>0.1.0-incubating</chemistry.opencmis.version>
+    <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>
     <nuxeo.opencmis.version>5.4.0-SNAPSHOT</nuxeo.opencmis.version>
+    <chemistry.opencmis.version>0.1.0-incubating</chemistry.opencmis.version>
   </properties>
 
   <dependencies>
@@ -33,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-query</artifactId>
+      <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -41,20 +42,61 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-plugins</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-schema</artifactId>
+      <artifactId>nuxeo-core-query-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-opencmis-impl</artifactId>
+      <version>${nuxeo.opencmis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-opencmis-bindings</artifactId>
+      <version>${nuxeo.opencmis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-opencmis-impl</artifactId>
-      <version>${nuxeo.opencmis.version}</version>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
+      <!-- needed by H2 fulltext -->
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+    </dependency>
+    <dependency>
+      <!-- needed by nuxeo-core-convert-plugins -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+    </dependency>
+    <!-- scope provided -->
+    <dependency>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- overridden test scopes -->
@@ -123,51 +165,6 @@
       <version>${chemistry.opencmis.version}</version>
     </dependency>
 
-    <!-- scope provided -->
-    <dependency>
-      <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- scope test -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-query-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-convert</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-convert-plugins</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- needed by H2 fulltext -->
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- needed by nuxeo-core-convert-plugins -->
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

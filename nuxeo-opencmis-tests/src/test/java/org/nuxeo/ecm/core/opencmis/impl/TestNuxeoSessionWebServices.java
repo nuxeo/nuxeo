@@ -35,7 +35,7 @@ import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.resource.Resource;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
-import org.nuxeo.ecm.core.opencmis.tests.NuxeoCmisContextListener;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
@@ -109,8 +109,7 @@ public class TestNuxeoSessionWebServices extends
 
     @Override
     protected EventListener[] getEventListeners() {
-        return new EventListener[] {
-                new NuxeoCmisContextListener(getCoreSession().getSessionId()),
+        return new EventListener[] { new NuxeoCmisContextListener(),
                 new LocalWSServletContextListener() };
     }
 

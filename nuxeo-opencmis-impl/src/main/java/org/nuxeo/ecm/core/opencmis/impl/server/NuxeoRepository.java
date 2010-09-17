@@ -40,12 +40,9 @@ import org.apache.chemistry.opencmis.commons.enums.CapabilityJoin;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityQuery;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
 import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -59,17 +56,36 @@ public class NuxeoRepository {
 
     protected final String repositoryId;
 
+    protected final String rootFolderId;
+
+    protected final RepositoryInfoImpl repositoryInfo;
+
     protected TypeManagerImpl typeManager;
 
-    protected String rootFolderId;
-
-    protected final RepositoryCapabilitiesImpl caps;
-
-    protected final AclCapabilitiesDataImpl aclCaps;
-
-    public NuxeoRepository(String repositoryId) {
+    public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
-        caps = new RepositoryCapabilitiesImpl();
+        this.rootFolderId = rootFolderId;
+        repositoryInfo = new RepositoryInfoImpl();
+        repositoryInfo.setId(repositoryId);
+        repositoryInfo.setName("Nuxeo Repository " + repositoryId);
+        repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
+        repositoryInfo.setCmisVersionSupported("1.0");
+        repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
+        repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
+        repositoryInfo.setThinClientUri(null); // TODO
+        repositoryInfo.setChangesIncomplete(Boolean.TRUE);
+        repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
+                BaseTypeId.CMIS_FOLDER));
+        repositoryInfo.setVendorName("Nuxeo");
+        repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
+        repositoryInfo.setProductVersion("5.4.0-SNAPSHOT"); // TODO
+        repositoryInfo.setRootFolder(rootFolderId);
+        // TODO link LatestChangeLogToken to session state
+        repositoryInfo.setLatestChangeLogToken(null); // TODO XXX variable
+        RepositoryCapabilitiesImpl caps = new RepositoryCapabilitiesImpl();
+        repositoryInfo.setCapabilities(caps);
+        AclCapabilitiesDataImpl aclCaps = new AclCapabilitiesDataImpl();
+        repositoryInfo.setAclCapabilities(aclCaps);
         caps.setAllVersionsSearchable(Boolean.TRUE);
         caps.setCapabilityAcl(CapabilityAcl.NONE);
         caps.setCapabilityChanges(CapabilityChanges.PROPERTIES);
@@ -84,12 +100,15 @@ public class NuxeoRepository {
         caps.setSupportsMultifiling(Boolean.FALSE);
         caps.setSupportsUnfiling(Boolean.FALSE);
         caps.setSupportsVersionSpecificFiling(Boolean.FALSE);
-        aclCaps = new AclCapabilitiesDataImpl();
         aclCaps.setAclPropagation(AclPropagation.REPOSITORYDETERMINED);
         aclCaps.setPermissionDefinitionData(new ArrayList<PermissionDefinition>(
                 0));
         aclCaps.setPermissionMappingData(new HashMap<String, PermissionMapping>());
         aclCaps.setSupportedPermissions(SupportedPermissions.BASIC);
+    }
+
+    public String getId() {
+        return repositoryId;
     }
 
     protected void initializeTypes() {
@@ -146,42 +165,12 @@ public class NuxeoRepository {
         }
     }
 
-    public String getId() {
-        return repositoryId;
-    }
-
-    public String getRootFolderId(CoreSession coreSession) {
-        if (rootFolderId == null) {
-            try {
-                rootFolderId = coreSession.getRootDocument().getId();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException("Cannot get root id", e);
-            }
-        }
+    public String getRootFolderId() {
         return rootFolderId;
     }
 
-    public RepositoryInfo getRepositoryInfo(CoreSession coreSession) {
-        RepositoryInfoImpl info = new RepositoryInfoImpl();
-        info.setId(repositoryId);
-        info.setName("Nuxeo Repository " + repositoryId);
-        info.setDescription("Nuxeo Repository " + repositoryId);
-        info.setCmisVersionSupported("1.0");
-        info.setPrincipalAnonymous("Guest"); // TODO
-        info.setPrincipalAnyone(SecurityConstants.EVERYONE);
-        info.setThinClientUri(null); // TODO
-        info.setChangesIncomplete(Boolean.TRUE);
-        info.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
-                BaseTypeId.CMIS_FOLDER));
-        info.setVendorName("Nuxeo");
-        info.setProductName("Nuxeo OpenCMIS Connector");
-        info.setProductVersion("5.4.0-SNAPSHOT"); // TODO
-        info.setCapabilities(caps);
-        info.setAclCapabilities(aclCaps);
-        //
-        info.setRootFolder(getRootFolderId(coreSession));
-        info.setLatestChangeLogToken(null); // TODO XXX variable
-        return info;
+    public RepositoryInfo getRepositoryInfo() {
+        return repositoryInfo;
     }
 
     // Structures are not copied when returned

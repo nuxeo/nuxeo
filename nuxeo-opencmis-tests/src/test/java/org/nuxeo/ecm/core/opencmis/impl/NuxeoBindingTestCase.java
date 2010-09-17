@@ -26,7 +26,8 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class NuxeoBindingTestCase {
@@ -52,15 +53,12 @@ public class NuxeoBindingTestCase {
     public void setUp() throws Exception {
         nuxeotc = new NuxeoTestCase();
         nuxeotc.setUp();
-        nuxeotc.openSession();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put(SessionParameter.BINDING_SPI_CLASS,
                 SessionParameter.LOCAL_FACTORY);
         params.put(SessionParameter.LOCAL_FACTORY,
-                NuxeoServiceFactory.class.getName());
-        params.put(NuxeoServiceFactory.PARAM_NUXEO_SESSION_ID,
-                nuxeotc.getSession().getSessionId());
+                NuxeoCmisServiceFactory.class.getName());
 
         binding = CmisBindingFactory.newInstance().createCmisLocalBinding(
                 params);
@@ -75,8 +73,8 @@ public class NuxeoBindingTestCase {
     }
 
     public void tearDown() throws Exception {
+        NuxeoRepositories.clear();
         if (nuxeotc != null) {
-            nuxeotc.closeSession();
             nuxeotc.tearDown();
         }
     }

@@ -34,7 +34,8 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
                 objectInfoRequired);
         context.put(CallContext.USERNAME, USERNAME);
         context.put(CallContext.PASSWORD, PASSWORD);
-        NuxeoRepository repository = new NuxeoRepository(getRepositoryId());
+        NuxeoRepository repository = new NuxeoRepository(getRepositoryId(),
+                getRootFolderId());
         session = new NuxeoSession(getCoreSession(), repository, context);
     }
 

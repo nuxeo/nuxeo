@@ -7,18 +7,30 @@
     </module>
   </extension>
 
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener
+      </listener-class>
+    </listener>
+  </extension>
+
   <extension target="web#SERVLET">
     <servlet>
-      <servlet-name>cmisatompub</servlet-name>
+      <servlet-name>cmisatom</servlet-name>
       <servlet-class>
         org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet
       </servlet-class>
+      <init-param>
+        <param-name>callContextHandler</param-name>
+        <param-value>org.apache.chemistry.opencmis.server.impl.atompub.BasicAuthCallContextHandler</param-value>
+      </init-param>
     </servlet>
   </extension>
 
   <extension target="web#SERVLET-MAPPING">
     <servlet-mapping>
-      <servlet-name>cmisatompub</servlet-name>
+      <servlet-name>cmisatom</servlet-name>
       <url-pattern>/atom/cmis/*</url-pattern>
     </servlet-mapping>
   </extension>
@@ -35,7 +47,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -50,7 +63,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -65,7 +79,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -80,7 +95,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -95,7 +111,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -110,7 +127,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -125,7 +143,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -140,7 +159,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>
@@ -155,7 +175,8 @@
       <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
         <handler-chain>
           <handler>
-            <handler-class>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthHandler
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
             </handler-class>
           </handler>
         </handler-chain>

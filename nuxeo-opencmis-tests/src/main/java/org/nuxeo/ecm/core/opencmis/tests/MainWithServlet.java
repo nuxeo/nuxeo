@@ -30,7 +30,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
@@ -71,23 +71,23 @@ public class MainWithServlet extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         // deployBundle("org.nuxeo.ecm.core.event");
-        openSession();
 
+        openSession();
         Helper.makeNuxeoRepository(session);
+        closeSession();
 
         log.warn("CMIS repository starting...");
-        setUpServer(session);
+        setUpServer();
         log.warn("CMIS repository started, AtomPub service url: " + serverURI);
     }
 
     @Override
     public void tearDown() throws Exception {
         tearDownServer();
-        closeSession();
         super.tearDown();
     }
 
-    protected void setUpServer(CoreSession coreSession) throws Exception {
+    protected void setUpServer() throws Exception {
         server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(HOST);
@@ -97,7 +97,7 @@ public class MainWithServlet extends SQLRepositoryTestCase {
         Context context = new Context(server, "/", Context.SESSIONS);
         setUpContext(context);
 
-        context.setEventListeners(getEventListeners(coreSession));
+        context.setEventListeners(getEventListeners());
         ServletHolder holder = new ServletHolder(getServlet());
         holder.setInitParameter(PARAM_CALL_CONTEXT_HANDLER,
                 BasicAuthCallContextHandler.class.getName());
@@ -123,9 +123,8 @@ public class MainWithServlet extends SQLRepositoryTestCase {
         return new CmisAtomPubServlet();
     }
 
-    protected EventListener[] getEventListeners(CoreSession coreSession) {
-        return new EventListener[] { new NuxeoCmisContextListener(
-                coreSession.getSessionId()) };
+    protected EventListener[] getEventListeners() {
+        return new EventListener[] { new NuxeoCmisContextListener() };
         // overridden for WebServices
     }
 

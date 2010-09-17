@@ -40,8 +40,10 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
@@ -97,6 +99,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         tearDownData();
         tearDownCmisSession();
+        NuxeoRepositories.clear();
+        closeSession();
         super.tearDown();
     }
 
@@ -119,6 +123,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected String getRepositoryId() {
         return super.session.getRepositoryName();
+    }
+
+    protected String getRootFolderId() {
+        try {
+            return super.session.getRootDocument().getId();
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void testRoot() {

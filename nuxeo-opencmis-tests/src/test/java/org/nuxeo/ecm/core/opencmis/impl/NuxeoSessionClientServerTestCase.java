@@ -34,6 +34,8 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler;
+import org.nuxeo.ecm.core.opencmis.bindings.TrustingLoginProvider;
 
 /**
  * Test case of the high-level session using a client-server connection.
@@ -89,6 +91,10 @@ public abstract class NuxeoSessionClientServerTestCase extends
     }
 
     protected void setUpServer() throws Exception {
+        // disable login checks
+        System.setProperty(NuxeoCmisAuthHandler.LOGIN_PROVIDER_PROP,
+                TrustingLoginProvider.class.getName());
+
         server = new Server();
         Connector connector = new SocketConnector();
         connector.setHost(HOST);
@@ -111,6 +117,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
     }
 
     protected void tearDownServer() throws Exception {
+        System.clearProperty(NuxeoCmisAuthHandler.LOGIN_PROVIDER_PROP);
         server.stop();
         server.join();
         server = null;

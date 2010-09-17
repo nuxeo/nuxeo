@@ -37,9 +37,9 @@ import org.nuxeo.runtime.api.Framework;
  * SOAP handler that extracts authentication information from the SOAP headers
  * and propagates it to Nuxeo for login.
  */
-public class NuxeoAuthHandler extends AuthHandler implements LoginProvider {
+public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
 
-    private static final Log log = LogFactory.getLog(NuxeoAuthHandler.class);
+    private static final Log log = LogFactory.getLog(NuxeoCmisAuthHandler.class);
 
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
@@ -69,6 +69,19 @@ public class NuxeoAuthHandler extends AuthHandler implements LoginProvider {
             }
         }
         return res;
+    }
+
+    @Override
+    public void close(MessageContext context) {
+        LoginContext loginContext = (LoginContext) context.get(NUXEO_LOGIN_CONTEXT);
+        if (loginContext != null) {
+            try {
+                loginContext.logout();
+            } catch (LoginException e) {
+                log.error("Cannot logout", e);
+            }
+        }
+        super.close(context);
     }
 
     protected LoginProvider getLoginProvider() {
@@ -112,24 +125,16 @@ public class NuxeoAuthHandler extends AuthHandler implements LoginProvider {
     }
 
     protected UserManager getUserManager() {
+        UserManager userManager;
         try {
-            return Framework.getService(UserManager.class);
+            userManager = Framework.getService(UserManager.class);
         } catch (Exception e) {
             throw new RuntimeException("Cannot get UserManager service", e);
         }
-    }
-
-    @Override
-    public void close(MessageContext context) {
-        LoginContext loginContext = (LoginContext) context.get(NUXEO_LOGIN_CONTEXT);
-        if (loginContext != null) {
-            try {
-                loginContext.logout();
-            } catch (LoginException e) {
-                log.error("Cannot logout", e);
-            }
+        if (userManager == null) {
+            throw new RuntimeException("Cannot get UserManager service");
         }
-        super.close(context);
+        return userManager;
     }
 
 }

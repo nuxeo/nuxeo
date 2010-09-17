@@ -81,8 +81,7 @@ public class NuxeoSession implements Session {
         repositoryId = repository.getId();
         objectFactory = new NuxeoObjectFactory(this);
 
-        service = new NuxeoCmisService(coreSession, repository);
-        service.setCallContext(context);
+        service = new NuxeoCmisService(repository, context, coreSession);
         binding = new NuxeoBinding(service);
     }
 

@@ -90,7 +90,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        nuxeotc.openSession();
         Helper.makeNuxeoRepository(nuxeotc.getSession());
+        nuxeotc.closeSession();
         repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
         navService = binding.getNavigationService();

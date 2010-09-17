@@ -24,7 +24,7 @@ import javax.servlet.Servlet;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
-import org.nuxeo.ecm.core.opencmis.tests.NuxeoCmisContextListener;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
 /**
  * Test the high-level session using an AtomPub connection.
@@ -44,8 +44,7 @@ public class TestNuxeoSessionAtomPub extends NuxeoSessionClientServerTestCase {
 
     @Override
     protected EventListener[] getEventListeners() {
-        return new EventListener[] { new NuxeoCmisContextListener(
-                getCoreSession().getSessionId()) };
+        return new EventListener[] { new NuxeoCmisContextListener() };
     }
 
 }

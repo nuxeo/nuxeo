@@ -22,6 +22,7 @@ import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Login provider that does not check the password and just logs in the provided
@@ -37,8 +38,16 @@ public class TrustingLoginProvider implements LoginProvider {
         userIdent.setLoginPluginName("Trusting_LM");
         CallbackHandler handler = new UserIdentificationInfoCallbackHandler(
                 userIdent);
-        LoginContext loginContext = new LoginContext("nuxeo-ecm-web", handler);
-        loginContext.login();
+        LoginContext loginContext;
+        try {
+            loginContext = new LoginContext("nuxeo-ecm-web", handler);
+            loginContext.login();
+        } catch (LoginException e) {
+            // No LoginModules configured for nuxeo-ecm-web
+            // do a system login
+            loginContext = Framework.loginAs(username);
+            // loginContext may still be null
+        }
         return loginContext;
     }
 

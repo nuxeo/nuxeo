@@ -14,16 +14,13 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.opencmis.tests;
-
-import java.util.Collections;
+package org.nuxeo.ecm.core.opencmis.bindings;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
+import org.apache.chemistry.opencmis.commons.server.CmisServiceFactory;
 import org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener;
-import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
 
 /**
  * Servlet context listener that sets up the CMIS service factory in the servlet
@@ -37,24 +34,17 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoServiceFactory;
  */
 public class NuxeoCmisContextListener implements ServletContextListener {
 
-    public final String coreSessionId;
-
-    public NuxeoCmisContextListener(String coreSessionId) {
-        this.coreSessionId = coreSessionId;
-    }
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        AbstractServiceFactory factory = new NuxeoServiceFactory();
-        factory.init(Collections.singletonMap(
-                NuxeoServiceFactory.PARAM_NUXEO_SESSION_ID, coreSessionId));
+        CmisServiceFactory factory = new NuxeoCmisServiceFactory();
+        factory.init(null);
         sce.getServletContext().setAttribute(
                 CmisRepositoryContextListener.SERVICES_FACTORY, factory);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AbstractServiceFactory factory = (AbstractServiceFactory) sce.getServletContext().getAttribute(
+        CmisServiceFactory factory = (CmisServiceFactory) sce.getServletContext().getAttribute(
                 CmisRepositoryContextListener.SERVICES_FACTORY);
         if (factory != null) {
             factory.destroy();

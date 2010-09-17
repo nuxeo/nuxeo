@@ -20,7 +20,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -35,7 +36,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -50,7 +52,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -65,7 +68,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -80,7 +84,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -95,7 +100,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -110,7 +116,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -125,7 +132,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
@@ -140,7 +148,8 @@
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler
+          <handler-class>
+            org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
           </handler-class>
         </handler>
       </handler-chain>
