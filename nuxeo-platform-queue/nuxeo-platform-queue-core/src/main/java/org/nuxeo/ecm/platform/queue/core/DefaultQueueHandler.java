@@ -63,12 +63,13 @@ public class DefaultQueueHandler implements QueueHandler {
             if (!isServerActive()) {
                 throw new QueueError("Server is not active");
             }
-
             // add content in queue
+            log.debug("Adding " + name);
             QueuePersister<C> persister = registry.getPersister(name);
             QueueInfo<C> info = persister.addContent(owner, name, content);
 
             // process content
+            log.debug("Processing " + name);
             QueueProcessor<C> executor = registry.getProcessor(name);
             persister.setExecuteTime(name, new Date());
             executor.process(info);
@@ -80,6 +81,7 @@ public class DefaultQueueHandler implements QueueHandler {
                 throw new QueueError("Server is not active");
             }
 
+            log.debug("Locking " + name);
         LockCoordinator coordinator = Framework.getLocalService(LockCoordinator.class);
 
         try {
@@ -91,6 +93,7 @@ public class DefaultQueueHandler implements QueueHandler {
             throw new QueueError("Couldn't lock the resource", e, name);
         }
 
+        log.debug("Persisting " + name);
         QueuePersister<C> persister = registry.getPersister(name);
 
         QueueInfo<C> info;
@@ -111,6 +114,7 @@ public class DefaultQueueHandler implements QueueHandler {
             }
         }
 
+        log.debug("Processing " + name);
         QueueProcessor<C> executor = registry.getProcessor(name);
         persister.setExecuteTime(name, new Date());
         executor.process(info);
