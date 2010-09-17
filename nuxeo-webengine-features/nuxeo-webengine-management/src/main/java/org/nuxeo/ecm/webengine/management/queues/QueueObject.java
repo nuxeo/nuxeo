@@ -88,7 +88,7 @@ public class QueueObject<C extends Serializable> extends ManagementObject {
         return manager;
     }
 
-    @Path("{content}")
+    @Path("/{content}")
     public Object doDispatch(@PathParam("content") String name) {
         for (QueueInfo<C> info : infos) {
             if (info.getName().getFragment().equals(name)) {
