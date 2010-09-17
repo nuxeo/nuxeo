@@ -96,7 +96,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected List<String> unAuthenticatedURLPrefix;
 
     /**
-     * On WebEngine (Jetty) with don't have JMS enabled so we should disable log
+     * On WebEngine (Jetty) we don't have JMS enabled so we should disable log
      */
     protected boolean byPassAuthenticationLog = false;
 
@@ -352,8 +352,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (session != null) {
                     session.removeAttribute(NXAuthConstants.USERIDENT_KEY);
                 }
-                // first propagate the login because invalidation may require an
-                // authenticated session
+                // first propagate the login because invalidation may require
+                // an authenticated session
                 propagateUserIdentificationInformation(cachableUserIdent);
                 // invalidate Session !
                 service.invalidateSession(request);
@@ -423,11 +423,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // check if the current authenticator is a
                         // LoginResponseHandler
                         NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
-                        if (plugin instanceof LoginResponseHandler) { // call
-                            // the
-                            // extended
-                            // error
-                            // handler
+                        if (plugin instanceof LoginResponseHandler) {
+                            // call the extended error handler
                             if (((LoginResponseHandler) plugin).onSuccess(
                                     (HttpServletRequest) request,
                                     (HttpServletResponse) response)) {
@@ -438,17 +435,15 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // first check if the current authenticator is a
                         // LoginResponseHandler
                         NuxeoAuthenticationPlugin plugin = getAuthenticator(cachableUserIdent);
-                        if (plugin instanceof LoginResponseHandler) { // call
-                            // the
-                            // extended
-                            // error
-                            // handler
+                        if (plugin instanceof LoginResponseHandler) {
+                            // call the extended error handler
                             if (((LoginResponseHandler) plugin).onError(
                                     (HttpServletRequest) request,
                                     (HttpServletResponse) response)) {
                                 return;
                             }
-                        } else { // use the old method
+                        } else {
+                            // use the old method
                             httpRequest.setAttribute(
                                     NXAuthConstants.LOGIN_ERROR,
                                     NXAuthConstants.ERROR_AUTHENTICATION_FAILED);
@@ -497,8 +492,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 try {
                     lc.logout();
                 } catch (LoginException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
         }
@@ -565,7 +559,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     /**
      * Save requested URL before redirecting to login form.
-     *
+     * <p>
      * Returns true if target url is a valid startup page.
      */
     public boolean saveRequestedURLBeforeRedirect(
@@ -600,8 +594,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             return true;
         }
 
-        // avoid saving to session is start page is not valid or if it's already
-        // in the request params
+        // avoid saving to session is start page is not valid or if it's
+        // already in the request params
         if (isStartPageValid(requestPage)) {
             if (!requestPageInParams) {
                 session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY,
@@ -632,7 +626,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         String requestedPage = null;
-
         if (httpRequest.getParameter(NXAuthConstants.REQUESTED_URL) == null) {
             HttpSession session = httpRequest.getSession(false);
             if (session != null) {

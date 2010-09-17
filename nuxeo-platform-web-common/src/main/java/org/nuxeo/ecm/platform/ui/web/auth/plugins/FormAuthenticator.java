@@ -85,8 +85,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                     parameters);
             httpResponse.sendRedirect(redirectUrl);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
             return false;
         }
         return true;

@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -40,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
+
+    private static final Log log = LogFactory.getLog(AnonymousAuthenticator.class);
 
     public static final String BLOCK_ANONYMOUS_LOGIN_KEY = "org.nuxeo.ecm.platform.ui.web.auth.anonymous.block";
 
@@ -62,7 +66,7 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
             try {
                 anonymousLogin = Framework.getService(UserManager.class).getAnonymousUserId();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
             initialized = true;
         }
