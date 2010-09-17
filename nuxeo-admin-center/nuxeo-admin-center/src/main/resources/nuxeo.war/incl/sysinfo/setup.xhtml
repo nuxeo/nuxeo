@@ -1,0 +1,53 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+ <h2><h:outputText value="#{messages['adminsubtab.sysinfo.setup']}" /></h2>
+
+ <br/>
+
+ <a4j:outputPanel id="setupPanel" ajaxRendered="true">
+
+  <ui:include src="/incl/message_banner.xhtml"/>
+
+  <h:panelGroup rendered="#{setupRequiresRestart}">
+  <div class="warningFeedback"><h:outputText value="#{messages['label.setup.restartNeeded']}" /></div><br/>
+  </h:panelGroup>
+
+
+  <a4j:form>
+    <table>
+      <tr>
+        <td><h:outputText value="#{messages['label.setup.template']}" /></td>
+        <td>
+              <h:selectOneListbox class="dataInputText" size="1" value="#{setupParams['nuxeo.template']}">
+                    <f:selectItem itemValue = "default" itemLabel = "Default (H2 embeded Database)"/>
+                    <f:selectItem itemValue = "postgresql" itemLabel = "PostgreSQL Database"/>
+             </h:selectOneListbox>
+        </td>
+      </tr><tr>
+        <td><h:outputText value="#{messages['label.setup.bind']}" /></td>
+        <td>
+              <h:inputText class="dataInputText" size="15" value="#{setupParams['nuxeo.bind.address']}"/>
+        </td>
+      </tr><tr>
+        <td><h:outputText value="#{messages['label.setup.url']}" /></td>
+        <td>
+              <h:inputText class="dataInputText" size="50" value="#{setupParams['nuxeo.url']}"/>
+        </td>
+      </tr>
+    </table>
+
+    <br/>
+      <a4j:commandButton  value="#{messages['action.setup.save']}" action="#{setupWizardAction.saveParameters()}" reRender="setupPanel"/>
+      <a4j:commandButton  value="#{messages['action.setup.cancel']}" action="#{setupWizardAction.resetParameters()}" reRender="setupPanel"/>
+
+  </a4j:form>
+
+ </a4j:outputPanel>
+
+</div>

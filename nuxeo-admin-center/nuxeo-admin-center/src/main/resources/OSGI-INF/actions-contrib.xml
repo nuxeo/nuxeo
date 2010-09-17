@@ -29,20 +29,26 @@
           <filter-id>only_for_manager</filter-id>
         </action>
 
+        <action id="Setup" link="/incl/sysinfo/setup.xhtml"
+          label="tab.sysinfo.setup" order="40">
+          <category>NUXEO_ADMIN_SystemInfo</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
         <action id="ReposInfo" link="/incl/sysinfo/reposInfo.xhtml"
-          label="tab.sysinfo.reposInfo" order="40">
+          label="tab.sysinfo.reposInfo" order="50">
           <category>NUXEO_ADMIN_SystemInfo</category>
           <filter-id>only_for_manager</filter-id>
         </action>
 
 <!--        <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml"
-          label="tab.sysinfo.reposStats" order="40">
+          label="tab.sysinfo.reposStats" order="60">
           <category>NUXEO_ADMIN_SystemInfo</category>
           <filter-id>only_for_manager</filter-id>
         </action>
 -->
         <action id="UserActivity" link="/incl/sysinfo/usersActivity.xhtml"
-          label="tab.sysinfo.usersActivity" order="50">
+          label="tab.sysinfo.usersActivity" order="60">
           <category>NUXEO_ADMIN_SystemInfo</category>
           <filter-id>only_for_manager</filter-id>
         </action>
