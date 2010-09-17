@@ -313,7 +313,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             try {
                 request.setCharacterEncoding("UTF-8");
             } catch (UnsupportedEncodingException e) {
-                log.error(e);
+                log.error(e, e);
             }
         }
 
