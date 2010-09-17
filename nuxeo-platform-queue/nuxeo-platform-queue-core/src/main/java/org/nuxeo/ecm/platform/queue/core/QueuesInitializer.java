@@ -47,7 +47,7 @@ public class QueuesInitializer implements FrameworkListener {
         // loading this class
         Thread currentThread = Thread.currentThread();
         ClassLoader previous = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(QueuesInitializer.class.getClassLoader());
+        currentThread.setContextClassLoader(org.nuxeo.runtime.api.Framework.class.getClassLoader());
         try {
             doInitialize();
         } finally {

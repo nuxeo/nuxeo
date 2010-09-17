@@ -29,7 +29,6 @@ import java.util.List;
  * @author Stephane Lacoin <slacoin@nuxeo.com> (aka matic)
  * @see QueuePersister
  */
-@Transacted
 public interface QueueManager<C extends Serializable> {
 
     /**
@@ -82,6 +81,7 @@ public interface QueueManager<C extends Serializable> {
      *
      * @param content the content
      */
+    @Transacted
     void updateInfos(URI name, C content);
 
     /**
@@ -90,6 +90,7 @@ public interface QueueManager<C extends Serializable> {
      * @param owner
      * @return
      */
+    @Transacted
     int removeOwned(URI owner);
 
     /**

@@ -59,7 +59,6 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     @Override
-    @Transacted
     public <C extends Serializable> void newContent(URI owner, URI name, C content) {
             if (!isServerActive()) {
                 throw new QueueError("Server is not active");
@@ -76,7 +75,6 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     @Override
-    @Transacted
     public <C extends Serializable> void newContentIfUnknown(URI ownerName, URI name, C content) {
             if (!isServerActive()) {
                 throw new QueueError("Server is not active");
@@ -129,7 +127,6 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     @Override
-    @Transacted
     public <C extends Serializable> QueueInfo<C> cancel(URI name) {
         QueuePersister<C> persister = registry.getPersister(name);
         return persister.removeContent(name);

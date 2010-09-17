@@ -47,7 +47,7 @@ public class DefaultQueueRegistry implements QueueRegistry, QueueLocator {
         protected Entry(Class<C> contentType, QueuePersister<C> persister, QueueProcessor<C> processor) {
             super();
             this.contentType = contentType;
-            this.persister =  persister; //TransactedInstanceHandler.newProxy(QueuePersister.class, persister);
+            this.persister =  persister;
             this.processor = processor;
         }
     }
@@ -63,7 +63,7 @@ public class DefaultQueueRegistry implements QueueRegistry, QueueLocator {
     }
 
     public <C extends Serializable> QueuePersister<C> getPersister(URI name) {
-        return TransactedInstanceHandler.newProxy(entry(name).persister, QueuePersister.class);
+        return (QueuePersister<C>)entry(name).persister;
     }
 
     public <C extends Serializable> QueueProcessor<C> getProcessor(URI name) {

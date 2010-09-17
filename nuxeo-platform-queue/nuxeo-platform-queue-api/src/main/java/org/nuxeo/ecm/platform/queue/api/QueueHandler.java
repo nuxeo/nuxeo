@@ -25,7 +25,6 @@ import java.net.URI;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
  */
-@Transacted
 public interface QueueHandler {
 
     /**
@@ -33,6 +32,7 @@ public interface QueueHandler {
      *
      * @param content the content
      */
+    @Transacted
     <C extends Serializable> void newContent(URI owner, URI contentName,  C content);
 
     /**
@@ -41,6 +41,7 @@ public interface QueueHandler {
      * @param ownerName the context owner
      * @param resource the content name
      */
+    @Transacted
     <C extends Serializable> void newContentIfUnknown(URI ownerName, URI contentName,  C content);
 
     /**
@@ -59,6 +60,7 @@ public interface QueueHandler {
      * @param contentName
      * @return
      */
+    @Transacted
     <C extends Serializable> QueueInfo<C> cancel(URI contentName);
 
     /**
@@ -67,5 +69,6 @@ public interface QueueHandler {
      * @param contentName
      * @return
      */
+    @Transacted
     <C extends Serializable> QueueInfo<C> retry(URI contentName);
 }
