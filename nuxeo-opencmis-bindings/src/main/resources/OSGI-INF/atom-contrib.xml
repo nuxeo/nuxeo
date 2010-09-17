@@ -7,7 +7,7 @@
     target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
     <filterConfig name="cmis-jaxrs" transactional="true">
-      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis/.*</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/cmis/.*</pattern>
     </filterConfig>
   </extension>
 
@@ -19,7 +19,7 @@
       enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
       <parameters>
-        <parameter name="ForcePromptURL_CMISAtomPub">atom/cmis/</parameter>
+        <parameter name="ForcePromptURL_CMISAtomPub">cmis/</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>
